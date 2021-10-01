@@ -1,0 +1,487 @@
+.yellowGradient {
+    background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
+    height: 688px;
+    width: 90%;
+    border-bottom-right-radius: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+}
+
+.yellowGradientSmall {
+    background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
+    height: 316px;
+    width: 90%;
+    border-bottom-right-radius: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+}
+
+.container {
+    width: 1320px;
+    margin: auto;
+}
+
+.footer {
+    width: 100%;
+
+    .footerBanner {
+        height: 287px;
+        background-color: #e74f26;
+        width: 91%;
+        float: right;
+        border-bottom-left-radius: 70px;
+        margin-right: -10px;
+
+        .footerHeader {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 900;
+            line-height: 85px;
+            text-align: left;
+        }
+
+        .footerSubHeader {
+            color: #ffffff;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+            text-align: left;
+        }
+
+        .linkHeader {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 80px;
+            text-align: left;
+        }
+
+        .link {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 30px;
+            text-align: left;
+        }
+    }
+
+    .footerRights {
+        opacity: 0.44;
+        color: #77798b;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 40px;
+        text-align: center;
+        width: 100%;
+        margin: auto;
+    }
+}
+
+.footerClearfix {
+    height: 290px;
+}
+
+.navBar {
+    padding-top: 33px;
+    width: 100%;
+    height: 100px;
+
+    .leftMenu {
+        display: flex;
+        flex-direction: row;
+        width: 50%;
+        float: left;
+    }
+
+    .rightMenu {
+        display: flex;
+        flex-direction: row-reverse;
+        width: 50%;
+        float: left;
+
+        .menuButton {
+            width: 180px;
+            height: 37px;
+            background-color: transparent;
+            text-transform: uppercase;
+            border: 1px solid #464749;
+            border-radius: 7px;
+            margin-right: 10px;
+
+            i {
+                float: right;
+                padding-right: 5px;
+            }
+        }
+
+        .contactButton {
+            width: 180px;
+            height: 37px;
+            border-radius: 7px;
+            background-color: #e74f26;
+            color: #fff;
+            text-transform: uppercase;
+            border: none;
+        }
+    }
+}
+
+.loginHeader {
+    .booking {
+        color: #464749;
+        font-size: 72px;
+        font-weight: 900;
+        line-height: 103px;
+        text-align: left;
+    }
+
+    .bookingText {
+        color: #464749;
+        font-size: 28px;
+        font-weight: 400;
+        line-height: 36px;
+        text-align: left;
+    }
+}
+
+.cards {
+    width: 100%;
+
+    .whiteCard {
+        width: 41%;
+        float: left;
+        height: 409px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        border-radius: 10px;
+        background-color: #f8f8f8;
+        padding: 39px 50px;
+
+        .cardList {
+            color: #000000;
+            font-size: 21px;
+            font-weight: 300;
+            line-height: 26px;
+            margin-top: -20px;
+        }
+
+        .editButton {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18px;
+            background-color: transparent;
+            width: 82px;
+            height: 37px;
+            border-radius: 7px;
+            border: 1px solid #c3c3c3;
+        }
+
+        .cardHeader {
+            color: #464749;
+            font-size: 40px;
+            font-weight: 600;
+            line-height: 55px;
+            text-align: left;
+        }
+
+        .cardSubHeader {
+            color: #464749;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+            text-align: left;
+            .info {
+                font-weight: bold;
+            }
+        }
+
+        .cardSubHeaderGrey {
+            color: #9799ab;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+            text-align: left;
+        }
+
+        .cardText {
+            color: #464749;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 16px;
+            text-align: left;
+        }
+
+        .applyButton {
+            border-radius: 7px;
+            background-color: #e74f26;
+            color: #fff;
+            text-transform: uppercase;
+            width: 100%;
+            height: 37px;
+            border: none;
+            position: relative;
+            margin-top: 166px;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        .cardForm {
+            display: grid;
+
+            label {
+                color: #000000;
+                font-size: 21px;
+                font-weight: 400;
+                text-align: left;
+            }
+
+            input {
+                width: 368px;
+                height: 36px;
+                border-radius: 5px;
+                background-color: #f0f0f0;
+                border: none;
+                width: 100%;
+            }
+
+            .submitButton {
+                color: #000000;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 18px;
+                text-align: center;
+                text-transform: uppercase;
+                height: 37px;
+                background-color: transparent;
+                border: 1px solid #c3c3c3;
+                border-radius: 7px;
+                margin-top: 10px;
+            }
+
+            .small {
+                width: 203px;
+                height: 14px;
+                color: #888888;
+                font-size: 11px;
+                font-weight: 400;
+                letter-spacing: 1.03px;
+                line-height: 26px;
+                text-align: left;
+                text-align: center;
+            }
+        }
+    }
+}
+
+.clearSpaceLogin {
+    height: 350px;
+}
+
+.col-3 {
+    width: 25%;
+    float: left;
+}
+
+.form-card {
+    label {
+        color: #000000;
+        font-size: 21px;
+        font-weight: 300;
+        text-align: left;
+    }
+    input {
+        width: 95% !important;
+        height: 36px;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+        border-radius: 5px !important;
+    }
+
+    select {
+        width: 95% !important;
+        height: 36px;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+        border-radius: 5px !important;
+        border: none !important;
+    }
+
+    .form-field {
+        width: 50%;
+        float: left;
+        height: 88px !important;
+    }
+    .form-field-big {
+        width: 100%;
+        float: left;
+        height: 88px !important;
+    }
+}
+
+#msform {
+    .action-button {
+        text-transform: uppercase;
+        float: right;
+        width: 368px !important;
+        height: 37px !important;
+        border-radius: 7px !important;
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .action-button-previous {
+        color: #000000 !important;
+        text-transform: uppercase;
+        float: left;
+        width: 368px !important;
+        height: 37px !important;
+        border-radius: 7px !important;
+        background-color: #fff !important;
+        margin-left: 77px !important;
+        font-size: 14px;
+        font-weight: 400;
+        border: 1px solid #c3c3c3 !important;
+    }
+}
+
+.whiteYellowCard {
+    width: 572px;
+    height: 506px;
+    background-color: #f8f8f8;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    float: left;
+    margin-bottom: 92px;
+
+    .cardBody {
+        padding: 30px;
+    }
+
+    .cardHeader {
+        font-size: 40px;
+        font-weight: 600;
+        color: #464749;
+        line-height: 40px;
+        background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+        height: 110x;
+        padding: 25px;
+    }
+
+    .uploadSection {
+        height: 54px;
+        box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+        border-radius: 10px;
+        background-color: #f8f8f8;
+        padding: 19px;
+        display: flex;
+
+        .uploadFileSection {
+            display: flex;
+            flex-direction: row-reverse;
+            width: 100%;
+            margin-top: 14px;
+        }
+
+        .uploadName {
+            color: #464749;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 62px;
+            width: 220%;
+        }
+
+        .uploadLabel {
+            display: inline-block;
+            background-color: #9a9a9a;
+            color: white;
+            cursor: pointer;
+            width: 99px;
+            height: 25px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 25px;
+            text-align: center;
+            margin-right: 18px;
+        }
+
+        i {
+            font-size: 24px;
+            color: #e74f26;
+        }
+    }
+}
+
+.redBannerNotice {
+    height: 85px;
+    border-radius: 10px;
+    background-color: #e74f26;
+    margin-left: -108px;
+    display: flex;
+    padding: 50px;
+    margin-bottom: 60px;
+
+    i {
+        color: #fff;
+        font-size: 55px;
+    }
+
+    p {
+        color: #fff;
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 28px;
+        text-align: left;
+        padding-left: 25px;
+    }
+}
+
+.flex {
+    display: flex;
+}
+.flex-rev {
+    flex-direction: row-reverse;
+}
+.flex-col {
+    flex-direction: column;
+}
+
+.halfCard {
+    width: 77% !important;
+    height: 200px !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.paymentSection {
+    .header {
+        color: #464749;
+        font-size: 40px;
+        font-weight: 600;
+        line-height: 55px;
+    }
+
+    .redBottom {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        background-color: #ff0000;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        width: 77%;
+        padding: 50px;
+
+        i {
+            color: #fff;
+            font-size: 45px;
+            padding-right: 50px;
+        }
+
+        p {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 900;
+        }
+    }
+}
