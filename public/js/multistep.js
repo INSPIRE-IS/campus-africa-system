@@ -4,10 +4,13 @@ $(document).ready(function(){
     var opacity;
     
     $(".next").click(function(){
+
     
     current_fs = $(this).parent();
     next_fs = $(this).parent().next();
     // prev_fs = $(this).parent().prev();
+
+    
     
     //Add Class Active
     $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");

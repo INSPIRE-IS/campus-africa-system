@@ -17,8 +17,17 @@
   margin-top: -10px; }
 
 .container {
-  width: 1320px;
+  width: 75%;
   margin: auto; }
+
+.errorBorder {
+  border: 1px solid red !important; }
+
+.hidden {
+  display: none !important; }
+
+.greenBorder {
+  border: 2px solid #6abc0b !important; }
 
 .footer {
   width: 100%; }
@@ -27,8 +36,7 @@
     background-color: #e74f26;
     width: 91%;
     float: right;
-    border-bottom-left-radius: 70px;
-    margin-right: -10px; }
+    border-bottom-left-radius: 70px; }
     .footer .footerBanner .footerHeader {
       color: #ffffff;
       font-size: 28px;
@@ -65,6 +73,40 @@
 
 .footerClearfix {
   height: 290px; }
+
+.centerContent {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 86px; }
+
+#stickyNavbar {
+  overflow: hidden;
+  height: 86px;
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  background-color: #ffffff;
+  z-index: 10;
+  overflow: overlay; }
+  #stickyNavbar a {
+    display: block;
+    color: #464749;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase; }
+    #stickyNavbar a:hover {
+      font-weight: bold;
+      color: black; }
+    #stickyNavbar a .active {
+      background-color: #04aa6d;
+      color: white; }
 
 .navBar {
   padding-top: 33px;
@@ -110,22 +152,188 @@
       text-transform: uppercase;
       border: none; }
 
-.loginHeader .booking {
-  color: #464749;
-  font-size: 72px;
-  font-weight: 900;
-  line-height: 103px;
-  text-align: left; }
+.loginHeader {
+  margin-top: 35px; }
+  .loginHeader .booking {
+    color: #464749;
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 103px;
+    text-align: left; }
+  .loginHeader .bookingSub {
+    color: #464749;
+    font-size: 33px;
+    font-weight: 400; }
+  .loginHeader .appBtn {
+    border-radius: 7px;
+    border: 1px solid #707070;
+    background-color: #707070;
+    width: 436px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 10px;
+    float: right;
+    margin-top: -120px;
+    cursor: pointer; }
+  .loginHeader .bookingText {
+    color: #464749;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 36px;
+    text-align: left; }
 
-.loginHeader .bookingText {
-  color: #464749;
-  font-size: 28px;
-  font-weight: 400;
-  line-height: 36px;
-  text-align: left; }
+.appRow {
+  width: 48%;
+  margin-right: 1%;
+  float: left; }
 
 .cards {
-  width: 100%; }
+  width: 100%;
+  padding-top: 22px; }
+  .cards .customWhiteCard {
+    width: 100%;
+    float: left;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    padding: 39px 50px; }
+    .cards .customWhiteCard .infoBlock {
+      border-radius: 10px;
+      border: 1px solid #c3c3c3;
+      background-color: #ffffff;
+      margin: 10px; }
+      .cards .customWhiteCard .infoBlock .responsible {
+        border-bottom: 1px solid #ccc;
+        padding: 20px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex; }
+        .cards .customWhiteCard .infoBlock .responsible .admin {
+          border-radius: 5px;
+          background-color: #1cb915;
+          border: none;
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 400;
+          line-height: 18px;
+          text-transform: uppercase;
+          padding: 2px 10px;
+          margin-left: 10px; }
+        .cards .customWhiteCard .infoBlock .responsible .applicant {
+          border-radius: 5px;
+          background-color: #f1cc3e;
+          border: none;
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 400;
+          line-height: 18px;
+          text-transform: uppercase;
+          padding: 2px 10px;
+          margin-left: 10px; }
+        .cards .customWhiteCard .infoBlock .responsible .datetime {
+          width: 100%;
+          text-align: end; }
+      .cards .customWhiteCard .infoBlock .information {
+        padding: 20px; }
+    .cards .customWhiteCard .section {
+      padding: 20px 20px 50px 20px;
+      border-bottom: 2px solid #efefef;
+      width: 100%; }
+      .cards .customWhiteCard .section .label {
+        width: 60%;
+        float: left; }
+      .cards .customWhiteCard .section .banner {
+        width: 30%;
+        float: left; }
+        .cards .customWhiteCard .section .banner button {
+          color: #101010;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 18px;
+          text-transform: uppercase;
+          border: 1px solid #101010;
+          background-color: transparent;
+          padding: 10px;
+          border-radius: 10px;
+          cursor: pointer; }
+        .cards .customWhiteCard .section .banner .error {
+          border: none;
+          background-color: #e74f26;
+          color: #fff; }
+      .cards .customWhiteCard .section .status {
+        width: 10%;
+        float: left; }
+      .cards .customWhiteCard .section .button {
+        border-radius: 50%;
+        height: 29px;
+        width: 29px;
+        border: 3px solid #cecece; }
+      .cards .customWhiteCard .section .approved {
+        background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%); }
+      .cards .customWhiteCard .section .action {
+        background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%); }
+      .cards .customWhiteCard .section .rejected {
+        background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%); }
+    .cards .customWhiteCard .reminder {
+      background-color: #e74f26;
+      border-radius: 7px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      text-transform: uppercase;
+      border: none;
+      padding: 10px;
+      float: right;
+      cursor: pointer; }
+    .cards .customWhiteCard .cardSubHeader {
+      color: #464749;
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 28px;
+      text-align: left; }
+      .cards .customWhiteCard .cardSubHeader .info {
+        font-weight: bold; }
+    .cards .customWhiteCard .buttons {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex; }
+      .cards .customWhiteCard .buttons .appBooking {
+        color: #464749;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        text-transform: uppercase;
+        background-color: transparent;
+        border-radius: 10px;
+        border: 1px solid #464749;
+        padding: 10px;
+        margin: 5px;
+        width: 48%;
+        cursor: pointer; }
+    .cards .customWhiteCard .cardSubHeaderGrey {
+      color: #9799ab;
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 28px;
+      text-align: left; }
+    .cards .customWhiteCard .appHeader {
+      color: #21232b;
+      font-size: 33px;
+      font-weight: 400;
+      padding-bottom: 10px; }
+    .cards .customWhiteCard .InfoList {
+      font-size: 21px;
+      font-weight: 300;
+      line-height: 26px; }
+    .cards .customWhiteCard .appSubHeader {
+      color: #464749;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 26px; }
   .cards .whiteCard {
     width: 41%;
     float: left;
@@ -191,6 +399,15 @@
     .cards .whiteCard .cardForm {
       display: -ms-grid;
       display: grid; }
+      .cards .whiteCard .cardForm .adminHeader {
+        color: #21232b;
+        font-size: 33px;
+        font-weight: 400;
+        margin-top: 35%; }
+      .cards .whiteCard .cardForm .adminOutstanding {
+        color: #1cb915;
+        font-size: 33px;
+        font-weight: 900; }
       .cards .whiteCard .cardForm label {
         color: #000000;
         font-size: 21px;
@@ -214,7 +431,8 @@
         background-color: transparent;
         border: 1px solid #c3c3c3;
         border-radius: 7px;
-        margin-top: 10px; }
+        margin-top: 10px;
+        width: 100%; }
       .cards .whiteCard .cardForm .small {
         width: 203px;
         height: 14px;
@@ -223,11 +441,14 @@
         font-weight: 400;
         letter-spacing: 1.03px;
         line-height: 26px;
-        text-align: left;
-        text-align: center; }
+        text-align: center;
+        margin: auto; }
 
 .clearSpaceLogin {
   height: 350px; }
+
+.clearSpaceLoginPage {
+  height: 195px; }
 
 .col-3 {
   width: 25%;
@@ -286,8 +507,88 @@
   font-weight: 400;
   border: 1px solid #c3c3c3 !important; }
 
+.PaymentLabel {
+  display: inline-block;
+  background-color: #e74f26;
+  color: white !important;
+  cursor: pointer;
+  width: 526px;
+  border-radius: 5px;
+  font-weight: 400;
+  line-height: 25px;
+  text-align: center !important;
+  margin-right: 18px;
+  padding: 10px; }
+
+.greenPayment {
+  background-color: #6abc0b !important; }
+
+.roomImgBack {
+  background-image: url("../images/rooms/Braamlofts_single_1_.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1;
+  background-size: 683px 476px; }
+  .roomImgBack .overlayCustom {
+    bottom: 0;
+    background-image: -webkit-gradient(linear, right top, left top, from(rgba(255, 0, 0, 0)), to(black));
+    background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
+    color: #f1f1f1;
+    width: 100%;
+    height: 410px;
+    opacity: 1;
+    color: white;
+    padding: 60px;
+    z-index: 10;
+    border-radius: 10px;
+    margin-left: -50px;
+    margin-top: -40px; }
+    .roomImgBack .overlayCustom .cardSub {
+      color: #ffffff;
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 28px; }
+    .roomImgBack .overlayCustom .cardHeaderSub {
+      color: #ffffff;
+      font-size: 36px;
+      font-weight: 900; }
+  .roomImgBack .overlay {
+    bottom: 0;
+    background-image: -webkit-gradient(linear, right top, left top, from(rgba(255, 0, 0, 0)), to(black));
+    background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
+    color: #f1f1f1;
+    width: 100%;
+    height: 345px;
+    opacity: 1;
+    color: white;
+    padding: 20px;
+    z-index: 10;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px; }
+    .roomImgBack .overlay .cardSubHeaderGrey {
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 28px; }
+    .roomImgBack .overlay .roomContactBtn {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      text-transform: uppercase;
+      border: 1px solid #fff;
+      border-radius: 10px;
+      background-color: transparent;
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer; }
+
+.smallerCard {
+  height: 461px !important;
+  margin-bottom: 30px !important; }
+
 .whiteYellowCard {
-  width: 572px;
+  width: 47%;
   height: 506px;
   background-color: #f8f8f8;
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
@@ -297,6 +598,16 @@
   margin-bottom: 92px; }
   .whiteYellowCard .cardBody {
     padding: 30px; }
+    .whiteYellowCard .cardBody .cardSubHeaderGreyTxt {
+      color: #9799ab;
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 28px; }
+    .whiteYellowCard .cardBody .cardHeaderBlck {
+      color: #000000;
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 28px; }
   .whiteYellowCard .cardHeader {
     font-size: 40px;
     font-weight: 600;
@@ -308,6 +619,101 @@
     border-top-left-radius: 10px;
     height: 110x;
     padding: 25px; }
+    .whiteYellowCard .cardHeader .small {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      text-align: right; }
+      .whiteYellowCard .cardHeader .small .text {
+        padding-right: 20px;
+        text-transform: uppercase; }
+      .whiteYellowCard .cardHeader .small .circle {
+        width: 30px;
+        height: 30px;
+        background: transparent;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        float: right;
+        margin-top: -10px; }
+        .whiteYellowCard .cardHeader .small .circle i {
+          margin-top: 7px;
+          margin-right: 8px; }
+  .whiteYellowCard .appAwait {
+    border-bottom: 2px solid #efefef;
+    padding: 15px; }
+    .whiteYellowCard .appAwait .outstanding {
+      border: 1px solid #e74f26;
+      padding: 7px;
+      border-radius: 10px;
+      float: right;
+      margin-top: -10px;
+      cursor: pointer; }
+      .whiteYellowCard .appAwait .outstanding .text {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        color: #e74f26;
+        text-transform: uppercase;
+        padding-right: 20px; }
+      .whiteYellowCard .appAwait .outstanding i {
+        color: #e74f26; }
+    .whiteYellowCard .appAwait .pending {
+      border: 1px solid #eece5b;
+      padding: 7px;
+      border-radius: 10px;
+      float: right;
+      margin-top: -29px; }
+      .whiteYellowCard .appAwait .pending .text {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        color: #eece5b;
+        text-transform: uppercase;
+        padding-right: 20px; }
+      .whiteYellowCard .appAwait .pending i {
+        color: #eece5b; }
+    .whiteYellowCard .appAwait .approved {
+      border: 1px solid #50b63a;
+      padding: 7px;
+      border-radius: 10px;
+      float: right;
+      margin-top: -10px; }
+      .whiteYellowCard .appAwait .approved .text {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        color: #50b63a;
+        text-transform: uppercase;
+        padding-right: 20px; }
+      .whiteYellowCard .appAwait .approved i {
+        color: #50b63a; }
+    .whiteYellowCard .appAwait .invalid {
+      border-radius: 7px;
+      background-color: #e74f26;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 18px;
+      padding: 5px;
+      margin-top: 10px; }
+      .whiteYellowCard .appAwait .invalid i {
+        float: right;
+        font-size: 17px; }
+  .whiteYellowCard .cardHeaderText {
+    color: #ffffff;
+    font-size: 36px;
+    font-weight: 900; }
+  .whiteYellowCard .greyCardHeader {
+    background-color: #efefef !important;
+    background-image: none; }
+  .whiteYellowCard .redCardHeader {
+    color: #fff;
+    background-color: #e74f26 !important;
+    background-image: none; }
+  .whiteYellowCard .greenCardHeader {
+    color: #fff;
+    background-color: #50b63a !important;
+    background-image: none; }
   .whiteYellowCard .uploadSection {
     height: 54px;
     -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
@@ -347,9 +753,85 @@
       line-height: 25px;
       text-align: center;
       margin-right: 18px; }
+    .whiteYellowCard .uploadSection .successLabel {
+      display: inline-block;
+      background-color: #6abc0b;
+      color: white;
+      cursor: pointer;
+      width: 99px;
+      height: 25px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 25px;
+      text-align: center;
+      margin-right: 18px; }
     .whiteYellowCard .uploadSection i {
       font-size: 24px;
       color: #e74f26; }
+    .whiteYellowCard .uploadSection .successful {
+      color: #6abc0b; }
+
+.singleUploadSection {
+  height: 90px;
+  width: 90%;
+  -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+          box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+  border-radius: 10px;
+  background-color: #f8f8f8;
+  padding: 19px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: 50px;
+  margin-bottom: 50px; }
+  .singleUploadSection .uploadFileSection {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+        -ms-flex-direction: row-reverse;
+            flex-direction: row-reverse;
+    width: 100%;
+    margin-top: 14px; }
+  .singleUploadSection .uploadName {
+    color: #464749;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 62px;
+    width: 220%; }
+  .singleUploadSection .uploadLabel {
+    display: inline-block;
+    background-color: #9a9a9a;
+    color: white;
+    cursor: pointer;
+    width: 99px;
+    height: 25px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center;
+    margin-right: 18px; }
+  .singleUploadSection .successLabel {
+    display: inline-block;
+    background-color: #6abc0b;
+    color: white;
+    cursor: pointer;
+    width: 99px;
+    height: 25px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center;
+    margin-right: 18px; }
+  .singleUploadSection i {
+    font-size: 24px;
+    color: #e74f26; }
+  .singleUploadSection .successful {
+    color: #6abc0b; }
 
 .redBannerNotice {
   height: 85px;
@@ -395,13 +877,15 @@
   border-bottom-right-radius: 0 !important;
   border-bottom-left-radius: 0 !important; }
 
-.paymentSection .header {
+.paymentSection .header,
+.paymentTwo .header {
   color: #464749;
   font-size: 40px;
   font-weight: 600;
   line-height: 55px; }
 
-.paymentSection .redBottom {
+.paymentSection .redBottom,
+.paymentTwo .redBottom {
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
           box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
   background-color: #ff0000;
@@ -409,12 +893,228 @@
   border-bottom-right-radius: 10px;
   width: 77%;
   padding: 50px; }
-  .paymentSection .redBottom i {
+  .paymentSection .redBottom i,
+  .paymentTwo .redBottom i {
     color: #fff;
     font-size: 45px;
     padding-right: 50px; }
-  .paymentSection .redBottom p {
+  .paymentSection .redBottom p,
+  .paymentTwo .redBottom p {
     color: #fff;
     font-size: 24px;
     font-weight: 900; }
+
+.otherProperties .header {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 55px; }
+
+.otherProperties .demo-content {
+  color: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-family: Helvetica;
+  font-weight: 100;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  text-transform: uppercase;
+  border-radius: 3px;
+  font-size: 56px;
+  height: 250px;
+  width: 100%; }
+
+button:disabled {
+  opacity: 0.5; }
+
+.buttonSection .download {
+  color: #000000;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  text-transform: uppercase;
+  border: 1px solid #000;
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 10px;
+  width: 368px;
+  cursor: pointer; }
+
+.buttonSection .sign {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  text-transform: uppercase;
+  background-color: #e74f26;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  width: 368px;
+  cursor: pointer; }
+
+.bookingPage .bookingHeader {
+  color: #464749;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 55px; }
+
+.bookingPage .bookingInfo {
+  color: #000000;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24px;
+  margin-top: 30px;
+  margin-bottom: 30px; }
+
+.leaseText {
+  margin-top: 20px;
+  width: 1030px;
+  height: 300px;
+  border: none;
+  margin-bottom: 50px; }
+
+.completeText {
+  opacity: 0.6;
+  color: #464749;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 36px;
+  margin-top: 40px;
+  margin-bottom: 30px; }
+
+.appSearchForm {
+  margin-top: 80px; }
+  .appSearchForm .searchField {
+    width: 33.3%;
+    float: left;
+    margin-top: 20px; }
+    .appSearchForm .searchField select,
+    .appSearchForm .searchField input {
+      border-radius: 7px;
+      background-color: #f0f0f0;
+      border: none;
+      width: 90%;
+      padding: 10px;
+      color: #000000;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px; }
+    .appSearchForm .searchField label {
+      color: #000000;
+      font-size: 21px;
+      font-weight: 300; }
+  .appSearchForm .searchTab {
+    width: 20%;
+    float: left; }
+    .appSearchForm .searchTab button {
+      width: 180px;
+      height: 37px;
+      border-radius: 7px;
+      border: 1px solid #707070;
+      background-color: #707070;
+      color: #ffffff; }
+  .appSearchForm .indexTab {
+    width: 80%;
+    float: left;
+    border-radius: 10px;
+    background-color: #e8e8e8;
+    padding: 20px; }
+    .appSearchForm .indexTab label {
+      color: #000000;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 18px; }
+    .appSearchForm .indexTab .keys {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      width: 100%;
+      -webkit-box-pack: end;
+          -ms-flex-pack: end;
+              justify-content: flex-end; }
+      .appSearchForm .indexTab .keys .text {
+        padding: 4px 20px 0px 20px;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 18px; }
+      .appSearchForm .indexTab .keys .button {
+        border-radius: 50%;
+        height: 29px;
+        width: 29px;
+        border: 3px solid #cecece; }
+      .appSearchForm .indexTab .keys .approved {
+        background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%); }
+      .appSearchForm .indexTab .keys .action {
+        background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%); }
+      .appSearchForm .indexTab .keys .rejected {
+        background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%); }
+      .appSearchForm .indexTab .keys .na {
+        background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%); }
+
+.applicationTable {
+  width: 100%; }
+  .applicationTable th {
+    background-color: #868686;
+    color: #ffffff;
+    max-width: 50px;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 11px;
+    text-align: left;
+    padding: 10px; }
+  .applicationTable tr:hover {
+    background-color: #ffffff;
+    opacity: 0.9;
+    border: 3px solid #000000 !important;
+    border-radius: 2px;
+    cursor: pointer; }
+  .applicationTable .light {
+    background-color: #f5f5f5; }
+  .applicationTable .dark {
+    background-color: #ededed; }
+  .applicationTable td {
+    padding: 10px; }
+  .applicationTable .first {
+    border-top-left-radius: 10px; }
+  .applicationTable .last {
+    border-top-right-radius: 10px; }
+  .applicationTable .button {
+    border-radius: 50%;
+    height: 29px;
+    width: 29px;
+    border: 3px solid #cecece; }
+  .applicationTable .approved {
+    background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+    margin: auto; }
+  .applicationTable .action {
+    background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+    margin: auto; }
+  .applicationTable .rejected {
+    background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+    margin: auto; }
+  .applicationTable .na {
+    background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
+    margin: auto; }
+
+.bold {
+  font-weight: bold !important; }
+
+.greyAppSection {
+  width: 90%;
+  height: 312px;
+  background-color: #e8e8e8;
+  margin-left: -10px;
+  border-bottom-right-radius: 20px; }
+  .greyAppSection .col-3 {
+    width: 33.3%; }
+  .greyAppSection .listHeader {
+    color: #464749;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 29px; }
 /*# sourceMappingURL=styles.css.map */

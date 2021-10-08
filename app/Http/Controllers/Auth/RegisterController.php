@@ -8,6 +8,9 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use App\Models\UserFiles;
+use Illuminate\Support\Facades\Storage;
 
 class RegisterController extends Controller
 {
@@ -50,7 +53,7 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
+            'firstName' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -65,9 +68,132 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'name' => $data['firstName'],
+            'userFirstName' => $data['firstName'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'userLastname' => $data['lastName'],
+            'userTitle' => $data['title'],
+            'userDob' => $data['dob'],
+            'userCell' => $data['cell_no'],
+            'userEmail' => $data['email'],
+            'userId' => $data['idNumber'],
+            'userNationality' => $data['nationality'],
+            'userPassport' => $data['passportNo'],
+            'institutionStudy' => $data['institStudy'],
+            'studentNo' => $data['studNumber'],
+            'institutionCampus' => $data['institCampus'],
+            'faculty' => $data['faculty'],
+            'year' => $data['year'],
         ]);
+    }
+
+    protected function registration_step_one(Request $request){
+        return User::create([
+            'name' => $request->firstName,
+            'userFirstName' => $request->firstName,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'userLastname' => $request->lastName,
+            'userTitle' => $request->title,
+            'userDob' => $request->dob,
+            'userCell' => $request->cell_no,
+            'userEmail' => $request->email,
+            'userId' => $request->idNumber,
+            'userNationality' => $request->nationality,
+            'userPassport' => $request->passportNo,
+            'institutionStudy' => $request->institStudy,
+            'studentNo' => $request->studNumber,
+            'institutionCampus' => $request->institCampus,
+            'faculty' => $request->faculty,
+            'year' => $request->year,
+        ]);
+    }
+
+    protected function registration_step_one_update(Request $request){
+        return User::where('id', $request->userUid)->update([
+            'name' => $request->firstName,
+            'userFirstName' => $request->firstName,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'userLastname' => $request->lastName,
+            'userTitle' => $request->title,
+            'userDob' => $request->dob,
+            'userCell' => $request->cell_no,
+            'userEmail' => $request->email,
+            'userId' => $request->idNumber,
+            'userNationality' => $request->nationality,
+            'userPassport' => $request->passportNo,
+            'institutionStudy' => $request->institStudy,
+            'studentNo' => $request->studNumber,
+            'institutionCampus' => $request->institCampus,
+            'faculty' => $request->faculty,
+            'year' => $request->year,
+        ]);
+    }
+
+    protected function registration_step_two (Request $request){
+        return User::where('id', $request->userUid)->update([
+            'sponFirstName' => $request->pFirstName,
+            'sponLastName' => $request->lastName,
+            'sponCell' => $request->cell,
+            'sponEmail' => $request->email,
+            'sponId' => $request->idNo,
+            'burCompanyName' => $request->companyName,
+            'burRegNo' => $request->regNo,
+            'burContactPerson' => $request->contactPerson,
+            'burContactNo' => $request->contactNo,
+            'burEmail' => $request->emailAddress,
+        ]);
+    } 
+
+    protected function registration_step_three (Request $request){
+        return User::where('id', $request->userUid)->update([
+            'kinFirstName' => $request->firstName,
+            'kinLastName' => $request->lastName,
+            'kinTitle' => $request->title,
+            'kinId' => $request->idNo,
+            'kinAddressStr' => $request->address1,
+            'kinAddressSuburb' => $request->address2,
+            'kinAddressCity' => $request->addressCity,
+            'kinAddressPost' => $request->addressPostal,
+            'kinRelationship' => $request->relationship,
+            'kinTelNo' => $request->telNo,
+            'kinCellNo' => $request->celNo,
+            'kinWorkNo' => $request->workNo,
+            'kinEmail' => $request->email,
+        ]);
+    }
+
+    protected function fileUpload(Request $request){
+        $userUid = $request->userUid;
+        $fileType = $request->fileType;
+
+        if ($request->hasFile('file')) {
+            
+            if ($request->file('file')->isValid()) {
+
+                $filenameWithExt  = $request->file('file')->getClientOriginalName();
+                $fileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                $extension = $request->file('file')->extension();
+                $fileNameToStore = $fileName. '_'. time().'.'.$extension;
+
+                $request->file('file')->storeAs('files/'.$userUid.'/', $fileNameToStore);
+
+                $fileUrl = '/files/'.$userUid.'/'. $fileNameToStore;
+
+                UserFiles::create([
+                    'fileId' => $fileType,
+                    'userUid' => $userUid,
+                    'fileName' => $fileNameToStore,
+                    'fileUrl' => $fileUrl,
+                    'status' => 'Uploaded',
+                ]);
+
+            }
+        }
+
+
+        return "done";
     }
 }

@@ -37,12 +37,23 @@
             <div class="whiteCard" style="margin-left:11px;">
                 <h2 class="cardHeader" >Login</h2>
                 <h4 class="cardSubHeader">Already registered with Campus Africa? <br/> <span class="info">Come on in!</span></h4>
-                <form class="cardForm">
+                <form class="cardForm" method="POST" action="/login" >
+                    @csrf
                     <label>Username</label>
-                    <input type="text">
+                    <input type="text" name="email" id="email">
+                    @error('email')
+                        <span class="invalid-feedback" role="alert">
+                            <strong style="color:red">{{ $message }}</strong>
+                        </span>
+                    @enderror
                     <br/>
                     <label>Password</label>
-                    <input type="password">
+                    <input type="password" name="password" id="password">
+                    @error('password')
+                        <span class="invalid-feedback" role="alert">
+                            <strong style="color:red">{{ $message }}</strong>
+                        </span>
+                    @enderror
                     <button type="submit" class="submitButton" value="Login">Login</button>
                     <p class="small">Forgotten your password? Click here</p>
                 </form>
@@ -54,7 +65,7 @@
 </div>
 
 
-<div class="clearSpaceLogin"></div>
+<div class="clearSpaceLoginPage"></div>
 
 <!-- <div class="container">
     <div class="row justify-content-center">

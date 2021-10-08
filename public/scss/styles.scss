@@ -17,8 +17,20 @@
 }
 
 .container {
-    width: 1320px;
+    width: 75%;
     margin: auto;
+}
+
+.errorBorder {
+    border: 1px solid red !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.greenBorder {
+    border: 2px solid #6abc0b !important;
 }
 
 .footer {
@@ -30,7 +42,7 @@
         width: 91%;
         float: right;
         border-bottom-left-radius: 70px;
-        margin-right: -10px;
+        // margin-right: -2px;
 
         .footerHeader {
             color: #ffffff;
@@ -80,6 +92,41 @@
 .footerClearfix {
     height: 290px;
 }
+.centerContent {
+    justify-content: center;
+    align-items: center;
+    height: 86px;
+}
+
+#stickyNavbar {
+    overflow: hidden;
+    height: 86px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: #ffffff;
+    z-index: 10;
+    overflow: overlay;
+
+    a {
+        display: block;
+        color: #464749;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        text-transform: uppercase;
+
+        &:hover {
+            font-weight: bold;
+            color: black;
+        }
+        .active {
+            background-color: #04aa6d;
+            color: white;
+        }
+    }
+}
 
 .navBar {
     padding-top: 33px;
@@ -127,12 +174,35 @@
 }
 
 .loginHeader {
+    margin-top: 35px;
+
     .booking {
         color: #464749;
         font-size: 72px;
         font-weight: 900;
         line-height: 103px;
         text-align: left;
+    }
+
+    .bookingSub {
+        color: #464749;
+        font-size: 33px;
+        font-weight: 400;
+    }
+
+    .appBtn {
+        border-radius: 7px;
+        border: 1px solid #707070;
+        background-color: #707070;
+        width: 436px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        padding: 10px;
+        float: right;
+        margin-top: -120px;
+        cursor: pointer;
     }
 
     .bookingText {
@@ -144,8 +214,214 @@
     }
 }
 
+.appRow {
+    width: 48%;
+    margin-right: 1%;
+    float: left;
+}
+
 .cards {
     width: 100%;
+    padding-top: 22px;
+
+    .customWhiteCard {
+        width: 100%;
+        float: left;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        border-radius: 10px;
+        background-color: #f8f8f8;
+        padding: 39px 50px;
+
+        .infoBlock {
+            border-radius: 10px;
+            border: 1px solid #c3c3c3;
+            background-color: #ffffff;
+            margin: 10px;
+
+            .responsible {
+                border-bottom: 1px solid #ccc;
+                padding: 20px;
+                display: flex;
+
+                .admin {
+                    border-radius: 5px;
+                    background-color: #1cb915;
+                    border: none;
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 400;
+                    line-height: 18px;
+                    text-transform: uppercase;
+                    padding: 2px 10px;
+                    margin-left: 10px;
+                }
+
+                .applicant {
+                    border-radius: 5px;
+                    background-color: #f1cc3e;
+                    border: none;
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 400;
+                    line-height: 18px;
+                    text-transform: uppercase;
+                    padding: 2px 10px;
+                    margin-left: 10px;
+                }
+
+                .datetime {
+                    width: 100%;
+                    text-align: end;
+                }
+            }
+            .information {
+                padding: 20px;
+            }
+        }
+
+        .section {
+            padding: 20px 20px 50px 20px;
+            border-bottom: 2px solid #efefef;
+            width: 100%;
+
+            .label {
+                width: 60%;
+                float: left;
+            }
+            .banner {
+                width: 30%;
+                float: left;
+
+                button {
+                    color: #101010;
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 18px;
+                    text-transform: uppercase;
+                    border: 1px solid #101010;
+                    background-color: transparent;
+                    padding: 10px;
+                    border-radius: 10px;
+                    cursor: pointer;
+                }
+
+                .error {
+                    border: none;
+                    background-color: #e74f26;
+                    color: #fff;
+                }
+            }
+            .status {
+                width: 10%;
+                float: left;
+            }
+
+            .button {
+                border-radius: 50%;
+                height: 29px;
+                width: 29px;
+                border: 3px solid #cecece;
+            }
+
+            .approved {
+                background-image: linear-gradient(
+                    140deg,
+                    #94ff64 0%,
+                    #1cb915 100%
+                );
+            }
+            .action {
+                background-image: linear-gradient(
+                    140deg,
+                    #ffec5c 0%,
+                    #ffbb3c 100%
+                );
+            }
+            .rejected {
+                background-image: linear-gradient(
+                    140deg,
+                    #ff5c5c 0%,
+                    #b72626 100%
+                );
+            }
+        }
+
+        .reminder {
+            background-color: #e74f26;
+            border-radius: 7px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18px;
+            text-transform: uppercase;
+            border: none;
+            padding: 10px;
+            float: right;
+            cursor: pointer;
+        }
+
+        .cardSubHeader {
+            color: #464749;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+            text-align: left;
+            .info {
+                font-weight: bold;
+            }
+        }
+
+        .bigHeader {
+            // background-color: #efefef;
+        }
+
+        .buttons {
+            display: flex;
+
+            .appBooking {
+                color: #464749;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 18px;
+                text-transform: uppercase;
+                background-color: transparent;
+                border-radius: 10px;
+                border: 1px solid #464749;
+                padding: 10px;
+                margin: 5px;
+                width: 48%;
+                cursor: pointer;
+            }
+        }
+
+        .cardSubHeaderGrey {
+            color: #9799ab;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+            text-align: left;
+        }
+
+        .appHeader {
+            color: #21232b;
+            font-size: 33px;
+            font-weight: 400;
+            padding-bottom: 10px;
+        }
+
+        .InfoList {
+            font-size: 21px;
+            font-weight: 300;
+            line-height: 26px;
+        }
+
+        .appSubHeader {
+            color: #464749;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 26px;
+        }
+    }
 
     .whiteCard {
         width: 41%;
@@ -229,6 +505,18 @@
         .cardForm {
             display: grid;
 
+            .adminHeader {
+                color: #21232b;
+                font-size: 33px;
+                font-weight: 400;
+                margin-top: 35%;
+            }
+            .adminOutstanding {
+                color: #1cb915;
+                font-size: 33px;
+                font-weight: 900;
+            }
+
             label {
                 color: #000000;
                 font-size: 21px;
@@ -257,6 +545,7 @@
                 border: 1px solid #c3c3c3;
                 border-radius: 7px;
                 margin-top: 10px;
+                width: 100%;
             }
 
             .small {
@@ -267,8 +556,8 @@
                 font-weight: 400;
                 letter-spacing: 1.03px;
                 line-height: 26px;
-                text-align: left;
                 text-align: center;
+                margin: auto;
             }
         }
     }
@@ -276,6 +565,10 @@
 
 .clearSpaceLogin {
     height: 350px;
+}
+
+.clearSpaceLoginPage {
+    height: 195px;
 }
 
 .col-3 {
@@ -345,8 +638,110 @@
     }
 }
 
+.PaymentLabel {
+    display: inline-block;
+    background-color: #e74f26;
+    color: white !important;
+    cursor: pointer;
+    width: 526px;
+    border-radius: 5px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center !important;
+    margin-right: 18px;
+    padding: 10px;
+}
+
+.greenPayment {
+    background-color: #6abc0b !important;
+}
+
+.roomImgBack {
+    background-image: url("../images/rooms/Braamlofts_single_1_.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
+    background-size: 683px 476px;
+
+    .overlayCustom {
+        bottom: 0;
+        background-image: linear-gradient(
+            to left,
+            rgba(255, 0, 0, 0),
+            rgb(0, 0, 0)
+        );
+        color: #f1f1f1;
+        width: 100%;
+        height: 410px;
+        opacity: 1;
+        color: white;
+        padding: 60px;
+        z-index: 10;
+        border-radius: 10px;
+        margin-left: -50px;
+        margin-top: -40px;
+
+        .cardSub {
+            color: #ffffff;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+        }
+
+        .cardHeaderSub {
+            color: #ffffff;
+            font-size: 36px;
+            font-weight: 900;
+        }
+    }
+
+    .overlay {
+        bottom: 0;
+        background-image: linear-gradient(
+            to left,
+            rgba(255, 0, 0, 0),
+            rgb(0, 0, 0)
+        );
+        color: #f1f1f1;
+        width: 100%;
+        height: 345px;
+        opacity: 1;
+        color: white;
+        padding: 20px;
+        z-index: 10;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+
+        .cardSubHeaderGrey {
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+        }
+
+        .roomContactBtn {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18px;
+            text-transform: uppercase;
+            border: 1px solid #fff;
+            border-radius: 10px;
+            background-color: transparent;
+            padding: 10px;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    }
+}
+
+.smallerCard {
+    height: 461px !important;
+    margin-bottom: 30px !important;
+}
+
 .whiteYellowCard {
-    width: 572px;
+    width: 47%;
     height: 506px;
     background-color: #f8f8f8;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
@@ -356,6 +751,20 @@
 
     .cardBody {
         padding: 30px;
+
+        .cardSubHeaderGreyTxt {
+            color: #9799ab;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+        }
+
+        .cardHeaderBlck {
+            color: #000000;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 28px;
+        }
     }
 
     .cardHeader {
@@ -368,6 +777,141 @@
         border-top-left-radius: 10px;
         height: 110x;
         padding: 25px;
+
+        .small {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18px;
+            text-align: right;
+
+            .text {
+                padding-right: 20px;
+                text-transform: uppercase;
+            }
+
+            .circle {
+                width: 30px;
+                height: 30px;
+                background: transparent;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                float: right;
+                margin-top: -10px;
+
+                i {
+                    margin-top: 7px;
+                    margin-right: 8px;
+                }
+            }
+        }
+    }
+
+    .appAwait {
+        border-bottom: 2px solid #efefef;
+        padding: 15px;
+
+        .outstanding {
+            border: 1px solid #e74f26;
+            padding: 7px;
+            border-radius: 10px;
+            float: right;
+            margin-top: -10px;
+            cursor: pointer;
+
+            .text {
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 18px;
+                color: #e74f26;
+                text-transform: uppercase;
+                padding-right: 20px;
+            }
+
+            i {
+                color: #e74f26;
+            }
+        }
+
+        .pending {
+            border: 1px solid #eece5b;
+            padding: 7px;
+            border-radius: 10px;
+            float: right;
+            margin-top: -29px;
+
+            .text {
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 18px;
+                color: #eece5b;
+                text-transform: uppercase;
+                padding-right: 20px;
+            }
+
+            i {
+                color: #eece5b;
+            }
+        }
+
+        .approved {
+            border: 1px solid #50b63a;
+            padding: 7px;
+            border-radius: 10px;
+            float: right;
+            margin-top: -10px;
+
+            .text {
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 18px;
+                color: #50b63a;
+                text-transform: uppercase;
+                padding-right: 20px;
+            }
+
+            i {
+                color: #50b63a;
+            }
+        }
+
+        .invalid {
+            border-radius: 7px;
+            background-color: #e74f26;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 18px;
+            padding: 5px;
+            margin-top: 10px;
+
+            i {
+                float: right;
+                font-size: 17px;
+            }
+        }
+    }
+
+    .cardHeaderText {
+        color: #ffffff;
+        font-size: 36px;
+        font-weight: 900;
+    }
+
+    .greyCardHeader {
+        background-color: #efefef !important;
+        background-image: none;
+    }
+
+    .redCardHeader {
+        color: #fff;
+        background-color: #e74f26 !important;
+        background-image: none;
+    }
+
+    .greenCardHeader {
+        color: #fff;
+        background-color: #50b63a !important;
+        background-image: none;
     }
 
     .uploadSection {
@@ -408,10 +952,96 @@
             margin-right: 18px;
         }
 
+        .successLabel {
+            display: inline-block;
+            background-color: #6abc0b;
+            color: white;
+            cursor: pointer;
+            width: 99px;
+            height: 25px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 25px;
+            text-align: center;
+            margin-right: 18px;
+        }
+
         i {
             font-size: 24px;
             color: #e74f26;
         }
+
+        .successful {
+            color: #6abc0b;
+        }
+    }
+}
+
+.singleUploadSection {
+    height: 90px;
+    width: 90%;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    padding: 19px;
+    display: flex;
+
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+    .uploadFileSection {
+        display: flex;
+        flex-direction: row-reverse;
+        width: 100%;
+        margin-top: 14px;
+    }
+
+    .uploadName {
+        color: #464749;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 62px;
+        width: 220%;
+    }
+
+    .uploadLabel {
+        display: inline-block;
+        background-color: #9a9a9a;
+        color: white;
+        cursor: pointer;
+        width: 99px;
+        height: 25px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 25px;
+        text-align: center;
+        margin-right: 18px;
+    }
+
+    .successLabel {
+        display: inline-block;
+        background-color: #6abc0b;
+        color: white;
+        cursor: pointer;
+        width: 99px;
+        height: 25px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 25px;
+        text-align: center;
+        margin-right: 18px;
+    }
+
+    i {
+        font-size: 24px;
+        color: #e74f26;
+    }
+
+    .successful {
+        color: #6abc0b;
     }
 }
 
@@ -456,7 +1086,8 @@
     border-bottom-left-radius: 0 !important;
 }
 
-.paymentSection {
+.paymentSection,
+.paymentTwo {
     .header {
         color: #464749;
         font-size: 40px;
@@ -483,5 +1114,295 @@
             font-size: 24px;
             font-weight: 900;
         }
+    }
+}
+
+.otherProperties {
+    .header {
+        font-size: 40px;
+        font-weight: 600;
+        line-height: 55px;
+    }
+
+    .demo-content {
+        color: #fff;
+        display: flex;
+        font-family: Helvetica;
+        font-weight: 100;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        border-radius: 3px;
+        font-size: 56px;
+        height: 250px;
+        width: 100%;
+    }
+}
+
+button:disabled {
+    opacity: 0.5;
+}
+
+.buttonSection {
+    .download {
+        color: #000000;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        text-transform: uppercase;
+        border: 1px solid #000;
+        background-color: transparent;
+        padding: 10px;
+        border-radius: 10px;
+        width: 368px;
+        cursor: pointer;
+    }
+
+    .sign {
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        text-transform: uppercase;
+        background-color: #e74f26;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        width: 368px;
+        cursor: pointer;
+    }
+}
+
+.bookingPage {
+    .bookingHeader {
+        color: #464749;
+        font-size: 40px;
+        font-weight: 600;
+        line-height: 55px;
+    }
+
+    .bookingInfo {
+        color: #000000;
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 24px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+}
+
+.leaseText {
+    margin-top: 20px;
+    width: 1030px;
+    height: 300px;
+    border: none;
+    margin-bottom: 50px;
+}
+
+.completeText {
+    opacity: 0.6;
+    color: #464749;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 36px;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.appSearchForm {
+    margin-top: 80px;
+
+    .searchField {
+        width: 33.3%;
+        float: left;
+        margin-top: 20px;
+
+        select,
+        input {
+            border-radius: 7px;
+            background-color: #f0f0f0;
+            border: none;
+            width: 90%;
+            padding: 10px;
+            color: #000000;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18px;
+        }
+
+        label {
+            color: #000000;
+            font-size: 21px;
+            font-weight: 300;
+        }
+    }
+
+    .searchTab {
+        width: 20%;
+        float: left;
+
+        button {
+            width: 180px;
+            height: 37px;
+            border-radius: 7px;
+            border: 1px solid #707070;
+            background-color: #707070;
+            color: #ffffff;
+        }
+    }
+
+    .indexTab {
+        width: 80%;
+        float: left;
+        border-radius: 10px;
+        background-color: #e8e8e8;
+        padding: 20px;
+
+        label {
+            color: #000000;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 18px;
+        }
+
+        .keys {
+            display: flex;
+            width: 100%;
+            justify-content: flex-end;
+
+            .text {
+                padding: 4px 20px 0px 20px;
+                font-size: 11px;
+                font-weight: 400;
+                line-height: 18px;
+            }
+
+            .button {
+                border-radius: 50%;
+                height: 29px;
+                width: 29px;
+                border: 3px solid #cecece;
+            }
+
+            .approved {
+                background-image: linear-gradient(
+                    140deg,
+                    #94ff64 0%,
+                    #1cb915 100%
+                );
+            }
+            .action {
+                background-image: linear-gradient(
+                    140deg,
+                    #ffec5c 0%,
+                    #ffbb3c 100%
+                );
+            }
+            .rejected {
+                background-image: linear-gradient(
+                    140deg,
+                    #ff5c5c 0%,
+                    #b72626 100%
+                );
+            }
+            .na {
+                background-image: linear-gradient(
+                    140deg,
+                    #eaeaea 0%,
+                    #cecece 100%
+                );
+            }
+        }
+    }
+}
+
+.applicationTable {
+    width: 100%;
+
+    th {
+        background-color: #868686;
+        color: #ffffff;
+        max-width: 50px;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 11px;
+        text-align: left;
+        padding: 10px;
+    }
+
+    tr {
+        &:hover {
+            background-color: #ffffff;
+            opacity: 0.9;
+            border: 3px solid #000000 !important;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+    }
+
+    .light {
+        background-color: #f5f5f5;
+    }
+
+    .dark {
+        background-color: #ededed;
+    }
+
+    td {
+        padding: 10px;
+    }
+
+    .first {
+        border-top-left-radius: 10px;
+    }
+    .last {
+        border-top-right-radius: 10px;
+    }
+
+    .button {
+        border-radius: 50%;
+        height: 29px;
+        width: 29px;
+        border: 3px solid #cecece;
+    }
+
+    .approved {
+        background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+        margin: auto;
+    }
+    .action {
+        background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+        margin: auto;
+    }
+    .rejected {
+        background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+        margin: auto;
+    }
+    .na {
+        background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
+        margin: auto;
+    }
+}
+
+.bold {
+    font-weight: bold !important;
+}
+
+.greyAppSection {
+    width: 90%;
+    height: 312px;
+    background-color: #e8e8e8;
+    margin-left: -10px;
+    border-bottom-right-radius: 20px;
+
+    .col-3 {
+        width: 33.3%;
+    }
+
+    .listHeader {
+        color: #464749;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 29px;
     }
 }
