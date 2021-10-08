@@ -43,3 +43,5 @@ Route::post('/move-in-form', [HomeController::class, 'fileUpload']);
 Route::get('/complete-reservation', [HomeController::class, 'complete_reservation']);
 Route::get('/applications', [HomeController::class, 'applications']);
 Route::get('/application-profile/{userId}', [HomeController::class, 'application_profile']);
+
+Route::get('/thanks', [HomeController::class, 'thanks']);

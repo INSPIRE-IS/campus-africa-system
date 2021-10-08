@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFiles;
 use Auth;
+use Mail;
 
 class HomeController extends Controller
 {
@@ -111,5 +112,19 @@ class HomeController extends Controller
 
             return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $user]);
         }
+    }
+
+    public function thanks(Request $request){
+
+        $data['test'] = "";
+
+        // Mail::send('email.application_thank_you', $data, function($message) use ($data) {
+        //     $message->to("mirichea@whitehart.co.za", "Mirichea")->subject
+        //         ('Thank you Application');
+        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->from('test@test.com','test@test.com');
+        // });
+
+        return view('email.application_rejected');
     }
 }
