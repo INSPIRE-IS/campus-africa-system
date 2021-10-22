@@ -21,6 +21,7 @@
     <link href="{{ asset('css/all.css') }}" rel="stylesheet">
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
 
 
 
@@ -28,21 +29,26 @@
 </head>
 <body>
 
-        
-        <div id="stickyNavbar">
-            <div class="container flex centerContent">
-                <a class="active" href="/dashboard">Dashboard</a>
+    
+
+        <div id="fullNavbar">
+            <div class="topnav" id="myTopnav">
+            <a class="active" href="/dashboard">Dashboard</a>
                 <a href="/applications">Aplications</a>
-                <a href="javascript:void(0)">Leases</a>
-                <a href="javascript:void(0)">Invoices</a>
-                <a href="javascript:void(0)">Mailing</a>
+                <a href="/leases">Leases</a>
+                <a href="/invoices">Invoices</a>
+                <a href="/mailing">Mailing</a>
+                <a href="/logout">Log out</a>
+                <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                    <i class="fa fa-bars"></i>
+                </a>
             </div>
         </div>
 
         <!-- <div class="yellowGradientSmall" style="z-index:1;"> -->
 
         @if (isset($appProfile) && $appProfile === "true")
-            <div class="yellowGradientSmall" style="z-index:1; border-bottom-right-radius:0px;">
+            <div class="yellowGradientSmall" id="bookingHeaderYellow" style="z-index:1; border-bottom-right-radius:0px;">
         @else
             <div class="yellowGradientSmall" style="z-index:1;">
         @endif
@@ -55,20 +61,27 @@
                     </div>
 
                     <div class="rightMenu">
-                        <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button>
+                        <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
                     </div>
                 </nav>
 
                 <div class="loginHeader">
                     @if (isset($appProfile) && $appProfile === "true")
-                        <h1 class="bookingSub">Application Profile</h1>
+                        <h1 class="bookingSub">
+                            Application Profile 
+                            @if($user[0]['userInfo']['bookingStatus'] == "Approved" || $user[0]['userInfo']['bookingStatus'] == "Rejected")
+                                : {{$user[0]['userInfo']['bookingStatus']}}
+                            @endif
+                        </h1>
                     @endif
                     <h1 class="booking">{{$headerTitle}}</h1>
 
                     @if (isset($appProfile) && $appProfile === "true")
-                        <button type="button" class="appBtn">APPROVE APPLICATION AND SEND CONFIRMATION</button>
-                        <br/><br/><br/>
-                        <button type="button" class="appBtn">REJECT APPLICATION AND SEND NOTIFICATION</button>
+                        @if($user[0]['userInfo']['bookingStatus'] !== "Approved" && $user[0]['userInfo']['bookingStatus'] !== "Rejected")
+                            <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
+                            <br/><br/><br/>
+                            <button type="button" class="appBtn" id="rejectApplication">REJECT APPLICATION AND SEND NOTIFICATION</button>                          
+                        @endif
                     @endif
                 </div>
             
@@ -113,9 +126,9 @@
 
             <div class="col-3">
             <p class="linkHeader">Follow Us</p>
-            <img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43">
-            <img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43">
-            <img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43">
+            <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
+            <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
+            <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
             <br/>
             <img src="/images/footer/email.png" alt="Email" width="43" height="43">
             <img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43">
@@ -129,3 +142,42 @@
     </div>
 </footer>
 </html>
+
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    function approveApplication(userId){
+
+        $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        $.ajax({
+            type: "post",
+            url: "/approve-application",
+            data: {
+                userId: userId, 
+            },
+
+            success: function (data) {
+                window.location.reload();
+            },
+        });
+    }
+
+    function myFunction() {
+    var x = document.getElementById("myTopnav");
+    if (x.className === "topnav") {
+        x.className += " responsive";
+        document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+    } else {
+        x.className = "topnav";
+        document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+    }
+    }
+
+    
+    
+</script>

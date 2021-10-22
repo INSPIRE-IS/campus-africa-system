@@ -12,6 +12,7 @@
     <!-- Scripts -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <!-- <script src="{{ asset('/js/multistep.js') }}" defer></script> -->
+    
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -21,6 +22,7 @@
     <link href="{{ asset('css/all.css') }}" rel="stylesheet">
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
 
 
 
@@ -29,16 +31,26 @@
 <body>
 
         
-        <div id="stickyNavbar">
-            <div class="container flex centerContent">
+        <div id="fullNavbar">
+            <div class="topnav" id="myTopnav">
                 <a class="active" href="/dashboard">Dashboard</a>
                 <a href="javascript:void(0)">Properties</a>
                 <a href="/room-booking">My Room</a>
-                <a href="javascript:void(0)">My Documents</a>
-                <a href="javascript:void(0)">My Profile</a>
-                <a href="javascript:void(0)">Name Surname</a>
+                <a href="/my-documents">My Documents</a>
+                <a href="/my-profile">My Profile</a>
+
+                @if (!$agent->isMobile())
+                    <a href="/my-profile"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
+                @endif
+                
+                <a href="/logout">Log out</a>
+                <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                    <i class="fa fa-bars"></i>
+                </a>
             </div>
         </div>
+
+        
 
         <div class="yellowGradientSmall" style="z-index:1;">
             <div class="container">
@@ -49,12 +61,18 @@
                     </div>
 
                     <div class="rightMenu">
-                        <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button>
+                        <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
                     </div>
                 </nav>
 
                 <div class="loginHeader">
-                    <h1 class="booking">{{$headerTitle}}</h1>
+                    @if($headerTitle == "Congratulations!")
+                        <h1 class="booking" style="font-size:41px">{{$headerTitle}}</h1>
+                    @else
+                        <h1 class="booking">{{$headerTitle}}</h1>
+                    @endif
+
+                    
                 </div>
             
             </div>
@@ -98,9 +116,9 @@
 
             <div class="col-3">
             <p class="linkHeader">Follow Us</p>
-            <img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43">
-            <img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43">
-            <img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43">
+            <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
+            <a href="https://www.instagram.com/campus.africa/?hl=en" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
+            <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"</a><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
             <br/>
             <img src="/images/footer/email.png" alt="Email" width="43" height="43">
             <img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43">
@@ -113,4 +131,17 @@
         <p class="footerRights">Campus Africa - All Right Reserved</p>
     </div>
 </footer>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+    document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+  } else {
+    x.className = "topnav";
+    document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+  }
+}
+</script>
 </html>

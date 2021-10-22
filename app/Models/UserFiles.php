@@ -15,5 +15,12 @@ class UserFiles extends Model
         'fileName',
         'fileUrl',
         'status',
+        'uploaded_by',
+        'approved_by',
+        'rejectReason',
     ];
+
+    public function users(){
+        return $this->hasOne("App\Models\User", "id", "userUid");
+    }
 }

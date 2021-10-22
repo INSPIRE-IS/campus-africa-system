@@ -59,7 +59,19 @@ class User extends Authenticatable
         'kinCellNo',
         'kinWorkNo',
         'kinEmail',
+        'roomBlock',
+        'roomNo',
+        'roomType',
+        'price',
+        'studentType',
+        'bookingRef',
+        'bookingStatus',
+        'applicationStatus',
     ];
+
+    public function files(){
+        return $this->hasMany("App\Models\UserFiles", "userUid", "id");
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -7,7 +7,8 @@
         <div class="cardForm" >
 
                 <h4 class="adminHeader">Applications</h4>
-                <h4 class="adminOutstanding">10 new Applications</h4>
+                <!-- <h4 class="adminOutstanding">10 new Applications</h4> -->
+                <br/><br/>
                     <br/>
                 <a href="/applications"><button type="button" class="submitButton" value="Login">VIEW ALL APPLICATIONS </button></a>
             </div>
@@ -17,7 +18,8 @@
             <div class="cardForm" >
 
                 <h4 class="adminHeader">Leases</h4>
-                <h4 class="adminOutstanding">6 new Leases for approval</h4>
+                <!-- <h4 class="adminOutstanding">6 new Leases for approval</h4> -->
+                <br/><br/>
                 <br/>
                 <button type="button" class="submitButton" value="Login">View All Leases</button>
             </div>
@@ -27,7 +29,8 @@
         <div class="cardForm" >
 
                 <h4 class="adminHeader">Invoices</h4>
-                <h4 class="adminOutstanding">10 new Invoices</h4>
+                <!-- <h4 class="adminOutstanding">10 new Invoices</h4> -->
+                <br/><br/>
                     <br/>
                 <button type="button" class="submitButton" value="Login">VIEW ALL INVOICES </button>
             </div>

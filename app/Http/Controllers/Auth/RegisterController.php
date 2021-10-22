@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\UserFiles;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ActionList;
 
 class RegisterController extends Controller
 {
@@ -89,7 +90,8 @@ class RegisterController extends Controller
     }
 
     protected function registration_step_one(Request $request){
-        return User::create([
+
+        $user = User::create([
             'name' => $request->firstName,
             'userFirstName' => $request->firstName,
             'email' => $request->email,
@@ -108,6 +110,16 @@ class RegisterController extends Controller
             'faculty' => $request->faculty,
             'year' => $request->year,
         ]);
+
+        ActionList::create([
+            "userUid" => $user->id,
+            "action" => "Registered",
+            "actionUserUid" => $user->id,
+            "actionUserDisplayName" => $request->firstName,
+            "actionUserRole" => "0",
+        ]);
+
+        return $user;
     }
 
     protected function registration_step_one_update(Request $request){
@@ -178,9 +190,9 @@ class RegisterController extends Controller
                 $extension = $request->file('file')->extension();
                 $fileNameToStore = $fileName. '_'. time().'.'.$extension;
 
-                $request->file('file')->storeAs('files/'.$userUid.'/', $fileNameToStore);
+                $request->file('file')->storeAs('public/files/'.$userUid.'/', $fileNameToStore);
 
-                $fileUrl = '/files/'.$userUid.'/'. $fileNameToStore;
+                $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
 
                 UserFiles::create([
                     'fileId' => $fileType,
@@ -188,6 +200,28 @@ class RegisterController extends Controller
                     'fileName' => $fileNameToStore,
                     'fileUrl' => $fileUrl,
                     'status' => 'Uploaded',
+                ]);
+
+                if($fileType == "copyID"){
+                    $typeName = "Copy of ID Document";
+                }elseif($fileType == "studentCard"){
+                    $typeName = "Copy of Student Card";
+                }elseif($fileType == "bankStatement"){
+                    $typeName = "Bank Statements";
+                }elseif($fileType == "proofRegistration"){
+                    $typeName = "Proof of Registration";
+                }elseif($fileType == "proof_of_payment"){
+                    $typeName = "Proof of Payment";
+                }
+
+                $user = User::where('id', $userUid)->first();
+
+                ActionList::create([
+                    "userUid" => $userUid,
+                    "action" => $typeName." Uploaded for review",
+                    "actionUserUid" => $userUid,
+                    "actionUserDisplayName" => $user->userFirstName,
+                    "actionUserRole" => "0",
                 ]);
 
             }

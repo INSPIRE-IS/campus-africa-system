@@ -289,7 +289,7 @@ html {
 }
 
 .carousel {
-    min-width: 900px;
+    /* min-width: 900px; */
     max-width: 100%;
     position: relative;
 }

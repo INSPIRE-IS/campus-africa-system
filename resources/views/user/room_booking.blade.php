@@ -8,15 +8,21 @@
     <h2 class="bookingHeader">Booking Reference #0000000</h2>
     <br/>
     <div class="buttonSection">
-        <button type="button" class="download">DOWNLOAD INVOICE</button>
-        <a href="/sign-lease"><button type="button" class="sign">SIGN LEASE</button></a>
+            <button type="button" class="download">DOWNLOAD INVOICE</button>
+
+        @if($lease === null)
+            <a href="/sign-lease"><button type="button" class="sign">SIGN LEASE</button></a>
+        @endif
     </div>
-    <p class="bookingInfo">Thank you for your payment. A representative will be in touch with more details with regards to your booking.
-        <br/>Please email … or call … if you have any queries.
-    </p>
+
+    @if($proof_of_payment !== null)
+        <p class="bookingInfo">Thank you for your payment. A representative will be in touch with more details with regards to your booking.
+            <br/>Please email … or call … if you have any queries.
+        </p>
+    @endif
 
     <div class="cards">
-        <div class="whiteCard">
+        <div class="whiteCard room">
         
             <p class="cardList">
                 {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}<br/>
@@ -34,7 +40,7 @@
                 
         </div>
 
-        <div class="whiteCard roomImgBack" style="margin-left:11px;">
+        <div class="whiteCard roomImgBack room" style="margin-left:11px;">
             <div class="overlayCustom">
                 <h4 class="cardSub">Braamlofts</h4>
                 <h2 class="cardHeaderSub" >Single Room</h2>

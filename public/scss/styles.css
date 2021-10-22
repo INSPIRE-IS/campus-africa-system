@@ -1,3 +1,8 @@
+html,
+body {
+  font-family: source-sans-pro, sans-serif;
+}
+
 .yellowGradient {
   background-image: -webkit-gradient(linear, left top, left bottom, from(#f0e020), to(#e5b219));
   background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
@@ -102,6 +107,10 @@
       -ms-flex-align: center;
           align-items: center;
   height: 86px;
+}
+
+.centerContent .name {
+  padding-left: 175px;
 }
 
 #stickyNavbar {
@@ -253,6 +262,11 @@
   padding: 39px 50px;
 }
 
+.cards .customWhiteCard .actionItemList {
+  max-height: 350px;
+  overflow: auto;
+}
+
 .cards .customWhiteCard .infoBlock {
   border-radius: 10px;
   border: 1px solid #c3c3c3;
@@ -321,7 +335,7 @@
 
 .cards .customWhiteCard .section .banner button {
   color: #101010;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 400;
   line-height: 18px;
   text-transform: uppercase;
@@ -388,6 +402,16 @@
   font-weight: bold;
 }
 
+.cards .customWhiteCard .bigHeader {
+  background-color: #e8e8e8;
+  padding: 40px;
+  height: 200px;
+  border-radius: 10px 10px 0px 0px;
+  margin-top: -40px;
+  margin-left: -50px;
+  margin-right: -50px;
+}
+
 .cards .customWhiteCard .buttons {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -424,6 +448,16 @@
   padding-bottom: 10px;
 }
 
+.cards .customWhiteCard .appHeader select {
+  float: right;
+  margin-right: 15px;
+  width: 50%;
+  background-color: transparent;
+  border-radius: 7px;
+  border: 1px solid #c3c3c3;
+  padding: 10px;
+}
+
 .cards .customWhiteCard .InfoList {
   font-size: 21px;
   font-weight: 300;
@@ -438,7 +472,7 @@
 }
 
 .cards .whiteCard {
-  width: 41%;
+  width: 47%;
   float: left;
   height: 409px;
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
@@ -606,6 +640,8 @@
   border-radius: 5px;
   background-color: #f0f0f0;
   border-radius: 5px !important;
+  border: none;
+  padding: 10px;
 }
 
 .form-card select {
@@ -615,6 +651,7 @@
   background-color: #f0f0f0;
   border-radius: 5px !important;
   border: none !important;
+  padding: 10px;
 }
 
 .form-card .form-field {
@@ -627,6 +664,13 @@
   width: 100%;
   float: left;
   height: 88px !important;
+}
+
+.form-card .profileSubmit {
+  margin-bottom: 10px;
+  background-color: #e74f26;
+  color: #fff;
+  cursor: pointer;
 }
 
 #msform .action-button {
@@ -676,7 +720,7 @@
   background-repeat: no-repeat;
   background-position: center;
   z-index: 1;
-  background-size: 683px 476px;
+  background-size: 700px 590px;
 }
 
 .roomImgBack .overlayCustom {
@@ -714,7 +758,7 @@
   background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
   color: #f1f1f1;
   width: 100%;
-  height: 345px;
+  height: 446px;
   opacity: 1;
   color: white;
   padding: 20px;
@@ -745,7 +789,7 @@
 }
 
 .smallerCard {
-  height: 461px !important;
+  height: 560px !important;
   margin-bottom: 30px !important;
 }
 
@@ -850,7 +894,7 @@
   padding: 7px;
   border-radius: 10px;
   float: right;
-  margin-top: -29px;
+  margin-top: -7px;
 }
 
 .whiteYellowCard .appAwait .pending .text {
@@ -927,7 +971,7 @@
 }
 
 .whiteYellowCard .uploadSection {
-  height: 54px;
+  height: 93px;
   -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
           box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
   border-radius: 10px;
@@ -1072,7 +1116,7 @@
 }
 
 .redBannerNotice {
-  height: 85px;
+  height: 180px;
   border-radius: 10px;
   background-color: #e74f26;
   margin-left: -108px;
@@ -1119,7 +1163,7 @@
 
 .halfCard {
   width: 77% !important;
-  height: 200px !important;
+  height: 250px !important;
   border-bottom-right-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
@@ -1233,7 +1277,7 @@ button:disabled {
 
 .leaseText {
   margin-top: 20px;
-  width: 1030px;
+  width: 100%;
   height: 300px;
   border: none;
   margin-bottom: 50px;
@@ -1308,6 +1352,10 @@ button:disabled {
 }
 
 .appSearchForm .indexTab .keys {
+  display: contents;
+}
+
+.appSearchForm .indexTab .keys #indexOne {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -1317,33 +1365,33 @@ button:disabled {
           justify-content: flex-end;
 }
 
-.appSearchForm .indexTab .keys .text {
+.appSearchForm .indexTab .keys #indexOne .text {
   padding: 4px 20px 0px 20px;
   font-size: 11px;
   font-weight: 400;
   line-height: 18px;
 }
 
-.appSearchForm .indexTab .keys .button {
+.appSearchForm .indexTab .keys #indexOne .button {
   border-radius: 50%;
   height: 29px;
   width: 29px;
   border: 3px solid #cecece;
 }
 
-.appSearchForm .indexTab .keys .approved {
+.appSearchForm .indexTab .keys #indexOne .approved {
   background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
 }
 
-.appSearchForm .indexTab .keys .action {
+.appSearchForm .indexTab .keys #indexOne .action {
   background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
 }
 
-.appSearchForm .indexTab .keys .rejected {
+.appSearchForm .indexTab .keys #indexOne .rejected {
   background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
 }
 
-.appSearchForm .indexTab .keys .na {
+.appSearchForm .indexTab .keys #indexOne .na {
   background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
 }
 
@@ -1365,7 +1413,7 @@ button:disabled {
 .applicationTable tr:hover {
   background-color: #ffffff;
   opacity: 0.9;
-  border: 3px solid #000000 !important;
+  outline: 3px solid black;
   border-radius: 2px;
   cursor: pointer;
 }
@@ -1423,7 +1471,7 @@ button:disabled {
 
 .greyAppSection {
   width: 90%;
-  height: 312px;
+  height: 215px;
   background-color: #e8e8e8;
   margin-left: -10px;
   border-bottom-right-radius: 20px;
@@ -1438,5 +1486,566 @@ button:disabled {
   font-size: 24px;
   font-weight: 700;
   line-height: 29px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: black;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal .modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.modal .close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.modal .close:hover, .modal .close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal #modalHeader {
+  color: #464749;
+  font-size: 33px;
+  font-weight: 400;
+}
+
+.modal small {
+  color: #464749;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.modal .button {
+  margin: 0px 5px;
+  border-radius: 7px;
+  border: none;
+  padding: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.modal .rejected {
+  background-color: #e74f26;
+}
+
+.modal .amend {
+  background-color: #086904;
+}
+
+.modal .approve {
+  background-color: #1cb915;
+}
+
+.modal input {
+  background-color: #f0f0f0;
+  border-radius: 7px;
+  border: none;
+  width: 65%;
+  padding: 10px;
+}
+
+.modal .pdfSection {
+  margin-top: 50px;
+}
+
+#mailer_table button {
+  padding: 10px;
+  border: none;
+  color: #fff;
+  border-radius: 7px;
+  background-color: #e74f26;
+  cursor: pointer;
+}
+
+#lease_table button,
+#documents_table button {
+  padding: 10px;
+  border: none;
+  color: #fff;
+  border-radius: 7px;
+  background-color: #e74f26;
+  cursor: pointer;
+}
+
+#lease_table .await,
+#documents_table .await {
+  padding: 5px 50px;
+  border: none;
+  color: #fff;
+  border-radius: 7px;
+  background-color: #f1cc3e;
+  width: 100px;
+  text-align: center;
+}
+
+#lease_table .approved,
+#documents_table .approved {
+  padding: 10px;
+  border: none;
+  color: #fff;
+  border-radius: 7px;
+  background-color: #1cb915;
+  width: 100px;
+  text-align: center;
+}
+
+#lease_table .uploaded,
+#documents_table .uploaded {
+  padding: 10px;
+  border: none;
+  color: #fff;
+  border-radius: 7px;
+  background-color: #ffbb3c;
+  width: 100px;
+  text-align: center;
+}
+
+#lease_table .rejected,
+#documents_table .rejected {
+  padding: 10px;
+  border: none;
+  color: #fff;
+  border-radius: 7px;
+  background-color: #e74f26;
+  width: 100px;
+  text-align: center;
+}
+
+.outstandingUpload {
+  background-color: #e74f26;
+  padding: 5px 50px;
+  color: #fff;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #fff;
+  margin-left: 26%;
+  margin-top: 18px;
+}
+
+.topnav .name {
+  margin-left: 150px;
+}
+
+.topnav a {
+  float: left;
+  display: block;
+  color: #000;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  font-family: source-sans-pro, sans-serif;
+  text-transform: uppercase;
+}
+
+.topnav a:hover {
+  font-weight: bold;
+}
+
+.topnav a .active {
+  font-weight: bold;
+}
+
+.topnav .icon {
+  display: none;
+}
+
+#fullNavbar {
+  overflow: hidden;
+  height: 86px;
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  background-color: #ffffff;
+  z-index: 10;
+  overflow: overlay;
+}
+
+.openMenu {
+  height: 500px !important;
+}
+
+@media only screen and (max-width: 1485px) {
+  .cards .customWhiteCard .section {
+    padding-bottom: 80px;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .col-3 {
+    width: 50%;
+  }
+  .footer .footerBanner {
+    height: 480px;
+  }
+  .whiteYellowCard .appAwait {
+    padding-bottom: 50px;
+  }
+  .whiteYellowCard .appAwait .invalid {
+    margin-top: 50px;
+  }
+  .whiteYellowCard .appAwait .outstanding {
+    margin-top: 0px;
+  }
+  .whiteYellowCard .appAwait .pending {
+    margin-top: 0px;
+  }
+  .cardBody {
+    max-height: 440px;
+    overflow: auto;
+  }
+  .topnav {
+    margin-left: 10% !important;
+  }
+  .topnav .name {
+    margin-left: 0px !important;
+  }
+}
+
+@media only screen and (max-width: 1250px) {
+  .appSearchForm .searchTab {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .loginHeader .appBtn {
+    width: 261px;
+  }
+  .appSearchForm .indexTab .keys #indexOne .text {
+    padding: 4px 5px 0px 5px;
+  }
+}
+
+@media only screen and (max-width: 1170px) {
+  .cards .customWhiteCard .actionItemList {
+    margin-top: 50px;
+  }
+  .cards .customWhiteCard .appHeader select {
+    float: left;
+  }
+  .cards .customWhiteCard .section .status .approved, .cards .customWhiteCard .section .status .action, .cards .customWhiteCard .section .status .rejected {
+    margin-left: 15px;
+  }
+}
+
+@media only screen and (max-width: 1050px) {
+  #documents_table .rejected {
+    padding: 5px;
+  }
+  #documents_table .outstandingUpload {
+    padding: 5px 33px;
+  }
+  .applicationTable {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .appSearchForm .indexTab {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  #documentsCard {
+    width: 200%;
+    margin-left: -100%;
+    margin-top: 1160px !important;
+    margin-bottom: 20px;
+  }
+  #actionListCard {
+    width: 200%;
+    margin-left: 8px;
+  }
+  #applicationCard {
+    width: 200%;
+    margin-left: 8px;
+  }
+  .cards .customWhiteCard .appHeader select {
+    float: right;
+  }
+  #bookingRef, #studType, #statusBarIcon, #studType {
+    padding: 10px 55px;
+  }
+}
+
+@media only screen and (max-width: 950px) {
+  .room {
+    margin-left: 0px !important;
+  }
+  .mainBlock {
+    margin-left: 40px !important;
+  }
+  .cards .whiteCard {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 50px;
+  }
+  .yellowGradientSmall {
+    height: 380px;
+  }
+  .whiteYellowCard {
+    width: 100%;
+  }
+  .sign {
+    margin-top: 20px;
+  }
+  .appSearchForm .searchField {
+    width: 50%;
+  }
+  .loginHeader .appBtn {
+    width: 206px;
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  #fullNavbar {
+    height: 120px !important;
+  }
+  #documents_table .await {
+    padding: 5px;
+  }
+  #documents_table .approved {
+    padding: 5px;
+  }
+  #documents_table .denied {
+    padding: 5px;
+  }
+  #documents_table .outstandingUpload {
+    padding: 5px;
+  }
+  #approveProfile {
+    margin-top: -28px;
+    float: left;
+  }
+  #rejectApplication {
+    margin-top: -34px;
+    float: left;
+  }
+  .loginHeader .booking {
+    font-size: 48px;
+  }
+  .greyAppSection .col-3 {
+    width: 50%;
+  }
+  .greyAppSection {
+    height: 310px;
+  }
+  #documentsCard {
+    margin-top: 1211px !important;
+  }
+}
+
+@media only screen and (max-width: 660px) {
+  .col-3 {
+    width: 100%;
+    padding-left: 0px !important;
+  }
+  .footer .footerBanner {
+    height: 820px;
+  }
+}
+
+@media only screen and (max-width: 530px) {
+  .yellowGradient {
+    height: 740px;
+  }
+  .cards .whiteCard .applyButton {
+    margin-top: 100px;
+  }
+  .form-card .form-field {
+    width: 100%;
+  }
+  .appSearchForm .searchField {
+    width: 100%;
+  }
+  .greyAppSection .col-3 {
+    width: 100%;
+  }
+  .greyAppSection {
+    height: 444px;
+  }
+  .appRow {
+    width: 100%;
+  }
+  #documentsCard {
+    width: 100%;
+    margin-top: 350px !important;
+  }
+  #actionListCard {
+    width: 100%;
+  }
+  #applicationCard {
+    width: 100%;
+  }
+  .cards .customWhiteCard .appHeader select {
+    float: left;
+    width: 100%;
+  }
+  .cards .customWhiteCard .infoBlock .responsible {
+    display: block;
+  }
+  .cards .customWhiteCard .infoBlock .responsible .admin, .cards .customWhiteCard .infoBlock .responsible .applicant {
+    float: right;
+    margin-top: -25px;
+  }
+  .cards .customWhiteCard .section {
+    padding-bottom: 110px;
+  }
+  .cards .customWhiteCard .section .label {
+    width: 100%;
+  }
+  .cards .customWhiteCard .section .banner {
+    width: 80%;
+    margin-top: 15px;
+  }
+  .cards .customWhiteCard .section .status {
+    width: 20%;
+    margin-top: 15px;
+  }
+  .appSearchForm .indexTab {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .topnav a:not(:first-child), .dropdown .dropbtn {
+    display: none;
+  }
+  .topnav a.icon {
+    float: right;
+    display: block;
+  }
+  .topnav.responsive {
+    position: relative;
+  }
+  .topnav.responsive .icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .topnav.responsive a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+  .topnav.responsive .dropdown {
+    float: none;
+  }
+  .topnav.responsive .dropdown-content {
+    position: relative;
+  }
+  .topnav.responsive .dropdown .dropbtn {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  #fullNavbar {
+    height: 100%;
+  }
+  .loginHeader .booking {
+    font-size: 60px;
+  }
+  .buttonSection .sign,
+  .buttonSection .download {
+    width: 100%;
+  }
+  .cards .whiteCard {
+    margin-left: 0px !important;
+  }
+  #lease_table {
+    display: block;
+    overflow-x: auto;
+  }
+  #applicationIndex {
+    display: block;
+  }
+  .appSearchForm .indexTab .keys #indexOne {
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+    padding: 5px;
+  }
+  #lease_table .await .sorting_1 .await, #lease_table .await .sorting_1 .rejected, #lease_table .await .sorting_1 .approved, #documents_table .sorting_1 .await, #documents_table .sorting_1 .rejected, #documents_table .sorting_1 .approved {
+    background-color: transparent;
+    color: #000;
+  }
+  .whiteYellowCard .appAwait .approved {
+    margin-top: 0px;
+  }
+  .whiteYellowCard .cardHeaderText {
+    line-height: 34px;
+  }
+  #bookingHeaderYellow {
+    height: 500px;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .whiteYellowCard .appAwait .approved {
+    float: left;
+  }
+  .loginHeader .booking {
+    font-size: 50px;
+    line-height: 55px;
+  }
+  #rejectApplication, #approveProfile {
+    margin-top: 0px;
+  }
+  .cards .customWhiteCard .section {
+    padding-bottom: 130px;
+  }
+  .cards .customWhiteCard .section .label {
+    width: 100%;
+  }
+  .cards .customWhiteCard .section .banner {
+    width: 90%;
+    margin-top: 15px;
+  }
+  .cards .customWhiteCard .section .status {
+    width: 10%;
+    margin-top: 15px;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .roomImgBack {
+    height: 626px !important;
+    background-size: 700px 650px;
+  }
+  .roomImgBack .overlay .roomContactBtn {
+    padding: 4px;
+    margin-top: -10px;
+    margin-bottom: 15px;
+  }
+  .whiteYellowCard .appAwait {
+    padding-bottom: 85px;
+  }
 }
 /*# sourceMappingURL=styles.css.map */

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserFiles;
 use Auth;
 use Mail;
+use App\Models\ActionList;
 
 class HomeController extends Controller
 {
@@ -25,12 +26,35 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+
+     public function index(){
+        if (Auth::check()) {
+            return redirect()->route('home');
+        } else {
+            return redirect()->route('login');
+        }
+     }
+    public function dashboard()
     {
 
         if(Auth::user()->userRole == "0"){
 
-            return view('user.dashboard', ["headerTitle" => "Your Dashboard"]);
+            $allApprovedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Approved')->get();
+            $allPendingFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Uploaded')->get();
+            $allRejectedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Rejected')->get();
+
+            $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
+
+            $uploaded = [];
+            $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+
+            foreach($allFiles as $file){
+                array_push($uploaded, $file->fileId);
+            }
+
+            $outstanding = array_diff($all, $uploaded);
+
+            return view('user.dashboard', ["headerTitle" => "Your Dashboard", "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
         }else{
 
             return view('admin.dashboard', ["headerTitle" => "Admin Dashboard"]);
@@ -40,7 +64,10 @@ class HomeController extends Controller
 
     public function room_booking(){
 
-        return view('user.room_booking', ["headerTitle" => "Room Booking"]);
+        $proof_of_payment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
+        $lease = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'moveIn')->first();
+
+        return view('user.room_booking', ["headerTitle" => "Room Booking", "proof_of_payment" => $proof_of_payment, "lease" => $lease]);
 
     }
 
@@ -69,16 +96,55 @@ class HomeController extends Controller
                 $extension = $request->file('file')->extension();
                 $fileNameToStore = $fileName. '_'. time().'.'.$extension;
 
-                $request->file('file')->storeAs('files/'.$userUid.'/', $fileNameToStore);
+                $request->file('file')->storeAs('public/files/'.$userUid.'/', $fileNameToStore);
 
-                $fileUrl = '/files/'.$userUid.'/'. $fileNameToStore;
+                $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
 
-                UserFiles::create([
-                    'fileId' => $fileType,
-                    'userUid' => $userUid,
-                    'fileName' => $fileNameToStore,
-                    'fileUrl' => $fileUrl,
-                    'status' => 'Uploaded',
+                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
+
+                if($fileType == "copyID"){
+                    $typeName = "Copy of ID Document";
+                }elseif($fileType == "studentCard"){
+                    $typeName = "Copy of Student Card";
+                }elseif($fileType == "bankStatement"){
+                    $typeName = "Bank Statements";
+                }elseif($fileType == "proofRegistration"){
+                    $typeName = "Proof of Registration";
+                }elseif($fileType == "proof_of_payment"){
+                    $typeName = "Proof of Payment";
+                }elseif($fileType == "moveIn"){
+                    $typeName = "Lease";
+                }
+
+                if(!$hasFile){
+                    UserFiles::create([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => 'Uploaded',
+                        'uploaded_by' => Auth::user()->userFirstName,
+                    ]);
+
+                    $text = "Uploaded ".$typeName." for review";
+                }else{
+                    UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => 'Uploaded',
+                        'uploaded_by' => Auth::user()->userFirstName,
+                    ]);
+                    $text = "Re-uploaded ".$typeName." for review";
+                }
+    
+                ActionList::create([
+                    "userUid" => $userUid,
+                    "action" => $text,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
                 ]);
 
             }
@@ -98,7 +164,30 @@ class HomeController extends Controller
         
         if(Auth::user()->userRole == "1"){
 
-            return view('admin.applications', ["headerTitle" => "Applications"]);
+            $allUsersData = User::with('files')->get();
+            $userData = [];
+
+            foreach($allUsersData as $user){
+
+                $uploaded = [];
+                $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+                $data = [];
+
+                foreach($user->files as $file){
+                    array_push($uploaded, $file->fileId);
+                    array_push($data, ["field" => $file->fileId, "status" => $file->status]);
+                }
+
+                $left = array_diff($all, $uploaded);
+
+                foreach($left as $dataLeft){
+                    array_push($data, ["field" => $dataLeft, "status" => ""]);
+                }
+
+                array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data]);
+            }
+
+            return view('admin.applications', ["headerTitle" => "Applications", "users" => $userData]);
         }
     }
 
@@ -110,13 +199,205 @@ class HomeController extends Controller
 
             $name = $user['userFirstName']." ".$user['userLastname'];
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $user]);
+            $user = User::with('files')->where('id', $userId)->first();
+            $userData = [];
+            $uploaded = [];
+            $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+            $data = [];
+
+            foreach($user->files as $file){
+                array_push($uploaded, $file->fileId);
+                array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+            }
+
+            $left = array_diff($all, $uploaded);
+
+            foreach($left as $dataLeft){
+                array_push($data, ["field" => $dataLeft, "status" => ""]);
+            }
+
+            array_push($userData, ["files" => $data, "userInfo" => $user]);
+
+            $actions = ActionList::where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions]);
         }
+    }
+
+    public function action_file(Request $request){
+
+        if(Auth::user()->userRole == "1"){
+            
+            $fileId = $request->file;
+            $action = $request->type;
+            $reason = $request->reason;
+
+            UserFiles::where('id', $fileId)->update([
+                'status' => $action,
+                'rejectReason' => $reason,
+                'approved_by' => Auth::user()->userFirstName,
+            ]);
+
+            $userFile = UserFiles::where('id', $fileId)->first();
+
+            if($userFile['fileId'] == "copyID"){
+                $typeName = "Copy of ID Document";
+            }elseif($userFile['fileId'] == "studentCard"){
+                $typeName = "Copy of Student Card";
+            }elseif($userFile['fileId'] == "bankStatement"){
+                $typeName = "Bank Statements";
+            }elseif($userFile['fileId'] == "proofRegistration"){
+                $typeName = "Proof of Registration";
+            }elseif($userFile['fileId'] == "proof_of_payment"){
+                $typeName = "Proof of Payment";
+            }elseif($userFile['fileId'] == "moveIn"){
+                $typeName = "Lease";
+            }
+
+            if($action == "Rejected"){
+                $text = "Rejected ".$typeName." with reason: ".$reason ;
+            }else{
+                $text = "Approved ".$typeName;
+            }
+
+            ActionList::create([
+                "userUid" => $userFile->userUid,
+                "action" => $text,
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+
+        }
+    }
+
+    public function action_list(Request $request, $userId, $filter){
+
+        if($filter == "all"){
+            $list = ActionList::where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
+        }elseif($filter == "admin"){
+            $list = ActionList::where('userUid', $userId)->where('actionUserRole', '1')->orderBy('created_at', 'DESC')->get();
+        }elseif($filter == "applicant"){
+            $list = ActionList::where('userUid', $userId)->where('actionUserRole', '0')->orderBy('created_at', 'DESC')->get();
+        }
+
+        return $list;
+    }
+
+    public function document_list(Request $request, $userId, $filter){
+
+        $user = User::with('files')->where('id', $userId)->first();
+        $userData = [];
+        $uploaded = [];
+        $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+        $data = [];
+        
+        if($filter == "all"){
+            foreach($user->files as $file){
+                array_push($uploaded, $file->fileId);
+                array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+            }
+    
+            $left = array_diff($all, $uploaded);
+            foreach($left as $dataLeft){
+                array_push($data, ["field" => $dataLeft, "status" => ""]);
+            }
+        }elseif($filter == "review"){
+            foreach($user->files as $file){
+                if($file->status == "Uploaded"){
+                    array_push($uploaded, $file->fileId);
+                    array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+                }
+            }
+        }elseif($filter == "approved"){
+            foreach($user->files as $file){
+                if($file->status == "Approved"){
+                    array_push($uploaded, $file->fileId);
+                    array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+                }
+            }
+        }elseif($filter == "noDoc"){
+            foreach($user->files as $file){
+                array_push($uploaded, $file->fileId);                
+            }
+
+            $left = array_diff($all, $uploaded);
+            foreach($left as $dataLeft){
+                array_push($data, ["field" => $dataLeft, "status" => ""]);
+            }
+        }
+
+        return $data;
+    }
+
+    protected function approve_application(Request $request){
+        $userId = $request->userId;
+
+        $user = User::where('id', $userId)->first();
+
+        $data['name'] = $user->userFirstName;
+        $data['email'] = $user->userEmail;
+        $data['roomNo'] = $user->roomNo;
+        $data['bookingRef'] = $user->bookingRef;
+
+        Mail::send('email.application_approved', $data, function($message) use ($data) {
+            $message->to($data['email'], $data['name'])->subject
+                ('Thank you Application');
+            $message->cc('test@whitehart.co.za','Name');
+            $message->from('test@test.com','test@test.com');
+        });
+
+        User::where('id', $userId)->update(['bookingStatus' => "Approved"]);
+
+        ActionList::create([
+            "userUid" => $userId,
+            "action" => "Approved application and sent confirmation email",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+    }
+
+    public function documents(Request $request){
+            $allApprovedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Approved')->get();
+            $allPendingFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Uploaded')->get();
+            $allRejectedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Rejected')->get();
+
+            $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
+
+            $uploaded = [];
+            $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+
+            foreach($allFiles as $file){
+                array_push($uploaded, $file->fileId);
+            }
+
+            $outstanding = array_diff($all, $uploaded);
+
+            return view('user.documents', ["headerTitle" => "My Documents", "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
+    }
+
+    public function leases(Request $request){
+        
+        $leases = UserFiles::with('users')->where('fileId', 'moveIn')->get();
+
+        return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases]);
+    }
+
+    public function mailing(Request $request){
+
+        $thankYou = view('email.application_thank_you');
+
+        return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000"]);
+    }
+
+    public function invoices(Request $request){
+        return view('admin.invoices', ["headerTitle" => "Invoices"]);
     }
 
     public function thanks(Request $request){
 
-        $data['test'] = "";
+        // $data['test'] = "";
 
         // Mail::send('email.application_thank_you', $data, function($message) use ($data) {
         //     $message->to("mirichea@whitehart.co.za", "Mirichea")->subject

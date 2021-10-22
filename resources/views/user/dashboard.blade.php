@@ -20,7 +20,7 @@
             
         </div>
 
-        <div class="whiteYellowCard smallerCard">
+        <div class="whiteYellowCard smallerCard"> 
             
             <h2 class="cardHeader redCardHeader">Application
                 <div class="small"><span class="text">Awaiting Documents </span>
@@ -31,49 +31,92 @@
             </h2>
                 
             <div class="cardBody">
-                
-                <div class="appAwait" id="studentCardSection">
-                    <h3 class="uploadName">STUDENT CARD
 
-                    <label for="studentCard" id="studentCardUpload" class="outstanding">
+            @foreach ($rejectedFiles as $file)
+
+                <div class="appAwait">
+                    <h3 class="uploadName">
+
+                    @if($file->fileId == 'copyID')
+                        I.D COPY
+                      @elseif($file->fileId == 'studentCard')
+                        STUDENT CARD
+                      @elseif($file->fileId == 'bankStatement')
+                        BANK STATEMENT
+                      @elseif($file->fileId == 'proofRegistration')
+                        REGISTRATION
+                      @elseif($file->fileId == 'proof_of_payment')
+                        PROOF OF PAYMENT
+                      @elseif($file->fileId == 'moveIn')
+                        LEASE
+                      @endif
+
+                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
                         <span class="text">Outstanding</span>
                         <i class="fas fa-file-upload" ></i>
                         <i class="fas fa-exclamation-circle"></i>
                     </label>
                     </h3>
-                    <input type="file" id="studentCard" hidden/>
+                    <input type="file" id="{{$file->fileId}}" hidden/>
 
                     <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
 
                 </div>
 
-                <div class="appAwait" id="nsfasApprovalSection">
-                    <h3 class="uploadName">NSFAS APPROVAL
+            @endforeach
 
-                    <label for="nsfasApproval" id="nsfasApprovalUpload" class="outstanding">
+            @foreach($outstanding as $file)
+
+              <div class="appAwait">
+                    <h3 class="uploadName">
+                    @if($file == 'copyID')
+                        I.D COPY
+                      @elseif($file == 'studentCard')
+                        STUDENT CARD
+                      @elseif($file == 'bankStatement')
+                        BANK STATEMENT
+                      @elseif($file == 'proofRegistration')
+                        REGISTRATION
+                      @elseif($file == 'proof_of_payment')
+                        PROOF OF PAYMENT
+                      @elseif($file == 'moveIn')
+                        LEASE
+                      @endif
+
+                    <label for="{{$file}}" id="{{$file}}Section" class="outstanding">
                         <span class="text">Outstanding</span>
                         <i class="fas fa-file-upload" ></i>
                         <i class="fas fa-exclamation-circle"></i>
                     </label>
                     </h3>
-                    <input type="file" id="nsfasApproval" hidden/>
-
-                    <div class="invalid hidden" id="nsfasApprovalInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
+                    <input type="file" id="{{$file}}" hidden/>
 
                 </div>
+            
+            @endforeach
+                
+                
+
+                
+
+                @foreach($pendingFiles as $file)
 
                 <div class="appAwait" id="registrationSection">
-                    <h3 class="uploadName">REGISTRATION
+                    <h3 class="uploadName">
 
-                    <label for="registration" id="registrationUpload" class="outstanding hidden">
-                        <span class="text">Outstanding</span>
-                        <i class="fas fa-file-upload" ></i>
-                        <i class="fas fa-exclamation-circle"></i>
-                    </label>
-                    </h3>
-                    <input type="file" id="registration" hidden/>
-
-                    <div class="invalid hidden" id="registrationInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
+                    @if($file->fileId == 'copyID')
+                        I.D COPY
+                      @elseif($file->fileId == 'studentCard')
+                        STUDENT CARD
+                      @elseif($file->fileId == 'bankStatement')
+                        BANK STATEMENT
+                      @elseif($file->fileId == 'proofRegistration')
+                        REGISTRATION
+                      @elseif($file->fileId == 'proof_of_payment')
+                        PROOF OF PAYMENT
+                      @elseif($file->fileId == 'moveIn')
+                        LEASE
+                      @endif
 
                     <label id="registrationPending" class="pending">
                         <span class="text">Pending Approval</span>
@@ -81,6 +124,10 @@
                     </label>
 
                 </div>
+
+                @endforeach
+
+                
 
             </div>
 
@@ -119,17 +166,23 @@
                 
             <div class="cardBody">
 
-                <div class="appAwait" id="idCopySection">
-                    <h3 class="uploadName">I.D COPY
-                        <label class="approved">
-                            <span class="text">Approved</span>
-                            <i class="fas fa-check-circle"></i>
-                        </label>
-                    </h3>
-                </div>
-                
-                <div class="appAwait hidden" id="studentCardSection">
-                    <h3 class="uploadName">STUDENT CARD
+            @foreach ($approvedFiles as $file)
+
+            <div class="appAwait" id="idCopySection">
+                    <h3 class="uploadName">
+                      @if($file->fileId == 'copyID')
+                        I.D COPY
+                      @elseif($file->fileId == 'studentCard')
+                        STUDENT CARD
+                      @elseif($file->fileId == 'bankStatement')
+                        BANK STATEMENT
+                      @elseif($file->fileId == 'proofRegistration')
+                        REGISTRATION
+                      @elseif($file->fileId == 'proof_of_payment')
+                        PROOF OF PAYMENT
+                      @elseif($file->fileId == 'moveIn')
+                        LEASE
+                      @endif
                         <label class="approved">
                             <span class="text">Approved</span>
                             <i class="fas fa-check-circle"></i>
@@ -137,26 +190,9 @@
                     </h3>
                 </div>
 
-                <div class="appAwait hidden" id="bankStatementSection">
-                    <h3 class="uploadName">3 MONTHS BANK STATEMENT
-                        <label class="approved">
-                            <span class="text">Approved</span>
-                            <i class="fas fa-check-circle"></i>
-                        </label>
-                    </h3>
-                </div>
-
-                <div class="appAwait" id="registrationSection">
-                    <h3 class="uploadName">REGISTRATION
-                        <label class="approved">
-                            <span class="text">Approved</span>
-                            <i class="fas fa-check-circle"></i>
-                        </label>
-                    </h3>
-                </div>
+            @endforeach
 
             </div>
-
         </div>
     </div>
 </div>
@@ -238,6 +274,137 @@
 </div>
 
 <br/><br/>
+
+<script>
+
+$.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+  $("#copyID").on('change', function(){
+        $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('copyID').files[0]);
+        form_data.append("userUid", {{Auth::user()->id}});
+        form_data.append("fileType", "copyID");
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data == "done") {
+                    window.location.reload();
+                }
+            },
+        });
+    });
+
+    $("#studentCard").on('change', function(){
+        $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('studentCard').files[0]);
+        form_data.append("userUid", {{Auth::user()->id}});
+        form_data.append("fileType", "studentCard");
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data == "done") {
+                  window.location.reload();
+                }
+            },
+        });  
+    })
+
+    $("#bankStatement").on('change', function(){
+        $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('bankStatement').files[0]);
+        form_data.append("userUid", {{Auth::user()->id}});
+        form_data.append("fileType", "bankStatement");
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data == "done") {
+                  window.location.reload();
+                }
+            },
+        });
+    })
+
+    $("#proofRegistration").on('change', function(){
+
+        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('proofRegistration').files[0]);
+        form_data.append("userUid", {{Auth::user()->id}});
+        form_data.append("fileType", "proofRegistration");
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data == "done") {
+                  window.location.reload();
+                }
+            },
+        });
+    })
+
+
+    $("#proof_of_payment").on('change', function(){
+        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
+        form_data.append("userUid", {{Auth::user()->id}});
+        form_data.append("fileType", "proof_of_payment");
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data == "done") {
+                  window.location.reload();
+                }
+            },
+        });
+    })
+    </script>
 
 
 @endsection

@@ -21,6 +21,7 @@
     <link href="{{ asset('css/all.css') }}" rel="stylesheet">
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
     
 </head>
 <body>
@@ -60,9 +61,9 @@
 
             <div class="col-3">
             <p class="linkHeader">Follow Us</p>
-            <img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43">
-            <img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43">
-            <img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43">
+            <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
+            <a href="https://www.instagram.com/campus.africa/?hl=en" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
+            <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
             <br/>
             <img src="/images/footer/email.png" alt="Email" width="43" height="43">
             <img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43">

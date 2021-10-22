@@ -7,13 +7,13 @@
 
         <nav class="navBar">
             <div class="leftMenu">
-                <img src="/images/logo/Campus_Africa_Logo.png" alt="Campus Africa Logo" width="92" height="91">
+                <a href="/login"><img src="/images/logo/Campus_Africa_Logo.png" alt="Campus Africa Logo" width="92" height="91"></a>
             </div>
 
             <div class="rightMenu">
                 
                 <button type="button" class="contactButton">contact us</button>
-                <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button>
+                <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
             </div>
         </nav>
 
@@ -60,11 +60,10 @@
                                             <div class="form-field">
                                                 <label>Title</label>
                                                 <select name="title" id='title'>
-                                                    <option value="1">Mr</option>
-                                                    <option value="2">Ms</option>
-                                                    <option value="3">Mrs</option>
-                                                    <option value="4">Miss</option>
-                                                    <option value="5">Dr</option>
+                                                    <option value="Mr">Mr</option>
+                                                    <option value="Ms">Ms</option>
+                                                    <option value="Mrs">Mrs</option>
+                                                    <option value="Miss">Miss</option>
                                                 </select>
                                             </div>
 
@@ -102,7 +101,7 @@
                                             <div class="form-field">
                                                 <label>Nationality</label>
                                                 <select name="nationality" id='nationality'>
-                                                    <option value="1">South African</option>
+                                                    <option value="South African">South African</option>
                                                 </select>
                                             </div>
 
@@ -114,7 +113,7 @@
                                             <div class="form-field">
                                                 <label>Institution of Study</label>
                                                 <select name="institStudy" id="institStudy">
-                                                    <option value="1">Choose one</option>
+                                                    <option value="Choose one" selected disabled>Choose one</option>
                                                 </select>
                                             </div>
 
@@ -126,14 +125,14 @@
                                             <div class="form-field">
                                                 <label>Insitution Campus</label>
                                                 <select name="institCampus" id="institCampus">
-                                                    <option value="1">Choose one</option>
+                                                    <option value="Choose one" selected diabled>Choose one</option>
                                                 </select>
                                             </div>
 
                                             <div class="form-field">
                                                 <label>Faculty</label>
                                                 <select name="faculty" id="faculty">
-                                                    <option value="1">Choose one</option>
+                                                    <option value="Choose one" disabled selected>Choose one</option>
                                                 </select>
                                             </div>
 
@@ -242,11 +241,10 @@
                                             <div class="form-field">
                                                 <label>Title</label>
                                                 <select name="kTitle" id='kTitle'>
-                                                    <option value="1">Mr</option>
-                                                    <option value="2">Ms</option>
-                                                    <option value="3">Mrs</option>
-                                                    <option value="4">Miss</option>
-                                                    <option value="5">Dr</option>
+                                                    <option value="Mr">Mr</option>
+                                                    <option value="Ms">Ms</option>
+                                                    <option value="Mrs">Mrs</option>
+                                                    <option value="Miss">Miss</option>
                                                 </select>
                                             </div>
 
@@ -257,10 +255,10 @@
 
                                             <div class="form-field-big">
                                                 <label>Physical Address</label>
-                                                <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1">
+                                                <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important">
                                             </div>
                                             <div class="form-field-big">
-                                                <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2">
+                                                <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important">
                                             </div>
                                             <div class="form-field">
                                                 <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity'>
@@ -310,7 +308,7 @@
                                             <div class="form-field-app" style="width:100%; text-align:center; display:flex; justify-content: center;">
                                                 <label style="font-size:12px; line-height:38px;">Application Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                                                 <select name="kTitle" style="width:30% !important">
-                                                    <option value="1">Cash</option>
+                                                    <option value="Cash">Cash</option>
                                                 </select>
                                             </div>
 
@@ -350,7 +348,7 @@
                                                     </div>
 
                                                     <div class="whiteYellowCard">
-                                                        <h2 class="cardHeader" style="height:80px;">Application</h2>
+                                                        <h2 class="cardHeader" style="height:130px;">Application</h2>
                                                         
                                                         <div class="cardBody">
                                                             <div class="uploadSection" id="copyStudentCard">
@@ -413,101 +411,116 @@
                                     <fieldset>
                                         <div class="form-card">
                                             
-                                        <div class="cards">
-                                            <div class="whiteCard">
+                                            <div class="cards">
+                                                <div class="whiteCard">
 
-                                                <div class="flex flex-rev">
-                                                    <button type="button" class="editButton" onClick="PrevStep('back2')">EDIT</button>
-                                                </div>
-                                            
-                                                <p class="cardList">
-                                                    <span id="dispFirstName"></span> <span id="dispLastName"></span><br/>
-                                                    <span id="dispDob"></span><br/>
-                                                    <span id="dispCell"></span><br/>
-                                                    <span id="dispEmail"></span><br/>
-                                                    <span id="dispID"></span><br/>
-                                                    <span id="dispNationality"></span><br/>
-                                                    <span id="dispPassport"></span><br/>
-                                                    <span id="dispInstit"></span><br/>
-                                                    <span id="dispStudNo"></span><br/>
-                                                    <span id="dispInstitCampus"></span><br/>
-                                                    <span id="dispFaculty"></span><br/>
-                                                    <span id="dispYear"></span></p>
-                                                    
-                                            </div>
-
-                                            <div class="whiteCard" style="margin-left:11px;">
-                                                <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                                                <h2 class="cardHeader" >Single Room</h2>
-                                                <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
-                                            </div>
-                                        </div>
-
-                                        <br/>
-                                        <div class="clearSpaceLogin"></div>
-                                        <div class="footerClearfix"></div>
-
-                                        <div class="paymentSection">
-
-                                            <div class="form-field">
-                                                <h1 class="header">Payment Information</h1>
-                                            </div>
-
-                                            <div class="form-field">
-                                                <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                                <select name="paymentType" >
-                                                    <option value="1">Credit card</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="form-field">
-                                                <label>Cardholder Name</label>
-                                                <input type="text" name="cardholderName">
-
-                                                <label>Card Number</label>
-                                                <input type="text" name="cardNumber">
-
-                                                <label>Exp. Date</label>
-                                                <input type="date" name="expDate">
-
-                                                <label>CVV</label>
-                                                <input type="text" name="cvv" style="width:50%">
-                                            </div>
-
-                                            <div class="form-field">
-                                                <div class="cards flex flex-col">
-                                                    <div class="whiteCard halfCard">
-                                                        <h4 class="cardSubHeaderGrey">Booking Deposit</h4>
-                                                        <h2 class="cardHeader" >R5000</h2>
-                                                        <h4 class="cardSubHeaderGrey">Your application deposit is deducted from the total of the room deposit required to make this booking.</h4>
-                                                        
+                                                    <div class="flex flex-rev">
+                                                        <button type="button" class="editButton" onClick="PrevStep('back2')">EDIT</button>
                                                     </div>
-                                                    <div class="redBottom flex">
-                                                            <i class="fas fa-clock"></i>
-                                                            <p>Please note that your booking will only be reserved for 24hrs without payment</p>
-                                                        </div>
+                                                
+                                                    <p class="cardList">
+                                                        <span id="dispFirstName"></span> <span id="dispLastName"></span><br/>
+                                                        <span id="dispDob"></span><br/>
+                                                        <span id="dispCell"></span><br/>
+                                                        <span id="dispEmail"></span><br/>
+                                                        <span id="dispID"></span><br/>
+                                                        <span id="dispNationality"></span><br/>
+                                                        <span id="dispPassport"></span><br/>
+                                                        <span id="dispInstit"></span><br/>
+                                                        <span id="dispStudNo"></span><br/>
+                                                        <span id="dispInstitCampus"></span><br/>
+                                                        <span id="dispFaculty"></span><br/>
+                                                        <span id="dispYear"></span></p>
+                                                        
+                                                </div>
+
+                                                <div class="whiteCard" style="margin-left:11px;">
+                                                    <h4 class="cardSubHeaderGrey">Braamlofts</h4>
+                                                    <h2 class="cardHeader" >Single Room</h2>
+                                                    <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
                                                 </div>
                                             </div>
 
-                                        </div>
-
-                                        <div class="paymentTwo hidden">
-                                            <h1 class="header">Payment Information</h1>
                                             <br/>
-                                            <p class="cardSubHeaderGrey">Thank you for your payment. In order to speed up the process, please upload a proof of payment document below or via your online profile as soon as possible. Your room will only be reserved for 24 hours without payment.</p>
-                                            <br/><br/>
+                                            <div class="clearSpaceLogin"></div>
+                                            <br/><br/><br/><br/><br/>
 
-                                            <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
-                                            <input type="file" id="proof_of_payment" hidden/>
+                                            <div class="paymentSection">
+
+                                                <div class="form-field">
+                                                    <h1 class="header" >Payment Information</h1>
+                                                </div>
+
+                                                <div class="form-field">
+                                                    <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                                    <select name="paymentType" >
+                                                        <option value="Credit card">Credit card</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-field">
+                                                    <label>Cardholder Name</label>
+                                                    <input type="text" name="cardholderName">
+
+                                                    <label>Card Number</label>
+                                                    <input type="text" name="cardNumber">
+
+                                                    <label>Exp. Date</label>
+                                                    <input type="date" name="expDate">
+
+                                                    <label>CVV</label>
+                                                    <input type="text" name="cvv" style="width:50%">
+                                                </div>
+
+                                                <div class="form-field">
+                                                    <div class="cards flex flex-col">
+                                                        <div class="whiteCard halfCard">
+                                                            <h4 class="cardSubHeaderGrey">Booking Deposit</h4>
+                                                            <h2 class="cardHeader" >R5000</h2>
+                                                            <h4 class="cardSubHeaderGrey">Your application deposit is deducted from the total of the room deposit required to make this booking.</h4>
+                                                            
+                                                        </div>
+                                                        <div class="redBottom flex">
+                                                                <i class="fas fa-clock"></i>
+                                                                <p>Please note that your booking will only be reserved for 24hrs without payment</p>
+                                                            </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="clearSpaceLogin"></div>
+                                                <div class="footerClearfix"></div>
+
+                                                <!-- <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" />  -->
+                                                <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" />
+
+                                            </div>
+
+                                            <div class="paymentTwo hidden">
+                                            <div class="footerClearfix"></div>
+                                            <br/><br/><br/><br/>
+                                                <h1 class="header">Payment Submitted!</h1>
+                                                <br/>
+                                                <p class="cardSubHeaderGrey">Thank you for your payment. In order to speed up the process, please upload a proof of payment document below or via your online profile as soon as possible. Your room will only be reserved for 24 hours without payment.</p>
+                                                <br/><br/>
+
+                                                <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
+                                                <input type="file" id="proof_of_payment" hidden/>
+
+                                                <div class="clearSpaceLogin"></div>
+                                        <!-- <div class="footerClearfix"></div> --><br/><br/><br/><br/><br/><br/><br/><br/>
+
+                                        <!-- <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" style="margin-left: -7px !important;"/> <br/><br/><br/><br/> -->
+                                        <input type="button" name="previous" class="previous action-button-previous" value="Back to home page" style="margin-left: -7px !important;" /> 
+                                        <!-- <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" /> -->
                                         </div>
 
-                                        <div class="clearSpaceLogin"></div>
-                                        <div class="footerClearfix"></div>
+                                        
+
+                                        
+
+                                        </div>
 
                                         <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" /> 
-                                        <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" />
-
-                                        </div>
                                     </fieldset>
                                     <input type="hidden" id="userId" value="" />
                                 </form>
@@ -561,6 +574,7 @@
                         success: function (data) {
                             console.log(data.id)
                             $("#userId").val(data.id);
+                            $("#step1").val("Proceed to Next Step");
                             NextStep("step1");
 
                             $("#dispFirstName").empty().append($("#firstName").val());
@@ -604,6 +618,7 @@
                         },
 
                         success: function (data) {
+                            $("#step1").val("Proceed to Next Step");
                             console.log(data.id)
                             $("#userId").val(data.id);
                             NextStep("step1")
@@ -651,6 +666,7 @@
             },
 
             success: function (data) {
+                $("#step2").val("Proceed to Next Step");
                 NextStep("step2")
             },
         });
@@ -681,6 +697,7 @@
             },
 
             success: function (data) {
+                $("#step3").val("Proceed to Next Step");
                 NextStep("step3")
             },
         });
@@ -723,6 +740,9 @@
         
         //Remove class active
         $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+        console.log(current_fs)
+        console.log(previous_fs)
         
         //show the previous fieldset
         previous_fs.show();
