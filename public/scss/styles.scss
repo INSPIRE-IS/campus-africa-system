@@ -1544,56 +1544,56 @@ button:disabled {
 }
 
 #lease_table,
-    #documents_table {
-        button {
-            padding: 10px;
-            border: none;
-            color: #fff;
-            border-radius: 7px;
-            background-color: #e74f26;
-            cursor: pointer;
-        }
-
-        .await {
-            padding: 5px 50px;
-            border: none;
-            color: #fff;
-            border-radius: 7px;
-            background-color: #f1cc3e;
-            width: 100px;
-            text-align: center;
-        }
-
-        .approved {
-            padding: 10px;
-            border: none;
-            color: #fff;
-            border-radius: 7px;
-            background-color: #1cb915;
-            width: 100px;
-            text-align: center;
-        }
-
-        .uploaded {
-            padding: 10px;
-            border: none;
-            color: #fff;
-            border-radius: 7px;
-            background-color: #ffbb3c;
-            width: 100px;
-            text-align: center;
-        }
-
-        .rejected {
-            padding: 10px;
-            border: none;
-            color: #fff;
-            border-radius: 7px;
-            background-color: #e74f26;
-            width: 100px;
-            text-align: center;
-        }
+#documents_table {
+    button {
+        padding: 10px;
+        border: none;
+        color: #fff;
+        border-radius: 7px;
+        background-color: #e74f26;
+        cursor: pointer;
     }
+
+    .await {
+        padding: 5px 50px;
+        border: none;
+        color: #fff;
+        border-radius: 7px;
+        background-color: #f1cc3e;
+        width: 100px;
+        text-align: center;
+    }
+
+    .approved {
+        padding: 10px;
+        border: none;
+        color: #fff;
+        border-radius: 7px;
+        background-color: #1cb915;
+        width: 100px;
+        text-align: center;
+    }
+
+    .uploaded {
+        padding: 10px;
+        border: none;
+        color: #fff;
+        border-radius: 7px;
+        background-color: #ffbb3c;
+        width: 100px;
+        text-align: center;
+    }
+
+    .rejected {
+        padding: 10px;
+        border: none;
+        color: #fff;
+        border-radius: 7px;
+        background-color: #e74f26;
+        width: 100px;
+        text-align: center;
+    }
+}
 
 .outstandingUpload {
     background-color: #e74f26;
@@ -1653,12 +1653,32 @@ button:disabled {
     height: 500px !important;
 }
 
-@media only screen and (max-width: 1485px){
+.rejectedRobot {
+    background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
+.pendingRobot {
+    background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
+.approvedRobot {
+    background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
+@media only screen and (max-width: 1485px) {
     .cards {
         .customWhiteCard {
-
-            .section{
-                padding-bottom:80px;
+            .section {
+                padding-bottom: 80px;
             }
         }
     }
@@ -1736,17 +1756,17 @@ button:disabled {
                 }
             }
 
-            .section{
-                .status{
-                    .approved, .action, .rejected{
-                        margin-left:15px;
+            .section {
+                .status {
+                    .approved,
+                    .action,
+                    .rejected {
+                        margin-left: 15px;
                     }
                 }
             }
         }
     }
-
-    
 }
 
 @media only screen and (max-width: 1050px) {
@@ -1797,8 +1817,11 @@ button:disabled {
         }
     }
 
-    #bookingRef, #studType, #statusBarIcon, #studType{
-        padding:10px 55px
+    #bookingRef,
+    #studType,
+    #statusBarIcon,
+    #studType {
+        padding: 10px 55px;
     }
 }
 
@@ -1880,7 +1903,6 @@ button:disabled {
     #documentsCard {
         margin-top: 1211px !important;
     }
-    
 }
 
 @media only screen and (max-width: 660px) {
@@ -1925,8 +1947,8 @@ button:disabled {
         height: 444px;
     }
 
-    .appRow{
-        width:100%
+    .appRow {
+        width: 100%;
     }
 
     #documentsCard {
@@ -1945,58 +1967,60 @@ button:disabled {
             .appHeader {
                 select {
                     float: left;
-                    width:100%;
+                    width: 100%;
                 }
             }
 
-            .infoBlock{
-                .responsible{
-                    display:block;
+            .infoBlock {
+                .responsible {
+                    display: block;
 
-                    .admin, .applicant{
-                        float:right;
-                        margin-top:-25px;
+                    .admin,
+                    .applicant {
+                        float: right;
+                        margin-top: -25px;
                     }
                 }
             }
 
-            .section{
-                padding-bottom:110px;
+            .section {
+                padding-bottom: 110px;
 
-                .label{
-                    width:100%;
+                .label {
+                    width: 100%;
                 }
-                .banner{
-                    width:80%;
-                    margin-top:15px;
+                .banner {
+                    width: 80%;
+                    margin-top: 15px;
                 }
-                .status{
-                    width:20%;
-                    margin-top:15px;
+                .status {
+                    width: 20%;
+                    margin-top: 15px;
                 }
             }
         }
     }
 
     .appSearchForm {
-        .indexTab{
+        .indexTab {
             display: block;
         }
     }
-
 }
 
 @media screen and (max-width: 600px) {
-
-    .topnav a:not(:first-child), .dropdown .dropbtn {
+    .topnav a:not(:first-child),
+    .dropdown .dropbtn {
         display: none;
-      }
-      .topnav a.icon {
+    }
+    .topnav a.icon {
         float: right;
         display: block;
-      }
+    }
 
-    .topnav.responsive {position: relative;}
+    .topnav.responsive {
+        position: relative;
+    }
     .topnav.responsive .icon {
         position: absolute;
         right: 0;
@@ -2007,14 +2031,17 @@ button:disabled {
         display: block;
         text-align: left;
     }
-    .topnav.responsive .dropdown {float: none;}
-    .topnav.responsive .dropdown-content {position: relative;}
+    .topnav.responsive .dropdown {
+        float: none;
+    }
+    .topnav.responsive .dropdown-content {
+        position: relative;
+    }
     .topnav.responsive .dropdown .dropbtn {
         display: block;
         width: 100%;
         text-align: left;
     }
-  
 
     #fullNavbar {
         height: 100%;
@@ -2054,70 +2081,71 @@ button:disabled {
         }
     }
 
-    #lease_table .await, #documents_table {
+    #lease_table .await,
+    #documents_table {
         .sorting_1 {
-            .await, .rejected, .approved{
+            .await,
+            .rejected,
+            .approved {
                 background-color: transparent;
-                color:#000;
+                color: #000;
             }
         }
     }
 
     .whiteYellowCard {
         .appAwait {
-            .approved{
-                margin-top:0px;
+            .approved {
+                margin-top: 0px;
             }
         }
 
-        .cardHeaderText{
-            line-height:34px;
+        .cardHeaderText {
+            line-height: 34px;
         }
     }
 
-    #bookingHeaderYellow{
-        height:500px;
+    #bookingHeaderYellow {
+        height: 500px;
     }
-
-    
 }
 
 @media screen and (max-width: 380px) {
     .whiteYellowCard {
         .appAwait {
-            .approved{
-                float:left
+            .approved {
+                float: left;
             }
         }
     }
 
     .loginHeader {
-        .booking{
-            font-size:50px;
-            line-height:55px;
+        .booking {
+            font-size: 50px;
+            line-height: 55px;
         }
     }
 
-    #rejectApplication, #approveProfile{
-        margin-top:0px;
+    #rejectApplication,
+    #approveProfile {
+        margin-top: 0px;
     }
 
     .cards {
         .customWhiteCard {
+            .section {
+                padding-bottom: 130px;
 
-            .section{
-                padding-bottom:130px;
-
-                .label{
-                    width:100%;
+                .label {
+                    width: 100%;
                 }
-                .banner{
-                    width:90%;
-                    margin-top:15px;
+                .banner {
+                    width: 90%;
+                    margin-top: 15px;
                 }
-                .status{
-                    width:10%;
-                    margin-top:15px;
+                .status {
+                    width: 10%;
+                    margin-top: 15px;
                 }
             }
         }
@@ -2125,26 +2153,22 @@ button:disabled {
 }
 
 @media screen and (max-width: 350px) {
-
-
     .roomImgBack {
         height: 626px !important;
-        background-size:700px 650px;
+        background-size: 700px 650px;
 
         .overlay {
-            .roomContactBtn{
-                padding:4px; 
-                margin-top:-10px; 
-                margin-bottom:15px;
+            .roomContactBtn {
+                padding: 4px;
+                margin-top: -10px;
+                margin-bottom: 15px;
             }
         }
     }
 
     .whiteYellowCard {
-        .appAwait{
+        .appAwait {
             padding-bottom: 85px;
         }
     }
-
 }
-

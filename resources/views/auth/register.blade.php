@@ -491,7 +491,7 @@
                                                 <div class="footerClearfix"></div>
 
                                                 <!-- <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" />  -->
-                                                <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" />
+                                                <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" style="margin-top:55px;" />
 
                                             </div>
 
@@ -510,7 +510,7 @@
                                         <!-- <div class="footerClearfix"></div> --><br/><br/><br/><br/><br/><br/><br/><br/>
 
                                         <!-- <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" style="margin-left: -7px !important;"/> <br/><br/><br/><br/> -->
-                                        <input type="button" name="previous" class="previous action-button-previous" value="Back to home page" style="margin-left: -7px !important;" /> 
+                                        <input type="button" name="previous" class="previous action-button-previous" value="Back to home page" style="margin-left: -7px !important; margin-top:59px" /> 
                                         <!-- <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" /> -->
                                         </div>
 

@@ -34,7 +34,7 @@
         <div id="fullNavbar">
             <div class="topnav" id="myTopnav">
                 <a class="active" href="/dashboard">Dashboard</a>
-                <a href="javascript:void(0)">Properties</a>
+                <a href="javascript:void(0)">Residences</a>
                 <a href="/room-booking">My Room</a>
                 <a href="/my-documents">My Documents</a>
                 <a href="/my-profile">My Profile</a>

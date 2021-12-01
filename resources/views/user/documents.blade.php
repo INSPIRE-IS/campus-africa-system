@@ -7,6 +7,21 @@
 
 <div class="container">
     <br/>
+      <div class="appSearchForm">
+        <div class="indexTab flex" id="applicationIndex">
+            <label>Legend</label>
+            <div class="keys">
+                <div id="indexOne"><div class="button approved"></div><span class="text">Approved</span></div>
+                <div id="indexOne"><div class="button action"></div><span class="text">Pending Approval</span></div>
+                <div id="indexOne"><div class="button rejected"></div><span class="text">Action Required</span></div>
+                <div id="indexOne"><div class="button na"></div><span class="text">Not Applicable</span></div>
+            </div>
+        </div>
+      </div>
+        <br/>
+        <br/>
+        <div style="height:50px;"></div>
+        <br/>
     <table id="documents_table" class="display">
         <thead>
             <tr>
@@ -33,9 +48,7 @@
                           LEASE
                         @endif
                     </td>
-                    <td>
-                        <span class="rejected">Outstanding</span>
-                    </td>
+                    <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
                     <td>
                       <label for="{{$file}}" id="{{$file}}Section" class="outstandingUpload">
                           <span class="text">Upload</span>
@@ -64,9 +77,7 @@
                           LEASE
                         @endif
                     </td>
-                    <td>
-                        <span class="rejected">INVALID DOCUMENT - PLEASE REUPLOAD</span>
-                    </td>
+                    <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
                     <td>
                       <label for="{{$file['fileId']}}" id="{{$file['fileId']}}Section" class="outstandingUpload">
                           <span class="text">Upload</span>
@@ -98,11 +109,9 @@
                           LEASE
                         @endif
                     </td>
+                    <td><span class="flex"><div class="pendingRobot"></div> &nbsp;&nbsp; Pending Approval</span></td>
                     <td>
-                        <span class="await">Pending Approval</span>
-                    </td>
-                    <td>
-                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="await">View</span></a>
+                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
                     </td>
                 </tr>
             @endforeach
@@ -124,11 +133,9 @@
                           LEASE
                         @endif
                     </td>
+                    <td><span class="flex"><div class="approvedRobot"></div> &nbsp;&nbsp; Approved</span></td>
                     <td>
-                        <span class="approved">Approved</span>
-                    </td>
-                    <td>
-                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="approved">View</span></a>
+                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
                     </td>
                 </tr>
             @endforeach
@@ -167,7 +174,7 @@ $.ajaxSetup({
 
   $(document).ready( function () {
         $('#documents_table').DataTable({
-          "order": [[ 1, "desc" ]]
+          "order": [[ 2, "asc" ]]
         });
     } );
 
