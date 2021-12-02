@@ -475,9 +475,9 @@
                                                 <div class="form-field">
                                                     <div class="cards flex flex-col">
                                                         <div class="whiteCard halfCard">
-                                                            <h4 class="cardSubHeaderGrey">Booking Deposit</h4>
+                                                            <h4 class="cardSubHeaderGrey">Non Refundable Booking Fee</h4>
                                                             <h2 class="cardHeader" >R5000</h2>
-                                                            <h4 class="cardSubHeaderGrey">Your application deposit is deducted from the total of the room deposit required to make this booking.</h4>
+                                                            <h4 class="cardSubHeaderGrey">Your application fee is deducted from the total of the room fee required to make this booking.</h4>
                                                             
                                                         </div>
                                                         <div class="redBottom flex">

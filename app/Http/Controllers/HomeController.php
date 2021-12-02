@@ -8,6 +8,7 @@ use App\Models\UserFiles;
 use Auth;
 use Mail;
 use App\Models\ActionList;
+use App\models\MailerList;
 
 class HomeController extends Controller
 {
@@ -207,6 +208,12 @@ class HomeController extends Controller
 
             foreach($user->files as $file){
                 array_push($uploaded, $file->fileId);
+                if($file->status == "Rejected"){
+                    $file->status = "";
+                }
+                if($file->status == "Approved"){
+                    $file->status = "XApproved";
+                }
                 array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
             }
 
@@ -216,11 +223,33 @@ class HomeController extends Controller
                 array_push($data, ["field" => $dataLeft, "status" => ""]);
             }
 
+            
+            usort($data, function($a, $b) {
+                return $a['status'] <=> $b['status'];
+            });
+
+            // dd($data);
+
             array_push($userData, ["files" => $data, "userInfo" => $user]);
 
             $actions = ActionList::where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions]);
+            $completed = "false";
+            $completedDocs = [];
+
+            foreach($data as $file){
+                if($file['status'] == "XApproved"){
+                    array_push($completedDocs, $file['status']);
+                }
+            }
+
+            // dd($completedDocs);
+
+            if(count($completedDocs) == 5){
+                $completed = "true";
+            }
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed]);
         }
     }
 
@@ -235,7 +264,7 @@ class HomeController extends Controller
             UserFiles::where('id', $fileId)->update([
                 'status' => $action,
                 'rejectReason' => $reason,
-                'approved_by' => Auth::user()->userFirstName,
+                'approved_by' => $userName,
             ]);
 
             $userFile = UserFiles::where('id', $fileId)->first();
@@ -264,7 +293,7 @@ class HomeController extends Controller
                 "userUid" => $userFile->userUid,
                 "action" => $text,
                 "actionUserUid" => Auth::user()->id,
-                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserDisplayName" => $userName,
                 "actionUserRole" => Auth::user()->userRole,
             ]);
 
@@ -388,7 +417,9 @@ class HomeController extends Controller
 
         $thankYou = view('email.application_thank_you');
 
-        return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000"]);
+        $MailerList = MailerList::all();
+
+        return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000", "MailerList" => $MailerList]);
     }
 
     public function invoices(Request $request){
@@ -408,4 +439,67 @@ class HomeController extends Controller
 
         return view('email.application_rejected');
     }
+
+    public function activate_mailer(Request $request){
+        $mailerId = $request->mailerId;
+
+        MailerList::where('id', $mailerId)->update(['status' => '1']);
+
+        return $mailerId;
+    }
+
+    public function inactivate_mailer(Request $request){
+        $mailerId = $request->mailerId;
+
+        MailerList::where('id', $mailerId)->update(['status' => '0']);
+
+        return $mailerId;
+    }
+
+    public function saveMailTy(Request $request){
+        
+        MailerList::where('id', '6')->update(['message' => $request->text]);
+
+        return 'true';
+        
+    }
+
+    public function saveMailAa(Request $request){
+        
+        MailerList::where('id', '1')->update(['message' => $request->text]);
+
+        return 'true';
+        
+    }
+
+    public function saveMailAav(Request $request){
+        
+        MailerList::where('id', '2')->update(['message' => $request->text]);
+
+        return 'true';
+        
+    }
+    public function saveMailAD(Request $request){
+        
+        MailerList::where('id', '5')->update(['message' => $request->text]);
+
+        return 'true';
+        
+    }
+    public function saveMailADd(Request $request){
+        
+        MailerList::where('id', '3')->update(['message' => $request->text]);
+
+        return 'true';
+        
+    }
+    public function saveMailAR(Request $request){
+        
+        MailerList::where('id', '4')->update(['message' => $request->text]);
+
+        return 'true';
+        
+    }
+
+    
 }

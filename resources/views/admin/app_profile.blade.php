@@ -41,6 +41,11 @@
 </div>
 
 <div class="container">
+    @if($completed == "true")
+        <div class="row">
+            <a href="/storage/leases/lease_empty.pdf" download><button type="button" class="lease">Create Lease</button></a>
+        </div>
+    @endif
     <div class="appRow">
         <div class="cards">
 
@@ -184,7 +189,7 @@
                                     @endif
                                 </div>
                                 <div class="banner">
-                                    @if($file["status"] === "Uploaded" || $file["status"] === "Approved")
+                                    @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
                                         <button type="button" onClick="
                                             openModal(
                                                 '{{$file['field']}}', 
@@ -203,7 +208,7 @@
                                 <div class="status">
                                     @if($file["status"] === "Uploaded" )
                                         <div class="button action"></div>
-                                    @elseif($file["status"] === "Approved")
+                                    @elseif($file["status"] === "XApproved")
                                         <div class="button approved"></div>
                                     @elseif($file["status"] === "Rejected" || $file["status"] === "")
                                         <div class="button rejected"></div>
@@ -235,11 +240,14 @@
         <small>Uploaded by <span id="uploadedBy"></span> at <span id="uploadedTime"></span> on the <span id="uploadedDate"></span></small>
         <br/>
         <input type="hidden" id="FileIdForApproval">
+        <input type="text" id="actionUserName" placeholder="Name">
         <div class="flex" style="margin-top:35px;" id="buttonSection">
             <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
             <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
             <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
             <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+            
+            
         </div>
 
         <div class="pdfSection"></div>
@@ -340,6 +348,7 @@
                 file: $("#FileIdForApproval").val(), 
                 type: type,
                 reason: $("#rejectReason").val(), 
+                userName: $("#actionUserName").val(),
             },
 
             success: function (data) {

@@ -628,6 +628,7 @@ body {
     border-radius: 7px !important;
     font-size: 14px;
     font-weight: 400;
+    opacity: 1 !important;
 }
 
 #msform .action-button-previous {
@@ -642,6 +643,21 @@ body {
     font-size: 14px;
     font-weight: 400;
     border: 1px solid #c3c3c3 !important;
+    opacity: 1 !important;
+}
+
+.yellowBack{
+    background-color: #f1cc3e;
+}
+.redBack{
+    background-color: #e74f26;
+}
+.greenBack{
+    background-color: #50b63a;
+}
+
+.tox .tox-edit-area__iframe{
+    background-color:transparent !important;
 }
 
 .PaymentLabel {
@@ -1953,4 +1969,57 @@ button:disabled {
     height: 25px;
     border-radius: 50%;
 }
+.row .lease{
+    width:100%;
+    background-color:#ffec5c;
+    padding: 10px;
+    border: none;
+    border-radius: 9px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.row .lease:hover {
+    background-color:#e5b219 ;
+}
+
+.inactiveBtn{
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #e74f26;
+    cursor: pointer;
+}
+
+.activeBtn{
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #1cb915  !important;
+    cursor: pointer;
+}
+
+input:read-only {
+    opacity: 0.5;
+  }
+
+  .detailsChange{
+    float:right; padding:10px; background-color:red; color:#fff; border:none; border-radius:10px; cursor:pointer; margin:20px;
+  }
+
+.saveTxtMailTy, .saveTxtMailAa, .saveTxtMailAav, .saveTxtMailAD, .saveTxtMailADd, .saveTxtMailAR{
+    border:none;
+    background-color:green;
+    color:#fff;
+    padding:10px;
+    margin:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+
+
 /*# sourceMappingURL=styles.css.map */
