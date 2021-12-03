@@ -29,65 +29,63 @@
 </head>
 <body>
 
-    
-
-        <div id="fullNavbar">
-            <div class="topnav" id="myTopnav">
-            <a class="active" href="/dashboard">Dashboard</a>
-                <a href="/applications">Aplications</a>
-                <a href="/leases">Leases</a>
-                <a href="/invoices">Invoices</a>
-                <a href="/mailing">Mailing</a>
-                <a href="/users">Users</a>
-                <a href="/logout">Log out</a>
-                <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-                    <i class="fa fa-bars"></i>
-                </a>
-            </div>
+    <div id="fullNavbar">
+        <div class="topnav" id="myTopnav">
+        <a class="active" href="/dashboard">Dashboard</a>
+            <a href="/applications">Aplications</a>
+            <a href="/leases">Leases</a>
+            <a href="/invoices">Invoices</a>
+            <a href="/mailing">Mailing</a>
+            <a href="/users">Users</a>
+            <a href="/logout">Log out</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <i class="fa fa-bars"></i>
+            </a>
         </div>
+    </div>
 
-        <!-- <div class="yellowGradientSmall" style="z-index:1;"> -->
+    <!-- <div class="yellowGradientSmall" style="z-index:1;"> -->
 
-        @if (isset($appProfile) && $appProfile === "true")
-            <div class="yellowGradientSmall" id="bookingHeaderYellow" style="z-index:1; border-bottom-right-radius:0px;">
-        @else
-            <div class="yellowGradientSmall" style="z-index:1;">
-        @endif
+    @if (isset($appProfile) && $appProfile === "true")
+        <div class="yellowGradientSmall" id="bookingHeaderYellow" style="z-index:1; border-bottom-right-radius:0px;">
+    @else
+        <div class="yellowGradientSmall" style="z-index:1;">
+    @endif
 
-            <div class="container">
+        <div class="container">
 
-                <nav class="navBar">
-                    <div class="leftMenu">
-                        <img src="/images/logo/Campus_Africa_Logo.png" alt="Campus Africa Logo" width="92" height="91">
-                    </div>
-
-                    <div class="rightMenu">
-                        <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
-                    </div>
-                </nav>
-
-                <div class="loginHeader">
-                    @if (isset($appProfile) && $appProfile === "true")
-                        <h1 class="bookingSub">
-                            Application Profile 
-                            @if($user[0]['userInfo']['bookingStatus'] == "Approved" || $user[0]['userInfo']['bookingStatus'] == "Rejected")
-                                : {{$user[0]['userInfo']['bookingStatus']}}
-                            @endif
-                        </h1>
-                    @endif
-                    <h1 class="booking">{{$headerTitle}}</h1>
-
-                    @if (isset($appProfile) && $appProfile === "true")
-                        @if($user[0]['userInfo']['bookingStatus'] !== "Approved" && $user[0]['userInfo']['bookingStatus'] !== "Rejected")
-                            <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
-                            <br/><br/><br/>
-                            <button type="button" class="appBtn" id="rejectApplication">REJECT APPLICATION AND SEND NOTIFICATION</button>                          
-                        @endif
-                    @endif
+            <nav class="navBar">
+                <div class="leftMenu">
+                    <img src="/images/logo/Campus_Africa_Logo.png" alt="Campus Africa Logo" width="92" height="91">
                 </div>
-            
+
+                <div class="rightMenu">
+                    <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
+                </div>
+            </nav>
+
+            <div class="loginHeader">
+                @if (isset($appProfile) && $appProfile === "true")
+                    <h1 class="bookingSub">
+                        Application Profile 
+                        @if($user[0]['userInfo']['bookingStatus'] == "Approved" || $user[0]['userInfo']['bookingStatus'] == "Rejected")
+                            : {{$user[0]['userInfo']['bookingStatus']}}
+                        @endif
+                    </h1>
+                @endif
+                <h1 class="booking">{{$headerTitle}}</h1>
+
+                @if (isset($appProfile) && $appProfile === "true")
+                    @if($user[0]['userInfo']['bookingStatus'] !== "Approved" && $user[0]['userInfo']['bookingStatus'] !== "Rejected")
+                        <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
+                        <br/><br/><br/>
+                        <button type="button" class="appBtn" id="rejectApplication">REJECT APPLICATION AND SEND NOTIFICATION</button>                          
+                    @endif
+                @endif
             </div>
+        
         </div>
+    </div>
 
         
 
@@ -98,87 +96,99 @@
             @yield('content')
         </main>
     </div>
-</body>
-<footer class="footer">
-    <div class="footerBanner">
-        <div class="container">
-            <div class="col-3">
-                <h2 class="footerHeader">
-                    Campus Africa
-                </h2>
-                <p class="footerSubHeader">
-                    If your looking for a place<br/> of learning and fun to grow<br/> and express yourself, then<br/> Campus Africa is your home.
-                </p>
-            </div>
 
-            <div class="col-3" style="padding-left:6%; width:19%">
-                <p class="linkHeader">Home</p>
-                <p class="link">Residences<br/>
-                Campus Africa Life<br/>
-                FAQ<br/>
-                What's Hot</p>
-            </div>
+    <footer class="footer">
+        <div class="footerBanner">
+            <div class="container">
+                <div class="col-3">
+                    <h2 class="footerHeader">
+                        Campus Africa
+                    </h2>
+                    <p class="footerSubHeader">
+                        If your looking for a place<br/> of learning and fun to grow<br/> and express yourself, then<br/> Campus Africa is your home.
+                    </p>
+                </div>
 
-            <div class="col-3">
-            <p class="linkHeader">Contact Us</p>
-            <p class="link">info@campusafrica.co.za<br/>
-            010 109 1700</p>
-            </div>
+                <div class="col-3" style="padding-left:6%; width:19%">
+                    <p class="linkHeader">Home</p>
+                    <p class="link">Residences<br/>
+                    Campus Africa Life<br/>
+                    FAQ<br/>
+                    What's Hot</p>
+                </div>
 
-            <div class="col-3">
-            <p class="linkHeader">Follow Us</p>
-            <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
-            <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
-            <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
-            <br/>
-            <img src="/images/footer/email.png" alt="Email" width="43" height="43">
-            <img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43">
+                <div class="col-3">
+                <p class="linkHeader">Contact Us</p>
+                <p class="link">info@campusafrica.co.za<br/>
+                010 109 1700</p>
+                </div>
+
+                <div class="col-3">
+                <p class="linkHeader">Follow Us</p>
+                <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
+                <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
+                <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
+                <br/>
+                <img src="/images/footer/email.png" alt="Email" width="43" height="43">
+                <img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43">
+                </div>
             </div>
         </div>
-    </div>
-    <div class="footerClearfix"></div>
-    <div class="container">
-        <br/>
-        <p class="footerRights">Campus Africa - All Right Reserved</p>
-    </div>
-</footer>
+        <div class="footerClearfix"></div>
+        <div class="container">
+            <br/>
+            <p class="footerRights">Campus Africa - All Right Reserved</p>
+        </div>
+    </footer>
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        function approveApplication(userId){
+
+            $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+            $.ajax({
+                type: "post",
+                url: "/approve-application",
+                data: {
+                    userId: userId, 
+                },
+
+                success: function (data) {
+                    window.location.reload();
+                },
+            });
+        }
+
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+                document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+            } else {
+                x.className = "topnav";
+                document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+            }
+        }        
+    </script>
+
+    <script>
+        (function (d, t, g) {
+            var ph    = d.createElement(t), s = d.getElementsByTagName(t)[0];
+            ph.type   = 'text/javascript';
+            ph.async   = true;
+            ph.charset = 'UTF-8';
+            ph.src     = g + '&v=' + (new Date()).getTime();
+            s.parentNode.insertBefore(ph, s);
+        })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
+    </script>
+</body>
+
 </html>
 
-<script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
 
-    function approveApplication(userId){
-
-        $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        $.ajax({
-            type: "post",
-            url: "/approve-application",
-            data: {
-                userId: userId, 
-            },
-
-            success: function (data) {
-                window.location.reload();
-            },
-        });
-    }
-
-    function myFunction() {
-    var x = document.getElementById("myTopnav");
-    if (x.className === "topnav") {
-        x.className += " responsive";
-        document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
-    } else {
-        x.className = "topnav";
-        document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
-    }
-    }
-
-    
-    
-</script>
