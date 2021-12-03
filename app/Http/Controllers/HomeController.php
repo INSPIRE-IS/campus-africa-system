@@ -501,5 +501,184 @@ class HomeController extends Controller
         
     }
 
+    public function users(Request $request){
+
+        $systemUsers = User::where("userRole", "!=", "0")->get();
+        $students = User::where("userRole", "0")->get();
+
+        return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students]);
+    }
+
+    public function user_edit(Request $request, $userId){
+        
+        $user = User::where('id', $userId)->first();
+        
+
+        return view('admin.userEdit', ["headerTitle" => "User Edit", "user" => $user]);
+    }
+
+    public function edit_admin(Request $request){
+        
+
+        User::where('id', $request->userUid)->update([
+            "userFirstName" => $request->firstName,
+            "userLastname" => $request->lastName,
+            "userTitle" => $request->title,
+            "userDob" => $request->dob,
+            "userCell" => $request->cell_no,
+            "userEmail" => $request->email,
+            "userRole" => $request->userRole,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function student_edit(Request $request, $studentId){
+        $user = User::where('id', $studentId)->first();
+
+        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user]);
+    }
+
+    public function edit_student(Request $request){
+
+        User::where('id', $request->userUid)->update([
+            'userFirstName' => $request->firstName,
+            'userLastname' => $request->lastName,
+            'userTitle' => $request->title,
+            'userDob' => $request->dob,
+            'userCell' => $request->cell_no,
+            'userEmail' => $request->email,
+            'userId' => $request->idNumber,
+            'userNationality' => $request->nationality,
+            'userPassport' => $request->passportNo,
+            'institutionStudy' => $request->institStudy,
+            'studentNo' => $request->studNumber,
+            'institutionCampus' => $request->institCampus,
+            'faculty' => $request->faculty,
+            'year' => $request->year,
+            'sponFirstName' => $request->pFirstName,
+            'sponLastName' => $request->pLastName,
+            'sponCell' => $request->pCell_no,
+            'sponEmail' => $request->pEmail,
+            'sponId' => $request->pIdNumber,
+            'burCompanyName' => $request->bCompanyName,
+            'burRegNo' => $request->bRegistrationNo,
+            'burContactPerson' => $request->bContactPerson,
+            'burContactNo' => $request->bContactNumber,
+            'burEmail' => $request->bEmail,
+            'kinFirstName' => $request->kFirstName,
+            'kinLastName' => $request->kLastName,
+            'kinTitle' => $request->kTitle,
+            'kinId' => $request->kIdNumber,
+            'kinAddressStr' => $request->kAddress1,
+            'kinAddressSuburb' => $request->kAddress2,
+            'kinAddressCity' => $request->kAddressCity,
+            'kinAddressPost' => $request->kAddressPostal,
+            'kinRelationship' => $request->kRelationship,
+            'kinTelNo' => $request->kTeleNo,
+            'kinCellNo' => $request->kCellNo,
+            'kinWorkNo' => $request->kWorkNo,
+            'kinEmail' => $request->kEmail,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function student_upload(Request $request, $studentId){
+        $user = User::where('id', $studentId)->first();
+
+        $allApprovedFiles = UserFiles::where("userUid", $studentId)->where('status', 'Approved')->get();
+        $allPendingFiles = UserFiles::where("userUid", $studentId)->where('status', 'Uploaded')->get();
+        $allRejectedFiles = UserFiles::where("userUid", $studentId)->where('status', 'Rejected')->get();
+
+        $allFiles = UserFiles::where("userUid", $studentId)->get();
+
+        $uploaded = [];
+        $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+
+        foreach($allFiles as $file){
+            array_push($uploaded, $file->fileId);
+        }
+
+        $outstanding = array_diff($all, $uploaded);
+
+        return view('admin.studentUpload', ["headerTitle" => "Student File Upload", "user" => $user, "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
+    }
+
+    public function adminFileUpload(Request $request){
+        $userUid = $request->userUid;
+        $fileType = $request->fileType;
+
+        $fileUrlBack = "";
+
+        if ($request->hasFile('file')) {
+            
+            if ($request->file('file')->isValid()) {
+
+                $filenameWithExt  = $request->file('file')->getClientOriginalName();
+                $fileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                $extension = $request->file('file')->extension();
+                $fileNameToStore = $fileName. '_'. time().'.'.$extension;
+
+                $request->file('file')->storeAs('public/files/'.$userUid.'/', $fileNameToStore);
+
+                $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
+                $fileUrlBack = $fileUrl;
+
+                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
+
+                if($fileType == "copyID"){
+                    $typeName = "Copy of ID Document";
+                }elseif($fileType == "studentCard"){
+                    $typeName = "Copy of Student Card";
+                }elseif($fileType == "bankStatement"){
+                    $typeName = "Bank Statements";
+                }elseif($fileType == "proofRegistration"){
+                    $typeName = "Proof of Registration";
+                }elseif($fileType == "proof_of_payment"){
+                    $typeName = "Proof of Payment";
+                }elseif($fileType == "moveIn"){
+                    $typeName = "Lease";
+                }
+                
+
+                if(!$hasFile){
+                    UserFiles::create([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => 'Uploaded',
+                        'uploaded_by' => $request->adminName,
+                    ]);
+
+                    $text = "Uploaded ".$typeName." for review";
+                }else{
+                    UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => 'Uploaded',
+                        'uploaded_by' => $request->adminName,
+                    ]);
+                    $text = "Re-uploaded ".$typeName." for review";
+                }
+    
+                ActionList::create([
+                    "userUid" => $userUid,
+                    "action" => $text,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => $request->adminName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+
+            }
+        }
+
+
+        return ["done", $fileUrlBack];
+    }
+
     
 }

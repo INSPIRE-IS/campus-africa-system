@@ -64,3 +64,11 @@ Route::post("/saveMailAav", [HomeController::class, 'saveMailAav']);
 Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
 Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
 Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
+
+Route::get("/users", [HomeController::class, 'users']);
+Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);
+Route::post("/update-admin", [HomeController::class, 'edit_admin']);
+Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
+Route::post("/update-student", [HomeController::class, 'edit_student']);
+Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
+Route::post('/move-in-form-admin', [HomeController::class, 'adminFileUpload']);
