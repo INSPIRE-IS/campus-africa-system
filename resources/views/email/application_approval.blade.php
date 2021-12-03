@@ -9,10 +9,10 @@
             <tr width="100%" style="background-color: #50b63a;">
                 <td colspan="2" style="width: 100%; padding: 30px 6% 30px 6%; line-height: 22px">   
                 
-                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Application #00000</p>
+                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Application [application_number]</p>
                     <h1 style="color: #fff; font-size: 40px; font-weight: 700; line-height: 45px;">We are excited to inform you that <br/>you application has been<br/> successful!</h1>
                     <br/>
-                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Hi John, we’re excited to inform you that your application has been <br/>successful!</p>
+                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Hi [name], we’re excited to inform you that your application has been <br/>successful!</p>
 
                     <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Your unique username and password are below, please do not <br/>share this with anyone!</p>
 
@@ -20,14 +20,14 @@
 
                     <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">To complete your booking, you will need to upload the <br/>following documents:</p>
 
-                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">1) Document 1 <br/>2) Document 2<br/>3) Document 3</p>
+                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">[document_list]</p>
                     
                     
                     
                     <br/>
                     <button type="button" style="color:#fff; background-color: #e74f26; border-radius: 7px; padding:10px; border:none; width:300px ">LOGIN AND UPLOAD DOCUMENTS</button>
 
-                    <h3 style="color: #fff; font-size: 15px; font-weight: 400; line-height: 20px;">If you have any questions, please reply to this email or contact us at <br/><a href="mailto:hello@campusafrica.co.za" style="color:inherit; text-decoration:none">hello@campusafrica.co.za</a></h3>
+                    <h3 style="color: #fff; font-size: 15px; font-weight: 400; line-height: 20px;">If you have any questions, please reply to this email or contact us at <br/>hello@campusafrica.co.za</h3>
                 </td>
             </tr>
         </table>

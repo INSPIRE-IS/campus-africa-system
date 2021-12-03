@@ -651,6 +651,20 @@ body {
     }
 }
 
+.yellowBack{
+    background-color: #f1cc3e;
+}
+.redBack{
+    background-color: #e74f26;
+}
+.greenBack{
+    background-color: #50b63a;
+}
+
+.tox .tox-edit-area__iframe{
+    background-color:transparent !important;
+}
+
 #msform {
     .action-button {
         text-transform: uppercase;
@@ -660,6 +674,7 @@ body {
         border-radius: 7px !important;
         font-size: 14px;
         font-weight: 400;
+        opacity: 1 !important;
     }
 
     .action-button-previous {
@@ -674,6 +689,7 @@ body {
         font-size: 14px;
         font-weight: 400;
         border: 1px solid #c3c3c3 !important;
+        opacity: 1 !important;
     }
 }
 
@@ -1182,6 +1198,14 @@ button:disabled {
     opacity: 0.5;
 }
 
+input:read-only {
+    opacity: 0.5;
+  }
+
+  .detailsChange{
+    float:right; padding:10px; background-color:red; color:#fff; border:none; border-radius:10px; cursor:pointer; margin:20px;
+  }
+
 .buttonSection {
     .download {
         color: #000000;
@@ -1672,6 +1696,51 @@ button:disabled {
     width: 25px;
     height: 25px;
     border-radius: 50%;
+}
+
+.inactiveBtn{
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #e74f26;
+    cursor: pointer;
+}
+
+.activeBtn{
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #94ff64 !important;
+    cursor: pointer;
+}
+
+.saveTxtMailTy, .saveTxtMailAa, .saveTxtMailAav, .saveTxtMailAD, .saveTxtMailADd, .saveTxtMailAR{
+    border:none;
+    background-color:green;
+    color:#fff;
+    padding:10px;
+    margin:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.row{
+    .lease{
+        width:100%;
+        background-color:#ffec5c;
+        padding: 10px;
+        border: none;
+        border-radius: 9px;
+        margin-top: 20px;
+        cursor: pointer;
+        font-size: 20px;
+
+        &:hover{
+            background-color:#e5b219 ;
+        }
+    }
 }
 
 @media only screen and (max-width: 1485px) {

@@ -54,3 +54,21 @@ Route::get('/my-documents', [HomeController::class, 'documents']);
 Route::get('/leases', [HomeController::class, 'leases']);
 Route::get('/mailing', [HomeController::class, 'mailing']);
 Route::get('/invoices', [HomeController::class, 'invoices']);
+
+Route::post('/activate_mailer', [HomeController::class, 'activate_mailer']);
+Route::post('/inactivate_mailer', [HomeController::class, 'inactivate_mailer']);
+
+Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
+Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
+Route::post("/saveMailAav", [HomeController::class, 'saveMailAav']);
+Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
+Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
+Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
+
+Route::get("/users", [HomeController::class, 'users']);
+Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);
+Route::post("/update-admin", [HomeController::class, 'edit_admin']);
+Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
+Route::post("/update-student", [HomeController::class, 'edit_student']);
+Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
+Route::post('/move-in-form-admin', [HomeController::class, 'adminFileUpload']);
