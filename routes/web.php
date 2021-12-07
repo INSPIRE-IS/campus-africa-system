@@ -65,7 +65,7 @@ Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
 Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
 Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
 
-Route::get("/users", [HomeController::class, 'users']);
+Route::get("/users", [HomeController::class, 'users'])->name('users');
 Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);
 Route::post("/update-admin", [HomeController::class, 'edit_admin']);
 Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
@@ -78,3 +78,10 @@ Route::get('/lookups/new', [HomeController::class, 'add_lookups']);
 Route::post('/new-lookup', [HomeController::class, 'new_lookups']);
 Route::get('/lookups/edit/{lookupId}', [HomeController::class, 'edit_lookups']);
 Route::post('/save-lookup', [HomeController::class, 'save_lookups']);
+
+Route::get('/new/student', [HomeController::class, 'new_student']);
+Route::post("/add-student", [HomeController::class, 'add_student']);
+Route::get('/new/admin', [HomeController::class, 'new_admin']);
+Route::post("/add-admin", [HomeController::class, 'add_admin']);
+
+Route::post("/delete/lookup", [HomeController::class, 'delete_lookup']);

@@ -538,7 +538,6 @@ body {
                 color: #21232b;
                 font-size: 33px;
                 font-weight: 400;
-                margin-top: 35%;
             }
             .adminOutstanding {
                 color: #1cb915;
@@ -575,6 +574,7 @@ body {
                 border-radius: 7px;
                 margin-top: 10px;
                 width: 100%;
+                cursor: pointer;
             }
 
             .small {
@@ -2401,4 +2401,9 @@ input:read-only {
             padding-bottom: 85px;
         }
     }
+}
+
+.dashCard {
+    width: 23% !important;
+    height: 200px !important;
 }

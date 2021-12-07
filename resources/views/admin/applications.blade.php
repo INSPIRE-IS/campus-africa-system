@@ -8,17 +8,23 @@
         <div class="searchField">
         <label></label><br/>
             <select name="property">
-                <option value="Property 1">Property 1</option>
-                <option value="Property 2">Property 2</option>
-                <option value="Property 3">Property 3</option>
+                <option value="Property" selected disabled>Select a proprty</option>
+                <option value="Braamlofts">Braamlofts</option>
+                <option value="80 Jorissen">80 Jorissen</option>
+                <option value="49 Jorissen">49 Jorissen</option>
+                <option value="Dunvista Mansions">Dunvista Mansions</option>
+                <option value="Wynton Joy">Wynton Joy</option>
+                <option value="126 Siemert">126 Siemert</option>
+                <option value="YMCA">YMCA</option>
             </select>
         </div>
         <div class="searchField">
         <label></label><br/>
-            <select name="property">
-                <option value="Property 1">Property 1</option>
-                <option value="Property 2">Property 2</option>
-                <option value="Property 3">Property 3</option>
+            <select name="room_type">
+                <option value="Single Room" selected disabled>Select a Room Type</option>
+                <option value="Single Room">Single Room</option>
+                <option value="2 Sharing">2 Sharing</option>
+                <option value="3 Sharing">3 sharing</option>
             </select>
         </div>
         <div class="searchField">
@@ -28,17 +34,20 @@
 
         <div class="searchField">
         <label></label><br/>
-            <select name="applicationStatus">
-                <option value="all">All Applications</option>
-                <option value="Uploaded">Applied</option>
-                <option value="Accepted">Approved</option>
-                <option value="Rejected">Rejected</option>
+            <select name="student_type">
+                <option value="Single Room" selected disabled>Select a Student Type</option>
+                <option value="NSFAS">NSFAS</option>
+                <option value="Bursary">Bursary</option>
+                <option value="Cash / Direct">Cash / Direct</option>
             </select>
         </div>
         <div class="searchField">
-        <label>Date</label><br/>
-            <select name="bookingStatus">
-                <option value="all">All Bookings</option>
+        <label></label><br/>
+            <select name="applicationStatus">
+                <option value="all" selected disabled>Select a Booking Status</option>
+                <option value="Valid">Valid</option>
+                <option value="Pending">Pending</option>
+                <option value="Invalid">Invalid</option>
             </select>
         </div>
         <div class="searchField">

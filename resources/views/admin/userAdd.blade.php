@@ -1,0 +1,65 @@
+@extends('layouts.admin')
+
+@section('content')
+
+<div class="container form-card">
+<form action="/add-admin" method="post">
+    @csrf
+        <br/>
+        <br/>
+
+        <div class="form-field">
+            <label>First Name </label>
+            <input type="text" name="firstName" id="firstName" required>
+            <input type="hidden" name="userUid" id="userUid" required >
+        </div>
+
+        <div class="form-field">
+            <label>Last Name</label>
+            <input type="text" name="lastName" id="lastName"  >
+        </div>
+
+        <div class="form-field">
+            <label>Title</label>
+            <select name="title" id='title'>
+                <option value="Mr" >Mr</option>
+                <option value="Ms" >Ms</option>
+                <option value="Mrs" >Mrs</option>
+                <option value="Miss" >Miss</option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Date of Birth</label>
+            <input type="date" name="dob" id="dob"  >
+        </div>
+
+        <div class="form-field">
+            <label>Cellphone Number</label>
+            <input type="text" name="cell_no" id="cell_no"  >
+        </div>
+
+        <div class="form-field">
+            <label>Password</label>
+            <input type="password" name="password" id="password"  >
+        </div>
+
+        <div class="form-field">
+            <label>Email Address *</label>
+            <input type="email" name="email" id="email" required  >
+        </div>
+
+        <div class="form-field">
+            <label>User Role</label>
+            <select name="userRole" id='userRole'>
+                <option value="1" >Super Admin</option>
+                <option value="2" >Admin</option>
+                <option value="3" >Consultant</option>
+            </select>
+        </div>
+
+        <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
+    </form>
+</div>
+
+@endsection

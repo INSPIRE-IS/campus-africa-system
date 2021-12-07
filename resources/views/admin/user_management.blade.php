@@ -8,6 +8,8 @@
 <div class="container">
     <br/>
     <h1>System Users</h1>
+    <br/>
+    <a href="/new/admin"><button type="button" class="inactiveBtn">Add New System User</button></a>
     <br/><br/>
 
     <table id="admin_table" class="display">
@@ -36,6 +38,8 @@
     <br/><br/><br/><br/>
 
     <h1>Students</h1>
+    <br/>
+    <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
     <br/><br/>
 
     <table id="student_table" class="display">

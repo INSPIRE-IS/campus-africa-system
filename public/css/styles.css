@@ -514,7 +514,6 @@ body {
     color: #21232b;
     font-size: 33px;
     font-weight: 400;
-    margin-top: 35%;
 }
 .cards .whiteCard .cardForm .adminOutstanding {
     color: #1cb915;
@@ -548,6 +547,7 @@ body {
     border-radius: 7px;
     margin-top: 10px;
     width: 100%;
+    cursor: pointer;
 }
 .cards .whiteCard .cardForm .small {
     width: 203px;
@@ -2180,6 +2180,11 @@ input:read-only {
     margin: 10px;
     border-radius: 10px;
     cursor: pointer;
+}
+
+.dashCard {
+    width: 23% !important;
+    height: 200px !important;
 }
 
 /*# sourceMappingURL=styles.css.map */

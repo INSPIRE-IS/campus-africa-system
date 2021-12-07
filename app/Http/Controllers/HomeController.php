@@ -10,6 +10,7 @@ use Mail;
 use App\Models\ActionList;
 use App\models\MailerList;
 use App\models\Lookups;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -166,7 +167,7 @@ class HomeController extends Controller
         
         if(Auth::user()->userRole == "1"){
 
-            $allUsersData = User::with('files')->get();
+            $allUsersData = User::with('files')->where('userRole', '0')->get();
             $userData = [];
 
             foreach($allUsersData as $user){
@@ -372,12 +373,12 @@ class HomeController extends Controller
         $data['roomNo'] = $user->roomNo;
         $data['bookingRef'] = $user->bookingRef;
 
-        Mail::send('email.application_approved', $data, function($message) use ($data) {
-            $message->to($data['email'], $data['name'])->subject
-                ('Thank you Application');
-            $message->cc('test@whitehart.co.za','Name');
-            $message->from('test@test.com','test@test.com');
-        });
+        // Mail::send('email.application_approved', $data, function($message) use ($data) {
+        //     $message->to($data['email'], $data['name'])->subject
+        //         ('Thank you Application');
+        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->from('test@test.com','test@test.com');
+        // });
 
         User::where('id', $userId)->update(['bookingStatus' => "Approved"]);
 
@@ -722,6 +723,91 @@ class HomeController extends Controller
 
         return redirect()->route('lookups');
     }
+
+    public function new_student(Request $request){
+
+        $lookup = Lookups::get();
+        
+        return view('admin.new_student', ["headerTitle" => "Add New Student", "lookups" => $lookup]);
+    }
+
+    public function add_student(Request $request){
+        User::create([
+            'name' => $request->firstName,
+            'userFirstName' => $request->firstName,
+            'userLastname' => $request->lastName,
+            'userTitle' => $request->title,
+            'userDob' => $request->dob,
+            'userCell' => $request->cell_no,
+            'userEmail' => $request->email,
+            'email' => $request->email,
+            'password' => Hash::make("!Placeholder#"),
+            'userId' => $request->idNumber,
+            'userNationality' => $request->nationality,
+            'userPassport' => $request->passportNo,
+            'institutionStudy' => $request->institStudy,
+            'studentNo' => $request->studNumber,
+            'institutionCampus' => $request->institCampus,
+            'faculty' => $request->faculty,
+            'year' => $request->year,
+            'sponFirstName' => $request->pFirstName,
+            'sponLastName' => $request->pLastName,
+            'sponCell' => $request->pCell_no,
+            'sponEmail' => $request->pEmail,
+            'sponId' => $request->pIdNumber,
+            'burCompanyName' => $request->bCompanyName,
+            'burRegNo' => $request->bRegistrationNo,
+            'burContactPerson' => $request->bContactPerson,
+            'burContactNo' => $request->bContactNumber,
+            'burEmail' => $request->bEmail,
+            'kinFirstName' => $request->kFirstName,
+            'kinLastName' => $request->kLastName,
+            'kinTitle' => $request->kTitle,
+            'kinId' => $request->kIdNumber,
+            'kinAddressStr' => $request->kAddress1,
+            'kinAddressSuburb' => $request->kAddress2,
+            'kinAddressCity' => $request->kAddressCity,
+            'kinAddressPost' => $request->kAddressPostal,
+            'kinRelationship' => $request->kRelationship,
+            'kinTelNo' => $request->kTeleNo,
+            'kinCellNo' => $request->kCellNo,
+            'kinWorkNo' => $request->kWorkNo,
+            'kinEmail' => $request->kEmail,
+        ]);
+
+        return redirect()->route('users');
+    }
+
+    public function new_admin(Request $request){
+
+        return view('admin.userAdd', ["headerTitle" => "Add New System User"]);
+    }
+
+    public function add_admin(Request $request){
+        User::create([
+            "name" => $request->firstName,
+            "userFirstName" => $request->firstName,
+            "userLastname" => $request->lastName,
+            "userTitle" => $request->title,
+            "userDob" => $request->dob,
+            "userCell" => $request->cell_no,
+            "userEmail" => $request->email,
+            "email" => $request->email,
+            "password" => Hash::make($request->password),
+            "userRole" => $request->userRole,
+        ]);
+
+        return redirect()->route('users');
+    }
+
+    public function delete_lookup(Request $request){
+
+        Lookups::where('id', $request->lookupId)->delete();
+
+        return 'true';
+    }
+
+    
 
     
 }
