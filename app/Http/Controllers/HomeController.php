@@ -8,8 +8,8 @@ use App\Models\UserFiles;
 use Auth;
 use Mail;
 use App\Models\ActionList;
-use App\models\MailerList;
-use App\models\Lookups;
+use App\Models\MailerList;
+use App\Models\Lookups;
 use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
