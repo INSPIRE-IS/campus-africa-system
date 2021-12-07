@@ -59,10 +59,10 @@
                     {{$user[0]['userInfo']['userId']}}<br/>
                     {{$user[0]['userInfo']['userNationality']}}<br/>
                     {{$user[0]['userInfo']['userPassport']}}<br/>
-                    {{$user[0]['userInfo']['institutionStudy']}}<br/>
+                    @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['institutionStudy']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['studentNo']}}<br/>
-                    {{$user[0]['userInfo']['institutionCampus']}}<br/>
-                    {{$user[0]['userInfo']['faculty']}}<br/>
+                    @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['institutionCampus']) {{$lookup->lookup_name}} @endif @endforeach<br/>
+                    @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['faculty']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['year']}}
                 </p>
             </div>

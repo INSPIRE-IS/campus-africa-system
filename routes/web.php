@@ -72,3 +72,9 @@ Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit'])
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
 Route::post('/move-in-form-admin', [HomeController::class, 'adminFileUpload']);
+
+Route::get('/lookups', [HomeController::class, 'lookups'])->name('lookups');
+Route::get('/lookups/new', [HomeController::class, 'add_lookups']);
+Route::post('/new-lookup', [HomeController::class, 'new_lookups']);
+Route::get('/lookups/edit/{lookupId}', [HomeController::class, 'edit_lookups']);
+Route::post('/save-lookup', [HomeController::class, 'save_lookups']);

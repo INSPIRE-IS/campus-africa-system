@@ -2,6 +2,7 @@
 
 @section('content')
 
+
 <div class="yellowGradient">
     <div class="container">
 
@@ -55,7 +56,7 @@
                         </span>
                     @enderror
                     <button type="submit" class="submitButton" value="Login">Login</button>
-                    <p class="small">Forgotten your password? Click here</p>
+                    <p class="small">Forgotten your password? <a href="/password/reset" style="color:inherit">Click here</a></p>
                 </form>
             </div>
         </div>

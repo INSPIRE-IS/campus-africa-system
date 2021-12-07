@@ -65,6 +65,11 @@
             <label>Institution of Study</label>
             <select name="institStudy" id="institStudy" disabled>
                 <option value="Choose one" selected disabled>Choose one</option>
+                @foreach($lookups as $lookup)
+                    @if($lookup->group_id == "1")
+                        <option value="{{$lookup->id}}" <?php if(Auth::user()->institutionStudy == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                    @endif
+                @endforeach
             </select>
         </div>
 
@@ -77,6 +82,11 @@
             <label>Insitution Campus</label>
             <select name="institCampus" id="institCampus" disabled>
                 <option value="Choose one" selected diabled>Choose one</option>
+                @foreach($lookups as $lookup)
+                    @if($lookup->group_id == "2")
+                        <option value="{{$lookup->id}}" <?php if(Auth::user()->institutionCampus == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                    @endif
+                @endforeach
             </select>
         </div>
 
@@ -84,6 +94,11 @@
             <label>Faculty</label>
             <select name="faculty" id="faculty" disabled>
                 <option value="Choose one" disabled selected>Choose one</option>
+                @foreach($lookups as $lookup)
+                    @if($lookup->group_id == "3")
+                        <option value="{{$lookup->id}}" <?php if(Auth::user()->faculty == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                    @endif
+                @endforeach
             </select>
         </div>
 
@@ -92,10 +107,6 @@
             <select name="year" id="year" disabled>
                 <option value="2022" <?php if(Auth::user()->year == "2022"){echo "selected";}?>>2022</option>
                 <option value="2021" <?php if(Auth::user()->year == "2021"){echo "selected";}?>>2021</option>
-                <option value="2020" <?php if(Auth::user()->year == "2020"){echo "selected";}?>>2020</option>
-                <option value="2019" <?php if(Auth::user()->year == "2019"){echo "selected";}?>>2019</option>
-                <option value="2018" <?php if(Auth::user()->year == "2018"){echo "selected";}?>>2018</option>
-                <option value="2017" <?php if(Auth::user()->year == "2017"){echo "selected";}?>>2017</option>
             </select>
         </div>
 

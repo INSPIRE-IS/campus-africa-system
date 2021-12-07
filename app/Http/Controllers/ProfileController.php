@@ -6,17 +6,19 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
 use App\Models\ActionList;
+use App\models\Lookups;
 
 class ProfileController extends Controller
 {
     public function index(Request $request){
 
         $user = User::where('id', Auth::user()->id)->first();
+        $lookups = User::get();
 
         if(Auth::user()->userRole == "0"){
-            return view('user.profile', ["headerTitle" => "My Profile", "user" => $user]);
+            return view('user.profile', ["headerTitle" => "My Profile", "user" => $user, "lookups" => $lookups]);
         }else{
-            return view('admin.profile', ["headerTitle" => "My Profile", "user" => $user]);
+            return view('admin.profile', ["headerTitle" => "My Profile", "user" => $user, "lookups" => $lookups]);
         }
     }
 

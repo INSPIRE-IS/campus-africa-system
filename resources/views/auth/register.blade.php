@@ -42,7 +42,7 @@
                                         <li id="upload"></li>
                                         <li id="booking"></li>
                                     </ul> <!-- fieldsets -->
-                                    <fieldset>
+                                    <fieldset id="appStep1">
                                         <div class="form-card">
                                             <h2 class="fs-title">Applicant Details</h2>
                                             <br/>
@@ -78,7 +78,7 @@
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Email Address *</label>
+                                                <label>Email Address * <span id="emailhide" class="hidden" style="color:red">Please enter a valid email address</span></label>
                                                 <input type="email" name="email" id="email" required>
                                             </div>
 
@@ -114,6 +114,11 @@
                                                 <label>Institution of Study</label>
                                                 <select name="institStudy" id="institStudy">
                                                     <option value="Choose one" selected disabled>Choose one</option>
+                                                    @foreach($lookups as $lookup)
+                                                        @if($lookup->group_id == "1")
+                                                            <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
+                                                        @endif
+                                                    @endforeach
                                                 </select>
                                             </div>
 
@@ -126,6 +131,11 @@
                                                 <label>Insitution Campus</label>
                                                 <select name="institCampus" id="institCampus">
                                                     <option value="Choose one" selected diabled>Choose one</option>
+                                                    @foreach($lookups as $lookup)
+                                                        @if($lookup->group_id == "2")
+                                                            <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
+                                                        @endif
+                                                    @endforeach
                                                 </select>
                                             </div>
 
@@ -133,6 +143,11 @@
                                                 <label>Faculty</label>
                                                 <select name="faculty" id="faculty">
                                                     <option value="Choose one" disabled selected>Choose one</option>
+                                                    @foreach($lookups as $lookup)
+                                                        @if($lookup->group_id == "3")
+                                                            <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
+                                                        @endif
+                                                    @endforeach
                                                 </select>
                                             </div>
 
@@ -141,10 +156,6 @@
                                                 <select name="year" id="year">
                                                     <option value="2022">2022</option>
                                                     <option value="2021">2021</option>
-                                                    <option value="2020">2020</option>
-                                                    <option value="2019">2019</option>
-                                                    <option value="2018">2018</option>
-                                                    <option value="2017">2017</option>
                                                 </select>
                                             </div>
                                             
@@ -152,7 +163,7 @@
                                         </div> 
                                         <input type="button" name="next" class="next action-button" value="proceed To Next Step" id="step1" />
                                     </fieldset>
-                                    <fieldset>
+                                    <fieldset id="appStep1">
                                         <div class="form-card">
                                             <h2 class="fs-title">Sponsor / Burser Information</h2>
                                             <h4 class="fs-subtitle">Parent / guardians / sponsor details</h4>
@@ -224,7 +235,7 @@
                                         <input type="button" name="previous" class="previous action-button-previous" id="back2" onClick="PrevStep('back2')" value="Back to Previous Step" />
                                         <input type="button" name="next" class="next action-button" value="Proceed to Next Step" id="step2" />
                                     </fieldset>
-                                    <fieldset>
+                                    <fieldset id="appStep1">
                                         <div class="form-card">
                                             <h2 class="fs-title">Next of Kin</h2>
                                             <br/>
@@ -302,10 +313,10 @@
                                         <input type="button" name="next" class="next action-button" value="Proceed to Next Step" id="step3" />
                                         <!-- <input type="button" name="make_payment" class="next action-button" value="Confirm" /> -->
                                     </fieldset>
-                                    <fieldset>
+                                    <fieldset id="appStep1">
                                         <div class="form-card">
 
-                                            <div class="form-field-app" style="width:100%; text-align:center; display:flex; justify-content: center;">
+                                            <div class="form-field-app" id="applicationType"style="width:100%; text-align:center; display:flex; justify-content: center;">
                                                 <label style="font-size:12px; line-height:38px;">Application Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                                                 <select name="kTitle" style="width:30% !important">
                                                     <option value="Cash">Cash</option>
@@ -315,27 +326,29 @@
                                             <br/><br/>
 
                                             <div>
-                                                <div class="cards">
+                                                <div class="cards" id="registerCards">
                                                     <div class="whiteYellowCard" style="margin-right:30px">
                                                         <h2 class="cardHeader">Booking<br/>Documents</h2>
 
                                                         <div class="cardBody">
-                                                            <div class="uploadSection" id="copyIdCard">
-                                                                <h3 class="uploadName">I.D COPY</h3>
-                                                                <div class="uploadFileSection">
-                                                                <label for="copyID" id="copyIdUpload">
-                                                                    <i class="fas fa-file-upload" ></i>
-                                                                </label>
-                                                                <input type="file" id="copyID" hidden/>
-                                                                <label id="copyIdSucess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
+                                                            <label for="copyID" id="copyIdUpload" style="cursor:pointer">
+                                                                <div class="uploadSection" id="copyIdCard">
+                                                                    <h3 class="uploadName">I.D COPY</h3>
+                                                                    <div class="uploadFileSection">
                                                                     
+                                                                        <i class="fas fa-file-upload" ></i>
+                                                                    
+                                                                    <input type="file" id="copyID" hidden/>
+                                                                    <label id="copyIdSucess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
+                                                                        
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            </label>
 
                                                             <br/>
                                                             
                                                             <div class="uploadSection">
-                                                                <h3 class="uploadName" style="color:#9a9a9a">BOOKING FEE PROOF OF PAYMENT</h3>
+                                                                <h3 class="uploadName" id="bookingFeeUploadTab" style="color:#9a9a9a">BOOKING FEE PROOF OF PAYMENT</h3>
                                                                 <div class="uploadFileSection">
                                                                     <i class="fas fa-file-upload" style="color:rgba(231, 79, 38, 0.5);"></i>
                                                                     <label for="bookingFee" style="cursor: context-menu" class="uploadLabel">NEXT STEP</label>
@@ -351,45 +364,51 @@
                                                         <h2 class="cardHeader" style="height:130px;">Application</h2>
                                                         
                                                         <div class="cardBody">
-                                                            <div class="uploadSection" id="copyStudentCard">
-                                                                <h3 class="uploadName">COPY OF STUDENT CARD</h3>
-                                                                <div class="uploadFileSection">
-                                                                    <label for="studentCard" id="studentCardUpload">
-                                                                        <i class="fas fa-file-upload" ></i>
-                                                                    </label>
-                                                                    <input type="file" id="studentCard" hidden/>
-                                                                    <label id="copyStudCardSucess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
-                                                                    
+                                                            <label for="studentCard" id="studentCardUpload" style="cursor:pointer">
+                                                                <div class="uploadSection" id="copyStudentCard">
+                                                                    <h3 class="uploadName">COPY OF STUDENT CARD</h3>
+                                                                    <div class="uploadFileSection">
+                                                                        
+                                                                            <i class="fas fa-file-upload" ></i>
+                                                                        
+                                                                        <input type="file" id="studentCard" hidden/>
+                                                                        <label id="copyStudCardSucess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
+                                                                        
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            </label>
 
                                                             <br/>
                                                             
-                                                            <div class="uploadSection" id="copyBankStatement">
-                                                                <h3 class="uploadName">3 MONTHS BANK STATEMENTS</h3>
-                                                                <div class="uploadFileSection">
-                                                                    <label for="bankStatement" id="bankStatementUpload">
-                                                                        <i class="fas fa-file-upload" ></i>
-                                                                    </label>
-                                                                    <input type="file" id="bankStatement" hidden/>
-                                                                    <label id="bankStatementSuccess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
-                                                                    
+                                                            <label for="bankStatement" id="bankStatementUpload" style="cursor:pointer">
+                                                                <div class="uploadSection" id="copyBankStatement">
+                                                                    <h3 class="uploadName">3 MONTHS BANK STATEMENTS</h3>
+                                                                    <div class="uploadFileSection">
+                                                                        
+                                                                            <i class="fas fa-file-upload" ></i>
+                                                                        
+                                                                        <input type="file" id="bankStatement" hidden/>
+                                                                        <label id="bankStatementSuccess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
+                                                                        
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            </label>
 
                                                             <br/>
                                                             
-                                                            <div class="uploadSection" id="copyProofRegistration">
-                                                                <h3 class="uploadName">PROOF OF REGISTRATION</h3>
-                                                                <div class="uploadFileSection">
-                                                                    <label for="proofRegistration" id="proofRegistrationUpload">
-                                                                        <i class="fas fa-file-upload" ></i>
-                                                                    </label>
-                                                                    <input type="file" id="proofRegistration" hidden/>
-                                                                    <label id="proofRegistrationSuccess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
-                                                                    
+                                                            <label for="proofRegistration" id="proofRegistrationUpload" style="cursor:pointer">
+                                                                <div class="uploadSection" id="copyProofRegistration">
+                                                                    <h3 class="uploadName">PROOF OF REGISTRATION</h3>
+                                                                    <div class="uploadFileSection">
+                                                                        
+                                                                            <i class="fas fa-file-upload" ></i>
+                                                                        
+                                                                        <input type="file" id="proofRegistration" hidden/>
+                                                                        <label id="proofRegistrationSuccess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
+                                                                        
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            </label>
                                                         </div>
 
                                                     </div>
@@ -398,7 +417,7 @@
                                         </div>
 
                                         <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back4" onClick="PrevStep('back4')" /> 
-                                        <input type="button" name="next" class="next action-button" value="Pay booking fee" id="step4" onClick="NextStep('step4')" />
+                                        <input type="button" name="next" class="next action-button" value="Pay booking fee" id="step4" onClick="NextStep('step4')"  />
 
                                         <div class="clearSpaceLogin"></div>
                                         <div class="clearSpaceLogin"></div>
@@ -408,11 +427,11 @@
                                             <p>Please note that you can upload these documents via your online profile at a later date, however delays may cause you to not get the room you want! Your booking fee is processed in the next step; and you can upload proof of payment immediately or via your profile later.</p>
                                         </div>
                                     </fieldset>
-                                    <fieldset>
+                                    <fieldset id='appStep1'>
                                         <div class="form-card">
                                             
                                             <div class="cards">
-                                                <div class="whiteCard">
+                                                <div class="whiteCard" id="registerPaymentCards">
 
                                                     <div class="flex flex-rev">
                                                         <button type="button" class="editButton" onClick="PrevStep('back2')">EDIT</button>
@@ -434,7 +453,7 @@
                                                         
                                                 </div>
 
-                                                <div class="whiteCard" style="margin-left:11px;">
+                                                <div class="whiteCard" id="registerPaymentCards" style="margin-left:11px;">
                                                     <h4 class="cardSubHeaderGrey">Braamlofts</h4>
                                                     <h2 class="cardHeader" >Single Room</h2>
                                                     <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
@@ -491,7 +510,7 @@
                                                 <div class="footerClearfix"></div>
 
                                                 <!-- <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" />  -->
-                                                <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" style="margin-top:55px;" />
+                                                <input type="button" name="next" id="payBtnReg" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" style="margin-top:55px;" />
 
                                             </div>
 
@@ -540,15 +559,23 @@
         }
     });
 
+    function isEmail(email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
+    }
+
     $("#step1").on('click', function(){
 
-        $("#step1").val("Processing");
+        
 
         if($("#password").val() !== "" && $("#password").val() === $("#confirmPassword").val()){
 
-            if($("#firstName").val() !== "" && $("#email").val() !== ""){
+            if($("#firstName").val() !== "" && $("#email").val() !== "" && isEmail($("#email").val())){
 
                 if($("#userId").val() === ""){
+
+                    $("#step1").val("Processing");
+
                     $.ajax({
                         type: "post",
                         url: "/registration_step_one",
@@ -632,6 +659,7 @@
                 $("#firstName").focus();
                 $("#email").addClass('email')
                 $("#email").focus();
+                $("#emailhide").removeClass('hidden')
             }
             
         }else{
