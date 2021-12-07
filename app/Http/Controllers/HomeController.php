@@ -9,6 +9,7 @@ use Auth;
 use Mail;
 use App\Models\ActionList;
 use App\models\MailerList;
+use App\models\Lookups;
 
 class HomeController extends Controller
 {
@@ -249,7 +250,9 @@ class HomeController extends Controller
                 $completed = "true";
             }
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed]);
+            $lookup = Lookups::get();
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup]);
         }
     }
 
@@ -535,8 +538,9 @@ class HomeController extends Controller
 
     public function student_edit(Request $request, $studentId){
         $user = User::where('id', $studentId)->first();
+        $lookup = Lookups::get();
 
-        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user]);
+        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user, "lookups" => $lookup]);
     }
 
     public function edit_student(Request $request){
@@ -678,6 +682,45 @@ class HomeController extends Controller
 
 
         return ["done", $fileUrlBack];
+    }
+
+    public function lookups(Request $request){
+
+        $lookups = Lookups::get();
+
+        return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups]);
+    }
+
+    public function add_lookups(Request $request){
+
+        return view('admin.lookups_new', ["headerTitle" => "Add Lookup"]);
+    }
+
+    public function new_lookups(Request $request){
+
+        Lookups::create([
+            "group_id" => $request->group_id,
+            "lookup_name" => $request->value,
+        ]);
+
+        return redirect()->route('lookups');
+    }
+
+    public function edit_lookups(Request $request, $lookupId){
+
+        $lookup = Lookups::where('id', $lookupId)->first();
+
+        return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup]);
+    }
+
+    public function save_lookups(Request $request){
+
+        Lookups::where('id', $request->lookupId)->update([
+            "group_id" => $request->group_id,
+            "lookup_name" => $request->value,
+        ]);
+
+        return redirect()->route('lookups');
     }
 
     

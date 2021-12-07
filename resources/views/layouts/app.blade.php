@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Login | Campus Africa</title>
 
     <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
@@ -32,7 +32,6 @@
             @yield('content')
         </main>
     </div>
-
     <footer class="footer">
         <div class="footerBanner">
             <div class="container">
@@ -44,29 +43,29 @@
                         If your looking for a place<br/> of learning and fun to grow<br/> and express yourself, then<br/> Campus Africa is your home.
                     </p>
                 </div>
-
+    
                 <div class="col-3" style="padding-left:6%; width:19%">
                     <p class="linkHeader">Home</p>
-                    <p class="link">Residences<br/>
-                    Campus Africa Life<br/>
-                    FAQ<br/>
-                    What's Hot</p>
+                    <p class="link"><a href="https://campusafrica.whitehart.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
+                    <!-- Campus Africa Life<br/> -->
+                    <a href="https://campusafrica.whitehart.co.za/faq/" style="color:inherit; text-decoration:none; cursor:pointer">FAQ</a><br/>
+                    <a href="https://campusafrica.whitehart.co.za/announcements/" style="color:inherit; text-decoration:none; cursor:pointer">What's Hot</a></p>
                 </div>
-
+    
                 <div class="col-3">
                 <p class="linkHeader">Contact Us</p>
-                <p class="link">info@campusafrica.co.za<br/>
-                010 109 1700</p>
+                <p class="link"><a href="mailto:info@campusafrica.co.za" style="color:inherit; text-decoration:none;">info@campusafrica.co.za</a><br/>
+                <a href="tel:0101091700" style="color:inherit; text-decoration:none;">010 109 1700</a></p>
                 </div>
-
+    
                 <div class="col-3">
                 <p class="linkHeader">Follow Us</p>
-                <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
-                <a href="https://www.instagram.com/campus.africa/?hl=en" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
+                <a href="https://www.facebook.com/CampusAfricaLife" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
+                <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
                 <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
                 <br/>
-                <img src="/images/footer/email.png" alt="Email" width="43" height="43">
-                <img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43">
+                <a href="mailto:info@campusafrica.co.za"><img src="/images/footer/email.png" alt="Email" width="43" height="43"></a>
+                <a href="https://wa.me/27719991246" target="_blank"><img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43"></a>
                 </div>
             </div>
         </div>

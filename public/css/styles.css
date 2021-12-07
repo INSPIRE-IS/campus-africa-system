@@ -646,18 +646,18 @@ body {
     opacity: 1 !important;
 }
 
-.yellowBack{
+.yellowBack {
     background-color: #f1cc3e;
 }
-.redBack{
+.redBack {
     background-color: #e74f26;
 }
-.greenBack{
+.greenBack {
     background-color: #50b63a;
 }
 
-.tox .tox-edit-area__iframe{
-    background-color:transparent !important;
+.tox .tox-edit-area__iframe {
+    background-color: transparent !important;
 }
 
 .PaymentLabel {
@@ -944,10 +944,13 @@ body {
 }
 .whiteYellowCard .uploadSection .uploadName {
     color: #464749;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     line-height: 62px;
     width: 220%;
+}
+#bookingFeeUploadTab {
+    line-height: 30px !important;
 }
 .whiteYellowCard .uploadSection .uploadLabel {
     display: inline-block;
@@ -1589,6 +1592,11 @@ button:disabled {
     .cards .customWhiteCard .section {
         padding-bottom: 80px;
     }
+
+    .halfCard,
+    .redBottom {
+        width: 500px !important;
+    }
 }
 
 @media only screen and (max-width: 1200px) {
@@ -1633,6 +1641,22 @@ button:disabled {
     .appSearchForm .indexTab .keys #indexOne .text {
         padding: 4px 5px 0px 5px;
     }
+
+    #progressbar #applicant:before {
+        width: 95% !important;
+    }
+    #progressbar #sponsor:before {
+        width: 95% !important;
+    }
+    #progressbar #nextKin:before {
+        width: 95% !important;
+    }
+    #progressbar #upload:before {
+        width: 95% !important;
+    }
+    #progressbar #booking:before {
+        width: 95% !important;
+    }
 }
 
 @media only screen and (max-width: 1170px) {
@@ -1646,6 +1670,19 @@ button:disabled {
     .cards .customWhiteCard .section .status .action,
     .cards .customWhiteCard .section .status .rejected {
         margin-left: 15px;
+    }
+
+    #progressbar {
+        display: grid;
+    }
+
+    #progressbar li {
+        width: 100% !important;
+        margin: 5px !important;
+    }
+
+    .redBannerNotice {
+        height: 240px;
     }
 }
 
@@ -1687,6 +1724,25 @@ button:disabled {
     #statusBarIcon,
     #studType {
         padding: 10px 55px;
+    }
+
+    #step1,
+    #step2,
+    #msform .action-button-previous,
+    #step3 {
+        float: left !important;
+        margin-left: 60px !important;
+    }
+
+    #msform #step4.next.action-button {
+        float: left !important;
+        margin-right: 160px !important;
+        margin-left: 60px !important;
+    }
+
+    .halfCard,
+    .redBottom {
+        width: 400px !important;
     }
 }
 
@@ -1755,6 +1811,28 @@ button:disabled {
     #documentsCard {
         margin-top: 1211px !important;
     }
+
+    .redBannerNotice {
+        height: 300px;
+        width: 107%;
+    }
+
+    #registerCards {
+        margin-left: -50px;
+    }
+
+    .footer .footerBanner {
+        height: 532px;
+    }
+
+    #msform #step4.next.action-button {
+        margin-right: 221px !important;
+        margin-left: 7px !important;
+    }
+
+    #back4.previous.action-button-previous {
+        margin-left: 7px !important;
+    }
 }
 
 @media only screen and (max-width: 660px) {
@@ -1765,6 +1843,10 @@ button:disabled {
     .footer .footerBanner {
         height: 820px;
     }
+
+    .form-card .form-field {
+        width: 100%;
+    }
 }
 
 @media only screen and (max-width: 530px) {
@@ -1774,9 +1856,7 @@ button:disabled {
     .cards .whiteCard .applyButton {
         margin-top: 100px;
     }
-    .form-card .form-field {
-        width: 100%;
-    }
+
     .appSearchForm .searchField {
         width: 100%;
     }
@@ -1909,6 +1989,69 @@ button:disabled {
     }
 }
 
+@media screen and (max-width: 420px) {
+    #appStep1 {
+        margin-left: -72px !important;
+    }
+    #applicationType {
+        width: 60% !important;
+    }
+    #registerCards {
+        width: 67% !important;
+        margin-left: 0px;
+    }
+    .whiteYellowCard .uploadSection .uploadName {
+        line-height: 28px;
+    }
+    #bookingFeeUploadTab {
+        line-height: 20px !important;
+    }
+    .redBannerNotice {
+        width: 63%;
+        margin-left: 40px;
+        height: 335px;
+    }
+    .redBannerNotice i {
+        font-size: 22px;
+    }
+    .redBannerNotice p {
+        font-size: 15px;
+        line-height: 20px;
+    }
+    #back4.previous.action-button-previous {
+        margin-left: 41px !important;
+    }
+    #msform #step4.next.action-button {
+        margin-left: 41px !important;
+        margin-right: 180px !important;
+    }
+    #registerPaymentCards,
+    .paymentSection {
+        width: 87%;
+    }
+
+    .paymentSection .header {
+        line-height: 40px;
+    }
+
+    #payBtnReg {
+        margin-top: 950px !important;
+        margin-left: 6px;
+        margin-right: 0px !important;
+        float: left !important;
+    }
+
+    .halfCard {
+        width: 100% !important;
+        margin-top: 280px !important;
+        height: 300px !important;
+    }
+    .redBottom {
+        width: 100% !important;
+        margin-top: -50px;
+    }
+}
+
 @media screen and (max-width: 380px) {
     .whiteYellowCard .appAwait .approved {
         float: left;
@@ -1934,6 +2077,13 @@ button:disabled {
     .cards .customWhiteCard .section .status {
         width: 10%;
         margin-top: 15px;
+    }
+
+    .form-card .form-field {
+        width: 158% !important;
+    }
+    #step1.next.action-button {
+        width: 100% !important;
     }
 }
 
@@ -1969,9 +2119,9 @@ button:disabled {
     height: 25px;
     border-radius: 50%;
 }
-.row .lease{
-    width:100%;
-    background-color:#ffec5c;
+.row .lease {
+    width: 100%;
+    background-color: #ffec5c;
     padding: 10px;
     border: none;
     border-radius: 9px;
@@ -1981,10 +2131,10 @@ button:disabled {
 }
 
 .row .lease:hover {
-    background-color:#e5b219 ;
+    background-color: #e5b219;
 }
 
-.inactiveBtn{
+.inactiveBtn {
     padding: 10px;
     border: none;
     color: #fff;
@@ -1993,33 +2143,43 @@ button:disabled {
     cursor: pointer;
 }
 
-.activeBtn{
+.activeBtn {
     padding: 10px;
     border: none;
     color: #fff;
     border-radius: 7px;
-    background-color: #1cb915  !important;
+    background-color: #1cb915 !important;
     cursor: pointer;
 }
 
 input:read-only {
     opacity: 0.5;
-  }
-
-  .detailsChange{
-    float:right; padding:10px; background-color:red; color:#fff; border:none; border-radius:10px; cursor:pointer; margin:20px;
-  }
-
-.saveTxtMailTy, .saveTxtMailAa, .saveTxtMailAav, .saveTxtMailAD, .saveTxtMailADd, .saveTxtMailAR{
-    border:none;
-    background-color:green;
-    color:#fff;
-    padding:10px;
-    margin:10px;
-    border-radius:10px;
-    cursor:pointer;
 }
 
+.detailsChange {
+    float: right;
+    padding: 10px;
+    background-color: red;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 20px;
+}
 
+.saveTxtMailTy,
+.saveTxtMailAa,
+.saveTxtMailAav,
+.saveTxtMailAD,
+.saveTxtMailADd,
+.saveTxtMailAR {
+    border: none;
+    background-color: green;
+    color: #fff;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
 
 /*# sourceMappingURL=styles.css.map */
