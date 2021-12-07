@@ -15,7 +15,6 @@ class AddUserAppStatus extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('applicationStatus')->nullable();
-            $table->string('bookingRef')->nullable();
             
         });
     }
@@ -29,7 +28,6 @@ class AddUserAppStatus extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('applicationStatus');
-            $table->dropColumn('bookingRef');
         });
     }
 }
