@@ -72,6 +72,7 @@ class User extends Authenticatable
     public function files(){
         return $this->hasMany("App\Models\UserFiles", "userUid", "id");
     }
+    
 
     /**
      * The attributes that should be hidden for serialization.

@@ -85,3 +85,4 @@ Route::get('/new/admin', [HomeController::class, 'new_admin']);
 Route::post("/add-admin", [HomeController::class, 'add_admin']);
 
 Route::post("/delete/lookup", [HomeController::class, 'delete_lookup']);
+Route::post("/applications/filter", [HomeController::class, 'app_filter']);

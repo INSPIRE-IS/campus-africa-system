@@ -34,7 +34,7 @@
         <div id="fullNavbar">
             <div class="topnav" id="myTopnav">
             <a class="active" href="/dashboard">Dashboard</a>
-                <a href="/applications">Aplications</a>
+                <a href="/applications">Applications</a>
                 <a href="/leases">Leases</a>
                 <a href="/invoices">Invoices</a>
                 <a href="/mailing">Mailing</a>

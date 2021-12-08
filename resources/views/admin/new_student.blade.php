@@ -110,6 +110,43 @@
             </select>
         </div>
 
+        <div class="form-field">
+            <label>Student Type</label>
+            <select name="studentType" id='studentType'>
+                <option value="Single Room" selected disabled>Select a Student Type</option>
+                <option value="NSFAS">NSFAS</option>
+                <option value="Bursary">Bursary</option>
+                <option value="Cash / Direct">Cash / Direct</option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Property</label>
+            <select name="property" id='property'>
+                <option value="Property" selected disabled>Select a Proprty</option>
+                <option value="Braamlofts">Braamlofts</option>
+                <option value="80 Jorissen">80 Jorissen</option>
+                <option value="49 Jorissen">49 Jorissen</option>
+                <option value="Dunvista Mansions">Dunvista Mansions</option>
+                <option value="Wynton Joy">Wynton Joy</option>
+                <option value="126 Siemert">126 Siemert</option>
+                <option value="YMCA">YMCA</option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Room Type</label>
+            <select name="roomType" id='roomType'>
+                <option value="Single Room" selected disabled>Select a Room Type</option>
+                <option value="Single Room">Single Room</option>
+                <option value="2 Sharing">2 Sharing</option>
+                <option value="3 Sharing">3 sharing</option>
+                <option value="single room 2 bedroom">Single Room | 2 Bedroom</option>
+                <option value="single room 3 bedroom">Single Room | 3 Bedroom</option>
+                <option value="single room small">Single Room | small</option>
+            </select>
+        </div>
+
         <h1 class="fs-title">Sponsor / Burser Information</h2>
         <h2 class="fs-subtitle">Parent / guardians / sponsor details</h4>
         <br/>

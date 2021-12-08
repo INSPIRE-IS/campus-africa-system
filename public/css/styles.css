@@ -2187,4 +2187,8 @@ input:read-only {
     height: 200px !important;
 }
 
+#searchButton {
+    cursor: pointer;
+}
+
 /*# sourceMappingURL=styles.css.map */
