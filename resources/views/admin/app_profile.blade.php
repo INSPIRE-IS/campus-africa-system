@@ -35,6 +35,9 @@
                 {{$user[0]['userInfo']['burEmail']}}<br/>
                 {{$user[0]['userInfo']['burId']}}<br/>
             </p>
+            <br/>
+            <a href="/student/edit/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Edit Profile</button></a>
+            <a href="/student/upload/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Upload Documents</button></a>
         </div>
         
     </div>
