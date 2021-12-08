@@ -1129,6 +1129,8 @@ class HomeController extends Controller
             'kinWorkNo' => $request->kWorkNo,
             'kinEmail' => $request->kEmail,
             'studentType' => $request->studentType,
+            'bookingStatus' => "Empty",
+            'applicationStatus' => "Empty",
         ]);
 
         $booking = Booking::create(["userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType]);
@@ -1171,13 +1173,24 @@ class HomeController extends Controller
         
         $search_value = [];
 
+        if($request->applicationStatus !== "" && !empty($request->applicationStatus)){
+            
+            if($request->applicationStatus == "Empty"){
+                $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
+                array_push($search_value, $bookingStatus);
+            }else{
+                $bookingStatus = 'users.bookingStatus LIKE "%'.$request->applicationStatus.'%"';
+                array_push($search_value, $bookingStatus);
+            }
+        }
+
         if($request->property !== "" && !empty($request->property)){
             $property = 'bookings_data.property LIKE "%'.$request->property.'%"';
             array_push($search_value, $property);
         }
 
         if($request->room_type !== "" && !empty($request->room_type)){
-            $room_type = 'bookings_data.room_type LIKE "%'.$request->room_type.'%"';
+            $room_type = 'bookings_data.roomType LIKE "%'.$request->room_type.'%"';
             array_push($search_value, $room_type);
         }
 
@@ -1187,13 +1200,8 @@ class HomeController extends Controller
         }
 
         if($request->student_type !== "" && !empty($request->student_type)){
-            $student_type = 'users.student_type LIKE "%'.$request->student_type.'%"';
+            $student_type = 'users.studentType LIKE "%'.$request->student_type.'%"';
             array_push($search_value, $student_type);
-        }
-
-        if($request->applicationStatus !== "" && !empty($request->applicationStatus)){
-            $applicationStatus = 'users.applicationStatus LIKE "%'.$request->applicationStatus.'%"';
-            array_push($search_value, $applicationStatus);
         }
 
         if($request->date !== "" && !empty($request->date)){
@@ -1220,8 +1228,7 @@ class HomeController extends Controller
 
         foreach($searched_students as $student){
             
-            $user = User::with('files')->where('id', $student->userId)->first();
-            
+            $user = User::with('files')->where('id', $student->userId)->first();            
 
 
                 $uploaded = [];
@@ -1229,15 +1236,19 @@ class HomeController extends Controller
                 $data = [];
                 $counter = 0;
 
-                foreach($user->files as $file){
-                    array_push($uploaded, $file->fileId);
-                    array_push($data, ["field" => $file->fileId, "status" => $file->status]);
+                if(!empty($user->files)){
+                    foreach($user->files as $file){
+                        array_push($uploaded, $file->fileId);
+                        array_push($data, ["field" => $file->fileId, "status" => $file->status]);
+                    }
                 }
+
+                
 
                 $left = array_diff($all, $uploaded);
 
                 foreach($left as $dataLeft){
-                    if($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
+                    if(!empty($user->studentType) && $user->studentType == "NSFAS" || !empty($user->studentType) && $user->studentType == "Bursary"){
                         if($dataLeft == "bankStatement"){
                             array_push($data, ["field" => $dataLeft, "status" => "na"]);
                         }else{
@@ -1258,9 +1269,13 @@ class HomeController extends Controller
                         $counter++;
                     }
 
-                }                
+                }   
+                
+                if(!empty($user)){
 
-                array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter]);
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter]);
+                }
+
             
 
             }

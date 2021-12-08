@@ -56,9 +56,9 @@
         <label></label><br/>
             <select name="applicationStatus" id='applicationStatus'>
                 <option value="" selected disabled>Select a Booking Status</option>
-                <option value="Valid">Valid</option>
-                <option value="Pending">Pending</option>
-                <option value="Invalid">Invalid</option>
+                <option value="Approved">Valid</option>
+                <option value="Action">Pending</option>
+                <option value="Empty">Invalid</option>
             </select>
         </div>
         <div class="searchField">
