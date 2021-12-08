@@ -23,6 +23,8 @@
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
 
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
     
@@ -72,18 +74,20 @@
                 @if (isset($appProfile) && $appProfile === "true")
                     <h1 class="bookingSub">
                         Application Profile 
-                        @if($user[0]['userInfo']['bookingStatus'] == "Approved" || $user[0]['userInfo']['bookingStatus'] == "Rejected")
-                            : {{$user[0]['userInfo']['bookingStatus']}}
+                        @if($user[0]['userInfo']['applicationStatus'] == "Approved Confirmed")
+                            : Approved
+                        @elseif($user[0]['userInfo']['applicationStatus'] == "Rejected Confirmed")
+                            : Rejected
                         @endif
                     </h1>
                 @endif
                 <h1 class="booking">{{$headerTitle}}</h1>
 
                 @if (isset($appProfile) && $appProfile === "true")
-                    @if($user[0]['userInfo']['bookingStatus'] !== "Approved" && $user[0]['userInfo']['bookingStatus'] !== "Rejected")
+                    @if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected")
                         <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
                         <br/><br/><br/>
-                        <button type="button" class="appBtn" id="rejectApplication">REJECT APPLICATION AND SEND NOTIFICATION</button>                          
+                        <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>                          
                     @endif
                 @endif
             </div>
@@ -153,20 +157,59 @@
         });
 
         function approveApplication(userId){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Approve this application',
+                text: "You are about to approve this application and send approval email. Continue?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, approve'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-            $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                    $.ajax({
+                        type: "post",
+                        url: "/approve-application",
+                        data: {
+                            userId: userId, 
+                        },
 
-            $.ajax({
-                type: "post",
-                url: "/approve-application",
-                data: {
-                    userId: userId, 
-                },
+                        success: function (data) {
+                            window.location.reload();
+                        },
+                    });
+                }
+            })
+        }
 
-                success: function (data) {
-                    window.location.reload();
-                },
-            });
+        function rejectApplication(userId){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Reject this application',
+                text: "You are about to reject this application and send rejection email. Continue?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, reject'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+                    $.ajax({
+                        type: "post",
+                        url: "/reject-application",
+                        data: {
+                            userId: userId, 
+                        },
+
+                        success: function (data) {
+                            window.location.reload();
+                        },
+                    });
+                }
+            })
         }
 
         function myFunction() {

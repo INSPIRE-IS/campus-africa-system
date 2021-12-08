@@ -67,6 +67,7 @@ class User extends Authenticatable
         'bookingRef',
         'bookingStatus',
         'applicationStatus',
+        'yearOfStudy',
     ];
 
     public function files(){

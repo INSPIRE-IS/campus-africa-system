@@ -311,14 +311,25 @@ class HomeController extends Controller
                 }
 
                 foreach($data as $item){
-  
-                    if($item['status'] == "" || $item['status'] == "Rejected"){
+
+                    if($item['status'] == "Uploaded"){
                         $counter++;
                     }
+  
+                    if($item['status'] == "" || $item['status'] == "Rejected"){
+                        $counter--;
+                    }
 
-                }                
+                    if($item['status'] == "Approved"){
+                        $counter--;
+                        $counter--;
+                    }
 
-                array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter]);
+                }   
+                
+                $roomBooking = Booking::where('userId', $user->id)->first();
+
+                array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at]);
             }
 
             usort($userData, function($a, $b) {
@@ -340,7 +351,20 @@ class HomeController extends Controller
             $user = User::with('files')->where('id', $userId)->first();
             $userData = [];
             $uploaded = [];
-            $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+            // $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+
+            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+        if($user->applicationStatus == "Approved Confirmed"){
+            array_push($all, "moveIn");
+        }
+        if($user->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if($user->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
+        
             $data = [];
 
             foreach($user->files as $file){
@@ -618,11 +642,39 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['bookingStatus' => "Approved"]);
+        User::where('id', $userId)->update(['bookingStatus' => "Approved Confirmed"]);
 
         ActionList::create([
             "userUid" => $userId,
             "action" => "Approved application and sent confirmation email",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+    }
+
+    protected function reject_application(Request $request){
+        $userId = $request->userId;
+
+        $user = User::where('id', $userId)->first();
+
+        $data['name'] = $user->userFirstName;
+        $data['email'] = $user->userEmail;
+        $data['roomNo'] = $user->roomNo;
+        $data['bookingRef'] = $user->bookingRef;
+
+        // Mail::send('email.application_approved', $data, function($message) use ($data) {
+        //     $message->to($data['email'], $data['name'])->subject
+        //         ('Thank you Application');
+        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->from('test@test.com','test@test.com');
+        // });
+
+        User::where('id', $userId)->update(['bookingStatus' => "Rejected Confirmed"]);
+
+        ActionList::create([
+            "userUid" => $userId,
+            "action" => "Rejected application and sent rejectment email",
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
@@ -837,7 +889,17 @@ class HomeController extends Controller
         $allFiles = UserFiles::where("userUid", $studentId)->get();
 
         $uploaded = [];
-        $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+        if($user->applicationStatus == "Approved Confirmed"){
+            array_push($all, "moveIn");
+        }
+        if($user->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if($user->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
 
         foreach($allFiles as $file){
             array_push($uploaded, $file->fileId);
@@ -882,6 +944,8 @@ class HomeController extends Controller
                     $typeName = "Proof of Payment";
                 }elseif($fileType == "moveIn"){
                     $typeName = "Lease";
+                }elseif($fileType == "bursaryApproval"){
+                    $typeName = "Bursary Approval";
                 }
                 
 
@@ -1123,6 +1187,7 @@ class HomeController extends Controller
             'studentType' => $request->studentType,
             'bookingStatus' => "Empty",
             'applicationStatus' => "Empty",
+            'yearOfStudy' => $request->yearOfStudy,
         ]);
 
         $booking = Booking::create(["userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType]);

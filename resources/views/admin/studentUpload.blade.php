@@ -8,8 +8,9 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container">
+  <h1>Student: {{$user->userFirstName}} {{$user->userLastname}}</h1>
     <br/>
-      <div class="appSearchForm">
+      <div class="appSearchForm" style="margin-top:-10px;">
         <div class="indexTab flex" id="applicationIndex">
             <label>Legend</label>
             <div class="keys">
@@ -193,7 +194,8 @@
 
   $(document).ready( function () {
         $('#documents_table').DataTable({
-          "order": [[ 2, "asc" ]]
+          "order": [[ 2, "asc" ]],
+          searching: false, paging: false, info: false
         });
     } );
 

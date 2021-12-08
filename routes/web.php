@@ -45,6 +45,7 @@ Route::post('/action/file', [HomeController::class, 'action_file']);
 Route::get('/action-list/{userId}/{filter}', [HomeController::class, 'action_list']);
 Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document_list']);
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
+Route::post('/reject-application', [HomeController::class, 'reject_application']);
 
 Route::get('/my-profile', [ProfileController::class, 'index'])->name('my-profile');
 Route::post('/update-profile', [ProfileController::class, 'update']);

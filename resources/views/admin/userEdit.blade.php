@@ -42,7 +42,7 @@
 
         <div class="form-field">
             <label>Email Address *</label>
-            <input type="email" name="email" id="email" required value="{{$user->userEmail}}" >
+            <input type="email" name="email" id="email" required value="{{$user->email}}" >
         </div>
 
         <div class="form-field">

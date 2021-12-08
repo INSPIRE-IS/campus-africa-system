@@ -44,7 +44,7 @@
 </div>
 
 <div class="container">
-    @if($completed == "true")
+    @if($completed == "true" && $user[0]['userInfo']['applicationStatus'] == "Approved Confirmed")
         <div class="row">
             <a href="/storage/leases/lease_empty.pdf" download><button type="button" class="lease">Create Lease</button></a>
         </div>
@@ -191,6 +191,18 @@
                                         LEASE
                                     @endif
                                 </div>
+                                <div class="status">
+                                    @if($file["status"] === "Uploaded" )
+                                        <div class="button action"></div>
+                                    @elseif($file["status"] === "XApproved")
+                                        <div class="button approved"></div>
+                                    @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                        <div class="button rejected"></div>
+                                    @elseif($file["status"] === "na")
+                                        <div class="button na"></div>
+                                    @endif
+                                </div>
+
                                 <div class="banner">
                                     @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
                                         <button type="button" onClick="
@@ -206,17 +218,11 @@
                                         </button>
                                     @else
                                         <button type="button" class="error">Send reminder</button>
-                                    @endif
-                                </div>
-                                <div class="status">
-                                    @if($file["status"] === "Uploaded" )
-                                        <div class="button action"></div>
-                                    @elseif($file["status"] === "XApproved")
-                                        <div class="button approved"></div>
-                                    @elseif($file["status"] === "Rejected" || $file["status"] === "")
-                                        <div class="button rejected"></div>
-                                    @elseif($file["status"] === "na")
-                                        <div class="button na"></div>
+                                        <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
+                                            <span class="text">Upload</span>
+                                            <i class="fas fa-file-upload" ></i>
+                                        </label>
+                                        <input type="file" id="{{$file['field']}}" hidden/>
                                     @endif
                                 </div>
                             </div>
@@ -453,6 +459,169 @@
                             '</div>'+
                         '</div>'
                     )
+                }
+            },
+        });
+    })
+
+    $("#copyID").on('change', function(){
+        $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('copyID').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "copyID");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+                    window.location.reload();
+                }
+            },
+        });
+    });
+
+    $("#studentCard").on('change', function(){
+        $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('studentCard').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "studentCard");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+                    window.location.reload();
+                }
+            },
+        });  
+    })
+
+    $("#bankStatement").on('change', function(){
+        $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('bankStatement').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "bankStatement");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+                    window.location.reload();
+                }
+            },
+        });
+    })
+
+    $("#proofRegistration").on('change', function(){
+
+        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('proofRegistration').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "proofRegistration");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+                    window.location.reload();
+                }
+            },
+        });
+    })
+
+
+    $("#proof_of_payment").on('change', function(){
+        $("#proof_of_paymentSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "proof_of_payment");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+
+                    window.location.reload();
+
+                }
+            },
+        });
+    })
+    
+    $("#bursaryApproval").on('change', function(){
+        $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('bursaryApproval').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "bursaryApproval");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+
+                    window.location.reload();
+
                 }
             },
         });
