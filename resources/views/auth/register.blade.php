@@ -127,17 +127,7 @@
                                                 <input type="text" name="studNumber" id="studNumber">
                                             </div>
 
-                                            <div class="form-field">
-                                                <label>Insitution Campus</label>
-                                                <select name="institCampus" id="institCampus">
-                                                    <option value="Choose one" selected diabled>Choose one</option>
-                                                    @foreach($lookups as $lookup)
-                                                        @if($lookup->group_id == "2")
-                                                            <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
-                                                        @endif
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                            
 
                                             <div class="form-field">
                                                 <label>Faculty</label>
@@ -447,7 +437,6 @@
                                                         <span id="dispPassport"></span><br/>
                                                         <span id="dispInstit"></span><br/>
                                                         <span id="dispStudNo"></span><br/>
-                                                        <span id="dispInstitCampus"></span><br/>
                                                         <span id="dispFaculty"></span><br/>
                                                         <span id="dispYear"></span></p>
                                                         
@@ -593,7 +582,6 @@
                             passportNo: $("#passportNo").val(), 
                             institStudy: $("#institStudy").val(), 
                             studNumber: $("#studNumber").val(), 
-                            institCampus: $("#institCampus").val(), 
                             faculty: $("#faculty").val(), 
                             year: $("#year").val() 
                         },
@@ -614,7 +602,6 @@
                             $("#dispPassport").empty().append($("#passportNo").val());
                             $("#dispInstit").empty().append($("#institStudy").val());
                             $("#dispStudNo").empty().append($("#studNumber").val());
-                            $("#dispInstitCampus").empty().append($("#institCampus").val());
                             $("#dispFaculty").empty().append($("#faculty").val());
                             $("#dispYear").empty().append($("#year").val());
                             
@@ -639,7 +626,6 @@
                             passportNo: $("#passportNo").val(), 
                             institStudy: $("#institStudy").val(), 
                             studNumber: $("#studNumber").val(), 
-                            institCampus: $("#institCampus").val(), 
                             faculty: $("#faculty").val(), 
                             year: $("#year").val() 
                         },

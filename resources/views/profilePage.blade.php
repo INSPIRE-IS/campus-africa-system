@@ -78,17 +78,6 @@
             <input type="text" name="studNumber" id="studNumber" value="{{Auth::user()->studentNo}}" readonly>
         </div>
 
-        <div class="form-field">
-            <label>Insitution Campus</label>
-            <select name="institCampus" id="institCampus" disabled>
-                <option value="Choose one" selected diabled>Choose one</option>
-                @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "2")
-                        <option value="{{$lookup->id}}" <?php if(Auth::user()->institutionCampus == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
-                    @endif
-                @endforeach
-            </select>
-        </div>
 
         <div class="form-field">
             <label>Faculty</label>

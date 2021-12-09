@@ -34,7 +34,6 @@
                 {{Auth::user()->userPassport}}<br/>
                 {{Auth::user()->institutionStudy}}<br/>
                 {{Auth::user()->studentNo}}<br/>
-                {{Auth::user()->institutionCampus}}<br/>
                 {{Auth::user()->faculty}}<br/>
                 {{Auth::user()->year}}</p>
                 

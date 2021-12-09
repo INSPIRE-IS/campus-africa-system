@@ -1438,8 +1438,8 @@ input:read-only {
 
     .button {
         border-radius: 50%;
-        height: 29px;
-        width: 29px;
+        height: 20px;
+        width: 20px;
         border: 3px solid #cecece;
     }
 
@@ -1463,6 +1463,22 @@ input:read-only {
 
 .bold {
     font-weight: bold !important;
+}
+
+#application_table_wrapper {
+    margin-left: -12%;
+    width: 126%;
+}
+
+.even-row {
+    background-color: #ededed !important;
+}
+
+.odd-row {
+    background-color: #f5f5f5 !important;
+}
+.bookingBg {
+    background-color: #ccc !important;
 }
 
 .greyAppSection {

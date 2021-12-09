@@ -17,8 +17,8 @@
             </p>
         </div>
         <div class="col-3">
-            @if($user[0]['userInfo']['studentType'] !== "NSFAS")
-                <p class="listHeader">Sponsor</p>
+            @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
+                    <p class="listHeader">Sponsor/Parent</p>
                 <br/>
                 <p class="list">
                     {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
@@ -29,7 +29,7 @@
             @endif
         </div>
         <div class="col-3">
-            @if($user[0]['userInfo']['studentType'] !== "NSFAS")
+            @if($user[0]['userInfo']['studentType'] == "Bursary")
                 <p class="listHeader">Bursar</p>
                 <br/>
                 <p class="list">
@@ -68,7 +68,6 @@
                     {{$user[0]['userInfo']['userPassport']}}<br/>
                     @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['institutionStudy']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['studentNo']}}<br/>
-                    @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['institutionCampus']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['faculty']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['year']}}
                 </p>
@@ -195,7 +194,7 @@
                                         LEASE
                                     @endif
                                 </div>
-                                <div class="status">
+                                <div class="status" id="{{$file['field']}}Status">
                                     @if($file["status"] === "Uploaded" )
                                         <div class="button action"></div>
                                     @elseif($file["status"] === "XApproved")
@@ -207,7 +206,7 @@
                                     @endif
                                 </div>
 
-                                <div class="banner">
+                                <div class="banner" id="{{$file['field']}}Banner">
                                     @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
                                         <button type="button" onClick="
                                             openModal(
@@ -221,7 +220,9 @@
                                             id="myBtn_<?php echo $i; ?>">View Document
                                         </button>
                                     @else
-                                        <button type="button" class="error">Send reminder</button>
+                                        @if(Auth::user()->userRole == '1' || Auth::user()->userRole == '2')
+                                            <button type="button" id="{{$file['field']}}Error" class="error">Send reminder</button>
+                                        @endif
                                         <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
                                             <span class="text">Upload</span>
                                             <i class="fas fa-file-upload" ></i>
@@ -252,13 +253,16 @@
         <h2 id="modalHeader"></h2>
         <small>Uploaded by <span id="uploadedBy"></span> at <span id="uploadedTime"></span> on the <span id="uploadedDate"></span></small>
         <br/>
-        <input type="hidden" id="FileIdForApproval">
-        <input type="text" id="actionUserName" placeholder="Name">
-        <div class="flex" style="margin-top:35px;" id="buttonSection">
-            <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
-            <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
-            <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
-            <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+        
+            <input type="hidden" id="FileIdForApproval">
+            <input type="text" id="actionUserName" placeholder="Name">
+            <div class="flex" style="margin-top:35px;" id="buttonSection">
+            @if(Auth::user()->userRole !== 3)
+                <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
+                <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
+                <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
+                <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+        @endif
             
             
         </div>
@@ -488,7 +492,9 @@
 
             success: function (data) {
                 if (data[0] == "done") {
-                    window.location.reload();
+                    $("#copyIDStatus").empty().append('<div class="button action"></div>');
+
+                    $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
                 }
             },
         });
@@ -514,7 +520,9 @@
 
             success: function (data) {
                 if (data[0] == "done") {
-                    window.location.reload();
+                    $("#studentCardStatus").empty().append('<div class="button action"></div>');
+
+                    $("#studentCardBanner").empty().append('<button type="Button" onClick="openModal(\'studentCard\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
                 }
             },
         });  
@@ -540,7 +548,9 @@
 
             success: function (data) {
                 if (data[0] == "done") {
-                    window.location.reload();
+                    $("#bankStatementStatus").empty().append('<div class="button action"></div>');
+
+                    $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
                 }
             },
         });
@@ -567,7 +577,9 @@
 
             success: function (data) {
                 if (data[0] == "done") {
-                    window.location.reload();
+                    $("#proofRegistrationStatus").empty().append('<div class="button action"></div>');
+
+                    $("#proofRegistrationBanner").empty().append('<button type="Button" onClick="openModal(\'proofRegistration\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
                 }
             },
         });
@@ -595,7 +607,9 @@
             success: function (data) {
                 if (data[0] == "done") {
 
-                    window.location.reload();
+                    $("#proof_of_paymentStatus").empty().append('<div class="button action"></div>');
+
+                    $("#proof_of_paymentBanner").empty().append('<button type="Button" onClick="openModal(\'proof_of_payment\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                 }
             },
@@ -624,7 +638,9 @@
             success: function (data) {
                 if (data[0] == "done") {
 
-                    window.location.reload();
+                    $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
+
+                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                 }
             },

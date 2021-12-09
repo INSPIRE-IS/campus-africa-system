@@ -275,7 +275,7 @@ class HomeController extends Controller
 
     public function applications(Request $request){
         
-        if(Auth::user()->userRole == "1"){
+        if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3" ){
 
             $allUsersData = User::with('files')->where('userRole', '0')->get();
             $userData = [];
@@ -342,7 +342,7 @@ class HomeController extends Controller
 
     public function application_profile(Request $request, $userId){
 
-        if(Auth::user()->userRole == "1"){
+        if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3"){
 
             $user = User::where('id', $userId)->first();
 
@@ -418,7 +418,7 @@ class HomeController extends Controller
 
     public function action_file(Request $request){
 
-        if(Auth::user()->userRole == "1"){
+        if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3"){
             
             $fileId = $request->file;
             $action = $request->type;
@@ -848,7 +848,7 @@ class HomeController extends Controller
             'userPassport' => $request->passportNo,
             'institutionStudy' => $request->institStudy,
             'studentNo' => $request->studNumber,
-            'institutionCampus' => $request->institCampus,
+            // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => $request->year,
             'sponFirstName' => $request->pFirstName,
@@ -950,7 +950,7 @@ class HomeController extends Controller
                 
 
                 if(!$hasFile){
-                    UserFiles::create([
+                    $file = UserFiles::create([
                         'fileId' => $fileType,
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
@@ -961,7 +961,7 @@ class HomeController extends Controller
 
                     $text = "Uploaded ".$typeName." for review";
                 }else{
-                    UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
+                    $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
                         'fileId' => $fileType,
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
@@ -1093,7 +1093,7 @@ class HomeController extends Controller
         }
 
 
-        return ["done", $fileUrlBack];
+        return ["done", $fileUrlBack, $file];
     }
 
     public function lookups(Request $request){
@@ -1158,7 +1158,7 @@ class HomeController extends Controller
             'userPassport' => $request->passportNo,
             'institutionStudy' => $request->institStudy,
             'studentNo' => $request->studNumber,
-            'institutionCampus' => $request->institCampus,
+            // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => $request->year,
             'sponFirstName' => $request->pFirstName,
@@ -1240,34 +1240,54 @@ class HomeController extends Controller
         $search_value = [];
 
         if($request->applicationStatus !== "" && !empty($request->applicationStatus)){
+
+            if($request->applicationStatus !== "All"){
             
-            if($request->applicationStatus == "Empty"){
-                $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
-                array_push($search_value, $bookingStatus);
-            }else{
-                $bookingStatus = 'users.bookingStatus LIKE "%'.$request->applicationStatus.'%"';
-                array_push($search_value, $bookingStatus);
+                if($request->applicationStatus == "Empty"){
+                    $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
+                    array_push($search_value, $bookingStatus);
+                }else{
+                    $bookingStatus = 'users.bookingStatus LIKE "%'.$request->applicationStatus.'%"';
+                    array_push($search_value, $bookingStatus);
+                }
             }
         }
 
         if($request->property !== "" && !empty($request->property)){
-            $property = 'bookings_data.property LIKE "%'.$request->property.'%"';
-            array_push($search_value, $property);
+            if($request->property !== "All"){
+                $property = 'bookings_data.property LIKE "%'.$request->property.'%"';
+                array_push($search_value, $property);
+            }
         }
 
         if($request->room_type !== "" && !empty($request->room_type)){
-            $room_type = 'bookings_data.roomType LIKE "%'.$request->room_type.'%"';
-            array_push($search_value, $room_type);
+            if($request->room_type !== "All"){
+                $room_type = 'bookings_data.roomType LIKE "%'.$request->room_type.'%"';
+                array_push($search_value, $room_type);
+            }
         }
 
         if($request->applicant !== "" && !empty($request->applicant)){
-            $applicant = 'users.userFirstName LIKE "%'.$request->applicant.'%"';
-            array_push($search_value, $applicant);
+            $name = $request->applicant;
+            $explodeName = explode(" ", $name);
+            if(count($explodeName) > 1){
+                $applicant = 'users.userFirstName LIKE "%'.$explodeName[0].'%"';
+                array_push($search_value, $applicant);
+
+                $applicant = 'users.userLastname LIKE "%'.$explodeName[1].'%"';
+                array_push($search_value, $applicant);
+            }else{
+                $applicant = 'users.userFirstName LIKE "%'.$request->applicant.'%"';
+                array_push($search_value, $applicant);
+            }
+            
         }
 
         if($request->student_type !== "" && !empty($request->student_type)){
-            $student_type = 'users.studentType LIKE "%'.$request->student_type.'%"';
-            array_push($search_value, $student_type);
+            if($request->student_type !== "All"){
+                $student_type = 'users.studentType LIKE "%'.$request->student_type.'%"';
+                array_push($search_value, $student_type);
+            }
         }
 
         if($request->date !== "" && !empty($request->date)){
@@ -1288,7 +1308,11 @@ class HomeController extends Controller
             $i ++;
         }
 
-        $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0"');
+        if(count($query) > 0){
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0"');
+        }else{
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0"');
+        }
 
         $userData = [];
 
@@ -1336,10 +1360,12 @@ class HomeController extends Controller
                     }
 
                 }   
+
+                $roomBooking = Booking::where('userId', $user->id)->first();
                 
                 if(!empty($user)){
 
-                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter]);
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at]);
                 }
 
             

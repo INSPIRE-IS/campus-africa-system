@@ -28,7 +28,7 @@
                     <td>{{$user->userFirstName}}</td>
                     <td>{{$user->userLastname}}</td>
                     <td>{{$user->email}}</td>
-                    <td>@if($user->userRole == "1") Admin @endif</td>
+                    <td>@if($user->userRole == "1") Super Admin @elseif($user->userRole == "2") Admin @elseif($user->userRole == "1") Consultant @endif</td>
                     <td><a href="/user/edit/{{$user->id}}"><button type="button" class="inactiveBtn">Edit</button></a></td>
                 </tr>
             @endforeach
@@ -39,7 +39,9 @@
 
     <h1>Students</h1>
     <br/>
-    <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
+    @if(Auth::user()->userRole !== 2)
+        <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
+    @endif
     <br/><br/>
 
     <table id="student_table" class="display">

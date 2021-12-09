@@ -12,7 +12,7 @@
             <select name="group_id" id='group_id'>
                 <option value="0" disabled selected>Select one</option>
                 <option value="1">Institution of Study</option>
-                <option value="2">Insitution Campus</option>
+                <!-- <option value="2">Insitution Campus</option> -->
                 <option value="3" >Faculty</option>
             </select>
         </div>

@@ -9,7 +9,9 @@
 
 <br/>
 
-<a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
+@if(Auth::user()->userRole !== 2)
+    <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
+@endif
 
 
     <div class="appSearchForm" style="margin-top:-35px">
@@ -17,6 +19,7 @@
         <label></label><br/>
             <select name="property" id="property">
                 <option value="" selected disabled>Select a Property</option>
+                <option value="All">All</option>
                 <option value="Braamlofts">Braamlofts</option>
                 <option value="80 Jorissen">80 Jorissen</option>
                 <option value="49 Jorissen">49 Jorissen</option>
@@ -30,6 +33,7 @@
         <label></label><br/>
             <select name="room_type" id="room_type">
                 <option value="" selected disabled>Select a Room Type</option>
+                <option value="All">All</option>
                 <option value="Single Room">Single Room</option>
                 <option value="2 Sharing">2 Sharing</option>
                 <option value="3 Sharing">3 sharing</option>
@@ -47,6 +51,7 @@
         <label></label><br/>
             <select name="student_type" id='student_type'>
                 <option value="" selected disabled>Select a Student Type</option>
+                <option value="All">All</option>
                 <option value="NSFAS">NSFAS</option>
                 <option value="Bursary">Bursary</option>
                 <option value="Cash / Direct">Cash / Direct</option>
@@ -56,6 +61,7 @@
         <label></label><br/>
             <select name="applicationStatus" id='applicationStatus'>
                 <option value="" selected disabled>Select a Booking Status</option>
+                <option value="All">All</option>
                 <option value="Approved">Valid</option>
                 <option value="Action">Pending</option>
                 <option value="Empty">Invalid</option>
@@ -111,7 +117,7 @@
 
                     @foreach($users as $user)
 
-                        <tr class=" <?php if($i % 2 == 0){echo 'dark';}else{echo 'light';} ?> clickable-row" data-href='/application-profile/{{$user["id"]}}'>
+                        <tr class=" <?php if($i % 2 == 0){echo 'dark';}else{echo 'light';} ?> clickable-row table_id_{{$user['id']}}" data-href='/application-profile/{{$user["id"]}}'>
                             <td id="bookingRef">#{{$user["bookingRef"]}} </td>
                             <td id="appUser"><span class="bold">{{$user["userFirstName"]}} {{$user["userLastname"]}}</span> <br/> {{$user["property"]}} | {{$user["roomType"]}} | {{$user["created_at"]}}</td>
                             <td id="studType">{{$user["studentType"]}}</td>
@@ -263,14 +269,14 @@
 
 
 <script>
-    jQuery(document).ready(function($) {
-        $(".clickable-row").click(function() {
-            window.location = $(this).data("href");
-        });
-    });
+    // jQuery(document).ready(function($) {
+    //     $(".clickable-row").click(function() {
+    //         window.location = $(this).data("href");
+    //     });
+    // });
 
     $(document).ready( function () {
-        $('#application_table').DataTable({searching: false, "aaSorting": []});
+        $('#application_table').DataTable({searching: false, "aaSorting": [], "stripeClasses": [ 'odd-row', 'even-row' ]});
     } );
 
     $.ajaxSetup({
@@ -278,6 +284,17 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $('#application_table tbody').on('click', 'tr', function () {
+        var datatable = $( "#application_table" ).DataTable();
+        var data2 = datatable.row( this );
+        var rowClass = data2['selector']['rows'].className;
+        var rowId = (rowClass.split("table_id_"))[1];
+        var rowId = rowId.replace(" odd-row", "");
+        var rowId = rowId.replace(" even-row", "");
+
+        window.location = "/application-profile/"+rowId;
+    } );
 
     $("#searchButton").on('click', function(){
         $("#searchButton").empty().append("Searching...")
@@ -296,9 +313,15 @@
 
             success: function (data) {
                 results = JSON.parse(data)
-                $("#applicantsSection").empty();
 
                 var i = 0;
+                var datatable = $( "#application_table" ).DataTable();
+                datatable.clear();
+
+                if(results.length == "0"){
+                    var datatable = $( "#application_table" ).DataTable();
+                    datatable.clear().draw();
+                }
 
                 results.forEach(function (arrayItem) {
                     console.log(i)
@@ -311,121 +334,121 @@
                     }
 
                     if(arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action"){
-                        var bookingStat = '<div class="button action"></div>';
+                        var bookingStat = '<span class="hidden">A</span><div class="button action"></div>';
                     }else if(arrayItem["bookingStatus"] == "Approved"){
-                        var bookingStat = '<div class="button approved"></div>';
+                        var bookingStat = '<span class="hidden">C</span><div class="button approved"></div>';
                     }else if(arrayItem["bookingStatus"] == "Denied" || arrayItem["bookingStatus"] == "" || arrayItem["bookingStatus"] == "Empty" || arrayItem["bookingStatus"] == "Rejected"){
-                        var bookingStat = '<div class="button rejected"></div>';
+                        var bookingStat = '<span class="hidden">B</span><div class="button rejected"></div>';
                     }else{
-                        var bookingStat = '<div class="button rejected"></div>';
+                        var bookingStat = '<span class="hidden">D</span><div class="button rejected"></div>';
                     }
 
                     if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
-                        applicationStatus = '<div class="button action"></div>';
+                        applicationStatus = '<span class="hidden">A</span><div class="button action"></div>';
                     }else if(arrayItem["applicationStatus"] === "Approved"){
-                        applicationStatus = '<div class="button approved"></div>';
+                        applicationStatus = '<span class="hidden">C</span><div class="button approved"></div>';
                     }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
-                        applicationStatus = '<div class="button rejected"></div>';
+                        applicationStatus = '<span class="hidden">B</span><div class="button rejected"></div>';
                     }
 
                     files.forEach(function (file) {
                         if(file['field'] == "proof_of_payment"){
                             if(file["status"] === "Uploaded"){
-                                pop = '<td id="statusBarIcon"><div class="button action"></div></td>';
+                                pop = '<span class="hidden">A</span><div class="button action"></div>';
                             }else if(file["status"] === "Approved"){
-                                pop = '<td id="statusBarIcon"><div class="button approved"></div></td>';
+                                pop = '<span class="hidden">C</span><div class="button approved"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                pop = '<td id="statusBarIcon"><div class="button rejected"></div></td>'
+                                pop = '<span class="hidden">B</span><div class="button rejected"></div>'
                             }else if(file["status"] === "na"){
-                                pop = '<td id="statusBarIcon"><div class="button na"></div></td>';
+                                pop = '<span class="hidden">D</span><div class="button na"></div>';
                             }
                         }
 
                         if(file["field"] === "copyID"){
                             if(file["status"] === "Uploaded"){
-                                copyId = '<td id="statusBarIcon"><div class="button action"></div></td>';
+                                copyId = '<span class="hidden">A</span><div class="button action"></div>';
                             }else if(file["status"] === "Approved"){
-                                copyId = '<td id="statusBarIcon"><div class="button approved"></div></td>';
+                                copyId = '<span class="hidden">C</span><div class="button approved"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                copyId = '<td id="statusBarIcon"><div class="button rejected"></div></td>';
+                                copyId = '<span class="hidden">B</span><div class="button rejected"></div>';
                             }else if(file["status"] === "na"){
-                                copyId = '<td id="statusBarIcon"><div class="button na"></div></td>';
+                                copyId = '<span class="hidden">D</span><div class="button na"></div>';
                             }
                         }
 
                         if(file["field"] === "studentCard" ){
                             if(file["status"] === "Uploaded"){
-                                studentCard = '<td id="statusBarIcon"><div class="button action"></div></td>';
+                                studentCard = '<span class="hidden">A</span><div class="button action"></div>';
                             }else if(file["status"] === "Approved"){
-                                studentCard= '<td id="statusBarIcon"><div class="button approved"></div></td>';
+                                studentCard= '<span class="hidden">C</span><div class="button approved"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                studentCard = '<td id="statusBarIcon"><div class="button rejected"></div></td>';
+                                studentCard = '<span class="hidden">B</span><div class="button rejected"></div>';
                             }else if(file["status"] === "na"){
-                                studentCard = '<td id="statusBarIcon"><div class="button na"></div></td>';
+                                studentCard = '<span class="hidden">D</span><div class="button na"></div>';
                             }        
                         }
 
                         if(file["field"] === "proofRegistration" ){
                             if(file["status"] === "Uploaded"){
-                                proofRegistration = '<td id="statusBarIcon"><div class="button action"></div></td>';
+                                proofRegistration = '<span class="hidden">A</span><div class="button action"></div>';
                             }else if(file["status"] === "Approved"){
-                                proofRegistration = '<td id="statusBarIcon"><div class="button approved"></div></td>';
+                                proofRegistration = '<span class="hidden">C</span><div class="button approved"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] == ""){
-                                proofRegistration = '<td id="statusBarIcon"><div class="button rejected"></div></td>';
+                                proofRegistration = '<span class="hidden">B</span><div class="button rejected"></div>';
                             }else if(file["status"] === "na"){
-                                proofRegistration = '<td id="statusBarIcon"><div class="button na"></div></td>';
+                                proofRegistration = '<span class="hidden">D</span><div class="button na"></div>';
                             }
                         }
 
                         if(file["field"] === "bursaryApproval"){
                             if(file["status"] === "Uploaded"){
-                                bursaryApproval = '<td id="statusBarIcon"><div class="button action"></div></td>';
+                                bursaryApproval = '<span class="hidden">A</span><div class="button action"></div>';
                             }else if(file["status"] === "Approved"){
-                                bursaryApproval = '<td id="statusBarIcon"><div class="button approved"></div></td>';
+                                bursaryApproval = '<span class="hidden">C</span><div class="button approved"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                bursaryApproval = '<td id="statusBarIcon"><div class="button rejected"></div></td>';
+                                bursaryApproval = '<span class="hidden">B</span><div class="button rejected"></div>';
                             }else if(file["status"] === "na"){
-                                bursaryApproval = '<td id="statusBarIcon"><div class="button na"></div></td>';
+                                bursaryApproval = '<span class="hidden">D</span><div class="button na"></div>';
                             }
                         }
 
                         if(file["field"] === "bankStatement"){
                                 
                             if(file["status"] === "Uploaded"){
-                                bankStatement = '<td id="statusBarIcon"><div class="button action"></div></td>';
+                                bankStatement = '<span class="hidden">A</span><div class="button action"></div>';
                             }else if(file["status"] === "Approved"){
-                                bankStatement = '<td id="statusBarIcon"><div class="button approved"></div></td>';
+                                bankStatement = '<span class="hidden">C</span><div class="button approved"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                bankStatement = '<td id="statusBarIcon"><div class="button rejected"></div></td>';
+                                bankStatement = '<span class="hidden">B</span><div class="button rejected"></div>';
                             }else if(file["status"] === "na"){
-                                bankStatement = '<td id="statusBarIcon"><div class="button na"></div></td>';
+                                bankStatement = '<span class="hidden">D</span><div class="button na"></div>';
                             }
                                 
                         }
                                     
                     });
 
+                    var datatable = $( "#application_table" ).DataTable();
 
-                    $("#applicantsSection").append(
-                        '<tr class="'+color+' clickable-row" onClick="relocate('+arrayItem['id']+')" data-href="/application-profile/'+arrayItem['id']+'">'+
+                    var trDOM = datatable.row.add( [
+                        '#'+arrayItem["bookingRef"] + '<span class="hidden">dataID '+arrayItem["id"]+'</span>',
+                        '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"]+' | '+arrayItem["created_at"],
+                        arrayItem["studentType"],
+                        bookingStat,
+                        pop,
+                        copyId,
+                        applicationStatus,
+                        studentCard,
+                        proofRegistration,
+                        bursaryApproval,
+                        bankStatement,
+                    ] ).draw().node();
 
-                            '<td id="bookingRef">#'+arrayItem["bookingRef"]+' </td>'+
-                            '<td id="appUser"><span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["userId"]+' | '+arrayItem["roomBlock"]+'</td>'+
-                            '<td id="studType">'+arrayItem["studentType"]+'</td>'+
-                            '<td id="statusBarIcon" style="background-color:#ccc">'+
-                                bookingStat+
-                            '</td>'+
-                            pop+
-                            copyId+
-                            '<td id="statusBarIcon" style="background-color:#ccc">'+
-                            applicationStatus+
-                            '</td>'+
-                            studentCard+
-                            proofRegistration+
-                            bursaryApproval+
-                            bankStatement+
-                            '</tr>'
-                    );
+
+                    $( trDOM ).addClass('table_id_'+arrayItem["id"]);
+                    $( trDOM ).find('td').eq(3).addClass('bookingBg');
+                    $( trDOM ).find('td').eq(6).addClass('bookingBg');
+
 
                     i++;
                 });
