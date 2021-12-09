@@ -61,7 +61,7 @@
                     <td>{{$user->userId}}</td>
                     <td>
                         <a href="/student/edit/{{$user->id}}"><button type="button" class="inactiveBtn">Edit</button></a> &nbsp;&nbsp;
-                        <a href="/student/upload/{{$user->id}}"><button type="button" class="inactiveBtn">Upload Documents</button></a>
+                        <!-- <a href="/student/upload/{{$user->id}}"><button type="button" class="inactiveBtn">Upload Documents</button></a> -->
                     </td>
                 </tr>
             @endforeach

@@ -642,7 +642,7 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['bookingStatus' => "Approved Confirmed"]);
+        User::where('id', $userId)->update(['applicationStatus' => "Approved Confirmed"]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -956,7 +956,7 @@ class HomeController extends Controller
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
                         'status' => 'Uploaded',
-                        'uploaded_by' => $request->adminName,
+                        'uploaded_by' => Auth::user()->userFirstName,
                     ]);
 
                     $text = "Uploaded ".$typeName." for review";
@@ -967,7 +967,7 @@ class HomeController extends Controller
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
                         'status' => 'Uploaded',
-                        'uploaded_by' => $request->adminName,
+                        'uploaded_by' => Auth::user()->userFirstName,
                     ]);
                     $text = "Re-uploaded ".$typeName." for review";
                 }
@@ -976,7 +976,7 @@ class HomeController extends Controller
                     "userUid" => $userUid,
                     "action" => $text,
                     "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => $request->adminName,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
                 ]);
 
@@ -1194,7 +1194,16 @@ class HomeController extends Controller
 
         User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
 
-        return redirect()->route('users');
+        ActionList::create([
+            "userUid" => $user->id,
+            "action" => "Registered ".$request->firstName."as a new user",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        // return redirect()->route('users');
+        return redirect('/application-profile/'.$user->id);
     }
 
     public function new_admin(Request $request){

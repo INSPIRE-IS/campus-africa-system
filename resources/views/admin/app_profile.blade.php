@@ -17,27 +17,31 @@
             </p>
         </div>
         <div class="col-3">
-        <p class="listHeader">Sponsor</p>
-            <br/>
-            <p class="list">
-                {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
-                {{$user[0]['userInfo']['sponCellNo']}}<br/>
-                {{$user[0]['userInfo']['sponEmail']}}<br/>
-                {{$user[0]['userInfo']['sponId']}}<br/>
-            </p>
+            @if($user[0]['userInfo']['studentType'] !== "NSFAS")
+                <p class="listHeader">Sponsor</p>
+                <br/>
+                <p class="list">
+                    {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
+                    {{$user[0]['userInfo']['sponCellNo']}}<br/>
+                    {{$user[0]['userInfo']['sponEmail']}}<br/>
+                    {{$user[0]['userInfo']['sponId']}}<br/>
+                </p>
+            @endif
         </div>
         <div class="col-3">
-        <p class="listHeader">Bursar</p>
-            <br/>
-            <p class="list">
-                {{$user[0]['userInfo']['burFirstName']}} {{$user[0]['userInfo']['burLastName']}}<br/>
-                {{$user[0]['userInfo']['burCellNo']}}<br/>
-                {{$user[0]['userInfo']['burEmail']}}<br/>
-                {{$user[0]['userInfo']['burId']}}<br/>
-            </p>
+            @if($user[0]['userInfo']['studentType'] !== "NSFAS")
+                <p class="listHeader">Bursar</p>
+                <br/>
+                <p class="list">
+                    {{$user[0]['userInfo']['burFirstName']}} {{$user[0]['userInfo']['burLastName']}}<br/>
+                    {{$user[0]['userInfo']['burCellNo']}}<br/>
+                    {{$user[0]['userInfo']['burEmail']}}<br/>
+                    {{$user[0]['userInfo']['burId']}}<br/>
+                </p>
+            @endif
             <br/>
             <a href="/student/edit/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Edit Profile</button></a>
-            <a href="/student/upload/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Upload Documents</button></a>
+            <!-- <a href="/student/upload/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Upload Documents</button></a> -->
         </div>
         
     </div>

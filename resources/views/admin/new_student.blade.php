@@ -55,7 +55,7 @@
         </div>
 
         <div class="form-field" id="idField">
-            <label>I.D Number</label>
+            <label>I.D Number <span id="idNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
             <input type="text" name="idNumber" id="idNumber" >
         </div>
 
@@ -186,7 +186,7 @@
                 </div>
 
                 <div class="form-field">
-                    <label>I.D Number</label>
+                    <label>I.D Number <span id="pIdNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
                     <input type="text" name="pIdNumber" id="pIdNumber" >
                 </div>
 
@@ -300,11 +300,98 @@
             <br/>
         </div>
 
-        <input type="submit" value="Update" class="profileSubmit" style="opacity:1;"/>
+        <input type="submit" value="Save" class="profileSubmit" style="opacity:1;"/>
     </form>
 </div>
 
 <script>
+
+    $("#idNumber").on('blur', function(){
+        let idNumber = $("#idNumber").val();
+
+        let idArr = Array.from(idNumber);
+        idArr.reverse()
+        let newArr = [];
+
+        for (let i = 0; i < idArr.length; i++) {
+            if((i % 2) !== 0){
+                let newValue = idArr[i]*2
+                if(newValue > 9){
+                    value1 = (newValue.toString()).substr(0,1)
+                    value2 = (newValue.toString()).substr(1, 2)
+                    newValue = parseInt(value1) + parseInt(value2)
+
+                }
+                newArr.push(newValue)
+            }else{
+                newArr.push(idArr[i])
+            }
+        }
+
+        console.log(newArr)
+
+        let sum = 0;
+        for (let i = 0; i < newArr.length; i++) {
+            sum += parseInt(newArr[i]);
+        }
+
+        let finalSum = sum/10
+
+        console.log(finalSum, finalSum % 10)
+
+        if(Number.isInteger(finalSum)){
+            $("#idNumber").removeClass("fieldError")
+            $("#idNumberError").addClass('hidden')
+        }else{
+            $("#idNumber").addClass("fieldError")
+            $("#idNumberError").removeClass('hidden')
+        }
+
+    })
+
+    $("#pIdNumber").on('blur', function(){
+        let idNumber = $("#pIdNumber").val();
+
+        let idArr = Array.from(idNumber);
+        idArr.reverse()
+        let newArr = [];
+
+        for (let i = 0; i < idArr.length; i++) {
+            if((i % 2) !== 0){
+                let newValue = idArr[i]*2
+                if(newValue > 9){
+                    value1 = (newValue.toString()).substr(0,1)
+                    value2 = (newValue.toString()).substr(1, 2)
+                    newValue = parseInt(value1) + parseInt(value2)
+
+                }
+                newArr.push(newValue)
+            }else{
+                newArr.push(idArr[i])
+            }
+        }
+
+        console.log(newArr)
+
+        let sum = 0;
+        for (let i = 0; i < newArr.length; i++) {
+            sum += parseInt(newArr[i]);
+        }
+
+        let finalSum = sum/10
+
+        console.log(finalSum, finalSum % 10)
+
+        if(Number.isInteger(finalSum)){
+            $("#pIdNumber").removeClass("fieldError")
+            $("#pIdNumberError").addClass('hidden')
+        }else{
+            $("#pIdNumber").addClass("fieldError")
+            $("#pIdNumberError").removeClass('hidden')
+        }
+
+    })
+
     $("#cell_no").on('blur', function(){
 
         if(($("#cell_no").val()).substring(0,3) == "+27"){
