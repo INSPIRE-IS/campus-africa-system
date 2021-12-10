@@ -62,16 +62,16 @@
             <select name="bookingStatus" id='bookingStatus' style="width:45%">
                 <option value="" selected disabled>Booking Status</option>
                 <option value="All">All</option>
-                <option value="Approved">Valid Booking</option>
-                <option value="Action">Pending Booking</option>
-                <option value="Empty">Invalid Booking</option>
+                <option value="Approved">&#128994; Valid Booking</option>
+                <option value="Action">&#128993; Pending Booking</option>
+                <option value="Empty">&#128308; Invalid Booking</option>
             </select>
             <select name="applicationStatus" id='applicationStatus' style="width:45%">
                 <option value="" selected disabled>Application Status</option>
                 <option value="All">All</option>
-                <option value="Approved">Valid Application</option>
-                <option value="Action">Pending Application</option>
-                <option value="Empty">Invalid Application</option>
+                <option value="Approved">&#128994; Valid Application</option>
+                <option value="Action">&#128993; Pending Application</option>
+                <option value="Empty">&#128308; Invalid Application</option>
             </select>
         </div>
         <div class="searchField">
