@@ -888,6 +888,14 @@ class HomeController extends Controller
             'kinEmail' => $request->kEmail,
         ]);
 
+        ActionList::create([
+            "userUid" => $request->userUid,
+            "action" => "Updated Profile",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
         return redirect()->back();
     }
 

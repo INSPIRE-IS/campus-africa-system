@@ -106,7 +106,7 @@
                         <div class="infoBlock">
                             <div class="responsible">
                                 <p>{{$action->actionUserDisplayName}}</p>
-                                @if($action->actionUserRole == "1")
+                                @if($action->actionUserRole !== "0" )
                                     <button type="button" class="admin">Admin</button>
                                 @else
                                     <button type="button" class="applicant">Applicant</button>
