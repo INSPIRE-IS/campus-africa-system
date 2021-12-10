@@ -59,12 +59,19 @@
         </div>
         <div class="searchField">
         <label></label><br/>
-            <select name="applicationStatus" id='applicationStatus'>
-                <option value="" selected disabled>Select a Booking Status</option>
+            <select name="bookingStatus" id='bookingStatus' style="width:45%">
+                <option value="" selected disabled>Booking Status</option>
                 <option value="All">All</option>
-                <option value="Approved">Valid</option>
-                <option value="Action">Pending</option>
-                <option value="Empty">Invalid</option>
+                <option value="Approved">Valid Booking</option>
+                <option value="Action">Pending Booking</option>
+                <option value="Empty">Invalid Booking</option>
+            </select>
+            <select name="applicationStatus" id='applicationStatus' style="width:45%">
+                <option value="" selected disabled>Application Status</option>
+                <option value="All">All</option>
+                <option value="Approved">Valid Application</option>
+                <option value="Action">Pending Application</option>
+                <option value="Empty">Invalid Application</option>
             </select>
         </div>
         <div class="searchField">
@@ -307,6 +314,7 @@
                 room_type: $("#room_type").val(), 
                 applicant: $("#applicant").val(), 
                 student_type: $("#student_type").val(),
+                bookingStatus: $("#bookingStatus").val(),
                 applicationStatus: $("#applicationStatus").val(), 
                 date: $("#date").val(), 
             },
@@ -345,7 +353,7 @@
 
                     if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
                         applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                    }else if(arrayItem["applicationStatus"] === "Approved"){
+                    }else if(arrayItem["applicationStatus"] === "Approved" || arrayItem["applicationStatus"] === "Approved Confirmed"){
                         applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
                     }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
                         applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
@@ -441,7 +449,7 @@
                         ("0" + m.getUTCSeconds()).slice(-2);
 
                     var trDOM = datatable.row.add( [
-                        '#'+arrayItem["bookingRef"] + '<span class="hidden">dataID '+arrayItem["id"]+'</span>',
+                        '#'+arrayItem["bookingRef"],
                         '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"]+' | '+dateString,
                         arrayItem["studentType"],
                         bookingStat,

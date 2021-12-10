@@ -1267,16 +1267,30 @@ class HomeController extends Controller
         
         $search_value = [];
 
+        if($request->bookingStatus !== "" && !empty($request->bookingStatus)){
+
+            if($request->bookingStatus !== "All"){
+            
+                if($request->bookingStatus == "Empty"){
+                    $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
+                    array_push($search_value, $bookingStatus);
+                }else{
+                    $bookingStatus = 'users.bookingStatus LIKE "%'.$request->bookingStatus.'%"';
+                    array_push($search_value, $bookingStatus);
+                }
+            }
+        }
+
         if($request->applicationStatus !== "" && !empty($request->applicationStatus)){
 
             if($request->applicationStatus !== "All"){
             
                 if($request->applicationStatus == "Empty"){
-                    $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
-                    array_push($search_value, $bookingStatus);
+                    $applicationStatus = '(users.applicationStatus LIKE "%Empty%" OR users.applicationStatus LIKE "%Rejected%")';
+                    array_push($search_value, $applicationStatus);
                 }else{
-                    $bookingStatus = 'users.bookingStatus LIKE "%'.$request->applicationStatus.'%"';
-                    array_push($search_value, $bookingStatus);
+                    $applicationStatus = 'users.applicationStatus LIKE "%'.$request->applicationStatus.'%"';
+                    array_push($search_value, $applicationStatus);
                 }
             }
         }
@@ -1383,8 +1397,17 @@ class HomeController extends Controller
 
                 foreach($data as $item){
   
-                    if($item['status'] == "" || $item['status'] == "Rejected"){
+                    if($item['status'] == "Uploaded"){
                         $counter++;
+                    }
+  
+                    if($item['status'] == "" || $item['status'] == "Rejected"){
+                        $counter--;
+                    }
+
+                    if($item['status'] == "Approved"){
+                        $counter--;
+                        $counter--;
                     }
 
                 }   
