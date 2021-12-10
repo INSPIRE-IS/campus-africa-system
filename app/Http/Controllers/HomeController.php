@@ -424,7 +424,7 @@ class HomeController extends Controller
             $action = $request->type;
             $reason = $request->reason;
 
-            UserFiles::where('id', $fileId)->update([
+            $userFile = UserFiles::where('id', $fileId)->update([
                 'status' => $action,
                 'rejectReason' => $reason,
                 'approved_by' => $request->userName,
@@ -444,6 +444,10 @@ class HomeController extends Controller
                 $typeName = "Proof of Payment";
             }elseif($userFile['fileId'] == "moveIn"){
                 $typeName = "Lease";
+            }elseif($userFile['fileId'] == "moveIn"){
+                $typeName = "Lease";
+            }elseif($userFile['fileId'] == "bursaryApproval"){
+                $typeName = "NSFAS Approval";
             }
 
             if($action == "Rejected"){
@@ -561,6 +565,8 @@ class HomeController extends Controller
             }
 
             User::where('id', $userFile->userUid)->update(["bookingStatus" => $booking, "applicationStatus" => $phase2]);
+
+            return $userFile;
 
 
         }

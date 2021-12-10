@@ -1324,7 +1324,8 @@ button:disabled {
     background-color: #868686;
     color: #ffffff;
     /* max-width: 50px; */
-    font-size: 10px;
+    /* font-size: 10px; */
+    font-size: 7px;
     font-weight: 400;
     line-height: 11px;
     text-align: left;
@@ -1589,6 +1590,11 @@ button:disabled {
 }
 .topnav .icon {
     display: none;
+}
+
+.bigButton {
+    height: 30px !important;
+    width: 30px !important;
 }
 
 #fullNavbar {

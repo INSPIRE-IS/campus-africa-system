@@ -128,7 +128,7 @@
         <div class="cards">
 
             <div class="customWhiteCard">
-                <button type="button" class="reminder">Send reminder</button>
+                <!-- <button type="button" class="reminder">Send reminder</button> -->
                 <h2 class="appSubHeader bold">PAYMENT TYPE </h2>
                 <p class="appSubHeader">
                     NSFAS
@@ -221,7 +221,7 @@
                                         </button>
                                     @else
                                         @if(Auth::user()->userRole == '1' || Auth::user()->userRole == '2')
-                                            <button type="button" id="{{$file['field']}}Error" class="error">Send reminder</button>
+                                            <!-- <button type="button" id="{{$file['field']}}Error" class="error">Send reminder</button> -->
                                         @endif
                                         <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
                                             <span class="text">Upload</span>
@@ -255,6 +255,7 @@
         <br/>
         
             <input type="hidden" id="FileIdForApproval">
+            <input type="hidden" id="FileNameForApproval">
             <input type="text" id="actionUserName" placeholder="Name">
             <div class="flex" style="margin-top:35px;" id="buttonSection">
             @if(Auth::user()->userRole !== 3)
@@ -308,8 +309,9 @@
         $("#uploadedTime").empty().append(created_at.slice(11, 16))
         $("#uploadedDate").empty().append(created_at.slice(8, 10)+"|"+created_at.slice(5, 7)+"|"+created_at.slice(0, 4))
         $("#FileIdForApproval").val(fileId)
+        $("#FileNameForApproval").val(field)
 
-        if(status == "Approved" || status == "Rejected")
+        if(status == "Approved" || status == "Rejected" || status == "XApproved")
             $("#buttonSection").addClass('hidden')
         else
             $("#buttonSection").removeClass('hidden')
@@ -369,7 +371,21 @@
             },
 
             success: function (data) {
-                window.location.reload();
+                // window.location.reload();
+
+                // console.log(data['id'])
+
+                if(type === "Rejected"){
+                    $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
+                }else{
+                    $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button approved"></div>')
+                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<button type="button" onclick="openModal(\''+$("#FileNameForApproval").val()+'\', \''+data["fileUrl"]+'\', \'\', \'\', \''+data["id"]+'\', \'XApproved\')">View Document</button>')
+                }
+
+                var modal = document.getElementById("myModal");
+                modal.style.display = "none";
+
+               
             },
         });
 
@@ -434,14 +450,12 @@
                         var name = 'NSFAS APPROVAL';
                     }else if(item['field'] == "bankStatement"){
                         var name = 'BANK STATEMENT';
-                    }else if(item['field'] == "moveIn"){
-                        var name = 'LEASE';
                     }
 
                     if(item['status'] == "Uploaded" || item['status'] == "Approved"){
                         var button = '<button type="button" onClick="openModal(\''+item['field']+'\', \''+item['url']+'\',\''+item['uploaded_by']+'\',\''+item['created_at']+'\',\''+item['id']+'\',\''+item['status']+'\')" id="myBtn_'+index+'">View Document</button>';
                     }else{
-                        var button = '<button type="button" class="error">Send reminder</button>';
+                        // var button = '<button type="button" class="error">Send reminder</button>';
                     }
 
                     if(item['status'] == "Uploaded"){

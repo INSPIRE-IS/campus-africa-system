@@ -99,7 +99,7 @@
                 <thead>
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
-                        <th style="width:30%">APPLICANT | ROOM</th>
+                        <th style="width:50%">APPLICANT | ROOM</th>
                         <th>STUDENT TYPE</th>
                         <th style="background-color:#ccc; ">BOOKING STATUS</th>
                         <th>PROOF OF PAYMENT</th>
@@ -123,11 +123,11 @@
                             <td id="studType">{{$user["studentType"]}}</td>
                             <td id="statusBarIcon" style="background-color:#ccc">
                                 @if($user["bookingStatus"] === "Pending" || $user["bookingStatus"] === "Action")
-                                <span class="hidden">A</span><div class="button action"></div>
+                                <span class="hidden">A</span><div class="button action bigButton"></div>
                                 @elseif($user["bookingStatus"] === "Approved")
-                                <span class="hidden">C</span><div class="button approved"></div>
+                                <span class="hidden">C</span><div class="button approved bigButton"></div>
                                 @elseif($user["bookingStatus"] === "Denied" || $user["bookingStatus"] === null || $user["bookingStatus"] === "Empty" || $user["bookingStatus"] === "Rejected")
-                                <span class="hidden">B</span><div class="button rejected"></div>
+                                <span class="hidden">B</span><div class="button rejected bigButton"></div>
                                 @endif
                             </td>
                             
@@ -171,11 +171,11 @@
 
                             <td id="statusBarIcon" style="background-color:#ccc">
                                 @if($user["applicationStatus"] === "Pending" || $user["applicationStatus"] === "Action" || $user["applicationStatus"] === "Approved")
-                                <span class="hidden">A</span><div class="button action"></div>
+                                <span class="hidden">A</span><div class="button action bigButton"></div>
                                 @elseif($user["applicationStatus"] === "Approved Confirmed")
-                                <span class="hidden">C</span><div class="button approved"></div>
+                                <span class="hidden">C</span><div class="button approved bigButton"></div>
                                 @elseif($user["applicationStatus"] === "Denied" || $user["applicationStatus"] === null || $user["applicationStatus"] === "Rejected" || $user["applicationStatus"] === "Empty" || $user["applicationStatus"] == "Denied Confimed")
-                                <span class="hidden">B</span><div class="button rejected"></div>
+                                <span class="hidden">B</span><div class="button rejected bigButton"></div>
                                 @endif
                             </td>
 
