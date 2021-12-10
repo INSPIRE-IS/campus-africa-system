@@ -25,6 +25,9 @@
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="../../js/applications.js?v=<?php echo rand();?>"></script>
+
+
 
 
     
