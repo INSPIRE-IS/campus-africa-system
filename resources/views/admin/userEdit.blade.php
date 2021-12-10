@@ -45,13 +45,39 @@
             <input type="email" name="email" id="email" required value="{{$user->email}}" >
         </div>
 
-        <div class="form-field">
-            <label>User Role</label>
+        <!-- <div class="form-field">
+             <label>User Role</label>
             <select name="userRole" id='userRole'>
                 <option value="1" <?php if($user->userTitle == "1"){echo "selected";} ?>>Super Admin</option>
                 <option value="2" <?php if($user->userTitle == "2"){echo "selected";} ?>>Admin</option>
                 <option value="3" <?php if($user->userTitle == "3"){echo "selected";} ?>>Consultant</option>
-            </select>
+            </select> 
+        </div> -->
+
+        <div class="form-field" style="margin-bottom:250px;">
+            <label>Access Roles</label>
+            <br/><br/>
+            <ul style="list-style-type:none">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="create_app" name="create_app" value="1" <?php if($user->role_create_app == "1"){echo "checked";} ?>>
+                    <label for="create_app" style="width:400px">Create Applications</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="edit_app" name="edit_app" value="1" <?php if($user->role_edit_app == "1"){echo "checked";} ?>>
+                    <label for="edit_app" style="width:400px">Edit Applications</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="upload_docs" name="upload_docs" value="1" <?php if($user->role_upload_docs == "1"){echo "checked";} ?>>
+                    <label for="upload_docs" style="width:400px">Upload Documents</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="approve_docs" name="approve_docs" value="1" <?php if($user->role_approve_docs == "1"){echo "checked";} ?>>
+                    <label for="approve_docs" style="width:400px">Approve Documents</label>
+                </li>
+            </ul>
         </div>
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>

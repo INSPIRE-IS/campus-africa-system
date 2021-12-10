@@ -68,6 +68,10 @@ class User extends Authenticatable
         'bookingStatus',
         'applicationStatus',
         'yearOfStudy',
+        'role_create_app',
+        'role_edit_app',
+        'role_upload_docs',
+        'role_approve_docs',
     ];
 
     public function files(){

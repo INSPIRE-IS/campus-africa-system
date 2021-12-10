@@ -50,13 +50,45 @@
         </div>
 
         <div class="form-field">
+            <br/>
+        </div>
+
+        <!-- <div class="form-field">
             <label>User Role</label>
             <select name="userRole" id='userRole'>
                 <option value="1" >Super Admin</option>
                 <option value="2" >Admin</option>
                 <option value="3" >Consultant</option>
             </select>
+        </div> -->
+
+        <div class="form-field" style="margin-bottom:250px;">
+            <label>Access Roles</label>
+            <br/><br/>
+            <ul style="list-style-type:none">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="create_app" name="create_app" value="1">
+                    <label for="create_app" style="width:400px">Create Applications</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="edit_app" name="edit_app" value="1">
+                    <label for="edit_app" style="width:400px">Edit Applications</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="upload_docs" name="upload_docs" value="1">
+                    <label for="upload_docs" style="width:400px">Upload Documents</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="approve_docs" name="approve_docs" value="1">
+                    <label for="approve_docs" style="width:400px">Approve Documents</label>
+                </li>
+            </ul>
         </div>
+
+    <br/>
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>

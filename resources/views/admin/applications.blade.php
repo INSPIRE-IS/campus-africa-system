@@ -9,9 +9,9 @@
 
 <br/>
 
-@if(Auth::user()->userRole !== 2)
-    <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
-@endif
+    @if(Auth::user()->role_create_app == 1)
+        <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
+    @endif
 
 
     <div class="appSearchForm" style="margin-top:-35px">
@@ -135,13 +135,13 @@
 
                                 @if($file["field"] === "proof_of_payment")
                                     @if($file["status"] === "Uploaded")
-                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved noBoarder"></div></td>
                                     @elseif($file["status"] === "Rejected" || $file["status"] === "")
-                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na noBoarder"></div></td>
                                     @endif
 
                                 @endif
@@ -155,13 +155,13 @@
                                 @if($file["field"] === "copyID")
                                     <td id="statusBarIcon">
                                         @if($file["status"] === "Uploaded")
-                                        <span class="hidden">A</span><div class="button action"></div>
+                                        <span class="hidden">A</span><div class="button action noBoarder"></div>
                                         @elseif($file["status"] === "Approved")
-                                        <span class="hidden">C</span><div class="button approved"></div>
+                                        <span class="hidden">C</span><div class="button approved noBoarder"></div>
                                         @elseif($file["status"] === "Rejected" || $file["status"] === "")
-                                        <span class="hidden">B</span><div class="button rejected"></div>
+                                        <span class="hidden">B</span><div class="button rejected noBoarder"></div>
                                         @elseif($file["status"] === "na")
-                                        <span class="hidden">D</span><div class="button na"></div>
+                                        <span class="hidden">D</span><div class="button na noBoarder"></div>
                                         @endif
                                     </td>
                                     
@@ -185,13 +185,13 @@
 
                                 @if($file["field"] === "studentCard" )
                                     @if($file["status"] === "Uploaded")
-                                    <span class="hidden">A</span><td id="statusBarIcon"><div class="button action"></div></td>
+                                    <span class="hidden">A</span><td id="statusBarIcon"><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                    <span class="hidden">C</span><td id="statusBarIcon"><div class="button approved"></div></td>
+                                    <span class="hidden">C</span><td id="statusBarIcon"><div class="button approved noBoarder"></div></td>
                                     @elseif($file["status"] === "Rejected" || $file["status"] === "")
-                                    <span class="hidden">B</span><td id="statusBarIcon"><div class="button rejected"></div></td>
+                                    <span class="hidden">B</span><td id="statusBarIcon"><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                    <span class="hidden">D</span><td id="statusBarIcon"><div class="button na"></div></td>
+                                    <span class="hidden">D</span><td id="statusBarIcon"><div class="button na noBoarder"></div></td>
                                     @endif
 
                                     
@@ -203,13 +203,13 @@
 
                                 @if($file["field"] === "proofRegistration" )
                                     @if($file["status"] === "Uploaded")
-                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved noBoarder"></div></td>
                                     @elseif($file["status"] === "Rejected" || $file["status"] == "")
-                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na noBoarder"></div></td>
                                     @endif
 
                                 @endif
@@ -220,13 +220,13 @@
 
                                 @if($file["field"] === "bursaryApproval")
                                     @if($file["status"] === "Uploaded")
-                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved noBoarder"></div></td>
                                     @elseif($file["status"] === "Rejected" || $file["status"] === "")
-                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na noBoarder"></div></td>
                                     @endif
                                 @endif
 
@@ -237,13 +237,13 @@
                                 @if($file["field"] === "bankStatement")
                                 <td id="statusBarIcon">
                                     @if($file["status"] === "Uploaded")
-                                    <span class="hidden">A</span><div class="button action"></div>
+                                    <span class="hidden">A</span><div class="button action noBoarder"></div>
                                     @elseif($file["status"] === "Approved")
-                                    <span class="hidden">C</span><div class="button approved"></div>
+                                    <span class="hidden">C</span><div class="button approved noBoarder"></div>
                                     @elseif($file["status"] === "Rejected" || $file["status"] === "")
-                                    <span class="hidden">B</span><div class="button rejected"></div>
+                                    <span class="hidden">B</span><div class="button rejected noBoarder"></div>
                                     @elseif($file["status"] === "na")
-                                    <span class="hidden">D</span><div class="button na"></div>
+                                    <span class="hidden">D</span><div class="button na noBoarder"></div>
                                     @endif
                                 </td>
                                 @endif

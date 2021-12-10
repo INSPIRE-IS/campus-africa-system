@@ -40,7 +40,9 @@
                 </p>
             @endif
             <br/>
-            <a href="/student/edit/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Edit Profile</button></a>
+            @if(Auth::user()->role_edit_app == 1)
+                <a href="/student/edit/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Edit Profile</button></a>
+            @endif
             <!-- <a href="/student/upload/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Upload Documents</button></a> -->
         </div>
         
@@ -220,14 +222,18 @@
                                             id="myBtn_<?php echo $i; ?>">View Document
                                         </button>
                                     @else
-                                        @if(Auth::user()->userRole == '1' || Auth::user()->userRole == '2')
+                                        
                                             <!-- <button type="button" id="{{$file['field']}}Error" class="error">Send reminder</button> -->
-                                        @endif
-                                        <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
-                                            <span class="text">Upload</span>
-                                            <i class="fas fa-file-upload" ></i>
-                                        </label>
-                                        <input type="file" id="{{$file['field']}}" hidden/>
+
+                                            @if(Auth::user()->role_upload_docs == 1)
+                                        
+                                                <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
+                                                    <span class="text">Upload</span>
+                                                    <i class="fas fa-file-upload" ></i>
+                                                </label>
+                                                <input type="file" id="{{$file['field']}}" hidden/>
+
+                                            @endif
                                     @endif
                                 </div>
                             </div>
@@ -256,14 +262,16 @@
         
             <input type="hidden" id="FileIdForApproval">
             <input type="hidden" id="FileNameForApproval">
-            <input type="text" id="actionUserName" placeholder="Name">
+            @if(Auth::user()->role_approve_docs == 1)
+                <input type="text" id="actionUserName" placeholder="Name">
+            @endif
             <div class="flex" style="margin-top:35px;" id="buttonSection">
-            @if(Auth::user()->userRole !== 3)
+            @if(Auth::user()->role_approve_docs == 1)
                 <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
                 <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
                 <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-        @endif
+            @endif
             
             
         </div>

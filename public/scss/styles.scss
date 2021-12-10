@@ -1484,8 +1484,10 @@ input:read-only {
 }
 
 .bigButton {
-    height: 30px !important;
-    width: 30px !important;
+    border: 3px solid #000 !important;
+}
+.noBoarder {
+    border: none !important;
 }
 
 .greyAppSection {
