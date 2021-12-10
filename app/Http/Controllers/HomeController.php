@@ -456,11 +456,17 @@ class HomeController extends Controller
                 $text = "Approved ".$typeName;
             }
 
+            if($request->userName !== "" && !empty($request->userName)){
+                $name = $request->userName;
+            }else{
+                $name = Auth::user()->userFirstName;
+            }
+
             ActionList::create([
                 "userUid" => $userFile->userUid,
                 "action" => $text,
                 "actionUserUid" => Auth::user()->id,
-                "actionUserDisplayName" => $request->userName,
+                "actionUserDisplayName" => $name,
                 "actionUserRole" => Auth::user()->userRole,
             ]);
 
