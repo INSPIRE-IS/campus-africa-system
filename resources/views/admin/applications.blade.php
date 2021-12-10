@@ -334,94 +334,94 @@
                     }
 
                     if(arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action"){
-                        var bookingStat = '<span class="hidden">A</span><div class="button action"></div>';
+                        var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
                     }else if(arrayItem["bookingStatus"] == "Approved"){
-                        var bookingStat = '<span class="hidden">C</span><div class="button approved"></div>';
+                        var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
                     }else if(arrayItem["bookingStatus"] == "Denied" || arrayItem["bookingStatus"] == "" || arrayItem["bookingStatus"] == "Empty" || arrayItem["bookingStatus"] == "Rejected"){
-                        var bookingStat = '<span class="hidden">B</span><div class="button rejected"></div>';
+                        var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                     }else{
-                        var bookingStat = '<span class="hidden">D</span><div class="button rejected"></div>';
+                        var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
                     }
 
                     if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
-                        applicationStatus = '<span class="hidden">A</span><div class="button action"></div>';
+                        applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
                     }else if(arrayItem["applicationStatus"] === "Approved"){
-                        applicationStatus = '<span class="hidden">C</span><div class="button approved"></div>';
+                        applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
                     }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
-                        applicationStatus = '<span class="hidden">B</span><div class="button rejected"></div>';
+                        applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                     }
 
                     files.forEach(function (file) {
                         if(file['field'] == "proof_of_payment"){
                             if(file["status"] === "Uploaded"){
-                                pop = '<span class="hidden">A</span><div class="button action"></div>';
+                                pop = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                             }else if(file["status"] === "Approved"){
-                                pop = '<span class="hidden">C</span><div class="button approved"></div>';
+                                pop = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                pop = '<span class="hidden">B</span><div class="button rejected"></div>'
+                                pop = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>'
                             }else if(file["status"] === "na"){
-                                pop = '<span class="hidden">D</span><div class="button na"></div>';
+                                pop = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                             }
                         }
 
                         if(file["field"] === "copyID"){
                             if(file["status"] === "Uploaded"){
-                                copyId = '<span class="hidden">A</span><div class="button action"></div>';
+                                copyId = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                             }else if(file["status"] === "Approved"){
-                                copyId = '<span class="hidden">C</span><div class="button approved"></div>';
+                                copyId = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                copyId = '<span class="hidden">B</span><div class="button rejected"></div>';
+                                copyId = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                             }else if(file["status"] === "na"){
-                                copyId = '<span class="hidden">D</span><div class="button na"></div>';
+                                copyId = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                             }
                         }
 
                         if(file["field"] === "studentCard" ){
                             if(file["status"] === "Uploaded"){
-                                studentCard = '<span class="hidden">A</span><div class="button action"></div>';
+                                studentCard = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                             }else if(file["status"] === "Approved"){
-                                studentCard= '<span class="hidden">C</span><div class="button approved"></div>';
+                                studentCard= '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                studentCard = '<span class="hidden">B</span><div class="button rejected"></div>';
+                                studentCard = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                             }else if(file["status"] === "na"){
-                                studentCard = '<span class="hidden">D</span><div class="button na"></div>';
+                                studentCard = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                             }        
                         }
 
                         if(file["field"] === "proofRegistration" ){
                             if(file["status"] === "Uploaded"){
-                                proofRegistration = '<span class="hidden">A</span><div class="button action"></div>';
+                                proofRegistration = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                             }else if(file["status"] === "Approved"){
-                                proofRegistration = '<span class="hidden">C</span><div class="button approved"></div>';
+                                proofRegistration = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] == ""){
-                                proofRegistration = '<span class="hidden">B</span><div class="button rejected"></div>';
+                                proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                             }else if(file["status"] === "na"){
-                                proofRegistration = '<span class="hidden">D</span><div class="button na"></div>';
+                                proofRegistration = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                             }
                         }
 
                         if(file["field"] === "bursaryApproval"){
                             if(file["status"] === "Uploaded"){
-                                bursaryApproval = '<span class="hidden">A</span><div class="button action"></div>';
+                                bursaryApproval = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                             }else if(file["status"] === "Approved"){
-                                bursaryApproval = '<span class="hidden">C</span><div class="button approved"></div>';
+                                bursaryApproval = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                bursaryApproval = '<span class="hidden">B</span><div class="button rejected"></div>';
+                                bursaryApproval = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                             }else if(file["status"] === "na"){
-                                bursaryApproval = '<span class="hidden">D</span><div class="button na"></div>';
+                                bursaryApproval = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                             }
                         }
 
                         if(file["field"] === "bankStatement"){
                                 
                             if(file["status"] === "Uploaded"){
-                                bankStatement = '<span class="hidden">A</span><div class="button action"></div>';
+                                bankStatement = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                             }else if(file["status"] === "Approved"){
-                                bankStatement = '<span class="hidden">C</span><div class="button approved"></div>';
+                                bankStatement = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
                             }else if(file["status"] === "Rejected" || file["status"] === ""){
-                                bankStatement = '<span class="hidden">B</span><div class="button rejected"></div>';
+                                bankStatement = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                             }else if(file["status"] === "na"){
-                                bankStatement = '<span class="hidden">D</span><div class="button na"></div>';
+                                bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                             }
                                 
                         }
@@ -430,9 +430,19 @@
 
                     var datatable = $( "#application_table" ).DataTable();
 
+                    var m = new Date(arrayItem["created_at"]);
+
+                    var dateString =
+                        m.getUTCFullYear() + "-" +
+                        ("0" + (m.getUTCMonth()+1)).slice(-2) + "-" +
+                        ("0" + m.getUTCDate()).slice(-2) + " " +
+                        ("0" + m.getUTCHours()).slice(-2) + ":" +
+                        ("0" + m.getUTCMinutes()).slice(-2) + ":" +
+                        ("0" + m.getUTCSeconds()).slice(-2);
+
                     var trDOM = datatable.row.add( [
                         '#'+arrayItem["bookingRef"] + '<span class="hidden">dataID '+arrayItem["id"]+'</span>',
-                        '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"]+' | '+arrayItem["created_at"],
+                        '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"]+' | '+dateString,
                         arrayItem["studentType"],
                         bookingStat,
                         pop,
@@ -448,6 +458,9 @@
                     $( trDOM ).addClass('table_id_'+arrayItem["id"]);
                     $( trDOM ).find('td').eq(3).addClass('bookingBg');
                     $( trDOM ).find('td').eq(6).addClass('bookingBg');
+
+
+
 
 
                     i++;
