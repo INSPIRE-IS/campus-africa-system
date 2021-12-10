@@ -144,8 +144,11 @@
                                             <div class="form-field">
                                                 <label>Year</label>
                                                 <select name="year" id="year">
-                                                    <option value="2022">2022</option>
-                                                    <option value="2021">2021</option>
+                                                @foreach($lookups as $lookup)
+                                                    @if($lookup->group_id == "4")
+                                                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                                                    @endif
+                                                @endforeach
                                                 </select>
                                             </div>
                                             

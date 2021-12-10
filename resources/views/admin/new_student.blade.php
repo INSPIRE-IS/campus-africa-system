@@ -4,7 +4,7 @@
 
 <div class="container form-card">
 
-    <form action="/add-student" method="post">
+    <form action="/add-student" method="post" id="newUser">
     @csrf
         <br/>
         <br/>
@@ -22,6 +22,7 @@
         <div class="form-field">
             <label>Title *</label>
             <select name="title" id='title' required>
+                <option value="" disabled selected>Please select one</option>
                 <option value="Mr" >Mr</option>
                 <option value="Ms" >Ms</option>
                 <option value="Mrs" >Mrs</option>
@@ -48,8 +49,11 @@
             <label>Nationality *</label>
             <select name="nationality" id='nationality' required>
                 <option value="" selected disabled>Please select one</option>
-                <option value="South African" >South African</option>
-                <option value="Other" >Other</option>
+                @foreach($lookups as $lookup)
+                    @if($lookup->group_id == "5")
+                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                    @endif
+                @endforeach
             </select>
         </div>
 
@@ -66,7 +70,7 @@
         <div class="form-field">
             <label>Student Type *</label>
             <select name="studentType" id='studentType' required>
-                <option value="Single Room" selected disabled>Select a Student Type</option>
+                <option value="" selected disabled>Select a Student Type</option>
                 <option value="NSFAS">NSFAS</option>
                 <option value="Bursary">Bursary</option>
                 <option value="Cash / Direct">Cash</option>
@@ -77,15 +81,18 @@
             <label>Year *</label>
             <select name="year" id="year" required>
             <option value="" selected disabled>Please select one</option>
-                <option value="2022" >2022</option>
-                <option value="2021" >2021</option>
+                @foreach($lookups as $lookup)
+                    @if($lookup->group_id == "4")
+                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                    @endif
+                @endforeach
             </select>
         </div>
 
         <div class="form-field">
             <label>Institution of Study *</label>
             <select name="institStudy" id="institStudy" required>
-                <option value="Choose one" selected disabled>Choose one</option>
+                <option value="" selected disabled>Choose one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "1")
                         <option value="{{$lookup->id}}" >{{$lookup->lookup_name}}</option>
@@ -98,10 +105,11 @@
             <label>Year of study *</label>
             <select name="yearOfStudy" id="yearOfStudy" required>
                 <option value="" selected disabled>Please select one</option>
-                <option value="1st Year" >1st Year</option>
-                <option value="2nd Year" >2nd Year</option>
-                <option value="3rd Year" >3rd Year</option>
-                <option value="4th Year" >4th Year</option>
+                @foreach($lookups as $lookup)
+                    @if($lookup->group_id == "6")
+                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                    @endif
+                @endforeach
             </select>
         </div>
 
@@ -123,7 +131,7 @@
         <div class="form-field">
             <label>Faculty *</label>
             <select name="faculty" id="faculty" required>
-                <option value="Choose one" disabled selected>Choose one</option>
+                <option value="" disabled selected>Choose one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "3")
                         <option value="{{$lookup->id}}" >{{$lookup->lookup_name}}</option>
@@ -136,7 +144,7 @@
         <div class="form-field">
             <label>Property *</label>
             <select name="property" id='property' required>
-                <option value="Property" selected disabled>Select a Proprty</option>
+                <option value="" selected disabled>Select a Proprty</option>
                 <option value="Braamlofts">Braamlofts</option>
                 <option value="80 Jorissen">80 Jorissen</option>
                 <option value="49 Jorissen">49 Jorissen</option>
@@ -150,7 +158,7 @@
         <div class="form-field">
             <label>Room Type *</label>
             <select name="roomType" id='roomType' required>
-                <option value="Single Room" selected disabled>Select a Room Type</option>
+                <option value="" selected disabled>Select a Room Type</option>
 
                 
             </select>
@@ -165,32 +173,32 @@
                     <br/>
                 </div>
 
-                <h1 class="fs-title">Sponsor / Burser Information</h2>
-                <h2 class="fs-subtitle">Parent / guardians / sponsor details</h4>
+                <h1 class="fs-title">Sponsor Information</h2>
+                <h2 class="fs-subtitle">Parent / guardians details</h4>
                 <br/>
 
                 <div class="form-field">
-                    <label>First Name</label>
+                    <label>First Name *</label>
                     <input type="text" name="pFirstName" id="pFirstName" >
                 </div>
 
                 <div class="form-field">
-                    <label>Last Name</label>
+                    <label>Last Name *</label>
                     <input type="text" name="pLastName" id="pLastName" >
                 </div>
 
                 <div class="form-field">
-                    <label>Cellphone Number <span id="pCellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <label>Cellphone Number * <span id="pCellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
                     <input type="text" name="pCell_no" id="pCell_no" >
                 </div>
 
                 <div class="form-field">
-                    <label>Email Address <span id="pEmailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <label>Email Address * <span id="pEmailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
                     <input type="email" name="pEmail" id='pEmail' >
                 </div>
 
                 <div class="form-field">
-                    <label>I.D Number <span id="pIdNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                    <label>I.D Number * <span id="pIdNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
                     <input type="text" name="pIdNumber" id="pIdNumber" >
                 </div>
 
@@ -198,31 +206,41 @@
                     <br/>
                 </div>
 
-                <h4 class="fs-subtitle">Bursar Details</h4>
+            </div>
+            <div id="bursarDetails" class="hidden">
+
+            <div class="form-field">
+                    <br/>
+                </div>
+                <div class="form-field">
+                    <br/>
+                </div>
+
+                <h1 class="fs-title">Burser Information</h2>
                 <br/>
 
                 <div class="form-field">
-                    <label>Company Name</label>
+                    <label>Company Name *</label>
                     <input type="text" name="bCompanyName" id='bCompanyName' >
                 </div>
 
                 <div class="form-field">
-                    <label>Registration Number</label>
+                    <label>Registration Number *</label>
                     <input type="text" name="bRegistrationNo" id="bRegistrationNo" >
                 </div>
 
                 <div class="form-field">
-                    <label>Contact Person</label>
+                    <label>Contact Person *</label>
                     <input type="text" name="bContactPerson" id="bContactPerson" >
                 </div>
 
                 <div class="form-field">
-                    <label>Contact Number <span id="bCellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <label>Contact Number * <span id="bCellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
                     <input type="text" name="bContactNumber" id="bContactNumber">
                 </div>
 
                 <div class="form-field">
-                    <label>Email Address <span id="bEmailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <label>Email Address * <span id="bEmailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
                     <input type="email" name="bEmail" id="bEmail" >
                 </div>
 
@@ -254,6 +272,7 @@
         <div class="form-field">
             <label>Title *</label>
             <select name="kTitle" id='kTitle' required>
+            <option value="" disabled selected>Please select one</option>
                 <option value="Mr" >Mr</option>
                 <option value="Ms" >Ms</option>
                 <option value="Mrs" >Mrs</option>
@@ -262,7 +281,7 @@
         </div>
 
         <div class="form-field">
-            <label>I.D Number *</label>
+            <label>I.D Number * <span id="kIdNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
             <input type="text" name="kIdNumber" id="kIdNumber" required>
         </div>
 
@@ -271,7 +290,7 @@
             <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" required>
         </div>
         <div class="form-field-big">
-            <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" >
+            <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" required>
         </div>
         <div class="form-field">
             <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' required >
@@ -337,7 +356,6 @@
             }
         }
 
-        console.log(newArr)
 
         let sum = 0;
         for (let i = 0; i < newArr.length; i++) {
@@ -346,9 +364,7 @@
 
         let finalSum = sum/10
 
-        console.log(finalSum, finalSum % 10)
-
-        if(Number.isInteger(finalSum)){
+        if(Number.isInteger(finalSum) && idNumber !== ""){
             $("#idNumber").removeClass("fieldError")
             $("#idNumberError").addClass('hidden')
         }else{
@@ -380,8 +396,6 @@
             }
         }
 
-        console.log(newArr)
-
         let sum = 0;
         for (let i = 0; i < newArr.length; i++) {
             sum += parseInt(newArr[i]);
@@ -389,9 +403,8 @@
 
         let finalSum = sum/10
 
-        console.log(finalSum, finalSum % 10)
 
-        if(Number.isInteger(finalSum)){
+        if(Number.isInteger(finalSum) && idNumber !== ""){
             $("#pIdNumber").removeClass("fieldError")
             $("#pIdNumberError").addClass('hidden')
         }else{
@@ -401,18 +414,55 @@
 
     })
 
+    $("#kIdNumber").on('blur', function(){
+        let idNumber = $("#kIdNumber").val();
+
+        let idArr = Array.from(idNumber);
+        idArr.reverse()
+        let newArr = [];
+
+        for (let i = 0; i < idArr.length; i++) {
+            if((i % 2) !== 0){
+                let newValue = idArr[i]*2
+                if(newValue > 9){
+                    value1 = (newValue.toString()).substr(0,1)
+                    value2 = (newValue.toString()).substr(1, 2)
+                    newValue = parseInt(value1) + parseInt(value2)
+
+                }
+                newArr.push(newValue)
+            }else{
+                newArr.push(idArr[i])
+            }
+        }
+
+        let sum = 0;
+        for (let i = 0; i < newArr.length; i++) {
+            sum += parseInt(newArr[i]);
+        }
+
+        let finalSum = sum/10
+
+
+        if(Number.isInteger(finalSum) && idNumber !== ""){
+            $("#kIdNumber").removeClass("fieldError")
+            $("#kIdNumberError").addClass('hidden')
+        }else{
+            $("#kIdNumber").addClass("fieldError")
+            $("#kIdNumberError").removeClass('hidden')
+        }
+
+    })
+    
+
     $("#cell_no").on('blur', function(){
 
-        if(($("#cell_no").val()).substring(0,3) == "+27"){
-            cell = "0"+($("#cell_no").val()).substring(3)
-        }else{
-            cell = $("#cell_no").val()
-        }
-        
-        if( /^\d{10}$/.test(cell) ){
+        cell = $("#cell_no").val()
+
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
             $("#cell_no").removeClass("fieldError")
             $("#cellError").addClass('hidden')
-        } else {
+        }else{
             $("#cell_no").addClass("fieldError")
             $("#cellError").removeClass('hidden')
         }
@@ -421,16 +471,12 @@
 
     $("#pCell_no").on('blur', function(){
 
-        if(($("#pCell_no").val()).substring(0,3) == "+27"){
-            cell = "0"+($("#pCell_no").val()).substring(3)
-        }else{
-            cell = $("#pCell_no").val()
-        }
+        cell = $("#pCell_no").val()
 
-        if( /^\d{10}$/.test(cell) ){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
             $("#pCell_no").removeClass("fieldError")
             $("#pCellError").addClass('hidden')
-        } else {
+        }else{
             $("#pCell_no").addClass("fieldError")
             $("#pCellError").removeClass('hidden')
         }
@@ -439,16 +485,12 @@
 
     $("#bContactNumber").on('blur', function(){
 
-        if(($("#bContactNumber").val()).substring(0,3) == "+27"){
-            cell = "0"+($("#bContactNumber").val()).substring(3)
-        }else{
-            cell = $("#bContactNumber").val()
-        }
+        cell = $("#bContactNumber").val()
 
-        if( /^\d{10}$/.test(cell) ){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
             $("#bContactNumber").removeClass("fieldError")
             $("#bCellError").addClass('hidden')
-        } else {
+        }else{
             $("#bContactNumber").addClass("fieldError")
             $("#bCellError").removeClass('hidden')
         }
@@ -457,16 +499,12 @@
 
     $("#kTeleNo").on('blur', function(){
 
-        if(($("#kTeleNo").val()).substring(0,3) == "+27"){
-            cell = "0"+($("#kTeleNo").val()).substring(3)
-        }else{
-            cell = $("#kTeleNo").val()
-        }
+        cell = $("#kTeleNo").val()
 
-        if( /^\d{10}$/.test(cell) ){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
             $("#kTeleNo").removeClass("fieldError")
             $("#kTeleNoError").addClass('hidden')
-        } else {
+        }else{
             $("#kTeleNo").addClass("fieldError")
             $("#kTeleNoError").removeClass('hidden')
         }
@@ -475,16 +513,12 @@
 
     $("#kCellNo").on('blur', function(){
 
-        if(($("#kCellNo").val()).substring(0,3) == "+27"){
-            cell = "0"+($("#kCellNo").val()).substring(3)
-        }else{
-            cell = $("#kCellNo").val()
-        }
+        cell = $("#kCellNo").val()
 
-        if( /^\d{10}$/.test(cell) ){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
             $("#kCellNo").removeClass("fieldError")
             $("#kCellNoError").addClass('hidden')
-        } else {
+        }else{
             $("#kCellNo").addClass("fieldError")
             $("#kCellNoError").removeClass('hidden')
         }
@@ -493,16 +527,12 @@
 
     $("#kWorkNo").on('blur', function(){
 
-        if(($("#kWorkNo").val()).substring(0,3) == "+27"){
-            cell = "0"+($("#kWorkNo").val()).substring(3)
-        }else{
-            cell = $("#kWorkNo").val()
-        }
+        cell = $("#kWorkNo").val()
 
-        if( /^\d{10}$/.test(cell) ){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
             $("#kWorkNo").removeClass("fieldError")
             $("#kWorkNoError").addClass('hidden')
-        } else {
+        }else{
             $("#kWorkNo").addClass("fieldError")
             $("#kWorkNoError").removeClass('hidden')
         }
@@ -564,11 +594,43 @@
         }
     })
 
+    function parentDetails(value){
+        document.getElementById("pFirstName").required = value;
+        document.getElementById("pLastName").required = value;
+        document.getElementById("pCell_no").required = value;
+        document.getElementById("pEmail").required = value;
+        document.getElementById("pIdNumber").required = value;
+    }
+
+    function sponsorDetails(value){
+        document.getElementById("bCompanyName").required = value;
+        document.getElementById("bRegistrationNo").required = value;
+        document.getElementById("bContactPerson").required = value;
+        document.getElementById("bContactNumber").required = value;
+        document.getElementById("bEmail").required = value;
+    }
+
     $("#studentType").on('change', function(){
-        if($("#studentType").val() == "Cash / Direct" || $("#studentType").val() == "Bursary"){
+        if($("#studentType").val() == "Cash / Direct"){
             $("#sponsorDetails").removeClass('hidden')
+            $("#bursarDetails").addClass('hidden')
+
+            parentDetails(true)
+            sponsorDetails(false)
+
+        }else if($("#studentType").val() == "Bursary"){
+            $("#bursarDetails").removeClass('hidden')
+            $("#sponsorDetails").addClass('hidden')
+
+            parentDetails(false)
+            sponsorDetails(true)
+        
         }else{
             $("#sponsorDetails").addClass('hidden')
+            $("#bursarDetails").addClass('hidden')
+
+            parentDetails(false)
+            sponsorDetails(false)
         }
     })
 
@@ -591,6 +653,82 @@
             $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 sharing</option><option value="single room small">Single Room | small</option>')
         }
     })
+
+    $("input").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        var required = document.getElementById(fieldId).required
+
+        if($("#"+fieldId).val() == "" && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+        }
+    });
+
+    $("select").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        var required = document.getElementById(fieldId).required
+
+        if($("#"+fieldId).val() == "" && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+        }
+    });
+
+    $('#newUser').submit(function() {
+
+        if($("#cell_no").hasClass('fieldError') == true || $("#email").hasClass('fieldError') == true || $("#idNumber").hasClass('fieldError') == true || $("#kIdNumber").hasClass('fieldError') == true || $("#kCellNo").hasClass('fieldError') == true || $("#kEmail").hasClass('fieldError') == true){
+
+            if($("#cell_no").hasClass('fieldError') == true){
+                $("#cell_no").focus();
+            }else if($("#email").hasClass('fieldError') == true){
+                $("#email").focus();
+            }else if($("#idNumber").hasClass('fieldError') == true){
+                $("#idNumber").focus();
+            }else if($("#kIdNumber").hasClass('fieldError') == true){
+                $("#kIdNumber").focus();
+            }else if($("#kCellNo").hasClass('fieldError') == true){
+                $("#kCellNo").focus();
+            }else if($("#kEmail").hasClass('fieldError') == true){
+                $("#kEmail").focus();
+            }
+
+            return false; 
+        }else{
+
+            if($("#studentType").val() == "Bursary"){
+                if($("#bContactNumber").hasClass('fieldError') == true || $("#bEmail").hasClass('fieldError') == true){
+
+                    if($("#bContactNumber").hasClass('fieldError') == true){
+                        $("#bContactNumber").focus();
+                    }else if($("#bEmail").hasClass('fieldError') == true){
+                        $("#bEmail").focus();
+                    }
+
+                    return false; 
+                }else{
+                    return true; 
+                }
+            }else if($("#studentType").val() == "Cash / Direct"){
+                if($("#pCell_no").hasClass('fieldError') == true || $("#pEmail").hasClass('fieldError') == true || $("#pIdNumber").hasClass('fieldError') == true){
+
+                    if($("#pCell_no").hasClass('fieldError') == true){
+                        $("#pCell_no").focus();
+                    }else if($("#pEmail").hasClass('fieldError') == true){
+                        $("#pEmail").focus();
+                    }else if($("#pIdNumber").hasClass('fieldError') == true){
+                        $("#pIdNumber").focus();
+                    }
+
+                    return false; 
+                }else{
+                    return true; 
+                }
+            }else{
+                return true; 
+            }
+        }
+
+    });
 
 
     
