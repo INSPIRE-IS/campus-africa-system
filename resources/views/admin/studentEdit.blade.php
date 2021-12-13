@@ -107,13 +107,6 @@
             <label>Student Number * <span id="studNumber_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" name="studNumber" id="studNumber" value="{{$user->studentNo}}" required>
         </div>
-
-        <div class="form-field">
-            <br/>
-        </div>
-        <div class="form-field">
-            <br/>
-        </div>
         
         <div class="form-field">
             <label>Year of study * <span id="yearOfStudy_error" class="hidden" style="color:red"><small>This field is required</small></span></label>

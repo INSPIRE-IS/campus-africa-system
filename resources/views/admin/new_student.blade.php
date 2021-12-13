@@ -106,16 +106,6 @@
             <input type="text" name="studNumber" id="studNumber" required >
         </div>
 
-        
-
-
-        <div class="form-field">
-            <br/>
-        </div>
-        <div class="form-field">
-            <br/>
-        </div>
-
         <div class="form-field">
             <label>Year of study * <span id="yearOfStudy_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="yearOfStudy" id="yearOfStudy" required>
