@@ -86,13 +86,24 @@
                 @endif
                 <h1 class="booking">{{$headerTitle}}</h1>
 
-                @if (isset($appProfile) && $appProfile === "true")
-                    @if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected")
-                        <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
-                        <br/><br/><br/>
-                        <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>                          
+                <div class="buttonSidePanel" style="margin-top:-50px;">
+
+                    @if (isset($appProfile) && $appProfile === "true")
+                        @if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected")
+                            <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
+                            <br/><br/><br/>
+                            <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
+                            <br/><br/><br/>     
+                        @endif
+
+                        @if(Auth::user()->role_edit_app == 1)
+                            <a href="/student/edit/<?php echo $user[0]['userInfo']['id']; ?>"><button type="button" class="appBtn" style="background-color:#e74f26; border:none">EDIT PROFILE</button></a>
+                        @endif
                     @endif
-                @endif
+
+                    
+                </div>
+
             </div>
         
         </div>

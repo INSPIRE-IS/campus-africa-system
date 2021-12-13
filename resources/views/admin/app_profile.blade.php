@@ -6,9 +6,8 @@
 
     <div class="container">
 
-        <div class="col-3">
+        <div class="col-3 subSection">
             <p class="listHeader">Next of Kin</p>
-            <br/>
             <p class="list">
                 {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
                 {{$user[0]['userInfo']['kinCellNo']}}<br/>
@@ -16,33 +15,33 @@
                 {{$user[0]['userInfo']['kinId']}}<br/>
             </p>
         </div>
-        <div class="col-3">
+        <div class="col-3 subSection">
             @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
                     <p class="listHeader">Sponsor/Parent</p>
-                <br/>
                 <p class="list">
                     {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
                     {{$user[0]['userInfo']['sponCellNo']}}<br/>
                     {{$user[0]['userInfo']['sponEmail']}}<br/>
                     {{$user[0]['userInfo']['sponId']}}<br/>
                 </p>
+            @else
+                &nbsp;
             @endif
         </div>
-        <div class="col-3">
+        <div class="col-3 subSection">
             @if($user[0]['userInfo']['studentType'] == "Bursary")
                 <p class="listHeader">Bursar</p>
-                <br/>
                 <p class="list">
-                    {{$user[0]['userInfo']['burFirstName']}} {{$user[0]['userInfo']['burLastName']}}<br/>
-                    {{$user[0]['userInfo']['burCellNo']}}<br/>
-                    {{$user[0]['userInfo']['burEmail']}}<br/>
-                    {{$user[0]['userInfo']['burId']}}<br/>
+                    {{$user[0]['userInfo']['bCompanyName']}}<br/>
+                    {{$user[0]['userInfo']['bContactPerson']}} - {{$user[0]['userInfo']['bContactNumber']}}<br/>
+                    {{$user[0]['userInfo']['bEmail']}}<br/>
+                    {{$user[0]['userInfo']['bRegistrationNo']}}<br/>
                 </p>
+            @else
+                &nbsp;
             @endif
             <br/>
-            @if(Auth::user()->role_edit_app == 1)
-                <a href="/student/edit/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Edit Profile</button></a>
-            @endif
+            
             <!-- <a href="/student/upload/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Upload Documents</button></a> -->
         </div>
         

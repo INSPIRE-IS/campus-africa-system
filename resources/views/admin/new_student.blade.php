@@ -489,7 +489,9 @@
 
     $("#kTeleNo").on('keyup blur', function(){
         cell = $("#kTeleNo").val()
-        ValidCell(cell, "kTeleNo", "kTeleNoError")
+        if(cell !== ""){
+            ValidCell(cell, "kTeleNo", "kTeleNoError")
+        }
     })
 
     $("#kCellNo").on('keyup blur', function(){
@@ -499,7 +501,9 @@
 
     $("#kWorkNo").on('keyup blur', function(){
         cell = $("#kWorkNo").val()
-        ValidCell(cell, "kWorkNo", "kWorkNoError")
+        if(cell !== ""){
+            ValidCell(cell, "kWorkNo", "kWorkNoError")
+        }
     })
 
     function isEmail(email) {
