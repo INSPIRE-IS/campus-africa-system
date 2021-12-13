@@ -72,6 +72,14 @@ class User extends Authenticatable
         'role_edit_app',
         'role_upload_docs',
         'role_approve_docs',
+        'kinNationality',
+        'kinPassportNo',
+        'pNationality',
+        'pPassportNo',
+        'pAddress1',
+        'pAddress2',
+        'pAddressCity',
+        'pAddressPostal',
     ];
 
     public function files(){

@@ -49,9 +49,21 @@ class HomeController extends Controller
             $allRejectedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Rejected')->get();
 
             $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
+            $user = User::where('id', Auth::user()->id)->first();
 
             $uploaded = [];
-            $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+            // $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+            if($user->applicationStatus == "Approved Confirmed"){
+                array_push($all, "moveIn");
+            }
+            if($user->studentType == "Cash / Direct"){
+                array_push($all, "bankStatement");
+            }
+            if($user->studentType !== "Cash / Direct"){
+                array_push($all, "bursaryApproval");
+            }
 
             foreach($allFiles as $file){
                 array_push($uploaded, $file->fileId);
@@ -153,7 +165,19 @@ class HomeController extends Controller
                 ]);
 
                 $uploaded = [];
-                $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+                // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+                $user = User::where('id', $userUid)->first();
+                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+                if($user->applicationStatus == "Approved Confirmed"){
+                    array_push($all, "moveIn");
+                }
+                if($user->studentType == "Cash / Direct"){
+                    array_push($all, "bankStatement");
+                }
+                if($user->studentType !== "Cash / Direct"){
+                    array_push($all, "bursaryApproval");
+                }
                 $data = [];
 
                 $phase1 = "Empty";
@@ -284,6 +308,17 @@ class HomeController extends Controller
 
                 $uploaded = [];
                 $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+                // $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+                // if($user->applicationStatus == "Approved Confirmed"){
+                //     array_push($all, "moveIn");
+                // }
+                // if($user->studentType == "Cash / Direct"){
+                //     array_push($all, "bankStatement");
+                // }
+                // if($user->studentType !== "Cash / Direct"){
+                //     array_push($all, "bursaryApproval");
+                // }
                 $data = [];
                 $counter = 0;
 
@@ -355,15 +390,15 @@ class HomeController extends Controller
 
             $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
 
-        if($user->applicationStatus == "Approved Confirmed"){
-            array_push($all, "moveIn");
-        }
-        if($user->studentType == "Cash / Direct"){
-            array_push($all, "bankStatement");
-        }
-        if($user->studentType !== "Cash / Direct"){
-            array_push($all, "bursaryApproval");
-        }
+            if($user->applicationStatus == "Approved Confirmed"){
+                array_push($all, "moveIn");
+            }
+            if($user->studentType == "Cash / Direct"){
+                array_push($all, "bankStatement");
+            }
+            if($user->studentType !== "Cash / Direct"){
+                array_push($all, "bursaryApproval");
+            }
         
             $data = [];
 
@@ -471,7 +506,19 @@ class HomeController extends Controller
             ]);
 
             $uploaded = [];
-            $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+            // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+            $user = User::where('id', $userFile->userUid)->first();
+            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+            if($user->applicationStatus == "Approved Confirmed"){
+                array_push($all, "moveIn");
+            }
+            if($user->studentType == "Cash / Direct"){
+                array_push($all, "bankStatement");
+            }
+            if($user->studentType !== "Cash / Direct"){
+                array_push($all, "bursaryApproval");
+            }
             $data = [];
 
             $phase1Arr = [];
@@ -596,7 +643,19 @@ class HomeController extends Controller
         $user = User::with('files')->where('id', $userId)->first();
         $userData = [];
         $uploaded = [];
-        $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+        // $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+
+        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+        if($user->applicationStatus == "Approved Confirmed"){
+            array_push($all, "moveIn");
+        }
+        if($user->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if($user->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
         $data = [];
         
         if($filter == "all"){
@@ -701,7 +760,20 @@ class HomeController extends Controller
             $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
 
             $uploaded = [];
-            $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+            // $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+            $user = User::where('id', Auth::user()->id)->first();
+
+            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+            if($user->applicationStatus == "Approved Confirmed"){
+                array_push($all, "moveIn");
+            }
+            if($user->studentType == "Cash / Direct"){
+                array_push($all, "bankStatement");
+            }
+            if($user->studentType !== "Cash / Direct"){
+                array_push($all, "bursaryApproval");
+            }
 
             foreach($allFiles as $file){
                 array_push($uploaded, $file->fileId);
@@ -845,9 +917,10 @@ class HomeController extends Controller
 
     public function student_edit(Request $request, $studentId){
         $user = User::where('id', $studentId)->first();
+        $booking = Booking::where('userId', $studentId)->first();
         $lookup = Lookups::get();
 
-        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user, "lookups" => $lookup]);
+        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user, "lookups" => $lookup, "booking" => $booking]);
     }
 
     public function edit_student(Request $request){
@@ -890,6 +963,14 @@ class HomeController extends Controller
             'kinCellNo' => $request->kCellNo,
             'kinWorkNo' => $request->kWorkNo,
             'kinEmail' => $request->kEmail,
+            'kinNationality' => $request->kinNationality,
+            'kinPassportNo' => $request->kinPassportNo,
+            'pNationality' => $request->pNationality,
+            'pPassportNo' => $request->pPassportNo,
+            'pAddress1' => $request->pAddress1,
+            'pAddress2' => $request->pAddress2,
+            'pAddressCity' => $request->pAddressCity,
+            'pAddressPostal' => $request->pAddressPostal,
         ]);
 
         ActionList::create([
@@ -1005,7 +1086,20 @@ class HomeController extends Controller
                 ]);
 
                 $uploaded = [];
-                $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+                // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+
+                $user = User::where('id', $userUid)->first();
+                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+                if($user->applicationStatus == "Approved Confirmed"){
+                    array_push($all, "moveIn");
+                }
+                if($user->studentType == "Cash / Direct"){
+                    array_push($all, "bankStatement");
+                }
+                if($user->studentType !== "Cash / Direct"){
+                    array_push($all, "bursaryApproval");
+                }
                 $data = [];
 
                 $phase1 = "Empty";
@@ -1212,6 +1306,14 @@ class HomeController extends Controller
             'bookingStatus' => "Empty",
             'applicationStatus' => "Empty",
             'yearOfStudy' => $request->yearOfStudy,
+            'kinNationality' => $request->kinNationality,
+            'kinPassportNo' => $request->kinPassportNo,
+            'pNationality' => $request->pNationality,
+            'pPassportNo' => $request->pPassportNo,
+            'pAddress1' => $request->pAddress1,
+            'pAddress2' => $request->pAddress2,
+            'pAddressCity' => $request->pAddressCity,
+            'pAddressPostal' => $request->pAddressPostal,
         ]);
 
         $booking = Booking::create(["userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType]);
@@ -1364,7 +1466,18 @@ class HomeController extends Controller
 
 
                 $uploaded = [];
-                $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+                // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+                if($user->applicationStatus == "Approved Confirmed"){
+                    array_push($all, "moveIn");
+                }
+                if($user->studentType == "Cash / Direct"){
+                    array_push($all, "bankStatement");
+                }
+                if($user->studentType !== "Cash / Direct"){
+                    array_push($all, "bursaryApproval");
+                }
                 $data = [];
                 $counter = 0;
 

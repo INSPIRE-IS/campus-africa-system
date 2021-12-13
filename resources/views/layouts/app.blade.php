@@ -22,6 +22,8 @@
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
+
+    <script src="../../js/register.js?v=<?php echo rand();?>"></script>
     
 </head>
 <body>

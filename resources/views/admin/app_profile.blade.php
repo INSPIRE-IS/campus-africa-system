@@ -385,14 +385,33 @@
 
                 if(type === "Rejected"){
                     $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
+
+                    $("#rejected").empty().append('REJECT WITH REASON')
+                    var preview1 = document.getElementById("amend");
+                    preview1.removeAttribute("disabled", "disabled");
+                    var preview2 = document.getElementById("approved");
+                    preview2.removeAttribute("disabled", "disabled");
                 }else{
                     $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button approved"></div>')
                     $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<button type="button" onclick="openModal(\''+$("#FileNameForApproval").val()+'\', \''+data["fileUrl"]+'\', \'\', \'\', \''+data["id"]+'\', \'XApproved\')">View Document</button>')
+
+                    if(action == "Amend"){
+                        $("#amend").empty().append('AMEND &amp; APPROVE')
+                        var preview1 = document.getElementById("rejected");
+                        preview1.removeAttribute("disabled", "disabled");
+                        var preview2 = document.getElementById("approved");
+                        preview2.removeAttribute("disabled", "disabled");
+                    }else{
+                        $("#approved").empty().append('APPROVE')
+                        var preview1 = document.getElementById("rejected");
+                        preview1.removeAttribute("disabled", "disabled");
+                        var preview2 = document.getElementById("amend");
+                        preview2.removeAttribute("disabled", "disabled");
+                    }
                 }
 
                 var modal = document.getElementById("myModal");
                 modal.style.display = "none";
-
                
             },
         });
