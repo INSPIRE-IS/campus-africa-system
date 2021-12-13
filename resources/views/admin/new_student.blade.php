@@ -416,6 +416,7 @@
 
         if(Number.isInteger(finalSum) && idNumber !== ""){
             $("#"+idField).removeClass("fieldError")
+            $("#"+idField).removeClass("errorBorder")
             $("#"+errorField).addClass('hidden')
         }else{
             $("#"+idField).addClass("fieldError")
@@ -426,8 +427,11 @@
     $("#idNumber").on('keyup blur', function(){
         let idNumber = $("#idNumber").val();
         if(idNumber.length == 13){
+            console.log("1")
             ValidID(idNumber, "idNumber", "idNumberError")
         }else{
+            console.log("2")
+            $("#idNumber").addClass('errorBorder')
             $("#idNumber").addClass("fieldError")
             $("#idNumberError").removeClass('hidden')
         }  
