@@ -244,7 +244,7 @@
             </div>
             <div class="form-field">
                 <span id="pAddressPostal_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                <input type="text" placeholder="postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user->pAddressPostal}}" required>
+                <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user->pAddressPostal}}" required>
             </div>
 
         </div>
@@ -380,7 +380,7 @@
         </div>
         <div class="form-field">
             <span id="kAddressPostal_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="postal Code" name="kAddressPostal" id="kAddressPostal" value="{{$user->kinAddressPost}}" required>
+            <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" value="{{$user->kinAddressPost}}" required>
         </div>
 
 

@@ -303,7 +303,7 @@
                                                 <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity'>
                                             </div>
                                             <div class="form-field">
-                                                <input type="text" placeholder="postal Code" name="kAddressPostal" id="kAddressPostal">
+                                                <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal">
                                             </div>
 
                                             <div class="form-field">

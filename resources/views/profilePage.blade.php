@@ -199,7 +199,7 @@
             <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' value="{{Auth::user()->kinAddressCity}}" readonly>
         </div>
         <div class="form-field">
-            <input type="text" placeholder="postal Code" name="kAddressPostal" id="kAddressPostal" value="{{Auth::user()->kinAddressPost}}" readonly>
+            <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" value="{{Auth::user()->kinAddressPost}}" readonly>
         </div>
 
         <div class="form-field">
