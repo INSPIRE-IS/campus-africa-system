@@ -18,8 +18,7 @@
         <div class="searchField">
         <label></label><br/>
             <select name="property" id="property">
-                <option value="" selected disabled>Select a Property</option>
-                <option value="All">All</option>
+                <option value="All" selected>All Properties</option>
                 <option value="Braamlofts">Braamlofts</option>
                 <option value="80 Jorissen">80 Jorissen</option>
                 <option value="49 Jorissen">49 Jorissen</option>
@@ -32,8 +31,7 @@
         <div class="searchField">
         <label></label><br/>
             <select name="room_type" id="room_type">
-                <option value="" selected disabled>Select a Room Type</option>
-                <option value="All">All</option>
+                <option value="All" selected>All Room Types</option>
                 <option value="Single Room">Single Room</option>
                 <option value="2 Sharing">2 Sharing</option>
                 <option value="3 Sharing">3 sharing</option>
@@ -50,8 +48,7 @@
         <div class="searchField">
         <label></label><br/>
             <select name="student_type" id='student_type'>
-                <option value="" selected disabled>Select a Student Type</option>
-                <option value="All">All</option>
+                <option value="All" selected>All Student Types</option>
                 <option value="NSFAS">NSFAS</option>
                 <option value="Bursary">Bursary</option>
                 <option value="Cash / Direct">Cash / Direct</option>
@@ -60,15 +57,13 @@
         <div class="searchField">
         <label></label><br/>
             <select name="bookingStatus" id='bookingStatus' style="width:45%">
-                <option value="" selected disabled>Booking Status</option>
-                <option value="All">All</option>
+                <option value="All" selected>All Bookings</option>
                 <option value="Approved">&#128994; Valid Booking</option>
                 <option value="Action">&#128993; Pending Booking</option>
                 <option value="Empty">&#128308; Invalid Booking</option>
             </select>
             <select name="applicationStatus" id='applicationStatus' style="width:45%">
-                <option value="" selected disabled>Application Status</option>
-                <option value="All">All</option>
+                <option value="All" selected>All Applications</option>
                 <option value="Approved">&#128994; Valid Application</option>
                 <option value="Action">&#128993; Pending Application</option>
                 <option value="Empty">&#128308; Invalid Application</option>
