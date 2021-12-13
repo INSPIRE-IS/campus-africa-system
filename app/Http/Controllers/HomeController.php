@@ -74,7 +74,7 @@ class HomeController extends Controller
             return view('user.dashboard', ["headerTitle" => "Your Dashboard", "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
         }else{
 
-            return view('admin.dashboard', ["headerTitle" => "Admin Dashboard"]);
+            return view('admin.dashboard', ["headerTitle" => "Admin Dashboard", "title" => "Dashboard"]);
         }
 
     }
@@ -371,7 +371,7 @@ class HomeController extends Controller
                 return $b['counter'] - $a['counter'];
             });
 
-            return view('admin.applications', ["headerTitle" => "Applications", "users" => $userData]);
+            return view('admin.applications', ["headerTitle" => "Applications", "users" => $userData, "title" => "Applications"]);
         }
     }
 
@@ -447,7 +447,7 @@ class HomeController extends Controller
 
             $lookup = Lookups::get();
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup]);
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile"]);
         }
     }
 
@@ -788,7 +788,7 @@ class HomeController extends Controller
         
         $leases = UserFiles::with('users')->where('fileId', 'moveIn')->get();
 
-        return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases]);
+        return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases, "title" => "Leases"]);
     }
 
     public function mailing(Request $request){
@@ -797,11 +797,11 @@ class HomeController extends Controller
 
         $MailerList = MailerList::all();
 
-        return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000", "MailerList" => $MailerList]);
+        return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000", "MailerList" => $MailerList, "title" => "Mailers"]);
     }
 
     public function invoices(Request $request){
-        return view('admin.invoices', ["headerTitle" => "Invoices"]);
+        return view('admin.invoices', ["headerTitle" => "Invoices", "title" => "Invoices"]);
     }
 
     public function thanks(Request $request){
@@ -884,7 +884,7 @@ class HomeController extends Controller
         $systemUsers = User::where("userRole", "!=", "0")->get();
         $students = User::where("userRole", "0")->get();
 
-        return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students]);
+        return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students, "title" => "User Management"]);
     }
 
     public function user_edit(Request $request, $userId){
@@ -892,7 +892,7 @@ class HomeController extends Controller
         $user = User::where('id', $userId)->first();
         
 
-        return view('admin.userEdit', ["headerTitle" => "User Edit", "user" => $user]);
+        return view('admin.userEdit', ["headerTitle" => "User Edit", "user" => $user, "title" => "Edit User"]);
     }
 
     public function edit_admin(Request $request){
@@ -920,7 +920,7 @@ class HomeController extends Controller
         $booking = Booking::where('userId', $studentId)->first();
         $lookup = Lookups::get();
 
-        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user, "lookups" => $lookup, "booking" => $booking]);
+        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user, "lookups" => $lookup, "booking" => $booking, "title" => "Edit Student"]);
     }
 
     public function edit_student(Request $request){
@@ -1012,7 +1012,7 @@ class HomeController extends Controller
 
         $outstanding = array_diff($all, $uploaded);
 
-        return view('admin.studentUpload', ["headerTitle" => "Student File Upload", "user" => $user, "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
+        return view('admin.studentUpload', ["headerTitle" => "Student File Upload", "user" => $user, "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding, "title" => "Student Upload"]);
     }
 
     public function adminFileUpload(Request $request){
@@ -1218,12 +1218,12 @@ class HomeController extends Controller
 
         $lookups = Lookups::get();
 
-        return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups]);
+        return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
     }
 
     public function add_lookups(Request $request){
 
-        return view('admin.lookups_new', ["headerTitle" => "Add Lookup"]);
+        return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
     }
 
     public function new_lookups(Request $request){
@@ -1240,7 +1240,7 @@ class HomeController extends Controller
 
         $lookup = Lookups::where('id', $lookupId)->first();
 
-        return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup]);
+        return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
     }
 
     public function save_lookups(Request $request){
@@ -1257,7 +1257,7 @@ class HomeController extends Controller
 
         $lookup = Lookups::get();
         
-        return view('admin.new_student', ["headerTitle" => "Add New Student", "lookups" => $lookup]);
+        return view('admin.new_student', ["headerTitle" => "Add New Student", "lookups" => $lookup, "title" => "Add Student"]);
     }
 
     public function add_student(Request $request){
@@ -1334,7 +1334,7 @@ class HomeController extends Controller
 
     public function new_admin(Request $request){
 
-        return view('admin.userAdd', ["headerTitle" => "Add New System User"]);
+        return view('admin.userAdd', ["headerTitle" => "Add New System User", "title" => "Add User"]);
     }
 
     public function add_admin(Request $request){
