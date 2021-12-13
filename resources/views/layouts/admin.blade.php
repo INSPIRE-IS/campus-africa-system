@@ -19,7 +19,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/all.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+    <link href="../../css/styles.css?v=<?php echo rand();?>" rel="stylesheet">
+    <!-- <link href="{{ asset('css/styles.css') }}" rel="stylesheet"> -->
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
 

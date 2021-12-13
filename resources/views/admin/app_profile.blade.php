@@ -24,21 +24,17 @@
                     {{$user[0]['userInfo']['sponEmail']}}<br/>
                     {{$user[0]['userInfo']['sponId']}}<br/>
                 </p>
-            @else
-                &nbsp;
             @endif
         </div>
         <div class="col-3 subSection">
             @if($user[0]['userInfo']['studentType'] == "Bursary")
                 <p class="listHeader">Bursar</p>
                 <p class="list">
-                    {{$user[0]['userInfo']['bCompanyName']}}<br/>
-                    {{$user[0]['userInfo']['bContactPerson']}} - {{$user[0]['userInfo']['bContactNumber']}}<br/>
-                    {{$user[0]['userInfo']['bEmail']}}<br/>
-                    {{$user[0]['userInfo']['bRegistrationNo']}}<br/>
+                    {{$user[0]['userInfo']['burCompanyName']}}<br/>
+                    {{$user[0]['userInfo']['burContactPerson']}} - {{$user[0]['userInfo']['burContactNo']}}<br/>
+                    {{$user[0]['userInfo']['burEmail']}}<br/>
+                    {{$user[0]['userInfo']['burRegNo']}}<br/>
                 </p>
-            @else
-                &nbsp;
             @endif
             <br/>
             
