@@ -22,7 +22,16 @@
                 {{$user[0]['userInfo']['kinId']}}<br/>
             </p>
         </div>
-        <div class="col-3" style="margin-top:-35px;">
+        <div class="col-3" style="<?php 
+            if (isset($appProfile) && $appProfile === "true"){
+                if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected"){
+                    echo "margin-top:-35px;";
+                }else{
+                    echo "margin-top:16px;";
+                }
+            }else{
+                echo "margin-top:16px;";
+            }?>">
             @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
                     <p class="listHeader">Sponsor/Parent</p>
                 <p class="list">
@@ -33,7 +42,16 @@
                 </p>
             @endif
         </div>
-        <div class="col-3" style="margin-top:-35px;">
+        <div class="col-3" style="<?php 
+            if (isset($appProfile) && $appProfile === "true"){
+                if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected"){
+                    echo "margin-top:-35px;";
+                }else{
+                    echo "margin-top:16px;";
+                }
+            }else{
+                echo "margin-top:16px;";
+            }?>">
             @if($user[0]['userInfo']['studentType'] == "Bursary")
                 <p class="listHeader">Bursar</p>
                 <p class="list">
