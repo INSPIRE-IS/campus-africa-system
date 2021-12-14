@@ -46,7 +46,7 @@
                         @elseif($file == 'proofRegistration')
                           REGISTRATION
                         @elseif($file == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file == 'moveIn')
                           LEASE
                         @endif
@@ -75,7 +75,7 @@
                         @elseif($file['fileId'] == 'proofRegistration')
                           REGISTRATION
                         @elseif($file['fileId'] == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file['fileId'] == 'moveIn')
                           LEASE
                         @endif
@@ -107,7 +107,7 @@
                         @elseif($file['fileId'] == 'proofRegistration')
                           REGISTRATION
                         @elseif($file['fileId'] == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file['fileId'] == 'moveIn')
                           LEASE
                         @endif
@@ -131,7 +131,7 @@
                         @elseif($file['fileId'] == 'proofRegistration')
                           REGISTRATION
                         @elseif($file['fileId'] == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file['fileId'] == 'moveIn')
                           LEASE
                         @endif

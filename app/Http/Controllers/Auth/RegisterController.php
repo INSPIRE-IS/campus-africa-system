@@ -211,7 +211,7 @@ class RegisterController extends Controller
                 }elseif($fileType == "proofRegistration"){
                     $typeName = "Proof of Registration";
                 }elseif($fileType == "proof_of_payment"){
-                    $typeName = "Proof of Payment";
+                    $typeName = "Booking Fee Proof of Payment";
                 }
 
                 $user = User::where('id', $userUid)->first();

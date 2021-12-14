@@ -182,7 +182,7 @@
                                     @if($file["field"] === "studentCard")
                                         STUDENT CARD / PROOF OF STUDENT NUMBER
                                     @elseif($file["field"] === "proof_of_payment")
-                                        PROOF OF PAYMENT
+                                        BOOKING FEE PROOF OF PAYMENT
                                     @elseif($file["field"] === "copyID")
                                         COPY OF ID DOCUMENT
                                     @elseif($file["field"] === "proofRegistration")
