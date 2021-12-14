@@ -128,7 +128,7 @@ class HomeController extends Controller
                 }elseif($fileType == "proofRegistration"){
                     $typeName = "Proof of Registration";
                 }elseif($fileType == "proof_of_payment"){
-                    $typeName = "Proof of Payment";
+                    $typeName = "Booking Fee Proof of Payment";
                 }elseif($fileType == "moveIn"){
                     $typeName = "Lease";
                 }
@@ -478,7 +478,7 @@ class HomeController extends Controller
             }elseif($userFile['fileId'] == "proofRegistration"){
                 $typeName = "Proof of Registration";
             }elseif($userFile['fileId'] == "proof_of_payment"){
-                $typeName = "Proof of Payment";
+                $typeName = "Booking Fee Proof of Payment";
             }elseif($userFile['fileId'] == "moveIn"){
                 $typeName = "Lease";
             }elseif($userFile['fileId'] == "moveIn"){
@@ -912,6 +912,7 @@ class HomeController extends Controller
             "role_edit_app" => $request->edit_app,
             "role_upload_docs" => $request->upload_docs,
             "role_approve_docs" => $request->approve_docs,
+            "role_delete_booking" => $request->delete_booking,
         ]);
 
         return redirect()->back();
@@ -1048,11 +1049,11 @@ class HomeController extends Controller
                 }elseif($fileType == "proofRegistration"){
                     $typeName = "Proof of Registration";
                 }elseif($fileType == "proof_of_payment"){
-                    $typeName = "Proof of Payment";
+                    $typeName = "Booking Fee Proof of Payment";
                 }elseif($fileType == "moveIn"){
                     $typeName = "Lease";
                 }elseif($fileType == "bursaryApproval"){
-                    $typeName = "Bursary Approval";
+                    $typeName = "NSFAS / Bursary Approval";
                 }
                 
 
@@ -1355,6 +1356,7 @@ class HomeController extends Controller
             "role_edit_app" => $request->edit_app,
             "role_upload_docs" => $request->upload_docs,
             "role_approve_docs" => $request->approve_docs,
+            "role_delete_booking" => $request->delete_booking,
         ]);
 
         return redirect()->route('users');
@@ -1542,6 +1544,14 @@ class HomeController extends Controller
             });
 
         return json_encode($userData);
+    }
+
+    public function delete_booking(Request $request){
+
+        Booking::where('id', $request->bookingId)->delete();
+        User::where('id', $request->userId)->delete();
+
+        return 'true';
     }
 
     

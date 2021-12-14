@@ -245,7 +245,7 @@
                 <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity' value="{{$user->pAddressCity}}" required >
             </div>
             <div class="form-field">
-                <span id="pAddressPostal_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
                 <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user->pAddressPostal}}" required>
             </div>
 
@@ -381,7 +381,7 @@
             <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' value="{{$user->kinAddressCity}}" required>
         </div>
         <div class="form-field">
-            <span id="kAddressPostal_error" class="hidden" style="color:red"><small>This field is required</small></span>
+            <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
             <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" value="{{$user->kinAddressPost}}" required>
         </div>
 
@@ -750,6 +750,32 @@
         }
 
     });
+
+    $("#pAddressPostal").on('keyup blur', function(){
+        postal = $("#pAddressPostal").val()
+            if(/\b\d{4}\b/g.test(postal)){
+                $("#pAddressPostal").removeClass("fieldError")
+                $("#pAddressPostal_error").addClass('hidden')
+            }else{
+                $("#pAddressPostal").addClass("fieldError")
+                $("#pAddressPostal_error").removeClass('hidden')
+            }
+        
+    })
+
+    $("#kAddressPostal").on('keyup', function(){
+        postal = $("#kAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#kAddressPostal").removeClass("fieldError")
+            $("#kAddressPostal_error").addClass('hidden')
+        }else{
+            $("#kAddressPostal").addClass("fieldError")
+            $("#kAddressPostal_error").removeClass('hidden')
+        }
+
+        
+    })
 </script>
 
 @endsection

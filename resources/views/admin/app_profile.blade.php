@@ -2,6 +2,8 @@
 
 @section('content')
 
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="greyAppSection">
     <div class="container">
         <div class="col-3" style="<?php 
@@ -110,7 +112,9 @@
                 <br/>
                 <div class="buttons">
                     <button type="button" class="appBooking">Change this booking</button>
-                    <button type="button" class="appBooking">Delete this booking</button>
+                    @if(Auth::user()->role_delete_booking == 1)
+                        <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
+                    @endif
                 </div>
             </div>
 
@@ -213,7 +217,7 @@
                                     @elseif($file["field"] === "proofRegistration")
                                         PROOF OF REGISTRATION
                                     @elseif($file["field"] === "bursaryApproval")
-                                        NSFAS APPROVAL
+                                        NSFAS / Bursary APPROVAL
                                     @elseif($file["field"] === "bankStatement")
                                         BANK STATEMENT
                                     @elseif($file["field"] === "moveIn")
@@ -287,10 +291,15 @@
             <input type="hidden" id="FileIdForApproval">
             <input type="hidden" id="FileNameForApproval">
             @if(Auth::user()->role_approve_docs == 1)
+                <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
+                <br/>
                 <input type="text" id="actionUserName" placeholder="Name">
             @endif
+            <br/>
+            
             <div class="flex" style="margin-top:35px;" id="buttonSection">
             @if(Auth::user()->role_approve_docs == 1)
+                <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
                 <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
                 <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
@@ -330,7 +339,7 @@
         else if(field == "proofRegistration")
             var title = "Proof of registration";
         else if(field == "bursaryApproval")
-            var title = "NSFAS Approval";
+            var title = "NSFAS / Bursary Approval";
         else if(field == "bankStatement")
             var title = "Bank statement";
         else if(field == "moveIn")
@@ -360,37 +369,125 @@
 
     span.onclick = function() {
         modal.style.display = "none";
+        $("#actionUserName").removeClass("errorBorder")
+        $("#rejectReason").removeClass("errorBorder")
+        $("#rejectReason_error").addClass("hidden")
+        $("#actionUserName_error").addClass("hidden")
+        $("#actionUserName").val("")
+        $("#rejectReason").val("")
     }
 
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
+            $("#actionUserName").removeClass("errorBorder")
+            $("#rejectReason").removeClass("errorBorder")
+            $("#rejectReason_error").addClass("hidden")
+            $("#actionUserName_error").addClass("hidden")
+            $("#actionUserName").val("")
+            $("#rejectReason").val("")
         }
     }
 
     function actionFile(type, action){
 
         if(type === "Rejected"){
-            $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-            var preview1 = document.getElementById("amend");
-            preview1.setAttribute("disabled", "disabled");
-            var preview2 = document.getElementById("approved");
-            preview2.setAttribute("disabled", "disabled");
+            actionName = "Reject"
         }else{
             if(action == "Amend"){
-                $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                var preview1 = document.getElementById("rejected");
-                preview1.setAttribute("disabled", "disabled");
-                var preview2 = document.getElementById("approved");
-                preview2.setAttribute("disabled", "disabled");
+                actionName = "Amend"
             }else{
-                $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                var preview1 = document.getElementById("rejected");
-                preview1.setAttribute("disabled", "disabled");
-                var preview2 = document.getElementById("amend");
-                preview2.setAttribute("disabled", "disabled");
+                actionName = "Approve"
             }
         }
+
+        if(type === "Rejected"){
+            if($("#rejectReason").val() !== "" && $("#actionUserName").val() !== ""){
+                actionSwal(actionName, type, action)
+            }else{
+                $("#actionUserName").addClass("errorBorder")
+                $("#rejectReason").addClass("errorBorder")
+                $("#rejectReason_error").removeClass("hidden")
+                $("#actionUserName_error").removeClass("hidden")
+            }
+            
+        }else{
+            if(action == "Amend"){
+                if($("#actionUserName").val() !== ""){
+                    actionSwal(actionName, type, action)
+                }else{
+                    $("#actionUserName").addClass("errorBorder")
+                    $("#actionUserName_error").removeClass("hidden")
+                }
+                
+            }else{
+                if($("#actionUserName").val() !== ""){
+                    actionSwal(actionName, type, action)
+                }else{
+                    $("#actionUserName").addClass("errorBorder")
+                    $("#actionUserName_error").removeClass("hidden")
+                }
+                
+            }
+        }
+
+
+        
+
+        
+
+       
+        
+        
+
+    }
+
+    function actionSwal(actionName, type, action){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to "+actionName+" this file",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if(type === "Rejected"){
+                        $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                        var preview1 = document.getElementById("amend");
+                        preview1.setAttribute("disabled", "disabled");
+                        var preview2 = document.getElementById("approved");
+                        preview2.setAttribute("disabled", "disabled");
+
+                        sendAction(type, action);
+
+                }else{
+                    if(action == "Amend"){
+                            $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                            var preview1 = document.getElementById("rejected");
+                            preview1.setAttribute("disabled", "disabled");
+                            var preview2 = document.getElementById("approved");
+                            preview2.setAttribute("disabled", "disabled");
+
+                            sendAction(type, action);
+                        
+                    }else{
+                            $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                            var preview1 = document.getElementById("rejected");
+                            preview1.setAttribute("disabled", "disabled");
+                            var preview2 = document.getElementById("amend");
+                            preview2.setAttribute("disabled", "disabled");
+
+                            sendAction(type, action);
+                        
+                    }
+                }
+            }
+        })
+    }
+
+    function sendAction(type, action){
         
         $.ajax({
             type: "post",
@@ -403,12 +500,12 @@
             },
 
             success: function (data) {
-                // window.location.reload();
-
-                // console.log(data['id'])
+                
+                refreshActions();
 
                 if(type === "Rejected"){
                     $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
+                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden>')
 
                     $("#rejected").empty().append('REJECT WITH REASON')
                     var preview1 = document.getElementById("amend");
@@ -417,7 +514,7 @@
                     preview2.removeAttribute("disabled", "disabled");
                 }else{
                     $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button approved"></div>')
-                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<button type="button" onclick="openModal(\''+$("#FileNameForApproval").val()+'\', \''+data["fileUrl"]+'\', \'\', \'\', \''+data["id"]+'\', \'XApproved\')">View Document</button>')
+                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<button type="button" onclick="openModal(\''+$("#FileNameForApproval").val()+'\', \''+data["fileUrl"]+'\', \''+$("#actionUserName").val()+'\', \''+data["created_at"]+'\', \''+data["id"]+'\', \'XApproved\')">View Document</button>')
 
                     if(action == "Amend"){
                         $("#amend").empty().append('AMEND &amp; APPROVE')
@@ -432,14 +529,56 @@
                         var preview2 = document.getElementById("amend");
                         preview2.removeAttribute("disabled", "disabled");
                     }
+                    
                 }
 
                 var modal = document.getElementById("myModal");
                 modal.style.display = "none";
                
+
+                $("#actionUserName").removeClass("errorBorder")
+                $("#rejectReason").removeClass("errorBorder")
+                $("#rejectReason_error").addClass("hidden")
+                $("#actionUserName_error").addClass("hidden")
+                $("#actionUserName").val("")
+                $("#rejectReason").val("")
             },
         });
+    }
 
+    function refreshActions(){
+
+        $(".actionItemList").empty().append('<i class="fas fa-circle-notch fa-spin" style="font-size:41px; margin-left:41%;"></i>');
+
+        $.ajax({
+            type: "get",
+            url: "/action-list/<?php echo $user[0]['userInfo']['id']; ?>/all",
+            success: function (data) {
+                $(".actionItemList").empty();
+                
+                data.forEach(myFunction);
+                function myFunction(item, index) {
+                    if(item['actionUserRole'] == "1"){
+                        var role = '<button type="button" class="admin">Admin</button>';
+                    }else{
+                        var role = '<button type="button" class="applicant">Applicant</button>';
+                    }
+
+                    $(".actionItemList").append(
+                        '<div class="infoBlock">'+
+                            '<div class="responsible">'+
+                                '<p>'+item['actionUserDisplayName']+'</p>'+
+                                    role +
+                                '<p class="datetime">  '+item["created_at"].slice(8, 10)+' | '+item["created_at"].slice(5, 7)+' | '+item["created_at"].slice(0, 4)+' | '+item["created_at"].slice(11, 16)+' </p>'+
+                            '</div>'+
+                            '<div class="information">'+
+                                '<p>'+item['action']+'</p>'+
+                           ' </div>'+
+                        '</div>'
+                    )
+                }
+            },
+        });
     }
 
     $("#actionListSort").on("change", function(){
@@ -560,6 +699,8 @@
                     $("#copyIDStatus").empty().append('<div class="button action"></div>');
 
                     $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+                    refreshActions();
                 }
             },
         });
@@ -588,6 +729,8 @@
                     $("#studentCardStatus").empty().append('<div class="button action"></div>');
 
                     $("#studentCardBanner").empty().append('<button type="Button" onClick="openModal(\'studentCard\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+                    refreshActions();
                 }
             },
         });  
@@ -616,12 +759,15 @@
                     $("#bankStatementStatus").empty().append('<div class="button action"></div>');
 
                     $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+                    refreshActions();
                 }
             },
         });
     })
 
     $("#proofRegistration").on('change', function(){
+        console.log("1")
 
         $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
         let userId = <?php echo $user[0]['userInfo']['id'];?>
@@ -645,6 +791,8 @@
                     $("#proofRegistrationStatus").empty().append('<div class="button action"></div>');
 
                     $("#proofRegistrationBanner").empty().append('<button type="Button" onClick="openModal(\'proofRegistration\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+                    refreshActions();
                 }
             },
         });
@@ -675,6 +823,8 @@
                     $("#proof_of_paymentStatus").empty().append('<div class="button action"></div>');
 
                     $("#proof_of_paymentBanner").empty().append('<button type="Button" onClick="openModal(\'proof_of_payment\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+                    refreshActions();
 
                 }
             },
@@ -707,10 +857,75 @@
 
                     $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
+                    refreshActions();
+
                 }
             },
         });
     })
+
+    function deleteBooking(bookingId, userId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/delete/booking",
+                    data: {
+                        bookingId: bookingId, 
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location = "/applications";
+                    },
+                });
+            }
+        })
+    }
+
+    // function checkData(){
+    //     $.ajax({
+    //         type: "get",
+    //         url: "/action-list/<?php echo $user[0]['userInfo']['id']; ?>/all",
+    //         success: function (data) {
+    //             $(".actionItemList").empty();
+                
+    //             data.forEach(myFunction);
+    //             function myFunction(item, index) {
+    //                 if(item['actionUserRole'] == "1"){
+    //                     var role = '<button type="button" class="admin">Admin</button>';
+    //                 }else{
+    //                     var role = '<button type="button" class="applicant">Applicant</button>';
+    //                 }
+
+    //                 $(".actionItemList").append(
+    //                     '<div class="infoBlock">'+
+    //                         '<div class="responsible">'+
+    //                             '<p>'+item['actionUserDisplayName']+'</p>'+
+    //                                 role +
+    //                             '<p class="datetime">  '+item["created_at"].slice(8, 10)+' | '+item["created_at"].slice(5, 7)+' | '+item["created_at"].slice(0, 4)+' | '+item["created_at"].slice(11, 16)+' </p>'+
+    //                         '</div>'+
+    //                         '<div class="information">'+
+    //                             '<p>'+item['action']+'</p>'+
+    //                        ' </div>'+
+    //                     '</div>'
+    //                 )
+    //             }
+    //         },
+    //     });
+    // }
+
+    // setInterval(function(){
+    //     checkData()
+    // }, 30000)
 </script>
 
 

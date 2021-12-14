@@ -2,26 +2,28 @@
 
 @section('content')
 
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="container form-card">
 
-    <form action="/add-student" method="post" id="newUser">
+    <form action="/add-student" method="post" id="newUser" class="form">
     @csrf
         <br/>
         <br/>
 
         <div class="form-field">
             <label>First Name * <span id="firstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="firstName" id="firstName" required>
+            <input type="text" name="firstName" id="firstName" class="required">
         </div>
 
         <div class="form-field">
             <label>Last Name * <span id="lastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="lastName" id="lastName" required>
+            <input type="text" name="lastName" id="lastName" class="required">
         </div>
 
         <div class="form-field">
             <label>Title * <span id="title_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="title" id='title' required>
+            <select name="title" id='title' class="required">
                 <option value="" disabled selected>Please select one</option>
                 <option value="Mr" >Mr</option>
                 <option value="Ms" >Ms</option>
@@ -32,22 +34,22 @@
 
         <div class="form-field">
             <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="date" name="dob" id="dob" required>
+            <input type="date" name="dob" id="dob" class="required">
         </div>
 
         <div class="form-field">
-            <label>Cellphone Number * <span id="cellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="cell_no" id="cell_no" required>
+            <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+            <input type="text" name="cell_no" id="cell_no" class="required">
         </div>
 
         <div class="form-field">
-            <label>Email Address * <span id="emailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-            <input type="email" name="email" id="email" required >
+            <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+            <input type="email" name="email" id="email" class="required" >
         </div>
 
         <div class="form-field">
             <label>Nationality * <span id="nationality_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="nationality" id='nationality' required>
+            <select name="nationality" id='nationality' class="required">
                 <option value="" selected disabled>Please select one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "5")
@@ -58,8 +60,8 @@
         </div>
 
         <div class="form-field" id="idField">
-            <label>I.D Number * <span id="idNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-            <input type="text" name="idNumber" id="idNumber" >
+            <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+            <input type="text" name="idNumber" id="idNumber" class="required">
         </div>
 
         <div class="form-field hidden" id="passportField">
@@ -69,7 +71,7 @@
 
         <div class="form-field">
             <label>Student Type * <span id="studentType_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="studentType" id='studentType' required>
+            <select name="studentType" id='studentType' class="required">
                 <option value="" selected disabled>Select a Student Type</option>
                 <option value="NSFAS">NSFAS</option>
                 <option value="Bursary">Bursary</option>
@@ -79,7 +81,7 @@
 
         <div class="form-field">
             <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="year" id="year" required>
+            <select name="year" id="year" class="required">
             <option value="" selected disabled>Please select one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "4")
@@ -91,7 +93,7 @@
 
         <div class="form-field">
             <label>Institution of Study * <span id="institStudy_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="institStudy" id="institStudy" required>
+            <select name="institStudy" id="institStudy" class="required">
                 <option value="" selected disabled>Choose one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "1")
@@ -103,12 +105,12 @@
 
         <div class="form-field">
             <label>Student Number * <span id="studNumber_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="studNumber" id="studNumber" required >
+            <input type="text" name="studNumber" id="studNumber" class="required" >
         </div>
 
         <div class="form-field">
             <label>Year of study * <span id="yearOfStudy_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="yearOfStudy" id="yearOfStudy" required>
+            <select name="yearOfStudy" id="yearOfStudy" class="required">
                 <option value="" selected disabled>Please select one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "6")
@@ -120,7 +122,7 @@
 
         <div class="form-field">
             <label>Faculty * <span id="faculty_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="faculty" id="faculty" required>
+            <select name="faculty" id="faculty" class="required">
                 <option value="" disabled selected>Choose one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "3")
@@ -133,7 +135,7 @@
 
         <div class="form-field">
             <label>Residence * <span id="property_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="property" id='property' required>
+            <select name="property" id='property' class="required">
                 <option value="" selected disabled>Select a Residence</option>
                 <option value="Braamlofts">Braamlofts</option>
                 <option value="80 Jorissen">80 Jorissen</option>
@@ -147,7 +149,7 @@
 
         <div class="form-field">
             <label>Room Type * <span id="roomType_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="roomType" id='roomType' required>
+            <select name="roomType" id='roomType' class="required">
                 <option value="" selected disabled>Select a Room Type</option>
             </select>
         </div>
@@ -176,18 +178,18 @@
                 </div>
 
                 <div class="form-field">
-                    <label>Cellphone Number * <span id="pCellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
                     <input type="text" name="pCell_no" id="pCell_no" >
                 </div>
 
                 <div class="form-field">
-                    <label>Email Address * <span id="pEmailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <label>Email Address * <span id="pEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
                     <input type="email" name="pEmail" id='pEmail' >
                 </div>
 
                 <div class="form-field">
                     <label>Nationality * <span id="pNationality_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <select name="pNationality" id='pNationality' required>
+                    <select name="pNationality" id='pNationality'>
                         <option value="" selected disabled>Please select one</option>
                         @foreach($lookups as $lookup)
                             @if($lookup->group_id == "5")
@@ -198,7 +200,7 @@
                 </div>
 
                 <div class="form-field" id="pIdField">
-                    <label>I.D Number * <span id="pIdNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                    <label>I.D Number * <span id="pIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
                     <input type="text" name="pIdNumber" id="pIdNumber" >
                 </div>
 
@@ -211,19 +213,19 @@
 
                 <div class="form-field-big">
                     <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" required>
+                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
                 </div>
                 <div class="form-field-big">
                 <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" required>
+                    <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" >
                 </div>
                 <div class="form-field">
                 <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity' required >
+                    <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  >
                 </div>
                 <div class="form-field">
-                <span id="pAddressPostal_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" required>
+                <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" >
                 </div>
 
             </div>
@@ -255,12 +257,12 @@
                 </div>
 
                 <div class="form-field">
-                    <label>Contact Number * <span id="bCellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
                     <input type="text" name="bContactNumber" id="bContactNumber">
                 </div>
 
                 <div class="form-field">
-                    <label>Email Address * <span id="bEmailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <label>Email Address * <span id="bEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
                     <input type="email" name="bEmail" id="bEmail" >
                 </div>
 
@@ -282,16 +284,16 @@
 
         <div class="form-field">
             <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kFirstName" id="kFirstName" required>
+            <input type="text" name="kFirstName" id="kFirstName" class="required">
         </div>
         <div class="form-field">
             <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kLastName" id="kLastName" required>
+            <input type="text" name="kLastName" id="kLastName" class="required">
         </div>
 
         <div class="form-field">
             <label>Title * <span id="kTitle_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="kTitle" id='kTitle' required>
+            <select name="kTitle" id='kTitle' class="required">
             <option value="" disabled selected>Please select one</option>
                 <option value="Mr" >Mr</option>
                 <option value="Ms" >Ms</option>
@@ -302,12 +304,12 @@
 
         <div class="form-field">
             <label>Relationship * <span id="kRelationship_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kRelationship" id="kRelationship" required >
+            <input type="text" name="kRelationship" id="kRelationship" class="required" >
         </div>
 
         <div class="form-field">
             <label>Nationality * <span id="kNationality" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="kinNationality" id='kinNationality' required>
+            <select name="kinNationality" id='kinNationality' class="required">
                 <option value="" selected disabled>Please select one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "5")
@@ -318,8 +320,8 @@
         </div>
 
         <div class="form-field" id="kinIdField">
-            <label>I.D Number * <span id="kIdNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-            <input type="text" name="kIdNumber" id="kIdNumber" required>
+            <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+            <input type="text" name="kIdNumber" id="kIdNumber" class="required">
         </div>
 
         <div class="form-field hidden" id="kinPassportField">
@@ -328,40 +330,40 @@
         </div>
 
         <div class="form-field">
-            <label>Cellphone Number * <span id="kCellNoError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="kCellNo" id='kCellNo' required>
+            <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+            <input type="text" name="kCellNo" id='kCellNo' class="required">
         </div>
 
         <div class="form-field">
-            <label>Email Address * <span id="kEmailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-            <input type="email" name="kEmail" id="kEmail" required>
+            <label>Email Address * <span id="kEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+            <input type="email" name="kEmail" id="kEmail" class="required">
         </div>
 
         <div class="form-field">
-            <label>Work Number <span id="kWorkNoError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+            <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
             <input type="text" name="kWorkNo" id="kWorkNo" >
         </div>
 
         <div class="form-field">
-            <label>Telephone Number <span id="kTeleNoError" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
+            <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
             <input type="text" name="kTeleNo" id='kTeleNo'>
         </div>
 
         <div class="form-field-big">
             <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" required>
+            <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
         </div>
         <div class="form-field-big">
         <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" required>
+            <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required">
         </div>
         <div class="form-field">
         <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' required >
+            <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" >
         </div>
         <div class="form-field">
-        <span id="kAddressPostal_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" required>
+        <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+            <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required">
         </div>
 
         <div class="form-field">
@@ -373,6 +375,37 @@
 </div>
 
 <script>
+
+    $("input").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        // var required = document.getElementById(fieldId).required
+        var required = $("#"+fieldId).hasClass('required')
+
+        if($("#"+fieldId).val() == "" && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
+        }else{
+            $("#"+$(this)[0]["id"]).removeClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        }
+
+    });
+
+    $("select").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        // var required = document.getElementById(fieldId).required
+        var required = $("#"+fieldId).hasClass('required')
+
+        if($("#"+fieldId).val() == "" && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
+        }else{
+            $("#"+$(this)[0]["id"]).removeClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        }
+    });
 
     function ValidID(idNumber, idField, errorField){
         let idArr = Array.from(idNumber);
@@ -406,7 +439,6 @@
 
         if(Number.isInteger(finalSum) && idNumber !== ""){
             $("#"+idField).removeClass("fieldError")
-            $("#"+idField).removeClass("errorBorder")
             $("#"+errorField).addClass('hidden')
         }else{
             $("#"+idField).addClass("fieldError")
@@ -418,12 +450,11 @@
         let idNumber = $("#idNumber").val();
         if(idNumber.length == 13){
             console.log("1")
-            ValidID(idNumber, "idNumber", "idNumberError")
+            ValidID(idNumber, "idNumber", "idNumber_error")
         }else{
             console.log("2")
-            $("#idNumber").addClass('errorBorder')
             $("#idNumber").addClass("fieldError")
-            $("#idNumberError").removeClass('hidden')
+            $("#idNumber_error").removeClass('hidden')
         }  
     })
 
@@ -431,10 +462,10 @@
         let idNumber = $("#pIdNumber").val();
 
         if(idNumber.length == 13){
-            ValidID(idNumber, "pIdNumber", "pIdNumberError")
+            ValidID(idNumber, "pIdNumber", "pIdNumber_error")
         }else{
             $("#pIdNumber").addClass("fieldError")
-            $("#pIdNumberError").removeClass('hidden')
+            $("#pIdNumber_error").removeClass('hidden')
         }
 
     })
@@ -443,10 +474,10 @@
         let idNumber = $("#kIdNumber").val();
 
         if(idNumber.length == 13){
-            ValidID(idNumber, "kIdNumber", "kIdNumberError")
+            ValidID(idNumber, "kIdNumber", "kIdNumber_error")
         }else{
             $("#kIdNumber").addClass("fieldError")
-            $("#kIdNumberError").removeClass('hidden')
+            $("#kIdNumber_error").removeClass('hidden')
         }
 
     })
@@ -464,36 +495,68 @@
 
     $("#cell_no").on('keyup blur', function(){
         cell = $("#cell_no").val()
-        ValidCell(cell, "cell_no", "cellError")
+        ValidCell(cell, "cell_no", "cell_no_error")
     })
 
     $("#pCell_no").on('keyup blur', function(){
         cell = $("#pCell_no").val()
-        ValidCell(cell, "pCell_no", "pCellError")
+        ValidCell(cell, "pCell_no", "pCell_no_error")
     })
 
     $("#bContactNumber").on('keyup blur', function(){
         cell = $("#bContactNumber").val()
-        ValidCell(cell, "bContactNumber", "bCellError")
+        ValidCell(cell, "bContactNumber", "bContactNumber_error")
     })
 
     $("#kTeleNo").on('keyup blur', function(){
         cell = $("#kTeleNo").val()
         if(cell !== ""){
-            ValidCell(cell, "kTeleNo", "kTeleNoError")
+            ValidCell(cell, "kTeleNo", "kTeleNo_error")
+        }else{
+            $("#kTeleNo_error").addClass('hidden')
+            $("#kTeleNo").removeClass('fieldError')
         }
     })
 
     $("#kCellNo").on('keyup blur', function(){
         cell = $("#kCellNo").val()
-        ValidCell(cell, "kCellNo", "kCellNoError")
+        ValidCell(cell, "kCellNo", "kCellNo_error")
     })
 
     $("#kWorkNo").on('keyup blur', function(){
         cell = $("#kWorkNo").val()
         if(cell !== ""){
-            ValidCell(cell, "kWorkNo", "kWorkNoError")
+            ValidCell(cell, "kWorkNo", "kWorkNo_error")
+        }else{
+            $("#kWorkNo_error").addClass('hidden')
+            $("#kWorkNo").removeClass('fieldError')
         }
+    })
+
+    $("#pAddressPostal").on('keyup blur', function(){
+        postal = $("#pAddressPostal").val()
+            if(/\b\d{4}\b/g.test(postal)){
+                $("#pAddressPostal").removeClass("fieldError")
+                $("#pAddressPostal_error").addClass('hidden')
+            }else{
+                $("#pAddressPostal").addClass("fieldError")
+                $("#pAddressPostal_error").removeClass('hidden')
+            }
+        
+    })
+
+    $("#kAddressPostal").on('keyup', function(){
+        postal = $("#kAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#kAddressPostal").removeClass("fieldError")
+            $("#kAddressPostal_error").addClass('hidden')
+        }else{
+            $("#kAddressPostal").addClass("fieldError")
+            $("#kAddressPostal_error").removeClass('hidden')
+        }
+
+        
     })
 
     function isEmail(email) {
@@ -504,40 +567,40 @@
     $("#email").on('keyup', function(){
         if(isEmail($("#email").val())){
             $("#email").removeClass("fieldError")
-            $("#emailError").addClass('hidden')
+            $("#email_error").addClass('hidden')
         }else{
             $("#email").addClass("fieldError")
-            $("#emailError").removeClass('hidden')
+            $("#email_error").removeClass('hidden')
         }
     })
 
     $("#pEmail").on('keyup', function(){
         if(isEmail($("#pEmail").val())){
             $("#pEmail").removeClass("fieldError")
-            $("#pEmailError").addClass('hidden')
+            $("#pEmail_error").addClass('hidden')
         }else{
             $("#pEmail").addClass("fieldError")
-            $("#pEmailError").removeClass('hidden')
+            $("#pEmail_error").removeClass('hidden')
         }
     })
 
     $("#bEmail").on('keyup', function(){
         if(isEmail($("#bEmail").val())){
             $("#bEmail").removeClass("fieldError")
-            $("#bEmailError").addClass('hidden')
+            $("#bEmail_error").addClass('hidden')
         }else{
             $("#bEmail").addClass("fieldError")
-            $("#bEmailError").removeClass('hidden')
+            $("#bEmail_error").removeClass('hidden')
         }
     })
  
     $("#kEmail").on('keyup', function(){
         if(isEmail($("#kEmail").val())){
             $("#kEmail").removeClass("fieldError")
-            $("#kEmailError").addClass('hidden')
+            $("#kEmail_error").addClass('hidden')
         }else{
             $("#kEmail").addClass("fieldError")
-            $("#kEmailError").removeClass('hidden')
+            $("#kEmail_error").removeClass('hidden')
         }
     })
 
@@ -545,13 +608,15 @@
         if($("#nationality").val() == "South African"){
             $("#passportField").addClass('hidden')
             $("#idField").removeClass('hidden')
-            document.getElementById("passportNo").required = false;
-            document.getElementById("idNumber").required = true;
+
+            $("#passportNo").removeClass("required")
+            $("#idNumber").addClass("required")
         }else{
             $("#idField").addClass('hidden')
             $("#passportField").removeClass('hidden')
-            document.getElementById("passportNo").required = true;
-            document.getElementById("idNumber").required = false;
+
+            $("#passportNo").addClass("required")
+            $("#idNumber").removeClass("required")
         }
     })
 
@@ -559,13 +624,15 @@
         if($("#kinNationality").val() == "South African"){
             $("#kinPassportField").addClass('hidden')
             $("#kinIdField").removeClass('hidden')
-            document.getElementById("passportNo").required = false;
-            document.getElementById("idNumber").required = true;
+
+            $("#kinPassportNo").removeClass("required")
+            $("#kIdNumber").addClass("required")
         }else{
             $("#kinIdField").addClass('hidden')
             $("#kinPassportField").removeClass('hidden')
-            document.getElementById("passportNo").required = true;
-            document.getElementById("idNumber").required = false;
+
+            $("#kinPassportNo").addClass("required")
+            $("#kIdNumber").removeClass("required")
         }
     })
 
@@ -573,34 +640,59 @@
         if($("#pNationality").val() == "South African"){
             $("#pPassportField").addClass('hidden')
             $("#pIdField").removeClass('hidden')
-            document.getElementById("passportNo").required = false;
-            document.getElementById("idNumber").required = true;
+
+            $("#pPassportNo").addClass("required")
+            $("#pIdNumber").removeClass("required")
         }else{
             $("#pIdField").addClass('hidden')
             $("#pPassportField").removeClass('hidden')
-            document.getElementById("passportNo").required = true;
-            document.getElementById("idNumber").required = false;
+
+            $("#pPassportNo").addClass("required")
+            $("#pIdNumber").removeClass("required")
         }
     })
 
     function parentDetails(value){
-        document.getElementById("pFirstName").required = value;
-        document.getElementById("pLastName").required = value;
-        document.getElementById("pCell_no").required = value;
-        document.getElementById("pEmail").required = value;
-        document.getElementById("pNationality").required = value;
-        document.getElementById("pAddress1").required = value;
-        document.getElementById("pAddress2").required = value;
-        document.getElementById("pAddressCity").required = value;
-        document.getElementById("pAddressPostal").required = value;
+
+        if(value == true){
+            $("#pFirstName").addClass('required')
+            $("#pLastName").addClass('required')
+            $("#pCell_no").addClass('required')
+            $("#pEmail").addClass('required')
+            $("#pNationality").addClass('required')
+            $("#pAddress1").addClass('required')
+            $("#pAddress2").addClass('required')
+            $("#pAddressCity").addClass('required')
+            $("#pAddressPostal").addClass('required')
+        }else{
+            $("#pFirstName").removeClass('required')
+            $("#pLastName").removeClass('required')
+            $("#pCell_no").removeClass('required')
+            $("#pEmail").removeClass('required')
+            $("#pNationality").removeClass('required')
+            $("#pAddress1").removeClass('required')
+            $("#pAddress2").removeClass('required')
+            $("#pAddressCity").removeClass('required')
+            $("#pAddressPostal").removeClass('required')
+        }
+
     }
 
     function sponsorDetails(value){
-        document.getElementById("bCompanyName").required = value;
-        document.getElementById("bRegistrationNo").required = value;
-        document.getElementById("bContactPerson").required = value;
-        document.getElementById("bContactNumber").required = value;
-        document.getElementById("bEmail").required = value;
+
+        if(value == true){
+            $("#bCompanyName").addClass('required')
+            $("#bRegistrationNo").addClass('required')
+            $("#bContactPerson").addClass('required')
+            $("#bContactNumber").addClass('required')
+            $("#bEmail").addClass('required')
+        }else{
+            $("#bCompanyName").removeClass('required')
+            $("#bRegistrationNo").removeClass('required')
+            $("#bContactPerson").removeClass('required')
+            $("#bContactNumber").removeClass('required')
+            $("#bEmail").removeClass('required')
+        }
     }
 
     $("#studentType").on('change', function(){
@@ -647,87 +739,111 @@
         }
     })
 
-    $("input").blur(function(){
-        let fieldId = $(this)[0]["id"]
-
-        var required = document.getElementById(fieldId).required
-
-        if($("#"+fieldId).val() == "" && required == true){
-            $("#"+$(this)[0]["id"]).addClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
-        }else{
-            $("#"+$(this)[0]["id"]).removeClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
-        }
-    });
-
-    $("select").blur(function(){
-        let fieldId = $(this)[0]["id"]
-
-        var required = document.getElementById(fieldId).required
-
-        if($("#"+fieldId).val() == "" && required == true){
-            $("#"+$(this)[0]["id"]).addClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
-        }else{
-            $("#"+$(this)[0]["id"]).removeClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
-        }
-    });
+    
 
     $('#newUser').submit(function() {
 
-        if($("#cell_no").hasClass('fieldError') == true || $("#email").hasClass('fieldError') == true || $("#idNumber").hasClass('fieldError') == true || $("#kIdNumber").hasClass('fieldError') == true || $("#kCellNo").hasClass('fieldError') == true || $("#kEmail").hasClass('fieldError') == true){
+        // form_class = $("#newUser").data()
+        // console.log(form_class)
 
-            if($("#cell_no").hasClass('fieldError') == true){
-                $("#cell_no").focus();
-            }else if($("#email").hasClass('fieldError') == true){
-                $("#email").focus();
-            }else if($("#idNumber").hasClass('fieldError') == true){
-                $("#idNumber").focus();
-            }else if($("#kIdNumber").hasClass('fieldError') == true){
-                $("#kIdNumber").focus();
-            }else if($("#kCellNo").hasClass('fieldError') == true){
-                $("#kCellNo").focus();
-            }else if($("#kEmail").hasClass('fieldError') == true){
-                $("#kEmail").focus();
+        var req = 1;
+
+        $('.required').each( function(){
+            if($(this).val() === ""){
+                req = 0
+
+                $(this).addClass("fieldError")
+                id = $(this)[0]["id"]
+                $("#"+id+"_error").removeClass("hidden")
             }
+        })
 
-            return false; 
+        if(req == 0){
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
+
+            return false;
         }else{
+            let total = 1
+            $('.fieldError').each( function(){
+                if($(this).val() === ""){
+                    total = 0
 
-            if($("#studentType").val() == "Bursary"){
-                if($("#bContactNumber").hasClass('fieldError') == true || $("#bEmail").hasClass('fieldError') == true){
-
-                    if($("#bContactNumber").hasClass('fieldError') == true){
-                        $("#bContactNumber").focus();
-                    }else if($("#bEmail").hasClass('fieldError') == true){
-                        $("#bEmail").focus();
-                    }
-
-                    return false; 
-                }else{
-                    return true; 
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
                 }
-            }else if($("#studentType").val() == "Cash / Direct"){
-                if($("#pCell_no").hasClass('fieldError') == true || $("#pEmail").hasClass('fieldError') == true || $("#pIdNumber").hasClass('fieldError') == true){
+            })
 
-                    if($("#pCell_no").hasClass('fieldError') == true){
-                        $("#pCell_no").focus();
-                    }else if($("#pEmail").hasClass('fieldError') == true){
-                        $("#pEmail").focus();
-                    }else if($("#pIdNumber").hasClass('fieldError') == true){
-                        $("#pIdNumber").focus();
-                    }
+            if(total == 0){
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
 
-                    return false; 
-                }else{
-                    return true; 
-                }
+                return false;
             }else{
-                return true; 
+                return true;
             }
         }
+
+        
+
+        // if($("#cell_no").hasClass('fieldError') == true || $("#email").hasClass('fieldError') == true || $("#idNumber").hasClass('fieldError') == true || $("#kIdNumber").hasClass('fieldError') == true || $("#kCellNo").hasClass('fieldError') == true || $("#kEmail").hasClass('fieldError') == true){
+
+        //     if($("#cell_no").hasClass('fieldError') == true){
+        //         $("#cell_no").focus();
+        //     }else if($("#email").hasClass('fieldError') == true){
+        //         $("#email").focus();
+        //     }else if($("#idNumber").hasClass('fieldError') == true){
+        //         $("#idNumber").focus();
+        //     }else if($("#kIdNumber").hasClass('fieldError') == true){
+        //         $("#kIdNumber").focus();
+        //     }else if($("#kCellNo").hasClass('fieldError') == true){
+        //         $("#kCellNo").focus();
+        //     }else if($("#kEmail").hasClass('fieldError') == true){
+        //         $("#kEmail").focus();
+        //     }
+
+        //     return false; 
+        // }else{
+
+        //     if($("#studentType").val() == "Bursary"){
+        //         if($("#bContactNumber").hasClass('fieldError') == true || $("#bEmail").hasClass('fieldError') == true){
+
+        //             if($("#bContactNumber").hasClass('fieldError') == true){
+        //                 $("#bContactNumber").focus();
+        //             }else if($("#bEmail").hasClass('fieldError') == true){
+        //                 $("#bEmail").focus();
+        //             }
+
+        //             return false; 
+        //         }else{
+        //             return true; 
+        //         }
+        //     }else if($("#studentType").val() == "Cash / Direct"){
+        //         if($("#pCell_no").hasClass('fieldError') == true || $("#pEmail").hasClass('fieldError') == true || $("#pIdNumber").hasClass('fieldError') == true){
+
+        //             if($("#pCell_no").hasClass('fieldError') == true){
+        //                 $("#pCell_no").focus();
+        //             }else if($("#pEmail").hasClass('fieldError') == true){
+        //                 $("#pEmail").focus();
+        //             }else if($("#pIdNumber").hasClass('fieldError') == true){
+        //                 $("#pIdNumber").focus();
+        //             }
+
+        //             return false; 
+        //         }else{
+        //             return true; 
+        //         }
+        //     }else{
+        //         return true; 
+        //     }
+        // }
 
     });
 

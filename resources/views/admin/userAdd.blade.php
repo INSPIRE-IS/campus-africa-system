@@ -85,6 +85,11 @@
                     <input type="checkbox" id="approve_docs" name="approve_docs" value="1">
                     <label for="approve_docs" style="width:400px">Approve Documents</label>
                 </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="delete_booking" name="delete_booking" value="1">
+                    <label for="delete_booking" style="width:400px">Delete Booking</label>
+                </li>
             </ul>
         </div>
 
