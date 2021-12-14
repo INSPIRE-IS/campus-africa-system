@@ -104,6 +104,7 @@
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
                         <th style="width:50%">APPLICANT | ROOM</th>
+                        <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
                         <th style="background-color:#ccc; ">BOOKING STATUS</th>
                         <th>PROOF OF PAYMENT</th>
@@ -123,8 +124,9 @@
 
                         <tr class=" <?php if($i % 2 == 0){echo 'dark';}else{echo 'light';} ?> clickable-row table_id_{{$user['id']}}" data-href='/application-profile/{{$user["id"]}}'>
                             <td id="bookingRef">#{{$user["bookingRef"]}} </td>
-                            <td id="appUser"><span class="bold">{{$user["userFirstName"]}} {{$user["userLastname"]}}</span> <br/> {{$user["property"]}} | {{$user["roomType"]}} | {{$user["created_at"]}}</td>
-                            <td id="studType">{{$user["studentType"]}}</td>
+                            <td id="appUser"><span class="bold">{{$user["userFirstName"]}} {{$user["userLastname"]}}</span> <br/> {{$user["property"]}} | {{$user["roomType"]}}</td>
+                            <td id="date">{{$user["created_at"]}}</td>
+                            <td id="studType">@if($user["studentType"] == "Cash / Direct") Cash @else {{$user["studentType"]}} @endif</td>
                             <td id="statusBarIcon" style="background-color:#ccc">
                                 @if($user["bookingStatus"] === "Pending" || $user["bookingStatus"] === "Action")
                                 <span class="hidden">A</span><div class="button action bigButton"></div>

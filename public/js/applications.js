@@ -159,10 +159,17 @@ jQuery(document).ready(function ($) {
                                 ("0" + m.getUTCMinutes()).slice(-2) + ":" +
                                 ("0" + m.getUTCSeconds()).slice(-2);
 
+                            if(arrayItem["studentType"] == "Cash / Direct"){
+                                studentType = "Cash"
+                            }else{
+                                studentType = arrayItem["studentType"]
+                            }
+
                             var trDOM = datatable.row.add( [
                                 '#'+arrayItem["bookingRef"],
-                                '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"]+' | '+dateString,
-                                arrayItem["studentType"],
+                                '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"],
+                                dateString,
+                                studentType,
                                 bookingStat,
                                 pop,
                                 copyId,
@@ -175,8 +182,8 @@ jQuery(document).ready(function ($) {
 
 
                             $( trDOM ).addClass('table_id_'+arrayItem["id"]);
-                            $( trDOM ).find('td').eq(3).addClass('bookingBg');
-                            $( trDOM ).find('td').eq(6).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(4).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(7).addClass('bookingBg');
 
 
 
