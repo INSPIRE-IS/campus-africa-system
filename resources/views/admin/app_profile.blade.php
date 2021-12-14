@@ -6,7 +6,7 @@
 
     <div class="container">
 
-        <div class="col-3 subSection">
+        <div class="col-3">
             <p class="listHeader">Next of Kin</p>
             <p class="list">
                 {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
@@ -15,7 +15,7 @@
                 {{$user[0]['userInfo']['kinId']}}<br/>
             </p>
         </div>
-        <div class="col-3 subSection">
+        <div class="col-3">
             @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
                     <p class="listHeader">Sponsor/Parent</p>
                 <p class="list">
@@ -26,7 +26,7 @@
                 </p>
             @endif
         </div>
-        <div class="col-3 subSection">
+        <div class="col-3">
             @if($user[0]['userInfo']['studentType'] == "Bursary")
                 <p class="listHeader">Bursar</p>
                 <p class="list">
@@ -72,12 +72,16 @@
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
                 <h2 class="appHeader">Application made for</h2>
-                <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                <h2 class="cardHeader" >Single Room</h2>
-                <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
+                <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
+                <h2 class="cardHeader" >{{$booking->roomType}}</h2>
+                <h4 class="cardSubHeaderGrey">
+                    <!-- Room 23 Floor 2 -->
+                </h4>
                 <br/>
                 <h4 class="cardSubHeaderGrey">BOOKING FEE PAID</h4>
-                <h2 class="cardHeader" >R2500</h2>
+                <h2 class="cardHeader" >
+                    <!-- R2500 -->
+                </h2>
                 <br/>
                 <div class="buttons">
                     <button type="button" class="appBooking">Change this booking</button>
