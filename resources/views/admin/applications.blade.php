@@ -18,7 +18,7 @@
         <div class="searchField">
         <label></label><br/>
             <select name="property" id="property">
-                <option value="All" selected>All Properties</option>
+                <option value="All" selected>All Residences</option>
                 <option value="Braamlofts">Braamlofts</option>
                 <option value="80 Jorissen">80 Jorissen</option>
                 <option value="49 Jorissen">49 Jorissen</option>
@@ -37,7 +37,9 @@
                 <option value="3 Sharing">3 sharing</option>
                 <option value="single room 2 bedroom">Single Room | 2 Bedroom</option>
                 <option value="single room 3 bedroom">Single Room | 3 Bedroom</option>
-                <option value="single room small">Single Room | small</option>
+                <option value="single room small">Single Room | Small</option>
+                <option value="single room medium">Single Room | Medium</option>
+                <option value="single room large">Single Room | Large</option>
             </select>
         </div>
         <div class="searchField">

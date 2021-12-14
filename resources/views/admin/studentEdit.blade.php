@@ -133,9 +133,9 @@
         </div>
 
         <div class="form-field">
-            <label>Property * <span id="property_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+            <label>Residence * <span id="property_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="property" id='property' required>
-                <option value="" selected disabled>Select a Proprty</option>
+                <option value="" selected disabled>Select a Residence</option>
                 <option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";} ?>>Braamlofts</option>
                 <option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";} ?>>80 Jorissen</option>
                 <option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";} ?>>49 Jorissen</option>
@@ -171,6 +171,8 @@
                     <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
                     <option value="3 Sharing" <?php if($booking->roomType == "3 Sharing"){ echo "selected";}?>>3 sharing</option>
                     <option value="single room small" <?php if($booking->roomType == "single room small"){ echo "selected";}?>>Single Room | small</option>
+                    <option value="single room medium" <?php if($booking->roomType == "single room medium"){ echo "selected";}?>>Single Room | Medium</option>
+                    <option value="single room large" <?php if($booking->roomType == "single room large"){ echo "selected";}?>>Single Room | Large</option>
                 <?php } ?>
             </select>
         </div>
@@ -661,7 +663,7 @@
         }else if(propValue == "126 Siemert"){
             $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 sharing</option><option value="single room small">Single Room | small</option>')
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 sharing</option><option value="single room small">Single Room | small</option><option value="single room medium" >Single Room | Medium</option><option value="single room large" >Single Room | Large</option>')
         }
     })
 

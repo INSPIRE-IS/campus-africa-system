@@ -132,9 +132,9 @@
 
 
         <div class="form-field">
-            <label>Property * <span id="property_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+            <label>Residence * <span id="property_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="property" id='property' required>
-                <option value="" selected disabled>Select a Proprty</option>
+                <option value="" selected disabled>Select a Residence</option>
                 <option value="Braamlofts">Braamlofts</option>
                 <option value="80 Jorissen">80 Jorissen</option>
                 <option value="49 Jorissen">49 Jorissen</option>
@@ -643,7 +643,7 @@
         }else if(propValue == "126 Siemert"){
             $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 sharing</option><option value="single room small">Single Room | small</option>')
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 sharing</option><option value="single room small">Single Room | small</option><option value="single room medium">Single Room | Medium</option><option value="single room large">Single Room | Large</option>')
         }
     })
 
