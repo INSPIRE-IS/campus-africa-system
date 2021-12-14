@@ -125,6 +125,8 @@ jQuery(document).ready(function ($) {
                                     }else if(file["status"] === "na"){
                                         bursaryApproval = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                                     }
+                                }else{
+                                    bursaryApproval = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                                 }
 
                                 if(file["field"] === "bankStatement"){
