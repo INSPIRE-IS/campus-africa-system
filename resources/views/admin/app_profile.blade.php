@@ -139,19 +139,19 @@
                 <!-- <button type="button" class="reminder">Send reminder</button> -->
                 <h2 class="appSubHeader bold">PAYMENT TYPE </h2>
                 <p class="appSubHeader">
-                    NSFAS
+                    @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif
                 </p>
                 <br/>
 
-                <h2 class="appSubHeader bold">DEPOSIT</h2>
-                <p class="appSubHeader">
+                <h2 class="appSubHeader bold">BOOKING FEE</h2>
+                <!-- <p class="appSubHeader">
                     CREDIT CARD
-                </p>
+                </p> -->
                 <br/>
 
                 <h2 class="appSubHeader bold">PAID</h2>
                 <p class="appSubHeader">
-                    NO
+                    <!-- NO -->
                 </p>
             </div>
 
