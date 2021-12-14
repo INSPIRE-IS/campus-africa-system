@@ -34,7 +34,7 @@
                 <option value="All" selected>All Room Types</option>
                 <option value="Single Room">Single Room</option>
                 <option value="2 Sharing">2 Sharing</option>
-                <option value="3 Sharing">3 sharing</option>
+                <option value="3 Sharing">3 Sharing</option>
                 <option value="single room 2 bedroom">Single Room | 2 Bedroom</option>
                 <option value="single room 3 bedroom">Single Room | 3 Bedroom</option>
                 <option value="single room small">Single Room | Small</option>
