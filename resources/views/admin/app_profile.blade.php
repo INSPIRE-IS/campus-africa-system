@@ -3,10 +3,17 @@
 @section('content')
 
 <div class="greyAppSection">
-
     <div class="container">
-
-        <div class="col-3" style="<?php if (isset($appProfile) && $appProfile === "true"){if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected"){echo "margin-top:-35px;";}}else{echo "margin-top:16px;";}?>">
+        <div class="col-3" style="<?php 
+            if (isset($appProfile) && $appProfile === "true"){
+                if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected"){
+                    echo "margin-top:-35px;";
+                }else{
+                    echo "margin-top:16px;";
+                }
+            }else{
+                echo "margin-top:16px;";
+            }?>">
             <p class="listHeader">Next of Kin</p>
             <p class="list">
                 {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
