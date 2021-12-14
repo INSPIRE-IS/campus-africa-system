@@ -139,6 +139,8 @@ jQuery(document).ready(function ($) {
                                         bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                                     }
                                         
+                                }else{
+                                    bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                                 }
                                             
                             });
