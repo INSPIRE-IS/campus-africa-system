@@ -184,7 +184,7 @@
                                     @elseif($file["field"] === "proof_of_payment")
                                         PROOF OF PAYMENT
                                     @elseif($file["field"] === "copyID")
-                                        STUDENT ID DOCUMENT
+                                        COPY OF ID DOCUMENT
                                     @elseif($file["field"] === "proofRegistration")
                                         PROOF OF REGISTRATION
                                     @elseif($file["field"] === "bursaryApproval")
@@ -301,7 +301,7 @@
         else if(field == "proof_of_payment")
             var title = "Proof of payment";
         else if(field == "copyID")
-            var title = "Student ID document";
+            var title = "Copy Of ID document";
         else if(field == "proofRegistration")
             var title = "Proof of registration";
         else if(field == "bursaryApproval")
@@ -469,7 +469,7 @@
                     }else if(item['field'] == "proof_of_payment"){
                         var name = 'PROOF OF PAYMENT';
                     }else if(item['field'] == "copyID"){
-                        var name = 'STUDENT ID DOCUMENT';
+                        var name = 'COPY OF ID DOCUMENT';
                     }else if(item['field'] == "proofRegistration"){
                         var name = 'PROOF OF REGISTRATION';
                     }else if(item['field'] == "bursaryApproval"){
