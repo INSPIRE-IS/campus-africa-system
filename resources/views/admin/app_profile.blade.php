@@ -6,7 +6,7 @@
 
     <div class="container">
 
-        <div class="col-3">
+        <div class="col-3" style="margin-top:-35px;">
             <p class="listHeader">Next of Kin</p>
             <p class="list">
                 {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
@@ -15,7 +15,7 @@
                 {{$user[0]['userInfo']['kinId']}}<br/>
             </p>
         </div>
-        <div class="col-3">
+        <div class="col-3" style="margin-top:-35px;">
             @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
                     <p class="listHeader">Sponsor/Parent</p>
                 <p class="list">
@@ -26,7 +26,7 @@
                 </p>
             @endif
         </div>
-        <div class="col-3">
+        <div class="col-3" style="margin-top:-35px;">
             @if($user[0]['userInfo']['studentType'] == "Bursary")
                 <p class="listHeader">Bursar</p>
                 <p class="list">
