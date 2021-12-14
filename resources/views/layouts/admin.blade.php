@@ -49,6 +49,7 @@
                 <a href="/invoices">Invoices</a>
                 <a href="/mailing">Mailing</a>
                 <a href="/lookups">Lookups</a>
+                <a href="/reports">Reports</a>
                 <a href="/users">Users</a>
                 <a href="/logout">Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">

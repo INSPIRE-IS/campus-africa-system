@@ -32,7 +32,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '22ab3565efb7dd333481fde8730c28276d7a6afb',
+    'reference' => 'ced180e47f3fcca127d9999100e66cbc9a83fff7',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -471,7 +471,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '22ab3565efb7dd333481fde8730c28276d7a6afb',
+      'reference' => 'ced180e47f3fcca127d9999100e66cbc9a83fff7',
     ),
     'laravel/sail' => 
     array (
@@ -1044,6 +1044,15 @@ private static $installed = array (
       array (
       ),
       'reference' => 'c6c1022351a901512170118436c764e473f6de8c',
+    ),
+    'shuchkin/simplexlsxgen' => 
+    array (
+      'pretty_version' => '1.0.22',
+      'version' => '1.0.22.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '9a555eef9b922ec5a7b6893e8cc40cbbe68de999',
     ),
     'swiftmailer/swiftmailer' => 
     array (

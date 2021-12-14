@@ -1556,6 +1556,128 @@ class HomeController extends Controller
         return 'true';
     }
 
+    public function reports(Request $request){
+        return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports"]);
+    }
+
+    public function download_report(Request $request){
+        $search_value = [];
+
+        if($request->bookingStatus !== "" && !empty($request->bookingStatus)){
+
+            if($request->bookingStatus !== "All"){
+            
+                if($request->bookingStatus == "Empty"){
+                    $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
+                    array_push($search_value, $bookingStatus);
+                }else{
+                    $bookingStatus = 'users.bookingStatus LIKE "%'.$request->bookingStatus.'%"';
+                    array_push($search_value, $bookingStatus);
+                }
+            }
+        }
+
+        if($request->applicationStatus !== "" && !empty($request->applicationStatus)){
+
+            if($request->applicationStatus !== "All"){
+            
+                if($request->applicationStatus == "Empty"){
+                    $applicationStatus = '(users.applicationStatus LIKE "%Empty%" OR users.applicationStatus LIKE "%Rejected%")';
+                    array_push($search_value, $applicationStatus);
+                }else{
+                    $applicationStatus = 'users.applicationStatus LIKE "%'.$request->applicationStatus.'%"';
+                    array_push($search_value, $applicationStatus);
+                }
+            }
+        }
+
+        if($request->property !== "" && !empty($request->property)){
+            if($request->property !== "All"){
+                $property = 'bookings_data.property LIKE "%'.$request->property.'%"';
+                array_push($search_value, $property);
+            }
+        }
+
+        if($request->room_type !== "" && !empty($request->room_type)){
+            if($request->room_type !== "All"){
+                $room_type = 'bookings_data.roomType LIKE "%'.$request->room_type.'%"';
+                array_push($search_value, $room_type);
+            }
+        }
+
+        if($request->applicant !== "" && !empty($request->applicant)){
+            $name = $request->applicant;
+            $explodeName = explode(" ", $name);
+            if(count($explodeName) > 1){
+                $applicant = 'users.userFirstName LIKE "%'.$explodeName[0].'%"';
+                array_push($search_value, $applicant);
+
+                $applicant = 'users.userLastname LIKE "%'.$explodeName[1].'%"';
+                array_push($search_value, $applicant);
+            }else{
+                $applicant = 'users.userFirstName LIKE "%'.$request->applicant.'%"';
+                array_push($search_value, $applicant);
+            }
+            
+        }
+
+        if($request->student_type !== "" && !empty($request->student_type)){
+            if($request->student_type !== "All"){
+                $student_type = 'users.studentType LIKE "%'.$request->student_type.'%"';
+                array_push($search_value, $student_type);
+            }
+        }
+
+        if($request->date !== "" && !empty($request->date)){
+            $date = 'users.created_at LIKE "%'.$request->date.'%"';
+            array_push($search_value, $date);
+        }
+
+        $query = [];
+        $i = 0;
+        foreach($search_value as $value){
+            if($i == 0){
+                $statement = "where ".$value;
+                array_push($query, $statement);
+            }else{
+                $statement = " and ".$value;
+                array_push($query, $statement);
+            }
+            $i ++;
+        }
+
+        if(count($query) > 0){
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0"');
+        }else{
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0"');
+        }
+
+        $users = [
+			['<b>First Name</b>', '<b>Last Name</b>', '<b>Title</b>', '<b>DOB</b>', '<b>Cell</b>', '<b>Email</b>', '<b>Nationality</b>', '<b>I.D Number</b>', '<b>Passport</b>',  '<b>Student Type</b>', '<b>Year</b>', '<b>Institution of Study</b>', '<b>Student Number</b>', '<b>Year of Study</b>', '<b>Faculty</b>', '<b>Residence</b>', '<b>Room Type</b>', '<b>Burser Company Name</b>', '<b>Burser Registeration Number</b>', '<b>Burser Contact Person</b>', '<b>Burser Contact Number</b>', '<b>Burser Email</b>', '<b>Parent First Name</b>', '<b>Parent Last Name</b>', '<b>Parent Cellphone Number</b>', '<b>Parent Email</b>', '<b>Parent Nationality</b>', '<b>Parent I.D Number</b>', '<b>Parent Passport</b>', '<b>Parent Street No</b>', '<b>Parent Suburb</b>', '<b>Parent City</b>', '<b>Parent Postal Code</b>', '<b>Next of Kin First Name</b>', '<b>Next of Kin Last Name</b>', '<b>Next of Kin Title</b>', '<b>Next of Kin Relationship</b>', '<b>Next of Kin Nationality</b>', '<b>Next of Kin I.D Number</b>', '<b>Next of Kin Passport</b>', '<b>Next of Kin Cellphone Number</b>', '<b>Next of Kin Email</b>', '<b>Next of Kin Work Number</b>', '<b>Next of Kin Telephone Number</b>', '<b>Next of Kin Street No</b>', '<b>Next of Kin Suburb</b>', '<b>Next of Kin City</b>', '<b>Next of Kin Postal Code</b>',],
+		];
+
+        foreach($searched_students as $studentData){
+            $booking = Booking::where('userId', $studentData->userId)->first();
+            $student = User::where('id', $studentData->userId)->first();
+
+            if($student->studentType == "Cash / Direct"){
+                $student->studentType = "Cash";
+            }
+
+            $lookupsInstit = Lookups::where('id', $student->institutionStudy)->first();
+            $lookupsFaculty = Lookups::where('id', $student->faculty)->first();
+
+            $studentData = [$student->userFirstName, $student->userLastname, $student->userTitle, $student->userDob, $student->userCell, $student->email, $student->userNationality, $student->userId, $student->userPassport, $student->studentType, $student->year, $lookupsInstit->value, $student->studentNo, $student->yearOfStudy, $lookupsFaculty->value, $booking->property, $booking->roomType, $student->burCompanyName, $student->burRegNo, $student->burContactPerson, $student->burContactNo, $student->burEmail, $student->sponFirstName, $student->sponLastName, $student->sponCell, $student->sponEmail, $student->pNationality, $student->sponId, $student->pPassportNo, $student->pAddress1, $student->pAddress2, $student->pAddressCity, $student->pAddressPostal, $student->kinFirstName, $student->kinLastName, $student->kinTitle, $student->kinRelationship, $student->kinNationality, $student->kinId, $student->kinPassportNo, $student->kinCellNo, $student->kinEmail, $student->kinWorkNo, $student->kinTelNo, $student->kinAddressStr, $student->kinAddressSuburb, $student->kinAddressCity, $student->kinAddressPost ];
+            array_push($users, $studentData);
+        }
+
+        $xlsx = new \SimpleXLSXGen();
+		$xlsx->addSheet( $users, 'Students');
+		$xlsx->saveAs('Student Export.xlsx');
+
+		return "true";
+    }
+
     
 
     
