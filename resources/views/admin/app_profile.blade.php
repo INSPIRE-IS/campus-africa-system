@@ -298,16 +298,20 @@
             <br/>
             
             <div class="flex" style="margin-top:35px;" id="buttonSection">
-            @if(Auth::user()->role_approve_docs == 1)
-                <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
-                <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
-                <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
-                <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
-                <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-            @endif
-            
-            
-        </div>
+                @if(Auth::user()->role_approve_docs == 1)
+                    <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
+                    <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
+                    <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
+                    <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
+                    <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+                @endif
+            </div>
+
+            <div id="approvedDocs" class="hidden">
+                @if(Auth::user()->role_delete_uploaded == 1)
+                    <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
+                @endif
+            </div>
 
         <div class="pdfSection"></div>
     </div>
@@ -352,6 +356,11 @@
         $("#FileIdForApproval").val(fileId)
         $("#FileNameForApproval").val(field)
 
+        if(status == "Approved" || status == "XApproved"){
+            $("#approvedDocs").removeClass("hidden")
+            $("#actionUserName").addClass("hidden")
+        }
+
         if(status == "Approved" || status == "Rejected" || status == "XApproved")
             $("#buttonSection").addClass('hidden')
         else
@@ -375,6 +384,7 @@
         $("#actionUserName_error").addClass("hidden")
         $("#actionUserName").val("")
         $("#rejectReason").val("")
+        $("#approvedDocs").addClass("hidden")
     }
 
     window.onclick = function(event) {
@@ -386,7 +396,61 @@
             $("#actionUserName_error").addClass("hidden")
             $("#actionUserName").val("")
             $("#rejectReason").val("")
+            $("#approvedDocs").addClass("hidden")
         }
+    }
+
+    function removeFile(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to delete this file",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#delete").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+                $.ajax({
+                    type: "post",
+                    url: "/action/file",
+                    data: {
+                        file: $("#FileIdForApproval").val(), 
+                        type: "Rejected",
+                        reason: "", 
+                        userName: "",
+                    },
+
+                    success: function (data) {
+                        
+                        refreshActions();
+
+                            $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
+                            $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden>')
+
+      
+   
+
+                        var modal = document.getElementById("myModal");
+                        modal.style.display = "none";
+
+                        $("#delete").empty().append('Delete')
+                    
+
+                        $("#actionUserName").removeClass("errorBorder")
+                        $("#rejectReason").removeClass("errorBorder")
+                        $("#rejectReason_error").addClass("hidden")
+                        $("#actionUserName_error").addClass("hidden")
+                        $("#actionUserName").val("")
+                        $("#rejectReason").val("")
+                        $("#approvedDocs").addClass("hidden")
+                    },
+                });
+
+            }
+        })
     }
 
     function actionFile(type, action){
@@ -414,11 +478,73 @@
         }else{
             if(action == "Amend"){
                 if($("#actionUserName").val() !== ""){
-                    actionSwal(actionName, type, action)
+
+                    start();
+
+                async function start() {
+                    const { value: file } = await Swal.fire({
+                        title: 'Select file',
+                        input: 'file',
+                        inputAttributes: {
+                            'aria-label': 'Upload your file'
+                        }
+                    })
+
+                    if (file) {
+                        console.log("yes")
+                        fileForApproval = $("#FileNameForApproval").val();
+
+                        $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                        var preview1 = document.getElementById("rejected");
+                        preview1.setAttribute("disabled", "disabled");
+                        var preview2 = document.getElementById("approved");
+                        preview2.setAttribute("disabled", "disabled");
+
+                        // $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+                        var form_data = new FormData();
+                        form_data.append("file", file);
+                        form_data.append("userUid", userId);
+                        form_data.append("fileType", fileForApproval);
+                        form_data.append("adminName", $("#actionUserName").val());
+
+                        $.ajax({
+                            type: "post",
+                            url: "/move-in-form-admin",
+                            data: form_data,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+
+                            success: function (data) {
+                                if (data[0] == "done") {
+                                    $("#"+fileForApproval+"Status").empty().append('<div class="button action"></div>');
+
+                                    $("#"+fileForApproval+"Banner").empty().append('<button type="Button" onClick="openModal(\''+fileForApproval+'\', \''+data[1]+'\', \''+$("#actionUserName").val()+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+                                    refreshActions();
+                                    
+
+                                    $("#amend").empty().append('AMEND')
+                                    var preview1 = document.getElementById("rejected");
+                                    preview1.removeAttribute("disabled", "disabled");
+                                    var preview2 = document.getElementById("approved");
+                                    preview2.removeAttribute("disabled", "disabled");
+
+                                    var modal = document.getElementById("myModal");
+                                    modal.style.display = "none";
+                                }
+                            },
+                        });
+                    }
+                }
+                    
                 }else{
                     $("#actionUserName").addClass("errorBorder")
                     $("#actionUserName_error").removeClass("hidden")
                 }
+     
                 
             }else{
                 if($("#actionUserName").val() !== ""){
@@ -429,16 +555,7 @@
                 }
                 
             }
-        }
-
-
-        
-
-        
-
-       
-        
-        
+        } 
 
     }
 
@@ -517,7 +634,7 @@
                     $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<button type="button" onclick="openModal(\''+$("#FileNameForApproval").val()+'\', \''+data["fileUrl"]+'\', \''+$("#actionUserName").val()+'\', \''+data["created_at"]+'\', \''+data["id"]+'\', \'XApproved\')">View Document</button>')
 
                     if(action == "Amend"){
-                        $("#amend").empty().append('AMEND &amp; APPROVE')
+                        $("#amend").empty().append('AMEND')
                         var preview1 = document.getElementById("rejected");
                         preview1.removeAttribute("disabled", "disabled");
                         var preview2 = document.getElementById("approved");
@@ -542,6 +659,7 @@
                 $("#actionUserName_error").addClass("hidden")
                 $("#actionUserName").val("")
                 $("#rejectReason").val("")
+                $("#approvedDocs").addClass("hidden")
             },
         });
     }

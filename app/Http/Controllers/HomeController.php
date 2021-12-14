@@ -913,6 +913,7 @@ class HomeController extends Controller
             "role_upload_docs" => $request->upload_docs,
             "role_approve_docs" => $request->approve_docs,
             "role_delete_booking" => $request->delete_booking,
+            "role_delete_uploaded" => $request->delete_uploaded,
         ]);
 
         return redirect()->back();
@@ -942,7 +943,7 @@ class HomeController extends Controller
             'studentNo' => $request->studNumber,
             // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
-            'year' => $request->year,
+            'year' => "2022",
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,
             'sponCell' => $request->pCell_no,
@@ -1281,7 +1282,7 @@ class HomeController extends Controller
             'studentNo' => $request->studNumber,
             // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
-            'year' => $request->year,
+            'year' => "2022",
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,
             'sponCell' => $request->pCell_no,
@@ -1357,6 +1358,7 @@ class HomeController extends Controller
             "role_upload_docs" => $request->upload_docs,
             "role_approve_docs" => $request->approve_docs,
             "role_delete_booking" => $request->delete_booking,
+            "role_delete_uploaded" => $request->delete_uploaded,
         ]);
 
         return redirect()->route('users');

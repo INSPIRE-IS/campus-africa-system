@@ -62,7 +62,7 @@
             </select>
         </div> -->
 
-        <div class="form-field" style="margin-bottom:250px;">
+        <div class="form-field" style="margin-bottom:350px;">
             <label>Access Roles</label>
             <br/><br/>
             <ul style="list-style-type:none">
@@ -89,6 +89,11 @@
                 <li style="display:inline-flex">
                     <input type="checkbox" id="delete_booking" name="delete_booking" value="1">
                     <label for="delete_booking" style="width:400px">Delete Booking</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="delete_uploaded" name="delete_uploaded" value="1">
+                    <label for="delete_uploaded" style="width:400px">Delete Approved Documents</label>
                 </li>
             </ul>
         </div>

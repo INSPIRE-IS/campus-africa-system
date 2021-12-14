@@ -81,14 +81,16 @@
 
         <div class="form-field">
             <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="year" id="year" required>
-            <option value="" selected disabled>Please select one</option>
+            <br/>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "4")
-                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                        {{$lookup->lookup_name}}
                     @endif
                 @endforeach
-            </select>
+            <!-- <select name="year" id="year" required>
+            <option value="" selected disabled>Please select one</option>
+                
+            </select> -->
         </div>
 
         <div class="form-field">

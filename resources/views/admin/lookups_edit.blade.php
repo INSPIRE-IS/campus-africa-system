@@ -14,6 +14,9 @@
                 <option value="1" <?php if($lookup->group_id == "1"){echo "selected";}?>>Institution of Study</option>
                 <!-- <option value="2" <?php if($lookup->group_id == "2"){echo "selected";}?>>Insitution Campus</option> -->
                 <option value="3" <?php if($lookup->group_id == "3"){echo "selected";}?>>Faculty</option>
+                <option value="4" <?php if($lookup->group_id == "4"){echo "selected";}?>>Year</option>
+                <option value="5" <?php if($lookup->group_id == "5"){echo "selected";}?>>Nationality</option>
+                <option value="6" <?php if($lookup->group_id == "6"){echo "selected";}?>>Year of Study</option>
             </select>
             <input type="hidden" name="lookupId" id="lookupId" value="{{$lookup->id}}"/>
         </div>
