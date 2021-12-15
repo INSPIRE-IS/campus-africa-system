@@ -746,8 +746,8 @@
             $("#pPassportField").addClass('hidden')
             $("#pIdField").removeClass('hidden')
             
-            $("#pPassportNo").addClass("required")
-            $("#pIdNumber").removeClass("required")
+            $("#pPassportNo").removeClass("required")
+            $("#pIdNumber").addClass("required")
         }else{
             $("#pIdField").addClass('hidden')
             $("#pPassportField").removeClass('hidden')
