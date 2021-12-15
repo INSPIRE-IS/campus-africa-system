@@ -34,7 +34,7 @@
 
         <div class="form-field">
             <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
-            <input type="date" name="dob" id="dob" class="required" min="1920-01-01">
+            <input type="date" name="dob" id="dob" class="required" max="<?php echo date('Y-m-d'); ?>">
         </div>
 
         <div class="form-field">
