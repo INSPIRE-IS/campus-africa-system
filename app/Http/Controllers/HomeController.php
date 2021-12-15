@@ -947,6 +947,7 @@ class HomeController extends Controller
             'userPassport' => $request->passportNo,
             'institutionStudy' => $request->institStudy,
             'studentNo' => $request->studNumber,
+            'studentType' => $request->studentType,
             // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => "2022",

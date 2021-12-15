@@ -378,20 +378,22 @@
                 <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
             </li>
         </div>
-        <div class="form-field-big">
-            <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
-        </div>
-        <div class="form-field-big">
-        <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required">
-        </div>
-        <div class="form-field">
-        <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" >
-        </div>
-        <div class="form-field">
-        <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-            <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required">
+        <div class="kinAddress">
+            <div class="form-field-big">
+                <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
+            </div>
+            <div class="form-field-big">
+            <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required">
+            </div>
+            <div class="form-field">
+            <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" >
+            </div>
+            <div class="form-field">
+            <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required">
+            </div>
         </div>
 
         <div class="form-field">
@@ -827,66 +829,21 @@
     $("#app_address").on('change', function(){
 
         if(document.getElementById('app_address').checked == true){
-            $("#kAddress1").empty().val($("#userAddress1").val())
-            $("#kAddress2").empty().val($("#userAddress2").val())
-            $("#kAddressCity").empty().val($("#userAddressCity").val())
-            $("#kAddressPostal").empty().val($("#userAddressPostal").val())
+            $(".kinAddress").addClass("hidden");
         }else{
-            $("#kAddress1").empty().val('')
-            $("#kAddress2").empty().val('')
-            $("#kAddressCity").empty().val('')
-            $("#kAddressPostal").empty().val('')
+            $(".kinAddress").removeClass('hidden')
         }
     })
 
-    $("#kAddress1").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#userAddress1").empty().val($("#kAddress1").val())
-        }
-    })
-    $("#userAddress1").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#kAddress1").empty().val($("#userAddress1").val())
-        }
-    })
-
-    $("#userAddress2").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#kAddress2").empty().val($("#userAddress2").val())
-        }
-    })
-    $("#kAddress2").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#userAddress2").empty().val($("#kAddress2").val())
-        }
-    })
-
-    $("#kAddressCity").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#userAddressCity").empty().val($("#kAddressCity").val())
-        }
-    })
-    $("#userAddressCity").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#kAddressCity").empty().val($("#userAddressCity").val())
-        }
-    })
-
-    $("#userAddressPostal").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#kAddressPostal").empty().val($("#userAddressPostal").val())
-        }
-    })
-    $("#kAddressPostal").on('keyup blur', function(){
-        if(document.getElementById('app_address').checked == true){
-            $("#userAddressPostal").empty().val($("#kAddressPostal").val())
-        }
-    })
-    
-
-    
 
     $('#newUser').submit(function() {
+
+        if(document.getElementById('app_address').checked == true){
+            $("#kAddress1").empty().val($("#userAddress1").val())
+            $("#kAddress2").empty().val($("#userAddress2").val())
+            $("#kAddressCity").empty().val($("#userAddressCity").val())
+            $("#kAddressPostal").empty().val($("#userAddressPostal").val())
+        }
 
 
         var req = 1;
