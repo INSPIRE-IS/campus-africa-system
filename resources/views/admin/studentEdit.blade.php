@@ -716,6 +716,7 @@
             $("#idField").removeClass('hidden')
 
             $("#passportNo").removeClass("required")
+            $("#passportNo").removeClass("fieldError")
             $("#idNumber").addClass("required")
         }else{
             $("#idField").addClass('hidden')
@@ -723,6 +724,7 @@
 
             $("#passportNo").addClass("required")
             $("#idNumber").removeClass("required")
+            $("#idNumber").removeClass("fieldError")
         }
     })
 
@@ -734,12 +736,14 @@
 
             $("#kinPassportNo").removeClass("required")
             $("#kIdNumber").addClass("required")
+            $("#kinPassportNo").removeClass("fieldError")
         }else{
             $("#kinIdField").addClass('hidden')
             $("#kinPassportField").removeClass('hidden')
 
             $("#kinPassportNo").addClass("required")
             $("#kIdNumber").removeClass("required")
+            $("#kIdNumber").removeClass("fieldError")
         }
     })
 
@@ -750,12 +754,14 @@
             
             $("#pPassportNo").removeClass("required")
             $("#pIdNumber").addClass("required")
+            $("#pPassportNo").removeClass("fieldError")
         }else{
             $("#pIdField").addClass('hidden')
             $("#pPassportField").removeClass('hidden')
             
             $("#pPassportNo").addClass("required")
             $("#pIdNumber").removeClass("required")
+            $("#pIdNumber").removeClass("fieldError")
         }
     })
 
