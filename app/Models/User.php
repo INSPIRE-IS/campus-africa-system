@@ -87,6 +87,8 @@ class User extends Authenticatable
         'userAddressCity',
         'userAddressPostal',
         'app_address',
+        'app_address_p',
+        'app_parent_kin',
     ];
 
     public function files(){

@@ -251,21 +251,35 @@
                 <input type="text" name="pPassportNo" id="pPassportNo" value="{{$user->pPassportNo}}" <?php if($user->studentType == "Cash / Direct" && $user->pNationality !== "South Africa"){echo "class='required'";}?>>
             </div>
 
-            <div class="form-field-big">
+            <!-- <div class="form-field-big">
                 <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                 <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" value="{{$user->pAddress1}}">
+            </div> -->
+            <div class="form-field-big" style="height:50px !important">
+                <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             </div>
             <div class="form-field-big" style="height:60px !important">
-                <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" value="{{$user->pAddress2}}">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;" <?php if($user->app_address_p == 1){echo "checked";}?>>
+                    <label for="app_address_p" style="width:400px">Same as Applicant's Home Address</label>
+                </li>
             </div>
-            <div class="form-field" style="height:60px !important">
-                <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity' value="{{$user->pAddressCity}}" >
-            </div>
-            <div class="form-field" style="height:60px !important">
-                <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user->pAddressPostal}}">
+            <div class="pAddress <?php if($user->app_address_p == 1){echo "hidden";} ?>">
+                <div class="form-field-big" style="height:60px !important">
+                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" value="{{$user->pAddress1}}" class="required">
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                    <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" value="{{$user->pAddress2}}">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                    <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity' value="{{$user->pAddressCity}}" >
+                </div>
+                <div class="form-field" style="height:60px !important">
+                    <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user->pAddressPostal}}">
+                </div>
             </div>
 
         </div>
@@ -321,13 +335,23 @@
 
         <h1 class="fs-title">Next of Kin</h2>
 
-        <div class="form-field">
-            <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kFirstName" id="kFirstName" value="{{$user->kinFirstName}}" class="required">
+        <div class="form-field-big <?php if($user->studentType !== "Cash / Direct"){echo "hidden";}?>" style="height:60px !important" id="parentSameInfo">
+            <li style="display:inline-flex">
+                <input type="checkbox" id="app_parent_kin" name="app_parent_kin" value="1" style="width:50px !important;" <?php if($user->app_parent_kin == 1){echo "checked";}?>>
+                <label for="app_parent_kin" style="width:400px">Same as Parent / Sponsor</label>
+            </li>
         </div>
-        <div class="form-field">
-            <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kLastName" id="kLastName" value="{{$user->kinLastName}}" class="required">
+
+        <div class="nameFields <?php if($user->app_parent_kin == 1){echo "hidden";}?>">
+
+            <div class="form-field">
+                <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                <input type="text" name="kFirstName" id="kFirstName" value="{{$user->kinFirstName}}" class="required">
+            </div>
+            <div class="form-field">
+                <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                <input type="text" name="kLastName" id="kLastName" value="{{$user->kinLastName}}" class="required">
+            </div>
         </div>
 
         <div class="form-field">
@@ -345,36 +369,39 @@
             <input type="text" name="kRelationship" id="kRelationship" value="{{$user->kinRelationship}}" class="required">
         </div>
 
-        <div class="form-field">
-            <label>Nationality * <span id="kNationality" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="kinNationality" id='kinNationality' class="required">
-                <option value="" selected disabled>Please select one</option>
-                @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "5")
-                        <option value="{{$lookup->lookup_name}}" <?php if($user->kinNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
-                    @endif
-                @endforeach
-            </select>
-        </div>
+        <div class="generalInfo <?php if($user->app_parent_kin == 1){echo "hidden";}?>">
 
-        <div class="form-field <?php if($user->kinNationality !== "South Africa"){echo "hidden";}?>" id="kinIdField">
-            <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-            <input type="text" name="kIdNumber" id="kIdNumber" value="{{$user->kinId}}" <?php if($user->kinNationality == "South Africa"){echo "class='required'";}?>>
-        </div>
+            <div class="form-field">
+                <label>Nationality * <span id="kNationality" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                <select name="kinNationality" id='kinNationality' class="required">
+                    <option value="" selected disabled>Please select one</option>
+                    @foreach($lookups as $lookup)
+                        @if($lookup->group_id == "5")
+                            <option value="{{$lookup->lookup_name}}" <?php if($user->kinNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="form-field <?php if($user->kinNationality == "South Africa"){echo "hidden";}?>" id="kinPassportField">
-            <label>Passport Number * <span id="kinPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kinPassportNo" id="kinPassportNo" value="{{$user->kinPassportNo}}" <?php if($user->kinNationality !== "South Africa"){echo "class='required'";}?>>
-        </div>
+            <div class="form-field <?php if($user->kinNationality !== "South Africa"){echo "hidden";}?>" id="kinIdField">
+                <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                <input type="text" name="kIdNumber" id="kIdNumber" value="{{$user->kinId}}" <?php if($user->kinNationality == "South Africa"){echo "class='required'";}?>>
+            </div>
 
-        <div class="form-field">
-            <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="kCellNo" id='kCellNo' value="{{$user->kinCellNo}}" class="required">
-        </div>
+            <div class="form-field <?php if($user->kinNationality == "South Africa"){echo "hidden";}?>" id="kinPassportField">
+                <label>Passport Number * <span id="kinPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                <input type="text" name="kinPassportNo" id="kinPassportNo" value="{{$user->kinPassportNo}}" <?php if($user->kinNationality !== "South Africa"){echo "class='required'";}?>>
+            </div>
 
-        <div class="form-field">
-            <label>Email Address * <span id="kEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-            <input type="email" name="kEmail" id="kEmail" value="{{$user->kinEmail}}" class="required">
+            <div class="form-field">
+                <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                <input type="text" name="kCellNo" id='kCellNo' value="{{$user->kinCellNo}}" class="required">
+            </div>
+
+            <div class="form-field">
+                <label>Email Address * <span id="kEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                <input type="email" name="kEmail" id="kEmail" value="{{$user->kinEmail}}" class="required">
+            </div>
         </div>
 
         <div class="form-field">
@@ -391,30 +418,33 @@
             <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" value="{{$user->kinAddressStr}}" class="required">
         </div> -->
-        <div class="form-field-big" style="height:50px !important">
-            <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-        </div>
-        <div class="form-field-big" style="height:60px !important">
-            <li style="display:inline-flex">
-                <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;" <?php if($user->app_address == 1){echo "checked";}?>>
-                <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
-            </li>
-        </div>
-        <div class="kinAddress <?php if($user->app_address == 1){echo "hidden";} ?>">
-            <div class="form-field-big" style="height:60px !important">
-                <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" value="{{$user->kinAddressStr}}" class="required">
+
+        <div class="addressSection <?php if($user->app_parent_kin == 1){echo "hidden";}?>">
+            <div class="form-field-big" style="height:50px !important">
+                <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             </div>
             <div class="form-field-big" style="height:60px !important">
-                <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" value="{{$user->kinAddressSuburb}}" class="required">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;" <?php if($user->app_address == 1){echo "checked";}?>>
+                    <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
+                </li>
             </div>
-            <div class="form-field" style="height:60px !important">
-                <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' value="{{$user->kinAddressCity}}" class="required">
-            </div>
-            <div class="form-field" style="height:60px !important">
-                <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" value="{{$user->kinAddressPost}}" class="required">
+            <div class="kinAddress <?php if($user->app_address == 1){echo "hidden";} ?>">
+                <div class="form-field-big" style="height:60px !important">
+                    <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" value="{{$user->kinAddressStr}}" class="required">
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                    <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" value="{{$user->kinAddressSuburb}}" class="required">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                    <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' value="{{$user->kinAddressCity}}" class="required">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                    <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" value="{{$user->kinAddressPost}}" class="required">
+                </div>
             </div>
         </div>
 
@@ -473,6 +503,7 @@ var d = new Date()
         if($("#studentType").val() == "Cash / Direct"){
             $("#sponsorDetails").removeClass('hidden')
             $("#bursarDetails").addClass('hidden')
+            $("#parentSameInfo").removeClass('hidden')
 
             parentDetails(true)
             sponsorDetails(false)
@@ -480,6 +511,7 @@ var d = new Date()
         }else if($("#studentType").val() == "Bursary"){
             $("#bursarDetails").removeClass('hidden')
             $("#sponsorDetails").addClass('hidden')
+            $("#parentSameInfo").addClass('hidden')
 
             parentDetails(false)
             sponsorDetails(true)
@@ -487,6 +519,7 @@ var d = new Date()
         }else{
             $("#sponsorDetails").addClass('hidden')
             $("#bursarDetails").addClass('hidden')
+            $("#parentSameInfo").addClass('hidden')
 
             parentDetails(false)
             sponsorDetails(false)
@@ -843,6 +876,34 @@ var d = new Date()
         }
     })
 
+    $("#app_address_p").on('change', function(){
+
+        if(document.getElementById('app_address_p').checked == true){
+            $(".pAddress").addClass("hidden");
+        }else{
+            $(".pAddress").removeClass('hidden')
+        }
+    })
+
+    $("#app_parent_kin").on('change', function(){
+
+        if(document.getElementById('app_parent_kin').checked == true){
+
+            $(".nameFields").addClass('hidden')
+            $(".generalInfo").addClass('hidden')
+            $(".addressSection").addClass('hidden')
+            
+        }else{
+
+            $(".nameFields").removeClass('hidden')
+            $(".generalInfo").removeClass('hidden')
+            $(".addressSection").removeClass('hidden')
+            
+        }
+    })
+
+    
+
     // $('#newUser').submit(function() {
 
     //     if($("#cell_no").hasClass('fieldError') == true || $("#email").hasClass('fieldError') == true || $("#idNumber").hasClass('fieldError') == true || $("#kIdNumber").hasClass('fieldError') == true || $("#kCellNo").hasClass('fieldError') == true || $("#kEmail").hasClass('fieldError') == true){
@@ -901,6 +962,47 @@ var d = new Date()
 
     $('#newUser').submit(function() {
 
+        if(document.getElementById('app_parent_kin').checked == true){
+            $("#kFirstName").removeClass('fieldError').empty().val($("#pFirstName").val())
+            $("#kLastName").removeClass('fieldError').empty().val($("#pLastName").val())
+            $("#kCellNo").removeClass('fieldError').empty().val($("#pCell_no").val())
+            $("#kEmail").removeClass('fieldError').empty().val($("#pEmail").val())
+            let element = document.getElementById("kinNationality");
+            element.value = $("#pNationality").val();
+
+
+            if($("#pNationality").val() == "South Africa"){
+                $("#kinPassportField").addClass('hidden')
+                $("#kinIdField").removeClass('hidden')
+
+                $("#kinPassportNo").removeClass("required")
+                $("#kIdNumber").addClass("required")
+            }else{
+                $("#kinIdField").addClass('hidden')
+                $("#kinPassportField").removeClass('hidden')
+
+                $("#kinPassportNo").addClass("required")
+                $("#kIdNumber").removeClass("required")
+            }
+
+            $("#kIdNumber").removeClass('fieldError').empty().val($("#pIdNumber").val())
+            $("#kinPassportNo").removeClass('fieldError').empty().val($("#pPassportNo").val())
+
+            if(document.getElementById('app_address_p').checked == true){
+                document.getElementById('app_address').checked = true;
+                $(".kinAddress").addClass("hidden");
+                $("#kAddress1").removeClass('fieldError').empty().val($("#userAddress1").val())
+                $("#kAddress2").removeClass('fieldError').empty().val($("#userAddress2").val())
+                $("#kAddressCity").removeClass('fieldError').empty().val($("#userAddressCity").val())
+                $("#kAddressPostal").removeClass('fieldError').empty().val($("#userAddressPostal").val())
+            }else{
+                $("#kAddress1").empty().val($("#pAddress1").val())
+                $("#kAddress2").empty().val($("#pAddress2").val())
+                $("#kAddressCity").empty().val($("#pAddressCity").val())
+                $("#kAddressPostal").empty().val($("#pAddressPostal").val())
+            }
+        }
+
         if(document.getElementById('app_address').checked == true){
             $("#kAddress1").empty().val($("#userAddress1").val())
             $("#kAddress2").empty().val($("#userAddress2").val())
@@ -908,107 +1010,67 @@ var d = new Date()
             $("#kAddressPostal").empty().val($("#userAddressPostal").val())
         }
 
-
-var req = 1;
-
-$('.required').each( function(){
-    if($(this).val() === ""){
-        req = 0
-
-        $(this).addClass("fieldError")
-        id = $(this)[0]["id"]
-        $("#"+id+"_error").removeClass("hidden")
-    }
-})
-
-if(req == 0){
-    Swal.fire(
-        'Blank Fields',
-        'Please fill in all Required Fields!',
-        'error'
-    )
-
-    return false;
-}else{
-    let total = 1
-    $('.fieldError').each( function(){
-        if($(this).val() === ""){
-            total = 0
-
-            $(this).addClass("fieldError")
-            id = $(this)[0]["id"]
-            $("#"+id+"_error").removeClass("hidden")
+        if(document.getElementById('app_address_p').checked == true){
+            $("#pAddress1").empty().val($("#userAddress1").val())
+            $("#pAddress2").empty().val($("#userAddress2").val())
+            $("#pAddressCity").empty().val($("#userAddressCity").val())
+            $("#pAddressPostal").empty().val($("#userAddressPostal").val())
         }
-    })
 
-    if(total == 0){
-        Swal.fire(
-            'Blank Fields',
-            'Please fill in all Required Fields!',
-            'error'
-        )
+         //Check if any hidden fields are required, remove required check
+         $('.hidden .fieldError').removeClass('fieldError').val('');
 
-        return false;
-    }else{
-        return true;
-    }
-}
+        
 
 
+        var req = 1;
 
-// if($("#cell_no").hasClass('fieldError') == true || $("#email").hasClass('fieldError') == true || $("#idNumber").hasClass('fieldError') == true || $("#kIdNumber").hasClass('fieldError') == true || $("#kCellNo").hasClass('fieldError') == true || $("#kEmail").hasClass('fieldError') == true){
+        $('.required').each( function(){
+            if($(this).val() === ""){
+                req = 0
 
-//     if($("#cell_no").hasClass('fieldError') == true){
-//         $("#cell_no").focus();
-//     }else if($("#email").hasClass('fieldError') == true){
-//         $("#email").focus();
-//     }else if($("#idNumber").hasClass('fieldError') == true){
-//         $("#idNumber").focus();
-//     }else if($("#kIdNumber").hasClass('fieldError') == true){
-//         $("#kIdNumber").focus();
-//     }else if($("#kCellNo").hasClass('fieldError') == true){
-//         $("#kCellNo").focus();
-//     }else if($("#kEmail").hasClass('fieldError') == true){
-//         $("#kEmail").focus();
-//     }
+                console.log($(this)[0]["id"])
 
-//     return false; 
-// }else{
+                $(this).addClass("fieldError")
+                id = $(this)[0]["id"]
+                $("#"+id+"_error").removeClass("hidden")
+            }
+        })
 
-//     if($("#studentType").val() == "Bursary"){
-//         if($("#bContactNumber").hasClass('fieldError') == true || $("#bEmail").hasClass('fieldError') == true){
+        if(req == 0){
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
 
-//             if($("#bContactNumber").hasClass('fieldError') == true){
-//                 $("#bContactNumber").focus();
-//             }else if($("#bEmail").hasClass('fieldError') == true){
-//                 $("#bEmail").focus();
-//             }
+            return false;
+        }else{
+            let total = 1
+            $('.fieldError').each( function(){
+                if($(this).val() === ""){
+                    total = 0
 
-//             return false; 
-//         }else{
-//             return true; 
-//         }
-//     }else if($("#studentType").val() == "Cash / Direct"){
-//         if($("#pCell_no").hasClass('fieldError') == true || $("#pEmail").hasClass('fieldError') == true || $("#pIdNumber").hasClass('fieldError') == true){
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
+                }
+            })
 
-//             if($("#pCell_no").hasClass('fieldError') == true){
-//                 $("#pCell_no").focus();
-//             }else if($("#pEmail").hasClass('fieldError') == true){
-//                 $("#pEmail").focus();
-//             }else if($("#pIdNumber").hasClass('fieldError') == true){
-//                 $("#pIdNumber").focus();
-//             }
+            if(total == 0){
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
 
-//             return false; 
-//         }else{
-//             return true; 
-//         }
-//     }else{
-//         return true; 
-//     }
-// }
+                return false;
+            }else{
+                return true;
+            }
+        }
 
-});
+    });
 
 
 </script>

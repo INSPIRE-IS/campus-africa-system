@@ -231,21 +231,36 @@
 
                 
 
-                <div class="form-field-big">
+                <!-- <div class="form-field-big">
                     <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                </div> -->
+                <div class="form-field-big" style="height:50px !important">
+                    <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                 </div>
                 <div class="form-field-big" style="height:60px !important">
-                <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" >
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;">
+                        <label for="app_address_p" style="width:400px">Same as Applicant's Home Address</label>
+                    </li>
                 </div>
-                <div class="form-field" style="height:60px !important">
-                <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  >
-                </div>
-                <div class="form-field" style="height:60px !important">
-                <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                    <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" >
+
+                <div class="pAddress">
+                    <div class="form-field-big" style="height:60px !important">
+                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required">
+                    </div>
+                    <div class="form-field-big" style="height:60px !important">
+                    <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" >
+                    </div>
+                    <div class="form-field" style="height:60px !important">
+                    <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  >
+                    </div>
+                    <div class="form-field" style="height:60px !important">
+                    <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" >
+                    </div>
                 </div>
 
             </div>
@@ -301,63 +316,75 @@
 
             <h1 class="fs-title">Next of Kin</h2>
 
+            <div class="form-field-big hidden" style="height:60px !important" id="parentSameInfo">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="app_parent_kin" name="app_parent_kin" value="1" style="width:50px !important;">
+                    <label for="app_parent_kin" style="width:400px">Same as Parent / Sponsor</label>
+                </li>
+            </div>
 
-        <div class="form-field">
-            <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kFirstName" id="kFirstName" class="required">
-        </div>
-        <div class="form-field">
-            <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kLastName" id="kLastName" class="required">
-        </div>
+            <div class="nameFields">
 
-        <div class="form-field">
-            <label>Title * <span id="kTitle_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="kTitle" id='kTitle' class="required">
-            <option value="" disabled selected>Please select one</option>
-                <option value="Mr" >Mr</option>
-                <option value="Ms" >Ms</option>
-                <option value="Mrs" >Mrs</option>
-                <option value="Miss" >Miss</option>
-            </select>
-        </div>
+                <div class="form-field">
+                    <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="kFirstName" id="kFirstName" class="required">
+                </div>
+                <div class="form-field">
+                    <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="kLastName" id="kLastName" class="required">
+                </div>
+            </div>
 
-        <div class="form-field">
-            <label>Relationship * <span id="kRelationship_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kRelationship" id="kRelationship" class="required" >
-        </div>
+            <div class="form-field">
+                <label>Title * <span id="kTitle_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                <select name="kTitle" id='kTitle' class="required">
+                <option value="" disabled selected>Please select one</option>
+                    <option value="Mr" >Mr</option>
+                    <option value="Ms" >Ms</option>
+                    <option value="Mrs" >Mrs</option>
+                    <option value="Miss" >Miss</option>
+                </select>
+            </div>
 
-        <div class="form-field">
-            <label>Nationality * <span id="kNationality" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="kinNationality" id='kinNationality' class="required">
-                <option value="" selected disabled>Please select one</option>
-                @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "5")
-                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
-                    @endif
-                @endforeach
-            </select>
-        </div>
+            <div class="form-field">
+                <label>Relationship * <span id="kRelationship_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                <input type="text" name="kRelationship" id="kRelationship" class="required" >
+            </div>
 
-        <div class="form-field" id="kinIdField">
-            <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-            <input type="text" name="kIdNumber" id="kIdNumber" class="required">
-        </div>
+            <div class="generalInfo">
 
-        <div class="form-field hidden" id="kinPassportField">
-            <label>Passport Number * <span id="kinPassport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kinPassportNo" id="kinPassportNo" >
-        </div>
+                <div class="form-field">
+                    <label>Nationality * <span id="kNationality" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <select name="kinNationality" id='kinNationality' class="required">
+                        <option value="" selected disabled>Please select one</option>
+                        @foreach($lookups as $lookup)
+                            @if($lookup->group_id == "5")
+                                <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
 
-        <div class="form-field">
-            <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="kCellNo" id='kCellNo' class="required">
-        </div>
+                <div class="form-field" id="kinIdField">
+                    <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                    <input type="text" name="kIdNumber" id="kIdNumber" class="required">
+                </div>
 
-        <div class="form-field">
-            <label>Email Address * <span id="kEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-            <input type="email" name="kEmail" id="kEmail" class="required">
-        </div>
+                <div class="form-field hidden" id="kinPassportField">
+                    <label>Passport Number * <span id="kinPassport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="kinPassportNo" id="kinPassportNo" >
+                </div>
+
+                <div class="form-field">
+                    <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <input type="text" name="kCellNo" id='kCellNo' class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Email Address * <span id="kEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <input type="email" name="kEmail" id="kEmail" class="required">
+                </div>
+            </div>
 
         <div class="form-field">
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
@@ -369,32 +396,33 @@
             <input type="text" name="kTeleNo" id='kTeleNo'>
         </div>
 
-        
+        <div class="addressSection">
 
-        <div class="form-field-big" style="height:50px !important;">
-            <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-        </div>
-        <div class="form-field-big" style="height:60px !important">
-            <li style="display:inline-flex">
-                <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;">
-                <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
-            </li>
-        </div>
-        <div class="kinAddress">
-            <div class="form-field-big" style="height:60px !important">
-                <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
+            <div class="form-field-big" style="height:50px !important;">
+                <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             </div>
             <div class="form-field-big" style="height:60px !important">
-            <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;">
+                    <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
+                </li>
             </div>
-            <div class="form-field" style="height:60px !important">
-            <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" >
-            </div>
-            <div class="form-field" style="height:60px !important">
-            <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required">
+            <div class="kinAddress">
+                <div class="form-field-big" style="height:60px !important">
+                    <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" >
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required">
+                </div>
             </div>
         </div>
 
@@ -718,12 +746,14 @@
 
             $("#passportNo").removeClass("required")
             $("#idNumber").addClass("required")
+            $("#passportNo").removeClass("fieldError")
         }else{
             $("#idField").addClass('hidden')
             $("#passportField").removeClass('hidden')
 
             $("#passportNo").addClass("required")
             $("#idNumber").removeClass("required")
+            $("#idNumber").removeClass("fieldError")
         }
     })
 
@@ -734,12 +764,14 @@
 
             $("#kinPassportNo").removeClass("required")
             $("#kIdNumber").addClass("required")
+            $("#kinPassportNo").removeClass("fieldError")
         }else{
             $("#kinIdField").addClass('hidden')
             $("#kinPassportField").removeClass('hidden')
 
             $("#kinPassportNo").addClass("required")
             $("#kIdNumber").removeClass("required")
+            $("#kIdNumber").removeClass("fieldError")
         }
     })
 
@@ -751,12 +783,14 @@
 
             $("#pPassportNo").removeClass("required")
             $("#pIdNumber").addClass("required")
+            $("#pPassportNo").removeClass("fieldError")
         }else{
             $("#pIdField").addClass('hidden')
             $("#pPassportField").removeClass('hidden')
 
             $("#pPassportNo").addClass("required")
             $("#pIdNumber").removeClass("required")
+            $("#pIdNumber").removeClass("fieldError")
         }
     })
 
@@ -807,6 +841,7 @@
         if($("#studentType").val() == "Cash / Direct"){
             $("#sponsorDetails").removeClass('hidden')
             $("#bursarDetails").addClass('hidden')
+            $("#parentSameInfo").removeClass('hidden')
 
             parentDetails(true)
             sponsorDetails(false)
@@ -814,6 +849,7 @@
         }else if($("#studentType").val() == "Bursary"){
             $("#bursarDetails").removeClass('hidden')
             $("#sponsorDetails").addClass('hidden')
+            $("#parentSameInfo").addClass('hidden')
 
             parentDetails(false)
             sponsorDetails(true)
@@ -821,6 +857,7 @@
         }else{
             $("#sponsorDetails").addClass('hidden')
             $("#bursarDetails").addClass('hidden')
+            $("#parentSameInfo").addClass('hidden')
 
             parentDetails(false)
             sponsorDetails(false)
@@ -856,15 +893,94 @@
         }
     })
 
+    $("#app_address_p").on('change', function(){
+
+        if(document.getElementById('app_address_p').checked == true){
+            $(".pAddress").addClass("hidden");
+        }else{
+            $(".pAddress").removeClass('hidden')
+        }
+    })
+
+    $("#app_parent_kin").on('change', function(){
+
+        if(document.getElementById('app_parent_kin').checked == true){
+
+            $(".nameFields").addClass('hidden')
+            $(".generalInfo").addClass('hidden')
+            $(".addressSection").addClass('hidden')
+            
+        }else{
+
+            $(".nameFields").removeClass('hidden')
+            $(".generalInfo").removeClass('hidden')
+            $(".addressSection").removeClass('hidden')
+            
+        }
+    })
+
 
     $('#newUser').submit(function() {
 
-        if(document.getElementById('app_address').checked == true){
-            $("#kAddress1").empty().val($("#userAddress1").val())
-            $("#kAddress2").empty().val($("#userAddress2").val())
-            $("#kAddressCity").empty().val($("#userAddressCity").val())
-            $("#kAddressPostal").empty().val($("#userAddressPostal").val())
+        if(document.getElementById('app_parent_kin').checked == true){
+            $("#kFirstName").removeClass('fieldError').empty().val($("#pFirstName").val())
+            $("#kLastName").removeClass('fieldError').empty().val($("#pLastName").val())
+            $("#kCellNo").removeClass('fieldError').empty().val($("#pCell_no").val())
+            $("#kEmail").removeClass('fieldError').empty().val($("#pEmail").val())
+            let element = document.getElementById("kinNationality");
+            element.value = $("#pNationality").val();
+
+
+            if($("#pNationality").val() == "South Africa"){
+                $("#kinPassportField").addClass('hidden')
+                $("#kinIdField").removeClass('hidden')
+
+                $("#kinPassportNo").removeClass("required")
+                $("#kIdNumber").addClass("required")
+            }else{
+                $("#kinIdField").addClass('hidden')
+                $("#kinPassportField").removeClass('hidden')
+
+                $("#kinPassportNo").addClass("required")
+                $("#kIdNumber").removeClass("required")
+            }
+
+            $("#kIdNumber").removeClass('fieldError').empty().val($("#pIdNumber").val())
+            $("#kinPassportNo").removeClass('fieldError').empty().val($("#pPassportNo").val())
+
+            if(document.getElementById('app_address_p').checked == true){
+                document.getElementById('app_address').checked = true;
+                $(".kinAddress").addClass("hidden");
+                $("#kAddress1").removeClass('fieldError').empty().val($("#userAddress1").val())
+                $("#kAddress2").removeClass('fieldError').empty().val($("#userAddress2").val())
+                $("#kAddressCity").removeClass('fieldError').empty().val($("#userAddressCity").val())
+                $("#kAddressPostal").removeClass('fieldError').empty().val($("#userAddressPostal").val())
+            }else{
+                $("#kAddress1").empty().val($("#pAddress1").val())
+                $("#kAddress2").empty().val($("#pAddress2").val())
+                $("#kAddressCity").empty().val($("#pAddressCity").val())
+                $("#kAddressPostal").empty().val($("#pAddressPostal").val())
+            }
         }
+
+        if(document.getElementById('app_address').checked == true){
+            $("#kAddress1").removeClass('fieldError').empty().val($("#userAddress1").val())
+            $("#kAddress2").removeClass('fieldError').empty().val($("#userAddress2").val())
+            $("#kAddressCity").removeClass('fieldError').empty().val($("#userAddressCity").val())
+            $("#kAddressPostal").removeClass('fieldError').empty().val($("#userAddressPostal").val())
+        }
+
+        if(document.getElementById('app_address_p').checked == true){
+            $("#pAddress1").removeClass('fieldError').empty().val($("#userAddress1").val())
+            $("#pAddress2").removeClass('fieldError').empty().val($("#userAddress2").val())
+            $("#pAddressCity").removeClass('fieldError').empty().val($("#userAddressCity").val())
+            $("#pAddressPostal").removeClass('fieldError').empty().val($("#userAddressPostal").val())
+        }
+
+        
+
+         //Check if any hidden fields are required, remove required check
+         $('.hidden .fieldError').removeClass('fieldError').val('');
 
 
         var req = 1;
@@ -872,6 +988,7 @@
         $('.required').each( function(){
             if($(this).val() === ""){
                 req = 0
+                console.log($(this)[0]["id"])
 
                 $(this).addClass("fieldError")
                 id = $(this)[0]["id"]
@@ -879,8 +996,9 @@
             }
         })
 
+       
+
         if(req == 0){
-            // console.log("2")
             Swal.fire(
                 'Blank Fields',
                 'Please fill in all Required Fields!',
@@ -889,7 +1007,6 @@
 
             return false;
         }else{
-            // console.log("HERE")
             let total = 1
             $('.fieldError').each( function(){
                 if($(this).val() === ""){

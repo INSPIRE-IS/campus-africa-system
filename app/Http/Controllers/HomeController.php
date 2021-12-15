@@ -1007,6 +1007,8 @@ class HomeController extends Controller
             'userAddressCity' => $request->userAddressCity,
             'userAddressPostal' => $request->userAddressPostal,
             'app_address' => $request->app_address,
+            'app_address_p' => $request->app_address_p,
+            'app_parent_kin' => $request->app_parent_kin,
         ]);
 
         // ActionList::create([
@@ -1356,6 +1358,8 @@ class HomeController extends Controller
             'userAddressCity' => $request->userAddressCity,
             'userAddressPostal' => $request->userAddressPostal,
             'app_address' => $request->app_address,
+            'app_address_p' => $request->app_address_p,
+            'app_parent_kin' => $request->app_parent_kin,
         ]);
 
         $booking = Booking::create(["userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType]);
