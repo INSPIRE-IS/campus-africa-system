@@ -33,18 +33,8 @@
         </div>
 
         <div class="form-field">
-            <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="date" name="dob" id="dob" class="required">
-        </div>
-
-        <div class="form-field">
-            <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="cell_no" id="cell_no" class="required">
-        </div>
-
-        <div class="form-field">
-            <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-            <input type="email" name="email" id="email" class="required" >
+            <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
+            <input type="date" name="dob" id="dob" class="required" min="1920-01-01">
         </div>
 
         <div class="form-field">
@@ -70,6 +60,33 @@
         </div>
 
         <div class="form-field">
+            <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+            <input type="text" name="cell_no" id="cell_no" class="required">
+        </div>
+
+        <div class="form-field">
+            <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+            <input type="email" name="email" id="email" class="required" >
+        </div>
+
+        <div class="form-field-big">
+            <label>Physical Address * <span id="userAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+            <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="width:98% !important" class="required">
+        </div>
+        <div class="form-field-big">
+        <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+            <input type="text" placeholder="Suburb" name="userAddress2" id="userAddress2" style="width:98% !important" class="required">
+        </div>
+        <div class="form-field">
+        <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+            <input type="text" placeholder="City" name="userAddressCity" id='userAddressCity' class="required" >
+        </div>
+        <div class="form-field">
+        <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+            <input type="text" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal" class="required">
+        </div>
+
+        <div class="form-field">
             <label>Student Type * <span id="studentType_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="studentType" id='studentType' class="required">
                 <option value="" selected disabled>Select a Student Type</option>
@@ -82,15 +99,14 @@
         <div class="form-field">
             <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <br/>
+                
+            <select name="year" id="year" class="required">
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "4")
-                        {{$lookup->lookup_name}}
+                        <option value="{{$lookup->lookup_name}}" selected>{{$lookup->lookup_name}}</option>
                     @endif
                 @endforeach
-            <!-- <select name="year" id="year" class="required">
-            <option value="" selected disabled>Please select one</option>
-                
-            </select> -->
+            </select>
         </div>
 
         <div class="form-field">
@@ -351,8 +367,18 @@
             <input type="text" name="kTeleNo" id='kTeleNo'>
         </div>
 
+        
+
         <div class="form-field-big">
             <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+        </div>
+        <div class="form-field-big">
+            <li style="display:inline-flex">
+                <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;">
+                <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
+            </li>
+        </div>
+        <div class="form-field-big">
             <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
         </div>
         <div class="form-field-big">
@@ -451,10 +477,8 @@
     $("#idNumber").on('keyup blur', function(){
         let idNumber = $("#idNumber").val();
         if(idNumber.length == 13){
-            console.log("1")
             ValidID(idNumber, "idNumber", "idNumber_error")
         }else{
-            console.log("2")
             $("#idNumber").addClass("fieldError")
             $("#idNumber_error").removeClass('hidden')
         }  
@@ -482,6 +506,24 @@
             $("#kIdNumber_error").removeClass('hidden')
         }
 
+    })
+
+    $("#dob").on('keyup blur', function(){
+        let dob = $("#dob").val();
+
+        var d = new Date()
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+        yearBack =(d.getFullYear() - 100);
+
+        if(dob < yearBack+"-01-01" || dob > year+"-"+month+"-"+day){
+            $("#dob").addClass("fieldError")
+            $("#dob_error").removeClass('hidden')
+        }else{
+            $("#dob").removeClass("fieldError")
+            $("#dob_error").addClass('hidden')
+        }
     })
 
     function ValidCell(cell, fieldId, fieldError){
@@ -537,17 +579,18 @@
 
     $("#pAddressPostal").on('keyup blur', function(){
         postal = $("#pAddressPostal").val()
-            if(/\b\d{4}\b/g.test(postal)){
-                $("#pAddressPostal").removeClass("fieldError")
-                $("#pAddressPostal_error").addClass('hidden')
-            }else{
-                $("#pAddressPostal").addClass("fieldError")
-                $("#pAddressPostal_error").removeClass('hidden')
-            }
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#pAddressPostal").removeClass("fieldError")
+            $("#pAddressPostal_error").addClass('hidden')
+        }else{
+            $("#pAddressPostal").addClass("fieldError")
+            $("#pAddressPostal_error").removeClass('hidden')
+        }
         
     })
 
-    $("#kAddressPostal").on('keyup', function(){
+    $("#kAddressPostal").on('keyup blur', function(){
         postal = $("#kAddressPostal").val()
 
         if(/\b\d{4}\b/g.test(postal)){
@@ -556,9 +599,19 @@
         }else{
             $("#kAddressPostal").addClass("fieldError")
             $("#kAddressPostal_error").removeClass('hidden')
-        }
+        } 
+    })
 
-        
+    $("#userAddressPostal").on('keyup blur', function(){
+        postal = $("#userAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#userAddressPostal").removeClass("fieldError")
+            $("#userAddressPostal_error").addClass('hidden')
+        }else{
+            $("#userAddressPostal").addClass("fieldError")
+            $("#userAddressPostal_error").removeClass('hidden')
+        } 
     })
 
     function isEmail(email) {
@@ -566,7 +619,7 @@
         return regex.test(email);
     }
 
-    $("#email").on('keyup', function(){
+    $("#email").on('keyup blur', function(){
         if(isEmail($("#email").val())){
             $("#email").removeClass("fieldError")
             $("#email_error").addClass('hidden')
@@ -576,7 +629,7 @@
         }
     })
 
-    $("#pEmail").on('keyup', function(){
+    $("#pEmail").on('keyup blur', function(){
         if(isEmail($("#pEmail").val())){
             $("#pEmail").removeClass("fieldError")
             $("#pEmail_error").addClass('hidden')
@@ -586,7 +639,7 @@
         }
     })
 
-    $("#bEmail").on('keyup', function(){
+    $("#bEmail").on('keyup blur', function(){
         if(isEmail($("#bEmail").val())){
             $("#bEmail").removeClass("fieldError")
             $("#bEmail_error").addClass('hidden')
@@ -596,7 +649,7 @@
         }
     })
  
-    $("#kEmail").on('keyup', function(){
+    $("#kEmail").on('keyup blur', function(){
         if(isEmail($("#kEmail").val())){
             $("#kEmail").removeClass("fieldError")
             $("#kEmail_error").addClass('hidden')
@@ -741,12 +794,70 @@
         }
     })
 
+    $("#app_address").on('change', function(){
+
+        if(document.getElementById('app_address').checked == true){
+            $("#kAddress1").empty().val($("#userAddress1").val())
+            $("#kAddress2").empty().val($("#userAddress2").val())
+            $("#kAddressCity").empty().val($("#userAddressCity").val())
+            $("#kAddressPostal").empty().val($("#userAddressPostal").val())
+        }else{
+            $("#kAddress1").empty().val('')
+            $("#kAddress2").empty().val('')
+            $("#kAddressCity").empty().val('')
+            $("#kAddressPostal").empty().val('')
+        }
+    })
+
+    $("#kAddress1").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#userAddress1").empty().val($("#kAddress1").val())
+        }
+    })
+    $("#userAddress1").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#kAddress1").empty().val($("#userAddress1").val())
+        }
+    })
+
+    $("#userAddress2").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#kAddress2").empty().val($("#userAddress2").val())
+        }
+    })
+    $("#kAddress2").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#userAddress2").empty().val($("#kAddress2").val())
+        }
+    })
+
+    $("#kAddressCity").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#userAddressCity").empty().val($("#kAddressCity").val())
+        }
+    })
+    $("#userAddressCity").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#kAddressCity").empty().val($("#userAddressCity").val())
+        }
+    })
+
+    $("#userAddressPostal").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#kAddressPostal").empty().val($("#userAddressPostal").val())
+        }
+    })
+    $("#kAddressPostal").on('keyup blur', function(){
+        if(document.getElementById('app_address').checked == true){
+            $("#userAddressPostal").empty().val($("#kAddressPostal").val())
+        }
+    })
+    
+
     
 
     $('#newUser').submit(function() {
 
-        // form_class = $("#newUser").data()
-        // console.log(form_class)
 
         var req = 1;
 

@@ -111,7 +111,7 @@
                 </h2>
                 <br/>
                 <div class="buttons">
-                    <button type="button" class="appBooking">Change this booking</button>
+                    <button type="button" class="appBooking" onClick="changeBooking({{$user[0]['userInfo']['id']}})">Change this booking</button>
                     @if(Auth::user()->role_delete_booking == 1)
                         <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
                     @endif
@@ -283,6 +283,14 @@
 <div id="myModal" class="modal">
 
     <div class="modal-content">
+        //
+    </div>
+
+</div>
+
+<div id="myModal" class="modal">
+
+    <div class="modal-content">
         <span class="close">&times;</span>
         <h2 id="modalHeader"></h2>
         <small>Uploaded by <span id="uploadedBy"></span> at <span id="uploadedTime"></span> on the <span id="uploadedDate"></span></small>
@@ -299,8 +307,11 @@
             
             <div class="flex" style="margin-top:35px;" id="buttonSection">
                 @if(Auth::user()->role_approve_docs == 1)
-                    <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
-                    <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
+                    <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
+                        <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
+                        <br/>
+                        <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
+                    </div>
                     <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
                     <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
                     <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
@@ -385,6 +396,7 @@
         $("#actionUserName").val("")
         $("#rejectReason").val("")
         $("#approvedDocs").addClass("hidden")
+        document.getElementById("reasonBox").style.marginTop = "-21px";
     }
 
     window.onclick = function(event) {
@@ -397,7 +409,12 @@
             $("#actionUserName").val("")
             $("#rejectReason").val("")
             $("#approvedDocs").addClass("hidden")
+            document.getElementById("reasonBox").style.marginTop = "-21px";
         }
+    }
+
+    function changeBooking(){
+        //
     }
 
     function removeFile(){
@@ -446,6 +463,7 @@
                         $("#actionUserName").val("")
                         $("#rejectReason").val("")
                         $("#approvedDocs").addClass("hidden")
+                        document.getElementById("reasonBox").style.marginTop = "-21px";
                     },
                 });
 
@@ -473,6 +491,7 @@
                 $("#rejectReason").addClass("errorBorder")
                 $("#rejectReason_error").removeClass("hidden")
                 $("#actionUserName_error").removeClass("hidden")
+                document.getElementById("reasonBox").style.marginTop = "-27px";
             }
             
         }else{
@@ -491,7 +510,6 @@
                     })
 
                     if (file) {
-                        console.log("yes")
                         fileForApproval = $("#FileNameForApproval").val();
 
                         $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -660,6 +678,7 @@
                 $("#actionUserName").val("")
                 $("#rejectReason").val("")
                 $("#approvedDocs").addClass("hidden")
+                document.getElementById("reasonBox").style.marginTop = "-21px";
             },
         });
     }
@@ -794,7 +813,7 @@
         });
     })
 
-    $("#copyID").on('change', function(){
+    $("#documentsSectionDisplay").on('change', '#copyID', function(){
         $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
         let userId = <?php echo $user[0]['userInfo']['id'];?>
 
@@ -816,7 +835,7 @@
                 if (data[0] == "done") {
                     $("#copyIDStatus").empty().append('<div class="button action"></div>');
 
-                    $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
                 }
@@ -824,7 +843,7 @@
         });
     });
 
-    $("#studentCard").on('change', function(){
+    $("#documentsSectionDisplay").on('change', "#studentCard", function(){
         $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
         let userId = <?php echo $user[0]['userInfo']['id'];?>
 
@@ -846,7 +865,7 @@
                 if (data[0] == "done") {
                     $("#studentCardStatus").empty().append('<div class="button action"></div>');
 
-                    $("#studentCardBanner").empty().append('<button type="Button" onClick="openModal(\'studentCard\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    $("#studentCardBanner").empty().append('<button type="Button" onClick="openModal(\'studentCard\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
                 }
@@ -854,7 +873,7 @@
         });  
     })
 
-    $("#bankStatement").on('change', function(){
+    $("#documentsSectionDisplay").on('change', "#bankStatement",  function(){
         $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
         let userId = <?php echo $user[0]['userInfo']['id'];?>
 
@@ -876,7 +895,7 @@
                 if (data[0] == "done") {
                     $("#bankStatementStatus").empty().append('<div class="button action"></div>');
 
-                    $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
                 }
@@ -884,8 +903,7 @@
         });
     })
 
-    $("#proofRegistration").on('change', function(){
-        console.log("1")
+    $("#documentsSectionDisplay").on('change', "#proofRegistration", function(){
 
         $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
         let userId = <?php echo $user[0]['userInfo']['id'];?>
@@ -908,7 +926,7 @@
                 if (data[0] == "done") {
                     $("#proofRegistrationStatus").empty().append('<div class="button action"></div>');
 
-                    $("#proofRegistrationBanner").empty().append('<button type="Button" onClick="openModal(\'proofRegistration\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    $("#proofRegistrationBanner").empty().append('<button type="Button" onClick="openModal(\'proofRegistration\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
                 }
@@ -917,7 +935,7 @@
     })
 
 
-    $("#proof_of_payment").on('change', function(){
+    $("#documentsSectionDisplay").on('change', "#proof_of_payment", function(){
         $("#proof_of_paymentSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
         let userId = <?php echo $user[0]['userInfo']['id'];?>
 
@@ -940,7 +958,7 @@
 
                     $("#proof_of_paymentStatus").empty().append('<div class="button action"></div>');
 
-                    $("#proof_of_paymentBanner").empty().append('<button type="Button" onClick="openModal(\'proof_of_payment\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    $("#proof_of_paymentBanner").empty().append('<button type="Button" onClick="openModal(\'proof_of_payment\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
 
@@ -949,7 +967,7 @@
         });
     })
     
-    $("#bursaryApproval").on('change', function(){
+    $("#documentsSectionDisplay").on('change', "bursaryApproval", function(){
         $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
         let userId = <?php echo $user[0]['userInfo']['id'];?>
@@ -973,7 +991,7 @@
 
                     $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
 
-                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1]+'\', \'\', \'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
 

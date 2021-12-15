@@ -82,6 +82,11 @@ class User extends Authenticatable
         'pAddressPostal',
         'role_delete_booking',
         'role_delete_uploaded',
+        'userAddress1',
+        'userAddress2',
+        'userAddressCity',
+        'userAddressPostal',
+        'app_address',
     ];
 
     public function files(){

@@ -243,6 +243,22 @@ class HomeController extends Controller
                         }
 
                     }
+
+                    if($item['field'] == "proof_of_payment" || $item['field'] == "copyID"){
+
+                        if($item['status'] == "Approved"){
+                            array_push($phase1Arr, 2);
+                        }
+    
+                        if($item['status'] == "Uploaded"){
+                            array_push($phase1Arr, 1);
+                        }
+    
+                        if($item['status'] == "Rejected" || $item['status'] == ""){
+                            array_push($phase1Arr, 0);
+                        }
+    
+                    }
                     
 
                     if($item['field'] == "studentCard" || $item['field'] == "proofRegistration" || $item['field'] == "bursaryApproval" || $item['field'] == "bankStatement"){
@@ -308,17 +324,7 @@ class HomeController extends Controller
 
                 $uploaded = [];
                 $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
-                // $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
 
-                // if($user->applicationStatus == "Approved Confirmed"){
-                //     array_push($all, "moveIn");
-                // }
-                // if($user->studentType == "Cash / Direct"){
-                //     array_push($all, "bankStatement");
-                // }
-                // if($user->studentType !== "Cash / Direct"){
-                //     array_push($all, "bursaryApproval");
-                // }
                 $data = [];
                 $counter = 0;
 
@@ -975,6 +981,11 @@ class HomeController extends Controller
             'pAddress2' => $request->pAddress2,
             'pAddressCity' => $request->pAddressCity,
             'pAddressPostal' => $request->pAddressPostal,
+            'userAddress1' => $request->userAddress1,
+            'userAddress2' => $request->userAddress2,
+            'userAddressCity' => $request->userAddressCity,
+            'userAddressPostal' => $request->userAddressPostal,
+            'app_address' => $request->app_address,
         ]);
 
         ActionList::create([
@@ -1318,6 +1329,11 @@ class HomeController extends Controller
             'pAddress2' => $request->pAddress2,
             'pAddressCity' => $request->pAddressCity,
             'pAddressPostal' => $request->pAddressPostal,
+            'userAddress1' => $request->userAddress1,
+            'userAddress2' => $request->userAddress2,
+            'userAddressCity' => $request->userAddressCity,
+            'userAddressPostal' => $request->userAddressPostal,
+            'app_address' => $request->app_address,
         ]);
 
         $booking = Booking::create(["userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType]);
@@ -1326,7 +1342,7 @@ class HomeController extends Controller
 
         ActionList::create([
             "userUid" => $user->id,
-            "action" => "Registered ".$request->firstName."as a new user",
+            "action" => "Registered ".$request->firstName." as a new user",
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
