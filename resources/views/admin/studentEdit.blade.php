@@ -523,7 +523,7 @@
             }
     }
 
-    $("#idNumber").on('keyup', function(){
+    $("#idNumber").on('keyup blur', function(){
         let idNumber = $("#idNumber").val();
 
         if(idNumber.length == 13){
@@ -535,7 +535,7 @@
 
     })
 
-    $("#pIdNumber").on('keyup', function(){
+    $("#pIdNumber").on('keyup blur', function(){
         let idNumber = $("#pIdNumber").val();
 
         if(idNumber.length == 13){
@@ -547,7 +547,7 @@
 
     })
 
-    $("#kIdNumber").on('keyup', function(){
+    $("#kIdNumber").on('keyup blur', function(){
         let idNumber = $("#kIdNumber").val();
 
         if(idNumber.length == 13){
@@ -587,17 +587,17 @@
         }
     }
 
-    $("#cell_no").on('keyup', function(){
+    $("#cell_no").on('keyup blur', function(){
         cell = $("#cell_no").val()
         ValidCell(cell, "cell_no", "cell_no_error")
     })
 
-    $("#pCell_no").on('keyup', function(){
+    $("#pCell_no").on('keyup blur', function(){
         cell = $("#pCell_no").val()
         ValidCell(cell, "pCell_no", "pCell_no_error")
     })
 
-    $("#bContactNumber").on('keyup', function(){
+    $("#bContactNumber").on('keyup blur', function(){
         cell = $("#bContactNumber").val()
         ValidCell(cell, "bContactNumber", "bContactNumber_error")
     })
@@ -613,7 +613,7 @@
         }
     })
 
-    $("#kCellNo").on('keyup', function(){
+    $("#kCellNo").on('keyup blur', function(){
         cell = $("#kCellNo").val()
         ValidCell(cell, "kCellNo", "kCellNo_error")
     })
