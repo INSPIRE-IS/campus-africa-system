@@ -96,6 +96,13 @@ class User extends Authenticatable
         'role_wynton_joy',
         'role_126_siemert',
         'role_ymca',
+        'bAddress1',
+        'bAddress2',
+        'bAddressCity',
+        'bAddressPostal',
+        'bPayment',
+        'bint',
+        'bIntName',
     ];
 
     public function files(){

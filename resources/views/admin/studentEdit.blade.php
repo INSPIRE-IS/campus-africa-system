@@ -266,7 +266,7 @@
             </div>
             <div class="pAddress <?php if($user->app_address_p == 1){echo "hidden";} ?>">
                 <div class="form-field-big" style="height:60px !important">
-                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" value="{{$user->pAddress1}}" class="required">
+                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" value="{{$user->pAddress1}}">
                 </div>
                 <div class="form-field-big" style="height:60px !important">
                     <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
@@ -323,6 +323,62 @@
             <div class="form-field">
                 <br/>
             </div>
+
+            <div class="form-field-big">
+                    <label>Physical Address * <span id="bAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" placeholder="Street No" name="bAddress1" id="bAddress1" style="width:98% !important" value="{{$user->bAddress1}}">
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                <span id="bAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="Suburb" name="bAddress2" id="bAddress2" style="width:98% !important" value="{{$user->bAddress2}}">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="City" name="bAddressCity" id='bAddressCity'  value="{{$user->bAddressCity}}">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="bAddressPostal" id="bAddressPostal" value="{{$user->bAddressPostal}}">
+                </div>
+
+            <div class="form-field">
+                    <label>Bursary Payment * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <select name="bPayment" id='bPayment'>
+                    <option value="" disabled selected>Please select one</option>
+                        <option value="The Residence directly" <?php if($user->bPayment == "The Residence directly"){echo "selected";} ?>>The Residence Directly</option>
+                        <option value="The Student directly" <?php if($user->bPayment == "The Student directly"){echo "selected";} ?>>The Student Directly</option>
+                        <option value="Via an Intermediary" <?php if($user->bPayment == "Via an Intermediary"){echo "selected";} ?>>Via an Intermediary</option>
+                    </select>
+                </div>
+
+                <div class="form-field <?php if($user->bPayment == "Via an Intermediary"){ echo "hidden";}?>" id="placeholder" >
+                    <br/>
+                </div>
+
+                <div id="viaInt" class="<?php if($user->bPayment !== "Via an Intermediary"){ echo "hidden";}?>">
+
+                    <div class="form-field">
+                        <label>Intermediary * <span id="bint_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <select name="bint" id='bint'>
+                        <option value="" disabled selected>Please select one</option>
+                            <option value="Fundi" <?php if($user->bint == "Fundi"){echo "selected";} ?>>Fundi</option>
+                            <option value="Intellicard" <?php if($user->bint == "Intellicard"){echo "selected";} ?>>Intellicard</option>
+                            <option value="Other" <?php if($user->bint == "Other"){echo "selected";} ?>>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="spesificInt" class="<?php if($user->bint !== "Other"){ echo "hidden";}?>">
+
+                    <div class="form-field">
+                        <label>Specify Intermediary Name * <span id="bIntName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <input type="text" name="bIntName" id="bIntName" value="{{$user->bIntName}}">
+                    </div>
+
+                    <div class="form-field">
+                        <br/>
+                    </div>
+                </div>
 
         </div>
 
@@ -668,6 +724,43 @@ var d = new Date()
         }
     })
 
+    $("#bAddressPostal").on('keyup blur', function(){
+        postal = $("#bAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#bAddressPostal").removeClass("fieldError")
+            $("#bAddressPostal_error").addClass('hidden')
+        }else{
+            $("#bAddressPostal").addClass("fieldError")
+            $("#bAddressPostal_error").removeClass('hidden')
+        }
+        
+    })
+
+    $("#bPayment").on('change', function(){
+        
+        if($("#bPayment").val() == "Via an Intermediary"){
+            $("#viaInt").removeClass("hidden")
+            $("#bintermediary").addClass("required")
+            $("#placeholder").addClass("hidden")
+        }else{
+            $("#viaInt").addClass("hidden")
+            $("#bintermediary").removeClass("required")
+            $("#placeholder").removeClass("hidden")
+        }
+    })
+
+    $("#bint").on('change', function(){
+        
+        if($("#bint").val() == "Other"){
+            $("#spesificInt").removeClass("hidden")
+            $("#bIntermediaryName").addClass("required")
+        }else{
+            $("#spesificInt").addClass("hidden")
+            $("#bIntermediaryName").removeClass("required")
+        }
+    })
+
     $("#pAddressPostal").on('keyup blur', function(){
         postal = $("#pAddressPostal").val()
 
@@ -1004,17 +1097,17 @@ var d = new Date()
         }
 
         if(document.getElementById('app_address').checked == true){
-            $("#kAddress1").empty().val($("#userAddress1").val())
-            $("#kAddress2").empty().val($("#userAddress2").val())
-            $("#kAddressCity").empty().val($("#userAddressCity").val())
-            $("#kAddressPostal").empty().val($("#userAddressPostal").val())
+            $("#kAddress1").removeClass('fieldError').empty().val($("#userAddress1").val())
+            $("#kAddress2").removeClass('fieldError').empty().val($("#userAddress2").val())
+            $("#kAddressCity").removeClass('fieldError').empty().val($("#userAddressCity").val())
+            $("#kAddressPostal").removeClass('fieldError').empty().val($("#userAddressPostal").val())
         }
 
         if(document.getElementById('app_address_p').checked == true){
-            $("#pAddress1").empty().val($("#userAddress1").val())
-            $("#pAddress2").empty().val($("#userAddress2").val())
-            $("#pAddressCity").empty().val($("#userAddressCity").val())
-            $("#pAddressPostal").empty().val($("#userAddressPostal").val())
+            $("#pAddress1").removeClass('fieldError').empty().val($("#userAddress1").val())
+            $("#pAddress2").removeClass('fieldError').empty().val($("#userAddress2").val())
+            $("#pAddressCity").removeClass('fieldError').empty().val($("#userAddressCity").val())
+            $("#pAddressPostal").removeClass('fieldError').empty().val($("#userAddressPostal").val())
         }
 
          //Check if any hidden fields are required, remove required check

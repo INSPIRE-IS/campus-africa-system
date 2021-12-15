@@ -319,6 +319,66 @@
                     <br/>
                 </div>
 
+                <div class="form-field-big">
+                    <label>Physical Address * <span id="bAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" placeholder="Street No" name="bAddress1" id="bAddress1" style="width:98% !important">
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                <span id="bAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="Suburb" name="bAddress2" id="bAddress2" style="width:98% !important" >
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="City" name="bAddressCity" id='bAddressCity'  >
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="bAddressPostal" id="bAddressPostal" >
+                </div>
+
+                
+
+                <div class="form-field">
+                    <label>Bursary Payment * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <select name="bPayment" id='bPayment'>
+                    <option value="" disabled selected>Please select one</option>
+                        <option value="The Residence directly" >The Residence Directly</option>
+                        <option value="The Student directly" >The Student Directly</option>
+                        <option value="Via an Intermediary" >Via an Intermediary</option>
+                    </select>
+                </div>
+
+                <div class="form-field" id="placeholder">
+                    <br/>
+                </div>
+
+                <div id="viaInt" class="hidden">
+
+                    <div class="form-field">
+                        <label>Intermediary * <span id="bint_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <select name="bint" id='bint'>
+                        <option value="" disabled selected>Please select one</option>
+                            <option value="Fundi" >Fundi</option>
+                            <option value="Intellicard" >Intellicard</option>
+                            <option value="Other" >Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="spesificInt" class="hidden">
+
+                    <div class="form-field">
+                        <label>Specify Intermediary Name * <span id="bIntName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <input type="text" name="bIntName" id="bIntName">
+                    </div>
+
+                    <div class="form-field">
+                        <br/>
+                    </div>
+                </div>
+
+                
+
         </div>
 
             <div class="form-field">
@@ -494,6 +554,30 @@
         }
     });
 
+    $("#bPayment").on('change', function(){
+        
+        if($("#bPayment").val() == "Via an Intermediary"){
+            $("#viaInt").removeClass("hidden")
+            $("#bintermediary").addClass("required")
+            $("#placeholder").addClass("hidden")
+        }else{
+            $("#viaInt").addClass("hidden")
+            $("#bintermediary").removeClass("required")
+            $("#placeholder").removeClass("hidden")
+        }
+    })
+
+    $("#bint").on('change', function(){
+        
+        if($("#bint").val() == "Other"){
+            $("#spesificInt").removeClass("hidden")
+            $("#bIntermediaryName").addClass("required")
+        }else{
+            $("#spesificInt").addClass("hidden")
+            $("#bIntermediaryName").removeClass("required")
+        }
+    })
+
     function ValidID(idNumber, idField, errorField){
         let idArr = Array.from(idNumber);
         idArr.reverse()
@@ -634,6 +718,19 @@
             $("#kWorkNo_error").addClass('hidden')
             $("#kWorkNo").removeClass('fieldError')
         }
+    })
+
+    $("#bAddressPostal").on('keyup blur', function(){
+        postal = $("#bAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#bAddressPostal").removeClass("fieldError")
+            $("#bAddressPostal_error").addClass('hidden')
+        }else{
+            $("#bAddressPostal").addClass("fieldError")
+            $("#bAddressPostal_error").removeClass('hidden')
+        }
+        
     })
 
     $("#pAddressPostal").on('keyup blur', function(){
@@ -847,12 +944,25 @@
             $("#bContactPerson").addClass('required')
             $("#bContactNumber").addClass('required')
             $("#bEmail").addClass('required')
+
+            $("#bAddress1").addClass('required')
+            $("#bAddress2").addClass('required')
+            $("#bAddressCity").addClass('required')
+            $("#bAddressPostal").addClass('required')
+            $("#bPayment").addClass('required')
+
         }else{
             $("#bCompanyName").removeClass('required')
             $("#bRegistrationNo").removeClass('required')
             $("#bContactPerson").removeClass('required')
             $("#bContactNumber").removeClass('required')
             $("#bEmail").removeClass('required')
+
+            $("#bAddress1").removeClass('required')
+            $("#bAddress2").removeClass('required')
+            $("#bAddressCity").removeClass('required')
+            $("#bAddressPostal").removeClass('required')
+            $("#bPayment").removeClass('required')
         }
     }
 
