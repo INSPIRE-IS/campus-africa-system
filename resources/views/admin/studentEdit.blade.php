@@ -75,15 +75,15 @@
             <label>Physical Address * <span id="userAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="width:98% !important" class="required" value="{{$user->userAddress1}}">
         </div>
-        <div class="form-field-big">
+        <div class="form-field-big" style="height:77px !important">
         <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
             <input type="text" placeholder="Suburb" name="userAddress2" id="userAddress2" style="width:98% !important" class="required" value="{{$user->userAddress2}}">
         </div>
-        <div class="form-field">
+        <div class="form-field" style="margin-top:-15px; height:60px !important">
         <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
             <input type="text" placeholder="City" name="userAddressCity" id='userAddressCity' class="required" value="{{$user->userAddressCity}}">
         </div>
-        <div class="form-field">
+        <div class="form-field" style="margin-top:-15px; height:60px !important">
         <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
             <input type="text" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal" class="required" value="{{$user->userAddressPostal}}">
         </div>
@@ -255,15 +255,15 @@
                 <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                 <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" value="{{$user->pAddress1}}">
             </div>
-            <div class="form-field-big">
+            <div class="form-field-big" style="height:60px !important">
                 <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
                 <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" value="{{$user->pAddress2}}">
             </div>
-            <div class="form-field">
+            <div class="form-field" style="height:60px !important">
                 <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
                 <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity' value="{{$user->pAddressCity}}" >
             </div>
-            <div class="form-field">
+            <div class="form-field" style="height:60px !important">
                 <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
                 <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user->pAddressPostal}}">
             </div>
@@ -391,28 +391,28 @@
             <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" value="{{$user->kinAddressStr}}" class="required">
         </div> -->
-        <div class="form-field-big">
+        <div class="form-field-big" style="height:50px !important">
             <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
         </div>
-        <div class="form-field-big">
+        <div class="form-field-big" style="height:60px !important">
             <li style="display:inline-flex">
                 <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;" <?php if($user->app_address == 1){echo "checked";}?>>
                 <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
             </li>
         </div>
         <div class="kinAddress <?php if($user->app_address == 1){echo "hidden";} ?>">
-            <div class="form-field-big">
+            <div class="form-field-big" style="height:60px !important">
                 <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" value="{{$user->kinAddressStr}}" class="required">
             </div>
-            <div class="form-field-big">
+            <div class="form-field-big" style="height:60px !important">
                 <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
                 <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" value="{{$user->kinAddressSuburb}}" class="required">
             </div>
-            <div class="form-field">
+            <div class="form-field" style="height:60px !important">
                 <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
                 <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' value="{{$user->kinAddressCity}}" class="required">
             </div>
-            <div class="form-field">
+            <div class="form-field" style="height:60px !important">
                 <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
                 <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" value="{{$user->kinAddressPost}}" class="required">
             </div>

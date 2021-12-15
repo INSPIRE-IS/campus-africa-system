@@ -280,7 +280,7 @@
     </div>
 </div>
 
-<div id="myModal" class="modal">
+<div id="myModalEditApp" class="modal">
 
     <div class="modal-content">
         //

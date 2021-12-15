@@ -50,7 +50,8 @@
         </div>
 
         <div class="form-field" id="idField">
-            <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+            <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span>
+            <span id="idNumber_InUse" class="hidden" style="color:red"><small>ID Number already in use</small></span></label>
             <input type="text" name="idNumber" id="idNumber" class="required">
         </div>
 
@@ -65,7 +66,8 @@
         </div>
 
         <div class="form-field">
-            <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+            <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid email</small></span>
+            <span id="email_InUse" class="hidden" style="color:red"><small>Email Address already in use</small></span></label>
             <input type="email" name="email" id="email" class="required" >
         </div>
 
@@ -73,15 +75,15 @@
             <label>Physical Address * <span id="userAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="width:98% !important" class="required">
         </div>
-        <div class="form-field-big">
+        <div class="form-field-big" style="height:77px !important">
         <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
             <input type="text" placeholder="Suburb" name="userAddress2" id="userAddress2" style="width:98% !important" class="required">
         </div>
-        <div class="form-field">
+        <div class="form-field" style="margin-top:-15px; height:60px !important">
         <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
             <input type="text" placeholder="City" name="userAddressCity" id='userAddressCity' class="required" >
         </div>
-        <div class="form-field">
+        <div class="form-field" style="margin-top:-15px; height:60px !important">
         <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
             <input type="text" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal" class="required">
         </div>
@@ -233,15 +235,15 @@
                     <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
                 </div>
-                <div class="form-field-big">
+                <div class="form-field-big" style="height:60px !important">
                 <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
                     <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" >
                 </div>
-                <div class="form-field">
+                <div class="form-field" style="height:60px !important">
                 <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
                     <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  >
                 </div>
-                <div class="form-field">
+                <div class="form-field" style="height:60px !important">
                 <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
                     <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" >
                 </div>
@@ -369,34 +371,34 @@
 
         
 
-        <div class="form-field-big">
+        <div class="form-field-big" style="height:50px !important;">
             <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
         </div>
-        <div class="form-field-big">
+        <div class="form-field-big" style="height:60px !important">
             <li style="display:inline-flex">
                 <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;">
                 <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
             </li>
         </div>
         <div class="kinAddress">
-            <div class="form-field-big">
+            <div class="form-field-big" style="height:60px !important">
                 <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
             </div>
-            <div class="form-field-big">
+            <div class="form-field-big" style="height:60px !important">
             <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
                 <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required">
             </div>
-            <div class="form-field">
+            <div class="form-field" style="height:60px !important">
             <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
                 <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" >
             </div>
-            <div class="form-field">
+            <div class="form-field" style="height:60px !important">
             <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
                 <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required">
             </div>
         </div>
 
-        <div class="form-field">
+        <div class="form-field" style="height:60px !important">
             <br/>
         </div>
 
@@ -644,28 +646,40 @@
         }
     })
 
-    // $("#email").on('blur', function(){
-    //     $.ajax({
-    //         type: "post",
-    //         url: "/email-check",
-    //         data: {
-    //             email: $("#email").val(),
-    //         },
-    //         cache: false,
-    //         contentType: false,
-    //         processData: false,
+    $("#email, #idNumber").on('blur', function(){
+        $.ajax({
+            type: "post",
+            url: "/email-check",
+            data: {
+                email: $("#email").val(),
+                idNumber: $("#idNumber").val(),
+            },
 
-    //         success: function (data) {
-    //             // if (data[0] == "done") {
-    //             //     $("#copyIDStatus").empty().append('<div class="button action"></div>');
+            success: function (data) {
+                console.log(data)
+                
+                if (data[0] == "done") {
 
-    //             //     $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    if(data[1] == false){
+                        $("#email_InUse").removeClass('hidden')
+                        $("#email").addClass('fieldError')
+                    }else{
+                        $("#email_InUse").addClass('hidden')
+                        $("#email").removeClass('fieldError')
+                    }
 
-    //             //     refreshActions();
-    //             // }
-    //         },
-    //     });
-    // })
+                    if(data[2] == false){
+                        $("#idNumber_InUse").removeClass('hidden')
+                        $("#idNumber").addClass('fieldError')
+                    }else{
+                        $("#idNumber_InUse").addClass('hidden')
+                        $("#idNumber").removeClass('fieldError')
+                    }
+
+                }
+            },
+        });
+    })
 
     $("#pEmail").on('keyup blur', function(){
         if(isEmail($("#pEmail").val())){

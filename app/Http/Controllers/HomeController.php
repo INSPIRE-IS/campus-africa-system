@@ -997,7 +997,8 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
         ]);
 
-        return redirect()->back();
+        // return redirect()->back();
+        return redirect("/application-profile/".$request->userUid);
     }
 
     public function student_upload(Request $request, $studentId){
@@ -1696,7 +1697,29 @@ class HomeController extends Controller
     }
 
     public function email_check(Request $request){
-        //
+        $email = $request->email;
+        $idNumber = $request->idNumber;
+
+        $emailValid = true;
+        $idNumberValid = true;
+
+        if($email !== ""){
+            $emailCheck = User::where('email', $email)->first();
+
+            if(!empty($emailCheck)){
+                $emailValid = false;
+            }
+        }
+
+        if($idNumber !== ""){
+            $idCheck = User::where('userId', $idNumber)->first();
+
+            if(!empty($idCheck)){
+                $idNumberValid = false;
+            }
+        }
+
+        return ["done", $emailValid, $idNumberValid];
     }
 
     
