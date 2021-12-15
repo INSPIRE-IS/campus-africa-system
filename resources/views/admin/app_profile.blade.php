@@ -282,7 +282,9 @@
 
 <div id="myModalEditApp" class="modal">
 
-    <div class="modal-content form-card" style="height:260px;">
+    <div class="modal-content " style="height:270px;">
+    <span class="closeBooking" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+    <div class="form-card">
         <h2>Change this booking</h2>
 
         <input type="hidden" id="bookingId"/>
@@ -327,6 +329,7 @@
         <div class="form-field-big">
             <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
         </div>
+    </div>
 
 
     </div>
@@ -392,6 +395,13 @@
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
+    }
+
+    var modalBooking = document.getElementById("myModalEditApp");
+    var spanBooking = document.getElementsByClassName("closeBooking")[0];
+
+    spanBooking.onclick = function() {
+        modalBooking.style.display = "none";
     }
 
     $("#changeBookingType").on('click', function(){
@@ -522,6 +532,7 @@
 
     window.onclick = function(event) {
         if (event.target == modal) {
+            
             modal.style.display = "none";
             $("#actionUserName").removeClass("errorBorder")
             $("#rejectReason").removeClass("errorBorder")
@@ -532,6 +543,12 @@
             $("#approvedDocs").addClass("hidden")
             document.getElementById("reasonBox").style.marginTop = "-21px";
         }
+
+        if (event.target == modalBooking) {
+            //
+            modalBooking.style.display = "none";
+        }
+
     }
 
     function removeFile(){
