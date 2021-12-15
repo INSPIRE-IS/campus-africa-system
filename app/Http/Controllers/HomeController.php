@@ -1760,6 +1760,39 @@ class HomeController extends Controller
         return ["done", $emailValid, $idNumberValid];
     }
 
+    public function change_booking(Request $request){
+
+        $bookingId = $request->bookingId;
+        $property = $request->property;
+        $roomType = $request->roomType;
+
+        $oldData = Booking::where('userId', $bookingId)->first();
+        $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType];
+        
+
+
+        foreach($newData as $key => $new){
+            
+            $info = explode("|", $key);
+            $key = $info[0];
+            $changedField = $info[1];
+
+            if($oldData->$key !== $new){
+                ActionList::create([
+                    "userUid" => $request->bookingId,
+                    "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
+        }
+
+        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType]);
+
+        return "true";
+    }
+
     
 
     

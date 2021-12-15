@@ -282,8 +282,53 @@
 
 <div id="myModalEditApp" class="modal">
 
-    <div class="modal-content">
-        //
+    <div class="modal-content form-card" style="height:260px;">
+        <h2>Change this booking</h2>
+
+        <input type="hidden" id="bookingId"/>
+
+        <br/><br/>
+        <div class="form-field">
+            <label>Residence * <span id="property_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+
+            <select name="property" id='property' class="required">
+                <option value="" selected disabled>Select a Residence</option>
+                @if(Auth::user()->role_braamlofts == 1)
+                    <option value="Braamlofts">Braamlofts</option>
+                @endif
+                @if(Auth::user()->role_80_jorissen == 1)
+                    <option value="80 Jorissen">80 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_49_jorissen == 1)
+                    <option value="49 Jorissen">49 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_dunvista_mansions == 1)
+                    <option value="Dunvista Mansions">Dunvista Mansions</option>
+                @endif
+                @if(Auth::user()->role_wynton_joy == 1)
+                    <option value="Wynton Joy">Wynton Joy</option>
+                @endif
+                @if(Auth::user()->role_126_siemert == 1)
+                    <option value="126 Siemert">126 Siemert</option>
+                @endif
+                @if(Auth::user()->role_ymca == 1)
+                    <option value="YMCA">YMCA</option>
+                @endif
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Room Type * <span id="roomType_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+            <select name="roomType" id='roomType' class="required">
+                <option value="" selected disabled>Select a Room Type</option>
+            </select>
+        </div>
+
+        <div class="form-field-big">
+            <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
+        </div>
+
+
     </div>
 
 </div>
@@ -342,6 +387,82 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function changeBooking(bookingId){
+        $("#bookingId").val(bookingId)
+        var modal = document.getElementById("myModalEditApp");
+        modal.style.display = "block";
+    }
+
+    $("#changeBookingType").on('click', function(){
+        if($("#property").val() == "" || $("#roomType").val() == ""){
+            if($("#property").val() == ""){
+                $("#property").addClass("fieldError")
+                $("#property_error").removeClass("hidden")
+            }
+
+            if($("#roomType").val() == ""){
+                $("#roomType").addClass("fieldError")
+                $("#roomType_error").removeClass("hidden")
+            }
+        }else{
+            $("#changeBookingType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+            $.ajax({
+                    type: "post",
+                    url: "/change-booking",
+                    data: {
+                        bookingId: $("#bookingId").val(), 
+                        property: $("#property").val(),
+                        roomType: $("#roomType").val(), 
+                    },
+
+                    success: function (data) {
+                        
+                        window.location.reload();
+                    },
+                });
+        }
+    })
+
+    $("#property").on('blur', function(){
+        if($("#property").val() == ""){
+            $("#property").addClass("fieldError")
+            $("#property_error").removeClass("hidden")
+        }else{
+            $("#property").removeClass("fieldError")
+            $("#property_error").addClass("hidden")
+        }
+    })
+
+    $("#roomType").on('blur', function(){
+        if($("#roomType").val() == ""){
+            $("#roomType").addClass("fieldError")
+            $("#roomType_error").removeClass("hidden")
+        }else{
+            $("#roomType").removeClass("fieldError")
+            $("#roomType_error").addClass("hidden")
+        }
+    })
+
+    $("#property").on('change', function(){
+        let propValue = $("#property").val();
+
+        if(propValue == "Braamlofts"){
+            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
+        }else if(propValue == "80 Jorissen"){
+            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+        }else if(propValue == "49 Jorissen"){
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="single room 2 bedroom">Single Room | 2 Bedroom</option><option value="single room 3 bedroom">Single Room | 3 Bedroom</option>')
+        }else if(propValue == "Dunvista Mansions"){
+            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+        }else if(propValue == "Wynton Joy"){
+            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+        }else if(propValue == "126 Siemert"){
+            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+        }else if(propValue == "YMCA"){
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="single room small">Single Room | small</option><option value="single room medium">Single Room | Medium</option><option value="single room large">Single Room | Large</option>')
+        }
+    })
 
     function openModal(field, url, uploaded_by, created_at, fileId, status){
 
@@ -411,10 +532,6 @@
             $("#approvedDocs").addClass("hidden")
             document.getElementById("reasonBox").style.marginTop = "-21px";
         }
-    }
-
-    function changeBooking(){
-        //
     }
 
     function removeFile(){

@@ -94,6 +94,7 @@ Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
+Route::post('/change-booking', [HomeController::class, 'change_booking']);
 
 
 
