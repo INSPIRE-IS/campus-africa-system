@@ -34,7 +34,7 @@
 
         <div class="form-field">
             <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
-            <input type="date" name="dob" id="dob" class="required" min="1921-01-01" max="<?php echo date('Y-m-d'); ?>">
+            <input type="date" name="dob" id="dob" class="required" max="<?php echo date('Y-m-d'); ?>">
         </div>
 
         <div class="form-field">
@@ -411,6 +411,13 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    var d = new Date()
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    yearBack =(d.getFullYear() - 100);
+
+    document.getElementById("dob").setAttribute("min", yearBack+"-"+month+"-"+day);
 
     $("input").blur(function(){
         let fieldId = $(this)[0]["id"]
