@@ -920,6 +920,13 @@ class HomeController extends Controller
             "role_approve_docs" => $request->approve_docs,
             "role_delete_booking" => $request->delete_booking,
             "role_delete_uploaded" => $request->delete_uploaded,
+            "role_braamlofts" => $request->role_braamlofts,
+            "role_80_jorissen" => $request->role_80_jorissen,
+            "role_49_jorissen" => $request->role_49_jorissen,
+            "role_dunvista_mansions" => $request->role_dunvista_mansions,
+            "role_wynton_joy" => $request->role_wynton_joy,
+            "role_126_siemert" => $request->role_126_siemert,
+            "role_ymca" => $request->role_ymca,
         ]);
 
         return redirect()->back();
@@ -1401,6 +1408,13 @@ class HomeController extends Controller
             "role_approve_docs" => $request->approve_docs,
             "role_delete_booking" => $request->delete_booking,
             "role_delete_uploaded" => $request->delete_uploaded,
+            "role_braamlofts" => $request->role_braamlofts,
+            "role_80_jorissen" => $request->role_80_jorissen,
+            "role_49_jorissen" => $request->role_49_jorissen,
+            "role_dunvista_mansions" => $request->role_dunvista_mansions,
+            "role_wynton_joy" => $request->role_wynton_joy,
+            "role_126_siemert" => $request->role_126_siemert,
+            "role_ymca" => $request->role_ymca,
         ]);
 
         return redirect()->route('users');

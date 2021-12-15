@@ -89,6 +89,13 @@ class User extends Authenticatable
         'app_address',
         'app_address_p',
         'app_parent_kin',
+        'role_braamlofts',
+        'role_80_jorissen',
+        'role_49_jorissen',
+        'role_dunvista_mansions',
+        'role_wynton_joy',
+        'role_126_siemert',
+        'role_ymca',
     ];
 
     public function files(){

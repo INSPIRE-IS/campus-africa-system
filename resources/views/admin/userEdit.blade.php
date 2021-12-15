@@ -54,7 +54,7 @@
             </select> 
         </div> -->
 
-        <div class="form-field" style="margin-bottom:350px;">
+        <div class="form-field" style="margin-bottom:850px;">
             <label>Access Roles</label>
             <br/><br/>
             <ul style="list-style-type:none">
@@ -86,6 +86,41 @@
                 <li style="display:inline-flex">
                     <input type="checkbox" id="delete_uploaded" name="delete_uploaded" value="1" <?php if($user->role_delete_uploaded == "1"){echo "checked";} ?>>
                     <label for="delete_uploaded" style="width:400px">Delete Approved Documents</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_braamlofts" name="role_braamlofts" value="1" <?php if($user->role_braamlofts == "1"){echo "checked";} ?>>
+                    <label for="role_braamlofts" style="width:400px">Braamlofts</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_80_jorissen" name="role_80_jorissen" value="1" <?php if($user->role_80_jorissen == "1"){echo "checked";} ?>>
+                    <label for="role_80_jorissen" style="width:400px">80 Jorissen</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_49_jorissen" name="role_49_jorissen" value="1" <?php if($user->role_49_jorissen == "1"){echo "checked";} ?>>
+                    <label for="role_49_jorissen" style="width:400px">49 Jorissen</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_dunvista_mansions" name="role_dunvista_mansions" value="1" <?php if($user->role_dunvista_mansions == "1"){echo "checked";} ?>>
+                    <label for="role_dunvista_mansions" style="width:400px">Dunvista Mansions</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_wynton_joy" name="role_wynton_joy" value="1" <?php if($user->role_wynton_joy == "1"){echo "checked";} ?>>
+                    <label for="role_wynton_joy" style="width:400px">Wynton Joy</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_126_siemert" name="role_126_siemert" value="1" <?php if($user->role_126_siemert == "1"){echo "checked";} ?>>
+                    <label for="role_126_siemert" style="width:400px">126 Siemert</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_ymca" name="role_ymca" value="1" <?php if($user->role_ymca == "1"){echo "checked";} ?>>
+                    <label for="role_ymca" style="width:400px">YMCA</label>
                 </li>
             </ul>
         </div>
