@@ -51,14 +51,14 @@
             </select>
         </div>
 
-        <div class="form-field <?php if($user->userNationality !== "South African"){echo "hidden";} ?>" id="idField">
+        <div class="form-field <?php if($user->userNationality !== "South Africa"){echo "hidden";} ?>" id="idField">
             <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-            <input type="text" name="idNumber" id="idNumber" value="{{$user->userId}}" <?php if($user->userNationality == "South African"){echo "class='required'";} ?>>
+            <input type="text" name="idNumber" id="idNumber" value="{{$user->userId}}" <?php if($user->userNationality == "South Africa"){echo "class='required'";} ?>>
         </div>
 
-        <div class="form-field <?php if($user->userNationality == "South African"){echo "hidden";} ?>" id="passportField">
+        <div class="form-field <?php if($user->userNationality == "South Africa"){echo "hidden";} ?>" id="passportField">
             <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="passportNo" id="passportNo" value="{{$user->userPassport}}" <?php if($user->userNationality !== "South African"){echo 'class="required"';} ?>>
+            <input type="text" name="passportNo" id="passportNo" value="{{$user->userPassport}}" <?php if($user->userNationality !== "South Africa"){echo 'class="required"';} ?>>
         </div>
 
         <div class="form-field">
@@ -241,14 +241,14 @@
                 </select>
             </div>
 
-            <div class="form-field <?php if($user->pNationality !== "South African"){echo "hidden";}?>" id="pIdField">
+            <div class="form-field <?php if($user->pNationality !== "South Africa"){echo "hidden";}?>" id="pIdField">
                 <label>I.D Number * <span id="pIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-                <input type="text" name="pIdNumber" id="pIdNumber" value="{{$user->sponId}}" <?php if($user->studentType == "Cash / Direct" && $user->pNationality == "South African"){echo "class='required'";}?>>
+                <input type="text" name="pIdNumber" id="pIdNumber" value="{{$user->sponId}}" <?php if($user->studentType == "Cash / Direct" && $user->pNationality == "South Africa"){echo "class='required'";}?>>
             </div>
 
-            <div class="form-field <?php if($user->pNationality == "South African"){echo "hidden";}?>" id="pPassportField">
+            <div class="form-field <?php if($user->pNationality == "South Africa"){echo "hidden";}?>" id="pPassportField">
                 <label>Passport Number * <span id="pPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                <input type="text" name="pPassportNo" id="pPassportNo" <?php if($user->studentType == "Cash / Direct" && $user->pNationality !== "South African"){echo "class='required'";}?>>
+                <input type="text" name="pPassportNo" id="pPassportNo" <?php if($user->studentType == "Cash / Direct" && $user->pNationality !== "South Africa"){echo "class='required'";}?>>
             </div>
 
             <div class="form-field-big">
@@ -357,14 +357,14 @@
             </select>
         </div>
 
-        <div class="form-field <?php if($user->kinNationality !== "South African"){echo "hidden";}?>" id="kinIdField">
+        <div class="form-field <?php if($user->kinNationality !== "South Africa"){echo "hidden";}?>" id="kinIdField">
             <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-            <input type="text" name="kIdNumber" id="kIdNumber" value="{{$user->kinId}}" <?php if($user->kinNationality == "South African"){echo "class='required'";}?>>
+            <input type="text" name="kIdNumber" id="kIdNumber" value="{{$user->kinId}}" <?php if($user->kinNationality == "South Africa"){echo "class='required'";}?>>
         </div>
 
-        <div class="form-field <?php if($user->kinNationality == "South African"){echo "hidden";}?>" id="kinPassportField">
+        <div class="form-field <?php if($user->kinNationality == "South Africa"){echo "hidden";}?>" id="kinPassportField">
             <label>Passport Number * <span id="kinPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="kinPassportNo" id="kinPassportNo" value="{{$user->kinPassportNo}}" <?php if($user->kinNationality !== "South African"){echo "class='required'";}?>>
+            <input type="text" name="kinPassportNo" id="kinPassportNo" value="{{$user->kinPassportNo}}" <?php if($user->kinNationality !== "South Africa"){echo "class='required'";}?>>
         </div>
 
         <div class="form-field">
@@ -709,7 +709,7 @@
     })
 
     $("#nationality").on('change', function(){
-        if($("#nationality").val() == "South African"){
+        if($("#nationality").val() == "South Africa"){
             $("#passportField").addClass('hidden')
             $("#idField").removeClass('hidden')
 
@@ -726,7 +726,7 @@
 
 
     $("#kinNationality").on('change', function(){
-        if($("#kinNationality").val() == "South African"){
+        if($("#kinNationality").val() == "South Africa"){
             $("#kinPassportField").addClass('hidden')
             $("#kinIdField").removeClass('hidden')
 
@@ -742,7 +742,7 @@
     })
 
     $("#pNationality").on('change', function(){
-        if($("#pNationality").val() == "South African"){
+        if($("#pNationality").val() == "South Africa"){
             $("#pPassportField").addClass('hidden')
             $("#pIdField").removeClass('hidden')
             

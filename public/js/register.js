@@ -71,7 +71,7 @@ jQuery(document).ready(function ($) {
     })
 
     $("#nationality").on('change', function(){
-        if($("#nationality").val() == "South African"){
+        if($("#nationality").val() == "South Africa"){
             $("#passportField").addClass('hidden')
             $("#idField").removeClass('hidden')
             document.getElementById("passportNo").required = false;

@@ -660,7 +660,7 @@
     })
 
     $("#nationality").on('change', function(){
-        if($("#nationality").val() == "South African"){
+        if($("#nationality").val() == "South Africa"){
             $("#passportField").addClass('hidden')
             $("#idField").removeClass('hidden')
 
@@ -676,7 +676,7 @@
     })
 
     $("#kinNationality").on('change', function(){
-        if($("#kinNationality").val() == "South African"){
+        if($("#kinNationality").val() == "South Africa"){
             $("#kinPassportField").addClass('hidden')
             $("#kinIdField").removeClass('hidden')
 
@@ -692,7 +692,7 @@
     })
 
     $("#pNationality").on('change', function(){
-        if($("#pNationality").val() == "South African"){
+        if($("#pNationality").val() == "South Africa"){
             $("#pPassportField").addClass('hidden')
             $("#pIdField").removeClass('hidden')
 

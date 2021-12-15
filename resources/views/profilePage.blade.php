@@ -52,7 +52,7 @@
         <div class="form-field">
             <label>Nationality</label>
             <select name="nationality" id='nationality' disabled>
-                <option value="South African" <?php if(Auth::user()->userNationality == "South African"){echo "selected";}?>>South African</option>
+                <option value="South Africa" <?php if(Auth::user()->userNationality == "South Africa"){echo "selected";}?>>South Africa</option>
             </select>
         </div>
 
