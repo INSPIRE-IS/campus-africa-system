@@ -1694,6 +1694,10 @@ class HomeController extends Controller
 		return "true";
     }
 
+    public function email_check(Request $request){
+        //
+    }
+
     
 
     

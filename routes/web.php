@@ -93,3 +93,7 @@ Route::post("/delete/booking", [HomeController::class, 'delete_booking']);
 Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
 
+Route::post('/email-check', [HomeController::class, 'email_check']);
+
+
+

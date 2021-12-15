@@ -404,6 +404,12 @@
 
 <script>
 
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     $("input").blur(function(){
         let fieldId = $(this)[0]["id"]
 
@@ -629,6 +635,29 @@
         }
     })
 
+    // $("#email").on('blur', function(){
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/email-check",
+    //         data: {
+    //             email: $("#email").val(),
+    //         },
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+
+    //         success: function (data) {
+    //             // if (data[0] == "done") {
+    //             //     $("#copyIDStatus").empty().append('<div class="button action"></div>');
+
+    //             //     $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+    //             //     refreshActions();
+    //             // }
+    //         },
+    //     });
+    // })
+
     $("#pEmail").on('keyup blur', function(){
         if(isEmail($("#pEmail").val())){
             $("#pEmail").removeClass("fieldError")
@@ -692,12 +721,13 @@
     })
 
     $("#pNationality").on('change', function(){
+        console.log($("#pNationality").val())
         if($("#pNationality").val() == "South Africa"){
             $("#pPassportField").addClass('hidden')
             $("#pIdField").removeClass('hidden')
 
-            $("#pPassportNo").addClass("required")
-            $("#pIdNumber").removeClass("required")
+            $("#pPassportNo").removeClass("required")
+            $("#pIdNumber").addClass("required")
         }else{
             $("#pIdField").addClass('hidden')
             $("#pPassportField").removeClass('hidden')
@@ -872,6 +902,7 @@
         })
 
         if(req == 0){
+            // console.log("2")
             Swal.fire(
                 'Blank Fields',
                 'Please fill in all Required Fields!',
@@ -880,6 +911,7 @@
 
             return false;
         }else{
+            // console.log("HERE")
             let total = 1
             $('.fieldError').each( function(){
                 if($(this).val() === ""){
