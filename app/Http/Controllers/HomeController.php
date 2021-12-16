@@ -13,6 +13,7 @@ use App\Models\Lookups;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
+use App\Models\Property;
 
 class HomeController extends Controller
 {
@@ -1781,7 +1782,13 @@ class HomeController extends Controller
         $roomType = $request->roomType;
 
         $oldData = Booking::where('userId', $bookingId)->first();
-        $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType];
+        $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "room|Room" => $request->room, "bed|Bed" => $request->bed, "bed_code|Bed Code"=> $request->bed_code];
+
+        $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
+
+        Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
+
+        $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->first();
         
 
 
@@ -1792,6 +1799,9 @@ class HomeController extends Controller
             $changedField = $info[1];
 
             if($oldData->$key !== $new){
+                if($oldData->$key == "" || $oldData->$key == null){
+                    $oldData->$key = "Unassigned";
+                }
                 ActionList::create([
                     "userUid" => $request->bookingId,
                     "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
@@ -1802,9 +1812,92 @@ class HomeController extends Controller
             }
         }
 
-        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType]);
+        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id]);
 
         return "true";
+    }
+
+    public function manage_properties(Request $request){
+
+        $properties = Property::get();
+
+        return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "properties" => $properties, "title" => "Manage Properties"]);
+    }
+
+    public function property_edit(Request $request, $propertyId){
+        // $propertyId
+
+        if($propertyId == "0"){
+            $head = "Add";
+            $propertyData = "";
+        }else{
+            $head = "Edit";
+            $propertyData = Property::where('id', $propertyId)->first();
+        }
+
+        return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData]);
+    }
+
+    public function save_property (Request $request){
+
+        $propertyId = $request->propertyId;
+
+        $data = [
+            "residence" => $request->residence,
+            "meta_info_1" => $request->meta_info_1,
+            "meta_info_2" => $request->meta_info_2,
+            "floor" => $request->floor,
+            "unit" => $request->unit,
+            "room" => $request->room,
+            "bed" => $request->bed,
+            "bed_code" => $request->bed_code,
+            "inventory" => $request->inventory,
+            "room_type" => $request->roomType,
+            "room_rate" => $request->room_rate
+        ];
+
+        if($propertyId == "0"){
+            Property::create($data);
+        }else{
+            Property::where('id', $propertyId)->update($data);
+        }
+
+        return redirect("/manage-properties");
+    }
+
+    public function get_booking_info(Request $request){
+        $bookingData = Booking::where('userId', $request->bookingId)->first();
+
+        $property = Property::where('user_id_room', $request->bookingId)->first();
+
+        if(!empty($property)){
+            $selected = $property;
+            // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
+        }else{
+            $selected = [];
+            
+            
+        }
+
+        if(!empty($request->floor) && $request->floor !== ""){
+            if(!empty($request->unit) && $request->unit !== ""){
+                if(!empty($request->room) && $request->room !== ""){
+                    if(!empty($request->bed) && $request->bed !== ""){
+                        $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->get();
+                    }else{
+                        $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('room', $request->room)->get();
+                    }
+                }else{
+                    $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->get();
+                }
+            }else{
+                $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->get();
+            }
+        }else{
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
+        }
+
+        return ["true", $selected, $propertyInfo];
     }
 
     

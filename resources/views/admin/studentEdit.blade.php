@@ -741,12 +741,18 @@ var d = new Date()
         
         if($("#bPayment").val() == "Via an Intermediary"){
             $("#viaInt").removeClass("hidden")
-            $("#bintermediary").addClass("required")
+            $("#bint").addClass("required")
             $("#placeholder").addClass("hidden")
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
         }else{
             $("#viaInt").addClass("hidden")
-            $("#bintermediary").removeClass("required")
+            $("#bint").removeClass("required")
+            $("#bint").removeClass("fieldError")
             $("#placeholder").removeClass("hidden")
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
+            $("#bIntName").removeClass("fieldError")
         }
     })
 
@@ -754,10 +760,10 @@ var d = new Date()
         
         if($("#bint").val() == "Other"){
             $("#spesificInt").removeClass("hidden")
-            $("#bIntermediaryName").addClass("required")
+            $("#bIntName").addClass("required")
         }else{
             $("#spesificInt").addClass("hidden")
-            $("#bIntermediaryName").removeClass("required")
+            $("#bIntName").removeClass("required")
         }
     })
 

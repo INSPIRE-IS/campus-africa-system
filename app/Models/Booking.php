@@ -15,5 +15,14 @@ class Booking extends Model
         'userId',
         'property',
         'roomType',
+        'propertyId',
+        
+        'property_data_id',
+        'floor',
+        'unit',
+        'room',
+        'bed',
+        'room_rate',
+        'bed_code',
     ];
 }

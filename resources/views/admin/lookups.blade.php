@@ -8,7 +8,8 @@
 
 <div class="container">
     <br/>
-    <a href="/lookups/new"><button type="button" class="detailsChange" >Add New</button></a>
+    <a href="/lookups/new"><button type="button" class="detailsChange" >Add New Lookup</button></a>
+    <a href="/manage-properties"><button type="button" class="detailsChange" >Manage properties</button></a>
     <br/>
     <table id="lookups_table" class="display">
         <thead>

@@ -282,7 +282,7 @@
 
 <div id="myModalEditApp" class="modal">
 
-    <div class="modal-content " style="height:270px;">
+    <div class="modal-content " style="height:530px;">
     <span class="closeBooking" style="float:right; font-size:25px; cursor:pointer">&times;</span>
     <div class="form-card">
         <h2>Change this booking</h2>
@@ -335,6 +335,43 @@
                 <?php } ?>
             </select>
         </div>
+
+        <div class="form-field">
+            <label>Floor</label>
+            <select name="floor" id='floor'>
+                <!--  -->
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Unit</label>
+            <select name="unit" id='unit'>
+                <!--  -->
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Room</label>
+            <select name="room" id='room'>
+                <!--  -->
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Bed</label>
+            <select name="bed" id='bed'>
+                <!--  -->
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>Bed Code * <span id="bed_code_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+            <select name="bed_code" id='bed_code'>
+                <!--  -->
+            </select>
+        </div>
+        
+        
 
         <div class="form-field-big">
             <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
@@ -405,7 +442,151 @@
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
+
+        callRoomDetails('floor','', '', '', '', '', 'open')
+        
     }
+
+    function callRoomDetails(callId, floor, unit, room, bed, bed_code, action){
+        $.ajax({
+            type: "post",
+            url: "/get-booking-info",
+            data: {
+                bookingId: $("#bookingId").val(), 
+                property: $("#property").val(),
+                roomType: $("#roomType").val(), 
+                floor:floor,
+                unit:unit,
+                room:room,
+                bed:bed,
+                bed_code:bed_code,
+            },
+
+            success: function (data) {
+                
+                //No Room data been selected, just Property & room Type
+                roomData = data[2]; 
+                type = []
+
+                console.log(callId, floor, unit, room, bed, bed_code, action)
+
+                roomData.forEach(function (arrayItem) {
+                    type.push(arrayItem[''+callId+''])
+                })
+
+                var unique = [...new Set(type)];
+                $("#"+callId).empty();
+
+                if(unit == ""){
+                    $("#unit").empty();
+                }
+                if(room == ""){
+                    $("#room").empty();
+                }
+                if(bed == ""){
+                    $("#bed").empty();
+                }
+                if(bed_code == ""){
+                    $("#bed_code").empty();
+                }
+
+                console.log(unique)
+                $("#"+callId).append('<option value="">Select One</option>');
+
+                unique.forEach(function (arrayItem) {
+                    if(action == "open" && data[1][callId] == arrayItem){
+                        value = '<option value="'+arrayItem+'" selected>'+arrayItem+'</option>';
+                    }else{
+                        value = '<option value="'+arrayItem+'">'+arrayItem+'</option>';
+                    }
+                    
+                    $("#"+callId).append(value);
+                })
+
+                //If room selected & open
+
+                if(action == "open"){
+                    units = [];
+                    rooms = [];
+                    beds = [];
+                    bed_codes = [];
+
+                    roomData.forEach(function (arrayItem) {
+                        if(arrayItem['floor'] == data[1]['floor']){
+                            units.push(arrayItem['unit'])
+                        }
+                        if(arrayItem['floor'] == data[1]['floor'] && arrayItem['unit'] == data[1]['unit']){
+                            rooms.push(arrayItem['room'])
+                        }
+                        if(arrayItem['floor'] == data[1]['floor'] && arrayItem['unit'] == data[1]['unit'] && arrayItem['room'] == data[1]['room']){
+                            beds.push(arrayItem['bed'])
+                        }
+                        if(arrayItem['floor'] == data[1]['floor'] && arrayItem['unit'] == data[1]['unit'] && arrayItem['room'] == data[1]['room'] && arrayItem['bed'] == data[1]['bed']){
+                            bed_codes.push(arrayItem['bed_code'])
+                        }
+                    })
+
+                    var uniqueUnits = [...new Set(units)];
+                    var uniqueRooms = [...new Set(rooms)];
+                    var uniqueBeds = [...new Set(beds)];
+                    var uniqueBedCodes = [...new Set(bed_codes)];
+
+                    uniqueUnits.forEach(function (arrayItem) {
+                        if(data[1]['unit'] == arrayItem){
+                            value = '<option value="'+arrayItem+'" selected>'+arrayItem+'</option>';
+                        }else{
+                            value = '<option value="'+arrayItem+'">'+arrayItem+'</option>';
+                        }
+                        $("#unit").append(value);
+                    })
+                    uniqueRooms.forEach(function (arrayItem) {
+                        if(data[1]['room'] == arrayItem){
+                            value = '<option value="'+arrayItem+'" selected>'+arrayItem+'</option>';
+                        }else{
+                            value = '<option value="'+arrayItem+'">'+arrayItem+'</option>';
+                        }
+                        $("#room").append(value);
+                    })
+                    uniqueBeds.forEach(function (arrayItem) {
+                        if(data[1]['bed'] == arrayItem){
+                            value = '<option value="'+arrayItem+'" selected>'+arrayItem+'</option>';
+                        }else{
+                            value = '<option value="'+arrayItem+'">'+arrayItem+'</option>';
+                        }
+                        $("#bed").append(value);
+                    })
+                    uniqueBedCodes.forEach(function (arrayItem) {
+                        if(data[1]['bed_code'] == arrayItem){
+                            value = '<option value="'+arrayItem+'" selected>'+arrayItem+'</option>';
+                        }else{
+                            value = '<option value="'+arrayItem+'">'+arrayItem+'</option>';
+                        }
+                        $("#bed_code").append(value);
+                    })
+                }
+            },
+        });
+    }
+
+    $("#floor").on('change', function(){
+        callRoomDetails('unit', $("#floor").val(), '', '', '', '', '')
+    })
+
+    $("#unit").on('change', function(){
+        callRoomDetails('room', $("#floor").val(), $("#unit").val(), '', '', '', '')
+    })
+
+    $("#room").on('change', function(){
+        callRoomDetails('bed', $("#floor").val(), $("#unit").val(), $("#room").val(), '', '', '')
+    })
+
+    $("#bed").on('change', function(){
+        callRoomDetails('bed_code', $("#floor").val(), $("#unit").val(), $("#room").val(), $("#bed").val(), '', '')
+    })
+
+    
+
+    
 
     var modalBooking = document.getElementById("myModalEditApp");
     var spanBooking = document.getElementsByClassName("closeBooking")[0];
@@ -415,7 +596,9 @@
     }
 
     $("#changeBookingType").on('click', function(){
-        if($("#property").val() == "" || $("#roomType").val() == ""){
+
+
+        if($("#property").val() == "" || $("#roomType").val() == "" || $("#bed_code").val() == null){
             if($("#property").val() == ""){
                 $("#property").addClass("fieldError")
                 $("#property_error").removeClass("hidden")
@@ -424,6 +607,11 @@
             if($("#roomType").val() == ""){
                 $("#roomType").addClass("fieldError")
                 $("#roomType_error").removeClass("hidden")
+            }
+
+            if($("#bed_code").val() == null){
+                $("#bed_code").addClass('fieldError')
+                $("#bed_code_error").removeClass('hidden')
             }
         }else{
             $("#changeBookingType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -434,6 +622,11 @@
                         bookingId: $("#bookingId").val(), 
                         property: $("#property").val(),
                         roomType: $("#roomType").val(), 
+                        floor: $("#floor").val(),
+                        unit: $("#unit").val(),
+                        room: $("#room").val(),
+                        bed: $("#bed").val(),
+                        bed_code: $("#bed_code").val(),
                     },
 
                     success: function (data) {
@@ -464,24 +657,45 @@
         }
     })
 
+    $("#roomType").on('change', function(){
+        callRoomDetails('floor','', '', '', '', '', '')
+    })
+
+    $("#bed_code").on('blur, change', function(){
+        if($("#bed_code").val() == null){
+            $("#bed_code").addClass("fieldError")
+            $("#bed_code_error").removeClass("hidden")
+        }else{
+            $("#bed_code").removeClass("fieldError")
+            $("#bed_code_error").addClass("hidden")
+        }
+    })
+
+
     $("#property").on('change', function(){
         let propValue = $("#property").val();
 
         if(propValue == "Braamlofts"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
         }else if(propValue == "80 Jorissen"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "49 Jorissen"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="single room 2 bedroom">Single Room | 2 Bedroom</option><option value="single room 3 bedroom">Single Room | 3 Bedroom</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="single room 2 bedroom">Single Room | 2 Bedroom</option><option value="single room 3 bedroom">Single Room | 3 Bedroom</option>')
         }else if(propValue == "Dunvista Mansions"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "Wynton Joy"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "126 Siemert"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="single room small">Single Room | small</option><option value="single room medium">Single Room | Medium</option><option value="single room large">Single Room | Large</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="single room small">Single Room | small</option><option value="single room medium">Single Room | Medium</option><option value="single room large">Single Room | Large</option>')
         }
+
+        $("#floor").empty();
+        $("#unit").empty();
+        $("#room").empty();
+        $("#bed").empty();
+        $("#bed_code").empty();
     })
 
     function openModal(field, url, uploaded_by, created_at, fileId, status){
