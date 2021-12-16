@@ -32,6 +32,9 @@
 
     <script src="../../js/applications.js?v=<?php echo rand();?>"></script>
 
+    <link rel="stylesheet" type="text/css" href="/css/dropzone.css">
+    <script src="/js/dropzone.js"></script>
+
 
 
 

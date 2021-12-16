@@ -101,6 +101,11 @@ Route::get('/property/edit/{propertyId}', [HomeController::class, 'property_edit
 Route::post('/save-property', [HomeController::class, 'save_property']);
 Route::post('/get-booking-info', [HomeController::class, 'get_booking_info']);
 
+Route::get('/properties-import', [HomeController::class, 'properties_import']);
+Route::post('/import/data', [HomeController::class, 'import_data']);
+
+
+
 
 
 

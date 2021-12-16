@@ -1900,6 +1900,78 @@ class HomeController extends Controller
         return ["true", $selected, $propertyInfo];
     }
 
+    public function properties_import(Request $request){
+
+        return view('admin.imports', ["headerTitle" => "Imports", "title" => "Imports"]);
+
+    }
+
+    public function import_data(Request $request){
+        
+        $files = $request->file('file');
+
+        $file = fopen($files,"r");
+        $i = 0;
+        $numberOfFields = 11;
+
+        while (($filedata = fgetcsv($file)) !== FALSE) {
+            $num = count($filedata);
+
+            // Skip first row & check number of fields
+            if($i > 0 && $num == $numberOfFields){ 
+                $property_arr = [];
+
+                if($filedata[0] == "80 JORISSEN"){
+                    $property_arr['residence'] = "80 Jorissen";
+                }else if($filedata[0] == "DUNVISTA MANSIONS"){
+                    $property_arr['residence'] = "Dunvista Mansions";
+                }else if($filedata[0] == "BRAAMLOFTS"){
+                    $property_arr['residence'] = "Braamlofts";
+                }else if($filedata[0] == "49 JORISSEN"){
+                    $property_arr['residence'] = "49 Jorissen";
+                }else if($filedata[0] == "WYNTON JOY"){
+                    $property_arr['residence'] = "Wynton Joy";
+                }else if($filedata[0] == "126 SIEMERT"){
+                    $property_arr['residence'] = "126 Siemert";
+                }else if($filedata[0] == "YMCA"){
+                    $property_arr['residence'] = "YMCA";
+                }
+
+                $property_arr['meta_info_1'] = $filedata[1];
+                $property_arr['meta_info_2'] = $filedata[2];
+                $property_arr['floor'] = $filedata[3];
+
+                if($filedata[4] == "" || $filedata[4] == " "){
+
+                    $property_arr['unit'] = "0";
+                }else{
+                    $property_arr['unit'] = $filedata[4];
+                }
+                $property_arr['room'] = $filedata[5];
+                $property_arr['bed'] = $filedata[6];
+                $property_arr['bed_code'] = $filedata[7];
+
+                if($filedata[8] == "YES"){
+                    $property_arr['inventory'] = "1";
+                }else{
+                    $property_arr['inventory'] = "0";
+                }
+
+                $property_arr['room_type'] = $filedata[9];
+                $property_arr['room_rate'] = $filedata[10];
+
+                Property::create($property_arr);
+
+            }
+            $i++;
+        }
+
+        fclose($file);
+
+        echo "done";
+
+    }
+
     
 
     
