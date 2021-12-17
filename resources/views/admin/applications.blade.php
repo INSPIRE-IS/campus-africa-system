@@ -114,6 +114,7 @@
                         <th>PROOF OF REGISTRATION</th>
                         <th>NSFAS | BURSARY APPROVAL</th>
                         <th>BANK STATEMENTS</th>
+                        <th>Lease</th>
                     </tr>
                 </thead>
                 <tbody id="applicantsSection">
@@ -249,6 +250,24 @@
                                     @elseif($file["status"] === "Rejected" || $file["status"] === "")
                                     <span class="hidden">B</span><div class="button rejected noBoarder"></div>
                                     @elseif($file["status"] === "na")
+                                    <span class="hidden">D</span><div class="button na noBoarder"></div>
+                                    @endif
+                                </td>
+                                @endif
+                            
+                            @endforeach
+
+                            @foreach($user["files"] as $file)
+
+                                @if($file["field"] === "moveIn")
+                                <td id="statusBarIcon">
+                                    @if($file["status"] === "Uploaded")
+                                    <span class="hidden">A</span><div class="button action noBoarder"></div>
+                                    @elseif($file["status"] === "Approved")
+                                    <span class="hidden">C</span><div class="button approved noBoarder"></div>
+                                    @elseif($file["status"] === "Rejected")
+                                    <span class="hidden">B</span><div class="button rejected noBoarder"></div>
+                                    @elseif($file["status"] === "na" || $file["status"] === "")
                                     <span class="hidden">D</span><div class="button na noBoarder"></div>
                                     @endif
                                 </td>

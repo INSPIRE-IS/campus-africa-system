@@ -144,6 +144,16 @@ jQuery(document).ready(function ($) {
                                 }else{
                                     bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                                 }
+
+                                if(file["field"] === "moveIn" ){
+                                    if(file["status"] === "Uploaded"){
+                                        moveIn = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                                    }else if(file["status"] === "Approved"){
+                                        moveIn = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                                    }else if(file["status"] === "Rejected"){
+                                        moveIn = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                                    }
+                                }
                                             
                             });
 
@@ -178,6 +188,7 @@ jQuery(document).ready(function ($) {
                                 proofRegistration,
                                 bursaryApproval,
                                 bankStatement,
+                                moveIn,
                             ] ).draw().node();
 
 

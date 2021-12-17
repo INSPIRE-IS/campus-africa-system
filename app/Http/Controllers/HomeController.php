@@ -338,19 +338,31 @@ class HomeController extends Controller
                 $left = array_diff($all, $uploaded);
 
                 foreach($left as $dataLeft){
-                    if($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
-                        if($dataLeft == "bankStatement"){
-                            array_push($data, ["field" => $dataLeft, "status" => "na"]);
+
+                    if($dataLeft == "moveIn"){
+                        $booking = Booking::where('userId', $user->id)->first();
+                        if($booking->lease_from_date){
+                            array_push($data, ["field" => $dataLeft, "status" => "Uploaded"]);
                         }else{
-                            array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
                         }
                     }else{
-                        if($dataLeft == "bursaryApproval"){
-                            array_push($data, ["field" => $dataLeft, "status" => "na"]);
+
+                        if($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
+                            if($dataLeft == "bankStatement"){
+                                array_push($data, ["field" => $dataLeft, "status" => "na"]);
+                            }else{
+                                array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            }
                         }else{
-                            array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            if($dataLeft == "bursaryApproval"){
+                                array_push($data, ["field" => $dataLeft, "status" => "na"]);
+                            }else{
+                                array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            }
                         }
                     }
+
                 }
 
                 foreach($data as $item){
@@ -1566,11 +1578,8 @@ class HomeController extends Controller
 
                 $uploaded = [];
                 // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
-                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment', 'moveIn'];
 
-                if($user->applicationStatus == "Approved Confirmed"){
-                    array_push($all, "moveIn");
-                }
                 if($user->studentType == "Cash / Direct"){
                     array_push($all, "bankStatement");
                 }
@@ -1592,17 +1601,26 @@ class HomeController extends Controller
                 $left = array_diff($all, $uploaded);
 
                 foreach($left as $dataLeft){
-                    if(!empty($user->studentType) && $user->studentType == "NSFAS" || !empty($user->studentType) && $user->studentType == "Bursary"){
-                        if($dataLeft == "bankStatement"){
-                            array_push($data, ["field" => $dataLeft, "status" => "na"]);
+                    if($dataLeft == "moveIn"){
+                        $booking = Booking::where('userId', $user->id)->first();
+                        if($booking->lease_from_date){
+                            array_push($data, ["field" => $dataLeft, "status" => "Uploaded"]);
                         }else{
-                            array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
                         }
                     }else{
-                        if($dataLeft == "bursaryApproval"){
-                            array_push($data, ["field" => $dataLeft, "status" => "na"]);
+                        if(!empty($user->studentType) && $user->studentType == "NSFAS" || !empty($user->studentType) && $user->studentType == "Bursary"){
+                            if($dataLeft == "bankStatement"){
+                                array_push($data, ["field" => $dataLeft, "status" => "na"]);
+                            }else{
+                                array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            }
                         }else{
-                            array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            if($dataLeft == "bursaryApproval"){
+                                array_push($data, ["field" => $dataLeft, "status" => "na"]);
+                            }else{
+                                array_push($data, ["field" => $dataLeft, "status" => ""]);
+                            }
                         }
                     }
                 }

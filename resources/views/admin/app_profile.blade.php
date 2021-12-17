@@ -233,15 +233,24 @@
                                     @endif
                                 </div>
                                 <div class="status" id="{{$file['field']}}Status">
-                                    @if($file["status"] === "Uploaded" )
-                                        <div class="button action"></div>
-                                    @elseif($file["status"] === "XApproved")
-                                        <div class="button approved"></div>
-                                    @elseif($file["status"] === "Rejected" || $file["status"] === "")
-                                        <div class="button rejected"></div>
-                                    @elseif($file["status"] === "na")
-                                        <div class="button na"></div>
+                                    @if($file["field"] === "moveIn")
+                                        @if($file["status"] === "XApproved" || $file["status"] === "Approved")
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button action"></div>
+                                        @endif
+                                    @else
+                                        @if($file["status"] === "Uploaded" )
+                                            <div class="button action"></div>
+                                        @elseif($file["status"] === "XApproved")
+                                            <div class="button approved"></div>
+                                        @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                            <div class="button rejected"></div>
+                                        @elseif($file["status"] === "na")
+                                            <div class="button na"></div>
+                                        @endif
                                     @endif
+                                    
                                 </div>
 
                                 <div class="banner" id="{{$file['field']}}Banner">
