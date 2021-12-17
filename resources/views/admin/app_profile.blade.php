@@ -858,6 +858,9 @@
         if(status == "Approved" || status == "XApproved"){
             $("#approvedDocs").removeClass("hidden")
             $("#actionUserName").addClass("hidden")
+        }else{
+            $("#approvedDocs").addClass("hidden")
+            $("#actionUserName").removeClass("hidden")
         }
 
         if(status == "Approved" || status == "Rejected" || status == "XApproved")
