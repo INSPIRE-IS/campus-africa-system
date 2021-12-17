@@ -8,6 +8,7 @@
 
 <div class="container">
     <br/>
+    <a href="/properties-info"><button type="button" class="detailsChange" >Residence Info</button></a>
     <a href="/property/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
     <br/>
     <table id="properties_table" class="display">
@@ -36,7 +37,7 @@
                 <td>{{$property->room}}</td>
                 <td>{{$property->bed}}</td>
                 <td>{{$property->bed_code}}</td>
-                <td>{{$property->inventory}}</td>
+                <td>@if($property->inventory == "1") Yes @else No @endif</td>
                 <td>{{$property->room_type}}</td>
                 <td>{{$property->room_rate}}</td>
                 <td>@if($property->room_available == "1") &#128308; &nbsp; No @else &#128994; &nbsp; Yes @endif</td>

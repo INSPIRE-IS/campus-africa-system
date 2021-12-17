@@ -32,7 +32,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '8664e07a7a30139615ca8b409a4421dab012b4a3',
+    'reference' => '33e9437041ec4de6714bde6950fa04b48107c2d2',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -45,6 +45,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '9cb795bf30988e8c96dd3c40623c48a877bc6714',
+    ),
+    'barryvdh/laravel-dompdf' => 
+    array (
+      'pretty_version' => 'v0.9.0',
+      'version' => '0.9.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '5b99e1f94157d74e450f4c97e8444fcaffa2144b',
     ),
     'brick/math' => 
     array (
@@ -140,6 +149,15 @@ private static $installed = array (
       array (
       ),
       'reference' => 'e864bbf5904cb8f5bb334f99209b48018522f042',
+    ),
+    'dompdf/dompdf' => 
+    array (
+      'pretty_version' => 'v1.1.1',
+      'version' => '1.1.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'de4aad040737a89fae2129cdeb0f79c45513128d',
     ),
     'dragonmantank/cron-expression' => 
     array (
@@ -516,7 +534,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '8664e07a7a30139615ca8b409a4421dab012b4a3',
+      'reference' => '33e9437041ec4de6714bde6950fa04b48107c2d2',
     ),
     'laravel/sail' => 
     array (
@@ -697,6 +715,24 @@ private static $installed = array (
       array (
       ),
       'reference' => 'bae7c545bef187884426f042434e561ab1ddb182',
+    ),
+    'phenx/php-font-lib' => 
+    array (
+      'pretty_version' => '0.5.2',
+      'version' => '0.5.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'ca6ad461f032145fff5971b5985e5af9e7fa88d8',
+    ),
+    'phenx/php-svg-lib' => 
+    array (
+      'pretty_version' => 'v0.3.3',
+      'version' => '0.3.3.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '5fa61b65e612ce1ae15f69b3d223cb14ecc60e32',
     ),
     'phpdocumentor/reflection-common' => 
     array (
@@ -961,6 +997,15 @@ private static $installed = array (
       array (
         0 => '4.2.3',
       ),
+    ),
+    'sabberworm/php-css-parser' => 
+    array (
+      'pretty_version' => '8.4.0',
+      'version' => '8.4.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'e41d2140031d533348b2192a83f02d8dd8a71d30',
     ),
     'sebastian/cli-parser' => 
     array (

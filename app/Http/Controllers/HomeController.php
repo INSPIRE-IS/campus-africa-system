@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
 use App\Models\Property;
+use App\Models\Residence;
 
 class HomeController extends Controller
 {
@@ -391,13 +392,14 @@ class HomeController extends Controller
             $name = $user['userFirstName']." ".$user['userLastname'];
 
             $user = User::with('files')->where('id', $userId)->first();
+            $booking = Booking::where('userId', $user->id)->first();
             $userData = [];
             $uploaded = [];
             // $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
 
             $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
 
-            if($user->applicationStatus == "Approved Confirmed"){
+            if($booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null){
                 array_push($all, "moveIn");
             }
             if($user->studentType == "Cash / Direct"){
@@ -1970,6 +1972,44 @@ class HomeController extends Controller
 
         echo "done";
 
+    }
+
+    public function properties_info(Request $request){
+        $residences = Residence::get();
+
+        return view('admin.property_address', ["headerTitle" => "Residense Info", "title" => "Residense Info", "residences" => $residences]);
+    }
+
+    public function residence_edit(Request $request, $residenceId){
+        if($residenceId == "0"){
+            $head = "Add";
+            $propertyData = "";
+        }else{
+            $head = "Edit";
+            $propertyData = Residence::where('id', $residenceId)->first();
+        }
+
+        return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData]);
+    }
+
+    public function save_residence (Request $request){
+
+        $propertyId = $request->propertyId;
+
+        $data = [
+            "residence" => $request->residence,
+            "booking_rate" => $request->booking_rate,
+            "owner" => $request->owner,
+            "address" => $request->address,
+        ];
+
+        if($propertyId == "0"){
+            Residence::create($data);
+        }else{
+            Residence::where('id', $propertyId)->update($data);
+        }
+
+        return redirect("/properties-info");
     }
 
     

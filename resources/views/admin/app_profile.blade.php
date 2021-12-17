@@ -72,11 +72,14 @@
 </div>
 
 <div class="container">
-    @if($completed == "true" && $user[0]['userInfo']['applicationStatus'] == "Approved Confirmed")
-        <div class="row">
-            <a href="/storage/leases/lease_empty.pdf" download><button type="button" class="lease">Create Lease</button></a>
-        </div>
-    @endif
+    
+    <div class="row">
+        <!-- <a href="/createLease/{{$user[0]['userInfo']['id']}}"><button type="button" class="lease">Create Lease</button></a> -->
+        <?php if($booking->lease_from_date == "" && $booking->lease_from_time !== "" && $booking->lease_to_date == "" && $booking->lease_to_time !== ""){ ?>
+            <button type="button" class="lease" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Create Lease</button>
+        <?php } ?>
+    </div>
+    
     <div class="appRow">
         <div class="cards">
 
@@ -111,7 +114,7 @@
                 </h2>
                 <br/>
                 <div class="buttons">
-                    <button type="button" class="appBooking" onClick="changeBooking({{$user[0]['userInfo']['id']}})">Change this booking</button>
+                    <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', '')">Change this booking</button>
                     @if(Auth::user()->role_delete_booking == 1)
                         <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
                     @endif
@@ -237,6 +240,10 @@
                                 </div>
 
                                 <div class="banner" id="{{$file['field']}}Banner">
+                                    @if($file["field"] === "moveIn")
+                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download><button type="button" id="myBtn_download">Download Lease</button></a>
+                                    @endif
+
                                     @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
                                         <button type="button" onClick="
                                             openModal(
@@ -282,7 +289,7 @@
 
 <div id="myModalEditApp" class="modal">
 
-    <div class="modal-content " style="height:530px;">
+    <div class="modal-content " id="editModalHeight" style="height:530px;">
     <span class="closeBooking" style="float:right; font-size:25px; cursor:pointer">&times;</span>
     <div class="form-card">
         <h2>Change this booking</h2>
@@ -373,8 +380,34 @@
         
         
 
-        <div class="form-field-big">
+        <div class="form-field-big" id="ChangeBookingOnly">
             <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
+        </div>
+
+        <div id="LeaseInfo" class="hidden">
+            <div class="form-field">
+                <br/>
+            </div>
+            <div class="form-field">
+                <label>Lease From Date * <span id="lease_from_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <input type="date" name="lease_from_date" id="lease_from_date">
+            </div>
+            <div class="form-field">
+                <label>Lease From Time * <span id="lease_from_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <input type="time" id="lease_from_time" name="lease_from_time" >
+            </div>
+            <div class="form-field">
+                <label>Lease To Date * <span id="lease_to_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <input type="date" name="lease_to_date" id="lease_to_date">
+            </div>
+            <div class="form-field">
+                <label>Lease To Time * <span id="lease_to_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <input type="time" id="lease_to_time" name="lease_to_time" >
+            </div>
+
+            <div class="form-field-big" >
+                <button type="button" id="generateLease" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Generate Lease</button>
+            </div>
         </div>
     </div>
 
@@ -438,7 +471,26 @@
         }
     });
 
-    function changeBooking(bookingId){
+    function changeBooking(bookingId, type){
+
+        if(type == "generate"){
+            $("#ChangeBookingOnly").addClass('hidden')
+            $("#LeaseInfo").removeClass('hidden')
+            document.getElementById("editModalHeight").style.height = "700px";
+            $("#lease_from_date").addClass("required")
+            $("#lease_from_time").addClass("required")
+            $("#lease_to_date").addClass("required")
+            $("#lease_to_time").addClass("required")
+        }else{
+            $("#ChangeBookingOnly").removeClass('hidden')
+            $("#LeaseInfo").addClass('hidden')
+            document.getElementById("editModalHeight").style.height = "530px";
+            $("#lease_from_date").removeClass("required")
+            $("#lease_from_time").removeClass("required")
+            $("#lease_to_date").removeClass("required")
+            $("#lease_to_time").removeClass("required")
+        }
+
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
@@ -446,6 +498,87 @@
         callRoomDetails('floor','', '', '', '', '', 'open')
         
     }
+
+    $("#generateLease").on('click', function(){
+        
+        if($("#property").val() == "" || $("#roomType").val() == "" || $("#bed_code").val() == null || $("#lease_from_date").val() == "" || $("#lease_from_time").val() == "" || $("#lease_to_date").val() == "" || $("#lease_to_time").val() == ""){
+            if($("#property").val() == ""){
+                $("#property").addClass("fieldError")
+                $("#property_error").removeClass("hidden")
+            }
+
+            if($("#roomType").val() == ""){
+                $("#roomType").addClass("fieldError")
+                $("#roomType_error").removeClass("hidden")
+            }
+
+            if($("#bed_code").val() == null){
+                $("#bed_code").addClass('fieldError')
+                $("#bed_code_error").removeClass('hidden')
+            }
+
+            if($("#lease_from_date").val() == ""){
+                $("#lease_from_date").addClass("fieldError")
+                $("#lease_from_date_error").removeClass("hidden")
+            }
+            if($("#lease_from_time").val() == ""){
+                $("#lease_from_time").addClass("fieldError")
+                $("#lease_from_time_error").removeClass("hidden")
+            }
+            if($("#lease_to_date").val() == ""){
+                $("#lease_to_date").addClass("fieldError")
+                $("#lease_to_date_error").removeClass("hidden")
+            }
+            if($("#lease_to_time").val() == ""){
+                $("#lease_to_time").addClass("fieldError")
+                $("#lease_to_time_error").removeClass("hidden")
+            }
+        }else{
+
+            $("#property").removeClass("fieldError")
+            $("#property_error").addClass("hidden")
+            $("#roomType").removeClass("fieldError")
+            $("#roomType_error").addClass("hidden")
+            $("#bed_code").removeClass('fieldError')
+            $("#bed_code_error").addClass('hidden')
+            $("#lease_from_date").removeClass("fieldError")
+            $("#lease_from_date_error").addClass("hidden")
+            $("#lease_from_time").removeClass("fieldError")
+            $("#lease_from_time_error").addClass("hidden")
+            $("#lease_to_date").removeClass("fieldError")
+            $("#lease_to_date_error").addClass("hidden")
+            $("#lease_to_time").removeClass("fieldError")
+            $("#lease_to_time_error").addClass("hidden")
+
+            $("#generateLease").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+            
+            
+            $.ajax({
+                type: "post",
+                url: "/createLease/"+$("#bookingId").val(),
+                data: {
+                    bookingId: $("#bookingId").val(), 
+                    property: $("#property").val(),
+                    roomType: $("#roomType").val(), 
+                    floor: $("#floor").val(),
+                    unit: $("#unit").val(),
+                    room: $("#room").val(),
+                    bed: $("#bed").val(),
+                    bed_code: $("#bed_code").val(),
+                    lease_from_date: $("#lease_from_date").val(),
+                    lease_from_time: $("#lease_from_time").val(),
+                    lease_to_date: $("#lease_to_date").val(),
+                    lease_to_time: $("#lease_to_time").val(),
+                },
+
+                success: function (data) {
+                    
+                    window.location.reload();
+                },
+            });
+
+        }
+    })
 
     function callRoomDetails(callId, floor, unit, room, bed, bed_code, action){
         $.ajax({

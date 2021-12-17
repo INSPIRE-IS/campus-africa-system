@@ -24,5 +24,9 @@ class Booking extends Model
         'bed',
         'room_rate',
         'bed_code',
+        'lease_from_date',
+        'lease_from_time',
+        'lease_to_date',
+        'lease_to_time',
     ];
 }

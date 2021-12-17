@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PDFController;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,6 +104,11 @@ Route::post('/get-booking-info', [HomeController::class, 'get_booking_info']);
 
 Route::get('/properties-import', [HomeController::class, 'properties_import']);
 Route::post('/import/data', [HomeController::class, 'import_data']);
+
+Route::post('/createLease/{studentId}', [PDFController::class, 'createPDF']);
+Route::get('/properties-info', [HomeController::class, 'properties_info']);
+Route::get('/residence/edit/{residenceId}', [HomeController::class, 'residence_edit']);
+Route::post('/save-residence', [HomeController::class, 'save_residence']);
 
 
 
