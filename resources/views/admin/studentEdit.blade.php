@@ -342,20 +342,20 @@
                 </div>
 
             <div class="form-field">
-                    <label>Bursary Payment * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <label>How Is the Bursary Paid? * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <select name="bPayment" id='bPayment'>
                     <option value="" disabled selected>Please select one</option>
-                        <option value="The Residence directly" <?php if($user->bPayment == "The Residence directly"){echo "selected";} ?>>The Residence Directly</option>
-                        <option value="The Student directly" <?php if($user->bPayment == "The Student directly"){echo "selected";} ?>>The Student Directly</option>
-                        <option value="Via an Intermediary" <?php if($user->bPayment == "Via an Intermediary"){echo "selected";} ?>>Via an Intermediary</option>
+                        <option value="Directly to the RESIDENCE" <?php if($user->bPayment == "Directly to the RESIDENCE"){echo "selected";} ?>>Directly to the RESIDENCE</option>
+                        <option value="Directly to the STUDENT" <?php if($user->bPayment == "Directly to the STUDENT"){echo "selected";} ?>>Directly to the STUDENT</option>
+                        <option value="Via an INTERMEDIARY" <?php if($user->bPayment == "Via an INTERMEDIARY"){echo "selected";} ?>>Via an INTERMEDIARY</option>
                     </select>
                 </div>
 
-                <div class="form-field <?php if($user->bPayment == "Via an Intermediary"){ echo "hidden";}?>" id="placeholder" >
+                <div class="form-field <?php if($user->bPayment == "Via an INTERMEDIARY"){ echo "hidden";}?>" id="placeholder" >
                     <br/>
                 </div>
 
-                <div id="viaInt" class="<?php if($user->bPayment !== "Via an Intermediary"){ echo "hidden";}?>">
+                <div id="viaInt" class="<?php if($user->bPayment !== "Via an INTERMEDIARY"){ echo "hidden";}?>">
 
                     <div class="form-field">
                         <label>Intermediary * <span id="bint_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
@@ -739,7 +739,7 @@ var d = new Date()
 
     $("#bPayment").on('change', function(){
         
-        if($("#bPayment").val() == "Via an Intermediary"){
+        if($("#bPayment").val() == "Via an INTERMEDIARY"){
             $("#viaInt").removeClass("hidden")
             $("#bint").addClass("required")
             $("#placeholder").addClass("hidden")

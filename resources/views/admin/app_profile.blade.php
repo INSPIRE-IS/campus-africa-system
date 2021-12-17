@@ -169,14 +169,14 @@
                 <br/>
 
                 <h2 class="appSubHeader bold">BOOKING FEE</h2>
-                <!-- <p class="appSubHeader">
-                    CREDIT CARD
-                </p> -->
+                <p class="appSubHeader">
+                    @if($residence !== null) {{$residence->booking_rate}} @endif
+                </p>
                 <br/>
 
                 <h2 class="appSubHeader bold">PAID</h2>
                 <p class="appSubHeader">
-                    <!-- NO -->
+                    @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
                 </p>
             </div>
 

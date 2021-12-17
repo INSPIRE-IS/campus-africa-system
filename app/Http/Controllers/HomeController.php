@@ -457,8 +457,9 @@ class HomeController extends Controller
             $lookup = Lookups::get();
 
             $booking = Booking::where('userId', $userId)->first();
+            $residence = Residence::where('residence', $booking->residence)->first();
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking]);
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence]);
         }
     }
 

@@ -339,12 +339,12 @@
                 
 
                 <div class="form-field">
-                    <label>Bursary Payment * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <label>How Is the Bursary Paid * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <select name="bPayment" id='bPayment'>
                     <option value="" disabled selected>Please select one</option>
-                        <option value="The Residence directly" >The Residence Directly</option>
-                        <option value="The Student directly" >The Student Directly</option>
-                        <option value="Via an Intermediary" >Via an Intermediary</option>
+                        <option value="Directly to the RESIDENCE" >Directly to the RESIDENCE</option>
+                        <option value="Directly to the STUDENT" >TDirectly to the STUDENT</option>
+                        <option value="Via an INTERMEDIARY" >Via an INTERMEDIARY</option>
                     </select>
                 </div>
 
@@ -556,7 +556,7 @@
 
     $("#bPayment").on('change', function(){
         
-        if($("#bPayment").val() == "Via an Intermediary"){
+        if($("#bPayment").val() == "Via an INTERMEDIARY"){
             $("#viaInt").removeClass("hidden")
             $("#bint").addClass("required")
             $("#placeholder").addClass("hidden")
