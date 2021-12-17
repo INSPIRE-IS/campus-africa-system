@@ -75,9 +75,9 @@
     
     <div class="row">
         <!-- <a href="/createLease/{{$user[0]['userInfo']['id']}}"><button type="button" class="lease">Create Lease</button></a> -->
-        <?php if($booking->lease_from_date == "" && $booking->lease_from_time !== "" && $booking->lease_to_date == "" && $booking->lease_to_time !== ""){ ?>
+        <!-- <?php if($booking->lease_from_date == "" && $booking->lease_from_time !== "" && $booking->lease_to_date == "" && $booking->lease_to_time !== ""){ ?> -->
+            <!-- <?php } ?> -->
             <button type="button" class="lease" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Create Lease</button>
-        <?php } ?>
     </div>
     
     <div class="appRow">
@@ -101,15 +101,20 @@
             </div>
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
-                <h2 class="appHeader">Application made for</h2>
+                <h2 class="appHeader">Application Summary</h2>
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
-                <h2 class="cardHeader" >{{$booking->roomType}}</h2>
-                <h4 class="cardSubHeaderGrey">
-                    <!-- Room 23 Floor 2 -->
+                <h4 class="cardHeader" >{{$booking->roomType}}</h4>
+                <h4 class="cardHeader" >@if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->Unit)Unit {{$booking->unit}},@endif @if($booking->room)Room {{$booking->room}},@endif @if($booking->bed)Bed {{$booking->bed}}@endif</h4>
+                <h4 class="cardHeader" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}}@endif</h4>
+                <h4 class="cardHeader">
+                    @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
+                    @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
+
+                    @if($booking->lease_from_date && $booking->lease_to_date) Lease Duration: <?php $date1 = new DateTime($booking->lease_from_date); $date2 = new DateTime($booking->lease_to_date); $interval = $date1->diff($date2); if($interval->y > 1 || $interval->y < 1){ $years = "years";}else{$years = "year";} echo $interval->y . " ".$years.", " . $interval->m." months, ".$interval->d." days "; ?> @endif
                 </h4>
                 <br/>
-                <h4 class="cardSubHeaderGrey">BOOKING FEE PAID</h4>
-                <h2 class="cardHeader" >
+                <h4 class="cardHeader">BOOKING FEE PAID</h4>
+                <h2 class="cardSubHeaderGrey" >
                     <!-- R2500 -->
                 </h2>
                 <br/>
@@ -241,7 +246,7 @@
 
                                 <div class="banner" id="{{$file['field']}}Banner">
                                     @if($file["field"] === "moveIn")
-                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download><button type="button" id="myBtn_download">Download Lease</button></a>
+                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>
                                     @endif
 
                                     @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
@@ -390,19 +395,19 @@
             </div>
             <div class="form-field">
                 <label>Lease From Date * <span id="lease_from_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="date" name="lease_from_date" id="lease_from_date">
+                <input type="date" name="lease_from_date" id="lease_from_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_date."'";}}?>>
             </div>
             <div class="form-field">
                 <label>Lease From Time * <span id="lease_from_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="time" id="lease_from_time" name="lease_from_time" >
+                <input type="time" id="lease_from_time" name="lease_from_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_time."'";}}?>>
             </div>
             <div class="form-field">
                 <label>Lease To Date * <span id="lease_to_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="date" name="lease_to_date" id="lease_to_date">
+                <input type="date" name="lease_to_date" id="lease_to_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_date."'";}}?>>
             </div>
             <div class="form-field">
                 <label>Lease To Time * <span id="lease_to_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="time" id="lease_to_time" name="lease_to_time" >
+                <input type="time" id="lease_to_time" name="lease_to_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}?>>
             </div>
 
             <div class="form-field-big" >
@@ -429,7 +434,7 @@
             @if(Auth::user()->role_approve_docs == 1)
                 <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
                 <br/>
-                <input type="text" id="actionUserName" placeholder="Name">
+                <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
             @endif
             <br/>
             
@@ -981,10 +986,16 @@
             if($("#rejectReason").val() !== "" && $("#actionUserName").val() !== ""){
                 actionSwal(actionName, type, action)
             }else{
-                $("#actionUserName").addClass("errorBorder")
-                $("#rejectReason").addClass("errorBorder")
-                $("#rejectReason_error").removeClass("hidden")
-                $("#actionUserName_error").removeClass("hidden")
+                if($("#actionUserName").val() == ""){
+                    $("#actionUserName").addClass("errorBorder")
+                    $("#actionUserName_error").removeClass("hidden")
+                }
+
+                if($("#rejectReason").val() == ""){
+                    $("#rejectReason").addClass("errorBorder")
+                    $("#rejectReason_error").removeClass("hidden")
+                }
+                
                 document.getElementById("reasonBox").style.marginTop = "-27px";
             }
             
@@ -1527,6 +1538,37 @@
             },
         });
     })
+
+    $("#moveIn").on('change', function(){
+        $("#moveInSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('moveIn').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "moveIn");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+                    $("#moveInStatus").empty().append('<div class="button approved"></div>');
+
+                    $("#moveInBanner").empty().append('<button type="Button" onClick="openModal(\'moveIn\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Approved\')">View Document</button>');
+
+                    refreshActions();
+                }
+            },
+        });
+    });
 
     function deleteBooking(bookingId, userId){
         Swal.fire({

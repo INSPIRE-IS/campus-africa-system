@@ -10,6 +10,7 @@ use App\Models\Residence;
 use App\Models\ActionList;
 use PDF;
 use Auth;
+use App\Models\UserFiles;
 
 class PDFController extends Controller
 {

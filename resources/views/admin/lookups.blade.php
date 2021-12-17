@@ -27,7 +27,7 @@
                 <td>{{$lookup->lookup_name}}</td>
                 <td>
                     <button type="button" id="tableBtn" class="detailsChange" onClick="deleteLookup('{{$lookup->id}}')" style="margin:5px;">Delete</button>
-                    <a href="/lookups/edit/{{$lookup->id}}"><button type="button" style="margin:5px;" id="tableBtn" onClick="openModal('{{$lookup->id}}')" class="detailsChange">Edit</button></a>
+                    <a href="/lookups/edit/{{$lookup->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Edit</button></a>
                 </td>
             </tr>
         @endforeach

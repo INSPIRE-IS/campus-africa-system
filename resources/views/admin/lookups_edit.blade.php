@@ -26,6 +26,25 @@
             <input type="text" name="value" id="value" value="<?php echo $lookup->lookup_name;?>">
         </div>
 
+        @if($lookup->group_id == "4")
+            <div class="form-field">
+                <label>Lease From Date</label>
+                <input type="date" name="lease_from_date" id="lease_from_date" value="{{$lookup->lease_from_date}}">
+            </div>
+            <div class="form-field">
+                <label>Lease From Time</label>
+                <input type="time" id="lease_from_time" name="lease_from_time" value="{{$lookup->lease_from_time}}">
+            </div>
+            <div class="form-field">
+                <label>Lease To Date</label>
+                <input type="date" name="lease_to_date" id="lease_to_date" value="{{$lookup->lease_to_date}}">
+            </div>
+            <div class="form-field">
+                <label>Lease To Time</label>
+                <input type="time" id="lease_to_time" name="lease_to_time" value="{{$lookup->lease_to_time}}" >
+            </div>
+        @endif
+
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>
 </div>

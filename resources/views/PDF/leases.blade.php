@@ -163,7 +163,9 @@
             <span style="font-weight:bold; font-size:14px;">3. Payment of Accommodation and Student Meal Fees </span>
 
                 <ol type="a" style="text-laign:left; font-size:14px;">
-                    <li>The Student agrees to pay the Owner, the sum of R{{$propertyData->room_rate}} as a monthly fee for the non-exclusive right to make use of the facilities at the residence and Single / Shared Room and a further R ??? as an optional monthly fee for the provision of Student Meals on a daily basis</li>
+                    <li>The Student agrees to pay the Owner, the sum of R{{$propertyData->room_rate}} as a monthly fee for the non-exclusive right to make use of the facilities at the residence and Single / Shared Room.
+                         <!-- and a further R ??? as an optional monthly fee for the provision of Student Meals on a daily basis -->
+                        </li>
                     <br/>
 
                     <li>The Accommodation and Student Meal fees (if requested) are payable in advance on or before the second day of each month. Where the lodger moves in during a month, a pro-rata amount based on the number of days that the lodger occupies a room for that month will be due and payable by the lodger in the first month. Thereafter, clause 3a applies. </li>
@@ -428,8 +430,8 @@
                         <br/><br/>
                         <span style="font-weight:bold">Physical Address:</span> {{$data->userAddress1}}, {{$data->userAddress2}}, {{$data->userAddressCity}}, {{$data->userAddressPostal}}
                         <br/>
-                        <span style="font-weight:bold">Unit No:</span> ???
-                        <br/>
+                        <!-- <span style="font-weight:bold">Unit No:</span> ???
+                        <br/> -->
                         <span style="font-weight:bold">Email:</span> {{$data->email}}
                     </li>
                 </ol>
@@ -531,7 +533,7 @@
             <table style="width:100%">
                 <tr>
                     <td style="width:50%; vertical-align: top;">
-                        <p style="font-size:14px;">OWNER Signature: ………………………………….…</p>
+                        <p style="font-size:14px;">OWNER Signature: ………………………………….…<br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
                     </td>
                     <td style="vertical-align: top;">
                         <p style="font-size:14px;">Place: ………………………..........
@@ -566,7 +568,7 @@
 
             <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:44%;">
             <br/><br/>
-            <span style="font-weight:bold; font-size:14px;"> ANNEXURE A: Inventory of contents of Room – UNIT: {{$propertyData->bed_code}}</span>
+            <span style="font-weight:bold; font-size:14px;"> ANNEXURE A: Inventory of contents of Room – UNIT: {{$propertyData->residence}}, {{$propertyData->bed_code}}, {{$data->userFirstName}}, {{$data->userLastname}}, {{$data->yearOfStudy}}</span>
             <br/><br/>
             <p style="font-weight:bold; font-size:14px; text-align:center">ACCOMMODATION & RESIDENCE LIFE FORM</p>
             <p style="font-size:14px; text-align:center">For Office Use Only</p>
@@ -739,7 +741,7 @@
             </ul>
             <br/><br/><br/>
 
-            <table style="border:1px solid #000; border-collapse: collapse; width:100%">
+            <!-- <table style="border:1px solid #000; border-collapse: collapse; width:100%">
                 <tr style="border:1px solid #000; border-collapse: collapse;">
                     <th style="padding:5px; border:1px solid #000; border-collapse: collapse; width:33.3%; background-color:#ccc">
                         <span style="font-weight:bold; font-size:14px;">RESIDENCE</span>
@@ -828,7 +830,7 @@
                         <span style="font-size:14px;">JIRAC PROJECTS (PTY) LTD</span>
                     </td>
                 </tr>
-            </table>
+            </table> -->
 
             <footer>
                 Page | 11
@@ -848,7 +850,9 @@
                 <br/><br/>
                 Hereby acknowledge that I am fully liable for any rental/accommodation payments due on demand to the Owner Ltd for accommodation supplied at the student accommodation centre as indicated in clause 12.a.ii of this lease. 
             </p>
-            <p style="font-weight:bold; font-size:14px;">I am an approved bursary holder from {{$data->burCompanyName}}, whose agreement is to pay all accommodation on my behalf. Should it arise that the above-mentioned bursary does not pay the accommodation I will be held liable in my private capacity for all outstanding monies due even if I have vacated the premises.</p>
+            @if($data->studentType == "Bursary")
+                <p style="font-weight:bold; font-size:14px;">I am an approved bursary holder from {{$data->burCompanyName}}, whose agreement is to pay all accommodation on my behalf. Should it arise that the above-mentioned bursary does not pay the accommodation I will be held liable in my private capacity for all outstanding monies due even if I have vacated the premises.</p>
+            @endif
             <br/>
             <br/>
             <p style="font-weight:bold; font-size:14px;">Signed at __________________________________ on this <?php echo date('d'); ?> day of <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
@@ -861,7 +865,7 @@
             <br/>
             <span style="font-weight:bold; font-size:14px;">Acknowledgement by parent/guardian of the abovementioned student:</span>
             <br/><br/>
-            <p style="font-weight:bold; font-size:14px;">I {{$data->sponFirstName}} {{$data->sponLastName}} With
+            <p style="font-weight:bold; font-size:14px;">I @if($data->sponFirstName !== ""){{$data->sponFirstName}} {{$data->sponLastName}} @else ________________________ @endif With
                 <br/><br/>
                 ID {{$data->sponId}}
                 <br/><br/>

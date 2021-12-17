@@ -1109,6 +1109,12 @@ class HomeController extends Controller
                 }elseif($fileType == "bursaryApproval"){
                     $typeName = "NSFAS / Bursary Approval";
                 }
+
+                if($typeName == "Lease"){
+                    $statusAction = "Approved";
+                }else{
+                    $statusAction = "Uploaded";
+                }
                 
 
                 if(!$hasFile){
@@ -1117,7 +1123,7 @@ class HomeController extends Controller
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
-                        'status' => 'Uploaded',
+                        'status' => $statusAction,
                         'uploaded_by' => Auth::user()->userFirstName,
                     ]);
 
@@ -1128,7 +1134,7 @@ class HomeController extends Controller
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
-                        'status' => 'Uploaded',
+                        'status' => $statusAction,
                         'uploaded_by' => Auth::user()->userFirstName,
                     ]);
                     $text = "Re-uploaded ".$typeName." for review";
@@ -1302,10 +1308,23 @@ class HomeController extends Controller
 
     public function save_lookups(Request $request){
 
-        Lookups::where('id', $request->lookupId)->update([
-            "group_id" => $request->group_id,
-            "lookup_name" => $request->value,
-        ]);
+        if($request->group_id == "4"){
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->value,
+                "lease_from_date" => $request->lease_from_date,
+                "lease_from_time" => $request->lease_from_time,
+                "lease_to_date" => $request->lease_to_date,
+                "lease_to_time" => $request->lease_to_time,
+            ];
+        }else{
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->value,
+            ];
+        }
+
+        Lookups::where('id', $request->lookupId)->update($data);
 
         return redirect()->route('lookups');
     }

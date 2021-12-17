@@ -12,5 +12,11 @@ class Lookups extends Model
     protected $fillable = [
         'group_id',
         'lookup_name',
+        'lease_from_date',
+        'lease_from_time',
+        'lease_to_date',
+        'lease_to_time',
+        'deafault',
+        'class',
     ];
 }
