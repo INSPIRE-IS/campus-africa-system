@@ -1131,7 +1131,8 @@
 
                 if(type === "Rejected"){
                     $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
-                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden>')
+                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden onChange="bursaryApp()">')
+                    //here
 
                     $("#rejected").empty().append('REJECT WITH REASON')
                     var preview1 = document.getElementById("amend");
@@ -1458,7 +1459,40 @@
         });
     })
     
-    $("#documentsSectionDisplay").on('change', "bursaryApproval", function(){
+    function bursaryApp(){
+        $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('bursaryApproval').files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", "bursaryApproval");
+        form_data.append("adminName", $("#adminName").val());
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] == "done") {
+
+                    $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
+
+                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+
+                    refreshActions();
+
+                }
+            },
+        });
+    }
+
+    $("#bursaryApproval").on('change', function(){
         $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
         let userId = <?php echo $user[0]['userInfo']['id'];?>
