@@ -147,11 +147,11 @@ jQuery(document).ready(function ($) {
 
                                 if(file["field"] === "moveIn" ){
                                     if(file["status"] === "Uploaded"){
-                                        moveIn = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                                        moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
                                     }else if(file["status"] === "Approved"){
-                                        moveIn = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                                        moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
                                     }else if(file["status"] === "Rejected"){
-                                        moveIn = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                                        moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                                     }
                                 }
                                             
@@ -195,6 +195,7 @@ jQuery(document).ready(function ($) {
                             $( trDOM ).addClass('table_id_'+arrayItem["id"]);
                             $( trDOM ).find('td').eq(4).addClass('bookingBg');
                             $( trDOM ).find('td').eq(7).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(12).addClass('bookingBg');
 
 
 

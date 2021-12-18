@@ -471,6 +471,9 @@ class HomeController extends Controller
             $booking = Booking::where('userId', $userId)->first();
             $residence = Residence::where('residence', $booking->residence)->first();
 
+            
+
+
             return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence]);
         }
     }
@@ -493,26 +496,44 @@ class HomeController extends Controller
 
             if($userFile['fileId'] == "copyID"){
                 $typeName = "Copy of ID Document";
+                $dataField = "id_data_approved";
+                $dataField2 = "";
             }elseif($userFile['fileId'] == "studentCard"){
                 $typeName = "Copy of Student Card";
+                $dataField = "student_card_approved";
+                $dataField2 = "";
             }elseif($userFile['fileId'] == "bankStatement"){
                 $typeName = "Bank Statements";
+                $dataField = "bank_approved";
+                $dataField2 = "parent_approved";
             }elseif($userFile['fileId'] == "proofRegistration"){
                 $typeName = "Proof of Registration";
+                $dataField = "registration_approved";
+                $dataField2 = "";
             }elseif($userFile['fileId'] == "proof_of_payment"){
                 $typeName = "Booking Fee Proof of Payment";
+                $dataField = "";
             }elseif($userFile['fileId'] == "moveIn"){
                 $typeName = "Lease";
-            }elseif($userFile['fileId'] == "moveIn"){
-                $typeName = "Lease";
+                $dataField = "";
             }elseif($userFile['fileId'] == "bursaryApproval"){
                 $typeName = "NSFAS Approval";
+                $dataField = "bursary_approved";
+                $dataField2 = "burser_approved";
             }
 
             if($action == "Rejected"){
                 $text = "Rejected ".$typeName." with reason: ".$reason ;
             }else{
                 $text = "Approved ".$typeName;
+
+                if($dataField !== ""){
+                    User::where('id', $userFile->userUid)->update([$dataField => "2"]);
+                    
+                    if($dataField2 !== ""){
+                        User::where('id', $userFile->userUid)->update([$dataField2 => "2"]);
+                    }
+                }
             }
 
             if($request->userName !== "" && !empty($request->userName)){
@@ -746,6 +767,7 @@ class HomeController extends Controller
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
         ]);
+
     }
 
     protected function reject_application(Request $request){
@@ -2048,6 +2070,72 @@ class HomeController extends Controller
         }
 
         return redirect("/properties-info");
+    }
+
+    public function action_data(Request $request){
+
+        if($request->FileNameForApproval == "studentCard"){
+            $name = 'STUDENT CARD / PROOF OF STUDENT NUMBER';
+            $field = "student_card_approved";
+        }else if($request->FileNameForApproval == "copyID"){
+            $name = 'COPY OF ID DOCUMENT';
+            $field = "id_data_approved";
+        }else if($request->FileNameForApproval == "proofRegistration"){
+            $name = 'PROOF OF REGISTRATION';
+            $field = "registration_approved";
+        }else if($request->FileNameForApproval == "bursaryApproval"){
+            $name = 'NSFAS / BURSARY';
+            $field = "bursary_approved";
+        }else if($request->FileNameForApproval == "bankStatement"){
+            $name = 'BANK STATEMENT';
+            $field = "bank_approved";
+        }
+
+        $dataToUpdate = [
+            $field => $request->type,
+        ];
+        
+        User::where('id', $request->userId)->update($dataToUpdate);
+
+        if($request->type == "1"){
+            $action = "Approved";
+        }else{
+            $action = "Rejected";
+        }
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => $name." Data ".$action,
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+          ]);
+
+        return "true";
+    }
+
+    public function approve_app_data(Request $request){
+        if($request->type == "Address"){
+            User::where('id', $request->userId)->update(["address_approved" => "2"]);
+
+            ActionList::create([
+                "userUid" => $request->userId,
+                "action" => "Physical Address Data Approved",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+              ]);
+        }else{
+            User::where('id', $request->userId)->update(["kin_approved" => "2"]);
+
+            ActionList::create([
+                "userUid" => $request->userId,
+                "action" => "Next of Kin Data Approved",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+              ]);
+        }
     }
 
     

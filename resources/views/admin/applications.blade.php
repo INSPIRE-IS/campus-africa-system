@@ -106,15 +106,15 @@
                         <th style="width:50%">APPLICANT | ROOM</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
-                        <th style="background-color:#ccc; ">BOOKING STATUS</th>
+                        <th style="background-color:#ccc; color:#000">BOOKING STATUS</th>
                         <th>PROOF OF PAYMENT</th>
                         <th>ID COPY</th>
-                        <th style="background-color:#ccc">APPLICATION STATUS</th>
+                        <th style="background-color:#ccc; color:#000">APPLICATION STATUS</th>
                         <th>STUDENT CARD COPY</th>
                         <th>PROOF OF REGISTRATION</th>
                         <th>NSFAS | BURSARY APPROVAL</th>
                         <th>BANK STATEMENTS</th>
-                        <th>Lease</th>
+                        <th style="background-color:#ccc; color:#000">Lease</th>
                     </tr>
                 </thead>
                 <tbody id="applicantsSection">
@@ -260,15 +260,15 @@
                             @foreach($user["files"] as $file)
 
                                 @if($file["field"] === "moveIn")
-                                <td id="statusBarIcon">
+                                <td id="statusBarIcon" style="background-color:#ccc">
                                     @if($file["status"] === "Uploaded")
-                                    <span class="hidden">A</span><div class="button action noBoarder"></div>
+                                    <span class="hidden">A</span><div class="button action bigButton"></div>
                                     @elseif($file["status"] === "Approved")
-                                    <span class="hidden">C</span><div class="button approved noBoarder"></div>
+                                    <span class="hidden">C</span><div class="button approved bigButton"></div>
                                     @elseif($file["status"] === "Rejected")
-                                    <span class="hidden">B</span><div class="button rejected noBoarder"></div>
+                                    <span class="hidden">B</span><div class="button rejected bigButton"></div>
                                     @elseif($file["status"] === "na" || $file["status"] === "")
-                                    <span class="hidden">D</span><div class="button na noBoarder"></div>
+                                    <span class="hidden">D</span><div class="button na bigButton"></div>
                                     @endif
                                 </td>
                                 @endif

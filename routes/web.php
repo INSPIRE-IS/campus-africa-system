@@ -110,6 +110,13 @@ Route::get('/properties-info', [HomeController::class, 'properties_info']);
 Route::get('/residence/edit/{residenceId}', [HomeController::class, 'residence_edit']);
 Route::post('/save-residence', [HomeController::class, 'save_residence']);
 
+Route::post('/action-data', [HomeController::class, 'action_data']);
+Route::post('/approve-app-data', [HomeController::class, 'approve_app_data']);
+
+
+
+
+
 
 
 

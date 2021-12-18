@@ -98,11 +98,13 @@
                 <div class="buttonSidePanel" style="margin-top:-50px;">
 
                     @if (isset($appProfile) && $appProfile === "true")
-                        @if($user[0]['userInfo']['applicationStatus'] == "Approved" || $user[0]['userInfo']['applicationStatus'] == "Rejected")
-                            <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
-                            <br/><br/><br/>
-                            <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
-                            <br/><br/><br/>     
+                        @if($user[0]['userInfo']['applicationStatus'] !== "Approved Confirmed")
+                            <div id="MainAppSection" class="hidden">
+                                <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
+                                <br/><br/><br/>
+                                <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
+                                <br/><br/><br/>     
+                            </div>
                         @endif
 
                         @if(Auth::user()->role_edit_app == 1)
@@ -180,29 +182,128 @@
         });
 
         function approveApplication(userId){
+
+            if($("#address_approved").val() !== "2" || $("#kin_approved").val() !== "2"){
+
+                if($("#address_approved").val() !== "2"){
+                    addressApp()
+                }else if($("#kin_approved").val() !== "2"){
+                    kinApp();
+                }
+                        
+            }else{
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Approve this application',
+                    text: "You are about to approve this application and send approval email. Continue?",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, approve'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+                        $.ajax({
+                            type: "post",
+                            url: "/approve-application",
+                            data: {
+                                userId: "{{$user[0]['userInfo']['id']}}", 
+                            },
+
+                            success: function (data) {
+                                // window.location.reload();
+                                $.ajax({
+                                    type: "post",
+                                    url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                    data: {
+                                        bookingId: "{{$user[0]['userInfo']['id']}}", 
+                                        property: $("#property").val(),
+                                        roomType: $("#roomType").val(), 
+                                        floor: $("#floor").val(),
+                                        unit: $("#unit").val(),
+                                        room: $("#room").val(),
+                                        bed: $("#bed").val(),
+                                        bed_code: $("#bed_code").val(),
+                                        lease_from_date: $("#lease_from_date").val(),
+                                        lease_from_time: $("#lease_from_time").val(),
+                                        lease_to_date: $("#lease_to_date").val(),
+                                        lease_to_time: $("#lease_to_time").val(),
+                                        type: "auto",
+                                    },
+
+                                    success: function (data) {
+                                        
+                                        window.location.reload();
+                                    },
+                                });
+                            },
+                        });
+                    }
+                })
+            }
+
+            
+        }
+
+        function addressApp(){
             Swal.fire({
+                title: 'Please Approve or Reject this data first.',
+                html: '<span style="font-weight:bold">Physical Address:</span><br/>{{$user[0]["userInfo"]["userAddress1"]}}<br/>{{$user[0]["userInfo"]["userAddress2"]}}<br/>{{$user[0]["userInfo"]["userAddressCity"]}}<br/>{{$user[0]["userInfo"]["userAddressPostal"]}}<br/>',
                 icon: 'warning',
-                title: 'Approve this application',
-                text: "You are about to approve this application and send approval email. Continue?",
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#1cb915',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, approve'
+                confirmButtonText: 'Approve',
+                cancelButtonText: 'Reject'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
+                    $("#approvedAddr").removeClass('hidden');
+                    $("#rejectedAddr").addClass('hidden');
+                    $("#address_approved").val('2');
                     $.ajax({
                         type: "post",
-                        url: "/approve-application",
+                        url: "/approve-app-data",
                         data: {
-                            userId: userId, 
-                        },
-
-                        success: function (data) {
-                            window.location.reload();
+                            type: "Address", 
+                            userId: "{{$user[0]['userInfo']['id']}}",
                         },
                     });
+
+                    approveApplication();
+                }
+            })
+        }
+
+        function kinApp(){
+            Swal.fire({
+                title: 'Please Approve or Reject this data first.',
+                html: '<span style="font-weight:bold">Next of Kin:</span><br/>{{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>{{$user[0]['userInfo']['kinRelationship']}}<br/>{{$user[0]['userInfo']['kinNationality']}}<br/>'+
+                <?php if($user[0]['userInfo']['kinId']){echo $user[0]['userInfo']['kinId'];}?>+'<br/>'+
+                <?php if($user[0]['userInfo']['kinPassportNo']){ echo $user[0]['userInfo']['kinPassportNo'];}?>+'<br/>'+
+                '{{$user[0]['userInfo']['kinCellNo']}}<br/>{{$user[0]['userInfo']['kinEmail']}}<br/>{{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>{{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPostal']}}<br/>',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#1cb915',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Approve',
+                cancelButtonText: 'Reject'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#approvedKin").removeClass('hidden');
+                    $("#rejectedKin").addClass('hidden');
+                    $("#kin_approved").val('2');
+                    $.ajax({
+                        type: "post",
+                        url: "/approve-app-data",
+                        data: {
+                            type: "Kin", 
+                            userId: "{{$user[0]['userInfo']['id']}}",
+                        },
+                    });
+
+                    approveApplication();
                 }
             })
         }

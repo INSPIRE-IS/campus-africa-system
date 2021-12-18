@@ -18,50 +18,56 @@ class PDFController extends Controller
 
     public function createPDF(Request $request, $studentId) {
 
-      $bookingId = $request->bookingId;
-      $property = $request->property;
-      $roomType = $request->roomType;
+        $bookingId = $request->bookingId;
+        $property = $request->property;
+        $roomType = $request->roomType;
 
-      $oldData = Booking::where('userId', $bookingId)->first();
-      $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "room|Room" => $request->room, "bed|Bed" => $request->bed, "bed_code|Bed Code"=> $request->bed_code, "lease_from_date|Lease From Date" => $request->lease_from_date, "lease_from_time|Lease From Time" => $request->lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
+      if(!$request->type){
+        
 
-      $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
+        $oldData = Booking::where('userId', $bookingId)->first();
+        $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "room|Room" => $request->room, "bed|Bed" => $request->bed, "bed_code|Bed Code"=> $request->bed_code, "lease_from_date|Lease From Date" => $request->lease_from_date, "lease_from_time|Lease From Time" => $request->lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
 
-      Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
+        $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
 
-      $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->first();
-      
+        Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
+
+        $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->first();
+        
 
 
-      foreach($newData as $key => $new){
-          
-          $info = explode("|", $key);
-          $key = $info[0];
-          $changedField = $info[1];
+        foreach($newData as $key => $new){
+            
+            $info = explode("|", $key);
+            $key = $info[0];
+            $changedField = $info[1];
 
-          if($oldData->$key !== $new){
-              if($oldData->$key == "" || $oldData->$key == null){
-                  $oldData->$key = "Unassigned";
-              }
-              ActionList::create([
-                  "userUid" => $request->bookingId,
-                  "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
-                  "actionUserUid" => Auth::user()->id,
-                  "actionUserDisplayName" => Auth::user()->userFirstName,
-                  "actionUserRole" => Auth::user()->userRole,
-              ]);
-          }
+            if($oldData->$key !== $new){
+                if($oldData->$key == "" || $oldData->$key == null){
+                    $oldData->$key = "Unassigned";
+                }
+                ActionList::create([
+                    "userUid" => $request->bookingId,
+                    "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
+        }
+
+        ActionList::create([
+          "userUid" => $request->bookingId,
+          "action" => "Generated a Lease",
+          "actionUserUid" => Auth::user()->id,
+          "actionUserDisplayName" => Auth::user()->userFirstName,
+          "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time"=> $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time]);
       }
 
-      ActionList::create([
-        "userUid" => $request->bookingId,
-        "action" => "Generated a Lease",
-        "actionUserUid" => Auth::user()->id,
-        "actionUserDisplayName" => Auth::user()->userFirstName,
-        "actionUserRole" => Auth::user()->userRole,
-      ]);
-
-      Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time"=> $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time]);
+      
 
         // retreive all records from db
         $data = User::where('id', $studentId)->first();

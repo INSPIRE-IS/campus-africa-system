@@ -343,7 +343,7 @@
                     <select name="bPayment" id='bPayment'>
                     <option value="" disabled selected>Please select one</option>
                         <option value="Directly to the RESIDENCE" >Directly to the RESIDENCE</option>
-                        <option value="Directly to the STUDENT" >TDirectly to the STUDENT</option>
+                        <option value="Directly to the STUDENT" >Directly to the STUDENT</option>
                         <option value="Via an INTERMEDIARY" >Via an INTERMEDIARY</option>
                     </select>
                 </div>

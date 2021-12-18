@@ -103,6 +103,15 @@ class User extends Authenticatable
         'bPayment',
         'bint',
         'bIntName',
+        'id_data_approved',
+        'student_card_approved',
+        'registration_approved',
+        'bursary_approved',
+        'bank_approved',
+        'address_approved',
+        'kin_approved',
+        'parent_approved',
+        'burser_approved',
     ];
 
     public function files(){
