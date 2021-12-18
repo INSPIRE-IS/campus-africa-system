@@ -174,6 +174,7 @@
     </footer>
 
 
+    @if (isset($user) && isset($user[0]))
     <script>
         $.ajaxSetup({
             headers: {
@@ -347,6 +348,7 @@
             }
         }        
     </script>
+    @endif
 
     <script>
         (function (d, t, g) {
