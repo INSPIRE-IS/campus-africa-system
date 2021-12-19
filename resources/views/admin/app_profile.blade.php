@@ -181,6 +181,8 @@
                 <h2 class="appSubHeader bold">PAID</h2>
                 <p class="appSubHeader">
                     @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
+                    @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <br />{{$user[0]['userInfo']['bint']}} @endif
+                    @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <br />{{$user[0]['userInfo']['spesificInt']}} @endif
                 </p>
             </div>
 

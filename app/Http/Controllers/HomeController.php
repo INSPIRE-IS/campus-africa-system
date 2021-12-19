@@ -340,8 +340,7 @@ class HomeController extends Controller
                 foreach($left as $dataLeft){
 
                     if($dataLeft == "moveIn"){
-                        $booking = Booking::where('userId', $user->id)->first();
-                        if($booking->lease_from_date){
+                        if($user->applicationStatus == "Approved Confirmed"){
                             array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
                         }else{
                             array_push($data, ["field" => $dataLeft, "status" => "na"]);
