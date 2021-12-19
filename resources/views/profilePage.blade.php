@@ -2,7 +2,7 @@
 <div class="container form-card">
     <button type="button" class="detailsChange" onClick="emailSent()">Request Deatils Change</button>
 
-    <form action="/update-profile" method="post">
+    <form action="/update-profile" method="post" autocomplete="off">
     @csrf
         <br/>
         <h1 class="header fs-title">Applicant Details</h2>

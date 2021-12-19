@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container form-card">
-<form action="/save-lookup" method="post">
+<form action="/save-lookup" method="post" autocomplete="off">
     @csrf
         <br/>        <br/>
 

@@ -6,7 +6,7 @@
 
 <div class="container form-card">
 
-    <form action="/update-student" method="post" id="newUser">
+    <form action="/update-student" method="post" id="newUser" autocomplete="off">
     @csrf
         <br/>
         <h1 class="header fs-title">Student: {{$user->userFirstName}} {{$user->userLastname}}</h2>
