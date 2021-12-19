@@ -437,9 +437,9 @@
                 </div>
             @endif
 
-            <div class="form-field-big" >
+            <?php /*<div class="form-field-big" >
                 <button type="button" id="generateLease" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Generate Lease</button>
-            </div>
+            </div>*/ ?>
         </div>
 
         <div class="form-field-big" id="ChangeBookingOnly">
