@@ -98,7 +98,14 @@
             </div>
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
-            <div class="flex"><span id="bedAllocatedYes" class="hidden">&#128994;</span><span id="bedAllocatedNo">&#128308;</span><h2 class="appHeader">Application Summary</h2></div>
+            <div class="flex">
+                @if($booking->bed_code)
+                    <span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>
+                @else
+                    <span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>
+                @endif
+                <h2 class="appHeader">Application Summary</h2>
+            </div>
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
                 <h4 class="cardHeader" >@if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->Unit)Unit {{$booking->unit}},@endif @if($booking->room)Room {{$booking->room}},@endif @if($booking->bed)Bed {{$booking->bed}}@endif</h4>
