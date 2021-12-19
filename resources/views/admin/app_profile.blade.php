@@ -553,54 +553,64 @@
 
 
     function approveData(){
-        var FileNameForApproval = $("#FileNameForApproval").val();
-        $("#approveData").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-        var rejBtn = document.getElementById("RejectDAta");
-        rejBtn.setAttribute("disabled", "disabled");
-
-        $.ajax({
-            type: "post",
-            url: "/action-data",
-            data: {
-                FileNameForApproval: FileNameForApproval, 
-                type: "1", 
-                userId: "{{$user[0]['userInfo']['id']}}",
-            },
-
-            success: function (data) {
-                
-                var preview1 = document.getElementById("rejected");
-                preview1.removeAttribute("disabled", "disabled");
-                var preview2 = document.getElementById("approved");
-                preview2.removeAttribute("disabled", "disabled");
-                var preview3 = document.getElementById("amend");
-                preview3.removeAttribute("disabled", "disabled");
-                var preview4 = document.getElementById("rejectReason");
-                preview4.removeAttribute("readonly", "readonly");
-                var preview5 = document.getElementById("actionUserName");
-                preview5.removeAttribute("readonly", "readonly");
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to approve this data",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var FileNameForApproval = $("#FileNameForApproval").val();
+                $("#approveData").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
                 var rejBtn = document.getElementById("RejectDAta");
-                rejBtn.removeAttribute("disabled", "disabled");
+                rejBtn.setAttribute("disabled", "disabled");
 
-                $("#infoButtons").addClass('hidden');
+                $.ajax({
+                    type: "post",
+                    url: "/action-data",
+                    data: {
+                        FileNameForApproval: FileNameForApproval, 
+                        type: "1", 
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                    },
 
-                /*$("#infoChecker").addClass('hidden')
-                $("#infoToCheck").empty();
-                $("#approveData").empty().append('Approve')*/
+                    success: function (data) {
+                        
+                        var preview1 = document.getElementById("rejected");
+                        preview1.removeAttribute("disabled", "disabled");
+                        var preview2 = document.getElementById("approved");
+                        preview2.removeAttribute("disabled", "disabled");
+                        var preview3 = document.getElementById("amend");
+                        preview3.removeAttribute("disabled", "disabled");
+                        var preview4 = document.getElementById("rejectReason");
+                        preview4.removeAttribute("readonly", "readonly");
+                        var preview5 = document.getElementById("actionUserName");
+                        preview5.removeAttribute("readonly", "readonly");
+                        var rejBtn = document.getElementById("RejectDAta");
+                        rejBtn.removeAttribute("disabled", "disabled");
 
-                if(FileNameForApproval == "copyID"){
-                    $("#id_data_approved").val('1')
-                }else if(FileNameForApproval == "studentCard"){
-                    $("#student_card_approved").val('1')
-                }else if(FileNameForApproval == "bankStatement"){
-                    $("#bank_approved").val('1')
-                    $("#parent_approved").val('1')
-                }else if(FileNameForApproval == "proofRegistration"){
-                    $("#registration_approved").val('1')
-                }else if(FileNameForApproval == "bursaryApproval"){
-                    $("#bursary_approved").val('1')
-                    $("#burser_approved").val('1')
-                }
+                        $("#infoButtons").addClass('hidden');
+
+                        /*$("#infoChecker").addClass('hidden')
+                        $("#infoToCheck").empty();
+                        $("#approveData").empty().append('Approve')*/
+
+                        if(FileNameForApproval == "copyID"){
+                            $("#id_data_approved").val('1')
+                        }else if(FileNameForApproval == "studentCard"){
+                            $("#student_card_approved").val('1')
+                        }else if(FileNameForApproval == "bankStatement"){
+                            $("#bank_approved").val('1')
+                            $("#parent_approved").val('1')
+                        }else if(FileNameForApproval == "proofRegistration"){
+                            $("#registration_approved").val('1')
+                        }else if(FileNameForApproval == "bursaryApproval"){
+                            $("#bursary_approved").val('1')
+                            $("#burser_approved").val('1')
+                        }
 
                 checkUserStatus()
 
@@ -609,32 +619,44 @@
     }
 
     function rejectData(){
-        var FileNameForApproval = $("#FileNameForApproval").val();
-        $("#RejectDAta").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-        var approveData = document.getElementById("approveData");
-        approveData.setAttribute("disabled", "disabled");
-
-        $.ajax({
-            type: "post",
-            url: "/action-data",
-            data: {
-                FileNameForApproval: $("#FileNameForApproval").val(), 
-                type: "0", 
-                userId: "{{$user[0]['userInfo']['id']}}",
-            },
-
-            success: function (data) {
-                
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to reject this data",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var FileNameForApproval = $("#FileNameForApproval").val();
+                $("#RejectDAta").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
                 var approveData = document.getElementById("approveData");
-                approveData.removeAttribute("disabled", "disabled");
+                approveData.setAttribute("disabled", "disabled");
 
-                $("#RejectDAta").empty().append('Reject')
+                $.ajax({
+                    type: "post",
+                    url: "/action-data",
+                    data: {
+                        FileNameForApproval: $("#FileNameForApproval").val(), 
+                        type: "0", 
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                    },
 
-                var modal = document.getElementById("myModal");
-                modal.style.display = "none";
+                    success: function (data) {
+                        
+                        var approveData = document.getElementById("approveData");
+                        approveData.removeAttribute("disabled", "disabled");
 
-            },
-        });
+                        $("#RejectDAta").empty().append('Reject')
+
+                        var modal = document.getElementById("myModal");
+                        modal.style.display = "none";
+
+                    },
+                });
+            }
+        })
     }
 
     function changeBooking(bookingId, type){
@@ -1106,16 +1128,16 @@
         $("#infoToCheck").empty().append(Data);
 
         if(approved !== 1){
-            var preview1 = document.getElementById("rejected");
-            preview1.setAttribute("disabled", "disabled");
+            /*var preview1 = document.getElementById("rejected");
+            preview1.setAttribute("disabled", "disabled");*/
             var preview2 = document.getElementById("approved");
             preview2.setAttribute("disabled", "disabled");
-            var preview3 = document.getElementById("amend");
+            /*var preview3 = document.getElementById("amend");
             preview3.setAttribute("disabled", "disabled");
             var preview4 = document.getElementById("rejectReason");
             preview4.setAttribute("readonly", "readonly");
             var preview5 = document.getElementById("actionUserName");
-            preview5.setAttribute("readonly", "readonly");
+            preview5.setAttribute("readonly", "readonly");*/
 
             $("#infoButtons").removeClass('hidden');
 
