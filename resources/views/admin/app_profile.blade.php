@@ -68,12 +68,14 @@
 
 <div class="container">
     
+    <?php /*
     <div class="row">
         <!-- <a href="/createLease/{{$user[0]['userInfo']['id']}}"><button type="button" class="lease">Create Lease</button></a> -->
         <!-- <?php if($booking->lease_from_date == "" && $booking->lease_from_time !== "" && $booking->lease_to_date == "" && $booking->lease_to_time !== ""){ ?> -->
             <!-- <?php } ?> -->
             <button type="button" class="lease" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Create Lease</button>
     </div>
+    */ ?>
     
     <div class="appRow">
         <div class="cards">
@@ -416,11 +418,11 @@
         
         
 
-        <div class="form-field-big" id="ChangeBookingOnly">
+        {{-- <div class="form-field-big" id="ChangeBookingOnly">
             <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
-        </div>
+        </div> --}}
 
-        <div id="LeaseInfo" class="hidden">
+        <div id="LeaseInfo">
             <div class="form-field">
                 <br/>
             </div>
@@ -443,9 +445,13 @@
                 </div>
             @endif
 
-            <div class="form-field-big" >
+            {{-- <div class="form-field-big" >
                 <button type="button" id="generateLease" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change Booking</button>
-            </div>
+            </div> --}}
+        </div>
+
+        <div class="form-field-big" id="ChangeBookingOnly">
+            <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
         </div>
     </div>
 
@@ -690,16 +696,16 @@
     function changeBooking(bookingId, type){
 
         if(type == "generate"){
-            $("#ChangeBookingOnly").addClass('hidden')
-            $("#LeaseInfo").removeClass('hidden')
+            //$("#ChangeBookingOnly").addClass('hidden')
+            //$("#LeaseInfo").removeClass('hidden')
             // document.getElementById("editModalHeight").style.height = "700px";
             $("#lease_from_date").addClass("required")
             $("#lease_from_time").addClass("required")
             $("#lease_to_date").addClass("required")
             $("#lease_to_time").addClass("required")
         }else{
-            $("#ChangeBookingOnly").removeClass('hidden')
-            $("#LeaseInfo").addClass('hidden')
+            //$("#ChangeBookingOnly").removeClass('hidden')
+            //$("#LeaseInfo").addClass('hidden')
             // document.getElementById("editModalHeight").style.height = "530px";
             $("#lease_from_date").removeClass("required")
             $("#lease_from_time").removeClass("required")

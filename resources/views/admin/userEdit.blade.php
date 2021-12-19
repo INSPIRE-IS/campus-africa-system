@@ -124,7 +124,7 @@
                 </li>
                 <br/><br/>
                 <li style="display:inline-flex">
-                    <input type="checkbox" id="role_change_date" name="role_change_date" value="1">
+                    <input type="checkbox" id="role_change_date" name="role_change_date" value="1" <?php if($user->role_change_date == "1"){echo "checked";} ?>>
                     <label for="role_change_date" style="width:400px">Change Lease Dates</label>
                 </li>
             </ul>
