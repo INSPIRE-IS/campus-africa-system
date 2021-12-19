@@ -280,10 +280,7 @@
         function kinApp(){
             Swal.fire({
                 title: 'Please Approve or Reject this data first.',
-                html: '<span style="font-weight:bold">Next of Kin:</span><br/>{{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>{{$user[0]['userInfo']['kinRelationship']}}<br/>{{$user[0]['userInfo']['kinNationality']}}<br/>'+
-                <?php if($user[0]['userInfo']['kinId']){echo $user[0]['userInfo']['kinId'];}?>+'<br/>'+
-                <?php if($user[0]['userInfo']['kinPassportNo']){ echo $user[0]['userInfo']['kinPassportNo'];}?>+'<br/>'+
-                '{{$user[0]['userInfo']['kinCellNo']}}<br/>{{$user[0]['userInfo']['kinEmail']}}<br/>{{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>{{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPostal']}}<br/>',
+                html: '<span style="font-weight:bold">Next of Kin:</span><br/>{{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>{{$user[0]['userInfo']['kinRelationship']}}<br/>{{$user[0]['userInfo']['kinNationality']}}<br/>'+<?php if($user[0]['userInfo']['kinId']){echo $user[0]['userInfo']['kinId'];}?>+'<br/>'+<?php if($user[0]['userInfo']['kinPassportNo']){ echo $user[0]['userInfo']['kinPassportNo'];}?>+'<br/>'+'{{$user[0]['userInfo']['kinCellNo']}}<br/>{{$user[0]['userInfo']['kinEmail']}}<br/>{{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>{{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPostal']}}<br/>',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#1cb915',
