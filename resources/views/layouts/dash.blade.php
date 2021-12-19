@@ -131,20 +131,20 @@
             <p class="footerRights">Campus Africa - All Right Reserved</p>
         </div>
     </footer>
-</body>
-
-<script>
+    
+    <script>
         function myFunction() {
-        var x = document.getElementById("myTopnav");
-        if (x.className === "topnav") {
-            x.className += " responsive";
-            document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
-        } else {
-            x.className = "topnav";
-            document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
-        }
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+                document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+            } else {
+                x.className = "topnav";
+                document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+            }
         }
 
+        @if (App::environment('development'))
         (function (d, t, g) {
             var ph    = d.createElement(t), s = d.getElementsByTagName(t)[0];
             ph.type   = 'text/javascript';
@@ -153,5 +153,8 @@
             ph.src     = g + '&v=' + (new Date()).getTime();
             s.parentNode.insertBefore(ph, s);
         })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
+        @endif
     </script>
+
+    </body>
 </html>
