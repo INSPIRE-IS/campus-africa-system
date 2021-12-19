@@ -40,7 +40,7 @@
                     <span style="font-size:20px;">{{$data->userFirstName}} {{$data->userLastname}}</span>
                 </td>
                 <td style="text-align:left; padding-left:70px 20px;">
-                    <span style="font-size:20px;">{{$data->userId}}</span>
+                    <span style="font-size:20px;">@if($data->userNationality == "South African") {{$data->userId}} @else {{$data->userPassport}} @endif</span>
                 </td>
             </tr>
             <tr>
@@ -48,7 +48,7 @@
                     Full Name
                 </td>
                 <td style="text-align:left; padding-left:70px 20px;">
-                    ID Number
+                    @if($data->userNationality == "South African") {{"ID Number"}} @else {{"Passport Number"}} @endif
                 </td>
             </tr>
         </table>

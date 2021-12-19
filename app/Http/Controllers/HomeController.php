@@ -345,8 +345,7 @@ class HomeController extends Controller
                         }else{
                             array_push($data, ["field" => $dataLeft, "status" => "na"]);
                         }
-                    }else{
-
+                    } else {
                         if($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
                             if($dataLeft == "bankStatement"){
                                 array_push($data, ["field" => $dataLeft, "status" => "na"]);
@@ -359,8 +358,8 @@ class HomeController extends Controller
                             }else{
                                 array_push($data, ["field" => $dataLeft, "status" => ""]);
                             }
-                        }
-                    }
+                        }  
+                    }                
 
                 }
 
