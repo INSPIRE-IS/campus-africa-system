@@ -98,7 +98,7 @@
             </div>
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
-                <h2 class="appHeader">Application Summary</h2>
+            <div class="flex"><span id="bedAllocatedYes" class="hidden">&#128994;</span><span id="bedAllocatedNo">&#128308;</span><h2 class="appHeader">Application Summary</h2></div>
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
                 <h4 class="cardHeader" >@if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->Unit)Unit {{$booking->unit}},@endif @if($booking->room)Room {{$booking->room}},@endif @if($booking->bed)Bed {{$booking->bed}}@endif</h4>
@@ -509,47 +509,50 @@
     });
 
 
-        checkUserStatus();
+    checkUserStatus();
 
-        // MainAppSection
-        function checkUserStatus(){
+    // MainAppSection
+    function checkUserStatus(){
 
-            if($("#parent_approved").val() == "1" || $("#parent_approved").val() == "2"){
-                    $("#rejectedSpon").addClass('hidden')
-                    $("#approvedSpon").removeClass('hidden')
-                }
-                if($("#burser_approved").val() == "1" || $("#burser_approved").val() == "2"){
-                    $("#rejectedBur").addClass('hidden')
-                    $("#approvedBur").removeClass('hidden')
-                }
-                if($("#kin_approved").val() == "1" || $("#kin_approved").val() == "2"){
-                    $("#rejectedKin").addClass('hidden')
-                    $("#approvedKin").removeClass('hidden')
-                }
-                if($("#address_approved").val() == "1" || $("#address_approved").val() == "2"){
-                    $("#rejectedAddr").addClass('hidden')
-                    $("#approvedAddr").removeClass('hidden')
-                }
+        if($("#parent_approved").val() == "1" || $("#parent_approved").val() == "2"){
+            $("#rejectedSpon").addClass('hidden')
+            $("#approvedSpon").removeClass('hidden')
+        }
 
-            if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
-                
-                if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
-                    $("#MainAppSection").removeClass('hidden')
-                    document.getElementById("col1").style.marginTop = "-35px";
-                    document.getElementById("col2").style.marginTop = "-35px";
-                    document.getElementById("col3").style.marginTop = "-35px";
-                }
+        if($("#burser_approved").val() == "1" || $("#burser_approved").val() == "2"){
+            $("#rejectedBur").addClass('hidden')
+            $("#approvedBur").removeClass('hidden')
+        }
 
-            }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS" || "{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
-                
-                if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
-                    $("#MainAppSection").removeClass('hidden')
-                    document.getElementById("col1").style.marginTop = "-35px";
-                    document.getElementById("col2").style.marginTop = "-35px";
-                    document.getElementById("col3").style.marginTop = "-35px";
-                }
+        if($("#kin_approved").val() == "1" || $("#kin_approved").val() == "2"){
+            $("#rejectedKin").addClass('hidden')
+            $("#approvedKin").removeClass('hidden')
+        }
+
+        if($("#address_approved").val() == "1" || $("#address_approved").val() == "2"){
+            $("#rejectedAddr").addClass('hidden')
+            $("#approvedAddr").removeClass('hidden')
+        }
+
+        if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
+            
+            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
+                $("#MainAppSection").removeClass('hidden')
+                document.getElementById("col1").style.marginTop = "-35px";
+                document.getElementById("col2").style.marginTop = "-35px";
+                document.getElementById("col3").style.marginTop = "-35px";
+            }
+
+        }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS" || "{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
+            
+            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
+                $("#MainAppSection").removeClass('hidden')
+                document.getElementById("col1").style.marginTop = "-35px";
+                document.getElementById("col2").style.marginTop = "-35px";
+                document.getElementById("col3").style.marginTop = "-35px";
             }
         }
+    }
 
 
     function approveData(){
@@ -612,9 +615,11 @@
                             $("#burser_approved").val('1')
                         }
 
-                checkUserStatus()
+                        checkUserStatus();
+                    }
+                })
 
-            },
+            }
         });
     }
 
