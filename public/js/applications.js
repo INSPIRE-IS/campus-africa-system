@@ -175,9 +175,16 @@ jQuery(document).ready(function ($) {
                                 studentType = arrayItem["studentType"]
                             }
 
+                            if(arrayItem["bed_code"] == null){
+                                bed_code = ""
+                            }else{
+                                bed_code = arrayItem["bed_code"]
+                            }
+
                             var trDOM = datatable.row.add( [
                                 '#'+arrayItem["bookingRef"],
                                 '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"],
+                                bed_code,
                                 dateString,
                                 studentType,
                                 bookingStat,
@@ -193,9 +200,9 @@ jQuery(document).ready(function ($) {
 
 
                             $( trDOM ).addClass('table_id_'+arrayItem["id"]);
-                            $( trDOM ).find('td').eq(4).addClass('bookingBg');
-                            $( trDOM ).find('td').eq(7).addClass('bookingBg');
-                            $( trDOM ).find('td').eq(12).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(5).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(8).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(13).addClass('bookingBg');
 
 
 

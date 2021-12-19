@@ -235,8 +235,10 @@
                                     @if($file["field"] === "moveIn")
                                         @if($file["status"] === "XApproved" || $file["status"] === "Approved")
                                             <div class="button approved"></div>
-                                        @else
+                                        @elseif($file["status"] === "Uploaded")
                                             <div class="button action"></div>
+                                        @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                            <div class="button rejected"></div>
                                         @endif
                                     @else
                                         @if($file["status"] === "Uploaded" )
@@ -1877,9 +1879,9 @@
 
             success: function (data) {
                 if (data[0] == "done") {
-                    $("#moveInStatus").empty().append('<div class="button approved"></div>');
+                    $("#moveInStatus").empty().append('<div class="button action"></div>');
 
-                    $("#moveInBanner").empty().append('<button type="Button" onClick="openModal(\'moveIn\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Approved\')">View Document</button>');
+                    $("#moveInBanner").empty().append('<button type="Button" onClick="openModal(\'moveIn\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
                 }

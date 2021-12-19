@@ -342,9 +342,9 @@ class HomeController extends Controller
                     if($dataLeft == "moveIn"){
                         $booking = Booking::where('userId', $user->id)->first();
                         if($booking->lease_from_date){
-                            array_push($data, ["field" => $dataLeft, "status" => "Uploaded"]);
-                        }else{
                             array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
+                        }else{
+                            array_push($data, ["field" => $dataLeft, "status" => "na"]);
                         }
                     }else{
 
@@ -384,7 +384,7 @@ class HomeController extends Controller
                 
                 $roomBooking = Booking::where('userId', $user->id)->first();
 
-                array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at]);
+                array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
             }
 
             usort($userData, function($a, $b) {
@@ -1144,11 +1144,11 @@ class HomeController extends Controller
                     $typeName = "NSFAS / Bursary Approval";
                 }
 
-                if($typeName == "Lease"){
-                    $statusAction = "Approved";
-                }else{
-                    $statusAction = "Uploaded";
-                }
+                // if($typeName == "Lease"){
+                //     $statusAction = "Uploaded";
+                // }else{
+                //     $statusAction = "Uploaded";
+                // }
                 
 
                 if(!$hasFile){
@@ -1157,7 +1157,7 @@ class HomeController extends Controller
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
-                        'status' => $statusAction,
+                        'status' => "Uploaded",
                         'uploaded_by' => Auth::user()->userFirstName,
                     ]);
 
@@ -1168,7 +1168,7 @@ class HomeController extends Controller
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
-                        'status' => $statusAction,
+                        'status' => "Uploaded",
                         'uploaded_by' => Auth::user()->userFirstName,
                     ]);
                     $text = "Re-uploaded ".$typeName." for review";
@@ -1668,7 +1668,7 @@ class HomeController extends Controller
                 
                 if(!empty($user)){
 
-                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at]);
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
                 }
 
             

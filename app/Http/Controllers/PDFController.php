@@ -65,9 +65,8 @@ class PDFController extends Controller
         ]);
 
         Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time"=> $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time]);
-      }
 
-      
+      }else{
 
         // retreive all records from db
         $data = User::where('id', $studentId)->first();
@@ -85,6 +84,9 @@ class PDFController extends Controller
         $user = User::where('id', $bookingId)->first();
 
         \Storage::put('public/files/'.$user->userId.'/Lease.pdf',$content) ;
+
+      }
+        
 
         return 'true';
       }
