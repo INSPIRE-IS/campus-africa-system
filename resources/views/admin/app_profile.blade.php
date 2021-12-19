@@ -464,15 +464,14 @@
         
             <input type="hidden" id="FileIdForApproval">
             <input type="hidden" id="FileNameForApproval">
-            @if(Auth::user()->role_approve_docs == 1)
-                <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
-                <br/>
-                <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
-            @endif
+            
+            <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
+            <br/>
+            <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
+            
             <br/>
             
             <div class="flex" style="margin-top:35px;" id="buttonSection">
-                @if(Auth::user()->role_approve_docs == 1)
                     <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
                         <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
                         <br/>
@@ -481,7 +480,6 @@
                     <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
                     <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
                     <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-                @endif
             </div>
 
             <div id="infoChecker">
@@ -1050,6 +1048,15 @@
     })
 
     function openModal(field, url, uploaded_by, created_at, fileId, status){
+
+        if("{{Auth::user()->role_approve_docs}}" !== "1"){
+            document.getElementById("approveData").setAttribute("disabled", "disabled");
+            document.getElementById("RejectDAta").setAttribute("disabled", "disabled");
+            document.getElementById("rejected").setAttribute("disabled", "disabled");
+            document.getElementById("approved").setAttribute("disabled", "disabled");
+
+            document.getElementById("amend").removeAttribute("disabled", "disabled");
+        }
 
         if(field == "studentCard"){
             var title = "Student card / Proof of student number";
