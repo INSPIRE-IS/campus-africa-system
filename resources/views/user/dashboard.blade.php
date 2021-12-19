@@ -9,7 +9,7 @@
             <div class="overlay">
                 <div class="cardBody">
                     <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                    <h2 class="cardHeaderText">Single Room</h2>
+                    <h2 class="cardHeaderText">Single</h2>
                     <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
                     <br/><br/><br/>
                     <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>

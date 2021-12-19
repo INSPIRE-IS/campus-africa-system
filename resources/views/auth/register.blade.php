@@ -482,7 +482,7 @@
 
                                                 <div class="whiteCard" id="registerPaymentCards" style="margin-left:11px;">
                                                     <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                                                    <h2 class="cardHeader" >Single Room</h2>
+                                                    <h2 class="cardHeader" >Single</h2>
                                                     <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
                                                 </div>
                                             </div>

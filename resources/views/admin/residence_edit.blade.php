@@ -48,19 +48,19 @@
         let propValue = $("#residence").val();
 
         if(propValue == "Braamlofts"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
         }else if(propValue == "80 Jorissen"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "49 Jorissen"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="single room 2 bedroom">Single Room | 2 Bedroom</option><option value="single room 3 bedroom">Single Room | 3 Bedroom</option>')
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option>')
         }else if(propValue == "Dunvista Mansions"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "Wynton Joy"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "126 Siemert"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="single room small">Single Room | small</option><option value="single room medium">Single Room | Medium</option><option value="single room large">Single Room | Large</option>')
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="Single small">Single | small</option><option value="Single medium">Single | Medium</option><option value="Single large">Single | Large</option>')
         }
     })
 </script>

@@ -113,7 +113,7 @@
                 <li><span style="margin-left:-20px;">g. </span><strong>“Shared Rooms”</strong> means: a room within the building consisting of two bedrooms to be shared by a maximum of 2 occupants. The occupants of shared rooms are permitted to use the common areas within the building consisting of the bathrooms, kitchenette and living area. The occupants of shared rooms are also permitted to use the other residence facilities, including but not limited to the canteen, the TV room, the study centre, the gym and the computer centre; </li>
                 <br/>
 
-                <li><span style="margin-left:-20px;">h. </span><strong>“Single Rooms”</strong> means: a room within the building consisting of one bed. The occupants of single rooms are permitted to use the common areas within the building consisting of the bathrooms, kitchenette and living area. The occupants of single rooms are also permitted to use the other residence facilities, including but not limited to the canteen, the TV room, the study centre, the gym and the computer centre; </li>
+                <li><span style="margin-left:-20px;">h. </span><strong>“Single”</strong> means: a room within the building consisting of one bed. The occupants of Singles are permitted to use the common areas within the building consisting of the bathrooms, kitchenette and living area. The occupants of Singles are also permitted to use the other residence facilities, including but not limited to the canteen, the TV room, the study centre, the gym and the computer centre; </li>
                 <br/>
 
                 <li><span style="margin-left:-20px;">i. </span><strong>“This Agreement”</strong> means: this temporary lodging agreement together with any and/or all Annexes hereto; </li>
@@ -292,7 +292,7 @@
                 <ol type="i">
                     <li>Provide the agreed upon Accommodation to the Student for purposes of the non-exclusive use of such Accommodation by the Student, in such part of the Owner’s property as the Owner may determine.</li>
                     <br/>
-                    <li>Ensure that the Accommodation is in a good clean condition immediately before the Student is given access thereto and that the Shared / Single Rooms are in such condition for the duration of the Temporary Lodging Agreement.</li>
+                    <li>Ensure that the Accommodation is in a good clean condition immediately before the Student is given access thereto and that the Shared / Singles are in such condition for the duration of the Temporary Lodging Agreement.</li>
                 </ol>
                 <br/>
                 <li>In addition, the following services and facilities are provided to the Student: </li>
@@ -323,7 +323,7 @@
 
             <span style="font-weight:bold; font-size:14px;">8.	Liability of the Owner</span>
             <br/>
-            <p style="font-size:14px;">The Student hereby indemnifies and holds harmless the Owner from and against any and/or all claims, losses, costs, charges, expenses, damages and liabilities of whatsoever nature howsoever arising which the Student may incur, pay or sustain in connection with the Student’s occupation of the Shared Room or Single Rooms, including, all costs and expenses brought about in connection with any loss or damage.</p>
+            <p style="font-size:14px;">The Student hereby indemnifies and holds harmless the Owner from and against any and/or all claims, losses, costs, charges, expenses, damages and liabilities of whatsoever nature howsoever arising which the Student may incur, pay or sustain in connection with the Student’s occupation of the Shared Room or Singles, including, all costs and expenses brought about in connection with any loss or damage.</p>
 
             <footer>
                 Page | 5

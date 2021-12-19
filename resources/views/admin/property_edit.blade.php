@@ -27,28 +27,28 @@
             <select name="roomType" id='roomType' class="required">
                 <option value="" selected disabled>Select a Room Type</option>
                 <?php if(!empty($propertyData) && $propertyData->residence == "Braamlofts"){?>
-                    <option value="Single Room" <?php if($propertyData->room_type == "Single Room"){ echo "selected";}?>>Single Room</option>
+                    <option value="Single" <?php if($propertyData->room_type == "Single"){ echo "selected";}?>>Single</option>
                     <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
                     <option value="3 Sharing" <?php if($propertyData->room_type == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
                 <?php } ?>
 
                 <?php if(!empty($propertyData) && $propertyData->residence == "80 Jorissen" || !empty($propertyData) && $propertyData->residence == "Dunvista Mansions" || !empty($propertyData) && $propertyData->residence == "Wynton Joy" || !empty($propertyData) && $propertyData->residence == "126 Siemert"){?>
-                    <option value="Single Room" <?php if($propertyData->room_type == "Single Room"){ echo "selected";}?>>Single Room</option>
+                    <option value="Single" <?php if($propertyData->room_type == "Single"){ echo "selected";}?>>Single</option>
                     <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
                 <?php } ?>
 
                 <?php if(!empty($propertyData) && $propertyData->residence == "49 Jorissen"){?>
                     <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="single room 2 bedroom" <?php if($propertyData->room_type == "single room 2 bedroom"){ echo "selected";}?>>Single Room | 2 Bedroom</option>
-                    <option value="single room 3 bedroom" <?php if($propertyData->room_type == "single room 3 bedroom"){ echo "selected";}?>>Single Room | 3 Bedroom</option>
+                    <option value="Single 2 bedroom" <?php if($propertyData->room_type == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
+                    <option value="Single 3 bedroom" <?php if($propertyData->room_type == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
                 <?php } ?>
 
                 <?php if(!empty($propertyData) && $propertyData->residence == "YMCA"){?>
                     <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
                     <option value="3 Sharing" <?php if($propertyData->room_type == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                    <option value="single room small" <?php if($propertyData->room_type == "single room small"){ echo "selected";}?>>Single Room | small</option>
-                    <option value="single room medium" <?php if($propertyData->room_type == "single room medium"){ echo "selected";}?>>Single Room | Medium</option>
-                    <option value="single room large" <?php if($propertyData->room_type == "single room large"){ echo "selected";}?>>Single Room | Large</option>
+                    <option value="Single small" <?php if($propertyData->room_type == "Single small"){ echo "selected";}?>>Single | small</option>
+                    <option value="Single medium" <?php if($propertyData->room_type == "Single medium"){ echo "selected";}?>>Single | Medium</option>
+                    <option value="Single large" <?php if($propertyData->room_type == "Single large"){ echo "selected";}?>>Single | Large</option>
                 <?php } ?>
             </select>
 
@@ -146,19 +146,19 @@
         let propValue = $("#residence").val();
 
         if(propValue == "Braamlofts"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
         }else if(propValue == "80 Jorissen"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "49 Jorissen"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="single room 2 bedroom">Single Room | 2 Bedroom</option><option value="single room 3 bedroom">Single Room | 3 Bedroom</option>')
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option>')
         }else if(propValue == "Dunvista Mansions"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "Wynton Joy"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "126 Siemert"){
-            $("#roomType").empty().append('<option value="Single Room">Single Room</option><option value="2 Sharing">2 Sharing</option>')
+            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="single room small">Single Room | small</option><option value="single room medium">Single Room | Medium</option><option value="single room large">Single Room | Large</option>')
+            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="Single small">Single | small</option><option value="Single medium">Single | Medium</option><option value="Single large">Single | Large</option>')
         }
     })
 </script>

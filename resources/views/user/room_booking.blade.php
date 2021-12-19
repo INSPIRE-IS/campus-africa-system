@@ -42,7 +42,7 @@
         <div class="whiteCard roomImgBack room" style="margin-left:11px;">
             <div class="overlayCustom">
                 <h4 class="cardSub">Braamlofts</h4>
-                <h2 class="cardHeaderSub" >Single Room</h2>
+                <h2 class="cardHeaderSub" >Single</h2>
                 <h4 class="cardSub">Room 23 Floor 2</h4>
             </div>
         </div>

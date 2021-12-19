@@ -32,14 +32,14 @@
         <label></label><br/>
             <select name="room_type" id="room_type">
                 <option value="All" selected>All Room Types</option>
-                <option value="Single Room">Single Room</option>
+                <option value="Single">Single</option>
                 <option value="2 Sharing">2 Sharing</option>
                 <option value="3 Sharing">3 Sharing</option>
-                <option value="single room 2 bedroom">Single Room | 2 Bedroom</option>
-                <option value="single room 3 bedroom">Single Room | 3 Bedroom</option>
-                <option value="single room small">Single Room | Small</option>
-                <option value="single room medium">Single Room | Medium</option>
-                <option value="single room large">Single Room | Large</option>
+                <option value="Single 2 bedroom">Single | 2 Bedroom</option>
+                <option value="Single 3 bedroom">Single | 3 Bedroom</option>
+                <option value="Single small">Single | Small</option>
+                <option value="Single medium">Single | Medium</option>
+                <option value="Single large">Single | Large</option>
             </select>
         </div>
         <div class="searchField">
