@@ -598,8 +598,8 @@
                         $("#infoButtons").addClass('hidden');
 
                         /*$("#infoChecker").addClass('hidden')
-                        $("#infoToCheck").empty();
-                        $("#approveData").empty().append('Approve')*/
+                        $("#infoToCheck").empty();*/
+                        $("#approveData").empty().append('Approve')
 
                         if(FileNameForApproval == "copyID"){
                             $("#id_data_approved").val('1')
