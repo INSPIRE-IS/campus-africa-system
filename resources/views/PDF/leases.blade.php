@@ -189,7 +189,7 @@
             <span style="font-weight:bold; font-size:14px;">4.	Administration Fee</span>
 
             <ol type="a" style=" text-laign:left; font-size:14px;">
-                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of R{{$residence->booking_fee}}. </li>
+                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of R{{$residence->booking_rate}}. </li>
                 <br/>
             </ol>
 
@@ -568,7 +568,7 @@
 
             <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:44%;">
             <br/><br/>
-            <span style="font-weight:bold; font-size:14px;"> ANNEXURE A: Inventory of contents of Room – UNIT: {{$propertyData->residence}}, {{$propertyData->bed_code}}, {{$data->userFirstName}}, {{$data->userLastname}}, {{$data->yearOfStudy}}</span>
+            <span style="font-weight:bold; font-size:14px;"> ANNEXURE A: Inventory of contents of Room – UNIT: {{$propertyData->residence}}, {{$propertyData->bed_code}}, {{$data->userFirstName}}, {{$data->userLastname}}, {{$data->year}}</span>
             <br/><br/>
             <p style="font-weight:bold; font-size:14px; text-align:center">ACCOMMODATION & RESIDENCE LIFE FORM</p>
             <p style="font-size:14px; text-align:center">For Office Use Only</p>

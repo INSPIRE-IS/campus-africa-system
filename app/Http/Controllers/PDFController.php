@@ -85,7 +85,7 @@ class PDFController extends Controller
         // return $pdf->download('lease.pdf');
 
         $content = $pdf->download('lease.pdf')->getOriginalContent();
-        $user = User::where('id', $bookingId)->first();
+        $user = User::where('id', $studentId)->first();
 
         \Storage::put('public/files/'.$user->userId.'/Lease.pdf',$content) ;
 

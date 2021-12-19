@@ -68,15 +68,6 @@
 
 <div class="container">
     
-    <?php /*
-    <div class="row">
-        <!-- <a href="/createLease/{{$user[0]['userInfo']['id']}}"><button type="button" class="lease">Create Lease</button></a> -->
-        <!-- <?php if($booking->lease_from_date == "" && $booking->lease_from_time !== "" && $booking->lease_to_date == "" && $booking->lease_to_time !== ""){ ?> -->
-            <!-- <?php } ?> -->
-            <button type="button" class="lease" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Create Lease</button>
-    </div>
-    */ ?>
-    
     <div class="appRow">
         <div class="cards">
 
@@ -266,6 +257,7 @@
                                 <div class="banner" id="{{$file['field']}}Banner">
                                     @if($file["field"] === "moveIn")
                                         <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>
+                                        <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
                                     @endif
 
                                     @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
@@ -445,9 +437,9 @@
                 </div>
             @endif
 
-            {{-- <div class="form-field-big" >
-                <button type="button" id="generateLease" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change Booking</button>
-            </div> --}}
+            <div class="form-field-big" >
+                <button type="button" id="generateLease" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Generate Lease</button>
+            </div>
         </div>
 
         <div class="form-field-big" id="ChangeBookingOnly">
@@ -1963,6 +1955,25 @@
             }
         })
     }
+
+    $('#myBtn_regen_lease').on("click", function(e) {
+        let btn = $(this);
+        $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        $.ajax({
+            type: "post",
+            url: "/createLease/{{$user[0]['userInfo']['id']}}",
+            data: {
+                type: "auto",
+            },
+
+            success: function (data) {                
+                $(btn).html('REGEN LEASE');
+            },
+        });
+
+        e.preventDefault();
+    });
 
     // function checkData(){
     //     $.ajax({

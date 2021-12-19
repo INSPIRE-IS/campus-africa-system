@@ -678,6 +678,11 @@ class HomeController extends Controller
 
                 }
 
+                //For lease mark application as completed
+                if ($item['field'] == "moveIn") {
+                    $phase2 = "Approved Confirmed";
+                }
+
             }
 
             $booking = "Rejected";
@@ -1217,9 +1222,9 @@ class HomeController extends Controller
                 $user = User::where('id', $userUid)->first();
                 $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
 
-                if($user->applicationStatus == "Approved Confirmed"){
-                    array_push($all, "moveIn");
-                }
+                // if($user->applicationStatus == "Approved Confirmed"){
+                //     array_push($all, "moveIn");
+                // }
                 if($user->studentType == "Cash / Direct"){
                     array_push($all, "bankStatement");
                 }
@@ -1327,6 +1332,11 @@ class HomeController extends Controller
                             $phase2 = "Rejected";
                         }
 
+                    }
+
+                    //For lease mark application as completed
+                    if ($item['field'] == "moveIn") {
+                        $phase2 = "Approved Confirmed";
                     }
 
                 }
