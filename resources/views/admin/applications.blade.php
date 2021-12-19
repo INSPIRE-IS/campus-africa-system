@@ -115,7 +115,7 @@
                         <th>PROOF OF REGISTRATION</th>
                         <th>NSFAS | BURSARY APPROVAL</th>
                         <th>BANK STATEMENTS</th>
-                        <th style="background-color:#ccc; color:#000">Lease</th>
+                        <th style="background-color:#ccc; color:#000">LEASE</th>
                     </tr>
                 </thead>
                 <tbody id="applicantsSection">
