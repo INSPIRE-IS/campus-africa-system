@@ -311,7 +311,7 @@
 
 <div id="myModalEditApp" class="modal">
 
-    <div class="modal-content " id="editModalHeight" style="height:530px;">
+    <div class="modal-content " id="editModalHeight" style="<?php if(Auth::user()->role_change_date == "1"){echo "height:700px;";}else{echo "height:530px;";} ?>">
     <span class="closeBooking" style="float:right; font-size:25px; cursor:pointer">&times;</span>
     <div class="form-card">
         <h2>Change this booking</h2>
@@ -324,13 +324,27 @@
 
             <select name="property" id='property' class="required">
                 <option value="" selected disabled>Select a Residence</option>
+                @if(Auth::user()->role_braamlofts == 1)
                     <option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";}?>>Braamlofts</option>
+                @endif
+                @if(Auth::user()->role_80_jorissen == 1)
                     <option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_49_jorissen == 1)
                     <option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_dunvista_mansions == 1)
                     <option value="Dunvista Mansions" <?php if($booking->property == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>
+                @endif
+                @if(Auth::user()->role_wynton_joy == 1)
                     <option value="Wynton Joy" <?php if($booking->property == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>
+                @endif
+                @if(Auth::user()->role_126_siemert == 1)
                     <option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";}?>>126 Siemert</option>
+                @endif
+                @if(Auth::user()->role_ymca == 1)
                     <option value="YMCA" <?php if($booking->property == "YMCA"){echo "selected";}?>>YMCA</option>
+                @endif
             </select>
         </div>
 
@@ -410,22 +424,24 @@
             <div class="form-field">
                 <br/>
             </div>
-            <div class="form-field">
-                <label>Lease From Date * <span id="lease_from_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="date" name="lease_from_date" id="lease_from_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_date."'";}}?>>
-            </div>
-            <div class="form-field">
-                <label>Lease From Time * <span id="lease_from_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="time" id="lease_from_time" name="lease_from_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_time."'";}}?>>
-            </div>
-            <div class="form-field">
-                <label>Lease To Date * <span id="lease_to_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="date" name="lease_to_date" id="lease_to_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_date."'";}}?>>
-            </div>
-            <div class="form-field">
-                <label>Lease To Time * <span id="lease_to_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                <input type="time" id="lease_to_time" name="lease_to_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}?>>
-            </div>
+            @if(Auth::user()->role_change_date == "1")
+                <div class="form-field">
+                    <label>Lease From Date * <span id="lease_from_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                    <input type="date" name="lease_from_date" id="lease_from_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_date."'";}}?>>
+                </div>
+                <div class="form-field">
+                    <label>Lease From Time * <span id="lease_from_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                    <input type="time" id="lease_from_time" name="lease_from_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_time."'";}}?>>
+                </div>
+                <div class="form-field">
+                    <label>Lease To Date * <span id="lease_to_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                    <input type="date" name="lease_to_date" id="lease_to_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_date."'";}}?>>
+                </div>
+                <div class="form-field">
+                    <label>Lease To Time * <span id="lease_to_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                    <input type="time" id="lease_to_time" name="lease_to_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}?>>
+                </div>
+            @endif
 
             <div class="form-field-big" >
                 <button type="button" id="generateLease" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change Booking</button>
@@ -678,7 +694,7 @@
         if(type == "generate"){
             $("#ChangeBookingOnly").addClass('hidden')
             $("#LeaseInfo").removeClass('hidden')
-            document.getElementById("editModalHeight").style.height = "700px";
+            // document.getElementById("editModalHeight").style.height = "700px";
             $("#lease_from_date").addClass("required")
             $("#lease_from_time").addClass("required")
             $("#lease_to_date").addClass("required")
@@ -686,7 +702,7 @@
         }else{
             $("#ChangeBookingOnly").removeClass('hidden')
             $("#LeaseInfo").addClass('hidden')
-            document.getElementById("editModalHeight").style.height = "530px";
+            // document.getElementById("editModalHeight").style.height = "530px";
             $("#lease_from_date").removeClass("required")
             $("#lease_from_time").removeClass("required")
             $("#lease_to_date").removeClass("required")

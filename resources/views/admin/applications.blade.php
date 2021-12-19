@@ -19,13 +19,27 @@
         <label></label><br/>
             <select name="property" id="property">
                 <option value="All" selected>All Residences</option>
-                <option value="Braamlofts">Braamlofts</option>
-                <option value="80 Jorissen">80 Jorissen</option>
-                <option value="49 Jorissen">49 Jorissen</option>
-                <option value="Dunvista Mansions">Dunvista Mansions</option>
-                <option value="Wynton Joy">Wynton Joy</option>
-                <option value="126 Siemert">126 Siemert</option>
-                <option value="YMCA">YMCA</option>
+                @if(Auth::user()->role_braamlofts == 1)
+                    <option value="Braamlofts">Braamlofts</option>
+                @endif
+                @if(Auth::user()->role_80_jorissen == 1)
+                    <option value="80 Jorissen">80 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_49_jorissen == 1)
+                    <option value="49 Jorissen">49 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_dunvista_mansions == 1)
+                    <option value="Dunvista Mansions">Dunvista Mansions</option>
+                @endif
+                @if(Auth::user()->role_wynton_joy == 1)
+                    <option value="Wynton Joy">Wynton Joy</option>
+                @endif
+                @if(Auth::user()->role_126_siemert == 1)
+                    <option value="126 Siemert">126 Siemert</option>
+                @endif
+                @if(Auth::user()->role_ymca == 1)
+                    <option value="YMCA">YMCA</option>
+                @endif
             </select>
         </div>
         <div class="searchField">

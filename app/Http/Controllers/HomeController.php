@@ -384,7 +384,35 @@ class HomeController extends Controller
                 
                 $roomBooking = Booking::where('userId', $user->id)->first();
 
-                array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                if(Auth::user()->role_braamlofts == "1" && $roomBooking->property == "Braamlofts"){
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                }
+
+                if(Auth::user()->role_80_jorissen == "1" && $roomBooking->property == "80 Jorissen"){
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                }
+
+                if(Auth::user()->role_49_jorissen == "1" && $roomBooking->property == "49 Jorissen"){
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                }
+
+                if(Auth::user()->role_dunvista_mansions == "1" && $roomBooking->property == "Dunvista Mansions"){
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                }
+
+                if(Auth::user()->role_wynton_joy == "1" && $roomBooking->property == "Wynton Joy"){
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                }
+
+                if(Auth::user()->role_126_siemert == "1" && $roomBooking->property == "126 Siemert"){
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                }
+
+                if(Auth::user()->role_ymca == "1" && $roomBooking->property == "YMCA"){
+                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code"=>$roomBooking->bed_code]);
+                }
+
+                
             }
 
             usort($userData, function($a, $b) {
@@ -965,6 +993,7 @@ class HomeController extends Controller
             "role_wynton_joy" => $request->role_wynton_joy,
             "role_126_siemert" => $request->role_126_siemert,
             "role_ymca" => $request->role_ymca,
+            "role_change_date" => $request->role_change_date,
         ]);
 
         return redirect()->back();
@@ -1486,6 +1515,7 @@ class HomeController extends Controller
             "role_wynton_joy" => $request->role_wynton_joy,
             "role_126_siemert" => $request->role_126_siemert,
             "role_ymca" => $request->role_ymca,
+            "role_change_date" => $request->role_change_date,
         ]);
 
         return redirect()->route('users');
@@ -1668,7 +1698,34 @@ class HomeController extends Controller
                 
                 if(!empty($user)){
 
-                    array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+
+                    if(Auth::user()->role_braamlofts == "1" && $roomBooking->property == "Braamlofts"){
+                        array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+                    }
+    
+                    if(Auth::user()->role_80_jorissen == "1" && $roomBooking->property == "80 Jorissen"){
+                        array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+                    }
+    
+                    if(Auth::user()->role_49_jorissen == "1" && $roomBooking->property == "49 Jorissen"){
+                        array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+                    }
+    
+                    if(Auth::user()->role_dunvista_mansions == "1" && $roomBooking->property == "Dunvista Mansions"){
+                        array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+                    }
+    
+                    if(Auth::user()->role_wynton_joy == "1" && $roomBooking->property == "Wynton Joy"){
+                        array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+                    }
+    
+                    if(Auth::user()->role_126_siemert == "1" && $roomBooking->property == "126 Siemert"){
+                        array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+                    }
+    
+                    if(Auth::user()->role_ymca == "1" && $roomBooking->property == "YMCA"){
+                        array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code]);
+                    }
                 }
 
             

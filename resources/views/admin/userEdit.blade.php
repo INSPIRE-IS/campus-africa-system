@@ -54,7 +54,7 @@
             </select> 
         </div> -->
 
-        <div class="form-field" style="margin-bottom:850px;">
+        <div class="form-field" style="margin-bottom:870px;">
             <label>Access Roles</label>
             <br/><br/>
             <ul style="list-style-type:none">
@@ -121,6 +121,11 @@
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_ymca" name="role_ymca" value="1" <?php if($user->role_ymca == "1"){echo "checked";} ?>>
                     <label for="role_ymca" style="width:400px">YMCA</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_change_date" name="role_change_date" value="1">
+                    <label for="role_change_date" style="width:400px">Change Lease Dates</label>
                 </li>
             </ul>
         </div>

@@ -112,6 +112,7 @@ class User extends Authenticatable
         'kin_approved',
         'parent_approved',
         'burser_approved',
+        'role_change_date',
     ];
 
     public function files(){
