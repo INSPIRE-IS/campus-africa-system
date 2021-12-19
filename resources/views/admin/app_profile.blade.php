@@ -505,6 +505,7 @@
 <input type="hidden" id="kin_approved" value="{{$user[0]['userInfo']['kin_approved']}}"/>
 <input type="hidden" id="parent_approved" value="{{$user[0]['userInfo']['parent_approved']}}"/>
 <input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/>
+<input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/>
 
 
 <script>
@@ -543,7 +544,7 @@
 
         if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
             
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
+            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
                 $("#MainAppSection").removeClass('hidden')
                 document.getElementById("col1").style.marginTop = "-35px";
                 document.getElementById("col2").style.marginTop = "-35px";
@@ -552,7 +553,7 @@
 
         }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS" || "{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
             
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
+            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
                 $("#MainAppSection").removeClass('hidden')
                 document.getElementById("col1").style.marginTop = "-35px";
                 document.getElementById("col2").style.marginTop = "-35px";
@@ -603,10 +604,11 @@
                         rejBtn.removeAttribute("disabled", "disabled");
 
                         $("#infoButtons").addClass('hidden');
+                        $("#approveData").empty().append('Approve')
 
                         /*$("#infoChecker").addClass('hidden')
                         $("#infoToCheck").empty();
-                        $("#approveData").empty().append('Approve')*/
+                        */
 
                         if(FileNameForApproval == "copyID"){
                             $("#id_data_approved").val('1')
@@ -1096,13 +1098,18 @@
             }else{
                 bIntName = ""
             }
-            var Data = "<span style='font-weight:bold'>Company Name:</span> {{$user[0]['userInfo']['burCompanyName']}}<br/>"+
-                "<span style='font-weight:bold'>Registration Number:</span> {{$user[0]['userInfo']['burRegNo']}}<br/>"+
-                "<span style='font-weight:bold'>Contact Person:</span> {{$user[0]['userInfo']['burContactPerson']}}<br/>"+
-                "<span style='font-weight:bold'>Contact Number:</span> {{$user[0]['userInfo']['burContactNo']}}<br/>"+
-                "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['burEmail']}}<br/>"+
-                "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>"+
-                "<span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user[0]['userInfo']['bPayment']}}<br/>"+bInt+bIntName;
+            if("{{$user[0]['userInfo']['studentType']}}" !== "NSFAS"){
+
+                var Data = "<span style='font-weight:bold'>Company Name:</span> {{$user[0]['userInfo']['burCompanyName']}}<br/>"+
+                    "<span style='font-weight:bold'>Registration Number:</span> {{$user[0]['userInfo']['burRegNo']}}<br/>"+
+                    "<span style='font-weight:bold'>Contact Person:</span> {{$user[0]['userInfo']['burContactPerson']}}<br/>"+
+                    "<span style='font-weight:bold'>Contact Number:</span> {{$user[0]['userInfo']['burContactNo']}}<br/>"+
+                    "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['burEmail']}}<br/>"+
+                    "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>"+
+                    "<span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user[0]['userInfo']['bPayment']}}<br/>"+bInt+bIntName;
+            }else{
+                var Data = "";
+            }
 
         }else if(field == "bankStatement"){
             var title = "Bank statement";
