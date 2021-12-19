@@ -6,7 +6,7 @@
 
 <div class="container form-card">
 
-    <form action="/add-student" method="post" id="newUser" class="form">
+    <form action="/add-student" method="post" id="newUser" class="form" autocomplete="off">
     @csrf
         <br/>
         <br/>

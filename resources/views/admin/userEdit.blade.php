@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container form-card">
-<form action="/update-admin" method="post">
+<form action="/update-admin" method="post" autocomplete="off">
     @csrf
         <br/>
         <h1 class="header fs-title">User: {{$user->userFirstName}} {{$user->userLastname}}</h2>

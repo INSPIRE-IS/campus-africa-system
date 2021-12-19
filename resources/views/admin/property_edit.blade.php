@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container form-card">
-<form action="/save-property" method="post">
+<form action="/save-property" method="post" autocomplete="off">
     @csrf
         <br/><br/>
 
