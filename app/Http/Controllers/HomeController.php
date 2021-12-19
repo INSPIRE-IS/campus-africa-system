@@ -2086,14 +2086,20 @@ class HomeController extends Controller
         }else if($request->FileNameForApproval == "bursaryApproval"){
             $name = 'NSFAS / BURSARY';
             $field = "bursary_approved";
+            $field2 = "burser_approved";
         }else if($request->FileNameForApproval == "bankStatement"){
             $name = 'BANK STATEMENT';
             $field = "bank_approved";
+            $field2 = "parent_approved";
         }
 
         $dataToUpdate = [
             $field => $request->type,
         ];
+
+        if($field2){
+            $dataToUpdate[$field2] = $request->type;
+        }
         
         User::where('id', $request->userId)->update($dataToUpdate);
 

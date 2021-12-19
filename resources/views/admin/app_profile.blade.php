@@ -508,48 +508,48 @@
         }
     });
 
-    checkUserStatus();
 
-    // MainAppSection
-    function checkUserStatus(){
-        if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
+        checkUserStatus();
 
-            // rejectedSpon
+        // MainAppSection
+        function checkUserStatus(){
 
             if($("#parent_approved").val() == "1" || $("#parent_approved").val() == "2"){
-                $("#rejectedSpon").addClass('hidden')
-                $("#approvedSpon").removeClass('hidden')
-            }
-            if($("#burser_approved").val() == "1" || $("#burser_approved").val() == "2"){
-                $("#rejectedBur").addClass('hidden')
-                $("#approvedBur").removeClass('hidden')
-            }
-            if($("#kin_approved").val() == "1" || $("#kin_approved").val() == "2"){
-                $("#rejectedKin").addClass('hidden')
-                $("#approvedKin").removeClass('hidden')
-            }
-            if($("#address_approved").val() == "1" || $("#address_approved").val() == "2"){
-                $("#rejectedAddr").addClass('hidden')
-                $("#approvedAddr").removeClass('hidden')
-            }
-            
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
-                $("#MainAppSection").removeClass('hidden')
-                document.getElementById("col1").style.marginTop = "-35px";
-                document.getElementById("col2").style.marginTop = "-35px";
-                document.getElementById("col3").style.marginTop = "-35px";
-            }
+                    $("#rejectedSpon").addClass('hidden')
+                    $("#approvedSpon").removeClass('hidden')
+                }
+                if($("#burser_approved").val() == "1" || $("#burser_approved").val() == "2"){
+                    $("#rejectedBur").addClass('hidden')
+                    $("#approvedBur").removeClass('hidden')
+                }
+                if($("#kin_approved").val() == "1" || $("#kin_approved").val() == "2"){
+                    $("#rejectedKin").addClass('hidden')
+                    $("#approvedKin").removeClass('hidden')
+                }
+                if($("#address_approved").val() == "1" || $("#address_approved").val() == "2"){
+                    $("#rejectedAddr").addClass('hidden')
+                    $("#approvedAddr").removeClass('hidden')
+                }
 
-        }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS" || "{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
-            
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
-                $("#MainAppSection").removeClass('hidden')
-                document.getElementById("col1").style.marginTop = "-35px";
-                document.getElementById("col2").style.marginTop = "-35px";
-                document.getElementById("col3").style.marginTop = "-35px";
+            if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
+                
+                if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
+                    $("#MainAppSection").removeClass('hidden')
+                    document.getElementById("col1").style.marginTop = "-35px";
+                    document.getElementById("col2").style.marginTop = "-35px";
+                    document.getElementById("col3").style.marginTop = "-35px";
+                }
+
+            }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS" || "{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
+                
+                if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed"){
+                    $("#MainAppSection").removeClass('hidden')
+                    document.getElementById("col1").style.marginTop = "-35px";
+                    document.getElementById("col2").style.marginTop = "-35px";
+                    document.getElementById("col3").style.marginTop = "-35px";
+                }
             }
         }
-    }
 
 
     function approveData(){
@@ -612,12 +612,10 @@
                             $("#burser_approved").val('1')
                         }
 
-                    },
-                });
-            }
-        })
+                checkUserStatus()
 
-        
+            },
+        });
     }
 
     function rejectData(){
@@ -1446,7 +1444,6 @@
                 if(type === "Rejected"){
                     $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
                     $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden onChange="bursaryApp()">')
-                    //here
 
                     $("#rejected").empty().append('REJECT WITH REASON')
                     var preview1 = document.getElementById("amend");
@@ -1718,6 +1715,7 @@
 
             success: function (data) {
                 if (data[0] == "done") {
+                    
                     $("#bankStatementStatus").empty().append('<div class="button action"></div>');
 
                     $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
@@ -1814,6 +1812,7 @@
             success: function (data) {
                 if (data[0] == "done") {
 
+
                     $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
 
                     $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1]+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
@@ -1846,6 +1845,7 @@
 
             success: function (data) {
                 if (data[0] == "done") {
+
 
                     $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
 
