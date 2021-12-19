@@ -1388,7 +1388,7 @@ class HomeController extends Controller
             'studentNo' => $request->studNumber,
             // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
-            'year' => "2022",
+            'year' => $request->year,
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,
             'sponCell' => $request->pCell_no,
@@ -1440,8 +1440,22 @@ class HomeController extends Controller
             'bIntName' => $request->bIntName,
         ]);
 
-        $booking = Booking::create(["userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType]);
+        //Booking data        
+        $booking_data = array(
+            "userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType
+        );
 
+        //Get default lease data for the booking
+        $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
+
+        $booking_data['lease_from_date'] = $lookup_lease_dates['lease_from_date'];
+        $booking_data['lease_from_time'] = $lookup_lease_dates['lease_from_time'];
+        $booking_data['lease_to_date'] = $lookup_lease_dates['lease_to_date'];
+        $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
+
+        $booking = Booking::create($booking_data);
+
+        //Link booking to User
         User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
 
         ActionList::create([
