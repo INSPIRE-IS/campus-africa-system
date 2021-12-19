@@ -2097,7 +2097,7 @@ class HomeController extends Controller
             $field => $request->type,
         ];
 
-        if($field2){
+        if(isset($field2)){
             $dataToUpdate[$field2] = $request->type;
         }
         
