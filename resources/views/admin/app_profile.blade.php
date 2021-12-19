@@ -459,12 +459,14 @@
                 @endif
             </div>
 
-            <div id="infoChecker" class="hidden">
+            <div id="infoChecker">
                 <br/><hr/><br/>
                 <div class="flex">
                     <p id="infoToCheck"></p>
-                    <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
-                    <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
+                    <div id="infoButtons" class="hidden">
+                        <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
+                        <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
+                    </div>
                 </div>
                 <br/><br/><hr/>
             </div>
@@ -578,9 +580,11 @@
                 var rejBtn = document.getElementById("RejectDAta");
                 rejBtn.removeAttribute("disabled", "disabled");
 
-                $("#infoChecker").addClass('hidden')
+                $("#infoButtons").addClass('hidden');
+
+                /*$("#infoChecker").addClass('hidden')
                 $("#infoToCheck").empty();
-                $("#approveData").empty().append('Approve')
+                $("#approveData").empty().append('Approve')*/
 
                 if(FileNameForApproval == "copyID"){
                     $("#id_data_approved").val('1')
@@ -1095,6 +1099,8 @@
         $("#FileIdForApproval").val(fileId)
         $("#FileNameForApproval").val(field)
 
+        $("#infoToCheck").empty().append(Data);
+
         if(approved !== 1){
             var preview1 = document.getElementById("rejected");
             preview1.setAttribute("disabled", "disabled");
@@ -1107,8 +1113,10 @@
             var preview5 = document.getElementById("actionUserName");
             preview5.setAttribute("readonly", "readonly");
 
-            $("#infoChecker").removeClass('hidden')
-            $("#infoToCheck").empty().append(Data);
+            $("#infoButtons").removeClass('hidden');
+
+            /*$("#infoChecker").removeClass('hidden')
+            $("#infoToCheck").empty().append(Data);*/
         }else{
             var preview1 = document.getElementById("rejected");
             preview1.removeAttribute("disabled", "disabled");
@@ -1121,8 +1129,10 @@
             var preview5 = document.getElementById("actionUserName");
             preview5.removeAttribute("readonly", "readonly");
 
-            $("#infoChecker").addClass('hidden')
-            $("#infoToCheck").empty();
+            $("#infoButtons").addClass('hidden');
+
+            /*$("#infoChecker").addClass('hidden')
+            $("#infoToCheck").empty();*/
         }
 
         if(status == "Approved" || status == "XApproved"){
