@@ -70,6 +70,7 @@ Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
 Route::get("/users", [HomeController::class, 'users'])->name('users');
 Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);
 Route::post("/update-admin", [HomeController::class, 'edit_admin']);
+Route::post("/delete-admin", [HomeController::class, 'delete_admin']);
 Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);

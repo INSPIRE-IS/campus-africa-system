@@ -54,10 +54,10 @@
             </select> 
         </div> -->
 
-        <div class="form-field" style="margin-bottom:870px;">
+        <div>
             <label>Access Roles</label>
             <br/><br/>
-            <ul style="list-style-type:none">
+            <ul style="list-style-type:none; column-count: 2;">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="create_app" name="create_app" value="1" <?php if($user->role_create_app == "1"){echo "checked";} ?>>
                     <label for="create_app" style="width:400px">Create Applications</label>
@@ -131,6 +131,13 @@
         </div>
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
+    </form>
+
+    <form action="/delete-admin" method="post" autocomplete="off">
+        @csrf
+
+        <input type="submit" value="Delete User" class="profileSubmit" style="opacity:1"/>
+        <input type="hidden" name="userUid" id="userUid" value="{{$user->id}}" required >
     </form>
 </div>
 

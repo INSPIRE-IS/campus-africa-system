@@ -1003,6 +1003,14 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
+    public function delete_admin(Request $request){
+        
+
+        User::where('id', $request->userUid)->delete();
+
+        return redirect('/users');
+    }
+
     public function student_edit(Request $request, $studentId){
         $user = User::where('id', $studentId)->first();
         $booking = Booking::where('userId', $studentId)->first();
