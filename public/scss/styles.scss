@@ -177,6 +177,9 @@ body {
             color: #fff;
             text-transform: uppercase;
             border: none;
+            text-align: center;
+            line-height: 37px;
+            text-decoration: none;
         }
     }
 }
@@ -611,6 +614,7 @@ body {
         font-size: 21px;
         font-weight: 300;
         text-align: left;
+        display: block;
     }
     input {
         width: 95% !important;

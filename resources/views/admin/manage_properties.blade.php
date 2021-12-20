@@ -8,6 +8,7 @@
 
 <div class="container">
     <br/>
+    <a href="/room-types"><button type="button" class="detailsChange" >Room Types</button></a>
     <a href="/properties-info"><button type="button" class="detailsChange" >Residence Info</button></a>
     <a href="/property/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
     <br/>
