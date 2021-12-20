@@ -307,7 +307,7 @@
 
 <div id="myModalEditApp" class="modal">
 
-    <div class="modal-content " id="editModalHeight" style="<?php if(Auth::user()->role_change_date == "1"){echo "height:700px;";}else{echo "height:530px;";} ?>">
+    <div class="modal-content " id="editModalHeight" style="<?php if(Auth::user()->role_change_date == "1"){echo "height:624px;";}else{echo "height:530px;";} ?>">
     <span class="closeBooking" style="float:right; font-size:25px; cursor:pointer">&times;</span>
     <div class="form-card">
         <h2>Change this booking</h2>
@@ -372,8 +372,8 @@
             </select>
         </div>
         
-        <input type="text" name="room" id="room" value="" />
-        <input type="text" name="bed" id="bed" value="" />
+        <input type="hidden" name="room" id="room" value="" />
+        <input type="hidden" name="bed" id="bed" value="" />
 
         {{-- <div class="form-field-big" id="ChangeBookingOnly">
             <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
@@ -796,10 +796,10 @@
                                 spacer = " - ";
                             }
 
-                            if (roomData[key].meta_info_2 !== "" && roomData[key].meta_info_2 !== null) {
+                            /*if (roomData[key].meta_info_2 !== "" && roomData[key].meta_info_2 !== null) {
                                 floor_name += spacer + roomData[key].meta_info_2;
                                 spacer = " - ";
-                            }
+                            }*/
 
                             floor_name += spacer + roomData[key].floor;
 
