@@ -495,13 +495,13 @@ class HomeController extends Controller
 
             $lookup = Lookups::get();
 
-            $booking = Booking::where('userId', $userId)->first();
             $residence = Residence::where('residence', $booking->residence)->first();
 
-            
+            //Get booking Meta
+            $bookingPropData = Property::where('id', $booking->property_data_id)->first();
 
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence]);
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData]);
         }
     }
 
@@ -2025,15 +2025,21 @@ class HomeController extends Controller
             $floors = [];
 
             foreach($propertyInfo as $pi) {
-                if (!isset($floors[$pi->floor])) {
-                    $floors[$pi->floor] = $pi;
+                $new_floor = $pi->floor;
+
+                if (!empty($pi->meta_info_1)) {
+                    $new_floor .= $pi->meta_info_1;
+                }
+
+                if (!isset($floors[$new_floor])) {
+                    $floors[$new_floor] = $pi;
                 }
             }
 
             return ["true", $selected, $floors];
 
         } elseif (isset($request->getType) && $request->getType == "unit") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->get();
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->get();
 
             //Create a unique Unit list
             $units = [];
