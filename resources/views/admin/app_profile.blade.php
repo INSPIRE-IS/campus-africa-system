@@ -347,32 +347,7 @@
         <div class="form-field">
             <label>Room Type * <span id="roomType_error" class="hidden"><small style="color:red">This field is required</small></span></label>
             <select name="roomType" id='roomType' class="required">
-            <option value="" selected disabled>Select a Room Type</option>
-                <?php if($booking->property == "Braamlofts"){?>
-                    <option value="Single" <?php if($booking->roomType == "Single"){ echo "selected";}?>>Single</option>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="3 Sharing" <?php if($booking->roomType == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                <?php } ?>
-
-                <?php if($booking->property == "80 Jorissen" || $booking->property == "Dunvista Mansions" || $booking->property == "Wynton Joy" || $booking->property == "126 Siemert"){?>
-                    <option value="Single" <?php if($booking->roomType == "Single"){ echo "selected";}?>>Single</option>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                <?php } ?>
-
-                <?php if($booking->property == "49 Jorissen"){?>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="Single 2 Bedroom" <?php if($booking->roomType == "Single 2 Bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
-                    <option value="Single 3 Bedroom" <?php if($booking->roomType == "Single 3 Bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
-                    <option value="Single 4 Bedroom" <?php if($booking->roomType == "Single 4 Bedroom"){ echo "selected";}?>>Single | 4 Bedroom</option>
-                <?php } ?>
-
-                <?php if($booking->property == "YMCA"){?>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="3 Sharing" <?php if($booking->roomType == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                    <option value="Single small" <?php if($booking->roomType == "Single small"){ echo "selected";}?>>Single | small</option>
-                    <option value="Single medium" <?php if($booking->roomType == "Single medium"){ echo "selected";}?>>Single | Medium</option>
-                    <option value="Single large" <?php if($booking->roomType == "Single large"){ echo "selected";}?>>Single | Large</option>
-                <?php } ?>
+                <option value="" selected disabled>Select a Room Type</option>
             </select>
         </div>
 
@@ -391,27 +366,14 @@
         </div>
 
         <div class="form-field">
-            <label>Room</label>
-            <select name="room" id='room'>
-                <!--  -->
-            </select>
-        </div>
-
-        <div class="form-field">
-            <label>Bed</label>
-            <select name="bed" id='bed'>
-                <!--  -->
-            </select>
-        </div>
-
-        <div class="form-field">
             <label>Bed Code * <span id="bed_code_error" class="hidden"><small style="color:red">This field is required</small></span></label>
             <select name="bed_code" id='bed_code'>
                 <!--  -->
             </select>
         </div>
         
-        
+        <input type="text" name="room" id="room" value="" />
+        <input type="text" name="bed" id="bed" value="" />
 
         {{-- <div class="form-field-big" id="ChangeBookingOnly">
             <button type="button" id="changeBookingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change booking</button>
@@ -712,6 +674,8 @@
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
 
+        $("#property").change();
+
         callRoomDetails('floor','', '', '', '', '', 'open')
         
     }
@@ -797,7 +761,119 @@
         }
     })
 
-    function callRoomDetails(callId, floor, unit, room, bed, bed_code, action){
+    function callRoomDetails(callId){
+        if (callId == "floor") {
+            if ($("#property").val() !== "" && $("#roomType").val() !== "") {
+                $('#floor').html('<option>Loading</option>');
+                $('#unit').html('<option>Choose a Floor</option>');
+                $('#bed_code').html('<option>Choose a Unit</option>');
+
+                $('#room').val('');
+                $('#bed').val('');
+
+                $.ajax({
+                    type: "post",
+                    url: "/get-booking-info",
+                    data: {
+                        bookingId: $("#bookingId").val(), 
+                        property: $("#property").val(),
+                        roomType: $("#roomType").val(), 
+                        getType: callId
+                    },
+
+                    success: function (data) {
+                        let roomData = data[2];
+
+                        $('#floor').html('<option>Choose a Floor</option>');
+
+                        Object.keys(roomData).forEach( function(key) {
+
+                            let floor_name = "";
+                            let spacer = "";
+
+                            if (roomData[key].meta_info_1 !== "" && roomData[key].meta_info_1 !== null) {
+                                floor_name = roomData[key].meta_info_1;
+                                spacer = " - ";
+                            }
+
+                            if (roomData[key].meta_info_2 !== "" && roomData[key].meta_info_2 !== null) {
+                                floor_name += spacer + roomData[key].meta_info_2;
+                                spacer = " - ";
+                            }
+
+                            floor_name += spacer + roomData[key].floor;
+
+                            selected = "";
+                            /*if (data[1].floor == roomData[key].floor) {
+                                selected = "selected='selected'";
+                            }*/
+
+                            $('#floor').append("<option "+selected+" value='"+roomData[key].floor+"'>"+floor_name+"</option>")
+                        });                  
+                    }
+                });
+            }
+
+        } else if (callId == "unit") {
+            $('#unit').html('<option>Loading</option>');
+            $('#bed_code').html('<option>Choose a Unit</option>');
+
+            $('#room').val('');
+            $('#bed').val('');
+
+            $.ajax({
+                type: "post",
+                url: "/get-booking-info",
+                data: {
+                    bookingId: $("#bookingId").val(), 
+                    property: $("#property").val(),
+                    roomType: $("#roomType").val(), 
+                    floor: $('#floor').val(),
+                    getType: callId
+                },
+
+                success: function (data) {
+                    let roomData = data[2];
+
+                    $('#unit').html('<option>Choose a Unit</option>');
+
+                    Object.keys(roomData).forEach( function(key) {
+                        $('#unit').append("<option value='"+roomData[key].unit+"'>"+roomData[key].unit+"</option>")
+                    });                    
+                }
+            });
+
+        } else if (callId == "bed_code") {
+            $('#bed_code').html('<option>Loading</option>');
+
+            $('#room').val('');
+            $('#bed').val('');
+
+            $.ajax({
+                type: "post",
+                url: "/get-booking-info",
+                data: {
+                    bookingId: $("#bookingId").val(), 
+                    property: $("#property").val(),
+                    roomType: $("#roomType").val(), 
+                    floor: $('#floor').val(),
+                    unit: $('#unit').val(),
+                    getType: callId
+                },
+
+                success: function (data) {
+                    let roomData = data[2];
+
+                    $('#bed_code').html('<option>Choose a Bed</option>');
+
+                    Object.keys(roomData).forEach( function(key) {
+                        $('#bed_code').append("<option value='"+roomData[key].bed_code+"' room='"+roomData[key].room+"' bed='"+roomData[key].bed+"'>"+roomData[key].bed_code+"</option>")
+                    });                    
+                }
+            });
+        }
+
+        /*
         if (floor === "") {
             $("#floor").html('<option>Loading...</option>');
             $("#unit").html('<option>Loading...</option>');
@@ -954,16 +1030,28 @@
                 }
             },
         });
+        */
     }
 
     $("#floor").on('change', function(){
-        callRoomDetails('unit', $("#floor").val(), '', '', '', '', '')
-    })
+        callRoomDetails('unit');
+    });
 
     $("#unit").on('change', function(){
-        callRoomDetails('room', $("#floor").val(), $("#unit").val(), '', '', '', '')
-    })
+        callRoomDetails('bed_code');
+    });
+    
+    $('#bed_code').on('change', function() {
+        if ($('#bed_code option:selected').attr('room') !== "null") {
+            $('#room').val($('#bed_code option:selected').attr('room'));
+        }
 
+        if ($('#bed_code option:selected').attr('bed') !== "null") {
+            $('#bed').val($('#bed_code option:selected').attr('bed'));
+        }               
+    });
+
+    /*
     $("#room").on('change', function(){
         callRoomDetails('bed', $("#floor").val(), $("#unit").val(), $("#room").val(), '', '', '')
     })
@@ -971,6 +1059,7 @@
     $("#bed").on('change', function(){
         callRoomDetails('bed_code', $("#floor").val(), $("#unit").val(), $("#room").val(), $("#bed").val(), '', '')
     })
+    */
 
     
 
@@ -1057,8 +1146,7 @@
             $("#bed_code").removeClass("fieldError")
             $("#bed_code_error").addClass("hidden")
         }
-    })
-
+    });    
 
     $("#property").on('change', function(){
         let propValue = $("#property").val();
@@ -1068,7 +1156,7 @@
         }else if(propValue == "80 Jorissen"){
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "49 Jorissen"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="Single">Single</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option><option value="Single 4 bedroom">Single | 4 Bedroom</option>')
         }else if(propValue == "Dunvista Mansions"){
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "Wynton Joy"){
@@ -1076,7 +1164,7 @@
         }else if(propValue == "126 Siemert"){
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="Single small">Single | small</option><option value="Single medium">Single | Medium</option><option value="Single large">Single | Large</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single 3 Bedroom</option>')
         }
 
         $("#floor").empty();
