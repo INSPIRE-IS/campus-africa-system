@@ -46,14 +46,22 @@
         <label></label><br/>
             <select name="room_type" id="room_type">
                 <option value="All" selected>All Room Types</option>
+                
                 <option value="Single">Single</option>
+
+                <option value="Single 2 Bedroom">Single | 2 Bedroom</option>
+                <option value="Single 3 Bedroom">Single | 3 Bedroom</option>
+                <option value="Single 4 Bedroom">Single | 4 Bedroom</option>
+
+                <option value="Single Small">Single | Small</option>
+                <option value="Single Medium">Single | Medium</option>
+                <option value="Single Large">Single | Large</option>
+
                 <option value="2 Sharing">2 Sharing</option>
+                <option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option>
+                <option value="2 Sharing 2 Bedroom">2 Sharing | 3 Bedroom</option>
+
                 <option value="3 Sharing">3 Sharing</option>
-                <option value="Single 2 bedroom">Single | 2 Bedroom</option>
-                <option value="Single 3 bedroom">Single | 3 Bedroom</option>
-                <option value="Single small">Single | Small</option>
-                <option value="Single medium">Single | Medium</option>
-                <option value="Single large">Single | Large</option>
             </select>
         </div>
         <div class="searchField">

@@ -70,6 +70,7 @@ Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
 Route::get("/users", [HomeController::class, 'users'])->name('users');
 Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);
 Route::post("/update-admin", [HomeController::class, 'edit_admin']);
+Route::post("/delete-admin", [HomeController::class, 'delete_admin']);
 Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
@@ -96,6 +97,7 @@ Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
+Route::post('/change-lease', [HomeController::class, 'change_lease']);
 
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::get('/property/edit/{propertyId}', [HomeController::class, 'property_edit']);

@@ -53,7 +53,11 @@
                 <a href="/mailing">Mailing</a>
                 <a href="/lookups">Lookups</a>
                 <a href="/reports">Reports</a>
-                <a href="/users">Users</a>
+
+                @if(Auth::user()->role_manage_users == "1")
+                    <a href="/users">Users</a>
+                @endif
+                
                 <a href="/logout">Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>
