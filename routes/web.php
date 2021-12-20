@@ -97,6 +97,7 @@ Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
+Route::post('/change-lease', [HomeController::class, 'change_lease']);
 
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::get('/property/edit/{propertyId}', [HomeController::class, 'property_edit']);

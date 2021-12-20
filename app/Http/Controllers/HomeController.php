@@ -962,15 +962,23 @@ class HomeController extends Controller
         $systemUsers = User::where("userRole", "!=", "0")->get();
         $students = User::where("userRole", "0")->get();
 
-        return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students, "title" => "User Management"]);
+        if(Auth::user()->role_manage_users == "1") {
+            return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students, "title" => "User Management"]);
+        } else {
+            return "404 Error";
+        }
+
     }
 
     public function user_edit(Request $request, $userId){
         
         $user = User::where('id', $userId)->first();
         
-
-        return view('admin.userEdit', ["headerTitle" => "User Edit", "user" => $user, "title" => "Edit User"]);
+        if(Auth::user()->role_manage_users == "1") {
+            return view('admin.userEdit', ["headerTitle" => "User Edit", "user" => $user, "title" => "Edit User"]);
+        } else {
+            return "404 Error";
+        }
     }
 
     public function edit_admin(Request $request){
@@ -998,6 +1006,8 @@ class HomeController extends Controller
             "role_126_siemert" => $request->role_126_siemert,
             "role_ymca" => $request->role_ymca,
             "role_change_date" => $request->role_change_date,
+            "role_change_bed" => $request->role_change_bed,
+            "role_manage_users" => $request->role_manage_users,
         ]);
 
         return redirect()->back();
@@ -1547,6 +1557,8 @@ class HomeController extends Controller
             "role_126_siemert" => $request->role_126_siemert,
             "role_ymca" => $request->role_ymca,
             "role_change_date" => $request->role_change_date,
+            "role_change_bed" => $request->role_change_bed,
+            "role_manage_users" => $request->role_manage_users,
         ]);
 
         return redirect()->route('users');
@@ -1963,6 +1975,43 @@ class HomeController extends Controller
         }
 
         Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id]);
+
+        return "true";
+    }
+
+    public function change_lease(Request $request){
+
+        $bookingId = $request->bookingId;
+        
+        $lease_from_date = $request->lease_from_date;
+        $lease_from_time = $request->lease_from_time;
+        $lease_to_date = $request->lease_to_date;
+        $lease_to_time = $request->lease_to_time;        
+
+        $oldData = Booking::where('userId', $bookingId)->first();
+        $newData = ['lease_from_date|Lease From Date' => $lease_from_date, 'lease_from_time|Lease From Time' => $lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
+
+        Booking::where('userId', $bookingId)->update(["lease_from_date" => $lease_from_date, "lease_from_time"=>$lease_from_time, "lease_to_date"=>$lease_to_date, "lease_to_time"=>$lease_to_time]);
+
+        foreach($newData as $key => $new){
+            
+            $info = explode("|", $key);
+            $key = $info[0];
+            $changedField = $info[1];
+
+            if($oldData->$key !== $new){
+                if($oldData->$key == "" || $oldData->$key == null){
+                    $oldData->$key = "Unassigned";
+                }
+                ActionList::create([
+                    "userUid" => $request->bookingId,
+                    "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
+        }
 
         return "true";
     }
