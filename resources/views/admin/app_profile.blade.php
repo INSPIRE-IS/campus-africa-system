@@ -101,7 +101,7 @@
             </div>
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
-                <h4 class="cardHeader" >@if($bookingPropData->meta_info_1) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
+                <h4 class="cardHeader" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
                 <h4 class="cardHeader" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}}@endif</h4>
                 <h4 class="cardHeader">
                     @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
