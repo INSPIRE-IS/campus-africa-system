@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container form-card">
-<form action="/update-admin" method="post">
+<form action="/update-admin" method="post" autocomplete="off">
     @csrf
         <br/>
         <h1 class="header fs-title">User: {{$user->userFirstName}} {{$user->userLastname}}</h2>
@@ -42,16 +42,92 @@
 
         <div class="form-field">
             <label>Email Address *</label>
-            <input type="email" name="email" id="email" required value="{{$user->userEmail}}" >
+            <input type="email" name="email" id="email" required value="{{$user->email}}" >
         </div>
 
-        <div class="form-field">
-            <label>User Role</label>
+        <!-- <div class="form-field">
+             <label>User Role</label>
             <select name="userRole" id='userRole'>
                 <option value="1" <?php if($user->userTitle == "1"){echo "selected";} ?>>Super Admin</option>
                 <option value="2" <?php if($user->userTitle == "2"){echo "selected";} ?>>Admin</option>
                 <option value="3" <?php if($user->userTitle == "3"){echo "selected";} ?>>Consultant</option>
-            </select>
+            </select> 
+        </div> -->
+
+        <div class="form-field" style="margin-bottom:870px;">
+            <label>Access Roles</label>
+            <br/><br/>
+            <ul style="list-style-type:none">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="create_app" name="create_app" value="1" <?php if($user->role_create_app == "1"){echo "checked";} ?>>
+                    <label for="create_app" style="width:400px">Create Applications</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="edit_app" name="edit_app" value="1" <?php if($user->role_edit_app == "1"){echo "checked";} ?>>
+                    <label for="edit_app" style="width:400px">Edit Applications</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="upload_docs" name="upload_docs" value="1" <?php if($user->role_upload_docs == "1"){echo "checked";} ?>>
+                    <label for="upload_docs" style="width:400px">Upload Documents</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="approve_docs" name="approve_docs" value="1" <?php if($user->role_approve_docs == "1"){echo "checked";} ?>>
+                    <label for="approve_docs" style="width:400px">Approve Documents</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="delete_booking" name="delete_booking" value="1"  <?php if($user->role_delete_booking == "1"){echo "checked";} ?>>
+                    <label for="delete_booking" style="width:400px">Delete Booking</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="delete_uploaded" name="delete_uploaded" value="1" <?php if($user->role_delete_uploaded == "1"){echo "checked";} ?>>
+                    <label for="delete_uploaded" style="width:400px">Delete Approved Documents</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_braamlofts" name="role_braamlofts" value="1" <?php if($user->role_braamlofts == "1"){echo "checked";} ?>>
+                    <label for="role_braamlofts" style="width:400px">Braamlofts</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_80_jorissen" name="role_80_jorissen" value="1" <?php if($user->role_80_jorissen == "1"){echo "checked";} ?>>
+                    <label for="role_80_jorissen" style="width:400px">80 Jorissen</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_49_jorissen" name="role_49_jorissen" value="1" <?php if($user->role_49_jorissen == "1"){echo "checked";} ?>>
+                    <label for="role_49_jorissen" style="width:400px">49 Jorissen</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_dunvista_mansions" name="role_dunvista_mansions" value="1" <?php if($user->role_dunvista_mansions == "1"){echo "checked";} ?>>
+                    <label for="role_dunvista_mansions" style="width:400px">Dunvista Mansions</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_wynton_joy" name="role_wynton_joy" value="1" <?php if($user->role_wynton_joy == "1"){echo "checked";} ?>>
+                    <label for="role_wynton_joy" style="width:400px">Wynton Joy</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_126_siemert" name="role_126_siemert" value="1" <?php if($user->role_126_siemert == "1"){echo "checked";} ?>>
+                    <label for="role_126_siemert" style="width:400px">126 Siemert</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_ymca" name="role_ymca" value="1" <?php if($user->role_ymca == "1"){echo "checked";} ?>>
+                    <label for="role_ymca" style="width:400px">YMCA</label>
+                </li>
+                <br/><br/>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_change_date" name="role_change_date" value="1" <?php if($user->role_change_date == "1"){echo "checked";} ?>>
+                    <label for="role_change_date" style="width:400px">Change Lease Dates</label>
+                </li>
+            </ul>
         </div>
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>

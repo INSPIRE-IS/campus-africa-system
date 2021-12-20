@@ -9,7 +9,7 @@
             <div class="overlay">
                 <div class="cardBody">
                     <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                    <h2 class="cardHeaderText">Single Room</h2>
+                    <h2 class="cardHeaderText">Single</h2>
                     <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
                     <br/><br/><br/>
                     <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>
@@ -46,7 +46,7 @@
                       @elseif($file->fileId == 'proofRegistration')
                         REGISTRATION
                       @elseif($file->fileId == 'proof_of_payment')
-                        PROOF OF PAYMENT
+                        BOOKING FEE PROOF OF PAYMENT
                       @elseif($file->fileId == 'moveIn')
                         LEASE
                       @endif
@@ -78,7 +78,7 @@
                       @elseif($file == 'proofRegistration')
                         REGISTRATION
                       @elseif($file == 'proof_of_payment')
-                        PROOF OF PAYMENT
+                        BOOKING FEE PROOF OF PAYMENT
                       @elseif($file == 'moveIn')
                         LEASE
                       @endif
@@ -113,7 +113,7 @@
                       @elseif($file->fileId == 'proofRegistration')
                         REGISTRATION
                       @elseif($file->fileId == 'proof_of_payment')
-                        PROOF OF PAYMENT
+                        BOOKING FEE PROOF OF PAYMENT
                       @elseif($file->fileId == 'moveIn')
                         LEASE
                       @endif
@@ -179,7 +179,7 @@
                       @elseif($file->fileId == 'proofRegistration')
                         REGISTRATION
                       @elseif($file->fileId == 'proof_of_payment')
-                        PROOF OF PAYMENT
+                        BOOKING FEE PROOF OF PAYMENT
                       @elseif($file->fileId == 'moveIn')
                         LEASE
                       @endif
@@ -233,37 +233,37 @@
           <div class='carousel__track'>
             <div class='carousel__item carousel__item--mobile-in-1 carousel__item--tablet-in-2 carousel__item--desktop-in-3'>
               <div class='demo-content'>
-                <img src="/images/rooms/Group_6067.png" width="100%"/>
+                <a href="https://campusafrica.whitehart.co.za/residences/49-jorissen/" target="_blank"><img src="/images/rooms/Group_6067.png" width="100%"/></a>
               </div>
             </div>
             <div class='carousel__item carousel__item--mobile-in-1 carousel__item--tablet-in-2 carousel__item--desktop-in-3'>
               <div class='demo-content'>
-                <img src="/images/rooms/Group_5241.png" width="100%"/>
+                <a href="https://campusafrica.whitehart.co.za/residences/49-jorissen/" target="_blank"><img src="/images/rooms/Group_5241.png" width="100%"/></a>
               </div>
             </div>
             <div class='carousel__item carousel__item--mobile-in-1 carousel__item--tablet-in-2 carousel__item--desktop-in-3'>
               <div class='demo-content'>
-                <img src="/images/rooms/Group_6073.png" width="100%"/>
+                <a href="https://campusafrica.whitehart.co.za/residences/80-jorissen/" target="_blank"><img src="/images/rooms/Group_6073.png" width="100%"/></a>
               </div>
             </div>
             <div class='carousel__item carousel__item--mobile-in-1 carousel__item--tablet-in-2 carousel__item--desktop-in-3'>
               <div class='demo-content'>
-                <img src="/images/rooms/Group_6072.png" width="100%"/>
+                <a href="https://campusafrica.whitehart.co.za/residences/braamlofts/" target="_blank"><img src="/images/rooms/Group_6072.png" width="100%"/></a>
               </div>
             </div>
             <div class='carousel__item carousel__item--mobile-in-1 carousel__item--tablet-in-2 carousel__item--desktop-in-3'>
               <div class='demo-content'>
-                <img src="/images/rooms/Group_6076.png" width="100%"/>
+                <a href="https://campusafrica.whitehart.co.za/residences/126-siemert/" target="_blank"><img src="/images/rooms/Group_6076.png" width="100%"/></a>
               </div>
             </div>
             <div class='carousel__item carousel__item--mobile-in-1 carousel__item--tablet-in-2 carousel__item--desktop-in-3'>
               <div class='demo-content'>
-                <img src="/images/rooms/Group_6077.png" width="100%"/>
+                <a href="https://campusafrica.whitehart.co.za/residences/ymca/" taget="_blank"><img src="/images/rooms/Group_6077.png" width="100%"/></a>
               </div>
             </div>
             <div class='carousel__item carousel__item--mobile-in-1 carousel__item--tablet-in-2 carousel__item--desktop-in-3'>
               <div class='demo-content'>
-                <img src="/images/rooms/Group_6078.png" width="100%"/>
+                <a href="https://campusafrica.whitehart.co.za/residences/wynton-joy/" target="_blank"><img src="/images/rooms/Group_6078.png" width="100%"/></a>
               </div>
             </div>
           </div>

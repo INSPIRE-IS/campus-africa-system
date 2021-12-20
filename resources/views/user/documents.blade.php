@@ -43,7 +43,7 @@
                         @elseif($file == 'proofRegistration')
                           REGISTRATION
                         @elseif($file == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file == 'moveIn')
                           LEASE
                         @endif
@@ -72,7 +72,7 @@
                         @elseif($file['fileId'] == 'proofRegistration')
                           REGISTRATION
                         @elseif($file['fileId'] == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file['fileId'] == 'moveIn')
                           LEASE
                         @endif
@@ -104,7 +104,7 @@
                         @elseif($file['fileId'] == 'proofRegistration')
                           REGISTRATION
                         @elseif($file['fileId'] == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file['fileId'] == 'moveIn')
                           LEASE
                         @endif
@@ -128,7 +128,7 @@
                         @elseif($file['fileId'] == 'proofRegistration')
                           REGISTRATION
                         @elseif($file['fileId'] == 'proof_of_payment')
-                          PROOF OF PAYMENT
+                          BOOKING FEE PROOF OF PAYMENT
                         @elseif($file['fileId'] == 'moveIn')
                           LEASE
                         @endif
@@ -151,13 +151,16 @@
         <h2 id="modalHeader"></h2>
         <small>Uploaded by <span id="uploadedBy"></span> at <span id="uploadedTime"></span> on the <span id="uploadedDate"></span></small>
         <br/>
-        <input type="hidden" id="FileIdForApproval">
-        <div class="flex" style="margin-top:35px;" id="buttonSection">
-            <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
-            <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
-            <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
-            <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-        </div>
+        
+          <input type="hidden" id="FileIdForApproval">
+          <div class="flex" style="margin-top:35px;" id="buttonSection">
+          @if(Auth::user()->role_approve_docs == 1)
+              <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
+              <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
+              <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
+              <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+            @endif
+          </div>
 
         <div class="pdfSection"></div>
     </div>

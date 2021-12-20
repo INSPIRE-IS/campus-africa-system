@@ -8,9 +8,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="icon" href="/images/logo/Campus_Africa_Logo.png">
 
     <!-- Scripts -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <!-- <script src="{{ asset('/js/multistep.js') }}" defer></script> -->
     
 
@@ -34,7 +35,7 @@
         <div id="fullNavbar">
             <div class="topnav" id="myTopnav">
                 <a class="active" href="/dashboard">Dashboard</a>
-                <a href="javascript:void(0)">Residences</a>
+                <a href="https://campusafrica.whitehart.co.za/residences/" target="_blank">Residences</a>
                 <a href="/room-booking">My Room</a>
                 <a href="/my-documents">My Documents</a>
                 <a href="/my-profile">My Profile</a>
@@ -130,18 +131,30 @@
             <p class="footerRights">Campus Africa - All Right Reserved</p>
         </div>
     </footer>
-</body>
+    
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+                document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+            } else {
+                x.className = "topnav";
+                document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+            }
+        }
 
-<script>
-function myFunction() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-    document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
-  } else {
-    x.className = "topnav";
-    document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
-  }
-}
-</script>
+        @if (App::environment('development'))
+        (function (d, t, g) {
+            var ph    = d.createElement(t), s = d.getElementsByTagName(t)[0];
+            ph.type   = 'text/javascript';
+            ph.async   = true;
+            ph.charset = 'UTF-8';
+            ph.src     = g + '&v=' + (new Date()).getTime();
+            s.parentNode.insertBefore(ph, s);
+        })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
+        @endif
+    </script>
+
+    </body>
 </html>

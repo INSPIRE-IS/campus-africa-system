@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PDFController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,7 @@ Route::post('/action/file', [HomeController::class, 'action_file']);
 Route::get('/action-list/{userId}/{filter}', [HomeController::class, 'action_list']);
 Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document_list']);
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
+Route::post('/reject-application', [HomeController::class, 'reject_application']);
 
 Route::get('/my-profile', [ProfileController::class, 'index'])->name('my-profile');
 Route::post('/update-profile', [ProfileController::class, 'update']);
@@ -65,7 +67,7 @@ Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
 Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
 Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
 
-Route::get("/users", [HomeController::class, 'users']);
+Route::get("/users", [HomeController::class, 'users'])->name('users');
 Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);
 Route::post("/update-admin", [HomeController::class, 'edit_admin']);
 Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
@@ -78,3 +80,50 @@ Route::get('/lookups/new', [HomeController::class, 'add_lookups']);
 Route::post('/new-lookup', [HomeController::class, 'new_lookups']);
 Route::get('/lookups/edit/{lookupId}', [HomeController::class, 'edit_lookups']);
 Route::post('/save-lookup', [HomeController::class, 'save_lookups']);
+
+Route::get('/new/student', [HomeController::class, 'new_student']);
+Route::post("/add-student", [HomeController::class, 'add_student']);
+Route::get('/new/admin', [HomeController::class, 'new_admin']);
+Route::post("/add-admin", [HomeController::class, 'add_admin']);
+
+Route::post("/delete/lookup", [HomeController::class, 'delete_lookup']);
+Route::post("/applications/filter", [HomeController::class, 'app_filter']);
+
+Route::post("/delete/booking", [HomeController::class, 'delete_booking']);
+
+Route::get('/reports', [HomeController::class, 'reports']);
+Route::post('/download-report', [HomeController::class, 'download_report']);
+
+Route::post('/email-check', [HomeController::class, 'email_check']);
+Route::post('/change-booking', [HomeController::class, 'change_booking']);
+
+Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
+Route::get('/property/edit/{propertyId}', [HomeController::class, 'property_edit']);
+Route::post('/save-property', [HomeController::class, 'save_property']);
+Route::post('/get-booking-info', [HomeController::class, 'get_booking_info']);
+
+Route::get('/properties-import', [HomeController::class, 'properties_import']);
+Route::post('/import/data', [HomeController::class, 'import_data']);
+
+Route::post('/createLease/{studentId}', [PDFController::class, 'createPDF']);
+Route::get('/properties-info', [HomeController::class, 'properties_info']);
+Route::get('/residence/edit/{residenceId}', [HomeController::class, 'residence_edit']);
+Route::post('/save-residence', [HomeController::class, 'save_residence']);
+
+Route::post('/action-data', [HomeController::class, 'action_data']);
+Route::post('/approve-app-data', [HomeController::class, 'approve_app_data']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

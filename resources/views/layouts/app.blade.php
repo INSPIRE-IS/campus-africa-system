@@ -8,9 +8,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Login | Campus Africa</title>
+    <link rel="icon" href="/images/logo/Campus_Africa_Logo.png">
 
     <!-- Scripts -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <!-- <script src="{{ asset('/js/multistep.js') }}" defer></script> -->
 
     <!-- Fonts -->
@@ -22,6 +23,8 @@
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
+
+    <script src="../../js/register.js?v=<?php echo rand();?>"></script>
     
 </head>
 <body>
@@ -75,5 +78,18 @@
             <p class="footerRights">Campus Africa - All Right Reserved</p>
         </div>
     </footer>
+
+    @if (App::environment('development'))
+        <script>
+            (function (d, t, g) {
+                var ph    = d.createElement(t), s = d.getElementsByTagName(t)[0];
+                ph.type   = 'text/javascript';
+                ph.async   = true;
+                ph.charset = 'UTF-8';
+                ph.src     = g + '&v=' + (new Date()).getTime();
+                s.parentNode.insertBefore(ph, s);
+            })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
+        </script>
+    @endif
 </body>
 </html>

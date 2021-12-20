@@ -36,7 +36,7 @@ class ProfileController extends Controller
             'userPassport' => $request->passportNo,
             'institutionStudy' => $request->institStudy,
             'studentNo' => $request->studNumber,
-            'institutionCampus' => $request->institCampus,
+            // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => $request->year,
             'sponFirstName' => $request->pFirstName,

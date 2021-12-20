@@ -53,13 +53,14 @@
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Last Name</label>
-                                                <input type="text" name="lastName" id="lastName">
+                                                <label>Last Name *</label>
+                                                <input type="text" name="lastName" id="lastName" required>
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Title</label>
-                                                <select name="title" id='title'>
+                                                <label>Title *</label>
+                                                <select name="title" id='title' required>
+                                                    <option value="" selected disabled>Select One</option>
                                                     <option value="Mr">Mr</option>
                                                     <option value="Ms">Ms</option>
                                                     <option value="Mrs">Mrs</option>
@@ -68,17 +69,17 @@
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Date of Birth</label>
-                                                <input type="date" name="dob" id="dob">
+                                                <label>Date of Birth *</label>
+                                                <input type="date" name="dob" id="dob" required>
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Cellphone Number</label>
-                                                <input type="text" name="cell_no" id="cell_no">
+                                                <label>Cellphone Number * <span id="cellError" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                                                <input type="text" name="cell_no" id="cell_no" required>
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Email Address * <span id="emailhide" class="hidden" style="color:red">Please enter a valid email address</span></label>
+                                                <label>Email Address * <span id="emailError" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
                                                 <input type="email" name="email" id="email" required>
                                             </div>
 
@@ -90,30 +91,56 @@
                                             <div class="form-field">
                                                 <label>Confirm Password *  <span id="passhide" class="hidden" style="color:red">Passwords don't match</span></label>
                                                 <input type="password" name="confirmPassword" id="confirmPassword" required>
-                                               
                                             </div>
 
                                             <div class="form-field">
-                                                <label>I.D Number</label>
-                                                <input type="text" name="idNumber" id="idNumber">
+                                                <label>Nationality *</label>
+                                                <select name="nationality" id='nationality' required>
+                                                    <option value="" selected disabled>Select One</option>
+                                                    @foreach($lookups as $lookup)
+                                                        @if($lookup->group_id == "5")
+                                                            <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        
+                                            <div class="form-field hidden" id="passportField">
+                                                <label>Passport Number *</label>
+                                                <input type="text" name="passportNo" id="passportNo" >
+                                            </div>
+
+                                            <div class="form-field" id="idField">
+                                                <label>I.D Number * <span id="idNumberError" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                                                <input type="text" name="idNumber" id="idNumber" required>
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Nationality</label>
-                                                <select name="nationality" id='nationality'>
-                                                    <option value="South African">South African</option>
+                                                <label>Student Type *</label>
+                                                <select name="studentType" id='studentType' required>
+                                                    <option value="" selected disabled>Select One</option>
+                                                    <option value="NSFAS">NSFAS</option>
+                                                    <option value="Bursary">Bursary</option>
+                                                    <option value="Cash / Direct">Cash</option>
                                                 </select>
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Passport Number</label>
-                                                <input type="text" name="passportNo" id="passportNo">
+                                                <label>Year *</label>
+                                                <select name="year" id="year" required>
+                                                <option value="" selected disabled>Select One</option>
+                                                @foreach($lookups as $lookup)
+                                                    @if($lookup->group_id == "4")
+                                                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                                                    @endif
+                                                @endforeach
+                                                </select>
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Institution of Study</label>
-                                                <select name="institStudy" id="institStudy">
-                                                    <option value="Choose one" selected disabled>Choose one</option>
+                                                <label>Institution of Study *</label>
+                                                <select name="institStudy" id="institStudy" required>
+                                                    <option value="" selected disabled>Select One</option>
                                                     @foreach($lookups as $lookup)
                                                         @if($lookup->group_id == "1")
                                                             <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
@@ -123,26 +150,34 @@
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Student Number</label>
-                                                <input type="text" name="studNumber" id="studNumber">
-                                            </div>
-
-                                            <div class="form-field">
-                                                <label>Insitution Campus</label>
-                                                <select name="institCampus" id="institCampus">
-                                                    <option value="Choose one" selected diabled>Choose one</option>
+                                                <label>Year of study *</label>
+                                                <select name="yearOfStudy" id="yearOfStudy" required>
+                                                    <option value="" selected disabled>Select One</option>
                                                     @foreach($lookups as $lookup)
-                                                        @if($lookup->group_id == "2")
-                                                            <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
+                                                        @if($lookup->group_id == "6")
+                                                            <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
                                                         @endif
                                                     @endforeach
                                                 </select>
                                             </div>
 
                                             <div class="form-field">
-                                                <label>Faculty</label>
-                                                <select name="faculty" id="faculty">
-                                                    <option value="Choose one" disabled selected>Choose one</option>
+                                                <br/>
+                                            </div>
+
+                                            <div class="form-field">
+                                                <br/>
+                                            </div>
+
+                                            <div class="form-field">
+                                                <label>Student Number *</label>
+                                                <input type="text" name="studNumber" id="studNumber" required>
+                                            </div>
+
+                                            <div class="form-field">
+                                                <label>Faculty *</label>
+                                                <select name="faculty" id="faculty" required>
+                                                    <option value="" disabled selected>Select One</option>
                                                     @foreach($lookups as $lookup)
                                                         @if($lookup->group_id == "3")
                                                             <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
@@ -151,13 +186,6 @@
                                                 </select>
                                             </div>
 
-                                            <div class="form-field">
-                                                <label>Year</label>
-                                                <select name="year" id="year">
-                                                    <option value="2022">2022</option>
-                                                    <option value="2021">2021</option>
-                                                </select>
-                                            </div>
                                             
                                             
                                         </div> 
@@ -275,7 +303,7 @@
                                                 <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity'>
                                             </div>
                                             <div class="form-field">
-                                                <input type="text" placeholder="postal Code" name="kAddressPostal" id="kAddressPostal">
+                                                <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal">
                                             </div>
 
                                             <div class="form-field">
@@ -447,7 +475,6 @@
                                                         <span id="dispPassport"></span><br/>
                                                         <span id="dispInstit"></span><br/>
                                                         <span id="dispStudNo"></span><br/>
-                                                        <span id="dispInstitCampus"></span><br/>
                                                         <span id="dispFaculty"></span><br/>
                                                         <span id="dispYear"></span></p>
                                                         
@@ -455,7 +482,7 @@
 
                                                 <div class="whiteCard" id="registerPaymentCards" style="margin-left:11px;">
                                                     <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                                                    <h2 class="cardHeader" >Single Room</h2>
+                                                    <h2 class="cardHeader" >Single</h2>
                                                     <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
                                                 </div>
                                             </div>
@@ -529,7 +556,7 @@
                                         <!-- <div class="footerClearfix"></div> --><br/><br/><br/><br/><br/><br/><br/><br/>
 
                                         <!-- <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" style="margin-left: -7px !important;"/> <br/><br/><br/><br/> -->
-                                        <input type="button" name="previous" class="previous action-button-previous" value="Back to home page" style="margin-left: -7px !important; margin-top:59px" /> 
+                                        <a href="https://campusafrica.whitehart.co.za/"><input type="button" name="previous" class="previous action-button-previous" value="Back to home page" style="margin-left: -7px !important; margin-top:59px" /> </a>
                                         <!-- <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" /> -->
                                         </div>
 
@@ -593,7 +620,6 @@
                             passportNo: $("#passportNo").val(), 
                             institStudy: $("#institStudy").val(), 
                             studNumber: $("#studNumber").val(), 
-                            institCampus: $("#institCampus").val(), 
                             faculty: $("#faculty").val(), 
                             year: $("#year").val() 
                         },
@@ -614,7 +640,6 @@
                             $("#dispPassport").empty().append($("#passportNo").val());
                             $("#dispInstit").empty().append($("#institStudy").val());
                             $("#dispStudNo").empty().append($("#studNumber").val());
-                            $("#dispInstitCampus").empty().append($("#institCampus").val());
                             $("#dispFaculty").empty().append($("#faculty").val());
                             $("#dispYear").empty().append($("#year").val());
                             
@@ -639,7 +664,6 @@
                             passportNo: $("#passportNo").val(), 
                             institStudy: $("#institStudy").val(), 
                             studNumber: $("#studNumber").val(), 
-                            institCampus: $("#institCampus").val(), 
                             faculty: $("#faculty").val(), 
                             year: $("#year").val() 
                         },
@@ -655,11 +679,11 @@
                 
                 
             }else{
-                $("#firstName").addClass('errorBorder')
-                $("#firstName").focus();
-                $("#email").addClass('email')
-                $("#email").focus();
-                $("#emailhide").removeClass('hidden')
+                // $("#firstName").addClass('errorBorder')
+                // $("#firstName").focus();
+                // $("#email").addClass('email')
+                // $("#email").focus();
+                // $("#emailhide").removeClass('hidden')
             }
             
         }else{

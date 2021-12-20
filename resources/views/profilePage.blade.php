@@ -2,7 +2,7 @@
 <div class="container form-card">
     <button type="button" class="detailsChange" onClick="emailSent()">Request Deatils Change</button>
 
-    <form action="/update-profile" method="post">
+    <form action="/update-profile" method="post" autocomplete="off">
     @csrf
         <br/>
         <h1 class="header fs-title">Applicant Details</h2>
@@ -52,7 +52,7 @@
         <div class="form-field">
             <label>Nationality</label>
             <select name="nationality" id='nationality' disabled>
-                <option value="South African" <?php if(Auth::user()->userNationality == "South African"){echo "selected";}?>>South African</option>
+                <option value="South Africa" <?php if(Auth::user()->userNationality == "South Africa"){echo "selected";}?>>South Africa</option>
             </select>
         </div>
 
@@ -78,17 +78,6 @@
             <input type="text" name="studNumber" id="studNumber" value="{{Auth::user()->studentNo}}" readonly>
         </div>
 
-        <div class="form-field">
-            <label>Insitution Campus</label>
-            <select name="institCampus" id="institCampus" disabled>
-                <option value="Choose one" selected diabled>Choose one</option>
-                @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "2")
-                        <option value="{{$lookup->id}}" <?php if(Auth::user()->institutionCampus == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
-                    @endif
-                @endforeach
-            </select>
-        </div>
 
         <div class="form-field">
             <label>Faculty</label>
@@ -210,7 +199,7 @@
             <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' value="{{Auth::user()->kinAddressCity}}" readonly>
         </div>
         <div class="form-field">
-            <input type="text" placeholder="postal Code" name="kAddressPostal" id="kAddressPostal" value="{{Auth::user()->kinAddressPost}}" readonly>
+            <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" value="{{Auth::user()->kinAddressPost}}" readonly>
         </div>
 
         <div class="form-field">

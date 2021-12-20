@@ -83,7 +83,7 @@ class RegisterController extends Controller
             'userPassport' => $data['passportNo'],
             'institutionStudy' => $data['institStudy'],
             'studentNo' => $data['studNumber'],
-            'institutionCampus' => $data['institCampus'],
+            // 'institutionCampus' => $data['institCampus'],
             'faculty' => $data['faculty'],
             'year' => $data['year'],
         ]);
@@ -106,7 +106,7 @@ class RegisterController extends Controller
             'userPassport' => $request->passportNo,
             'institutionStudy' => $request->institStudy,
             'studentNo' => $request->studNumber,
-            'institutionCampus' => $request->institCampus,
+            // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => $request->year,
         ]);
@@ -138,7 +138,7 @@ class RegisterController extends Controller
             'userPassport' => $request->passportNo,
             'institutionStudy' => $request->institStudy,
             'studentNo' => $request->studNumber,
-            'institutionCampus' => $request->institCampus,
+            // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => $request->year,
         ]);
@@ -211,7 +211,7 @@ class RegisterController extends Controller
                 }elseif($fileType == "proofRegistration"){
                     $typeName = "Proof of Registration";
                 }elseif($fileType == "proof_of_payment"){
-                    $typeName = "Proof of Payment";
+                    $typeName = "Booking Fee Proof of Payment";
                 }
 
                 $user = User::where('id', $userUid)->first();

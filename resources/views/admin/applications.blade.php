@@ -1,24 +1,59 @@
 @extends('layouts.admin')
 
 @section('content')
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
 <div class="container">
 
+<br/>
 
-    <div class="appSearchForm">
+    @if(Auth::user()->role_create_app == 1)
+        <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
+    @endif
+
+
+    <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">
         <label></label><br/>
-            <select name="property">
-                <option value="Property 1">Property 1</option>
-                <option value="Property 2">Property 2</option>
-                <option value="Property 3">Property 3</option>
+            <select name="property" id="property">
+                <option value="All" selected>All Residences</option>
+                @if(Auth::user()->role_braamlofts == 1)
+                    <option value="Braamlofts">Braamlofts</option>
+                @endif
+                @if(Auth::user()->role_80_jorissen == 1)
+                    <option value="80 Jorissen">80 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_49_jorissen == 1)
+                    <option value="49 Jorissen">49 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_dunvista_mansions == 1)
+                    <option value="Dunvista Mansions">Dunvista Mansions</option>
+                @endif
+                @if(Auth::user()->role_wynton_joy == 1)
+                    <option value="Wynton Joy">Wynton Joy</option>
+                @endif
+                @if(Auth::user()->role_126_siemert == 1)
+                    <option value="126 Siemert">126 Siemert</option>
+                @endif
+                @if(Auth::user()->role_ymca == 1)
+                    <option value="YMCA">YMCA</option>
+                @endif
             </select>
         </div>
         <div class="searchField">
         <label></label><br/>
-            <select name="property">
-                <option value="Property 1">Property 1</option>
-                <option value="Property 2">Property 2</option>
-                <option value="Property 3">Property 3</option>
+            <select name="room_type" id="room_type">
+                <option value="All" selected>All Room Types</option>
+                <option value="Single">Single</option>
+                <option value="2 Sharing">2 Sharing</option>
+                <option value="3 Sharing">3 Sharing</option>
+                <option value="Single 2 bedroom">Single | 2 Bedroom</option>
+                <option value="Single 3 bedroom">Single | 3 Bedroom</option>
+                <option value="Single small">Single | Small</option>
+                <option value="Single medium">Single | Medium</option>
+                <option value="Single large">Single | Large</option>
             </select>
         </div>
         <div class="searchField">
@@ -28,17 +63,26 @@
 
         <div class="searchField">
         <label></label><br/>
-            <select name="applicationStatus">
-                <option value="all">All Applications</option>
-                <option value="Uploaded">Applied</option>
-                <option value="Accepted">Approved</option>
-                <option value="Rejected">Rejected</option>
+            <select name="student_type" id='student_type'>
+                <option value="All" selected>All Student Types</option>
+                <option value="NSFAS">NSFAS</option>
+                <option value="Bursary">Bursary</option>
+                <option value="Cash / Direct">Cash / Direct</option>
             </select>
         </div>
         <div class="searchField">
-        <label>Date</label><br/>
-            <select name="bookingStatus">
-                <option value="all">All Bookings</option>
+        <label></label><br/>
+            <select name="bookingStatus" id='bookingStatus' style="width:45%">
+                <option value="All" selected>All Bookings</option>
+                <option value="Approved">&#128994; Valid Booking</option>
+                <option value="Action">&#128993; Pending Booking</option>
+                <option value="Empty">&#128308; Invalid Booking</option>
+            </select>
+            <select name="applicationStatus" id='applicationStatus' style="width:45%">
+                <option value="All" selected>All Applications</option>
+                <option value="Approved">&#128994; Valid Application</option>
+                <option value="Action">&#128993; Pending Application</option>
+                <option value="Empty">&#128308; Invalid Application</option>
             </select>
         </div>
         <div class="searchField">
@@ -55,7 +99,7 @@
             <div class="keys">
                 <div id="indexOne"><div class="button approved"></div><span class="text">Approved</span></div>
                 <div id="indexOne"><div class="button action"></div><span class="text">Action Required</span></div>
-                <div id="indexOne"><div class="button rejected"></div><span class="text">Rejected</span></div>
+                <div id="indexOne"><div class="button rejected"></div><span class="text">Rejected / Not Uploaded</span></div>
                 <div id="indexOne"><div class="button na"></div><span class="text">Not Applicable</span></div>
             </div>
         </div>
@@ -64,58 +108,63 @@
 
     <div class="clearSpaceLogin"></div>
 
-    <div class="container">
+    <!-- <div class="container"> -->
         <div class="ApplicationResults">
 
 
 
-            <table class="applicationTable">
+            <table class="applicationTable" id="application_table">
                 <thead>
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
-                        <th>APPLICANT</th>
+                        <th style="width:50%">APPLICANT | ROOM</th>
+                        <th style="width:10%">BED CODE</th>
+                        <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
-                        <th style="border-top:3px solid #E74F26; border-left:3px solid #E74F26">BOOKING STATUS</th>
-                        <th style="border-top:3px solid #E74F26">PROOF OF PAYMENT</th>
-                        <th style="border-top:3px solid #E74F26; border-right:3px solid #E74F26">ID COPY</th>
-                        <th style="border-top:3px solid #19e5cd; border-left:3px solid #19e5cd">APPLICATION STATUS</th>
-                        <th style="border-top:3px solid #19e5cd">STUDENT CARD COPY</th>
-                        <th style="border-top:3px solid #19e5cd">PROOF OF REGISTRATION</th>
-                        <th style="border-top:3px solid #19e5cd">NSFAS | BURSARY APPROVAL</th>
-                        <th style="border-top:3px solid #19e5cd; border-right:3px solid #19e5cd; border-top-right-radius:10px;">BANK STATEMENTS</th>
+                        <th style="background-color:#ccc; color:#000">BOOKING STATUS</th>
+                        <th>PROOF OF PAYMENT</th>
+                        <th>ID COPY</th>
+                        <th style="background-color:#ccc; color:#000">APPLICATION STATUS</th>
+                        <th>STUDENT CARD COPY</th>
+                        <th>PROOF OF REGISTRATION</th>
+                        <th>NSFAS | BURSARY APPROVAL</th>
+                        <th>BANK STATEMENTS</th>
+                        <th style="background-color:#ccc; color:#000">LEASE</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="applicantsSection">
 
                 <?php $i = 0; ?>
 
                     @foreach($users as $user)
 
-                        <tr class=" <?php if($i % 2 == 0){echo 'dark';}else{echo 'light';} ?> clickable-row" data-href='/application-profile/{{$user["id"]}}'>
+                        <tr class=" <?php if($i % 2 == 0){echo 'dark';}else{echo 'light';} ?> clickable-row table_id_{{$user['id']}}" data-href='/application-profile/{{$user["id"]}}'>
                             <td id="bookingRef">#{{$user["bookingRef"]}} </td>
-                            <td id="appUser"><span class="bold">{{$user["userFirstName"]}} {{$user["userLastname"]}}</span> <br/> {{$user["userId"]}} | {{$user["roomBlock"]}}</td>
-                            <td id="studType">XX<span class="bold">{{$user["studentType"]}}</span></td>
-                            <td style="border-left:3px solid #E74F26" id="statusBarIcon">
-                                @if($user["bookingStatus"] === "Pending" || $user["bookingStatus"] === null)
-                                    <div class="button action"></div>
+                            <td id="appUser"><span class="bold">{{$user["userFirstName"]}} {{$user["userLastname"]}}</span> <br/> {{$user["property"]}} | {{$user["roomType"]}}</td>
+                            <td id="bed_code">{{$user["bed_code"]}}</td>
+                            <td id="date">{{$user["created_at"]}}</td>
+                            <td id="studType">@if($user["studentType"] == "Cash / Direct") Cash @else {{$user["studentType"]}} @endif</td>
+                            <td id="statusBarIcon" style="background-color:#ccc">
+                                @if($user["bookingStatus"] === "Pending" || $user["bookingStatus"] === "Action")
+                                <span class="hidden">A</span><div class="button action bigButton"></div>
                                 @elseif($user["bookingStatus"] === "Approved")
-                                    <div class="button approved"></div>
-                                @elseif($user["bookingStatus"] === "Denied")
-                                    <div class="button rejected"></div>
+                                <span class="hidden">C</span><div class="button approved bigButton"></div>
+                                @elseif($user["bookingStatus"] === "Denied" || $user["bookingStatus"] === null || $user["bookingStatus"] === "Empty" || $user["bookingStatus"] === "Rejected")
+                                <span class="hidden">B</span><div class="button rejected bigButton"></div>
                                 @endif
                             </td>
                             
                             @foreach($user["files"] as $file)
 
                                 @if($file["field"] === "proof_of_payment")
-                                    @if($file["status"] === "Uploaded" || $file["status"] === "")
-                                        <td id="statusBarIcon"><div class="button action"></div></td>
+                                    @if($file["status"] === "Uploaded")
+                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                        <td id="statusBarIcon"><div class="button approved"></div></td>
-                                    @elseif($file["status"] === "Rejected")
-                                        <td id="statusBarIcon"><div class="button rejected"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved noBoarder"></div></td>
+                                    @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                        <td id="statusBarIcon"><div class="button na"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na noBoarder"></div></td>
                                     @endif
 
                                 @endif
@@ -127,15 +176,15 @@
                                 
 
                                 @if($file["field"] === "copyID")
-                                    <td style="border-right:3px solid #E74F26" id="statusBarIcon">
-                                        @if($file["status"] === "Uploaded" || $file["status"] === "")
-                                            <div class="button action"></div>
+                                    <td id="statusBarIcon">
+                                        @if($file["status"] === "Uploaded")
+                                        <span class="hidden">A</span><div class="button action noBoarder"></div>
                                         @elseif($file["status"] === "Approved")
-                                            <div class="button approved"></div>
-                                        @elseif($file["status"] === "Rejected")
-                                            <div class="button rejected"></div>
+                                        <span class="hidden">C</span><div class="button approved noBoarder"></div>
+                                        @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                        <span class="hidden">B</span><div class="button rejected noBoarder"></div>
                                         @elseif($file["status"] === "na")
-                                            <div class="button na"></div>
+                                        <span class="hidden">D</span><div class="button na noBoarder"></div>
                                         @endif
                                     </td>
                                     
@@ -143,13 +192,13 @@
 
                             @endforeach
 
-                            <td style="border-left: 3px solid #19e5cd;" id="statusBarIcon">
-                                @if($user["applicationStatus"] === "Pending" || $user["applicationStatus"] === null)
-                                    <div class="button action"></div>
-                                @elseif($user["applicationStatus"] === "Approved")
-                                    <div class="button approved"></div>
-                                @elseif($user["applicationStatus"] === "Denied")
-                                    <div class="button rejected"></div>
+                            <td id="statusBarIcon" style="background-color:#ccc">
+                                @if($user["applicationStatus"] === "Pending" || $user["applicationStatus"] === "Action" || $user["applicationStatus"] === "Approved")
+                                <span class="hidden">A</span><div class="button action bigButton"></div>
+                                @elseif($user["applicationStatus"] === "Approved Confirmed")
+                                <span class="hidden">C</span><div class="button approved bigButton"></div>
+                                @elseif($user["applicationStatus"] === "Denied" || $user["applicationStatus"] === null || $user["applicationStatus"] === "Rejected" || $user["applicationStatus"] === "Empty" || $user["applicationStatus"] == "Denied Confimed")
+                                <span class="hidden">B</span><div class="button rejected bigButton"></div>
                                 @endif
                             </td>
 
@@ -158,14 +207,14 @@
                             @foreach($user["files"] as $file)
 
                                 @if($file["field"] === "studentCard" )
-                                    @if($file["status"] === "Uploaded" || $file["status"] === "")
-                                        <td id="statusBarIcon"><div class="button action"></div></td>
+                                    @if($file["status"] === "Uploaded")
+                                    <span class="hidden">A</span><td id="statusBarIcon"><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                        <td id="statusBarIcon"><div class="button approved"></div></td>
-                                    @elseif($file["status"] === "Rejected")
-                                        <td id="statusBarIcon"><div class="button rejected"></div></td>
+                                    <span class="hidden">C</span><td id="statusBarIcon"><div class="button approved noBoarder"></div></td>
+                                    @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                    <span class="hidden">B</span><td id="statusBarIcon"><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                        <td id="statusBarIcon"><div class="button na"></div></td>
+                                    <span class="hidden">D</span><td id="statusBarIcon"><div class="button na noBoarder"></div></td>
                                     @endif
 
                                     
@@ -176,14 +225,14 @@
                             @foreach($user["files"] as $file)
 
                                 @if($file["field"] === "proofRegistration" )
-                                    @if($file["status"] === "Uploaded" || $file["status"] == "")
-                                        <td id="statusBarIcon"><div class="button action"></div></td>
+                                    @if($file["status"] === "Uploaded")
+                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                        <td id="statusBarIcon"><div class="button approved"></div></td>
-                                    @elseif($file["status"] === "Rejected")
-                                        <td id="statusBarIcon"><div class="button rejected"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved noBoarder"></div></td>
+                                    @elseif($file["status"] === "Rejected" || $file["status"] == "")
+                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                        <td id="statusBarIcon"><div class="button na"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na noBoarder"></div></td>
                                     @endif
 
                                 @endif
@@ -193,14 +242,14 @@
                             @foreach($user["files"] as $file)
 
                                 @if($file["field"] === "bursaryApproval")
-                                    @if($file["status"] === "Uploaded" || $file["status"] === "")
-                                        <td id="statusBarIcon"><div class="button action"></div></td>
+                                    @if($file["status"] === "Uploaded")
+                                        <td id="statusBarIcon"><span class="hidden">A</span><div class="button action noBoarder"></div></td>
                                     @elseif($file["status"] === "Approved")
-                                        <td id="statusBarIcon"><div class="button approved"></div></td>
-                                    @elseif($file["status"] === "Rejected")
-                                        <td id="statusBarIcon"><div class="button rejected"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">C</span><div class="button approved noBoarder"></div></td>
+                                    @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                        <td id="statusBarIcon"><span class="hidden">B</span><div class="button rejected noBoarder"></div></td>
                                     @elseif($file["status"] === "na")
-                                        <td id="statusBarIcon"><div class="button na"></div></td>
+                                        <td id="statusBarIcon"><span class="hidden">D</span><div class="button na noBoarder"></div></td>
                                     @endif
                                 @endif
 
@@ -209,15 +258,33 @@
                             @foreach($user["files"] as $file)
 
                                 @if($file["field"] === "bankStatement")
-                                <td style="border-right:3px solid #19e5cd" id="statusBarIcon">
-                                    @if($file["status"] === "Uploaded" || $file["status"] === "")
-                                        <div class="button action"></div>
+                                <td id="statusBarIcon">
+                                    @if($file["status"] === "Uploaded")
+                                    <span class="hidden">A</span><div class="button action noBoarder"></div>
                                     @elseif($file["status"] === "Approved")
-                                        <div class="button approved"></div>
-                                    @elseif($file["status"] === "Rejected")
-                                        <div class="button rejected"></div>
+                                    <span class="hidden">C</span><div class="button approved noBoarder"></div>
+                                    @elseif($file["status"] === "Rejected" || $file["status"] === "")
+                                    <span class="hidden">B</span><div class="button rejected noBoarder"></div>
                                     @elseif($file["status"] === "na")
-                                        <div class="button na"></div>
+                                    <span class="hidden">D</span><div class="button na noBoarder"></div>
+                                    @endif
+                                </td>
+                                @endif
+                            
+                            @endforeach
+
+                            @foreach($user["files"] as $file)
+
+                                @if($file["field"] === "moveIn")
+                                <td id="statusBarIcon" style="background-color:#ccc">
+                                    @if($file["status"] === "Uploaded")
+                                    <span class="hidden">A</span><div class="button action bigButton"></div>
+                                    @elseif($file["status"] === "Approved")
+                                    <span class="hidden">C</span><div class="button approved bigButton"></div>
+                                    @elseif($file["status"] === "Rejected")
+                                    <span class="hidden">B</span><div class="button rejected bigButton"></div>
+                                    @elseif($file["status"] === "na" || $file["status"] === "")
+                                    <span class="hidden">D</span><div class="button na bigButton"></div>
                                     @endif
                                 </td>
                                 @endif
@@ -234,27 +301,11 @@
             </table>
 
         </div>
-</div>
 
     
 </div>
 
 <div class="clearSpaceLoginPage"></div>
-
-
-<script>
-    jQuery(document).ready(function($) {
-        $(".clickable-row").click(function() {
-            window.location = $(this).data("href");
-        });
-    });
-
-    $("#searchButton").on('click', function(){
-        //
-    })
-</script>
-
-
 
 
 @endsection
