@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '33e9437041ec4de6714bde6950fa04b48107c2d2',
+    'reference' => 'd3a0012b8fe60ef8d7425ec0d4905621489fdf64',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -485,6 +485,15 @@
       ),
       'reference' => 'daa11c43729510b3700bc34d414664966b03bffe',
     ),
+    'juanparati/sendinblue' => 
+    array (
+      'pretty_version' => '8.1',
+      'version' => '8.1.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '66eec8e49df1c13befcb3f9be07ab0ec55fb9c62',
+    ),
     'kodova/hamcrest-php' => 
     array (
       'replaced' => 
@@ -508,7 +517,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '33e9437041ec4de6714bde6950fa04b48107c2d2',
+      'reference' => 'd3a0012b8fe60ef8d7425ec0d4905621489fdf64',
     ),
     'laravel/sail' => 
     array (
@@ -1124,6 +1133,15 @@
       array (
       ),
       'reference' => 'c6c1022351a901512170118436c764e473f6de8c',
+    ),
+    'sendinblue/api-v3-sdk' => 
+    array (
+      'pretty_version' => 'v7.4.4',
+      'version' => '7.4.4.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'c169d8ceb74b211199fb11586389fb9aa2c37790',
     ),
     'shuchkin/simplexlsxgen' => 
     array (

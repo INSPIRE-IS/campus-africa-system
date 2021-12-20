@@ -361,8 +361,9 @@
 
                 <?php if($booking->property == "49 Jorissen"){?>
                     <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="Single 2 bedroom" <?php if($booking->roomType == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
-                    <option value="Single 3 bedroom" <?php if($booking->roomType == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
+                    <option value="Single 2 Bedroom" <?php if($booking->roomType == "Single 2 Bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
+                    <option value="Single 3 Bedroom" <?php if($booking->roomType == "Single 3 Bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
+                    <option value="Single 4 Bedroom" <?php if($booking->roomType == "Single 4 Bedroom"){ echo "selected";}?>>Single | 4 Bedroom</option>
                 <?php } ?>
 
                 <?php if($booking->property == "YMCA"){?>
@@ -797,6 +798,28 @@
     })
 
     function callRoomDetails(callId, floor, unit, room, bed, bed_code, action){
+        if (floor === "") {
+            $("#floor").html('<option>Loading...</option>');
+            $("#unit").html('<option>Loading...</option>');
+            $("#room").html('<option>Loading...</option>');
+            $("#bed").html('<option>Loading...</option>');
+            $("#bed_code").html('<option>Loading...</option>');
+        } else if (unit === "") {
+            $("#unit").html('<option>Loading...</option>');
+            $("#room").html('<option>Loading...</option>');
+            $("#bed").html('<option>Loading...</option>');
+            $("#bed_code").html('<option>Loading...</option>');
+        } else if (room === "") {
+            $("#room").html('<option>Loading...</option>');
+            $("#bed").html('<option>Loading...</option>');
+            $("#bed_code").html('<option>Loading...</option>');
+        } else if (bed === "") {
+            $("#bed").html('<option>Loading...</option>');
+            $("#bed_code").html('<option>Loading...</option>');
+        } else if (bed_code === "") {
+            $("#bed_code").html('<option>Loading...</option>');
+        }
+
         $.ajax({
             type: "post",
             url: "/get-booking-info",
@@ -817,11 +840,27 @@
                 roomData = data[2]; 
                 type = []
 
-                console.log(callId, floor, unit, room, bed, bed_code, action)
+                console.log(callId, floor, unit, room, bed, bed_code, action);
 
+                console.log(roomData);
+                
                 roomData.forEach(function (arrayItem) {
-                    type.push(arrayItem[''+callId+''])
+                    let new_key = arrayItem[''+callId+''];
+                    let meta1 = "";
+                    let meta2 = "";
+                    
+                    if (arrayItem['meta_info_1']) {
+                        meta1 = arrayItem['meta_info_1'] + " - ";
+                    }
+                    
+                    if (arrayItem['meta_info_2']) {
+                        meta2 = arrayItem['meta_info_2'] + " - ";
+                    }
+
+                    //type.push(meta1 + new_key);
+                    type.push(new_key);
                 })
+                
 
                 var unique = [...new Set(type)];
                 $("#"+callId).empty();

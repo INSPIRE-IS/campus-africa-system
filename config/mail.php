@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    'default' => env('MAIL_MAILER', 'sendinblue'),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +34,9 @@ return [
     */
 
     'mailers' => [
+        'sendinblue' => [
+            'transport' => 'sendinblue.v3'
+        ],
         'smtp' => [
             'transport' => 'smtp',
             'host' => env('MAIL_HOST', 'smtp.mailgun.org'),

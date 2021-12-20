@@ -113,17 +113,6 @@ Route::post('/save-residence', [HomeController::class, 'save_residence']);
 Route::post('/action-data', [HomeController::class, 'action_data']);
 Route::post('/approve-app-data', [HomeController::class, 'approve_app_data']);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Route::get('/room-types', [HomeController::class, 'room_types']);
+Route::get('/room-type/edit/{id}', [HomeController::class, 'room_type_edit']);
+Route::post('/save-room-type', [HomeController::class, 'save_room_type']);

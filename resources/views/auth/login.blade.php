@@ -12,9 +12,7 @@
             </div>
 
             <div class="rightMenu">
-                
-                <button type="button" class="contactButton">contact us</button>
-                <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
+                <a href="https://campusafrica.co.za/contact-us/" class="contactButton">contact us</a>
             </div>
         </nav>
 
@@ -32,7 +30,8 @@
                 <h2 class="cardHeader">Apply</h2>
                 <h4 class="cardSubHeader">Are you new?</h4>
                 <p class="cardText">Before you can view and reserve a room at one of our awesome properties, you'll need to apply and submit all the necessary paperwork. Get started now!</p>
-                <a href="/register"><button type="button" class="applyButton">apply now!</button></a>
+                <?php /*<a href="/register"><button type="button" class="applyButton">apply now!</button></a>*/ ?>
+                <a href="https://campusafrica.co.za/contact-us/"><button type="button" class="applyButton">apply now!</button></a>
             </div>
 
             <div class="whiteCard mainBlock" style="margin-left:11px;">

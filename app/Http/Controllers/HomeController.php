@@ -15,6 +15,7 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
 use App\Models\Property;
 use App\Models\Residence;
+use App\Models\RoomTypes;
 
 class HomeController extends Controller
 {
@@ -2011,9 +2012,12 @@ class HomeController extends Controller
 
         $property = Property::where('user_id_room', $request->bookingId)->first();
 
+        $room_types = [];
+
         if(!empty($property)){
             $selected = $property;
             // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
+
         }else{
             $selected = [];
             
@@ -2038,7 +2042,15 @@ class HomeController extends Controller
             $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
         }
 
-        return ["true", $selected, $propertyInfo];
+        $room_types = [];
+        $room_types_data = Property::where('residence', $request->property)->get();
+        foreach($room_types_data as $rtd) {
+            if (!in_array($rtd->room_type, $room_types)) {
+                array_push($room_types, $rtd->room_type);
+            }
+        }
+
+        return ["true", $selected, $propertyInfo, $room_types];
     }
 
     public function properties_import(Request $request){
@@ -2221,6 +2233,46 @@ class HomeController extends Controller
                 "actionUserRole" => Auth::user()->userRole,
               ]);
         }
+    }
+
+    public function room_types(Request $request){
+
+        $room_types = RoomTypes::get();
+        
+
+        return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types"]);
+    }
+
+    public function room_type_edit(Request $request, $id){
+        if($id == "0"){
+            $head = "Add";
+            $roomTypeData = "";
+        }else{
+            $head = "Edit";
+            $roomTypeData = RoomTypes::where('id', $id)->first();
+        }
+
+        $residence = Residence::get();
+
+        return view('admin.room_type_edit', ["headerTitle" => $head." Room Type", "title" => $head." Room Type", "roomTypeData" => $roomTypeData, "residence" => $residence]);
+    }
+
+    public function save_room_type (Request $request){
+
+        $roomTypeId = $request->id;
+
+        $data = [
+            "property_id" => $request->property_id,
+            "name" => $request->name
+        ];
+
+        if($roomTypeId == "0"){
+            RoomTypes::create($data);
+        }else{
+            RoomTypes::where('id', $roomTypeId)->update($data);
+        }
+
+        return redirect("/room-types");
     }
 
     
