@@ -793,7 +793,7 @@
 
                             if (roomData[key].meta_info_1 !== "" && roomData[key].meta_info_1 !== null) {
                                 floor_name = roomData[key].meta_info_1;
-                                spacer = " - ";
+                                spacer = " | ";
                             }
 
                             /*if (roomData[key].meta_info_2 !== "" && roomData[key].meta_info_2 !== null) {
