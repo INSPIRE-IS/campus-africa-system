@@ -99,9 +99,7 @@
         </div>
 
         <div class="form-field">
-            <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <br/>
-                
+            <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>                
             <select name="year" id="year" class="required">
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "4")
