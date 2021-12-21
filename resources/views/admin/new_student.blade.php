@@ -99,9 +99,7 @@
         </div>
 
         <div class="form-field">
-            <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <br/>
-                
+            <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>                
             <select name="year" id="year" class="required">
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "4")
@@ -1053,7 +1051,7 @@
         }else if(propValue == "126 Siemert"){
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single 3 Bedroom</option>')
+            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single | 3 Bedroom</option>')
         }
     })
 

@@ -97,7 +97,7 @@
                         @endif
                     </h1>
                 @endif
-                <h1 class="booking">{{$headerTitle}}</h1>
+                <h1 class="booking_app">{{$headerTitle}}</h1>
 
                 <div class="buttonSidePanel" style="margin-top:-50px;">
 
@@ -292,7 +292,7 @@
                 '<?php if($user[0]['userInfo']['kinPassportNo']){ echo $user[0]['userInfo']['kinPassportNo'];}?><br/>'+
                 '{{$user[0]['userInfo']['kinCellNo']}}<br/>{{$user[0]['userInfo']['kinEmail']}}<br/>'+
                 '{{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>'+
-                '{{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPostal']}}<br/>',
+                '{{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#1cb915',
