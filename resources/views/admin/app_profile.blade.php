@@ -27,7 +27,7 @@
                 {{$user[0]['userInfo']['kinCellNo']}}<br/>
                 {{$user[0]['userInfo']['kinEmail']}}<br/>
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
-                {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPostal']}}<br/>
+                {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
             </p>
 
         </div>

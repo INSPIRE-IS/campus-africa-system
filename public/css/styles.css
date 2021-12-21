@@ -210,6 +210,14 @@ body {
     line-height: 103px;
     text-align: left;
 }
+.loginHeader .booking_app {
+    color: #464749;
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 46px;
+    text-align: left;
+    width: 57%;
+}
 .loginHeader .bookingSub {
     color: #464749;
     font-size: 33px;
