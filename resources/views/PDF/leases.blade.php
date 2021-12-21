@@ -40,7 +40,7 @@
                     <span style="font-size:20px;">{{$data->userFirstName}} {{$data->userLastname}}</span>
                 </td>
                 <td style="text-align:left; padding-left:70px 20px;">
-                    <span style="font-size:20px;">@if($data->userNationality == "South African") {{$data->userId}} @else {{$data->userPassport}} @endif</span>
+                    <span style="font-size:20px;">@if($data->userNationality == "South Africa") {{$data->userId}} @else {{$data->userPassport}} @endif</span>
                 </td>
             </tr>
             <tr>
@@ -48,7 +48,7 @@
                     Full Name
                 </td>
                 <td style="text-align:left; padding-left:70px 20px;">
-                    @if($data->userNationality == "South African") {{"ID Number"}} @else {{"Passport Number"}} @endif
+                    @if($data->userNationality == "South Africa") {{"ID Number"}} @else {{"Passport Number"}} @endif
                 </td>
             </tr>
         </table>
@@ -846,7 +846,7 @@
             <br/><br/>
             <p style="font-weight:bold; font-size:14px;">I {{$data->userFirstName}} {{$data->userLastname}} With
                 <br/><br/>
-                @if($data->userNationality == "South African") {{"ID " . $data->userId}} @else {{"Passport Number " . $data->userPassport}} @endif
+                @if($data->userNationality == "South Africa") {{"ID " . $data->userId}} @else {{"Passport Number " . $data->userPassport}} @endif
                 <br/><br/>
                 Hereby acknowledge that I am fully liable for any rental/accommodation payments due on demand to the Owner Ltd for accommodation supplied at the student accommodation centre as indicated in clause 12.a.ii of this lease. 
             </p>
