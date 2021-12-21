@@ -61,7 +61,7 @@
         </div>
 
         <div class="form-field">
-            <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+            <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="cell_no_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
             <input type="text" name="cell_no" id="cell_no" class="required">
         </div>
 
@@ -427,7 +427,7 @@
 
             <div class="generalInfo">
 
-                <div class="form-field">
+                {{-- <div class="form-field">
                     <label>Nationality * <span id="kNationality" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <select name="kinNationality" id='kinNationality' class="required">
                         <option value="" selected disabled>Please select one</option>
@@ -442,21 +442,21 @@
                 <div class="form-field" id="kinIdField">
                     <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
                     <input type="text" name="kIdNumber" id="kIdNumber" class="required">
-                </div>
+                </div> 
 
                 <div class="form-field hidden" id="kinPassportField">
-                    <label>Passport Number * <span id="kinPassport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <label>Passport Number</label>
                     <input type="text" name="kinPassportNo" id="kinPassportNo" >
-                </div>
+                </div>--}}
 
                 <div class="form-field">
-                    <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
                     <input type="text" name="kCellNo" id='kCellNo' class="required">
                 </div>
 
                 <div class="form-field">
-                    <label>Email Address * <span id="kEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-                    <input type="email" name="kEmail" id="kEmail" class="required">
+                    <label>Email Address</label>
+                    <input type="email" name="kEmail" id="kEmail">
                 </div>
             </div>
 
@@ -645,6 +645,7 @@
 
     })
 
+    /*
     $("#kIdNumber").on('keyup blur', function(){
         let idNumber = $("#kIdNumber").val();
 
@@ -656,6 +657,7 @@
         }
 
     })
+    */
 
     $("#dob").on('keyup blur', function(){
         let dob = $("#dob").val();
@@ -684,11 +686,38 @@
             $("#"+fieldError).removeClass('hidden')
         }
     }
+
+    function duplicateCell(){
+        $('#kCellNo_duplicate').addClass('hidden');
+        $('#cell_no_duplicate').addClass('hidden');
+        $('#cell_no, #kCellNo').removeClass('fieldDuplicate');
+
+        if ($('#cell_no').val() != "" && $('#cell_no').val() == $('#kCellNo').val()) {
+            $('#kCellNo_duplicate').removeClass('hidden');
+            $('#cell_no_duplicate').removeClass('hidden');
+
+            $('#cell_no_error').removeClass('hidden');
+            $('#kCellNo_error').removeClass('hidden');
+
+            $('#cell_no').addClass('fieldError');
+            $('#kCellNo').addClass('fieldError');
+
+            $('#cell_no').addClass('fieldDuplicate');
+            $('#kCellNo').addClass('fieldDuplicate');
+        } else {
+            cell = $("#cell_no").val()
+            ValidCell(cell, "cell_no", "cell_no_error");
+            
+            cell = $("#kCellNo").val();            
+            ValidCell(cell, "kCellNo", "kCellNo_error");
+        }
+    }
     
 
     $("#cell_no").on('keyup blur', function(){
         cell = $("#cell_no").val()
-        ValidCell(cell, "cell_no", "cell_no_error")
+        ValidCell(cell, "cell_no", "cell_no_error");
+        duplicateCell();
     })
 
     $("#pCell_no").on('keyup blur', function(){
@@ -712,8 +741,10 @@
     })
 
     $("#kCellNo").on('keyup blur', function(){
-        cell = $("#kCellNo").val()
-        ValidCell(cell, "kCellNo", "kCellNo_error")
+        cell = $("#kCellNo").val();
+        
+        ValidCell(cell, "kCellNo", "kCellNo_error");
+        duplicateCell();
     })
 
     $("#kWorkNo").on('keyup blur', function(){
@@ -856,8 +887,13 @@
             $("#kEmail").removeClass("fieldError")
             $("#kEmail_error").addClass('hidden')
         }else{
-            $("#kEmail").addClass("fieldError")
-            $("#kEmail_error").removeClass('hidden')
+            if ($("#kEmail").val() !== "") {
+                $("#kEmail").addClass("fieldError")
+                $("#kEmail_error").removeClass('hidden')
+            } else {
+                $("#kEmail").removeClass("fieldError")
+                $("#kEmail_error").addClass('hidden')
+            }
         }
     })
 
@@ -879,23 +915,25 @@
         }
     })
 
+    /*
     $("#kinNationality").on('change', function(){
         if($("#kinNationality").val() == "South Africa"){
             $("#kinPassportField").addClass('hidden')
             $("#kinIdField").removeClass('hidden')
 
-            $("#kinPassportNo").removeClass("required")
-            $("#kIdNumber").addClass("required")
-            $("#kinPassportNo").removeClass("fieldError")
+            //$("#kinPassportNo").removeClass("required")
+            //$("#kIdNumber").addClass("required")
+            //$("#kinPassportNo").removeClass("fieldError")
         }else{
             $("#kinIdField").addClass('hidden')
             $("#kinPassportField").removeClass('hidden')
 
-            $("#kinPassportNo").addClass("required")
-            $("#kIdNumber").removeClass("required")
-            $("#kIdNumber").removeClass("fieldError")
+            //$("#kinPassportNo").addClass("required")
+            //$("#kIdNumber").removeClass("required")
+            //$("#kIdNumber").removeClass("fieldError")
         }
     })
+    */
 
     $("#pNationality").on('change', function(){
         console.log($("#pNationality").val())
@@ -1062,26 +1100,26 @@
             $("#kLastName").removeClass('fieldError').empty().val($("#pLastName").val())
             $("#kCellNo").removeClass('fieldError').empty().val($("#pCell_no").val())
             $("#kEmail").removeClass('fieldError').empty().val($("#pEmail").val())
-            let element = document.getElementById("kinNationality");
+            let element = document.getElementById("pNationality");
             element.value = $("#pNationality").val();
 
 
             if($("#pNationality").val() == "South Africa"){
-                $("#kinPassportField").addClass('hidden')
-                $("#kinIdField").removeClass('hidden')
+                $("#passportField").addClass('hidden')
+                $("#idField").removeClass('hidden')
 
-                $("#kinPassportNo").removeClass("required")
-                $("#kIdNumber").addClass("required")
+                //$("#kinPassportNo").removeClass("required")
+                //$("#kIdNumber").addClass("required")
             }else{
-                $("#kinIdField").addClass('hidden')
-                $("#kinPassportField").removeClass('hidden')
+                $("#idField").addClass('hidden')
+                $("#passportField").removeClass('hidden')
 
-                $("#kinPassportNo").addClass("required")
-                $("#kIdNumber").removeClass("required")
+                //$("#kinPassportNo").addClass("required")
+                //$("#kIdNumber").removeClass("required")
             }
 
-            $("#kIdNumber").removeClass('fieldError').empty().val($("#pIdNumber").val())
-            $("#kinPassportNo").removeClass('fieldError').empty().val($("#pPassportNo").val())
+            //$("#kIdNumber").removeClass('fieldError').empty().val($("#pIdNumber").val())
+            //$("#kinPassportNo").removeClass('fieldError').empty().val($("#pPassportNo").val())
 
             if(document.getElementById('app_address_p').checked == true){
                 document.getElementById('app_address').checked = true;
@@ -1131,7 +1169,9 @@
             }
         })
 
-       
+       if ($('.fieldDuplicate').length > 0) {
+            req = 0;
+        }
 
         if(req == 0){
             Swal.fire(
