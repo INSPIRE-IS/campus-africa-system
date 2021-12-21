@@ -150,57 +150,6 @@
             </select>
         </div>
 
-        <div class="form-field">
-            <label>Residence * <span id="property_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="property" id='property' class="required">
-                <option value="" selected disabled>Select a Residence</option>
-                <option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";} ?>>Braamlofts</option>
-                <option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";} ?>>80 Jorissen</option>
-                <option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";} ?>>49 Jorissen</option>
-                <option value="Dunvista Mansions" <?php if($booking->property == "Dunvista Mansions"){echo "selected";} ?>>Dunvista Mansions</option>
-                <option value="Wynton Joy" <?php if($booking->property == "Wynton Joy"){echo "selected";} ?>>Wynton Joy</option>
-                <option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";} ?>>126 Siemert</option>
-                <option value="YMCA" <?php if($booking->property == "YMCA"){echo "selected";} ?>>YMCA</option>
-            </select>
-        </div>
-
-        <div class="form-field">
-            <label>Room Type * <span id="roomType_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <select name="roomType" id='roomType' class="required">
-                <option value="" selected disabled>Select a Room Type</option>
-                <?php if($booking->property == "Braamlofts"){?>
-                    <option value="Single" <?php if($booking->roomType == "Single"){ echo "selected";}?>>Single</option>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="3 Sharing" <?php if($booking->roomType == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                <?php } ?>
-
-                <?php if($booking->property == "80 Jorissen" || $booking->property == "Dunvista Mansions" || $booking->property == "Wynton Joy" || $booking->property == "126 Siemert"){?>
-                    <option value="Single" <?php if($booking->roomType == "Single"){ echo "selected";}?>>Single</option>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                <?php } ?>
-
-                <?php if($booking->property == "49 Jorissen"){?>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option>
-                    <option value="Single" <?php if($booking->roomType == "Single"){ echo "selected";}?>>Single</option>
-                    <option value="Single 2 bedroom" <?php if($booking->roomType == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
-                    <option value="Single 3 bedroom" <?php if($booking->roomType == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
-                    <option value="Single 4 bedroom" <?php if($booking->roomType == "Single 4 bedroom"){ echo "selected";}?>>Single | 4 Bedroom</option>
-                <?php } ?>
-
-                <?php if($booking->property == "YMCA"){?>
-                    <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="2 Sharing 2 Bedroom" <?php if($booking->roomType == "2 Sharing 2 Bedroom"){ echo "selected";}?>>2 Sharing | 2 Bedroom</option>
-                    <option value="2 Sharing 3 Bedroom" <?php if($booking->roomType == "2 Sharing 3 Bedroom"){ echo "selected";}?>>2 Sharing | 3 Bedroom</option>
-                    <option value="3 Sharing" <?php if($booking->roomType == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                    <option value="Single Small" <?php if($booking->roomType == "Single Small"){ echo "selected";}?>>Single | Small</option>
-                    <option value="Single Medium" <?php if($booking->roomType == "Single Medium"){ echo "selected";}?>>Single | Medium</option>
-                    <option value="Single Large" <?php if($booking->roomType == "Single Large"){ echo "selected";}?>>Single | Large</option>
-                    <option value="Single 3 Bedroom" <?php if($booking->roomType == "Single 3 Bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>                    
-                <?php } ?>
-            </select>
-        </div>
-
         <div id="sponsorDetails" class="<?php if($user->studentType !== "Cash / Direct"){echo "hidden";}?>">
 
             <div class="form-field">
