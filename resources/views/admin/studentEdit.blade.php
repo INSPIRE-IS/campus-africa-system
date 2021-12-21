@@ -182,16 +182,22 @@
 
                 <?php if($booking->property == "49 Jorissen"){?>
                     <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
+                    <option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option>
+                    <option value="Single" <?php if($booking->roomType == "Single"){ echo "selected";}?>>Single</option>
                     <option value="Single 2 bedroom" <?php if($booking->roomType == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
                     <option value="Single 3 bedroom" <?php if($booking->roomType == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
+                    <option value="Single 4 bedroom" <?php if($booking->roomType == "Single 4 bedroom"){ echo "selected";}?>>Single | 4 Bedroom</option>
                 <?php } ?>
 
                 <?php if($booking->property == "YMCA"){?>
                     <option value="2 Sharing" <?php if($booking->roomType == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
+                    <option value="2 Sharing 2 Bedroom" <?php if($booking->roomType == "2 Sharing 2 Bedroom"){ echo "selected";}?>>2 Sharing | 2 Bedroom</option>
+                    <option value="2 Sharing 3 Bedroom" <?php if($booking->roomType == "2 Sharing 3 Bedroom"){ echo "selected";}?>>2 Sharing | 3 Bedroom</option>
                     <option value="3 Sharing" <?php if($booking->roomType == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                    <option value="Single small" <?php if($booking->roomType == "Single small"){ echo "selected";}?>>Single | small</option>
-                    <option value="Single medium" <?php if($booking->roomType == "Single medium"){ echo "selected";}?>>Single | Medium</option>
-                    <option value="Single large" <?php if($booking->roomType == "Single large"){ echo "selected";}?>>Single | Large</option>
+                    <option value="Single Small" <?php if($booking->roomType == "Single Small"){ echo "selected";}?>>Single | Small</option>
+                    <option value="Single Medium" <?php if($booking->roomType == "Single Medium"){ echo "selected";}?>>Single | Medium</option>
+                    <option value="Single Large" <?php if($booking->roomType == "Single Large"){ echo "selected";}?>>Single | Large</option>
+                    <option value="Single 3 Bedroom" <?php if($booking->roomType == "Single 3 Bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>                    
                 <?php } ?>
             </select>
         </div>
