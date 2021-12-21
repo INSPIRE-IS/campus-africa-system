@@ -1597,6 +1597,12 @@ input:read-only {
 
     .pdfSection {
         margin-top: 50px;
+
+        img {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+        }
     }
 }
 

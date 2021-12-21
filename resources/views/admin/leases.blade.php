@@ -91,8 +91,11 @@
         else
             $("#buttonSection").removeClass('hidden')
 
-
-        $(".pdfSection").empty().append('<embed id="pdfView" src="/storage/'+url+'"  width="100%" height="600px" />')
+        if (url.search(".pdf") > 0) {
+            $(".pdfSection").empty().append('<embed id="pdfView" src="/storage/'+url+'"  width="100%" height="600px" />')
+        } else {
+            $(".pdfSection").empty().append('<img id="pdfView" src="/storage/'+url+'" />')
+        }        
 
         var modal = document.getElementById("myModal");
         modal.style.display = "block";
