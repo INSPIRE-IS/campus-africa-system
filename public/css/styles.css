@@ -1496,6 +1496,11 @@ button:disabled {
 .modal .pdfSection {
     margin-top: 50px;
 }
+.modal .pdfSection img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+}
 
 #mailer_table button {
     padding: 10px;

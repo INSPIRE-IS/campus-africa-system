@@ -846,7 +846,7 @@
             <br/><br/>
             <p style="font-weight:bold; font-size:14px;">I {{$data->userFirstName}} {{$data->userLastname}} With
                 <br/><br/>
-                ID {{$data->userId}}
+                @if($data->userNationality == "South African") {{"ID " . $data->userId}} @else {{"Passport Number " . $data->userPassport}} @endif
                 <br/><br/>
                 Hereby acknowledge that I am fully liable for any rental/accommodation payments due on demand to the Owner Ltd for accommodation supplied at the student accommodation centre as indicated in clause 12.a.ii of this lease. 
             </p>
