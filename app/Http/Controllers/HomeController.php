@@ -2117,7 +2117,11 @@ class HomeController extends Controller
 
             foreach($propertyInfo as $pi) {
                 if (!isset($units[$pi->bed_code])) {
-                    $bed_code[$pi->bed_code] = $pi;
+                    $bed_used = Booking::where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
+
+                    if (count($bed_used) == 0) {
+                        $bed_code[$pi->bed_code] = $pi;
+                    }
                 }
             }
 
