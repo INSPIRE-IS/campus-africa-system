@@ -16,7 +16,6 @@ class Booking extends Model
         'property',
         'roomType',
         'propertyId',
-        
         'property_data_id',
         'floor',
         'unit',
@@ -29,4 +28,8 @@ class Booking extends Model
         'lease_to_date',
         'lease_to_time',
     ];
+
+    public function users(){
+        return $this->hasOne("App\Models\User", "id", "userId");
+    }
 }
