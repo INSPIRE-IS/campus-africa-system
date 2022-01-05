@@ -181,12 +181,24 @@
 
                 <h2 class="appSubHeader bold">BOOKING FEE</h2>
                 <p class="appSubHeader">
-                    @if($residence !== null) {{$residence->booking_rate}} @endif
+                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "NSFAS") R {{$residence->nsfas_booking_rate}} @endif
+                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "Bursary") R {{$residence->bursary_booking_rate}} @endif
+                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "Cash / Direct") R {{$residence->booking_rate}} @endif
                 </p>
                 <br/>
 
                 <h2 class="appSubHeader bold">PAID</h2>
                 <p class="appSubHeader">
+                    @foreach($user[0]["files"] as $file)
+                        @if($file["field"] === "proof_of_payment")
+                            @if($file["status"] === "XApproved" || $file["status"] === "Approved")
+                                Yes <br/>
+                            @else
+                                No <br/>
+                            @endif
+                        @endif
+                    @endforeach
+
                     @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
                     @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <br />{{$user[0]['userInfo']['bint']}} @endif
                     @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <br />{{$user[0]['userInfo']['spesificInt']}} @endif

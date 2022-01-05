@@ -495,7 +495,7 @@ class HomeController extends Controller
 
             $lookup = Lookups::get();
 
-            $residence = Residence::where('residence', $booking->residence)->first();
+            $residence = Residence::where('residence', $booking->property)->first();
 
             //Get booking Meta
             $bookingPropData = Property::where('id', $booking->property_data_id)->first();
@@ -2117,7 +2117,6 @@ class HomeController extends Controller
 
             foreach($propertyInfo as $pi) {
                 if (!isset($units[$pi->bed_code])) {
-                    // $bed_used = Booking::where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
 
                     $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
 
@@ -2235,15 +2234,88 @@ class HomeController extends Controller
             "booking_rate" => $request->booking_rate,
             "owner" => $request->owner,
             "address" => $request->address,
+            "nsfas_booking_rate" => $request->nsfas_booking_rate,
+            "bursary_booking_rate" => $request->bursary_booking_rate,
         ];
 
         if($propertyId == "0"){
             Residence::create($data);
         }else{
+            $oldData = Residence::where('id', $propertyId)->first();
+
+            if($oldData->nsfas_booking_rate !== $data['nsfas_booking_rate']){
+                if($data['nsfas_booking_rate'] == "0"){
+                    $this->updateInfoRes('NSFAS');
+                }else{
+                    $this->updateInfoResRedo('NSFAS');
+                }
+            }
+
+            if($oldData->bursary_booking_rate !== $data['bursary_booking_rate']){
+                if($data['bursary_booking_rate'] == "0"){
+                    $this->updateInfoRes('Bursary');
+                }else{
+                    $this->updateInfoResRedo('Bursary');
+                }
+            }
+
+            if($oldData->booking_rate !== $data['booking_rate']){
+                if($data['booking_rate'] == "0"){
+                    $this->updateInfoRes('Cash / Direct');
+                }else{
+                    $this->updateInfoResRedo('Cash / Direct');
+                }
+            }
+            
             Residence::where('id', $propertyId)->update($data);
         }
 
         return redirect("/properties-info");
+    }
+
+    public function updateInfoRes($studentType){
+
+        $students = User::where('studentType', $studentType)->get();
+        foreach($students as $student){
+            $file = UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->first();
+
+            if(!empty($file)){
+                UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->update(['status' => 'Approved']);
+            }else{
+                UserFiles::create([
+                    'userUid'=> $student->id,
+                    'fileId' => 'proof_of_payment',
+                    'status' => 'Approved'
+                ]);
+            }
+
+            ActionList::create([
+                "userUid" => $student['id'],
+                "action" => "Booking Fee Waived",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+        }
+    }
+
+    public function updateInfoResRedo($studentType){
+        $students = User::where('studentType', $studentType)->get();
+        foreach($students as $student){
+            $file = UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->first();
+
+            if(!empty($file) && $file->fileUrl !== null){
+                UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->update(['status' => 'Rejected']);
+            }
+
+            ActionList::create([
+                "userUid" => $student['id'],
+                "action" => "Booking Fee Added",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+        }
     }
 
     public function action_data(Request $request){

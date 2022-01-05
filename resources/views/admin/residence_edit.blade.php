@@ -23,11 +23,6 @@
         </div>
 
         <div class="form-field">
-            <label>Booking Rate</label>
-            <input type="text" name="booking_rate" id="booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->booking_rate;}?>">
-        </div>
-
-        <div class="form-field">
             <label>Owner</label>
             <input type="text" name="owner" id="owner" value="<?php if(!empty($propertyData)){echo $propertyData->owner;}?>">
         </div>
@@ -36,6 +31,25 @@
         <div class="form-field">
             <label>Address</label>
             <input type="text" name="address" id="address" value="<?php if(!empty($propertyData)){echo $propertyData->address;}?>">
+        </div>
+
+        <div class="form-field">
+            <br/>
+        </div>
+
+        <div class="form-field" style="width:33%">
+            <label>Booking Rate (NSFAS)</label>
+            <input type="text" name="nsfas_booking_rate" id="nsfas_booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->nsfas_booking_rate;}?>">
+        </div>
+
+        <div class="form-field" style="width:33%">
+            <label>Booking Rate (Bursary)</label>
+            <input type="text" name="bursary_booking_rate" id="bursary_booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->bursary_booking_rate;}?>">
+        </div>
+
+        <div class="form-field" style="width:33%">
+            <label>Booking Rate (Cash)</label>
+            <input type="text" name="booking_rate" id="booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->booking_rate;}?>">
         </div>
 
 

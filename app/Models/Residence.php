@@ -16,5 +16,7 @@ class Residence extends Model
         'booking_rate',
         'owner',
         'address',
+        'nsfas_booking_rate',
+        'bursary_booking_rate',
     ];
 }
