@@ -619,6 +619,7 @@ class ComposerStaticInit655c0109aef452550ab0652988262d7d
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Models\\ActionList' => __DIR__ . '/../..' . '/app/Models/ActionList.php',
         'App\\Models\\Booking' => __DIR__ . '/../..' . '/app/Models/Booking.php',
+        'App\\Models\\ImportNSFASApproval' => __DIR__ . '/../..' . '/app/Models/ImportNSFASApproval.php',
         'App\\Models\\Lookups' => __DIR__ . '/../..' . '/app/Models/Lookups.php',
         'App\\Models\\MailerList' => __DIR__ . '/../..' . '/app/Models/MailerList.php',
         'App\\Models\\Property' => __DIR__ . '/../..' . '/app/Models/Property.php',

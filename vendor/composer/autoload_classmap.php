@@ -29,6 +29,7 @@ return array(
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Models\\ActionList' => $baseDir . '/app/Models/ActionList.php',
     'App\\Models\\Booking' => $baseDir . '/app/Models/Booking.php',
+    'App\\Models\\ImportNSFASApproval' => $baseDir . '/app/Models/ImportNSFASApproval.php',
     'App\\Models\\Lookups' => $baseDir . '/app/Models/Lookups.php',
     'App\\Models\\MailerList' => $baseDir . '/app/Models/MailerList.php',
     'App\\Models\\Property' => $baseDir . '/app/Models/Property.php',

@@ -118,3 +118,6 @@ Route::post('/approve-app-data', [HomeController::class, 'approve_app_data']);
 Route::get('/room-types', [HomeController::class, 'room_types']);
 Route::get('/room-type/edit/{id}', [HomeController::class, 'room_type_edit']);
 Route::post('/save-room-type', [HomeController::class, 'save_room_type']);
+
+Route::get('/nsfas-approval-upload', [HomeController::class, 'nsfas_approval_upload']);
+Route::post('/import/nsfas-students', [HomeController::class, 'import_nsfas_approval']);

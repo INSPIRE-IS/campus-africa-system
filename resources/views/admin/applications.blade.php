@@ -13,6 +13,10 @@
         <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
     @endif
 
+    <a href="/nsfas-approval-upload"><button type="button" class="inactiveBtn">NSFAS Approval Upload</button></a>
+
+    
+
 
     <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">

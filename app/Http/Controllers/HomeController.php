@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Property;
 use App\Models\Residence;
 use App\Models\RoomTypes;
+use App\Models\ImportNSFASApproval;
 
 class HomeController extends Controller
 {
@@ -2428,6 +2429,78 @@ class HomeController extends Controller
         }
 
         return redirect("/room-types");
+    }
+
+    public function nsfas_approval_upload(Request $request){
+        
+        return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload"]);
+    }
+
+    public function import_nsfas_approval(Request $request){
+        $files = $request->file('file');
+
+        $file = fopen($files,"r");
+        $i = 0;
+        $numberOfFields = 3;
+
+        $approved = 0;
+        $skipped = 0;
+        $not_found = 0;
+        $students_not_found = [];
+
+        while (($filedata = fgetcsv($file)) !== FALSE) {
+            $num = count($filedata);
+
+            // Skip first row & check number of fields
+            if($i > 0 && $num == $numberOfFields){ 
+                // $property_arr = [];
+
+                echo $filedata[2];
+                // ImportNSFASApproval
+
+                $student = User::where("email", $filedata[2])->first();
+
+                if(!empty($student)){
+                    $file = UserFile::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
+
+                    if(!empty($file) && $file->status !== "Approved"){
+                        $approved ++;
+                        UserFile::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploadedBy' => 'Import']);
+
+                        ActionList::create([
+                            "userUid" => $student->id,
+                            "action" => "Approved via import",
+                            "actionUserUid" => Auth::user()->id,
+                            "actionUserDisplayName" => "Import",
+                            "actionUserRole" => Auth::user()->userRole,
+                          ]);
+                    }else if(empty($file)){
+                        $approved ++;
+                        UserFile::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploadedBy' => 'Import']);
+
+                        ActionList::create([
+                            "userUid" => $student->id,
+                            "action" => "Approved via import",
+                            "actionUserUid" => Auth::user()->id,
+                            "actionUserDisplayName" => "Import",
+                            "actionUserRole" => Auth::user()->userRole,
+                          ]);
+
+                    }else{
+                        $skipped ++;
+                    }
+                }else{
+                    $not_found ++;
+                    array_push($students_not_found, [$filedata[0], $filedata[1], $filedata[2]]);
+                }
+
+            }
+            $i++;
+        }
+
+        fclose($file);
+
+        echo "done";
     }
 
     
