@@ -117,15 +117,16 @@
                         <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
+                        <th style="background-color:#ccc; color:#000">APPLICATION STATUS</th>
                         <th style="background-color:#ccc; color:#000">BOOKING STATUS</th>
                         <th>PROOF OF PAYMENT</th>
                         <th>ID COPY</th>
-                        <th style="background-color:#ccc; color:#000">APPLICATION STATUS</th>
+                        <th style="background-color:#ccc; color:#000">DOCUMENT STATUS</th>
                         <th>STUDENT CARD COPY</th>
                         <th>PROOF OF REGISTRATION</th>
                         <th>NSFAS | BURSARY APPROVAL</th>
                         <th>BANK STATEMENTS</th>
-                        <th style="background-color:#ccc; color:#000">LEASE</th>
+                        <th style="background-color:#ccc; color:#000">LEASE STATUS</th>
                     </tr>
                 </thead>
                 <tbody id="applicantsSection">
@@ -140,6 +141,19 @@
                             <td id="bed_code">{{$user["bed_code"]}}</td>
                             <td id="date">{{$user["created_at"]}}</td>
                             <td id="studType">@if($user["studentType"] == "Cash / Direct") Cash @else {{$user["studentType"]}} @endif</td>
+
+                            <td id="statusBarIcon" style="background-color:#ccc">
+                                @if($user["overall_status"] === "pending" || $user["overall_status"] === "Action")
+                                <span class="hidden">A</span><div class="button action bigButton"></div>
+                                @elseif($user["overall_status"] === "Approved")
+                                <span class="hidden">C</span><div class="button approved bigButton"></div>
+                                @elseif($user["overall_status"] === "Denied" || $user["overall_status"] === null || $user["overall_status"] === "Incomplete")
+                                <span class="hidden">B</span><div class="button rejected bigButton"></div>
+                                @else
+                                <span class="hidden">D</span><div class="button na bigButton"></div>
+                                @endif
+                            </td>
+
                             <td id="statusBarIcon" style="background-color:#ccc">
                                 @if($user["bookingStatus"] === "Pending" || $user["bookingStatus"] === "Action")
                                 <span class="hidden">A</span><div class="button action bigButton"></div>
@@ -147,6 +161,8 @@
                                 <span class="hidden">C</span><div class="button approved bigButton"></div>
                                 @elseif($user["bookingStatus"] === "Denied" || $user["bookingStatus"] === null || $user["bookingStatus"] === "Empty" || $user["bookingStatus"] === "Rejected")
                                 <span class="hidden">B</span><div class="button rejected bigButton"></div>
+                                @else
+                                    <span class="hidden">D</span><div class="button na bigButton"></div>
                                 @endif
                             </td>
                             
@@ -195,6 +211,8 @@
                                 <span class="hidden">C</span><div class="button approved bigButton"></div>
                                 @elseif($user["applicationStatus"] === "Denied" || $user["applicationStatus"] === null || $user["applicationStatus"] === "Rejected" || $user["applicationStatus"] === "Empty" || $user["applicationStatus"] == "Denied Confimed")
                                 <span class="hidden">B</span><div class="button rejected bigButton"></div>
+                                @else
+                                <span class="hidden">D</span><div class="button na bigButton"></div>
                                 @endif
                             </td>
 

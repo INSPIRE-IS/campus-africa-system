@@ -91,6 +91,7 @@ Route::post("/delete/lookup", [HomeController::class, 'delete_lookup']);
 Route::post("/applications/filter", [HomeController::class, 'app_filter']);
 
 Route::post("/delete/booking", [HomeController::class, 'delete_booking']);
+Route::post("/cancel/booking", [HomeController::class, 'cancel_booking']);
 
 Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);

@@ -118,17 +118,24 @@
                     <br/>
                 @endif
                 <div class="buttons">
-                    @if(Auth::user()->role_change_bed == "1")
-                        <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
-                    @endif
+                        @if(Auth::user()->role_change_bed == "1")
+                            <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                        @endif
 
-                    @if(Auth::user()->role_change_date == "1")
-                        <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
-                    @endif
+                        @if(Auth::user()->role_change_date == "1")
+                            <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                        @endif
                     
-                    @if(Auth::user()->role_delete_booking == 1)
-                        <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
-                    @endif
+                </div>
+                <div class="buttons">
+                    
+                        @if(Auth::user()->role_delete_booking == 1)
+                            <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
+                        @endif
+
+                        
+                            <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                        
                 </div>
             </div>
 
@@ -2108,6 +2115,33 @@
             },
         });
     });
+
+    function cancelBooking(bookingId, userId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/cancel/booking",
+                    data: {
+                        bookingId: bookingId, 
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location = "/applications";
+                    },
+                });
+            }
+        })
+    }
 
     function deleteBooking(bookingId, userId){
         Swal.fire({
