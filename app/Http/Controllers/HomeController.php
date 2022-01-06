@@ -17,6 +17,7 @@ use App\Models\Property;
 use App\Models\Residence;
 use App\Models\RoomTypes;
 use App\Models\ImportNSFASApproval;
+use App\models\ImportNSFASStudentAuditLog;
 
 class HomeController extends Controller
 {
@@ -2432,8 +2433,18 @@ class HomeController extends Controller
     }
 
     public function nsfas_approval_upload(Request $request){
+
+        $uploads = ImportNSFASApproval::get();
+        $students = ImportNSFASStudentAuditLog::get();
         
-        return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload"]);
+        return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload", 'uploads' => $uploads, 'students' => $students]);
+    }
+
+    public function new_import_data(){
+        $uploads = ImportNSFASApproval::get();
+        $students = ImportNSFASStudentAuditLog::get();
+
+        return [$uploads, $students];
     }
 
     public function import_nsfas_approval(Request $request){
@@ -2449,24 +2460,20 @@ class HomeController extends Controller
         $students_not_found = [];
 
         while (($filedata = fgetcsv($file)) !== FALSE) {
+            
             $num = count($filedata);
 
             // Skip first row & check number of fields
             if($i > 0 && $num == $numberOfFields){ 
-                // $property_arr = [];
-
-                echo $filedata[2];
-                // ImportNSFASApproval
-
+        
                 $student = User::where("email", $filedata[2])->first();
 
                 if(!empty($student)){
-                    $file = UserFile::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
+                    $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
 
-                    if(!empty($file) && $file->status !== "Approved"){
+                    if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
                         $approved ++;
-                        UserFile::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploadedBy' => 'Import']);
-
+                        UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploadedBy' => 'Import']);
                         ActionList::create([
                             "userUid" => $student->id,
                             "action" => "Approved via import",
@@ -2474,9 +2481,10 @@ class HomeController extends Controller
                             "actionUserDisplayName" => "Import",
                             "actionUserRole" => Auth::user()->userRole,
                           ]);
-                    }else if(empty($file)){
+                          
+                    }else if(empty($fileInfo)){
                         $approved ++;
-                        UserFile::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploadedBy' => 'Import']);
+                        UserFiles::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploadedBy' => 'Import']);
 
                         ActionList::create([
                             "userUid" => $student->id,
@@ -2493,14 +2501,20 @@ class HomeController extends Controller
                     $not_found ++;
                     array_push($students_not_found, [$filedata[0], $filedata[1], $filedata[2]]);
                 }
-
             }
             $i++;
         }
 
         fclose($file);
 
+        $newImport = ImportNSFASApproval::create(['approved' => $approved, 'skipped' => $skipped, 'not_found' => $not_found]);
+
+        foreach($students_not_found as $not_found){
+
+            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $not_found[0], "student_last_name" => $not_found[1], "student_email" => $not_found[2]]);
+        }
         echo "done";
+
     }
 
     

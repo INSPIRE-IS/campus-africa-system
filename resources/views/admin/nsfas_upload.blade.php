@@ -2,6 +2,9 @@
 
 @section('content')
 
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
 
 <div class="container">
     <br/>
@@ -20,6 +23,78 @@
         </div>
 
         <br/><br/>
+
+        <br/>
+        <h1>Import Lists</h1>
+
+        <br/><br/>
+
+        <table id="upload_table" class="display">
+        <thead>
+            <tr>
+                <th>Import ID</th>
+                <th>Total Approved</th>
+                <th>Total Skipped</th>
+                <th>Total Not Found</th>
+            </tr>
+        </thead>
+        @foreach($uploads as $upload)
+            <tr>
+                <td>
+                    {{$upload->id}}
+                </td>
+                <td>
+                    {{$upload->approved}}
+                </td>
+                <td>
+                    {{$upload->skipped}}
+                </td>
+                <td>
+                    {{$upload->not_found}}
+                </td>
+            </tr>
+        @endforeach
+        <tbody>
+            
+        </tbody>
+    </table>
+
+    <br/><br/>
+
+        <br/>
+        <h1>Students not found in Import</h1>
+
+        <br/><br/>
+
+        <table id="student_upload_table" class="display">
+        <thead>
+            <tr>
+                <th>Import ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        @foreach($students as $student)
+            <tr>
+                <td>
+                    {{$student->importId}}
+                </td>
+                <td>
+                    {{$student->student_first_name}}
+                </td>
+                <td>
+                    {{$student->student_last_name}}
+                </td>
+                <td>
+                    {{$student->student_email}}
+                </td>
+            </tr>
+        @endforeach
+        <tbody>
+            
+        </tbody>
+    </table>
 </div>
 
 
@@ -36,12 +111,52 @@
                     });
                     this.on("complete", function (file) {
                         if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
-                            // location.reload();
+                            $.ajax({
+                            type: "get",
+                            url: "/import/newData",
+
+                            success: function (data) {
+
+                                var datatable1 = $( "#upload_table" ).DataTable();
+                                datatable1.clear();
+
+                                var datatable2 = $( "#student_upload_table" ).DataTable();
+                                datatable2.clear();
+
+                                results1 = data[0]
+                                results2 = data[1]
+
+                                results1.forEach(function (arrayItem) {
+                                    var trDOM = datatable1.row.add( [
+                                        arrayItem['id'],
+                                        arrayItem['approved'],
+                                        arrayItem['skipped'],
+                                        arrayItem['not_found']
+                                    ] ).draw().node();
+                                })
+
+                                results2.forEach(function (arrayItem) {
+                                    var trDOM = datatable2.row.add( [
+                                        arrayItem['importId'],
+                                        arrayItem['student_first_name'],
+                                        arrayItem['student_last_name'],
+                                        arrayItem['student_email']
+                                    ] ).draw().node();
+                                })
+                            },
+                        });
                         };
                     });
                 }
             });
     });
+
+    $(document).ready( function () {
+        $('#upload_table').DataTable();
+    } );
+    $(document).ready( function () {
+        $('#student_upload_table').DataTable();
+    } );
 </script>
 
 
