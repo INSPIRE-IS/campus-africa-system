@@ -48,7 +48,7 @@ jQuery(document).ready(function ($) {
                                 color = "light";
                             }
 
-                            if(arrayItem["overall_status"] == "pending" || arrayItem["overall_status"] == "Action"){
+                            if(arrayItem["overall_status"] == "Pending" || arrayItem["overall_status"] == "Action"){
                                 var status = '<span class="hidden">A</span><div class="button action bigButton"></div>';
                             }else if(arrayItem["overall_status"] == "Approved"){
                                 var status = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
@@ -202,7 +202,7 @@ jQuery(document).ready(function ($) {
                                 bed_code,
                                 dateString,
                                 studentType,
-                                status,
+                                arrayItem["overall_status"],
                                 bookingStat,
                                 pop,
                                 copyId,
@@ -216,7 +216,6 @@ jQuery(document).ready(function ($) {
 
 
                             $( trDOM ).addClass('table_id_'+arrayItem["id"]);
-                            $( trDOM ).find('td').eq(5).addClass('bookingBg');
                             $( trDOM ).find('td').eq(6).addClass('bookingBg');
                             $( trDOM ).find('td').eq(9).addClass('bookingBg');
                             $( trDOM ).find('td').eq(14).addClass('bookingBg');

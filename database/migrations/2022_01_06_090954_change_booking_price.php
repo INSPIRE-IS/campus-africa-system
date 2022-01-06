@@ -14,9 +14,9 @@ class ChangeBookingPrice extends Migration
     public function up()
     {
         Schema::table('property', function (Blueprint $table) {
-            $table->float('booking_rate', 10, 2)->default(0)->change();
-            $table->float('nsfas_booking_rate', 10, 2)->default(0)->change();
-            $table->float('bursary_booking_rate', 10, 2)->default(0)->change();
+            $table->float('booking_rate', 10, 2)->change();
+            $table->float('nsfas_booking_rate', 10, 2)->change();
+            $table->float('bursary_booking_rate', 10, 2)->change();
         });
         //
     }

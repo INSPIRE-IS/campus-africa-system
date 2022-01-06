@@ -117,7 +117,7 @@
                         <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
-                        <th style="background-color:#ccc; color:#000">APPLICATION STATUS</th>
+                        <th>APPLICATION STATUS</th>
                         <th style="background-color:#ccc; color:#000">BOOKING STATUS</th>
                         <th>PROOF OF PAYMENT</th>
                         <th>ID COPY</th>
@@ -142,16 +142,8 @@
                             <td id="date">{{$user["created_at"]}}</td>
                             <td id="studType">@if($user["studentType"] == "Cash / Direct") Cash @else {{$user["studentType"]}} @endif</td>
 
-                            <td id="statusBarIcon" style="background-color:#ccc">
-                                @if($user["overall_status"] === "pending" || $user["overall_status"] === "Action")
-                                <span class="hidden">A</span><div class="button action bigButton"></div>
-                                @elseif($user["overall_status"] === "Approved")
-                                <span class="hidden">C</span><div class="button approved bigButton"></div>
-                                @elseif($user["overall_status"] === "Denied" || $user["overall_status"] === null || $user["overall_status"] === "Incomplete")
-                                <span class="hidden">B</span><div class="button rejected bigButton"></div>
-                                @else
-                                <span class="hidden">D</span><div class="button na bigButton"></div>
-                                @endif
+                            <td id="statusBarIcon">
+                                {{$user["overall_status"]}}
                             </td>
 
                             <td id="statusBarIcon" style="background-color:#ccc">
