@@ -83,13 +83,29 @@ jQuery(document).ready(function ($) {
                             }else{
                                 applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
                             }
-                            
 
                             
-
-                            
+                            var filtered = files.filter(function(el) { return el.field != "bursaryApproval"; }); 
+                            var filtered = filtered.filter(function(el) { return el.field != "bankStatement"; }); 
 
                             files.forEach(function (file) {
+                                if(file["field"] == "bursaryApproval"){
+                                    filtered.push(file)
+                                }
+
+                                if(file["field"] === "bankStatement"){
+                                    filtered.push(file)  
+                                }
+                            })
+
+                            console.log(filtered)
+                            
+
+                            
+
+                            filtered.forEach(function (file) {
+
+                                // console.log(file["field"])
                                 if(file['field'] == "proof_of_payment"){
                                     if(file["status"] === "Uploaded"){
                                         pop = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
@@ -138,7 +154,20 @@ jQuery(document).ready(function ($) {
                                     }
                                 }
 
-                                if(file["field"] === "bursaryApproval"){
+                                if(file["field"] === "moveIn" ){
+                                    console.log(file["status"])
+                                    if(file["status"] === "Uploaded"){
+                                        moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                                    }else if(file["status"] === "Approved"){
+                                        moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                                    }else if(file["status"] === "Rejected"){
+                                        moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                                    }else if(file["status"] === "na"){
+                                        moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
+                                    }
+                                }
+
+                                if(file["field"] == "bursaryApproval"){
                                     if(file["status"] === "Uploaded"){
                                         bursaryApproval = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                                     }else if(file["status"] === "Approved"){
@@ -170,18 +199,7 @@ jQuery(document).ready(function ($) {
 
                                 
 
-                                if(file["field"] === "moveIn" ){
-                                    console.log(file["status"])
-                                    if(file["status"] === "Uploaded"){
-                                        moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                                    }else if(file["status"] === "Approved"){
-                                        moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                                    }else if(file["status"] === "Rejected"){
-                                        moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                                    }else if(file["status"] === "na"){
-                                        moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                                    }
-                                }
+                                
                                             
                             });
 
@@ -208,6 +226,8 @@ jQuery(document).ready(function ($) {
                             }else{
                                 bed_code = arrayItem["bed_code"]
                             }
+
+                            
 
                             var trDOM = datatable.row.add( [
                                 '#'+arrayItem["bookingRef"],

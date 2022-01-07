@@ -1725,17 +1725,19 @@ class HomeController extends Controller
                 if($user->studentType == "Cash / Direct"){
                     array_push($all, "bankStatement");
                 }
-                if($user->studentType !== "Cash / Direct"){
+                if($user->studentType == "NSFAS"){
+                    array_push($all, "bursaryApproval");
+                }
+                if($user->studentType == "Bursary"){
                     array_push($all, "bursaryApproval");
                 }
                 $data = [];
                 $counter = 0;
 
-                
-
                 if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected"){
                     if(!empty($user->files)){
                         foreach($user->files as $file){
+                            // echo $file->fileId;
                             array_push($uploaded, $file->fileId);
                             array_push($data, ["field" => $file->fileId, "status" => $file->status]);
                         }
