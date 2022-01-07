@@ -1733,7 +1733,7 @@ class HomeController extends Controller
 
                 
 
-                if($user->over_status !== "Cancelled" && $user->overall_status !== "Rejected"){
+                if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected"){
                     if(!empty($user->files)){
                         foreach($user->files as $file){
                             array_push($uploaded, $file->fileId);
@@ -1775,6 +1775,10 @@ class HomeController extends Controller
                 
 
                 foreach($data as $item){
+
+                    if($user->applicationStatus !== "Approved Confirmed" && $user->overall_status !== "Cancelled"){
+                        $counter++;
+                    }
   
                     if($item['status'] == "Uploaded"){
                         $counter++;

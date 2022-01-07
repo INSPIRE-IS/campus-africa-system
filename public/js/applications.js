@@ -58,23 +58,36 @@ jQuery(document).ready(function ($) {
                                 var status = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
                             }
 
-                            if(arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action"){
-                                var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                            }else if(arrayItem["bookingStatus"] == "Approved"){
-                                var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                            }else if(arrayItem["bookingStatus"] == "Denied" || arrayItem["bookingStatus"] == "" || arrayItem["bookingStatus"] == "Empty" || arrayItem["bookingStatus"] == "Rejected"){
-                                var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            if(arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected"){
+                                if(arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action"){
+                                    var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                                }else if(arrayItem["bookingStatus"] == "Approved"){
+                                    var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                                }else if(arrayItem["bookingStatus"] == "Denied" || arrayItem["bookingStatus"] == "" || arrayItem["bookingStatus"] == "Empty" || arrayItem["bookingStatus"] == "Rejected"){
+                                    var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                                }else{
+                                    var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
+                                }
                             }else{
-                                var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
+                                var bookingStat = '<span class="hidden">D</span><div class="button na bigButton"></div>';
                             }
 
-                            if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
-                                applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                            }else if(arrayItem["applicationStatus"] === "Approved" || arrayItem["applicationStatus"] === "Approved Confirmed"){
-                                applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                            }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
-                                applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            if(arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected"){
+                                if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
+                                    applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                                }else if(arrayItem["applicationStatus"] === "Approved" || arrayItem["applicationStatus"] === "Approved Confirmed"){
+                                    applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                                }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
+                                    applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                                }
+                            }else{
+                                applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
                             }
+                            
+
+                            
+
+                            
 
                             files.forEach(function (file) {
                                 if(file['field'] == "proof_of_payment"){
