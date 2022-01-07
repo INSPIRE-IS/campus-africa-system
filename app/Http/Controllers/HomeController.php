@@ -559,8 +559,10 @@ class HomeController extends Controller
             }elseif($userFile['fileId'] == "moveIn"){
                 $typeName = "Lease";
                 $dataField = "";
-                if($request-> type == "Approved"){
+                if($request->type == "Approved"){
                     User::where('id', $userFile->userUid)->update(['overall_status' => 'Approved']);
+                }else{
+                    User::where('id', $userFile->userUid)->update(['overall_status' => 'Incomplete']);
                 }
             }elseif($userFile['fileId'] == "bursaryApproval"){
                 $typeName = "NSFAS Approval";
@@ -1210,6 +1212,7 @@ class HomeController extends Controller
                     $typeName = "Booking Fee Proof of Payment";
                 }elseif($fileType == "moveIn"){
                     $typeName = "Lease";
+                    User::where('id', $userUid)->update(['overall_status' => 'Pending']);
                 }elseif($fileType == "bursaryApproval"){
                     $typeName = "NSFAS / Bursary Approval";
                 }
@@ -1244,7 +1247,7 @@ class HomeController extends Controller
                     $text = "Re-uploaded ".$typeName." for review";
                 }
 
-                User::where('id', $userUid)->update(['overall_status' => 'Pending']);
+                
     
                 ActionList::create([
                     "userUid" => $userUid,

@@ -555,18 +555,18 @@
             
             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
                 $("#MainAppSection").removeClass('hidden')
-                document.getElementById("col1").style.marginTop = "-35px";
-                document.getElementById("col2").style.marginTop = "-35px";
-                document.getElementById("col3").style.marginTop = "-35px";
+                // document.getElementById("col1").style.marginTop = "-35px";
+                // document.getElementById("col2").style.marginTop = "-35px";
+                // document.getElementById("col3").style.marginTop = "-35px";
             }
 
         }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS" || "{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
             
             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
                 $("#MainAppSection").removeClass('hidden')
-                document.getElementById("col1").style.marginTop = "-35px";
-                document.getElementById("col2").style.marginTop = "-35px";
-                document.getElementById("col3").style.marginTop = "-35px";
+                // document.getElementById("col1").style.marginTop = "-35px";
+                // document.getElementById("col2").style.marginTop = "-35px";
+                // document.getElementById("col3").style.marginTop = "-35px";
             }
         }
     }

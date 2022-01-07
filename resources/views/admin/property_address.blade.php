@@ -14,9 +14,9 @@
         <thead>
             <tr>
                 <th>Residence</th>
-                <th>Booking Rate (NSFAS)</th>
-                <th>Booking Rate (Bursary)</th>
-                <th>Booking Rate (Cash)</th>
+                <th>Booking Fee (NSFAS)</th>
+                <th>Booking Fee (Bursary)</th>
+                <th>Booking Fee (Cash)</th>
                 <th>Owner</th>
                 <th>Address</th>
                 <th></th>

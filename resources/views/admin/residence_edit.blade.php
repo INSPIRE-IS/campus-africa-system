@@ -38,17 +38,17 @@
         </div>
 
         <div class="form-field" style="width:33%">
-            <label>Booking Rate (NSFAS)</label>
+            <label>Booking Fee (NSFAS)</label>
             <input type="text" name="nsfas_booking_rate" id="nsfas_booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->nsfas_booking_rate;}?>">
         </div>
 
         <div class="form-field" style="width:33%">
-            <label>Booking Rate (Bursary)</label>
+            <label>Booking Fee (Bursary)</label>
             <input type="text" name="bursary_booking_rate" id="bursary_booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->bursary_booking_rate;}?>">
         </div>
 
         <div class="form-field" style="width:33%">
-            <label>Booking Rate (Cash)</label>
+            <label>Booking Fee (Cash)</label>
             <input type="text" name="booking_rate" id="booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->booking_rate;}?>">
         </div>
 
