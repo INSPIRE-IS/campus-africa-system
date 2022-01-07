@@ -376,6 +376,10 @@ class HomeController extends Controller
 
                 foreach($data as $item){
 
+                    if($user->applicationStatus !== "Approved Confirmed" && $user->overall_status !== "Cancelled"){
+                        $counter++;
+                    }
+
                     if($item['status'] == "Uploaded"){
                         $counter++;
                     }
