@@ -1543,6 +1543,25 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
         ]);
 
+        $residence = Residence::where('residence', $request->property)->first();
+
+        if(($request->studentType == "NSFAS" && $residence->nsfas_booking_rate == "0") || ($request->studentType == "Bursary" && $residence->bursary_booking_rate == "0") || ($request->studentType == "Cash / Direct" && $residence->booking_rate == "0")){
+            
+            UserFiles::create([
+                'userUid'=> $user->id,
+                'fileId' => 'proof_of_payment',
+                'status' => 'Approved'
+            ]);
+        
+            ActionList::create([
+                "userUid" => $user->id,
+                "action" => "Booking Fee Waived",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+        }
+
         // return redirect()->route('users');
         return redirect('/application-profile/'.$user->id);
     }
@@ -2301,29 +2320,29 @@ class HomeController extends Controller
         }else{
             $oldData = Residence::where('id', $propertyId)->first();
 
-            if($oldData->nsfas_booking_rate !== $data['nsfas_booking_rate']){
-                if($data['nsfas_booking_rate'] == "0"){
-                    $this->updateInfoRes('NSFAS');
-                }else{
-                    $this->updateInfoResRedo('NSFAS');
-                }
-            }
+            // if($oldData->nsfas_booking_rate !== $data['nsfas_booking_rate']){
+            //     if($data['nsfas_booking_rate'] == "0"){
+            //         $this->updateInfoRes('NSFAS');
+            //     }else{
+            //         $this->updateInfoResRedo('NSFAS');
+            //     }
+            // }
 
-            if($oldData->bursary_booking_rate !== $data['bursary_booking_rate']){
-                if($data['bursary_booking_rate'] == "0"){
-                    $this->updateInfoRes('Bursary');
-                }else{
-                    $this->updateInfoResRedo('Bursary');
-                }
-            }
+            // if($oldData->bursary_booking_rate !== $data['bursary_booking_rate']){
+            //     if($data['bursary_booking_rate'] == "0"){
+            //         $this->updateInfoRes('Bursary');
+            //     }else{
+            //         $this->updateInfoResRedo('Bursary');
+            //     }
+            // }
 
-            if($oldData->booking_rate !== $data['booking_rate']){
-                if($data['booking_rate'] == "0"){
-                    $this->updateInfoRes('Cash / Direct');
-                }else{
-                    $this->updateInfoResRedo('Cash / Direct');
-                }
-            }
+            // if($oldData->booking_rate !== $data['booking_rate']){
+            //     if($data['booking_rate'] == "0"){
+            //         $this->updateInfoRes('Cash / Direct');
+            //     }else{
+            //         $this->updateInfoResRedo('Cash / Direct');
+            //     }
+            // }
             
             Residence::where('id', $propertyId)->update($data);
         }
