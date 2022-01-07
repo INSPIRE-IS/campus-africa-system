@@ -121,7 +121,7 @@
                         <th style="background-color:#ccc; color:#000">BOOKING STATUS</th>
                         <th>PROOF OF PAYMENT</th>
                         <th>ID COPY</th>
-                        <th style="background-color:#ccc; color:#000">DOCUMENT STATUS</th>
+                        <th style="background-color:#ccc; color:#000">DOCUMENTS STATUS</th>
                         <th>STUDENT CARD COPY</th>
                         <th>PROOF OF REGISTRATION</th>
                         <th>NSFAS | BURSARY APPROVAL</th>
