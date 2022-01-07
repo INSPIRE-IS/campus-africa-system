@@ -1548,7 +1548,7 @@ class HomeController extends Controller
 
         $residence = Residence::where('residence', $request->property)->first();
 
-        if(($request->studentType == "NSFAS" && $residence->nsfas_booking_rate == "0") || ($request->studentType == "Bursary" && $residence->bursary_booking_rate == "0") || ($request->studentType == "Cash / Direct" && $residence->booking_rate == "0")){
+        if(($request->studentType == "NSFAS" && ($residence->nsfas_booking_rate == "0" || $residence->nsfas_booking_rate == "")) || ($request->studentType == "Bursary" && ($residence->bursary_booking_rate == "0" || $residence->bursary_booking_rate == "")) || ($request->studentType == "Cash / Direct" && ($residence->booking_rate == "0" || $residence->booking_rate == ""))){
             
             UserFiles::create([
                 'userUid'=> $user->id,
