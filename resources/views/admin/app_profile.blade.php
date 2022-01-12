@@ -156,7 +156,7 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                <p>{{$action->actionUserDisplayName}}</p>
+                                <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
                                 @if($action->actionUserRole !== "0" )
                                     <button type="button" class="admin">Admin</button>
                                 @else
@@ -263,13 +263,13 @@
                                     @if($file["field"] === "moveIn")
                                         @if($file["status"] === "XApproved" || $file["status"] === "Approved")
                                             <div class="button approved"></div>
-                                        @elseif($file["status"] === "Uploaded")
+                                        @elseif($file["status"] === "AUploaded")
                                             <div class="button action"></div>
                                         @elseif($file["status"] === "Rejected" || $file["status"] === "")
                                             <div class="button rejected"></div>
                                         @endif
                                     @else
-                                        @if($file["status"] === "Uploaded" )
+                                        @if($file["status"] === "AUploaded" )
                                             <div class="button action"></div>
                                         @elseif($file["status"] === "XApproved")
                                             <div class="button approved"></div>
@@ -288,7 +288,7 @@
                                         <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
                                     @endif
 
-                                    @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
+                                    @if($file["status"] === "AUploaded" || $file["status"] === "XApproved")
                                         <button type="button" onClick="
                                             openModal(
                                                 '{{$file['field']}}', 
@@ -1753,7 +1753,7 @@
                     $(".actionItemList").append(
                         '<div class="infoBlock">'+
                             '<div class="responsible">'+
-                                '<p>'+item['actionUserDisplayName']+'</p>'+
+                                '<p>'+item['users']['userFirstName']+' '+item['users']['userLastname']+'</p>'+
                                     role +
                                 '<p class="datetime">  '+item["created_at"].slice(8, 10)+' | '+item["created_at"].slice(5, 7)+' | '+item["created_at"].slice(0, 4)+' | '+item["created_at"].slice(11, 16)+' </p>'+
                             '</div>'+

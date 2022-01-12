@@ -44,6 +44,18 @@
             <label>Email Address *</label>
             <input type="email" name="email" id="email" required value="{{$user->email}}" >
         </div>
+        <div class="form-field">
+            <br/>
+            <ul style="list-style-type:none">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="email_details" name="email_details" value="1" style="width:50px !important" <?php if($user->email_info == "1"){ echo "checked";}?>>
+                    <label for="email_details" style="width:500px">Email login details to user.</label>
+                </li>
+            </ul>
+        </div>
+        <div class="form-field">
+            <br/>
+        </div>
 
         <!-- <div class="form-field">
              <label>User Role</label>

@@ -473,10 +473,13 @@ class HomeController extends Controller
             foreach($user->files as $file){
                 array_push($uploaded, $file->fileId);
                 if($file->status == "Rejected"){
-                    $file->status = "";
+                    $file->status = "Rejected";
                 }
                 if($file->status == "Approved"){
                     $file->status = "XApproved";
+                }
+                if($file->status == "Uploaded"){
+                    $file->status = "AUploaded";
                 }
                 array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
             }
@@ -484,19 +487,18 @@ class HomeController extends Controller
             $left = array_diff($all, $uploaded);
 
             foreach($left as $dataLeft){
-                array_push($data, ["field" => $dataLeft, "status" => ""]);
+                array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
             }
-
             
             usort($data, function($a, $b) {
                 return $a['status'] <=> $b['status'];
             });
 
-            // dd($data);
-
             array_push($userData, ["files" => $data, "userInfo" => $user]);
 
-            $actions = ActionList::where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
+            $actions = ActionList::with('users')->where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
+
+            // dd($actions[0]->users->userFirstName);
 
             $completed = "false";
             $completedDocs = [];
@@ -730,11 +732,11 @@ class HomeController extends Controller
     public function action_list(Request $request, $userId, $filter){
 
         if($filter == "all"){
-            $list = ActionList::where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
+            $list = ActionList::with('users')->where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
         }elseif($filter == "admin"){
-            $list = ActionList::where('userUid', $userId)->where('actionUserRole', '1')->orderBy('created_at', 'DESC')->get();
+            $list = ActionList::with('users')->where('userUid', $userId)->where('actionUserRole', '1')->orderBy('created_at', 'DESC')->get();
         }elseif($filter == "applicant"){
-            $list = ActionList::where('userUid', $userId)->where('actionUserRole', '0')->orderBy('created_at', 'DESC')->get();
+            $list = ActionList::with('users')->where('userUid', $userId)->where('actionUserRole', '0')->orderBy('created_at', 'DESC')->get();
         }
 
         return $list;
@@ -1578,7 +1580,24 @@ class HomeController extends Controller
         return view('admin.userAdd', ["headerTitle" => "Add New System User", "title" => "Add User"]);
     }
 
+    public function generateRandomString($length = 8) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
     public function add_admin(Request $request){
+
+        if($request->password == ""){
+            $password = $this->generateRandomString();
+        }else{
+            $password = $request->password;
+        }
+
         User::create([
             "name" => $request->firstName,
             "userFirstName" => $request->firstName,
@@ -1588,7 +1607,7 @@ class HomeController extends Controller
             "userCell" => $request->cell_no,
             "userEmail" => $request->email,
             "email" => $request->email,
-            "password" => Hash::make($request->password),
+            "password" => Hash::make($password),
             "userRole" => "1",
             "role_create_app" => $request->create_app,
             "role_edit_app" => $request->edit_app,
@@ -1606,7 +1625,23 @@ class HomeController extends Controller
             "role_change_date" => $request->role_change_date,
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
+            "email_info" => $request->email_details,
         ]);
+
+        if($request->email_details == "1"){
+
+            $data['name'] = $request->firstName;
+            $data['email'] = $request->email;
+            $data['password'] = $password;
+
+            Mail::send('email.system_user_application', $data, function($message) use ($data) {
+                $message->to($data['email'], $data['name'])->subject
+                    ('Campus Africa User Registered');
+                $message->from('hello@campusafrica.co.za','Campus Africa');
+            });
+
+        }
+        
 
         return redirect()->route('users');
     }

@@ -114,6 +114,7 @@ class User extends Authenticatable
         'burser_approved',
         'role_change_date',
         'overall_status',
+        'email_info',
     ];
 
     public function files(){

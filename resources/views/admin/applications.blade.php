@@ -63,7 +63,7 @@
                 <option value="All" selected>All Student Types</option>
                 <option value="NSFAS">NSFAS</option>
                 <option value="Bursary">Bursary</option>
-                <option value="Cash / Direct">Cash / Direct</option>
+                <option value="Cash / Direct">Cash</option>
             </select>
         </div>
         <div class="searchField">
