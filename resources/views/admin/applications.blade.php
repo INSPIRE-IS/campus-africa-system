@@ -13,7 +13,9 @@
         <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
     @endif
 
-    <a href="/nsfas-approval-upload"><button type="button" class="inactiveBtn">NSFAS Approval Upload</button></a>
+    @if(Auth::user()->role_nsfas_approval_upload == 1)
+        <a href="/nsfas-approval-upload"><button type="button" class="inactiveBtn">NSFAS Approval Upload</button></a>
+    @endif
 
     
 

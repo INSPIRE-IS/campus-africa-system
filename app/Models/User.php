@@ -115,6 +115,7 @@ class User extends Authenticatable
         'role_change_date',
         'overall_status',
         'email_info',
+        'role_nsfas_approval_upload',
     ];
 
     public function files(){

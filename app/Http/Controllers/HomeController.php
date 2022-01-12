@@ -1035,6 +1035,7 @@ class HomeController extends Controller
             "role_change_date" => $request->role_change_date,
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
+            "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
         ]);
 
         return redirect()->back();
@@ -1626,6 +1627,7 @@ class HomeController extends Controller
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
             "email_info" => $request->email_details,
+            "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
         ]);
 
         if($request->email_details == "1"){

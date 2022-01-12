@@ -136,6 +136,10 @@
                     <input type="checkbox" id="role_manage_users" name="role_manage_users" value="1">
                     <label for="role_manage_users" style="width:500px">Manage Users</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1">
+                    <label for="role_nsfas_approval_upload" style="width:500px">Upload NSFAS Approval Doc</label>
+                </li>
             </ul>
         </div>
 
