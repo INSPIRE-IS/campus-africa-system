@@ -20,7 +20,7 @@
             <input type="text" name="lastName" id="lastName" value="{{$user->userLastname}}" >
         </div>
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <label>Title</label>
             <select name="title" id='title'>
                 <option value="Mr" <?php if($user->userTitle == "Mr"){echo "selected";} ?>>Mr</option>
@@ -38,7 +38,7 @@
         <div class="form-field">
             <label>Cellphone Number</label>
             <input type="text" name="cell_no" id="cell_no" value="{{$user->userCell}}" >
-        </div>
+        </div> -->
 
         <div class="form-field">
             <label>Email Address *</label>
@@ -53,9 +53,9 @@
                 </li>
             </ul>
         </div>
-        <div class="form-field">
+        <!-- <div class="form-field">
             <br/>
-        </div>
+        </div> -->
 
         <!-- <div class="form-field">
              <label>User Role</label>
@@ -134,10 +134,10 @@
                     <input type="checkbox" id="role_manage_users" name="role_manage_users" value="1" <?php if($user->role_manage_users == "1"){echo "checked";} ?>>
                     <label for="role_manage_users" style="width:500px">Manage Users</label>
                 </li>
-                <li style="display:inline-flex">
+                <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1" <?php if($user->role_nsfas_approval_upload == "1"){echo "checked";} ?>>
                     <label for="role_nsfas_approval_upload" style="width:500px">Upload NSFAS Approval Doc</label>
-                </li>
+                </li> -->
             </ul>
         </div>
 

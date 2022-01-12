@@ -19,7 +19,7 @@
             <input type="text" name="lastName" id="lastName"  >
         </div>
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <label>Title</label>
             <select name="title" id='title'>
                 <option value="Mr" >Mr</option>
@@ -37,12 +37,12 @@
         <div class="form-field">
             <label>Cellphone Number</label>
             <input type="text" name="cell_no" id="cell_no"  >
-        </div>
+        </div> -->
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <label>Password</label><small>Leave blank to auto generate</small>
             <input type="password" name="password" id="password"  >
-        </div>
+        </div> -->
 
         <div class="form-field">
             <label>Email Address *</label>
@@ -136,10 +136,10 @@
                     <input type="checkbox" id="role_manage_users" name="role_manage_users" value="1">
                     <label for="role_manage_users" style="width:500px">Manage Users</label>
                 </li>
-                <li style="display:inline-flex">
+                <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1">
                     <label for="role_nsfas_approval_upload" style="width:500px">Upload NSFAS Approval Doc</label>
-                </li>
+                </li> -->
             </ul>
         </div>
 

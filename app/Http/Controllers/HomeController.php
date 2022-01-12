@@ -1014,9 +1014,9 @@ class HomeController extends Controller
         User::where('id', $request->userUid)->update([
             "userFirstName" => $request->firstName,
             "userLastname" => $request->lastName,
-            "userTitle" => $request->title,
-            "userDob" => $request->dob,
-            "userCell" => $request->cell_no,
+            // "userTitle" => $request->title,
+            // "userDob" => $request->dob,
+            // "userCell" => $request->cell_no,
             "userEmail" => $request->email,
             "userRole" => "1",
             "role_create_app" => $request->create_app,
@@ -1593,19 +1593,19 @@ class HomeController extends Controller
 
     public function add_admin(Request $request){
 
-        if($request->password == ""){
+        // if($request->password == ""){
             $password = $this->generateRandomString();
-        }else{
-            $password = $request->password;
-        }
+        // }else{
+        //     $password = $request->password;
+        // }
 
         User::create([
             "name" => $request->firstName,
             "userFirstName" => $request->firstName,
             "userLastname" => $request->lastName,
-            "userTitle" => $request->title,
-            "userDob" => $request->dob,
-            "userCell" => $request->cell_no,
+            // "userTitle" => $request->title,
+            // "userDob" => $request->dob,
+            // "userCell" => $request->cell_no,
             "userEmail" => $request->email,
             "email" => $request->email,
             "password" => Hash::make($password),
