@@ -524,7 +524,15 @@ class HomeController extends Controller
             //Get booking Meta
             $bookingPropData = Property::where('id', $booking->property_data_id)->first();
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData]);
+            $files_to_download = 'false';
+
+            foreach($user['files'] as $file){
+                if($file->status == "XApproved" && $file->fileUrl !== null || $file->status == "Approved" && $file->fileUrl !== null){
+                    $files_to_download = 'true';
+                }
+            }
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download]);
         }
     }
 

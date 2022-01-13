@@ -229,7 +229,9 @@
                             <div id="indexOne"><div class="button rejected"></div><span class="text">NO DOCUMENT</span></div>
                         </div>
                     </div>
-                    <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a>
+                    <!-- <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
+                    <!-- files_to_download -->
+                    <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
                 </div>
 
                 <br/><br/><br/><br/>
@@ -516,6 +518,7 @@
 <input type="hidden" id="parent_approved" value="{{$user[0]['userInfo']['parent_approved']}}"/>
 <input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/>
 <input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/>
+<input type="hidden" id="files_to_download" value="{{$files_to_download}}"/>
 
 
 <script>
@@ -633,6 +636,10 @@
                             $("#bursary_approved").val('1')
                             $("#burser_approved").val('1')
                         }
+
+                        
+
+                        
 
                         checkUserStatus();
                     }
@@ -1646,6 +1653,8 @@
                             preview2.setAttribute("disabled", "disabled");
 
                             sendAction(type, action);
+
+                            $("#files_to_download").val('true')
                         
                     }
                 }
@@ -2117,23 +2126,37 @@
         });
     });
 
-    // function downloadZipDocs(userId){
-    //     $("#downloadAllDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+    function downloadZipDocs(userId){
+        $("#downloadAllDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
-    //     $.ajax({
-    //         type: "post",
-    //         url: "/download/docs",
-    //         data: {
-    //             userId: userId,
-    //         },
+        canDownload = $("#files_to_download").val()
 
-    //         success: function (data) {
-    //             // window.location = "/applications";
-    //             console.log(data)
-    //             $("#downloadAllDocs").empty().append('Download All')
-    //         },
-    //     });
-    // }
+        if(canDownload == 'true'){
+            window.location.replace('/download/docs/'+userId);
+            $("#downloadAllDocs").empty().append('Download All')
+        }else{
+            $("#downloadAllDocs").empty().append('Download All')
+            Swal.fire(
+                'Oops!',
+                'Nothing to Download',
+                'warning'
+            )
+        }
+
+        // $.ajax({
+        //     type: "post",
+        //     url: "/download/docs",
+        //     data: {
+        //         userId: userId,
+        //     },
+
+        //     success: function (data) {
+        //         // window.location = "/applications";
+        //         console.log(data)
+        //         $("#downloadAllDocs").empty().append('Download All')
+        //     },
+        // });
+    }
 
     function cancelBooking(bookingId, userId){
         Swal.fire({
