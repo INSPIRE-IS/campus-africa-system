@@ -67,8 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
-    // Africa/Johannesburg
+    'timezone' => 'Africa/Johannesburg',
 
     /*
     |--------------------------------------------------------------------------
