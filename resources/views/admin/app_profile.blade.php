@@ -188,9 +188,10 @@
 
                 <h2 class="appSubHeader bold">BOOKING FEE</h2>
                 <p class="appSubHeader">
-                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "NSFAS") R {{$residence->nsfas_booking_rate}} @endif
+                    <!-- @if($residence !== null && $user[0]['userInfo']['studentType'] == "NSFAS") R {{$residence->nsfas_booking_rate}} @endif
                     @if($residence !== null && $user[0]['userInfo']['studentType'] == "Bursary") R {{$residence->bursary_booking_rate}} @endif
-                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "Cash / Direct") R {{$residence->booking_rate}} @endif
+                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "Cash / Direct") R {{$residence->booking_rate}} @endif -->
+                    R {{$booking->room_rate}}
                 </p>
                 <br/>
 
