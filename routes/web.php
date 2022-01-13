@@ -123,3 +123,5 @@ Route::post('/save-room-type', [HomeController::class, 'save_room_type']);
 Route::get('/nsfas-approval-upload', [HomeController::class, 'nsfas_approval_upload']);
 Route::post('/import/nsfas-students', [HomeController::class, 'import_nsfas_approval']);
 Route::get('/import/newData', [HomeController::class, 'new_import_data']);
+
+Route::get('/download/docs/{id}', [HomeController::class, 'download_docs']);

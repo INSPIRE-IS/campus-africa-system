@@ -18,6 +18,8 @@ use App\Models\Residence;
 use App\Models\RoomTypes;
 use App\Models\ImportNSFASApproval;
 use App\Models\ImportNSFASStudentAuditLog;
+use ZipStream\ZipStream;
+use ZipStream\Option\Archive as ArchiveOptions;
 
 class HomeController extends Controller
 {
@@ -521,7 +523,6 @@ class HomeController extends Controller
 
             //Get booking Meta
             $bookingPropData = Property::where('id', $booking->property_data_id)->first();
-
 
             return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData]);
         }
@@ -1036,6 +1037,7 @@ class HomeController extends Controller
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
+            "role_cancel_booking" => $request->role_cancel_booking,
         ]);
 
         return redirect()->back();
@@ -1628,6 +1630,7 @@ class HomeController extends Controller
             "role_manage_users" => $request->role_manage_users,
             "email_info" => $request->email_details,
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
+            "role_cancel_booking" => $request->role_cancel_booking,
         ]);
 
         if($request->email_details == "1"){
@@ -2593,7 +2596,7 @@ class HomeController extends Controller
         
                 $student = User::where("email", $filedata[2])->first();
 
-                if(!empty($student)){
+                if(!empty($student) && $student->studentType == "NSFAS"){
                     $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
 
                     if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
@@ -2639,6 +2642,41 @@ class HomeController extends Controller
             ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $not_found[0], "student_last_name" => $not_found[1], "student_email" => $not_found[2]]);
         }
         echo "done";
+
+    }
+
+    public function download_docs(Request $request, $userId){
+
+        $allFilesArr = [];
+        $files = UserFiles::where('userUid', $userId)->where('status', 'Approved')->get();
+        $userData = User::where('id', $userId)->first();
+
+        foreach($files as $file){
+            if($file->fileUrl !== '' && $file->fileUrl !== null){
+                array_push($allFilesArr, "storage/".$file->fileUrl);
+            }
+        }
+
+        $opt = new ArchiveOptions;
+        $opt->setSendHttpHeaders(true);
+        
+        $zip = new ZipStream($userData->userFirstName.' '.$userData->userLastname.' Approved Docs.zip', $opt);
+
+        foreach ($allFilesArr as $file) {
+            if (true === file_exists($file)) {
+                try {
+                    $str_arr = explode ("/", $file); 
+                    $fileName = end($str_arr);
+                    $zip->addFile($fileName, file_get_contents($file));
+                } catch (\Exception $exception) {
+                    print_r($exception->getMessage());
+                }
+            } else {
+                print_r(sprintf('File %s does not exist.', $file));
+            }
+        }
+
+        $zip->finish();
 
     }
 

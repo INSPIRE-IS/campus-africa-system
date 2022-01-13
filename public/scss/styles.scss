@@ -1407,6 +1407,23 @@ input:read-only {
     }
 }
 
+#downloadAllDocs{
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #464749;
+    padding: 10px;
+    margin: 5px;
+    width: 48%;
+    float: right;
+    cursor: pointer;
+    margin-top: 50px;
+}
+
 .applicationTable {
     width: 100%;
 

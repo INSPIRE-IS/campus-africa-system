@@ -133,9 +133,9 @@
                             <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
                         @endif
 
-                        
+                        @if(Auth::user()->role_cancel_booking == 1)
                             <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
-                        
+                        @endif
                 </div>
             </div>
 
@@ -229,6 +229,7 @@
                             <div id="indexOne"><div class="button rejected"></div><span class="text">NO DOCUMENT</span></div>
                         </div>
                     </div>
+                    <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a>
                 </div>
 
                 <br/><br/><br/><br/>
@@ -2115,6 +2116,24 @@
             },
         });
     });
+
+    // function downloadZipDocs(userId){
+    //     $("#downloadAllDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/download/docs",
+    //         data: {
+    //             userId: userId,
+    //         },
+
+    //         success: function (data) {
+    //             // window.location = "/applications";
+    //             console.log(data)
+    //             $("#downloadAllDocs").empty().append('Download All')
+    //         },
+    //     });
+    // }
 
     function cancelBooking(bookingId, userId){
         Swal.fire({

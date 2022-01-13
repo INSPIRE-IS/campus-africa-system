@@ -140,6 +140,11 @@
                     <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1">
                     <label for="role_nsfas_approval_upload" style="width:500px">Upload NSFAS Approval Doc</label>
                 </li> -->
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_cancel_booking" name="role_cancel_booking" value="1">
+                    <label for="role_cancel_booking" style="width:500px">Cancel Bookings</label>
+                </li>
+
             </ul>
         </div>
 

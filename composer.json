@@ -16,6 +16,7 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
+        "maennchen/zipstream-php": "^2.1",
         "shuchkin/simplexlsxgen": "^1.0"
     },
     "require-dev": {
