@@ -856,6 +856,7 @@ class HomeController extends Controller
         // });
 
         User::where('id', $userId)->update(['bookingStatus' => "Rejected Confirmed",'applicationStatus' => 'rejected', 'overall_status' => 'Rejected']);
+        Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -2102,6 +2103,8 @@ class HomeController extends Controller
 
     public function cancel_booking(Request $request){
         User::where('id', $request->userId)->update(['overall_status' => 'Cancelled', 'bookingStatus' => 'Cancelled', 'applicationStatus' => 'Cancelled']);
+
+        Booking::where('userId', $request->userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
         ActionList::create([
             "userUid" => $request->userId,
