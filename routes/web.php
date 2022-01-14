@@ -125,3 +125,6 @@ Route::post('/import/nsfas-students', [HomeController::class, 'import_nsfas_appr
 Route::get('/import/newData', [HomeController::class, 'new_import_data']);
 
 Route::get('/download/docs/{id}', [HomeController::class, 'download_docs']);
+Route::post('/waive-booking-fee', [HomeController::class, 'waive_booking_fee']);
+
+

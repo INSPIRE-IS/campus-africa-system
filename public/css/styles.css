@@ -1330,7 +1330,8 @@ button:disabled {
     background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
 }
 
-#downloadAllDocs {
+#downloadAllDocs,
+#waiveThisBookingFee {
     color: #464749;
     font-size: 14px;
     font-weight: 400;
@@ -1341,7 +1342,7 @@ button:disabled {
     border: 1px solid #464749;
     padding: 10px;
     margin: 5px;
-    width: 48%;
+    width: 44%;
     float: right;
     cursor: pointer;
     margin-top: 50px;

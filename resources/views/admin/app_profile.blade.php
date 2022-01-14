@@ -233,6 +233,7 @@
                     <!-- <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
+                    <button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee('{{$user[0]['userInfo']['id']}}')">Waive Booking Fee</button>
                 </div>
 
                 <br/><br/><br/><br/>
@@ -2127,6 +2128,36 @@
         });
     });
 
+    function waiveBookingFee(userId){
+        $("#waiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to waive this booking fee",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, waive it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/waive-booking-fee",
+                    data: {
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                });
+            }
+        })
+
+        
+    }
+
     function downloadZipDocs(userId){
         $("#downloadAllDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
@@ -2143,20 +2174,6 @@
                 'warning'
             )
         }
-
-        // $.ajax({
-        //     type: "post",
-        //     url: "/download/docs",
-        //     data: {
-        //         userId: userId,
-        //     },
-
-        //     success: function (data) {
-        //         // window.location = "/applications";
-        //         console.log(data)
-        //         $("#downloadAllDocs").empty().append('Download All')
-        //     },
-        // });
     }
 
     function cancelBooking(bookingId, userId){

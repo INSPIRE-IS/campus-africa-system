@@ -1563,7 +1563,7 @@ class HomeController extends Controller
         $lookup = Lookups::where('group_id', '7')->first();
 
 
-        if($lookup->lookup_name == "1" && date('Y-m-d') > $lookup->waiver_date_from && date('Y-m-d') < $lookup->waiver_date_to){
+        if($lookup && $lookup->lookup_name == "1" && date('Y-m-d') > $lookup->waiver_date_from && date('Y-m-d') < $lookup->waiver_date_to){
             $booking_data['room_rate'] = "0";
         }else{
             //Get residences from WP
@@ -2883,6 +2883,26 @@ class HomeController extends Controller
 
         $zip->finish();
 
+    }
+
+    public function waive_booking_fee(Request $request){
+        
+        $booking = Booking::where('userId', $request->userId)->update(['room_rate' => '0']);
+
+        UserFiles::create([
+            'userUid'=> $request->userId,
+            'fileId' => 'proof_of_payment',
+            'status' => 'Approved'
+        ]);
+    
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Booking Fee Waived",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+        
     }
 
     

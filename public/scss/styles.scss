@@ -1407,7 +1407,8 @@ input:read-only {
     }
 }
 
-#downloadAllDocs{
+#downloadAllDocs,
+#waiveThisBookingFee {
     color: #464749;
     font-size: 14px;
     font-weight: 400;
@@ -1418,7 +1419,7 @@ input:read-only {
     border: 1px solid #464749;
     padding: 10px;
     margin: 5px;
-    width: 48%;
+    width: 44%;
     float: right;
     cursor: pointer;
     margin-top: 50px;
