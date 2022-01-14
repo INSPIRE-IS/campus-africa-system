@@ -2190,17 +2190,35 @@
             confirmButtonText: 'Yes, waive it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                $.ajax({
-                    type: "post",
-                    url: "/waive-booking-fee",
-                    data: {
-                        userId: userId,
+                swal.fire({
+                    title: 'Reason for waiving the booking fee',
+                    input: 'text',
+                    inputAttributes: {
+                        autocapitalize: 'off'
                     },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    showLoaderOnConfirm: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "post",
+                            url: "/waive-booking-fee",
+                            data: {
+                                userId: userId,
+                                reason: result.value
+                            },
 
-                    success: function (data) {
-                        window.location.reload();
-                    },
-                });
+                            success: function (data) {
+                                window.location.reload();
+                            },
+                        });
+                    }else{
+                        $("#waiveThisBookingFee").empty().append('waive booking fee')
+                    }
+                })
+                
+                
             }else{
                 $("#waiveThisBookingFee").empty().append('waive booking fee')
             }
