@@ -2911,7 +2911,7 @@ class HomeController extends Controller
     
         ActionList::create([
             "userUid" => $request->userId,
-            "action" => "Booking Fee Waived",
+            "action" => "Booking Fee Waived with reason: ".$request->reason,
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
