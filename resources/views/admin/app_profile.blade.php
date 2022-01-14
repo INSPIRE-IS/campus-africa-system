@@ -110,13 +110,14 @@
                     @if($booking->lease_from_date && $booking->lease_to_date) Lease Duration: <?php $date1 = new DateTime($booking->lease_from_date); $date2 = new DateTime($booking->lease_to_date); $interval = $date1->diff($date2); if($interval->y > 1 || $interval->y < 1){ $years = "years";}else{$years = "year";} echo $interval->y . " ".$years.", " . $interval->m." months, ".$interval->d." days "; ?> @endif
                 </h4>
                 <br/>
-                @if($residence)
+                <div id="AppSummaryPaid" class="<?php if($booking_paid == 'false'){echo "hidden";}?>">
                     <h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2>
                     <h4 class="cardHeader" >
-                        R{{$residence->booking_rate}}
+                        R {{$booking->room_rate}}
                     </h4>
                     <br/>
-                @endif
+                </div>
+                
                 <div class="buttons">
                         @if(Auth::user()->role_change_bed == "1")
                             <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
@@ -196,20 +197,26 @@
                 <br/>
 
                 <h2 class="appSubHeader bold">PAID</h2>
-                <p class="appSubHeader">
-                    @foreach($user[0]["files"] as $file)
-                        @if($file["field"] === "proof_of_payment")
-                            @if($file["status"] === "XApproved" || $file["status"] === "Approved")
-                                Yes <br/>
-                            @else
-                                No <br/>
-                            @endif
-                        @endif
-                    @endforeach
+                <p class="appSubHeader" id="paidOption">
+                    
 
-                    @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
-                    @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <br />{{$user[0]['userInfo']['bint']}} @endif
-                    @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <br />{{$user[0]['userInfo']['spesificInt']}} @endif
+                    @if($booking_waived == 'true')
+                        Waived 
+                    @else 
+                        @foreach($user[0]["files"] as $file)
+                            @if($file["field"] === "proof_of_payment")
+                                @if($file["status"] === "XApproved" || $file["status"] === "Approved")
+                                    Yes <br/>
+                                @else
+                                    No <br/>
+                                @endif
+                            @endif
+                        @endforeach
+
+                        @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
+                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <br />{{$user[0]['userInfo']['bint']}} @endif
+                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <br />{{$user[0]['userInfo']['spesificInt']}} @endif
+                    @endif
                 </p>
             </div>
 
@@ -233,7 +240,13 @@
                     <!-- <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
-                    <button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee('{{$user[0]['userInfo']['id']}}')">Waive Booking Fee</button>
+                    @if($booking_paid == 'false')
+                        @if($booking_waived == 'false')
+                            <button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee('{{$user[0]['userInfo']['id']}}')">Waive Booking Fee</button>
+                        @else
+                            <button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee('{{$user[0]['userInfo']['id']}}')">Undo Booking Fee Waiver </button>
+                        @endif
+                    @endif
                 </div>
 
                 <br/><br/><br/><br/>
@@ -1722,6 +1735,13 @@
                             $("#bursary_approved").val('2')
                             $("#burser_approved").val('2')
                         }
+
+                        console.log($("#FileNameForApproval").val())
+
+                        if($("#FileNameForApproval").val() == "proof_of_payment"){
+                            $("#AppSummaryPaid").removeClass('hidden')
+                            $("#paidOption").empty().append("Yes")
+                        }
                     }
 
                 }
@@ -2128,6 +2148,35 @@
         });
     });
 
+    function unWaiveBookingFee(userId){
+        $("#unWaiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to undo this booking fee waiver",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, undo it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/undo-waive-booking-fee",
+                    data: {
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                });
+            }else{
+                $("#unWaiveThisBookingFee").empty().append('Undo Booking Fee Waiver')
+            }
+        })
+    }
+
     function waiveBookingFee(userId){
         $("#waiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
@@ -2152,6 +2201,8 @@
                         window.location.reload();
                     },
                 });
+            }else{
+                $("#waiveThisBookingFee").empty().append('waive booking fee')
             }
         })
 

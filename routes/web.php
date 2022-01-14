@@ -126,5 +126,8 @@ Route::get('/import/newData', [HomeController::class, 'new_import_data']);
 
 Route::get('/download/docs/{id}', [HomeController::class, 'download_docs']);
 Route::post('/waive-booking-fee', [HomeController::class, 'waive_booking_fee']);
+Route::post('/undo-waive-booking-fee', [HomeController::class, 'undo_waive_booking_fee']);
+
+
 
 
