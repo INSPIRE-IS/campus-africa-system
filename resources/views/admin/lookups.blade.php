@@ -23,8 +23,8 @@
 
         @foreach($lookups as $lookup)
             <tr>
-                <td>@if($lookup->group_id == "1") Institution of Study @elseif($lookup->group_id == "2")Insitution Campus @elseif($lookup->group_id == "3") Faculty @elseif($lookup->group_id == "4") Year @elseif($lookup->group_id == "5") Nationality @elseif($lookup->group_id == "6") Year of study @endif</td>
-                <td>{{$lookup->lookup_name}}</td>
+                <td>@if($lookup->group_id == "1") Institution of Study @elseif($lookup->group_id == "2")Insitution Campus @elseif($lookup->group_id == "3") Faculty @elseif($lookup->group_id == "4") Year @elseif($lookup->group_id == "5") Nationality @elseif($lookup->group_id == "6") Year of study @elseif($lookup->group_id == "7") Waive Booking Fee @endif</td>
+                <td>@if($lookup->lookup_name == '1') Yes @elseif($lookup->lookup_name == "2") No @else {{$lookup->lookup_name}} @endif</td>
                 <td>
                     <button type="button" id="tableBtn" class="detailsChange" onClick="deleteLookup('{{$lookup->id}}')" style="margin:5px;">Delete</button>
                     <a href="/lookups/edit/{{$lookup->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Edit</button></a>
