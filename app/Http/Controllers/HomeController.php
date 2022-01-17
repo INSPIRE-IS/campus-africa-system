@@ -538,7 +538,13 @@ class HomeController extends Controller
                         $booking_paid = "true";
                     }else{
                         if($file->status == "XApproved" || $file->status == "Approved"){
-                            $booking_waived = 'true';
+                            $booking_wording = ActionList::where('userUid', $user->id)->where('action', 'Booking Fee is R0')->first();
+
+                            if($booking_wording){
+                                $booking_waived = '0';
+                            }else{
+                                $booking_waived = 'true';
+                            }
                         }
                     }
                 }
@@ -1424,7 +1430,7 @@ class HomeController extends Controller
 
     public function lookups(Request $request){
 
-        $lookups = Lookups::get();
+        $lookups = Lookups::with('users')->get();
 
         return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
     }
@@ -1441,9 +1447,11 @@ class HomeController extends Controller
             $data['lookup_name'] = $request->booking_waiver;
             $data['waiver_date_from'] = $request->date_from;
             $data['waiver_date_to'] = $request->date_to;
+            $data['actionUserUid'] = Auth::user()->id;
         }else{
             $data['group_id'] = $request->group_id;
             $data['lookup_name'] = $request->value;
+            $data['actionUserUid'] = Auth::user()->id;
         }
 
         Lookups::create($data);
@@ -1468,6 +1476,7 @@ class HomeController extends Controller
                 "lease_from_time" => $request->lease_from_time,
                 "lease_to_date" => $request->lease_to_date,
                 "lease_to_time" => $request->lease_to_time,
+                "actionUserUid" => Auth::user()->id,
             ];
         }else if($request->group_id == "7"){
             $data = [
@@ -1475,11 +1484,13 @@ class HomeController extends Controller
                 "lookup_name" => $request->booking_waiver,
                 "waiver_date_from" => $request->date_from,
                 "waiver_date_to" => $request->date_to,
+                "actionUserUid" => Auth::user()->id,
             ];
         }else{
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->value,
+                "actionUserUid" => Auth::user()->id,
             ];
         }
 
@@ -1577,8 +1588,9 @@ class HomeController extends Controller
         $lookup = Lookups::where('group_id', '7')->first();
 
 
-        if($lookup && $lookup->lookup_name == "1" && date('Y-m-d') > $lookup->waiver_date_from && date('Y-m-d') < $lookup->waiver_date_to){
+        if($lookup && $lookup->lookup_name == "1"){
             $booking_data['room_rate'] = "0";
+            $actionFileData['action'] = "Booking Fee Waived";
         }else{
             //Get residences from WP
             $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
@@ -1716,18 +1728,21 @@ class HomeController extends Controller
                         if($request->studentType === "NSFAS"){
                             if(!in_array("NSFAS Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
 
                         if($request->studentType === "Bursary"){
                             if(!in_array("Bursary Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
 
                         if($request->studentType === "Cash / Direct"){
                             if(!in_array("Cash Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
                     } 
@@ -1766,14 +1781,14 @@ class HomeController extends Controller
                 'fileId' => 'proof_of_payment',
                 'status' => 'Approved'
             ]);
+
+            $actionFileData['userUid'] = $user->id;
+            $actionFileData['actionUserUid'] = Auth::user()->id;
+            $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+            $actionFileData['actionUserRole'] = Auth::user()->userRole;
+            //"action" => "Booking Fee is R0",
         
-            ActionList::create([
-                "userUid" => $user->id,
-                "action" => "Booking Fee Waived",
-                "actionUserUid" => Auth::user()->id,
-                "actionUserDisplayName" => Auth::user()->userFirstName,
-                "actionUserRole" => Auth::user()->userRole,
-            ]);
+            ActionList::create($actionFileData);
         }
 
         // if(($request->studentType == "NSFAS" && ($residence->nsfas_booking_rate == "0" || $residence->nsfas_booking_rate == "")) || ($request->studentType == "Bursary" && ($residence->bursary_booking_rate == "0" || $residence->bursary_booking_rate == "")) || ($request->studentType == "Cash / Direct" && ($residence->booking_rate == "0" || $residence->booking_rate == ""))){
@@ -3055,7 +3070,7 @@ class HomeController extends Controller
 
                     $appliesTo = $room->acf->booking_fee_applies_to;
 
-                    if($room->slug == $roomName){
+                    if($room->slug == $roomName && $roomType == $request->roomType){
 
                         if($room->acf->booking_fee_override !== ""){
                             $booking_data['room_rate'] = $room->acf->booking_fee_override;

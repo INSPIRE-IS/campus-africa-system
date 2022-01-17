@@ -55,7 +55,7 @@
             </select>
         </div>
 
-        <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateFrom">
+        <!-- <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateFrom">
             <label>Waiver Date From</label>
             <input type="date" name="date_from" id="date_from" value="<?php echo $lookup->waiver_date_from;?>">
         </div>
@@ -63,7 +63,7 @@
         <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateTo">
             <label>Waiver Date To</label>
             <input type="date" name="date_to" id="date_to" value="<?php echo $lookup->waiver_date_to;?>">
-        </div>
+        </div> -->
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>
@@ -74,13 +74,13 @@
         if($("#group_id").val() == "7"){
             $("#normalVlaue").addClass('hidden');
             $("#waiverValue").removeClass('hidden');
-            $("#waiverDateFrom").removeClass('hidden');
-            $("#waiverDateTo").removeClass('hidden');
+            // $("#waiverDateFrom").removeClass('hidden');
+            // $("#waiverDateTo").removeClass('hidden');
         }else{
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
-            $("#waiverDateFrom").addClass('hidden');
-            $("#waiverDateTo").addClass('hidden');
+            // $("#waiverDateFrom").addClass('hidden');
+            // $("#waiverDateTo").addClass('hidden');
         }
     })
 </script>

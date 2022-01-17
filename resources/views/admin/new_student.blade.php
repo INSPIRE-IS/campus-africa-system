@@ -1175,8 +1175,6 @@
             req = 0;
         }
 
-        console.log(req)
-
         if(req == 0){
             Swal.fire(
                 'Blank Fields',

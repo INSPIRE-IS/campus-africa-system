@@ -202,6 +202,8 @@
 
                     @if($booking_waived == 'true')
                         Waived 
+                    @elseif($booking_waived == '0')
+                        Yes, no booking fee
                     @else 
                         @foreach($user[0]["files"] as $file)
                             @if($file["field"] === "proof_of_payment")
