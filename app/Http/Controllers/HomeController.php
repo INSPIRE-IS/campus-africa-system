@@ -2304,16 +2304,16 @@ class HomeController extends Controller
 
         $bookingId = $request->bookingId;
         $property = $request->property;
-        $roomType = $request->roomType;
+        $roomTypeNew = $request->roomType;
 
         $oldData = Booking::where('userId', $bookingId)->first();
-        $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "bed_code|Bed Code"=> $request->bed_code];
+        $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomTypeNew, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "bed_code|Bed Code"=> $request->bed_code];
 
         $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
 
-        Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
+        Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
 
-        $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->first();
+        $propertyData = Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->first();
         
 
 
@@ -2337,7 +2337,7 @@ class HomeController extends Controller
             }
         }
 
-        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id]);
+        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id]);
 
 
 
@@ -2346,6 +2346,7 @@ class HomeController extends Controller
 
         $lookup = Lookups::where('group_id', '7')->first();
         $booking = Booking::where('userId', $bookingId)->first();
+        $user = User::where('id', $bookingId)->first();
         $booking_data = [];
 
         if($lookup && $lookup->lookup_name == "1"){
@@ -2357,7 +2358,7 @@ class HomeController extends Controller
             $residenceId = "";
 
             foreach($jsonDataResidence as $residence){
-                if($residence->title->rendered == $booking->property){
+                if($residence->title->rendered == $property){
                     //get room booking fee from residence (WP)
                     $booking_data['room_rate'] = $residence->acf->booking_fee;
                     //get residence ID (WP)
@@ -2372,7 +2373,7 @@ class HomeController extends Controller
 
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
-                    if($booking->property == "YMCA"){
+                    if($property == "YMCA"){
                         if($room->slug == "ymca-3-sharing"){
                             $roomType = "3 Sharing";
                             $roomName = "ymca-3-sharing";
@@ -2395,7 +2396,7 @@ class HomeController extends Controller
                         }
                     }
 
-                    if($booking->property == "126 Siemert"){
+                    if($property == "126 Siemert"){
                         if($room->slug == "126-siemert-single-room"){
                             $roomType = "Single";
                             $roomName = "126-siemert-single-room";
@@ -2406,7 +2407,7 @@ class HomeController extends Controller
                         }
                     }
 
-                    if($booking->property == "Wynton Joy"){
+                    if($property == "Wynton Joy"){
                         if($room->slug == "wynton-joy-single-room"){
                             $roomType = "Single";
                             $roomName = "wynton-joy-single-room";
@@ -2417,7 +2418,7 @@ class HomeController extends Controller
                         }
                     }
 
-                    if($booking->property == "Dunvista Mansions"){
+                    if($property == "Dunvista Mansions"){
                         if($room->slug == "dunvista-mansions-single-room"){
                             $roomType = "Single";
                             $roomName = "dunvista-mansions-single-room";
@@ -2428,7 +2429,7 @@ class HomeController extends Controller
                         }
                     }
 
-                    if($booking->property == "49 Jorissen"){
+                    if($property == "49 Jorissen"){
                         if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
                             $roomType = "Single 2 bedroom";
                             $roomName = "49-jorissen-single-room-2-bedroom-apartment";
@@ -2447,7 +2448,7 @@ class HomeController extends Controller
                         }
                     }
 
-                    if($booking->property == "80 Jorissen"){
+                    if($property == "80 Jorissen"){
                         if($room->slug == "80-jorissen-single-room"){
                             $roomType = "Single";
                             $roomName = "80-jorissen-single-room";
@@ -2458,7 +2459,7 @@ class HomeController extends Controller
                         }
                     }
 
-                    if($booking->property == "Braamlofts"){
+                    if($property == "Braamlofts"){
                         if($room->slug == "braamlofts-single-room"){
                             $roomType = "Single";
                             $roomName = "braamlofts-single-room";
@@ -2475,38 +2476,39 @@ class HomeController extends Controller
 
                     $appliesTo = $room->acf->booking_fee_applies_to;
 
-                    if($room->slug == $roomName && $roomType == $booking->roomType){
+                    if($room->slug == $roomName && $roomType == $roomTypeNew){
+
 
                         if($room->acf->booking_fee_override !== ""){
                             $booking_data['room_rate'] = $room->acf->booking_fee_override;
                         }
 
-                        if($booking->studentType == "NSFAS"){
+                        if($user->studentType == "NSFAS"){
                             if(!in_array("NSFAS Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
                                 $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
 
-                        if($booking->studentType == "Bursary"){
+                        if($user->studentType == "Bursary"){
                             if(!in_array("Bursary Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
                                 $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
 
-                        if($booking->studentType == "Cash / Direct"){
+                        if($user->studentType == "Cash / Direct"){
                             if(!in_array("Cash Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
                                 $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
                     }
-
-                    
                 }
             }
         }
+
+        
 
         if($booking_data['room_rate'] == "0"){
             UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
