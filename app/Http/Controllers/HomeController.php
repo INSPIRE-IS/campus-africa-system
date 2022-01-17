@@ -542,13 +542,14 @@ class HomeController extends Controller
                             $actions = ActionList::where('userUid', $user->id)->orderBy('id', 'DESC')->get();
 
                             foreach($actions as $action){
-                                if (str_contains('waived', $action->action)) {
+                                if (str_contains($action->action, 'Waived')) {
                                     $booking_waived = 'true';
                                     break;
                                 }
 
-                                if(str_contains('R0', $action->action)){
+                                if(str_contains($action->action, 'R0')){
                                     $booking_waived = '0';
+                                    break;
                                 }
                             }
 
