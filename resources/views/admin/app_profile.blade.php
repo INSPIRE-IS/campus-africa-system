@@ -714,6 +714,7 @@
         modal.style.display = "block";
 
         $("#property").change();
+        $("#roomType").val('<?php echo $booking->roomType;?>');
 
         callRoomDetails('floor','', '', '', '', '', 'open')
         
@@ -812,8 +813,8 @@
         if (callId == "floor") {
             if ($("#property").val() !== "" && $("#roomType").val() !== "") {
                 $('#floor').html('<option>Loading</option>');
-                $('#unit').html('<option>Choose a Floor</option>');
-                $('#bed_code').html('<option>Choose a Unit</option>');
+                $('#unit').html('<option>Choose a Unit</option>');
+                $('#bed_code').html('<option>Choose a Bed</option>');
 
                 $('#room').val('');
                 $('#bed').val('');
@@ -865,7 +866,7 @@
 
         } else if (callId == "unit") {
             $('#unit').html('<option>Loading</option>');
-            $('#bed_code').html('<option>Choose a Unit</option>');
+            $('#bed_code').html('<option>Choose a Bed</option>');
 
             $('#room').val('');
             $('#bed').val('');
