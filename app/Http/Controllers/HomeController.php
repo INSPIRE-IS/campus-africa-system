@@ -1601,6 +1601,7 @@ class HomeController extends Controller
 
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
+
                     if($request->property == "YMCA"){
                         if($room->slug == "ymca-3-sharing"){
                             $roomType = "3 Sharing";
@@ -1704,36 +1705,35 @@ class HomeController extends Controller
 
                     $appliesTo = $room->acf->booking_fee_applies_to;
 
-                    if($room->slug == $roomName){
+                    if($room->slug == $roomName && $roomType == $request->roomType){
+
 
                         if($room->acf->booking_fee_override !== ""){
                             $booking_data['room_rate'] = $room->acf->booking_fee_override;
                         }
 
-                        if($request->studentType == "NSFAS"){
+
+                        if($request->studentType === "NSFAS"){
                             if(!in_array("NSFAS Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
                             }
                         }
 
-                        if($request->studentType == "Bursary"){
+                        if($request->studentType === "Bursary"){
                             if(!in_array("Bursary Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
                             }
                         }
 
-                        if($request->studentType == "Cash / Direct"){
+                        if($request->studentType === "Cash / Direct"){
                             if(!in_array("Cash Students", $appliesTo)){
                                 $booking_data['room_rate'] = "0";
                             }
                         }
-                    }
-
-                    
+                    } 
                 }
             }
         }
-
         
 
 
