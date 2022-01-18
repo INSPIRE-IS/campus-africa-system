@@ -128,6 +128,10 @@ Route::get('/download/docs/{id}', [HomeController::class, 'download_docs']);
 Route::post('/waive-booking-fee', [HomeController::class, 'waive_booking_fee']);
 Route::post('/undo-waive-booking-fee', [HomeController::class, 'undo_waive_booking_fee']);
 
+Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees']);
+
+
+
 
 
 

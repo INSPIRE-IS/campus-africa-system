@@ -10,6 +10,9 @@
     <br/>
     <a href="/lookups/new"><button type="button" class="detailsChange" >Add New Lookup</button></a>
     <a href="/manage-properties"><button type="button" class="detailsChange" >Manage properties</button></a>
+    @if(Auth::user()->role_update_booking_fee == "1")
+        <button type="button" id="updateBookingFee" class="detailsChange" >Update All Booking Fees</button>
+    @endif
     <br/>
     <table id="lookups_table" class="display">
         <thead>
@@ -80,6 +83,36 @@
             }
         })
     }
+
+    $("#updateBookingFee").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#updateBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/update/booking-fees",
+
+                    success: function (data) {
+                        $("#updateBookingFee").empty().append('Update All Booking Fees');
+
+                        Swal.fire(
+                            'Success',
+                            'All booking fees updated',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
 
 </script>
 

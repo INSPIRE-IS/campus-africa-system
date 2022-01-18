@@ -1076,6 +1076,7 @@ class HomeController extends Controller
             "role_manage_users" => $request->role_manage_users,
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
+            "role_update_booking_fee" => $request->role_update_booking_fee,
         ]);
 
         return redirect()->back();
@@ -1874,6 +1875,7 @@ class HomeController extends Controller
             "email_info" => $request->email_details,
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
+            "role_update_booking_fee" => $request->role_update_booking_fee,
         ]);
 
         if($request->email_details == "1"){
@@ -3335,6 +3337,188 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
         ]);
         
+    }
+
+    public function update_booking_fees(Request $request){
+        
+        $bookingList = Booking::whereNotNull('property')->whereNotNull('roomType')->whereNotNull('bed_code')->get();
+
+        foreach($bookingList as $booking){
+            $user = User::where('id', $booking->userId)->first();
+
+            $lookup = Lookups::where('group_id', '7')->first();
+
+
+            $booking_data = [];
+
+
+            if($lookup && $lookup->lookup_name == "1"){
+                $booking_data['room_rate'] = "0";
+            }else{
+                //Get residences from WP
+                $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+                $residenceId = "";
+
+                foreach($jsonDataResidence as $residence){
+                    if($residence->title->rendered == $booking->property){
+                        //get room booking fee from residence (WP)
+                        $booking_data['room_rate'] = $residence->acf->booking_fee;
+                        //get residence ID (WP)
+                        $residenceId = $residence->id;
+                    }
+                }
+
+                $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+                // dd($jsonDataRooms);
+
+                $roomType = "";
+                $roomName = "";
+
+                foreach($jsonDataRooms as $room){
+                    if($residenceId == $room->acf->residence){
+                        if($booking->property == "YMCA"){
+                            if($room->slug == "ymca-3-sharing"){
+                                $roomType = "3 Sharing";
+                                $roomName = "ymca-3-sharing";
+                            }
+                            if($room->slug == "ymca-2-sharing"){
+                                $roomType = "2 Sharing";
+                                $roomName = "ymca-2-sharing";
+                            }
+                            if($room->slug == "ymca-single-room-large"){
+                                $roomType = "Single Large";
+                                $roomName = "ymca-single-room-large";
+                            }
+                            if($room->slug == "ymca-single-room-medium"){
+                                $roomType = "Single Medium";
+                                $roomName = "ymca-single-room-medium";
+                            }
+                            if($room->slug == "ymca-single-room-small"){
+                                $roomType = "Single Small";
+                                $roomName = "ymca-single-room-small";
+                            }
+                        }
+
+                        if($booking->property == "126 Siemert"){
+                            if($room->slug == "126-siemert-single-room"){
+                                $roomType = "Single";
+                                $roomName = "126-siemert-single-room";
+                            }
+                            if($room->slug == "126-siemert-2-sharing"){
+                                $roomType = "2 Sharing";
+                                $roomName = "126-siemert-2-sharing";
+                            }
+                        }
+
+                        if($booking->property == "Wynton Joy"){
+                            if($room->slug == "wynton-joy-single-room"){
+                                $roomType = "Single";
+                                $roomName = "wynton-joy-single-room";
+                            }
+                            if($room->slug == "wynton-joy-2-sharing"){
+                                $roomType = "2 Sharing";
+                                $roomName = "wynton-joy-2-sharing";
+                            }
+                        }
+
+                        if($booking->property == "Dunvista Mansions"){
+                            if($room->slug == "dunvista-mansions-single-room"){
+                                $roomType = "Single";
+                                $roomName = "dunvista-mansions-single-room";
+                            }
+                            if($room->slug == "dunvista-mansions-2-sharing"){
+                                $roomType = "2 Sharing";
+                                $roomName = "dunvista-mansions-2-sharing";
+                            }
+                        }
+
+                        if($booking->property == "49 Jorissen"){
+                            if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
+                                $roomType = "Single 2 bedroom";
+                                $roomName = "49-jorissen-single-room-2-bedroom-apartment";
+                            }
+                            if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
+                                $roomType = "Single 3 bedroom";
+                                $roomName = "49-jorissen-single-room-3-bedroom-apartment";
+                            }
+                            if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
+                                $roomType = "Single 4 bedroom";
+                                $roomName = "49-jorissen-single-room-4-bedroom-apartment";
+                            }
+                            if($room->slug == "49-jorissen-2-sharing-hotel"){
+                                $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
+                                $roomName = "49-jorissen-2-sharing-hotel";
+                            }
+                        }
+
+                        if($booking->property == "80 Jorissen"){
+                            if($room->slug == "80-jorissen-single-room"){
+                                $roomType = "Single";
+                                $roomName = "80-jorissen-single-room";
+                            }
+                            if($room->slug == "80-jorissen-2-sharing"){
+                                $roomType = "2 Sharing";
+                                $roomName = "80-jorissen-2-sharing";
+                            }
+                        }
+
+                        if($booking->property == "Braamlofts"){
+                            if($room->slug == "braamlofts-single-room"){
+                                $roomType = "Single";
+                                $roomName = "braamlofts-single-room";
+                            }
+                            if($room->slug == "braamlofts-2-sharing"){
+                                $roomType = "2 Sharing";
+                                $roomName = "braamlofts-2-sharing";
+                            }
+                            if($room->slug == "braamlofts-3-sharing"){
+                                $roomType = "3 Sharing";
+                                $roomName = "braamlofts-3-sharing";
+                            }
+                        }
+
+                        $appliesTo = $room->acf->booking_fee_applies_to;
+
+                        if($room->slug == $roomName && $roomType == $booking->roomType){
+
+                            if($room->acf->booking_fee_override !== ""){
+                                $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                            }
+
+                            if($booking->studentType == "NSFAS"){
+                                if(!in_array("NSFAS Students", $appliesTo)){
+                                    $booking_data['room_rate'] = "0";
+                                }
+                            }
+
+                            if($booking->studentType == "Bursary"){
+                                if(!in_array("Bursary Students", $appliesTo)){
+                                    $booking_data['room_rate'] = "0";
+                                }
+                            }
+
+                            if($booking->studentType == "Cash / Direct"){
+                                if(!in_array("Cash Students", $appliesTo)){
+                                    $booking_data['room_rate'] = "0";
+                                }
+                            }
+                        }
+
+                        
+                    }
+                }
+            }
+
+            Booking::where('userId', $booking->userId)->update($booking_data);
+        
+            ActionList::create([
+                "userUid" => $booking->userId,
+                "action" => "Booking Fee Updated (Bulk Update)",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+        }
     }
 
     
