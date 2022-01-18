@@ -117,6 +117,7 @@ class User extends Authenticatable
         'email_info',
         'role_nsfas_approval_upload',
         'role_cancel_booking',
+        'role_update_booking_fee',
     ];
 
     public function files(){
