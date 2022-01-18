@@ -110,25 +110,33 @@
                     @if($booking->lease_from_date && $booking->lease_to_date) Lease Duration: <?php $date1 = new DateTime($booking->lease_from_date); $date2 = new DateTime($booking->lease_to_date); $interval = $date1->diff($date2); if($interval->y > 1 || $interval->y < 1){ $years = "years";}else{$years = "year";} echo $interval->y . " ".$years.", " . $interval->m." months, ".$interval->d." days "; ?> @endif
                 </h4>
                 <br/>
-                @if($residence)
+                <div id="AppSummaryPaid" class="<?php if($booking_paid == 'false'){echo "hidden";}?>">
                     <h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2>
                     <h4 class="cardHeader" >
-                        R{{$residence->booking_rate}}
+                        R {{$booking->room_rate}}
                     </h4>
                     <br/>
-                @endif
+                </div>
+                
                 <div class="buttons">
-                    @if(Auth::user()->role_change_bed == "1")
-                        <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
-                    @endif
+                        @if(Auth::user()->role_change_bed == "1")
+                            <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                        @endif
 
-                    @if(Auth::user()->role_change_date == "1")
-                        <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
-                    @endif
+                        @if(Auth::user()->role_change_date == "1")
+                            <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                        @endif
                     
-                    @if(Auth::user()->role_delete_booking == 1)
-                        <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
-                    @endif
+                </div>
+                <div class="buttons">
+                    
+                        @if(Auth::user()->role_delete_booking == 1)
+                            <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
+                        @endif
+
+                        @if(Auth::user()->role_cancel_booking == 1)
+                            <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                        @endif
                 </div>
             </div>
 
@@ -149,7 +157,7 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                <p>{{$action->actionUserDisplayName}}</p>
+                                <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
                                 @if($action->actionUserRole !== "0" )
                                     <button type="button" class="admin">Admin</button>
                                 @else
@@ -181,15 +189,36 @@
 
                 <h2 class="appSubHeader bold">BOOKING FEE</h2>
                 <p class="appSubHeader">
-                    @if($residence !== null) {{$residence->booking_rate}} @endif
+                    <!-- @if($residence !== null && $user[0]['userInfo']['studentType'] == "NSFAS") R {{$residence->nsfas_booking_rate}} @endif
+                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "Bursary") R {{$residence->bursary_booking_rate}} @endif
+                    @if($residence !== null && $user[0]['userInfo']['studentType'] == "Cash / Direct") R {{$residence->booking_rate}} @endif -->
+                    R {{$booking->room_rate}}
                 </p>
                 <br/>
 
                 <h2 class="appSubHeader bold">PAID</h2>
-                <p class="appSubHeader">
-                    @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
-                    @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <br />{{$user[0]['userInfo']['bint']}} @endif
-                    @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <br />{{$user[0]['userInfo']['spesificInt']}} @endif
+                <p class="appSubHeader" id="paidOption">
+                    
+
+                    @if($booking_waived == 'true')
+                        Waived 
+                    @elseif($booking_waived == '0')
+                        Yes, no booking fee
+                    @else 
+                        @foreach($user[0]["files"] as $file)
+                            @if($file["field"] === "proof_of_payment")
+                                @if($file["status"] === "XApproved" || $file["status"] === "Approved")
+                                    Yes <br/>
+                                @else
+                                    No <br/>
+                                @endif
+                            @endif
+                        @endforeach
+
+                        @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
+                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <br />{{$user[0]['userInfo']['bint']}} @endif
+                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <br />{{$user[0]['userInfo']['spesificInt']}} @endif
+                    @endif
                 </p>
             </div>
 
@@ -210,6 +239,16 @@
                             <div id="indexOne"><div class="button rejected"></div><span class="text">NO DOCUMENT</span></div>
                         </div>
                     </div>
+                    <!-- <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
+                    <!-- files_to_download -->
+                    <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
+                    @if($booking_paid == 'false')
+                        @if($booking_waived == 'false')
+                            <button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee('{{$user[0]['userInfo']['id']}}')">Waive Booking Fee</button>
+                        @else
+                            <button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee('{{$user[0]['userInfo']['id']}}')">Undo Booking Fee Waiver </button>
+                        @endif
+                    @endif
                 </div>
 
                 <br/><br/><br/><br/>
@@ -244,13 +283,13 @@
                                     @if($file["field"] === "moveIn")
                                         @if($file["status"] === "XApproved" || $file["status"] === "Approved")
                                             <div class="button approved"></div>
-                                        @elseif($file["status"] === "Uploaded")
+                                        @elseif($file["status"] === "AUploaded")
                                             <div class="button action"></div>
                                         @elseif($file["status"] === "Rejected" || $file["status"] === "")
                                             <div class="button rejected"></div>
                                         @endif
                                     @else
-                                        @if($file["status"] === "Uploaded" )
+                                        @if($file["status"] === "AUploaded" )
                                             <div class="button action"></div>
                                         @elseif($file["status"] === "XApproved")
                                             <div class="button approved"></div>
@@ -269,7 +308,7 @@
                                         <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
                                     @endif
 
-                                    @if($file["status"] === "Uploaded" || $file["status"] === "XApproved")
+                                    @if($file["status"] === "AUploaded" || $file["status"] === "XApproved")
                                         <button type="button" onClick="
                                             openModal(
                                                 '{{$file['field']}}', 
@@ -496,6 +535,7 @@
 <input type="hidden" id="parent_approved" value="{{$user[0]['userInfo']['parent_approved']}}"/>
 <input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/>
 <input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/>
+<input type="hidden" id="files_to_download" value="{{$files_to_download}}"/>
 
 
 <script>
@@ -536,18 +576,18 @@
             
             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
                 $("#MainAppSection").removeClass('hidden')
-                document.getElementById("col1").style.marginTop = "-35px";
-                document.getElementById("col2").style.marginTop = "-35px";
-                document.getElementById("col3").style.marginTop = "-35px";
+                // document.getElementById("col1").style.marginTop = "-35px";
+                // document.getElementById("col2").style.marginTop = "-35px";
+                // document.getElementById("col3").style.marginTop = "-35px";
             }
 
         }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS" || "{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
             
             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
                 $("#MainAppSection").removeClass('hidden')
-                document.getElementById("col1").style.marginTop = "-35px";
-                document.getElementById("col2").style.marginTop = "-35px";
-                document.getElementById("col3").style.marginTop = "-35px";
+                // document.getElementById("col1").style.marginTop = "-35px";
+                // document.getElementById("col2").style.marginTop = "-35px";
+                // document.getElementById("col3").style.marginTop = "-35px";
             }
         }
     }
@@ -614,6 +654,10 @@
                             $("#burser_approved").val('1')
                         }
 
+                        
+
+                        
+
                         checkUserStatus();
                     }
                 })
@@ -670,6 +714,7 @@
         modal.style.display = "block";
 
         $("#property").change();
+        $("#roomType").val('<?php echo $booking->roomType;?>');
 
         callRoomDetails('floor','', '', '', '', '', 'open')
         
@@ -768,8 +813,8 @@
         if (callId == "floor") {
             if ($("#property").val() !== "" && $("#roomType").val() !== "") {
                 $('#floor').html('<option>Loading</option>');
-                $('#unit').html('<option>Choose a Floor</option>');
-                $('#bed_code').html('<option>Choose a Unit</option>');
+                $('#unit').html('<option>Choose a Unit</option>');
+                $('#bed_code').html('<option>Choose a Bed</option>');
 
                 $('#room').val('');
                 $('#bed').val('');
@@ -821,7 +866,7 @@
 
         } else if (callId == "unit") {
             $('#unit').html('<option>Loading</option>');
-            $('#bed_code').html('<option>Choose a Unit</option>');
+            $('#bed_code').html('<option>Choose a Bed</option>');
 
             $('#room').val('');
             $('#bed').val('');
@@ -1626,6 +1671,8 @@
                             preview2.setAttribute("disabled", "disabled");
 
                             sendAction(type, action);
+
+                            $("#files_to_download").val('true')
                         
                     }
                 }
@@ -1691,6 +1738,13 @@
                             $("#bursary_approved").val('2')
                             $("#burser_approved").val('2')
                         }
+
+                        console.log($("#FileNameForApproval").val())
+
+                        if($("#FileNameForApproval").val() == "proof_of_payment"){
+                            $("#AppSummaryPaid").removeClass('hidden')
+                            $("#paidOption").empty().append("Yes")
+                        }
                     }
 
                 }
@@ -1734,7 +1788,7 @@
                     $(".actionItemList").append(
                         '<div class="infoBlock">'+
                             '<div class="responsible">'+
-                                '<p>'+item['actionUserDisplayName']+'</p>'+
+                                '<p>'+item['users']['userFirstName']+' '+item['users']['userLastname']+'</p>'+
                                     role +
                                 '<p class="datetime">  '+item["created_at"].slice(8, 10)+' | '+item["created_at"].slice(5, 7)+' | '+item["created_at"].slice(0, 4)+' | '+item["created_at"].slice(11, 16)+' </p>'+
                             '</div>'+
@@ -2096,6 +2150,130 @@
             },
         });
     });
+
+    function unWaiveBookingFee(userId){
+        $("#unWaiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to undo this booking fee waiver",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, undo it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/undo-waive-booking-fee",
+                    data: {
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                });
+            }else{
+                $("#unWaiveThisBookingFee").empty().append('Undo Booking Fee Waiver')
+            }
+        })
+    }
+
+    function waiveBookingFee(userId){
+        $("#waiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to waive this booking fee",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, waive it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swal.fire({
+                    title: 'Reason for waiving the booking fee',
+                    input: 'text',
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    showLoaderOnConfirm: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "post",
+                            url: "/waive-booking-fee",
+                            data: {
+                                userId: userId,
+                                reason: result.value
+                            },
+
+                            success: function (data) {
+                                window.location.reload();
+                            },
+                        });
+                    }else{
+                        $("#waiveThisBookingFee").empty().append('waive booking fee')
+                    }
+                })
+                
+                
+            }else{
+                $("#waiveThisBookingFee").empty().append('waive booking fee')
+            }
+        })
+
+        
+    }
+
+    function downloadZipDocs(userId){
+        $("#downloadAllDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+        canDownload = $("#files_to_download").val()
+
+        if(canDownload == 'true'){
+            window.location.replace('/download/docs/'+userId);
+            $("#downloadAllDocs").empty().append('Download All')
+        }else{
+            $("#downloadAllDocs").empty().append('Download All')
+            Swal.fire(
+                'Oops!',
+                'Nothing to Download',
+                'warning'
+            )
+        }
+    }
+
+    function cancelBooking(bookingId, userId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/cancel/booking",
+                    data: {
+                        bookingId: bookingId, 
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location = "/applications";
+                    },
+                });
+            }
+        })
+    }
 
     function deleteBooking(bookingId, userId){
         Swal.fire({

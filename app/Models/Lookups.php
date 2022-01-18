@@ -18,5 +18,12 @@ class Lookups extends Model
         'lease_to_time',
         'deafault',
         'class',
+        'waiver_date_from',
+        'waiver_date_to',
+        'actionUserUid',
     ];
+
+    public function users(){
+        return $this->hasOne("App\Models\User", "id", "actionUserUid");
+    }
 }
