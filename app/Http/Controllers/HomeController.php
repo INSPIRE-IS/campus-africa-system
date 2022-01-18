@@ -3341,7 +3341,7 @@ class HomeController extends Controller
 
     public function update_booking_fees(Request $request){
         
-        $bookingList = Booking::whereNotNull('property')->whereNotNull('roomType')->whereNotNull('bed_code')->get();
+        $bookingList = Booking::whereNotNull('property')->whereNotNull('roomType')->get();
 
         $lookup = Lookups::where('group_id', '7')->first();
 
