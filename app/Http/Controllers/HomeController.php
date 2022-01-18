@@ -3343,20 +3343,21 @@ class HomeController extends Controller
         
         $bookingList = Booking::whereNotNull('property')->whereNotNull('roomType')->whereNotNull('bed_code')->get();
 
+        $lookup = Lookups::where('group_id', '7')->first();
+
+        $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+        $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+
         foreach($bookingList as $booking){
             $user = User::where('id', $booking->userId)->first();
 
-            $lookup = Lookups::where('group_id', '7')->first();
-
-
             $booking_data = [];
-
 
             if($lookup && $lookup->lookup_name == "1"){
                 $booking_data['room_rate'] = "0";
             }else{
                 //Get residences from WP
-                $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+                
                 $residenceId = "";
 
                 foreach($jsonDataResidence as $residence){
@@ -3368,7 +3369,7 @@ class HomeController extends Controller
                     }
                 }
 
-                $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+                
                 // dd($jsonDataRooms);
 
                 $roomType = "";
