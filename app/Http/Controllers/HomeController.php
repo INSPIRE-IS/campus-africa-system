@@ -535,7 +535,7 @@ class HomeController extends Controller
 
                 if($file->fileId == "proof_of_payment"){
                     
-                    if($file->fileUrl !== null && $file->fileUrl !== '' && $file->status !== "Rejected" && $file->status !== "Uploaded"){
+                    if($file->fileUrl !== null && $file->fileUrl !== '' && $file->status !== "Rejected" && $file->status !== "Uploaded" && $file->status !== "AUploaded"){
                         $booking_paid = "true";
                         
                     }else{
