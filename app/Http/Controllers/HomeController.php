@@ -3561,6 +3561,29 @@ class HomeController extends Controller
         }
     }
 
+    public function update_processing_status(){
+        $userList = User::get();
+
+        foreach($userList as $user){
+
+            $overall = "Incomplete";
+
+            if($user->bookingStatus == "Approved" || $user->applicationStatus == "Approved Confirmed"){
+                $overall = "Approved";
+            }
+            
+            if($user->bookingStatus == "Empty" || $user->bookingStatus == "Rejected" || $user->applicationStatus == "Empty" || $user->applicationStatus == "Rejected"){
+                $overall = "Incomplete";
+            }
+
+            if($user->bookingStatus == "Action" || $user->applicationStatus == "Action" || $user->applicationStatus == "Approved"){
+                $overall = "Pending";
+            }
+
+            User::where('id', $user->id)->update(['overall_status' => $overall]);
+        }
+    }
+
     
 
     

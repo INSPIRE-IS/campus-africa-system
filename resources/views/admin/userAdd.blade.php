@@ -144,10 +144,10 @@
                     <input type="checkbox" id="role_cancel_booking" name="role_cancel_booking" value="1">
                     <label for="role_cancel_booking" style="width:500px">Cancel Bookings</label>
                 </li>
-                <li style="display:inline-flex">
+                <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1">
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>
-                </li>
+                </li> -->
 
             </ul>
         </div>
