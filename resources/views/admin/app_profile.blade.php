@@ -185,9 +185,9 @@
                 <p class="appSubHeader">
                     @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif
 
-                    @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") {{$user[0]['userInfo']['bPayment']}}@endif
-                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <br /> <span style="color:red;">{{$user[0]['userInfo']['bint']}}</span> @endif
-                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <span style="color:red;">{{$user[0]['userInfo']['bIntName']}}</span> @endif
+                    @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <br /> <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") <br/> <span style="color:red;">{{$user[0]['userInfo']['bPayment']}}</span>@endif
+                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <span style="color:red;"> | {{$user[0]['userInfo']['bint']}}</span> @endif
+                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <span style="color:red;"> | {{$user[0]['userInfo']['bIntName']}}</span> @endif
                 </p>
                 <br/>
 
