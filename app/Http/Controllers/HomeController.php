@@ -3143,9 +3143,20 @@ class HomeController extends Controller
         
         $booking = Booking::where('userId', $request->userId)->update(['room_rate' => '0', 'waive_reason' => $request->reason]);
 
-        UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->update([
-            'status' => 'Approved'
-        ]);
+        $file = UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->first();
+
+        if(!$file){
+            UserFiles::create([
+                'userUid' => $request->userId,
+                'fileId' => 'proof_of_payment',
+                'status' => 'Approved'
+            ]);
+        }else{
+            UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->update([
+                'status' => 'Approved'
+            ]);
+        }
+
     
         ActionList::create([
             "userUid" => $request->userId,
