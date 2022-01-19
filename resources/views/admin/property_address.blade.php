@@ -14,7 +14,9 @@
         <thead>
             <tr>
                 <th>Residence</th>
-                <th>Booking Rate</th>
+                <th>Booking Fee (NSFAS)</th>
+                <th>Booking Fee (Bursary)</th>
+                <th>Booking Fee (Cash)</th>
                 <th>Owner</th>
                 <th>Address</th>
                 <th></th>
@@ -25,6 +27,8 @@
         @foreach($residences as $residence)
             <tr>
                 <td>{{$residence->residence}}</td>
+                <td>{{$residence->nsfas_booking_rate}}</td>
+                <td>{{$residence->bursary_booking_rate}}</td>
                 <td>{{$residence->booking_rate}}</td>
                 <td>{{$residence->owner}}</td>
                 <td>{{$residence->address}}</td>

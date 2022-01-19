@@ -91,6 +91,7 @@ Route::post("/delete/lookup", [HomeController::class, 'delete_lookup']);
 Route::post("/applications/filter", [HomeController::class, 'app_filter']);
 
 Route::post("/delete/booking", [HomeController::class, 'delete_booking']);
+Route::post("/cancel/booking", [HomeController::class, 'cancel_booking']);
 
 Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
@@ -118,3 +119,20 @@ Route::post('/approve-app-data', [HomeController::class, 'approve_app_data']);
 Route::get('/room-types', [HomeController::class, 'room_types']);
 Route::get('/room-type/edit/{id}', [HomeController::class, 'room_type_edit']);
 Route::post('/save-room-type', [HomeController::class, 'save_room_type']);
+
+Route::get('/nsfas-approval-upload', [HomeController::class, 'nsfas_approval_upload']);
+Route::post('/import/nsfas-students', [HomeController::class, 'import_nsfas_approval']);
+Route::get('/import/newData', [HomeController::class, 'new_import_data']);
+
+Route::get('/download/docs/{id}', [HomeController::class, 'download_docs']);
+Route::post('/waive-booking-fee', [HomeController::class, 'waive_booking_fee']);
+Route::post('/undo-waive-booking-fee', [HomeController::class, 'undo_waive_booking_fee']);
+
+Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees']);
+Route::get('/update/processing-status', [HomeController::class, 'update_processing_status']);
+
+
+
+
+
+

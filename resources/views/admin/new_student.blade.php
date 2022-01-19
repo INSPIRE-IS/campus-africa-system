@@ -1171,6 +1171,10 @@
             req = 0;
         }
 
+        if ($('.fieldError').length > 0) {
+            req = 0;
+        }
+
         if(req == 0){
             Swal.fire(
                 'Blank Fields',

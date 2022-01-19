@@ -16,4 +16,8 @@ class ActionList extends Model
         'actionUserDisplayName',
         'actionUserRole',
     ];
+
+    public function users(){
+        return $this->hasOne("App\Models\User", "id", "actionUserUid");
+    }
 }

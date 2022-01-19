@@ -17,11 +17,12 @@
                 <option value="4" <?php if($lookup->group_id == "4"){echo "selected";}?>>Year</option>
                 <option value="5" <?php if($lookup->group_id == "5"){echo "selected";}?>>Nationality</option>
                 <option value="6" <?php if($lookup->group_id == "6"){echo "selected";}?>>Year of Study</option>
+                <option value="7" <?php if($lookup->group_id == "7"){echo "selected";}?>>Waive Booking Fee</option>
             </select>
             <input type="hidden" name="lookupId" id="lookupId" value="{{$lookup->id}}"/>
         </div>
 
-        <div class="form-field">
+        <div class="form-field <?php if($lookup->group_id == "7"){echo "hidden";} ?>">
             <label>Value</label>
             <input type="text" name="value" id="value" value="<?php echo $lookup->lookup_name;?>">
         </div>
@@ -45,8 +46,43 @@
             </div>
         @endif
 
+        <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverValue">
+            <label>Value</label>
+            <select name="booking_waiver" id="booking_waiver">
+                <option value="0" disabled selected>- Select One -</option>
+                <option value="1" <?php if($lookup->lookup_name == "1"){echo "selected";}?>>Yes</option>
+                <option value="2" <?php if($lookup->lookup_name == "2"){echo "selected";}?>>No</option>
+            </select>
+        </div>
+
+        <!-- <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateFrom">
+            <label>Waiver Date From</label>
+            <input type="date" name="date_from" id="date_from" value="<?php echo $lookup->waiver_date_from;?>">
+        </div>
+
+        <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateTo">
+            <label>Waiver Date To</label>
+            <input type="date" name="date_to" id="date_to" value="<?php echo $lookup->waiver_date_to;?>">
+        </div> -->
+
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>
 </div>
+
+<script>
+    $("#group_id").on('change', function(){
+        if($("#group_id").val() == "7"){
+            $("#normalVlaue").addClass('hidden');
+            $("#waiverValue").removeClass('hidden');
+            // $("#waiverDateFrom").removeClass('hidden');
+            // $("#waiverDateTo").removeClass('hidden');
+        }else{
+            $("#normalVlaue").removeClass('hidden');
+            $("#waiverValue").addClass('hidden');
+            // $("#waiverDateFrom").addClass('hidden');
+            // $("#waiverDateTo").addClass('hidden');
+        }
+    })
+</script>
 
 @endsection

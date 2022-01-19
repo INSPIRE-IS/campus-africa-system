@@ -113,6 +113,11 @@ class User extends Authenticatable
         'parent_approved',
         'burser_approved',
         'role_change_date',
+        'overall_status',
+        'email_info',
+        'role_nsfas_approval_upload',
+        'role_cancel_booking',
+        'role_update_booking_fee',
     ];
 
     public function files(){

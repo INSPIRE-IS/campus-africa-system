@@ -13,6 +13,12 @@
         <a href="/new/student"><button type="button" class="inactiveBtn">Add New Student</button></a>
     @endif
 
+    <!-- @if(Auth::user()->role_nsfas_approval_upload == 1)
+        <a href="/nsfas-approval-upload"><button type="button" class="inactiveBtn">NSFAS Approval Upload</button></a>
+    @endif -->
+
+    
+
 
     <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">
@@ -59,7 +65,7 @@
                 <option value="All" selected>All Student Types</option>
                 <option value="NSFAS">NSFAS</option>
                 <option value="Bursary">Bursary</option>
-                <option value="Cash / Direct">Cash / Direct</option>
+                <option value="Cash / Direct">Cash</option>
             </select>
         </div>
         <div class="searchField">
@@ -113,6 +119,7 @@
                         <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
+                        <th>PROCESSING STATUS</th>
                         <th style="background-color:#ccc; color:#000">BOOKING STATUS</th>
                         <th>PROOF OF PAYMENT</th>
                         <th>ID COPY</th>
@@ -121,7 +128,7 @@
                         <th>PROOF OF REGISTRATION</th>
                         <th>NSFAS | BURSARY APPROVAL</th>
                         <th>BANK STATEMENTS</th>
-                        <th style="background-color:#ccc; color:#000">LEASE</th>
+                        <th style="background-color:#ccc; color:#000">LEASE STATUS</th>
                     </tr>
                 </thead>
                 <tbody id="applicantsSection">
@@ -136,6 +143,11 @@
                             <td id="bed_code">{{$user["bed_code"]}}</td>
                             <td id="date">{{$user["created_at"]}}</td>
                             <td id="studType">@if($user["studentType"] == "Cash / Direct") Cash @else {{$user["studentType"]}} @endif</td>
+
+                            <td id="statusBarIcon">
+                                {{$user["overall_status"]}}
+                            </td>
+
                             <td id="statusBarIcon" style="background-color:#ccc">
                                 @if($user["bookingStatus"] === "Pending" || $user["bookingStatus"] === "Action")
                                 <span class="hidden">A</span><div class="button action bigButton"></div>
@@ -143,6 +155,8 @@
                                 <span class="hidden">C</span><div class="button approved bigButton"></div>
                                 @elseif($user["bookingStatus"] === "Denied" || $user["bookingStatus"] === null || $user["bookingStatus"] === "Empty" || $user["bookingStatus"] === "Rejected")
                                 <span class="hidden">B</span><div class="button rejected bigButton"></div>
+                                @else
+                                    <span class="hidden">D</span><div class="button na bigButton"></div>
                                 @endif
                             </td>
                             
@@ -191,6 +205,8 @@
                                 <span class="hidden">C</span><div class="button approved bigButton"></div>
                                 @elseif($user["applicationStatus"] === "Denied" || $user["applicationStatus"] === null || $user["applicationStatus"] === "Rejected" || $user["applicationStatus"] === "Empty" || $user["applicationStatus"] == "Denied Confimed")
                                 <span class="hidden">B</span><div class="button rejected bigButton"></div>
+                                @else
+                                <span class="hidden">D</span><div class="button na bigButton"></div>
                                 @endif
                             </td>
 

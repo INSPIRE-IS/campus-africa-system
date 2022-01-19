@@ -48,25 +48,64 @@ jQuery(document).ready(function ($) {
                                 color = "light";
                             }
 
-                            if(arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action"){
-                                var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                            }else if(arrayItem["bookingStatus"] == "Approved"){
-                                var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                            }else if(arrayItem["bookingStatus"] == "Denied" || arrayItem["bookingStatus"] == "" || arrayItem["bookingStatus"] == "Empty" || arrayItem["bookingStatus"] == "Rejected"){
-                                var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            if(arrayItem["overall_status"] == "Pending" || arrayItem["overall_status"] == "Action"){
+                                var status = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                            }else if(arrayItem["overall_status"] == "Approved"){
+                                var status = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                            }else if(arrayItem["overall_status"] == "Denied" || arrayItem["overall_status"] == "" ){
+                                var status = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                             }else{
-                                var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
+                                var status = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
                             }
 
-                            if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
-                                applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                            }else if(arrayItem["applicationStatus"] === "Approved" || arrayItem["applicationStatus"] === "Approved Confirmed"){
-                                applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                            }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
-                                applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            if(arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected"){
+                                if(arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action"){
+                                    var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                                }else if(arrayItem["bookingStatus"] == "Approved"){
+                                    var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                                }else if(arrayItem["bookingStatus"] == "Denied" || arrayItem["bookingStatus"] == "" || arrayItem["bookingStatus"] == "Empty" || arrayItem["bookingStatus"] == "Rejected"){
+                                    var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                                }else{
+                                    var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
+                                }
+                            }else{
+                                var bookingStat = '<span class="hidden">D</span><div class="button na bigButton"></div>';
                             }
+
+                            if(arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected"){
+                                if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
+                                    applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                                }else if(arrayItem["applicationStatus"] === "Approved" || arrayItem["applicationStatus"] === "Approved Confirmed"){
+                                    applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                                }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
+                                    applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                                }
+                            }else{
+                                applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
+                            }
+
+                            
+                            var filtered = files.filter(function(el) { return el.field != "bursaryApproval"; }); 
+                            var filtered = filtered.filter(function(el) { return el.field != "bankStatement"; }); 
 
                             files.forEach(function (file) {
+                                if(file["field"] == "bursaryApproval"){
+                                    filtered.push(file)
+                                }
+
+                                if(file["field"] === "bankStatement"){
+                                    filtered.push(file)  
+                                }
+                            })
+
+                            console.log(filtered)
+                            
+
+                            
+
+                            filtered.forEach(function (file) {
+
+                                // console.log(file["field"])
                                 if(file['field'] == "proof_of_payment"){
                                     if(file["status"] === "Uploaded"){
                                         pop = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
@@ -115,7 +154,20 @@ jQuery(document).ready(function ($) {
                                     }
                                 }
 
-                                if(file["field"] === "bursaryApproval"){
+                                if(file["field"] === "moveIn" ){
+                                    console.log(file["status"])
+                                    if(file["status"] === "Uploaded"){
+                                        moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                                    }else if(file["status"] === "Approved"){
+                                        moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                                    }else if(file["status"] === "Rejected"){
+                                        moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                                    }else if(file["status"] === "na"){
+                                        moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
+                                    }
+                                }
+
+                                if(file["field"] == "bursaryApproval"){
                                     if(file["status"] === "Uploaded"){
                                         bursaryApproval = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
                                     }else if(file["status"] === "Approved"){
@@ -145,15 +197,9 @@ jQuery(document).ready(function ($) {
                                     bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                                 }
 
-                                if(file["field"] === "moveIn" ){
-                                    if(file["status"] === "Uploaded"){
-                                        moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                                    }else if(file["status"] === "Approved"){
-                                        moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                                    }else if(file["status"] === "Rejected"){
-                                        moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                                    }
-                                }
+                                
+
+                                
                                             
                             });
 
@@ -181,12 +227,15 @@ jQuery(document).ready(function ($) {
                                 bed_code = arrayItem["bed_code"]
                             }
 
+                            
+
                             var trDOM = datatable.row.add( [
                                 '#'+arrayItem["bookingRef"],
                                 '<span class="bold">'+arrayItem["userFirstName"]+' '+arrayItem["userLastname"]+'</span> <br/> '+arrayItem["property"]+' | '+arrayItem["roomType"],
                                 bed_code,
                                 dateString,
                                 studentType,
+                                arrayItem["overall_status"],
                                 bookingStat,
                                 pop,
                                 copyId,
@@ -200,13 +249,9 @@ jQuery(document).ready(function ($) {
 
 
                             $( trDOM ).addClass('table_id_'+arrayItem["id"]);
-                            $( trDOM ).find('td').eq(5).addClass('bookingBg');
-                            $( trDOM ).find('td').eq(8).addClass('bookingBg');
-                            $( trDOM ).find('td').eq(13).addClass('bookingBg');
-
-
-
-
+                            $( trDOM ).find('td').eq(6).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(9).addClass('bookingBg');
+                            $( trDOM ).find('td').eq(14).addClass('bookingBg');
 
                             i++;
                         });
