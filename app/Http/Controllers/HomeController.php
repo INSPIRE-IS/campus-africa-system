@@ -603,11 +603,6 @@ class HomeController extends Controller
             }elseif($userFile['fileId'] == "moveIn"){
                 $typeName = "Lease";
                 $dataField = "";
-                if($request->type == "Approved"){
-                    User::where('id', $userFile->userUid)->update(['overall_status' => 'Approved']);
-                }else{
-                    User::where('id', $userFile->userUid)->update(['overall_status' => 'Incomplete']);
-                }
             }elseif($userFile['fileId'] == "bursaryApproval"){
                 $typeName = "NSFAS Approval";
                 $dataField = "bursary_approved";
@@ -759,7 +754,30 @@ class HomeController extends Controller
                 $booking = "Action";
             }
 
-            User::where('id', $userFile->userUid)->update(["bookingStatus" => $booking, "applicationStatus" => $phase2]);
+
+            $overall = "Incomplete";
+
+            if($booking == "Approved Confirmed" || $phase2 == "Approved Confirmed"){
+                $overall = "Approved";
+            }
+
+            if($booking == "Rejected" || $booking == "Empty" || $phase2 == "Rejected" || $phase2 == "Empty"){
+                $overall = "Incomplete";
+            }
+
+            if($booking == "Action" || $phase2 == "Action"|| $phase2 == "Approved"){
+                $overall = "Pending";
+            }
+
+            if($userFile['fileId'] == "moveIn"){
+                if($request->type == "Approved"){
+                    $overall = "Approved";
+                }else{
+                    $overall = "Incomplete";
+                }
+            }
+
+            User::where('id', $userFile->userUid)->update(["bookingStatus" => $booking, "applicationStatus" => $phase2, 'overall_status' => $overall]);
 
             return $userFile;
 
@@ -855,7 +873,7 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['applicationStatus' => "Approved Confirmed"]);
+        User::where('id', $userId)->update(['applicationStatus' => "Approved Confirmed", 'overall_status' => "Incomplete"]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -1430,7 +1448,17 @@ class HomeController extends Controller
 
                 }
 
-                User::where('id', $userUid)->update(["bookingStatus" => $phase1, "applicationStatus" => $phase2]);
+                $overall = "Incomplete";
+
+                if($phase1 == "Action" || $phase2 == "Action"){
+                    $overall = "Pending";
+                }
+
+                if($fileType == "moveIn"){
+                    $overall = "Pending";
+                }
+
+                User::where('id', $userUid)->update(["bookingStatus" => $phase1, "applicationStatus" => $phase2, "overall_status" => $overall]);
 
             }
         }
@@ -3530,6 +3558,29 @@ class HomeController extends Controller
                 "actionUserDisplayName" => Auth::user()->userFirstName,
                 "actionUserRole" => Auth::user()->userRole,
             ]);
+        }
+    }
+
+    public function update_processing_status(){
+        $userList = User::get();
+
+        foreach($userList as $user){
+
+            $overall = "Incomplete";
+
+            if($user->bookingStatus == "Approved" || $user->applicationStatus == "Approved Confirmed"){
+                $overall = "Approved";
+            }
+            
+            if($user->bookingStatus == "Empty" || $user->bookingStatus == "Rejected" || $user->applicationStatus == "Empty" || $user->applicationStatus == "Rejected"){
+                $overall = "Incomplete";
+            }
+
+            if($user->bookingStatus == "Action" || $user->applicationStatus == "Action" || $user->applicationStatus == "Approved"){
+                $overall = "Pending";
+            }
+
+            User::where('id', $user->id)->update(['overall_status' => $overall]);
         }
     }
 
