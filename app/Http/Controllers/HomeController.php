@@ -3097,7 +3097,7 @@ class HomeController extends Controller
 
                 foreach($schdeules as $user){
                     
-                    if($i > 0){
+                    if($i > 0 && $user[0] !== null && $user[1] !== null && $user[2] !== null){
                         $student = User::where("email", $user[2])->first();
 
                         if(!empty($student) && $student->studentType == "NSFAS"){
