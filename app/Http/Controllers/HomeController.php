@@ -3076,20 +3076,20 @@ class HomeController extends Controller
 
 
                 $fileName = '/storage/public/files/'.$userUid.'/'.$inputFileName;
-
-                $fileName = "Student Export";
+                $request->file('file')->storeAs('public/files/'.$userUid.'/', $inputFileName);
 
                 /**  Identify the type of $inputFileName  **/
-                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($fileName);
 
                 /**  Create a new Reader of the type that has been identified  **/
                 $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
 
                 /**  Load $inputFileName to a Spreadsheet Object  **/
-                $spreadsheet = $reader->load($inputFileName);
+                $spreadsheet = $reader->load($fileName);
 
                 /**  Convert Spreadsheet Object to an Array for ease of use  **/
                 $schdeules = $spreadsheet->getActiveSheet()->toArray();
+
 
                 $i = 0;
                 $approved = 0;
