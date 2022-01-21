@@ -73,6 +73,8 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
+                <th>Student Number</th>
+                <th>ID Number</th>
             </tr>
         </thead>
         @foreach($students as $student)
@@ -88,6 +90,12 @@
                 </td>
                 <td>
                     {{$student->student_email}}
+                </td>
+                <td>
+                    {{$student->student_number}}
+                </td>
+                <td>
+                    {{$student->student_id_number}}
                 </td>
             </tr>
         @endforeach
@@ -140,7 +148,9 @@
                                         arrayItem['importId'],
                                         arrayItem['student_first_name'],
                                         arrayItem['student_last_name'],
-                                        arrayItem['student_email']
+                                        arrayItem['student_email'],
+                                        arrayItem['student_number'],
+                                        arrayItem['student_id_number'],
                                     ] ).draw().node();
                                 })
                             },

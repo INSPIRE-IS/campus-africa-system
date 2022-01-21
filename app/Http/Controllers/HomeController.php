@@ -3097,8 +3097,9 @@ class HomeController extends Controller
 
                 foreach($schdeules as $user){
                     
-                    if($i > 0 && $user[0] !== null && $user[1] !== null && $user[2] !== null){
-                        $student = User::where("email", $user[2])->first();
+                    if($i > 0){
+                        // $student = User::where("email", $user[2])->first();
+                        $student = User::where("studentNo", $user[3])->first();
 
                         if(!empty($student) && $student->studentType == "NSFAS"){
                             $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
@@ -3131,7 +3132,7 @@ class HomeController extends Controller
                             }
                         }else{
                             $not_found ++;
-                            array_push($students_not_found, [$user[0], $user[1], $user[2]]);
+                            array_push($students_not_found, [$user[0], $user[1], $user[2], $user[3], $user[4]]);
                         }
 
                     }
@@ -3144,7 +3145,7 @@ class HomeController extends Controller
 
         foreach($students_not_found as $not_found){
 
-            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $not_found[0], "student_last_name" => $not_found[1], "student_email" => $not_found[2]]);
+            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $not_found[0], "student_last_name" => $not_found[1], "student_email" => $not_found[2], "student_number" => $not_found[3], "student_id_number" => $not_found[4]]);
         }
         echo "done";
         
