@@ -3101,7 +3101,6 @@ class HomeController extends Controller
                         $student = User::where("email", $user[2])->first();
 
                         if(!empty($student) && $student->studentType == "NSFAS"){
-                            dd("2");
                             $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
         
                             if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
