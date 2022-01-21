@@ -3065,18 +3065,16 @@ class HomeController extends Controller
     public function import_nsfas_approval(Request $request){
         $files = $request->file('file');
 
-        // $inputFileName = "Student Export.xlsx";
         $inputFileName  = $request->file('file')->getClientOriginalName();
-        // $inputFileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
 
         if ($request->hasFile('file')) {
             
             if ($request->file('file')->isValid()) {
                 $userUid = "nsfas_upload";
 
+                $fileName = 'uploads/'.$inputFileName;
+                $path = $request->file('file')->move('uploads/', $inputFileName);
 
-                $fileName = '/storage/public/files/'.$userUid.'/'.$inputFileName;
-                $request->file('file')->storeAs('public/files/'.$userUid.'/', $inputFileName);
 
                 /**  Identify the type of $inputFileName  **/
                 $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($fileName);
@@ -3103,6 +3101,7 @@ class HomeController extends Controller
                         $student = User::where("email", $user[2])->first();
 
                         if(!empty($student) && $student->studentType == "NSFAS"){
+                            dd("2");
                             $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
         
                             if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
@@ -3133,7 +3132,7 @@ class HomeController extends Controller
                             }
                         }else{
                             $not_found ++;
-                            array_push($students_not_found, [$filedata[0], $filedata[1], $filedata[2]]);
+                            array_push($students_not_found, [$user[0], $user[1], $user[2]]);
                         }
 
                     }
