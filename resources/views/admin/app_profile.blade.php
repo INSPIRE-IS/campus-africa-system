@@ -620,6 +620,8 @@
                     },
 
                     success: function (data) {
+
+                        refreshActions();
                         
                         var preview1 = document.getElementById("rejected");
                         preview1.removeAttribute("disabled", "disabled");
@@ -693,6 +695,8 @@
                     },
 
                     success: function (data) {
+
+                        refreshActions();
                         
                         var approveData = document.getElementById("approveData");
                         approveData.removeAttribute("disabled", "disabled");

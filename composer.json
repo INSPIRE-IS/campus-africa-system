@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
         "maennchen/zipstream-php": "^2.1",
+        "phpoffice/phpspreadsheet": "^1.21",
         "shuchkin/simplexlsxgen": "^1.0"
     },
     "require-dev": {

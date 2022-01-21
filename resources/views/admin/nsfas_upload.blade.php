@@ -12,7 +12,7 @@
 
     <br/><br/>
 
-    <div class="row">
+        <div class="row">
             <div class="column" style="width:100%">
                 <div class="field">      
                     <div class="file-upload-wrapper">
