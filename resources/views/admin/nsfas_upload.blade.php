@@ -56,10 +56,10 @@
                     {{$upload->not_found}}
                 </td>
                 <td>
-                    {{$upload->file_name}}
+                    @if($upload->file_name) {{$upload->file_name}} @endif
                 </td>
                 <td>
-                    {{$upload->users->userFirstName}} {{$upload->users->userLastname}}
+                    @if($upload->users && $upload->users->userFirstName) {{$upload->users->userFirstName}} {{$upload->users->userLastname}} @endif
                 </td>
                 <td>
                     {{$upload->created_at}}
