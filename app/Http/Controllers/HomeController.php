@@ -3599,7 +3599,7 @@ class HomeController extends Controller
                     
                     $booking = Booking::where('id', $user->bookingRef)->first();
 
-                    if($booking->lease_unique !== "1"){
+                    if($booking && $booking->lease_unique !== 1){
                         $updatedDates['lease_from_date'] = $lookup->lease_from_date;
                         $updatedDates['lease_from_time'] = $lookup->lease_from_time;
                         $updatedDates['lease_to_date'] = $lookup->lease_to_date;
