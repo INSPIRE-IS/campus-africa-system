@@ -17,6 +17,10 @@ class ImportNSFASApproval extends Model
         'not_found',
         'file_name',
         'actionUserId',
+        'total_records',
+        'status',
+        'matched',
+        'unmatched',
     ];
 
     public function users(){

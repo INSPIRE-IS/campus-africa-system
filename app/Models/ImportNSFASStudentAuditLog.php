@@ -18,5 +18,7 @@ class ImportNSFASStudentAuditLog extends Model
         'student_email',
         'student_number',
         'student_id_number',
+        'status',
+        'institution',
     ];
 }

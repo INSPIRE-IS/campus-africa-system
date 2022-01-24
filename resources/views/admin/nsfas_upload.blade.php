@@ -8,7 +8,7 @@
 
 <div class="container">
     <br/>
-    <h1>Import</h1>
+    <h1>Upload File</h1>
 
     <br/><br/>
 
@@ -25,7 +25,7 @@
         <br/><br/>
 
         <br/>
-        <h1>Import Lists</h1>
+        <h1>Upload History</h1>
 
         <br/><br/>
 

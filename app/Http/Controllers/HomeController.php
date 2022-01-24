@@ -3049,7 +3049,7 @@ class HomeController extends Controller
 
     public function nsfas_approval_upload(Request $request){
 
-        $uploads = ImportNSFASApproval::with('users')->get();
+        $uploads = ImportNSFASApproval::with('users')->orderBy('id', 'ASC')->get();
         $students = ImportNSFASStudentAuditLog::get();
         
         return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload", 'uploads' => $uploads, 'students' => $students]);
@@ -3090,12 +3090,17 @@ class HomeController extends Controller
 
 
                 $i = 0;
-                $approved = 0;
-                $skipped = 0;
+                // $approved = 0;
+                // $skipped = 0;
                 $not_found = 0;
-                $students_not_found = [];
+                $students_Arr = [];
+
+                $matched = 0;
+                $unmatched = 0;
+                $totalStudents = 0;
 
                 foreach($schdeules as $user){
+                    $totalStudents++;
                     
                     if($i > 0){
                         // $student = User::where("email", $user[2])->first();
@@ -3103,9 +3108,12 @@ class HomeController extends Controller
 
                         if(!empty($student) && $student->studentType == "NSFAS"){
                             $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
+
+                            $matched ++;
+                            array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "1"]);
         
                             if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
-                                $approved ++;
+                                
                                 UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploadedBy' => 'Import']);
                                 ActionList::create([
                                     "userUid" => $student->id,
@@ -3116,9 +3124,8 @@ class HomeController extends Controller
                                     ]);
                                     
                             }else if(empty($fileInfo)){
-                                $approved ++;
+                                
                                 UserFiles::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploadedBy' => 'Import']);
-        
                                 ActionList::create([
                                     "userUid" => $student->id,
                                     "action" => "Approved via import",
@@ -3127,12 +3134,11 @@ class HomeController extends Controller
                                     "actionUserRole" => Auth::user()->userRole,
                                 ]);
         
-                            }else{
-                                $skipped ++;
                             }
+
                         }else{
-                            $not_found ++;
-                            array_push($students_not_found, [$user[0], $user[1], $user[2], $user[3], $user[4]]);
+                            $unmatched ++;
+                            array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "0"]);
                         }
 
                     }
@@ -3141,11 +3147,13 @@ class HomeController extends Controller
             }
         }
 
-        $newImport = ImportNSFASApproval::create(['approved' => $approved, 'skipped' => $skipped, 'not_found' => $not_found, 'file_name' => $inputFileName, 'actionUserId' => Auth::user()->id]);
+        ImportNSFASApproval::where('status', '1')->update(["status" => 0]);
 
-        foreach($students_not_found as $not_found){
+        $newImport = ImportNSFASApproval::create([ 'file_name' => $inputFileName, 'actionUserId' => Auth::user()->id, "matched" => $matched, "unmatched" => $unmatched, "total_records" => $totalStudents, "status" => 1]);
 
-            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $not_found[1], "student_last_name" => $not_found[2], "student_email" => $not_found[3], "student_number" => $not_found[0], "student_id_number" => $not_found[4]]);
+        foreach($students_Arr as $student){
+
+            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $student[1], "student_last_name" => $student[2], "student_email" => $student[3], "student_number" => $student[0], "student_id_number" => $student[4], "status" => $student[5]]);
         }
         echo "done";
         
