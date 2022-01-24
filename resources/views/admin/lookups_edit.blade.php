@@ -1,9 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container form-card">
-<form action="/save-lookup" method="post" autocomplete="off">
+<form action="/save-lookup" method="post" autocomplete="off" id="lookupForm">
     @csrf
         <br/>        <br/>
 
@@ -83,6 +84,36 @@
             // $("#waiverDateTo").addClass('hidden');
         }
     })
+
+    // $('#lookupForm').submit(function() {
+        
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: "You are about to approve this data",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Yes!'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             //
+    //         }
+    //     });
+
+    //     return false;
+    //     // if($("#group_id").val() == "7"){
+    //     //     return false;
+    //     //     Swal.fire({
+    //     //         icon: 'success',
+    //     //         title: 'Email Sent',
+    //     //         text: 'An email has been sent to request profile changes. A consultant will be in contact with you shortly.',
+    //     //     })
+            
+    //     // }else{
+    //     //     return true;
+    //     // }
+    // });
 </script>
 
 @endsection
