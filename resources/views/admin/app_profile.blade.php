@@ -313,7 +313,7 @@
                                         <button type="button" onClick="
                                             openModal(
                                                 '{{$file['field']}}', 
-                                                '<?php echo str_replace("'", "|", $file['url']); ?>',
+                                                '<?php echo str_replace("'", "%27", $file['url']); ?>',
                                                 '{{$file['uploaded_by']}}',
                                                 '{{$file['created_at']}}',
                                                 '{{$file['id']}}',
@@ -1256,7 +1256,7 @@
     })
 
     function openModal(field, url, uploaded_by, created_at, fileId, status){
-        url = url.replace("|", "'");
+        url = url.replace("%27", "'");
 
         if("{{Auth::user()->role_approve_docs}}" !== "1"){
             document.getElementById("approveData").setAttribute("disabled", "disabled");
