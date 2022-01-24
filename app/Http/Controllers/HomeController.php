@@ -3049,17 +3049,26 @@ class HomeController extends Controller
 
     public function nsfas_approval_upload(Request $request){
 
-        $uploads = ImportNSFASApproval::with('users')->orderBy('id', 'ASC')->get();
-        $students = ImportNSFASStudentAuditLog::get();
+        $uploads = ImportNSFASApproval::with('users')->get();
+        $active = ImportNSFASApproval::where('status', '1')->first();
+        $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
         
-        return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload", 'uploads' => $uploads, 'students' => $students]);
+        return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload", 'uploads' => $uploads, 'students' => $students, 'active' => $active]);
     }
 
     public function new_import_data(){
         $uploads = ImportNSFASApproval::with('users')->get();
-        $students = ImportNSFASStudentAuditLog::get();
+        $active = ImportNSFASApproval::where('status', '1')->first();
+        $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
 
         return [$uploads, $students];
+    }
+
+    public function get_upload_info(Request $request){
+        $active = ImportNSFASApproval::where('created_at', $request->timestamp)->first();
+        $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
+
+        return $students;
     }
 
     public function import_nsfas_approval(Request $request){
@@ -3100,9 +3109,11 @@ class HomeController extends Controller
                 $totalStudents = 0;
 
                 foreach($schdeules as $user){
-                    $totalStudents++;
                     
                     if($i > 0){
+
+                        $totalStudents++;
+
                         // $student = User::where("email", $user[2])->first();
                         $student = User::where("studentNo", $user[0])->first();
 
@@ -3114,7 +3125,7 @@ class HomeController extends Controller
         
                             if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
                                 
-                                UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploadedBy' => 'Import']);
+                                UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploaded_by' => 'Import']);
                                 ActionList::create([
                                     "userUid" => $student->id,
                                     "action" => "Approved via import",
@@ -3125,7 +3136,7 @@ class HomeController extends Controller
                                     
                             }else if(empty($fileInfo)){
                                 
-                                UserFiles::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploadedBy' => 'Import']);
+                                UserFiles::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
                                 ActionList::create([
                                     "userUid" => $student->id,
                                     "action" => "Approved via import",
@@ -3679,6 +3690,32 @@ class HomeController extends Controller
 
             User::where('id', $user->id)->update(['overall_status' => $overall]);
         }
+    }
+
+    public function download_matched_unmatched(Request $request, $id){
+        $allFromFile = ImportNSFASStudentAuditLog::where('importId', $id)->get();
+
+        $users = [
+			['<b>Student Number</b>', '<b>First Name</b>', '<b>Last Name</b>', '<b>ID Number</b>', '<b>Institution</b>', '<b>Status</b>'],
+		];
+
+        foreach($allFromFile as $user){
+            if($user->status == "1"){
+                $status = "Matched";
+            }else{
+                $status = "Unmatched";
+            }
+
+            $userData = [$user->student_number, $user->student_first_name, $user->student_last_name, $user->student_id_number, $user->institution, $status];
+
+            array_push($users, $userData);
+        }
+
+        $xlsx = new \SimpleXLSXGen();
+		$xlsx->addSheet( $users, 'Students');
+		$xlsx->saveAs('NSFAS Approval Export.xlsx');
+
+		return "true";
     }
 
     
