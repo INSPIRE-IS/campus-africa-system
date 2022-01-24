@@ -1095,6 +1095,7 @@ class HomeController extends Controller
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
+            "role_lookup" => $request->role_lookup,
         ]);
 
         return redirect()->back();
@@ -1904,6 +1905,7 @@ class HomeController extends Controller
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
+            "role_lookup" => $request->role_lookup,
         ]);
 
         if($request->email_details == "1"){
@@ -2598,7 +2600,7 @@ class HomeController extends Controller
         $oldData = Booking::where('userId', $bookingId)->first();
         $newData = ['lease_from_date|Lease From Date' => $lease_from_date, 'lease_from_time|Lease From Time' => $lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
 
-        Booking::where('userId', $bookingId)->update(["lease_from_date" => $lease_from_date, "lease_from_time"=>$lease_from_time, "lease_to_date"=>$lease_to_date, "lease_to_time"=>$lease_to_time]);
+        Booking::where('userId', $bookingId)->update(["lease_from_date" => $lease_from_date, "lease_from_time"=>$lease_from_time, "lease_to_date"=>$lease_to_date, "lease_to_time"=>$lease_to_time, "lease_unique" => "1"]);
 
         foreach($newData as $key => $new){
             
@@ -3581,6 +3583,32 @@ class HomeController extends Controller
             }
 
             User::where('id', $user->id)->update(['overall_status' => $overall]);
+        }
+    }
+
+    public function update_lease_dates(Request $request){
+        $allUsers = User::where('overall_status', '!=', 'Cancelled')->get();
+
+        $lookup = Lookups::where('group_id', '4')->first();
+
+        foreach($allUsers as $user){
+
+            if($user->bookingStatus !== "Approved" && $user->bookingStatus !== "Approved Confirmed" && $user->applicationStatus !== "Approved" && $user->applicationStatus !== "Approved Confirmed"){
+
+                if($user->bookingStatus !== "Rejected" && $user->bookingStatus !== "Rejected Confirmed" && $user->applicationStatus !== "Rejected" && $user->applicationStatus !== "Rejected Confirmed"){
+                    
+                    $booking = Booking::where('id', $user->bookingRef)->first();
+
+                    if($booking->lease_unique !== "1"){
+                        $updatedDates['lease_from_date'] = $lookup->lease_from_date;
+                        $updatedDates['lease_from_time'] = $lookup->lease_from_time;
+                        $updatedDates['lease_to_date'] = $lookup->lease_to_date;
+                        $updatedDates['lease_to_time'] = $lookup->lease_to_time;
+
+                        Booking::where('id', $user->bookingRef)->update($updatedDates);
+                    }
+                }
+            }
         }
     }
 
