@@ -313,7 +313,7 @@
                                         <button type="button" onClick="
                                             openModal(
                                                 '{{$file['field']}}', 
-                                                '{{$file['url']}}',
+                                                '<?php echo str_replace("'", "|", $file['url']); ?>',
                                                 '{{$file['uploaded_by']}}',
                                                 '{{$file['created_at']}}',
                                                 '{{$file['id']}}',
@@ -1256,6 +1256,7 @@
     })
 
     function openModal(field, url, uploaded_by, created_at, fileId, status){
+        url = url.replace("|", "'");
 
         if("{{Auth::user()->role_approve_docs}}" !== "1"){
             document.getElementById("approveData").setAttribute("disabled", "disabled");
@@ -1351,9 +1352,9 @@
             }
 
             if("{{$user[0]['userInfo']['pNationality']}}" == "South Africa"){
-                var IdData = "<span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['userId']}}<br/>";
+                var IdData = "<span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['sponId']}}<br/>";
             }else{
-                var IdData = "<span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['userPassport']}}<br/>";
+                var IdData = "<span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['pPassportNo']}}<br/>";
             }
 
             var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>"+
