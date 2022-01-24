@@ -2723,6 +2723,7 @@ class HomeController extends Controller
 
             //Create a unique Unit list
             $bed_code = [];
+            $booked_bed_codes = [];
 
             foreach($propertyInfo as $pi) {
                 if (!isset($units[$pi->bed_code])) {
@@ -2735,12 +2736,14 @@ class HomeController extends Controller
 
                         if($bed_used[0]->users->applicationStatus == "Rejected Confirmed" || $bed_used[0]->users->applicationStatus == "Cancelled"){
                             $bed_code[$pi->bed_code] = $pi;
+                        }else{
+                            $booked_bed_codes[$pi->bed_code] = $pi;
                         }
                     }
                 }
             }
 
-            return ["true", $selected, $bed_code];
+            return ["true", $selected, $bed_code, $booked_bed_codes];
         }
     }
 
