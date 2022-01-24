@@ -15,5 +15,11 @@ class ImportNSFASApproval extends Model
         'approved',
         'skipped',
         'not_found',
+        'file_name',
+        'actionUserId',
     ];
+
+    public function users(){
+        return $this->hasOne("App\Models\User", "id", "actionUserId");
+    }
 }

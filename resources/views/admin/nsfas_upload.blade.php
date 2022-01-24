@@ -36,6 +36,9 @@
                 <th>Total Approved</th>
                 <th>Total Skipped</th>
                 <th>Total Not Found</th>
+                <th>File Name</th>
+                <th>Uploaded By</th>
+                <th>Uploaded At</th>
             </tr>
         </thead>
         @foreach($uploads as $upload)
@@ -51,6 +54,15 @@
                 </td>
                 <td>
                     {{$upload->not_found}}
+                </td>
+                <td>
+                    {{$upload->file_name}}
+                </td>
+                <td>
+                    {{$upload->users->userFirstName}} {{$upload->users->userLastname}}
+                </td>
+                <td>
+                    {{$upload->created_at}}
                 </td>
             </tr>
         @endforeach
@@ -135,11 +147,24 @@
                                 results2 = data[1]
 
                                 results1.forEach(function (arrayItem) {
+                                    var m = new Date(arrayItem["created_at"]);
+
+                                var dateString =
+                                    m.getUTCFullYear() + "-" +
+                                    ("0" + (m.getMonth()+1)).slice(-2) + "-" +
+                                    ("0" + m.getDate()).slice(-2) + " " +
+                                    ("0" + m.getHours()).slice(-2) + ":" +
+                                    ("0" + m.getMinutes()).slice(-2) + ":" +
+                                    ("0" + m.getSeconds()).slice(-2);
+
                                     var trDOM = datatable1.row.add( [
                                         arrayItem['id'],
                                         arrayItem['approved'],
                                         arrayItem['skipped'],
-                                        arrayItem['not_found']
+                                        arrayItem['not_found'],
+                                        arrayItem['file_name'],
+                                        arrayItem['users']['userFirstName']+" "+arrayItem['users']['userLastname'],
+                                        dateString,
                                     ] ).draw().node();
                                 })
 
@@ -162,8 +187,13 @@
     });
 
     $(document).ready( function () {
-        $('#upload_table').DataTable();
+        $('#upload_table').DataTable({
+            "columnDefs": [
+                {"className": "dt-center", "targets": "_all"}
+            ],
+        });
     } );
+
     $(document).ready( function () {
         $('#student_upload_table').DataTable();
     } );

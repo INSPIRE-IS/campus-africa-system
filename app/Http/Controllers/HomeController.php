@@ -3049,14 +3049,14 @@ class HomeController extends Controller
 
     public function nsfas_approval_upload(Request $request){
 
-        $uploads = ImportNSFASApproval::get();
+        $uploads = ImportNSFASApproval::with('users')->get();
         $students = ImportNSFASStudentAuditLog::get();
         
         return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload", 'uploads' => $uploads, 'students' => $students]);
     }
 
     public function new_import_data(){
-        $uploads = ImportNSFASApproval::get();
+        $uploads = ImportNSFASApproval::with('users')->get();
         $students = ImportNSFASStudentAuditLog::get();
 
         return [$uploads, $students];
@@ -3099,7 +3099,7 @@ class HomeController extends Controller
                     
                     if($i > 0){
                         // $student = User::where("email", $user[2])->first();
-                        $student = User::where("studentNo", $user[3])->first();
+                        $student = User::where("studentNo", $user[0])->first();
 
                         if(!empty($student) && $student->studentType == "NSFAS"){
                             $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
@@ -3111,7 +3111,7 @@ class HomeController extends Controller
                                     "userUid" => $student->id,
                                     "action" => "Approved via import",
                                     "actionUserUid" => Auth::user()->id,
-                                    "actionUserDisplayName" => "Import",
+                                    "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
                                     "actionUserRole" => Auth::user()->userRole,
                                     ]);
                                     
@@ -3123,7 +3123,7 @@ class HomeController extends Controller
                                     "userUid" => $student->id,
                                     "action" => "Approved via import",
                                     "actionUserUid" => Auth::user()->id,
-                                    "actionUserDisplayName" => "Import",
+                                    "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
                                     "actionUserRole" => Auth::user()->userRole,
                                 ]);
         
@@ -3141,11 +3141,11 @@ class HomeController extends Controller
             }
         }
 
-        $newImport = ImportNSFASApproval::create(['approved' => $approved, 'skipped' => $skipped, 'not_found' => $not_found]);
+        $newImport = ImportNSFASApproval::create(['approved' => $approved, 'skipped' => $skipped, 'not_found' => $not_found, 'file_name' => $inputFileName, 'actionUserId' => Auth::user()->id]);
 
         foreach($students_not_found as $not_found){
 
-            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $not_found[0], "student_last_name" => $not_found[1], "student_email" => $not_found[2], "student_number" => $not_found[3], "student_id_number" => $not_found[4]]);
+            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $not_found[1], "student_last_name" => $not_found[2], "student_email" => $not_found[3], "student_number" => $not_found[0], "student_id_number" => $not_found[4]]);
         }
         echo "done";
         
