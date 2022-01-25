@@ -170,13 +170,19 @@
                                         var status = "Replaced"
                                     }
 
+                                    if(arrayItem['users'] && arrayItem['users']['userFirstName'] && arrayItem['users']['userLastname']){
+                                        var name = arrayItem['users']['userFirstName']+" "+arrayItem['users']['userLastname'];
+                                    }else{
+                                        var name = "";
+                                    }
+
                                     var trDOM = datatable1.row.add( [
                                         status,
                                         arrayItem['file_name'],
                                         arrayItem['total_records'],
                                         arrayItem['matched'],
                                         arrayItem['unmatched'],
-                                        arrayItem['users']['userFirstName']+" "+arrayItem['users']['userLastname'],
+                                        name,
                                         dateString,
                                     ] ).draw().node();
                                 })
