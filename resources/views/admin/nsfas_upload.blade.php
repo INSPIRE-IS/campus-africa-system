@@ -72,7 +72,7 @@
     </table>
 
     <br/><br/>
-    <input type="hidden" id="id_to_download" value="<?php echo $active->id; ?>"/>
+    <input type="hidden" id="id_to_download" value="<?php if($active && $active->id){echo $active->id;} ?>"/>
     <button type="button" class="detailsChange" id="downloadStudents">Download Matched / Unmatched</button>
     <div class="hidden"><a href="/NSFAS Approval Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
 
