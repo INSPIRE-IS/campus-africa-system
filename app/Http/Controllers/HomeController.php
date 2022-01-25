@@ -3718,6 +3718,49 @@ class HomeController extends Controller
 		return "true";
     }
 
+    public function download_nsfas_report(Request $request){
+        $studentArr = User::where('studentType', 'NSFAS')->get();
+
+        $users = [
+			['<b>Student Number</b>', '<b>First Name</b>', '<b>Last Name</b>', '<b>ID Number</b>', '<b>Institution</b>', '<b>Status</b>', '<b>Approved By</b>'],
+		];
+
+        $lookups = Lookups::where('group_id', '1')->get();
+
+        foreach($studentArr as $student){
+            $file = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
+
+            if($file){
+                $status = $file->status;
+                if($file->uploaded_by == "Import"){
+                    $approved_by = "Import";
+                }else{
+                    $approved_by = $file->approved_by;
+                }
+            }else{
+                $status = "";
+                $approved_by = "";
+            }
+
+            foreach($lookups as $lookup){
+                if($student->institutionStudy == $lookup->id){
+                    $institution = $lookup->value;
+                }
+            }
+            
+
+            $studentData = [$student->studentNo, $student->userFirstName, $student->userLastname, $student->userId, $institution, $status, $approved_by];
+            array_push($users, $studentData);
+        }
+
+        $xlsx = new \SimpleXLSXGen();
+		$xlsx->addSheet( $users, 'Students');
+		$xlsx->saveAs('NSFAS Approval Type Export.xlsx');
+
+		// return "true";
+        return $users;
+    }
+
     
 
     

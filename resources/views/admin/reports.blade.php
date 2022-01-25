@@ -5,6 +5,7 @@
 
 <div class="container">
     <br/>
+    <h2>Student Report</h2>
 
     <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">
@@ -78,6 +79,12 @@
     <div class="clearSpaceLogin"></div>
     <div class="hidden"><a href="/Student Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
 
+    <hr/><br/>
+    <h2>Other Reports</h2>
+
+    <button type="button" class="detailsChange" id="downloadStudents" style="float:left; ">Download NSFAS Approval Types</button>
+    <div class="hidden"><a href="/NSFAS Approval Type Export.xlsx" download><button type="button" id="downloadBtnNsfas">Download</button></a></div>
+
 </div>
 
 <script>
@@ -110,6 +117,17 @@
             },
         });
 
+    })
+
+    $("#downloadStudents").on('click', function(){
+        $.ajax({
+            type: "get",
+            url: "/download-nsfas-report",
+
+            success: function (data) {
+                $("#downloadBtnNsfas").click();
+            },
+        });
     })
 </script>
 
