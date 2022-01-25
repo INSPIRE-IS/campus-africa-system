@@ -3592,7 +3592,7 @@ class HomeController extends Controller
     public function update_lease_dates(Request $request){
         $allUsers = User::where('overall_status', '!=', 'Cancelled')->get();
 
-        $lookup = Lookups::where('group_id', '4')->first();
+        // $lookup = Lookups::where('group_id', '4')->first();
 
         foreach($allUsers as $user){
 
@@ -3603,10 +3603,10 @@ class HomeController extends Controller
                     $booking = Booking::where('id', $user->bookingRef)->first();
 
                     if($booking && $booking->lease_unique !== 1){
-                        $updatedDates['lease_from_date'] = $lookup->lease_from_date;
-                        $updatedDates['lease_from_time'] = $lookup->lease_from_time;
-                        $updatedDates['lease_to_date'] = $lookup->lease_to_date;
-                        $updatedDates['lease_to_time'] = $lookup->lease_to_time;
+                        $updatedDates['lease_from_date'] = $request->lease_from_date;
+                        $updatedDates['lease_from_time'] = $request->lease_from_time;
+                        $updatedDates['lease_to_date'] = $request->lease_to_date;
+                        $updatedDates['lease_to_time'] = $request->lease_to_time;
 
                         Booking::where('id', $user->bookingRef)->update($updatedDates);
                     }

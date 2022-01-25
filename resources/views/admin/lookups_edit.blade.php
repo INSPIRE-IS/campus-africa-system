@@ -1,9 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container form-card">
-<form action="/save-lookup" method="post" autocomplete="off">
+<form action="/save-lookup" method="post" autocomplete="off" id="lookupForm">
     @csrf
         <br/>        <br/>
 
@@ -65,7 +66,8 @@
             <input type="date" name="date_to" id="date_to" value="<?php echo $lookup->waiver_date_to;?>">
         </div> -->
 
-        <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
+        <!-- <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/> -->
+        <button type="button" class="profileSubmitBtn" id="submitLookup" style="opacity:1">Update</button>
     </form>
 </div>
 
@@ -83,6 +85,44 @@
             // $("#waiverDateTo").addClass('hidden');
         }
     })
+
+    $("#submitLookup").on('click', function(){
+        if($("#group_id").val() == "4"){
+            Swal.fire({
+                title: 'Do you want to update All Leases?',
+                text: "All Unapproved students lease dates will be updated",
+                icon: 'warning',
+                showDenyButton: true,
+                denyButtonText: 'No',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#submitLookup").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                    $.ajax({
+                        type: "post",
+                        url: "/update/lease-dates",
+                        data: {
+                            lease_from_date: $("#lease_from_date").val(),
+                            lease_from_time: $("#lease_from_time").val(),
+                            lease_to_date: $("#lease_to_date").val(),
+                            lease_to_time: $("#lease_to_time").val(),
+                        },
+
+                        success: function (data) {
+                            $('#lookupForm').submit();
+                        },
+                    });
+                } else if (result.isDenied) {
+                    $('#lookupForm').submit();
+                }
+            });
+        }else{
+            $('#lookupForm').submit();
+        }
+    })
+
 </script>
 
 @endsection
