@@ -231,25 +231,37 @@
 
                 success: function (data) {
 
-                    $("#id_to_download").val('').val(data[0].importId);
+                    if(data[0] == undefined){
+                        
+                        var datatable2 = $( "#student_upload_table" ).DataTable();
+                        datatable2.clear().draw(); 
+
+                        $("#student_upload_table").removeClass('hidden')
+                        $("#studentLoading").addClass('hidden')
+
+                    }else{
+                        $("#id_to_download").val('').val(data[0].importId);
                     
 
-                    var datatable2 = $( "#student_upload_table" ).DataTable();
-                    datatable2.clear(); 
-                    
-                    data.forEach(function (arrayItem) {
-                        var trDOM = datatable2.row.add( [
-                            arrayItem['student_number'],
-                            arrayItem['student_first_name'],
-                            arrayItem['student_last_name'],
-                            arrayItem['student_id_number'],
-                            arrayItem['institution'],
-                        ] ).draw().node();
-                    })
+                        var datatable2 = $( "#student_upload_table" ).DataTable();
+                        datatable2.clear(); 
+                        
+                        data.forEach(function (arrayItem) {
+                            var trDOM = datatable2.row.add( [
+                                arrayItem['student_number'],
+                                arrayItem['student_first_name'],
+                                arrayItem['student_last_name'],
+                                arrayItem['student_id_number'],
+                                arrayItem['institution'],
+                            ] ).draw().node();
+                        })
 
-                    $("#student_upload_table").removeClass('hidden')
-                    $("#studentLoading").addClass('hidden')
-                }
+                        $("#student_upload_table").removeClass('hidden')
+                        $("#studentLoading").addClass('hidden')
+                    }
+
+                    
+                },
             });
         } );
     } );
