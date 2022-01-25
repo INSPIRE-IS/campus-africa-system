@@ -3051,7 +3051,11 @@ class HomeController extends Controller
 
         $uploads = ImportNSFASApproval::with('users')->get();
         $active = ImportNSFASApproval::where('status', '1')->first();
-        $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
+        if($active){
+            $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
+        }else{
+            $students = ImportNSFASStudentAuditLog::where('status', '0')->get();
+        }
         
         return view('admin.nsfas_upload', ["headerTitle" => "NSFAS Approval Upload", "title" => "NSFAS Approval Upload", 'uploads' => $uploads, 'students' => $students, 'active' => $active]);
     }
@@ -3059,7 +3063,12 @@ class HomeController extends Controller
     public function new_import_data(){
         $uploads = ImportNSFASApproval::with('users')->get();
         $active = ImportNSFASApproval::where('status', '1')->first();
-        $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
+        if($active){
+            $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
+        }else{
+            $students = ImportNSFASStudentAuditLog::where('status', '0')->get();
+        }
+        
 
         return [$uploads, $students];
     }
