@@ -28,6 +28,7 @@
         <h1>Upload History</h1>
 
         <br/><br/>
+        <i class="fas fa-circle-notch fa-spin hidden" id="importsLoading" style="font-size:35px; margin-left:45%"></i>
 
         <table id="upload_table" class="display">
         <thead>
@@ -77,10 +78,11 @@
     <div class="hidden"><a href="/NSFAS Approval Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
 
         <br/>
-        <h1>Students not found in Import</h1>
+        <h1>Unmatched Students in Current Upload</h1>
 
         <br/><br/>
 
+        <i class="fas fa-circle-notch fa-spin hidden" id="studentLoading" style="font-size:35px; margin-left:45%"></i>
         <table id="student_upload_table" class="display">
         <thead>
             <tr>
@@ -130,6 +132,12 @@
                     });
                     this.on("complete", function (file) {
                         if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+
+                            $("#student_upload_table").addClass('hidden')
+                            $("#studentLoading").removeClass('hidden')
+                            $("#upload_table").addClass('hidden')
+                            $("#importsLoading").removeClass('hidden')
+
                             $.ajax({
                             type: "get",
                             url: "/import/newData",
@@ -182,6 +190,11 @@
                                         arrayItem['institution'],
                                     ] ).draw().node();
                                 })
+
+                                $("#student_upload_table").removeClass('hidden')
+                                $("#studentLoading").addClass('hidden')
+                                $("#upload_table").removeClass('hidden')
+                                $("#importsLoading").addClass('hidden')
                             },
                         });
                         };
@@ -195,10 +208,12 @@
             "columnDefs": [
                 {"className": "dt-center", "targets": "_all"}
             ],
-            "order": [[ 6, "desc" ]]
+            "order": [[ 6, "desc" ]],
         });
 
         $('#upload_table tbody').on('click', 'tr', function () {
+            $("#student_upload_table").addClass('hidden')
+            $("#studentLoading").removeClass('hidden')
             var data = table.row( this ).data();
             console.log(data[6])
             $.ajax({
@@ -225,6 +240,9 @@
                             arrayItem['institution'],
                         ] ).draw().node();
                     })
+
+                    $("#student_upload_table").removeClass('hidden')
+                    $("#studentLoading").addClass('hidden')
                 }
             });
         } );

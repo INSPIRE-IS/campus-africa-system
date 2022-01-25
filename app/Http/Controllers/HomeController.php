@@ -3137,7 +3137,7 @@ class HomeController extends Controller
                                 UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploaded_by' => 'Import']);
                                 ActionList::create([
                                     "userUid" => $student->id,
-                                    "action" => "Approved via import",
+                                    "action" => "NSFAS / Bursary has been Approved via import",
                                     "actionUserUid" => Auth::user()->id,
                                     "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
                                     "actionUserRole" => Auth::user()->userRole,
@@ -3148,7 +3148,7 @@ class HomeController extends Controller
                                 UserFiles::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
                                 ActionList::create([
                                     "userUid" => $student->id,
-                                    "action" => "Approved via import",
+                                    "action" => "NSFAS / Bursary has been Approved via import",
                                     "actionUserUid" => Auth::user()->id,
                                     "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
                                     "actionUserRole" => Auth::user()->userRole,
