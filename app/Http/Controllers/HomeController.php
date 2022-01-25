@@ -3121,46 +3121,47 @@ class HomeController extends Controller
                     
                     if($i > 0){
 
-                        $totalStudents++;
+                        if($user[0] !== null){
+                            $totalStudents++;
 
-                        // $student = User::where("email", $user[2])->first();
-                        $student = User::where("studentNo", $user[0])->first();
+                            // $student = User::where("email", $user[2])->first();
+                            $student = User::where("studentNo", $user[0])->first();
 
-                        if(!empty($student) && $student->studentType == "NSFAS"){
-                            $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
+                            if(!empty($student) && $student->studentType == "NSFAS"){
+                                $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
 
-                            $matched ++;
-                            array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "1"]);
-        
-                            if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
-                                
-                                UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploaded_by' => 'Import']);
-                                ActionList::create([
-                                    "userUid" => $student->id,
-                                    "action" => "NSFAS / Bursary has been Approved via import",
-                                    "actionUserUid" => Auth::user()->id,
-                                    "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
-                                    "actionUserRole" => Auth::user()->userRole,
-                                    ]);
+                                $matched ++;
+                                array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "1"]);
+            
+                                if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
                                     
-                            }else if(empty($fileInfo)){
-                                
-                                UserFiles::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
-                                ActionList::create([
-                                    "userUid" => $student->id,
-                                    "action" => "NSFAS / Bursary has been Approved via import",
-                                    "actionUserUid" => Auth::user()->id,
-                                    "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
-                                    "actionUserRole" => Auth::user()->userRole,
-                                ]);
-        
+                                    UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploaded_by' => 'Import']);
+                                    ActionList::create([
+                                        "userUid" => $student->id,
+                                        "action" => "NSFAS / Bursary has been Approved via import",
+                                        "actionUserUid" => Auth::user()->id,
+                                        "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
+                                        "actionUserRole" => Auth::user()->userRole,
+                                        ]);
+                                        
+                                }else if(empty($fileInfo)){
+                                    
+                                    UserFiles::create(['userUid'=> $student->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
+                                    ActionList::create([
+                                        "userUid" => $student->id,
+                                        "action" => "NSFAS / Bursary has been Approved via import",
+                                        "actionUserUid" => Auth::user()->id,
+                                        "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname,
+                                        "actionUserRole" => Auth::user()->userRole,
+                                    ]);
+            
+                                }
+
+                            }else{
+                                $unmatched ++;
+                                array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "0"]);
                             }
-
-                        }else{
-                            $unmatched ++;
-                            array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "0"]);
                         }
-
                     }
                     $i++;
                 }
