@@ -132,8 +132,3 @@ Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees'
 Route::get('/update/processing-status', [HomeController::class, 'update_processing_status']);
 Route::post('/update/lease-dates', [HomeController::class, 'update_lease_dates']);
 
-
-
-
-
-
