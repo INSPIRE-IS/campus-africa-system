@@ -2573,9 +2573,12 @@ class HomeController extends Controller
             $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first();
 
             if($fileUploaded && $fileUploaded->fileUrl !== null){
-                UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
-                    'status' => 'Uploaded'
-                ]);
+                if($oldData->room_rate !== $booking_data['room_rate']){
+
+                    UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                        'status' => 'Uploaded'
+                    ]);
+                }
             }else{
                 UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
                     'status' => 'Rejected'
