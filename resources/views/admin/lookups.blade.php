@@ -8,8 +8,11 @@
 
 <div class="container">
     <br/>
-    <a href="/lookups/new"><button type="button" class="detailsChange" >Add New Lookup</button></a>
-    <a href="/manage-properties"><button type="button" class="detailsChange" >Manage properties</button></a>
+    @if(Auth::user()->role_lookup == "1")
+        <a href="/lookups/new"><button type="button" class="detailsChange" >Add New Lookup</button></a>
+        <a href="/manage-properties"><button type="button" class="detailsChange" >Manage properties</button></a>
+        <!-- <button type="button" id="updateLeaseDates" class="detailsChange" >Update Lease Dates</button> -->
+    @endif
     @if(Auth::user()->id == 1)
         <button type="button" id="updateBookingFee" class="detailsChange" >Update All Booking Fees</button>
         <button type="button" id="updateProcessingStatus" class="detailsChange" >Update Student Processing Status</button>
@@ -34,8 +37,10 @@
                 <td>{{$lookup->updated_at}}</td>
                 <td>@if($lookup->users && $lookup->users->userFirstName) {{$lookup->users->userFirstName}} {{$lookup->users->userLastname}} @endif</td>
                 <td>
-                    <button type="button" id="tableBtn" class="detailsChange" onClick="deleteLookup('{{$lookup->id}}')" style="margin:5px;">Delete</button>
-                    <a href="/lookups/edit/{{$lookup->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Edit</button></a>
+                    @if(Auth::user()->role_lookup == "1")
+                        <button type="button" id="tableBtn" class="detailsChange" onClick="deleteLookup('{{$lookup->id}}')" style="margin:5px;">Delete</button>
+                        <a href="/lookups/edit/{{$lookup->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Edit</button></a>
+                    @endif
                 </td>
             </tr>
         @endforeach
@@ -84,6 +89,36 @@
             }
         })
     }
+
+    // $("#updateLeaseDates").on('click', function(){
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: "You won't be able to revert this!",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Yes, Update it!'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             $("#updateLeaseDates").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+    //             $.ajax({
+    //                 type: "get",
+    //                 url: "/update/lease-dates",
+
+    //                 success: function (data) {
+    //                     $("#updateLeaseDates").empty().append('Update Lease Dates');
+
+    //                     Swal.fire(
+    //                         'Success',
+    //                         'All Lease dates updated',
+    //                         'success'
+    //                     )
+    //                 },
+    //             });
+    //         }
+    //     })
+    // })
 
     $("#updateBookingFee").on('click', function(){
         Swal.fire({

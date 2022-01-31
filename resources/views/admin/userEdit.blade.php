@@ -142,6 +142,10 @@
                     <input type="checkbox" id="role_cancel_booking" name="role_cancel_booking" value="1" <?php if($user->role_cancel_booking == "1"){echo "checked";} ?>>
                     <label for="role_cancel_booking" style="width:500px">Cancel Bookings</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_lookup" name="role_lookup" value="1" <?php if($user->role_lookup == "1"){echo "checked";} ?>>
+                    <label for="role_lookup" style="width:500px">Manage Lookups</label>
+                </li>
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1" <?php if($user->role_update_booking_fee == "1"){echo "checked";} ?>>
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>

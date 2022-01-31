@@ -28,6 +28,7 @@ class Booking extends Model
         'lease_to_date',
         'lease_to_time',
         'waive_reason',
+        'lease_unique',
     ];
 
     public function users(){

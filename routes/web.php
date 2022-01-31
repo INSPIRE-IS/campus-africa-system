@@ -130,9 +130,5 @@ Route::post('/undo-waive-booking-fee', [HomeController::class, 'undo_waive_booki
 
 Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees']);
 Route::get('/update/processing-status', [HomeController::class, 'update_processing_status']);
-
-
-
-
-
+Route::post('/update/lease-dates', [HomeController::class, 'update_lease_dates']);
 

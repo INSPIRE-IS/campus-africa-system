@@ -915,11 +915,15 @@
 
                 success: function (data) {
                     let roomData = data[2];
+                    let bookedRoomData = data[3];
 
                     $('#bed_code').html('<option>Choose a Bed</option>');
 
                     Object.keys(roomData).forEach( function(key) {
                         $('#bed_code').append("<option value='"+roomData[key].bed_code+"' room='"+roomData[key].room+"' bed='"+roomData[key].bed+"'>"+roomData[key].bed_code+"</option>")
+                    }); 
+                    Object.keys(bookedRoomData).forEach( function(key) {
+                        $('#bed_code').append("<option disabled value='"+bookedRoomData[key].bed_code+"' room='"+bookedRoomData[key].room+"' bed='"+bookedRoomData[key].bed+"'>"+bookedRoomData[key].bed_code+" (Booked)</option>")
                     });                    
                 }
             });

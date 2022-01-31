@@ -1095,6 +1095,7 @@ class HomeController extends Controller
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
+            "role_lookup" => $request->role_lookup,
         ]);
 
         return redirect()->back();
@@ -1904,6 +1905,7 @@ class HomeController extends Controller
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
+            "role_lookup" => $request->role_lookup,
         ]);
 
         if($request->email_details == "1"){
@@ -2567,9 +2569,21 @@ class HomeController extends Controller
         
             ActionList::create($actionFileData);
         }else{
-            UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
-                'status' => 'Rejected'
-            ]);
+
+            $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first();
+
+            if($fileUploaded && $fileUploaded->fileUrl !== null){
+                if($oldData->room_rate !== $booking_data['room_rate']){
+
+                    UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                        'status' => 'Uploaded'
+                    ]);
+                }
+            }else{
+                UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                    'status' => 'Rejected'
+                ]);
+            }
 
             Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
 
@@ -2598,7 +2612,7 @@ class HomeController extends Controller
         $oldData = Booking::where('userId', $bookingId)->first();
         $newData = ['lease_from_date|Lease From Date' => $lease_from_date, 'lease_from_time|Lease From Time' => $lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
 
-        Booking::where('userId', $bookingId)->update(["lease_from_date" => $lease_from_date, "lease_from_time"=>$lease_from_time, "lease_to_date"=>$lease_to_date, "lease_to_time"=>$lease_to_time]);
+        Booking::where('userId', $bookingId)->update(["lease_from_date" => $lease_from_date, "lease_from_time"=>$lease_from_time, "lease_to_date"=>$lease_to_date, "lease_to_time"=>$lease_to_time, "lease_unique" => "1"]);
 
         foreach($newData as $key => $new){
             
@@ -2721,6 +2735,7 @@ class HomeController extends Controller
 
             //Create a unique Unit list
             $bed_code = [];
+            $booked_bed_codes = [];
 
             foreach($propertyInfo as $pi) {
                 if (!isset($units[$pi->bed_code])) {
@@ -2733,12 +2748,14 @@ class HomeController extends Controller
 
                         if($bed_used[0]->users->applicationStatus == "Rejected Confirmed" || $bed_used[0]->users->applicationStatus == "Cancelled"){
                             $bed_code[$pi->bed_code] = $pi;
+                        }else{
+                            $booked_bed_codes[$pi->bed_code] = $pi;
                         }
                     }
                 }
             }
 
-            return ["true", $selected, $bed_code];
+            return ["true", $selected, $bed_code, $booked_bed_codes];
         }
     }
 
@@ -3581,6 +3598,32 @@ class HomeController extends Controller
             }
 
             User::where('id', $user->id)->update(['overall_status' => $overall]);
+        }
+    }
+
+    public function update_lease_dates(Request $request){
+        $allUsers = User::where('overall_status', '!=', 'Cancelled')->get();
+
+        // $lookup = Lookups::where('group_id', '4')->first();
+
+        foreach($allUsers as $user){
+
+            if($user->bookingStatus !== "Approved" && $user->bookingStatus !== "Approved Confirmed" && $user->applicationStatus !== "Approved" && $user->applicationStatus !== "Approved Confirmed"){
+
+                if($user->bookingStatus !== "Rejected" && $user->bookingStatus !== "Rejected Confirmed" && $user->applicationStatus !== "Rejected" && $user->applicationStatus !== "Rejected Confirmed"){
+                    
+                    $booking = Booking::where('id', $user->bookingRef)->first();
+
+                    if($booking && $booking->lease_unique !== 1){
+                        $updatedDates['lease_from_date'] = $request->lease_from_date;
+                        $updatedDates['lease_from_time'] = $request->lease_from_time;
+                        $updatedDates['lease_to_date'] = $request->lease_to_date;
+                        $updatedDates['lease_to_time'] = $request->lease_to_time;
+
+                        Booking::where('id', $user->bookingRef)->update($updatedDates);
+                    }
+                }
+            }
         }
     }
 
