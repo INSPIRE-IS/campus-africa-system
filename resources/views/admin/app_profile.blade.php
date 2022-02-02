@@ -1133,10 +1133,8 @@
 
     $("#changeBookingType").on('click', function(){
 
-        console.log($("#floor").val())
-        console.log($("#bed_code").val())
 
-        if($("#floor").val() !== "" && $("#bed_code").val() == "Choose a Bed"){
+        if($("#floor").val() !== "Choose a Floor" && $("#bed_code").val() == "Choose a Bed"){
             // if($("#property").val() == ""){
             //     $("#property").addClass("fieldError")
             //     $("#property_error").removeClass("hidden")
