@@ -5,6 +5,11 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
+
+
 <div class="container">
 
 <br/>
@@ -71,16 +76,39 @@
         <div class="searchField">
         <label></label><br/>
             <select name="bookingStatus" id='bookingStatus' style="width:45%">
+                <option value="All" selected>- Select One - </option>
+                <option value="bookingStatus">Booking Status</option>
+                <option value="proofOfPayment">Proof of Payment</option>
+                <option value="idCopy">ID Copy</option>
+                <option value="applicationStatus">Application Status</option>
+                <option value="studentCardCopy">Student Card Copy</option>
+                <option value="proofOfRegistration">Proof of Registration</option>
+                <option value="nsfasBursaryApproval">NSFAS | Bursary Approval</option>
+                <option value="bankStatements">Bank Statements</option>
+                <option value="leaveStatus">LeaveStatus</option>
+            </select>
+            <!-- <select name="bookingStatus" id='bookingStatus' style="width:45%">
                 <option value="All" selected>All Bookings</option>
                 <option value="Approved">&#128994; Valid Booking</option>
                 <option value="Action">&#128993; Pending Booking</option>
                 <option value="Empty">&#128308; Invalid Booking</option>
-            </select>
-            <select name="applicationStatus" id='applicationStatus' style="width:45%">
+            </select> -->
+            <!-- <select name="applicationStatus" id='applicationStatus' style="width:45%">
                 <option value="All" selected>All Applications</option>
                 <option value="Approved">&#128994; Valid Application</option>
                 <option value="Action">&#128993; Pending Application</option>
                 <option value="Empty">&#128308; Invalid Application</option>
+            </select> -->
+            <select data-placeholder="Begin typing a name to filter..." multiple class="chosen-select" name="test">
+                <option value=""></option>
+                <option>American Black Bear</option>
+                <option>Asiatic Black Bear</option>
+                <option>Brown Bear</option>
+                <option>Giant Panda</option>
+                <option>Sloth Bear</option>
+                <option>Sun Bear</option>
+                <option>Polar Bear</option>
+                <option>Spectacled Bear</option>
             </select>
         </div>
         <div class="searchField">
