@@ -1936,34 +1936,81 @@ class HomeController extends Controller
     public function app_filter(Request $request){
         
         $search_value = [];
+        $search_status = [];
 
-        if($request->bookingStatus !== "" && !empty($request->bookingStatus)){
+        if($request->fieldStatus !== "" && !empty($request->fieldStatus)){
 
-            if($request->bookingStatus !== "All"){
-            
-                if($request->bookingStatus == "Empty"){
-                    $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
-                    array_push($search_value, $bookingStatus);
-                }else{
-                    $bookingStatus = 'users.bookingStatus LIKE "%'.$request->bookingStatus.'%"';
-                    array_push($search_value, $bookingStatus);
+            if($request->fieldStatus !== "All"){
+
+                if($request->fieldStatus == "bookingStatus"){
+                    if(in_array("Incomplete", $request->status)){
+                        $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
+                        array_push($search_status, $bookingStatus);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $bookingStatus = 'users.bookingStatus LIKE "%Approved%"';
+                        array_push($search_status, $bookingStatus);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $bookingStatus = 'users.bookingStatus LIKE "%Action%"';
+                        array_push($search_status, $bookingStatus);
+                    }
+                }elseif($request->fieldStatus == "proofOfPayment"){
+                    //
+                }elseif($request->fieldStatus == "idCopy"){
+                    //
+                }elseif($request->fieldStatus == "applicationStatus"){
+                    if(in_array("Incomplete", $request->status)){
+                        $applicationStatus = '(users.applicationStatus LIKE "%Empty%" OR users.applicationStatus LIKE "%Rejected%")';
+                        array_push($search_status, $applicationStatus);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $applicationStatus = 'users.applicationStatus LIKE "%Approved%"';
+                        array_push($search_status, $applicationStatus);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $applicationStatus = 'users.applicationStatus LIKE "%Action%"';
+                        array_push($search_status, $applicationStatus);
+                    }
+                }elseif($request->fieldStatus == "studentCardCopy"){
+                    //
+                }elseif($request->fieldStatus == "proofOfRegistration"){
+                    //
+                }elseif($request->fieldStatus == "nsfasBursaryApproval"){
+                    //
+                }elseif($request->fieldStatus == "bankStatements"){
+                    //
+                }elseif($request->fieldStatus == "leaseStatus"){
+                    //
                 }
+            
+                // if($request->bookingStatus == "Empty"){
+                //     $bookingStatus = '(users.bookingStatus LIKE "%Empty%" OR users.bookingStatus LIKE "%Rejected%")';
+                //     array_push($search_value, $bookingStatus);
+                // }else{
+                //     $bookingStatus = 'users.bookingStatus LIKE "%'.$request->bookingStatus.'%"';
+                //     array_push($search_value, $bookingStatus);
+                // }
             }
         }
 
-        if($request->applicationStatus !== "" && !empty($request->applicationStatus)){
+        // if($request->applicationStatus !== "" && !empty($request->applicationStatus)){
 
-            if($request->applicationStatus !== "All"){
+        //     if($request->applicationStatus !== "All"){
             
-                if($request->applicationStatus == "Empty"){
-                    $applicationStatus = '(users.applicationStatus LIKE "%Empty%" OR users.applicationStatus LIKE "%Rejected%")';
-                    array_push($search_value, $applicationStatus);
-                }else{
-                    $applicationStatus = 'users.applicationStatus LIKE "%'.$request->applicationStatus.'%"';
-                    array_push($search_value, $applicationStatus);
-                }
-            }
-        }
+        //         if($request->applicationStatus == "Empty"){
+        //             $applicationStatus = '(users.applicationStatus LIKE "%Empty%" OR users.applicationStatus LIKE "%Rejected%")';
+        //             array_push($search_value, $applicationStatus);
+        //         }else{
+        //             $applicationStatus = 'users.applicationStatus LIKE "%'.$request->applicationStatus.'%"';
+        //             array_push($search_value, $applicationStatus);
+        //         }
+        //     }
+        // }
 
         if($request->property !== "" && !empty($request->property)){
             if($request->property !== "All"){
@@ -2020,10 +2067,21 @@ class HomeController extends Controller
             $i ++;
         }
 
+        foreach($search_status as $status){
+            if($i == 0){
+                $statement = "where ".$status;
+                array_push($query, $statement);
+            }else{
+                $statement = "OR (".$status.")";
+                array_push($query, $statement);
+            }
+            $i ++;
+        }
+
         if(count($query) > 0){
             $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0"');
         }else{
-            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0"');
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN user_files on users.id = user_files.userUid LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0"');
         }
 
         $userData = [];

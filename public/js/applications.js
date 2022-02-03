@@ -21,13 +21,15 @@ jQuery(document).ready(function ($) {
                         room_type: $("#room_type").val(), 
                         applicant: $("#applicant").val(), 
                         student_type: $("#student_type").val(),
-                        bookingStatus: $("#bookingStatus").val(),
-                        applicationStatus: $("#applicationStatus").val(), 
+                        fieldStatus: $("#fieldStatus").val(),
+                        status: $("#status").val(), 
                         date: $("#date").val(), 
                     },
 
                     success: function (data) {
                         results = JSON.parse(data)
+
+                        console.log(data)
 
                         var i = 0;
                         var datatable = $( "#application_table" ).DataTable();

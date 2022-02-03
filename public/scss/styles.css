@@ -1,2052 +1,2095 @@
 html,
 body {
-  font-family: source-sans-pro, sans-serif;
+    font-family: source-sans-pro, sans-serif;
 }
 
 .yellowGradient {
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#f0e020), to(#e5b219));
-  background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
-  height: 688px;
-  width: 90%;
-  border-bottom-right-radius: 20px;
-  margin-left: -10px;
-  margin-top: -10px;
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(#f0e020),
+        to(#e5b219)
+    );
+    background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
+    height: 688px;
+    width: 90%;
+    border-bottom-right-radius: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
 }
 
 .yellowGradientSmall {
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#f0e020), to(#e5b219));
-  background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
-  height: 316px;
-  width: 90%;
-  border-bottom-right-radius: 20px;
-  margin-left: -10px;
-  margin-top: -10px;
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(#f0e020),
+        to(#e5b219)
+    );
+    background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
+    height: 316px;
+    width: 90%;
+    border-bottom-right-radius: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
 }
 
 .container {
-  width: 75%;
-  margin: auto;
+    width: 75%;
+    margin: auto;
 }
 
-
 .errorBorder {
-  border: 1px solid red !important;
+    border: 1px solid red !important;
 }
 
 .hidden {
-  display: none !important;
+    display: none !important;
 }
 
 .greenBorder {
-  border: 2px solid #6abc0b !important;
+    border: 2px solid #6abc0b !important;
 }
 
 .footer {
-  width: 100%;
+    width: 100%;
 }
 
 .footer .footerBanner {
-  height: 287px;
-  background-color: #e74f26;
-  width: 91%;
-  float: right;
-  border-bottom-left-radius: 70px;
+    height: 287px;
+    background-color: #e74f26;
+    width: 91%;
+    float: right;
+    border-bottom-left-radius: 70px;
 }
 
 .footer .footerBanner .footerHeader {
-  color: #ffffff;
-  font-size: 28px;
-  font-weight: 900;
-  line-height: 85px;
-  text-align: left;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 85px;
+    text-align: left;
 }
 
 .footer .footerBanner .footerSubHeader {
-  color: #ffffff;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
-  text-align: left;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
 }
 
 .footer .footerBanner .linkHeader {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 80px;
-  text-align: left;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 80px;
+    text-align: left;
 }
 
 .footer .footerBanner .link {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 300;
-  line-height: 30px;
-  text-align: left;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 30px;
+    text-align: left;
 }
 
 .footer .footerRights {
-  opacity: 0.44;
-  color: #77798b;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 40px;
-  text-align: center;
-  width: 100%;
-  margin: auto;
+    opacity: 0.44;
+    color: #77798b;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 40px;
+    text-align: center;
+    width: 100%;
+    margin: auto;
 }
 
 .footerClearfix {
-  height: 290px;
+    height: 290px;
 }
 
 .centerContent {
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  height: 86px;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    height: 86px;
 }
 
 .centerContent .name {
-  padding-left: 175px;
+    padding-left: 175px;
 }
 
 #stickyNavbar {
-  overflow: hidden;
-  height: 86px;
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  background-color: #ffffff;
-  z-index: 10;
-  overflow: overlay;
+    overflow: hidden;
+    height: 86px;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: #ffffff;
+    z-index: 10;
+    overflow: overlay;
 }
 
 #stickyNavbar a {
-  display: block;
-  color: #464749;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
+    display: block;
+    color: #464749;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
 }
 
 #stickyNavbar a:hover {
-  font-weight: bold;
-  color: black;
+    font-weight: bold;
+    color: black;
 }
 
 #stickyNavbar a .active {
-  background-color: #04aa6d;
-  color: white;
+    background-color: #04aa6d;
+    color: white;
 }
 
 .navBar {
-  padding-top: 33px;
-  width: 100%;
-  height: 100px;
+    padding-top: 33px;
+    width: 100%;
+    height: 100px;
 }
 
 .navBar .leftMenu {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  width: 50%;
-  float: left;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    width: 50%;
+    float: left;
 }
 
 .navBar .rightMenu {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: row-reverse;
-          flex-direction: row-reverse;
-  width: 50%;
-  float: left;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+    width: 50%;
+    float: left;
 }
 
 .navBar .rightMenu .menuButton {
-  width: 180px;
-  height: 37px;
-  background-color: transparent;
-  text-transform: uppercase;
-  border: 1px solid #464749;
-  border-radius: 7px;
-  margin-right: 10px;
+    width: 180px;
+    height: 37px;
+    background-color: transparent;
+    text-transform: uppercase;
+    border: 1px solid #464749;
+    border-radius: 7px;
+    margin-right: 10px;
 }
 
 .navBar .rightMenu .menuButton i {
-  float: right;
-  padding-right: 5px;
+    float: right;
+    padding-right: 5px;
 }
 
 .navBar .rightMenu .contactButton {
-  width: 180px;
-  height: 37px;
-  border-radius: 7px;
-  background-color: #e74f26;
-  color: #fff;
-  text-transform: uppercase;
-  border: none;
+    width: 180px;
+    height: 37px;
+    border-radius: 7px;
+    background-color: #e74f26;
+    color: #fff;
+    text-transform: uppercase;
+    border: none;
 }
 
 .loginHeader {
-  margin-top: 35px;
+    margin-top: 35px;
 }
 
 .loginHeader .booking {
-  color: #464749;
-  font-size: 72px;
-  font-weight: 900;
-  line-height: 103px;
-  text-align: left;
+    color: #464749;
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 103px;
+    text-align: left;
 }
 
 .loginHeader .bookingSub {
-  color: #464749;
-  font-size: 33px;
-  font-weight: 400;
+    color: #464749;
+    font-size: 33px;
+    font-weight: 400;
 }
 
 .loginHeader .appBtn {
-  border-radius: 7px;
-  border: 1px solid #707070;
-  background-color: #707070;
-  width: 436px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  padding: 10px;
-  float: right;
-  margin-top: -120px;
-  cursor: pointer;
+    border-radius: 7px;
+    border: 1px solid #707070;
+    background-color: #707070;
+    width: 436px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 10px;
+    float: right;
+    margin-top: -120px;
+    cursor: pointer;
 }
 
 .loginHeader .bookingText {
-  color: #464749;
-  font-size: 28px;
-  font-weight: 400;
-  line-height: 36px;
-  text-align: left;
+    color: #464749;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 36px;
+    text-align: left;
 }
 
 .appRow {
-  width: 48%;
-  margin-right: 1%;
-  float: left;
+    width: 48%;
+    margin-right: 1%;
+    float: left;
 }
 
 .cards {
-  width: 100%;
-  padding-top: 22px;
+    width: 100%;
+    padding-top: 22px;
 }
 
 .cards .customWhiteCard {
-  width: 100%;
-  float: left;
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  border-radius: 10px;
-  background-color: #f8f8f8;
-  padding: 39px 50px;
+    width: 100%;
+    float: left;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    padding: 39px 50px;
 }
 
 .cards .customWhiteCard .actionItemList {
-  max-height: 350px;
-  overflow: auto;
+    max-height: 350px;
+    overflow: auto;
 }
 
 .cards .customWhiteCard .infoBlock {
-  border-radius: 10px;
-  border: 1px solid #c3c3c3;
-  background-color: #ffffff;
-  margin: 10px;
+    border-radius: 10px;
+    border: 1px solid #c3c3c3;
+    background-color: #ffffff;
+    margin: 10px;
 }
 
 .cards .customWhiteCard .infoBlock .responsible {
-  border-bottom: 1px solid #ccc;
-  padding: 20px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+    border-bottom: 1px solid #ccc;
+    padding: 20px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
 }
 
 .cards .customWhiteCard .infoBlock .responsible .admin {
-  border-radius: 5px;
-  background-color: #1cb915;
-  border: none;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  padding: 2px 10px;
-  margin-left: 10px;
+    border-radius: 5px;
+    background-color: #1cb915;
+    border: none;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    margin-left: 10px;
 }
 
 .cards .customWhiteCard .infoBlock .responsible .applicant {
-  border-radius: 5px;
-  background-color: #f1cc3e;
-  border: none;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  padding: 2px 10px;
-  margin-left: 10px;
+    border-radius: 5px;
+    background-color: #f1cc3e;
+    border: none;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    margin-left: 10px;
 }
 
 .cards .customWhiteCard .infoBlock .responsible .datetime {
-  width: 100%;
-  text-align: end;
+    width: 100%;
+    text-align: end;
 }
 
 .cards .customWhiteCard .infoBlock .information {
-  padding: 20px;
+    padding: 20px;
 }
 
 .cards .customWhiteCard .section {
-  padding: 20px 20px 50px 20px;
-  border-bottom: 2px solid #efefef;
-  width: 100%;
+    padding: 20px 20px 50px 20px;
+    border-bottom: 2px solid #efefef;
+    width: 100%;
 }
 
 .cards .customWhiteCard .section .label {
-  width: 60%;
-  float: left;
+    width: 60%;
+    float: left;
 }
 
 .cards .customWhiteCard .section .banner {
-  width: 30%;
-  float: left;
+    width: 30%;
+    float: left;
 }
 
 .cards .customWhiteCard .section .banner button {
-  color: #101010;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  border: 1px solid #101010;
-  background-color: transparent;
-  padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
+    color: #101010;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    border: 1px solid #101010;
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
 }
 
 .cards .customWhiteCard .section .banner .error {
-  border: none;
-  background-color: #e74f26;
-  color: #fff;
+    border: none;
+    background-color: #e74f26;
+    color: #fff;
 }
 
 .cards .customWhiteCard .section .status {
-  width: 10%;
-  float: left;
+    width: 10%;
+    float: left;
 }
 
 .cards .customWhiteCard .section .button {
-  border-radius: 50%;
-  height: 29px;
-  width: 29px;
-  border: 3px solid #cecece;
+    border-radius: 50%;
+    height: 29px;
+    width: 29px;
+    border: 3px solid #cecece;
 }
 
 .cards .customWhiteCard .section .approved {
-  background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+    background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
 }
 
 .cards .customWhiteCard .section .action {
-  background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+    background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
 }
 
 .cards .customWhiteCard .section .rejected {
-  background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+    background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
 }
 
 .cards .customWhiteCard .reminder {
-  background-color: #e74f26;
-  border-radius: 7px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  border: none;
-  padding: 10px;
-  float: right;
-  cursor: pointer;
+    background-color: #e74f26;
+    border-radius: 7px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    border: none;
+    padding: 10px;
+    float: right;
+    cursor: pointer;
 }
 
 .cards .customWhiteCard .cardSubHeader {
-  color: #464749;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
-  text-align: left;
+    color: #464749;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
 }
 
 .cards .customWhiteCard .cardSubHeader .info {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .cards .customWhiteCard .bigHeader {
-  background-color: #e8e8e8;
-  padding: 40px;
-  height: 200px;
-  border-radius: 10px 10px 0px 0px;
-  margin-top: -40px;
-  margin-left: -50px;
-  margin-right: -50px;
+    background-color: #e8e8e8;
+    padding: 40px;
+    height: 200px;
+    border-radius: 10px 10px 0px 0px;
+    margin-top: -40px;
+    margin-left: -50px;
+    margin-right: -50px;
 }
 
 .cards .customWhiteCard .buttons {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
 }
 
 .cards .customWhiteCard .buttons .appBooking {
-  color: #464749;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  background-color: transparent;
-  border-radius: 10px;
-  border: 1px solid #464749;
-  padding: 10px;
-  margin: 5px;
-  width: 48%;
-  cursor: pointer;
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #464749;
+    padding: 10px;
+    margin: 5px;
+    width: 48%;
+    cursor: pointer;
 }
 
 .cards .customWhiteCard .cardSubHeaderGrey {
-  color: #9799ab;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
-  text-align: left;
+    color: #9799ab;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
 }
 
 .cards .customWhiteCard .appHeader {
-  color: #21232b;
-  font-size: 33px;
-  font-weight: 400;
-  padding-bottom: 10px;
+    color: #21232b;
+    font-size: 33px;
+    font-weight: 400;
+    padding-bottom: 10px;
 }
 
 .cards .customWhiteCard .appHeader select {
-  float: right;
-  margin-right: 15px;
-  width: 50%;
-  background-color: transparent;
-  border-radius: 7px;
-  border: 1px solid #c3c3c3;
-  padding: 10px;
+    float: right;
+    margin-right: 15px;
+    width: 50%;
+    background-color: transparent;
+    border-radius: 7px;
+    border: 1px solid #c3c3c3;
+    padding: 10px;
 }
 
 .cards .customWhiteCard .InfoList {
-  font-size: 21px;
-  font-weight: 300;
-  line-height: 26px;
+    font-size: 21px;
+    font-weight: 300;
+    line-height: 26px;
 }
 
 .cards .customWhiteCard .appSubHeader {
-  color: #464749;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 26px;
+    color: #464749;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
 }
 
 .cards .whiteCard {
-  width: 47%;
-  float: left;
-  height: 409px;
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  border-radius: 10px;
-  background-color: #f8f8f8;
-  padding: 39px 50px;
+    width: 47%;
+    float: left;
+    height: 409px;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    padding: 39px 50px;
 }
 
 .cards .whiteCard .cardList {
-  color: #000000;
-  font-size: 21px;
-  font-weight: 300;
-  line-height: 26px;
-  margin-top: -20px;
+    color: #000000;
+    font-size: 21px;
+    font-weight: 300;
+    line-height: 26px;
+    margin-top: -20px;
 }
 
 .cards .whiteCard .editButton {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  background-color: transparent;
-  width: 82px;
-  height: 37px;
-  border-radius: 7px;
-  border: 1px solid #c3c3c3;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    background-color: transparent;
+    width: 82px;
+    height: 37px;
+    border-radius: 7px;
+    border: 1px solid #c3c3c3;
 }
 
 .cards .whiteCard .cardHeader {
-  color: #464749;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 55px;
-  text-align: left;
+    color: #464749;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 55px;
+    text-align: left;
 }
 
 .cards .whiteCard .cardSubHeader {
-  color: #464749;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
-  text-align: left;
+    color: #464749;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
 }
 
 .cards .whiteCard .cardSubHeader .info {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .cards .whiteCard .cardSubHeaderGrey {
-  color: #9799ab;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
-  text-align: left;
+    color: #9799ab;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
 }
 
 .cards .whiteCard .cardText {
-  color: #464749;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-  text-align: left;
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+    text-align: left;
 }
 
 .cards .whiteCard .applyButton {
-  border-radius: 7px;
-  background-color: #e74f26;
-  color: #fff;
-  text-transform: uppercase;
-  width: 100%;
-  height: 37px;
-  border: none;
-  position: relative;
-  margin-top: 166px;
+    border-radius: 7px;
+    background-color: #e74f26;
+    color: #fff;
+    text-transform: uppercase;
+    width: 100%;
+    height: 37px;
+    border: none;
+    position: relative;
+    margin-top: 166px;
 }
 
 .cards .whiteCard .applyButton:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .cards .whiteCard .cardForm {
-  display: -ms-grid;
-  display: grid;
+    display: -ms-grid;
+    display: grid;
 }
 
 .cards .whiteCard .cardForm .adminHeader {
-  color: #21232b;
-  font-size: 33px;
-  font-weight: 400;
-  margin-top: 35%;
+    color: #21232b;
+    font-size: 33px;
+    font-weight: 400;
+    margin-top: 35%;
 }
 
 .cards .whiteCard .cardForm .adminOutstanding {
-  color: #1cb915;
-  font-size: 33px;
-  font-weight: 900;
+    color: #1cb915;
+    font-size: 33px;
+    font-weight: 900;
 }
 
 .cards .whiteCard .cardForm label {
-  color: #000000;
-  font-size: 21px;
-  font-weight: 400;
-  text-align: left;
+    color: #000000;
+    font-size: 21px;
+    font-weight: 400;
+    text-align: left;
 }
 
 .cards .whiteCard .cardForm input {
-  width: 368px;
-  height: 36px;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-  border: none;
-  width: 100%;
+    width: 368px;
+    height: 36px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    border: none;
+    width: 100%;
 }
 
 .cards .whiteCard .cardForm .submitButton {
-  color: #000000;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-align: center;
-  text-transform: uppercase;
-  height: 37px;
-  background-color: transparent;
-  border: 1px solid #c3c3c3;
-  border-radius: 7px;
-  margin-top: 10px;
-  width: 100%;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: center;
+    text-transform: uppercase;
+    height: 37px;
+    background-color: transparent;
+    border: 1px solid #c3c3c3;
+    border-radius: 7px;
+    margin-top: 10px;
+    width: 100%;
 }
 
 .cards .whiteCard .cardForm .small {
-  width: 203px;
-  height: 14px;
-  color: #888888;
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 1.03px;
-  line-height: 26px;
-  text-align: center;
-  margin: auto;
+    width: 203px;
+    height: 14px;
+    color: #888888;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 1.03px;
+    line-height: 26px;
+    text-align: center;
+    margin: auto;
 }
 
 .clearSpaceLogin {
-  height: 350px;
+    height: 350px;
 }
 
 .clearSpaceLoginPage {
-  height: 195px;
+    height: 195px;
 }
 
 .col-3 {
-  width: 25%;
-  float: left;
+    width: 25%;
+    float: left;
 }
 
 .form-card label {
-  color: #000000;
-  font-size: 21px;
-  font-weight: 300;
-  text-align: left;
+    color: #000000;
+    font-size: 21px;
+    font-weight: 300;
+    text-align: left;
 }
 
 .form-card input {
-  width: 95% !important;
-  height: 36px;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-  border-radius: 5px !important;
-  border: none;
-  padding: 10px;
+    width: 95% !important;
+    height: 36px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    border-radius: 5px !important;
+    border: none;
+    padding: 10px;
 }
 
 .form-card select {
-  width: 95% !important;
-  height: 36px;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-  border-radius: 5px !important;
-  border: none !important;
-  padding: 10px;
+    width: 95% !important;
+    height: 36px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    border-radius: 5px !important;
+    border: none !important;
+    padding: 10px;
 }
 
 .form-card .form-field {
-  width: 50%;
-  float: left;
-  height: 88px !important;
+    width: 50%;
+    float: left;
+    height: 88px !important;
 }
 
 .form-card .form-field-big {
-  width: 100%;
-  float: left;
-  height: 88px !important;
+    width: 100%;
+    float: left;
+    height: 88px !important;
 }
 
 .form-card .profileSubmit {
-  margin-bottom: 10px;
-  background-color: #e74f26;
-  color: #fff;
-  cursor: pointer;
+    margin-bottom: 10px;
+    background-color: #e74f26;
+    color: #fff;
+    cursor: pointer;
 }
 
 #msform .action-button {
-  text-transform: uppercase;
-  float: right;
-  width: 368px !important;
-  height: 37px !important;
-  border-radius: 7px !important;
-  font-size: 14px;
-  font-weight: 400;
+    text-transform: uppercase;
+    float: right;
+    width: 368px !important;
+    height: 37px !important;
+    border-radius: 7px !important;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 #msform .action-button-previous {
-  color: #000000 !important;
-  text-transform: uppercase;
-  float: left;
-  width: 368px !important;
-  height: 37px !important;
-  border-radius: 7px !important;
-  background-color: #fff !important;
-  margin-left: 77px !important;
-  font-size: 14px;
-  font-weight: 400;
-  border: 1px solid #c3c3c3 !important;
+    color: #000000 !important;
+    text-transform: uppercase;
+    float: left;
+    width: 368px !important;
+    height: 37px !important;
+    border-radius: 7px !important;
+    background-color: #fff !important;
+    margin-left: 77px !important;
+    font-size: 14px;
+    font-weight: 400;
+    border: 1px solid #c3c3c3 !important;
 }
 
 .PaymentLabel {
-  display: inline-block;
-  background-color: #e74f26;
-  color: white !important;
-  cursor: pointer;
-  width: 526px;
-  border-radius: 5px;
-  font-weight: 400;
-  line-height: 25px;
-  text-align: center !important;
-  margin-right: 18px;
-  padding: 10px;
+    display: inline-block;
+    background-color: #e74f26;
+    color: white !important;
+    cursor: pointer;
+    width: 526px;
+    border-radius: 5px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center !important;
+    margin-right: 18px;
+    padding: 10px;
 }
 
 .greenPayment {
-  background-color: #6abc0b !important;
+    background-color: #6abc0b !important;
 }
 
 .roomImgBack {
-  background-image: url("../images/rooms/Braamlofts_single_1_.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  z-index: 1;
-  background-size: 700px 590px;
+    background-image: url("../images/rooms/Braamlofts_single_1_.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
+    background-size: 700px 590px;
 }
 
 .roomImgBack .overlayCustom {
-  bottom: 0;
-  background-image: -webkit-gradient(linear, right top, left top, from(rgba(255, 0, 0, 0)), to(black));
-  background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
-  color: #f1f1f1;
-  width: 100%;
-  height: 410px;
-  opacity: 1;
-  color: white;
-  padding: 60px;
-  z-index: 10;
-  border-radius: 10px;
-  margin-left: -50px;
-  margin-top: -40px;
+    bottom: 0;
+    background-image: -webkit-gradient(
+        linear,
+        right top,
+        left top,
+        from(rgba(255, 0, 0, 0)),
+        to(black)
+    );
+    background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
+    color: #f1f1f1;
+    width: 100%;
+    height: 410px;
+    opacity: 1;
+    color: white;
+    padding: 60px;
+    z-index: 10;
+    border-radius: 10px;
+    margin-left: -50px;
+    margin-top: -40px;
 }
 
 .roomImgBack .overlayCustom .cardSub {
-  color: #ffffff;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
 }
 
 .roomImgBack .overlayCustom .cardHeaderSub {
-  color: #ffffff;
-  font-size: 36px;
-  font-weight: 900;
+    color: #ffffff;
+    font-size: 36px;
+    font-weight: 900;
 }
 
 .roomImgBack .overlay {
-  bottom: 0;
-  background-image: -webkit-gradient(linear, right top, left top, from(rgba(255, 0, 0, 0)), to(black));
-  background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
-  color: #f1f1f1;
-  width: 100%;
-  height: 446px;
-  opacity: 1;
-  color: white;
-  padding: 20px;
-  z-index: 10;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+    bottom: 0;
+    background-image: -webkit-gradient(
+        linear,
+        right top,
+        left top,
+        from(rgba(255, 0, 0, 0)),
+        to(black)
+    );
+    background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
+    color: #f1f1f1;
+    width: 100%;
+    height: 446px;
+    opacity: 1;
+    color: white;
+    padding: 20px;
+    z-index: 10;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 .roomImgBack .overlay .cardSubHeaderGrey {
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
 }
 
 .roomImgBack .overlay .roomContactBtn {
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  border: 1px solid #fff;
-  border-radius: 10px;
-  background-color: transparent;
-  padding: 10px;
-  width: 100%;
-  margin-top: 10px;
-  cursor: pointer;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background-color: transparent;
+    padding: 10px;
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
 }
 
 .smallerCard {
-  height: 560px !important;
-  margin-bottom: 30px !important;
+    height: 560px !important;
+    margin-bottom: 30px !important;
 }
 
 .whiteYellowCard {
-  width: 47%;
-  height: 506px;
-  background-color: #f8f8f8;
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  border-radius: 10px;
-  float: left;
-  margin-bottom: 92px;
+    width: 47%;
+    height: 506px;
+    background-color: #f8f8f8;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    float: left;
+    margin-bottom: 92px;
 }
 
 .whiteYellowCard .cardBody {
-  padding: 30px;
+    padding: 30px;
 }
 
 .whiteYellowCard .cardBody .cardSubHeaderGreyTxt {
-  color: #9799ab;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
+    color: #9799ab;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
 }
 
 .whiteYellowCard .cardBody .cardHeaderBlck {
-  color: #000000;
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 28px;
+    color: #000000;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 28px;
 }
 
 .whiteYellowCard .cardHeader {
-  font-size: 40px;
-  font-weight: 600;
-  color: #464749;
-  line-height: 40px;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#f0e020), to(#e5b219));
-  background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
-  border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
-  height: 110x;
-  padding: 25px;
+    font-size: 40px;
+    font-weight: 600;
+    color: #464749;
+    line-height: 40px;
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(#f0e020),
+        to(#e5b219)
+    );
+    background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    height: 110x;
+    padding: 25px;
 }
 
 .whiteYellowCard .cardHeader .small {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-align: right;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: right;
 }
 
 .whiteYellowCard .cardHeader .small .text {
-  padding-right: 20px;
-  text-transform: uppercase;
+    padding-right: 20px;
+    text-transform: uppercase;
 }
 
 .whiteYellowCard .cardHeader .small .circle {
-  width: 30px;
-  height: 30px;
-  background: transparent;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  float: right;
-  margin-top: -10px;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    float: right;
+    margin-top: -10px;
 }
 
 .whiteYellowCard .cardHeader .small .circle i {
-  margin-top: 7px;
-  margin-right: 8px;
+    margin-top: 7px;
+    margin-right: 8px;
 }
 
 .whiteYellowCard .appAwait {
-  border-bottom: 2px solid #efefef;
-  padding: 15px;
+    border-bottom: 2px solid #efefef;
+    padding: 15px;
 }
 
 .whiteYellowCard .appAwait .outstanding {
-  border: 1px solid #e74f26;
-  padding: 7px;
-  border-radius: 10px;
-  float: right;
-  margin-top: -10px;
-  cursor: pointer;
+    border: 1px solid #e74f26;
+    padding: 7px;
+    border-radius: 10px;
+    float: right;
+    margin-top: -10px;
+    cursor: pointer;
 }
 
 .whiteYellowCard .appAwait .outstanding .text {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  color: #e74f26;
-  text-transform: uppercase;
-  padding-right: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #e74f26;
+    text-transform: uppercase;
+    padding-right: 20px;
 }
 
 .whiteYellowCard .appAwait .outstanding i {
-  color: #e74f26;
+    color: #e74f26;
 }
 
 .whiteYellowCard .appAwait .pending {
-  border: 1px solid #eece5b;
-  padding: 7px;
-  border-radius: 10px;
-  float: right;
-  margin-top: -7px;
+    border: 1px solid #eece5b;
+    padding: 7px;
+    border-radius: 10px;
+    float: right;
+    margin-top: -7px;
 }
 
 .whiteYellowCard .appAwait .pending .text {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  color: #eece5b;
-  text-transform: uppercase;
-  padding-right: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #eece5b;
+    text-transform: uppercase;
+    padding-right: 20px;
 }
 
 .whiteYellowCard .appAwait .pending i {
-  color: #eece5b;
+    color: #eece5b;
 }
 
 .whiteYellowCard .appAwait .approved {
-  border: 1px solid #50b63a;
-  padding: 7px;
-  border-radius: 10px;
-  float: right;
-  margin-top: -10px;
+    border: 1px solid #50b63a;
+    padding: 7px;
+    border-radius: 10px;
+    float: right;
+    margin-top: -10px;
 }
 
 .whiteYellowCard .appAwait .approved .text {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  color: #50b63a;
-  text-transform: uppercase;
-  padding-right: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #50b63a;
+    text-transform: uppercase;
+    padding-right: 20px;
 }
 
 .whiteYellowCard .appAwait .approved i {
-  color: #50b63a;
+    color: #50b63a;
 }
 
 .whiteYellowCard .appAwait .invalid {
-  border-radius: 7px;
-  background-color: #e74f26;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 18px;
-  padding: 5px;
-  margin-top: 10px;
+    border-radius: 7px;
+    background-color: #e74f26;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 5px;
+    margin-top: 10px;
 }
 
 .whiteYellowCard .appAwait .invalid i {
-  float: right;
-  font-size: 17px;
+    float: right;
+    font-size: 17px;
 }
 
 .whiteYellowCard .cardHeaderText {
-  color: #ffffff;
-  font-size: 36px;
-  font-weight: 900;
+    color: #ffffff;
+    font-size: 36px;
+    font-weight: 900;
 }
 
 .whiteYellowCard .greyCardHeader {
-  background-color: #efefef !important;
-  background-image: none;
+    background-color: #efefef !important;
+    background-image: none;
 }
 
 .whiteYellowCard .redCardHeader {
-  color: #fff;
-  background-color: #e74f26 !important;
-  background-image: none;
+    color: #fff;
+    background-color: #e74f26 !important;
+    background-image: none;
 }
 
 .whiteYellowCard .greenCardHeader {
-  color: #fff;
-  background-color: #50b63a !important;
-  background-image: none;
+    color: #fff;
+    background-color: #50b63a !important;
+    background-image: none;
 }
 
 .whiteYellowCard .uploadSection {
-  height: 93px;
-  -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
-          box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
-  border-radius: 10px;
-  background-color: #f8f8f8;
-  padding: 19px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+    height: 93px;
+    -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    padding: 19px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
 }
 
 .whiteYellowCard .uploadSection .uploadFileSection {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: row-reverse;
-          flex-direction: row-reverse;
-  width: 100%;
-  margin-top: 14px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+    width: 100%;
+    margin-top: 14px;
 }
 
 .whiteYellowCard .uploadSection .uploadName {
-  color: #464749;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 62px;
-  width: 220%;
+    color: #464749;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 62px;
+    width: 220%;
 }
 
 .whiteYellowCard .uploadSection .uploadLabel {
-  display: inline-block;
-  background-color: #9a9a9a;
-  color: white;
-  cursor: pointer;
-  width: 99px;
-  height: 25px;
-  border-radius: 5px;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 25px;
-  text-align: center;
-  margin-right: 18px;
+    display: inline-block;
+    background-color: #9a9a9a;
+    color: white;
+    cursor: pointer;
+    width: 99px;
+    height: 25px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center;
+    margin-right: 18px;
 }
 
 .whiteYellowCard .uploadSection .successLabel {
-  display: inline-block;
-  background-color: #6abc0b;
-  color: white;
-  cursor: pointer;
-  width: 99px;
-  height: 25px;
-  border-radius: 5px;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 25px;
-  text-align: center;
-  margin-right: 18px;
+    display: inline-block;
+    background-color: #6abc0b;
+    color: white;
+    cursor: pointer;
+    width: 99px;
+    height: 25px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center;
+    margin-right: 18px;
 }
 
 .whiteYellowCard .uploadSection i {
-  font-size: 24px;
-  color: #e74f26;
+    font-size: 24px;
+    color: #e74f26;
 }
 
 .whiteYellowCard .uploadSection .successful {
-  color: #6abc0b;
+    color: #6abc0b;
 }
 
 .singleUploadSection {
-  height: 90px;
-  width: 90%;
-  -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
-          box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
-  border-radius: 10px;
-  background-color: #f8f8f8;
-  padding: 19px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  margin-top: 50px;
-  margin-bottom: 50px;
+    height: 90px;
+    width: 90%;
+    -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    padding: 19px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 .singleUploadSection .uploadFileSection {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: row-reverse;
-          flex-direction: row-reverse;
-  width: 100%;
-  margin-top: 14px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+    width: 100%;
+    margin-top: 14px;
 }
 
 .singleUploadSection .uploadName {
-  color: #464749;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 62px;
-  width: 220%;
+    color: #464749;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 62px;
+    width: 220%;
 }
 
 .singleUploadSection .uploadLabel {
-  display: inline-block;
-  background-color: #9a9a9a;
-  color: white;
-  cursor: pointer;
-  width: 99px;
-  height: 25px;
-  border-radius: 5px;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 25px;
-  text-align: center;
-  margin-right: 18px;
+    display: inline-block;
+    background-color: #9a9a9a;
+    color: white;
+    cursor: pointer;
+    width: 99px;
+    height: 25px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center;
+    margin-right: 18px;
 }
 
 .singleUploadSection .successLabel {
-  display: inline-block;
-  background-color: #6abc0b;
-  color: white;
-  cursor: pointer;
-  width: 99px;
-  height: 25px;
-  border-radius: 5px;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 25px;
-  text-align: center;
-  margin-right: 18px;
+    display: inline-block;
+    background-color: #6abc0b;
+    color: white;
+    cursor: pointer;
+    width: 99px;
+    height: 25px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: center;
+    margin-right: 18px;
 }
 
 .singleUploadSection i {
-  font-size: 24px;
-  color: #e74f26;
+    font-size: 24px;
+    color: #e74f26;
 }
 
 .singleUploadSection .successful {
-  color: #6abc0b;
+    color: #6abc0b;
 }
 
 .redBannerNotice {
-  height: 180px;
-  border-radius: 10px;
-  background-color: #e74f26;
-  margin-left: -108px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  padding: 50px;
-  margin-bottom: 60px;
+    height: 180px;
+    border-radius: 10px;
+    background-color: #e74f26;
+    margin-left: -108px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 50px;
+    margin-bottom: 60px;
 }
 
 .redBannerNotice i {
-  color: #fff;
-  font-size: 55px;
+    color: #fff;
+    font-size: 55px;
 }
 
 .redBannerNotice p {
-  color: #fff;
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 28px;
-  text-align: left;
-  padding-left: 25px;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 28px;
+    text-align: left;
+    padding-left: 25px;
 }
 
 .flex {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
 }
 
 .flex-rev {
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: row-reverse;
-          flex-direction: row-reverse;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
 }
 
 .flex-col {
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
 }
 
 .halfCard {
-  width: 77% !important;
-  height: 250px !important;
-  border-bottom-right-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
+    width: 77% !important;
+    height: 250px !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
 .paymentSection .header,
 .paymentTwo .header {
-  color: #464749;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 55px;
+    color: #464749;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 55px;
 }
 
 .paymentSection .redBottom,
 .paymentTwo .redBottom {
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  background-color: #ff0000;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  width: 77%;
-  padding: 50px;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: #ff0000;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: 77%;
+    padding: 50px;
 }
 
 .paymentSection .redBottom i,
 .paymentTwo .redBottom i {
-  color: #fff;
-  font-size: 45px;
-  padding-right: 50px;
+    color: #fff;
+    font-size: 45px;
+    padding-right: 50px;
 }
 
 .paymentSection .redBottom p,
 .paymentTwo .redBottom p {
-  color: #fff;
-  font-size: 24px;
-  font-weight: 900;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 900;
 }
 
 .otherProperties .header {
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 55px;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 55px;
 }
 
 .otherProperties .demo-content {
-  color: #fff;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  font-family: Helvetica;
-  font-weight: 100;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  text-transform: uppercase;
-  border-radius: 3px;
-  font-size: 56px;
-  height: 250px;
-  width: 100%;
+    color: #fff;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    font-family: Helvetica;
+    font-weight: 100;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    text-transform: uppercase;
+    border-radius: 3px;
+    font-size: 56px;
+    height: 250px;
+    width: 100%;
 }
 
 button:disabled {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 .buttonSection .download {
-  color: #000000;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  border: 1px solid #000;
-  background-color: transparent;
-  padding: 10px;
-  border-radius: 10px;
-  width: 368px;
-  cursor: pointer;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    border: 1px solid #000;
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 10px;
+    width: 368px;
+    cursor: pointer;
 }
 
 .buttonSection .sign {
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  background-color: #e74f26;
-  border: none;
-  padding: 10px;
-  border-radius: 10px;
-  width: 368px;
-  cursor: pointer;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: #e74f26;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    width: 368px;
+    cursor: pointer;
 }
 
 .bookingPage .bookingHeader {
-  color: #464749;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 55px;
+    color: #464749;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 55px;
 }
 
 .bookingPage .bookingInfo {
-  color: #000000;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 24px;
-  margin-top: 30px;
-  margin-bottom: 30px;
+    color: #000000;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 .leaseText {
-  margin-top: 20px;
-  width: 100%;
-  height: 300px;
-  border: none;
-  margin-bottom: 50px;
+    margin-top: 20px;
+    width: 100%;
+    height: 300px;
+    border: none;
+    margin-bottom: 50px;
 }
 
 .completeText {
-  opacity: 0.6;
-  color: #464749;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 36px;
-  margin-top: 40px;
-  margin-bottom: 30px;
+    opacity: 0.6;
+    color: #464749;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 36px;
+    margin-top: 40px;
+    margin-bottom: 30px;
 }
 
 .appSearchForm {
-  margin-top: 80px;
+    margin-top: 80px;
 }
 
 .appSearchForm .searchField {
-  width: 33.3%;
-  float: left;
-  margin-top: 20px;
+    width: 33.3%;
+    float: left;
+    margin-top: 20px;
 }
 
 .appSearchForm .searchField select,
 .appSearchForm .searchField input {
-  border-radius: 7px;
-  background-color: #f0f0f0;
-  border: none;
-  width: 90%;
-  padding: 10px;
-  color: #000000;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
+    border-radius: 7px;
+    background-color: #f0f0f0;
+    border: none;
+    width: 90%;
+    padding: 10px;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
 }
 
 .appSearchForm .searchField label {
-  color: #000000;
-  font-size: 21px;
-  font-weight: 300;
+    color: #000000;
+    font-size: 21px;
+    font-weight: 300;
 }
 
 .appSearchForm .searchTab {
-  width: 20%;
-  float: left;
+    width: 20%;
+    float: left;
 }
 
 .appSearchForm .searchTab button {
-  width: 180px;
-  height: 37px;
-  border-radius: 7px;
-  border: 1px solid #707070;
-  background-color: #707070;
-  color: #ffffff;
+    width: 180px;
+    height: 37px;
+    border-radius: 7px;
+    border: 1px solid #707070;
+    background-color: #707070;
+    color: #ffffff;
 }
 
 .appSearchForm .indexTab {
-  width: 80%;
-  float: left;
-  border-radius: 10px;
-  background-color: #e8e8e8;
-  padding: 20px;
+    width: 80%;
+    float: left;
+    border-radius: 10px;
+    background-color: #e8e8e8;
+    padding: 20px;
 }
 
 .appSearchForm .indexTab label {
-  color: #000000;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 18px;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 18px;
 }
 
 .appSearchForm .indexTab .keys {
-  display: contents;
+    display: contents;
 }
 
 .appSearchForm .indexTab .keys #indexOne {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  width: 100%;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
 }
 
 .appSearchForm .indexTab .keys #indexOne .text {
-  padding: 4px 20px 0px 20px;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 18px;
+    padding: 4px 20px 0px 20px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 18px;
 }
 
 .appSearchForm .indexTab .keys #indexOne .button {
-  border-radius: 50%;
-  height: 29px;
-  width: 29px;
-  border: 3px solid #cecece;
+    border-radius: 50%;
+    height: 29px;
+    width: 29px;
+    border: 3px solid #cecece;
 }
 
 .appSearchForm .indexTab .keys #indexOne .approved {
-  background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+    background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
 }
 
 .appSearchForm .indexTab .keys #indexOne .action {
-  background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+    background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
 }
 
 .appSearchForm .indexTab .keys #indexOne .rejected {
-  background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+    background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
 }
 
 .appSearchForm .indexTab .keys #indexOne .na {
-  background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
+    background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
 }
 
 .applicationTable {
-  width: 100%;
+    width: 100%;
 }
 
 .applicationTable th {
-  background-color: #868686;
-  color: #ffffff;
-  max-width: 50px;
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 11px;
-  text-align: left;
-  padding: 10px;
+    background-color: #868686;
+    color: #ffffff;
+    max-width: 50px;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 11px;
+    text-align: left;
+    padding: 10px;
 }
 
 .applicationTable tr:hover {
-  background-color: #ffffff;
-  opacity: 0.9;
-  outline: 3px solid black;
-  border-radius: 2px;
-  cursor: pointer;
+    background-color: #ffffff;
+    opacity: 0.9;
+    outline: 3px solid black;
+    border-radius: 2px;
+    cursor: pointer;
 }
 
 .applicationTable .light {
-  background-color: #f5f5f5;
+    background-color: #f5f5f5;
 }
 
 .applicationTable .dark {
-  background-color: #ededed;
+    background-color: #ededed;
 }
 
 .applicationTable td {
-  padding: 10px;
+    padding: 10px;
 }
 
 .applicationTable .first {
-  border-top-left-radius: 10px;
+    border-top-left-radius: 10px;
 }
 
 .applicationTable .last {
-  border-top-right-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 .applicationTable .button {
-  border-radius: 50%;
-  height: 29px;
-  width: 29px;
-  border: 3px solid #cecece;
+    border-radius: 50%;
+    height: 29px;
+    width: 29px;
+    border: 3px solid #cecece;
 }
 
 .applicationTable .approved {
-  background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
-  margin: auto;
+    background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+    margin: auto;
 }
 
 .applicationTable .action {
-  background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
-  margin: auto;
+    background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+    margin: auto;
 }
 
 .applicationTable .rejected {
-  background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
-  margin: auto;
+    background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+    margin: auto;
 }
 
 .applicationTable .na {
-  background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
-  margin: auto;
+    background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
+    margin: auto;
 }
 
 .bold {
-  font-weight: bold !important;
+    font-weight: bold !important;
 }
 
 .greyAppSection {
-  width: 90%;
-  height: 215px;
-  background-color: #e8e8e8;
-  margin-left: -10px;
-  border-bottom-right-radius: 20px;
+    width: 90%;
+    height: 215px;
+    background-color: #e8e8e8;
+    margin-left: -10px;
+    border-bottom-right-radius: 20px;
 }
 
 .greyAppSection .col-3 {
-  width: 33.3%;
+    width: 33.3%;
 }
 
 .greyAppSection .listHeader {
-  color: #464749;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 29px;
+    color: #464749;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 29px;
 }
 
 .modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  padding-top: 100px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: black;
-  background-color: rgba(0, 0, 0, 0.4);
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: black;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal .modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
 }
 
 .modal .close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
 
-.modal .close:hover, .modal .close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
+.modal .close:hover,
+.modal .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .modal #modalHeader {
-  color: #464749;
-  font-size: 33px;
-  font-weight: 400;
+    color: #464749;
+    font-size: 33px;
+    font-weight: 400;
 }
 
 .modal small {
-  color: #464749;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 28px;
+    color: #464749;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 28px;
 }
 
 .modal .button {
-  margin: 0px 5px;
-  border-radius: 7px;
-  border: none;
-  padding: 10px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  text-transform: uppercase;
-  cursor: pointer;
+    margin: 0px 5px;
+    border-radius: 7px;
+    border: none;
+    padding: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    cursor: pointer;
 }
 
 .modal .rejected {
-  background-color: #e74f26;
+    background-color: #e74f26;
 }
 
 .modal .amend {
-  background-color: #086904;
+    background-color: #086904;
 }
 
 .modal .approve {
-  background-color: #1cb915;
+    background-color: #1cb915;
 }
 
 .modal input {
-  background-color: #f0f0f0;
-  border-radius: 7px;
-  border: none;
-  width: 65%;
-  padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 7px;
+    border: none;
+    width: 65%;
+    padding: 10px;
 }
 
 .modal .pdfSection {
-  margin-top: 50px;
+    margin-top: 50px;
 }
 
 #mailer_table button {
-  padding: 10px;
-  border: none;
-  color: #fff;
-  border-radius: 7px;
-  background-color: #e74f26;
-  cursor: pointer;
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #e74f26;
+    cursor: pointer;
 }
 
 #lease_table button,
 #documents_table button {
-  padding: 10px;
-  border: none;
-  color: #fff;
-  border-radius: 7px;
-  background-color: #e74f26;
-  cursor: pointer;
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #e74f26;
+    cursor: pointer;
 }
 
 #lease_table .await,
 #documents_table .await {
-  padding: 5px 50px;
-  border: none;
-  color: #fff;
-  border-radius: 7px;
-  background-color: #f1cc3e;
-  width: 100px;
-  text-align: center;
+    padding: 5px 50px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #f1cc3e;
+    width: 100px;
+    text-align: center;
 }
 
 #lease_table .approved,
 #documents_table .approved {
-  padding: 10px;
-  border: none;
-  color: #fff;
-  border-radius: 7px;
-  background-color: #1cb915;
-  width: 100px;
-  text-align: center;
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #1cb915;
+    width: 100px;
+    text-align: center;
 }
 
 #lease_table .uploaded,
 #documents_table .uploaded {
-  padding: 10px;
-  border: none;
-  color: #fff;
-  border-radius: 7px;
-  background-color: #ffbb3c;
-  width: 100px;
-  text-align: center;
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #ffbb3c;
+    width: 100px;
+    text-align: center;
 }
 
 #lease_table .rejected,
 #documents_table .rejected {
-  padding: 10px;
-  border: none;
-  color: #fff;
-  border-radius: 7px;
-  background-color: #e74f26;
-  width: 100px;
-  text-align: center;
+    padding: 10px;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    background-color: #e74f26;
+    width: 100px;
+    text-align: center;
 }
 
 .outstandingUpload {
-  background-color: #e74f26;
-  padding: 5px 50px;
-  color: #fff;
-  border-radius: 7px;
-  cursor: pointer;
+    background-color: #e74f26;
+    padding: 5px 50px;
+    color: #fff;
+    border-radius: 7px;
+    cursor: pointer;
 }
 
 .topnav {
-  overflow: hidden;
-  background-color: #fff;
-  margin-left: 26%;
-  margin-top: 18px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-left: 26%;
+    margin-top: 18px;
 }
 
 .topnav .name {
-  margin-left: 150px;
+    margin-left: 150px;
 }
 
 .topnav a {
-  float: left;
-  display: block;
-  color: #000;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  font-family: source-sans-pro, sans-serif;
-  text-transform: uppercase;
+    float: left;
+    display: block;
+    color: #000;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    font-family: source-sans-pro, sans-serif;
+    text-transform: uppercase;
 }
 
 .topnav a:hover {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .topnav a .active {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .topnav .icon {
-  display: none;
+    display: none;
 }
 
 #fullNavbar {
-  overflow: hidden;
-  height: 86px;
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  background-color: #ffffff;
-  z-index: 10;
-  overflow: overlay;
+    overflow: hidden;
+    height: 86px;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: #ffffff;
+    z-index: 10;
+    overflow: overlay;
 }
 
 .openMenu {
-  height: 500px !important;
+    height: 500px !important;
 }
 
 @media only screen and (max-width: 1485px) {
-  .cards .customWhiteCard .section {
-    padding-bottom: 80px;
-  }
+    .cards .customWhiteCard .section {
+        padding-bottom: 80px;
+    }
 }
 
 @media only screen and (max-width: 1200px) {
-  .col-3 {
-    width: 50%;
-  }
-  .footer .footerBanner {
-    height: 480px;
-  }
-  .whiteYellowCard .appAwait {
-    padding-bottom: 50px;
-  }
-  .whiteYellowCard .appAwait .invalid {
-    margin-top: 50px;
-  }
-  .whiteYellowCard .appAwait .outstanding {
-    margin-top: 0px;
-  }
-  .whiteYellowCard .appAwait .pending {
-    margin-top: 0px;
-  }
-  .cardBody {
-    max-height: 440px;
-    overflow: auto;
-  }
-  .topnav {
-    margin-left: 10% !important;
-  }
-  .topnav .name {
-    margin-left: 0px !important;
-  }
+    .col-3 {
+        width: 50%;
+    }
+    .footer .footerBanner {
+        height: 480px;
+    }
+    .whiteYellowCard .appAwait {
+        padding-bottom: 50px;
+    }
+    .whiteYellowCard .appAwait .invalid {
+        margin-top: 50px;
+    }
+    .whiteYellowCard .appAwait .outstanding {
+        margin-top: 0px;
+    }
+    .whiteYellowCard .appAwait .pending {
+        margin-top: 0px;
+    }
+    .cardBody {
+        max-height: 440px;
+        overflow: auto;
+    }
+    .topnav {
+        margin-left: 10% !important;
+    }
+    .topnav .name {
+        margin-left: 0px !important;
+    }
 }
 
 @media only screen and (max-width: 1250px) {
-  .appSearchForm .searchTab {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .loginHeader .appBtn {
-    width: 261px;
-  }
-  .appSearchForm .indexTab .keys #indexOne .text {
-    padding: 4px 5px 0px 5px;
-  }
+    .appSearchForm .searchTab {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .loginHeader .appBtn {
+        width: 261px;
+    }
+    .appSearchForm .indexTab .keys #indexOne .text {
+        padding: 4px 5px 0px 5px;
+    }
 }
 
 @media only screen and (max-width: 1170px) {
-  .cards .customWhiteCard .actionItemList {
-    margin-top: 50px;
-  }
-  .cards .customWhiteCard .appHeader select {
-    float: left;
-  }
-  .cards .customWhiteCard .section .status .approved, .cards .customWhiteCard .section .status .action, .cards .customWhiteCard .section .status .rejected {
-    margin-left: 15px;
-  }
+    .cards .customWhiteCard .actionItemList {
+        margin-top: 50px;
+    }
+    .cards .customWhiteCard .appHeader select {
+        float: left;
+    }
+    .cards .customWhiteCard .section .status .approved,
+    .cards .customWhiteCard .section .status .action,
+    .cards .customWhiteCard .section .status .rejected {
+        margin-left: 15px;
+    }
 }
 
 @media only screen and (max-width: 1050px) {
-  #documents_table .rejected {
-    padding: 5px;
-  }
-  #documents_table .outstandingUpload {
-    padding: 5px 33px;
-  }
-  .applicationTable {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-  .appSearchForm .indexTab {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  #documentsCard {
-    width: 200%;
-    margin-left: -100%;
-    margin-top: 1160px !important;
-    margin-bottom: 20px;
-  }
-  #actionListCard {
-    width: 200%;
-    margin-left: 8px;
-  }
-  #applicationCard {
-    width: 200%;
-    margin-left: 8px;
-  }
-  .cards .customWhiteCard .appHeader select {
-    float: right;
-  }
-  #bookingRef, #studType, #statusBarIcon, #studType {
-    padding: 10px 55px;
-  }
+    #documents_table .rejected {
+        padding: 5px;
+    }
+    #documents_table .outstandingUpload {
+        padding: 5px 33px;
+    }
+    .applicationTable {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .appSearchForm .indexTab {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    #documentsCard {
+        width: 200%;
+        margin-left: -100%;
+        margin-top: 1160px !important;
+        margin-bottom: 20px;
+    }
+    #actionListCard {
+        width: 200%;
+        margin-left: 8px;
+    }
+    #applicationCard {
+        width: 200%;
+        margin-left: 8px;
+    }
+    .cards .customWhiteCard .appHeader select {
+        float: right;
+    }
+    #bookingRef,
+    #studType,
+    #statusBarIcon,
+    #studType {
+        padding: 10px 55px;
+    }
 }
 
 @media only screen and (max-width: 950px) {
-  .room {
-    margin-left: 0px !important;
-  }
-  .mainBlock {
-    margin-left: 40px !important;
-  }
-  .cards .whiteCard {
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 50px;
-  }
-  .yellowGradientSmall {
-    height: 380px;
-  }
-  .whiteYellowCard {
-    width: 100%;
-  }
-  .sign {
-    margin-top: 20px;
-  }
-  .appSearchForm .searchField {
-    width: 50%;
-  }
-  .loginHeader .appBtn {
-    width: 206px;
-  }
+    .room {
+        margin-left: 0px !important;
+    }
+    .mainBlock {
+        margin-left: 40px !important;
+    }
+    .cards .whiteCard {
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 50px;
+    }
+    .yellowGradientSmall {
+        height: 380px;
+    }
+    .whiteYellowCard {
+        width: 100%;
+    }
+    .sign {
+        margin-top: 20px;
+    }
+    .appSearchForm .searchField {
+        width: 50%;
+    }
+    .loginHeader .appBtn {
+        width: 206px;
+    }
 }
 
 @media only screen and (max-width: 850px) {
-  #fullNavbar {
-    height: 120px !important;
-  }
-  #documents_table .await {
-    padding: 5px;
-  }
-  #documents_table .approved {
-    padding: 5px;
-  }
-  #documents_table .denied {
-    padding: 5px;
-  }
-  #documents_table .outstandingUpload {
-    padding: 5px;
-  }
-  #approveProfile {
-    margin-top: -28px;
-    float: left;
-  }
-  #rejectApplication {
-    margin-top: -34px;
-    float: left;
-  }
-  .loginHeader .booking {
-    font-size: 48px;
-  }
-  .greyAppSection .col-3 {
-    width: 50%;
-  }
-  .greyAppSection {
-    height: 310px;
-  }
-  #documentsCard {
-    margin-top: 1211px !important;
-  }
+    #fullNavbar {
+        height: 120px !important;
+    }
+    #documents_table .await {
+        padding: 5px;
+    }
+    #documents_table .approved {
+        padding: 5px;
+    }
+    #documents_table .denied {
+        padding: 5px;
+    }
+    #documents_table .outstandingUpload {
+        padding: 5px;
+    }
+    #approveProfile {
+        margin-top: -28px;
+        float: left;
+    }
+    #rejectApplication {
+        margin-top: -34px;
+        float: left;
+    }
+    .loginHeader .booking {
+        font-size: 48px;
+    }
+    .greyAppSection .col-3 {
+        width: 50%;
+    }
+    .greyAppSection {
+        height: 310px;
+    }
+    #documentsCard {
+        margin-top: 1211px !important;
+    }
 }
 
 @media only screen and (max-width: 660px) {
-  .col-3 {
-    width: 100%;
-    padding-left: 0px !important;
-  }
-  .footer .footerBanner {
-    height: 820px;
-  }
+    .col-3 {
+        width: 100%;
+        padding-left: 0px !important;
+    }
+    .footer .footerBanner {
+        height: 820px;
+    }
 }
 
 @media only screen and (max-width: 530px) {
-  .yellowGradient {
-    height: 740px;
-  }
-  .cards .whiteCard .applyButton {
-    margin-top: 100px;
-  }
-  .form-card .form-field {
-    width: 100%;
-  }
-  .appSearchForm .searchField {
-    width: 100%;
-  }
-  .greyAppSection .col-3 {
-    width: 100%;
-  }
-  .greyAppSection {
-    height: 444px;
-  }
-  .appRow {
-    width: 100%;
-  }
-  #documentsCard {
-    width: 100%;
-    margin-top: 350px !important;
-  }
-  #actionListCard {
-    width: 100%;
-  }
-  #applicationCard {
-    width: 100%;
-  }
-  .cards .customWhiteCard .appHeader select {
-    float: left;
-    width: 100%;
-  }
-  .cards .customWhiteCard .infoBlock .responsible {
-    display: block;
-  }
-  .cards .customWhiteCard .infoBlock .responsible .admin, .cards .customWhiteCard .infoBlock .responsible .applicant {
-    float: right;
-    margin-top: -25px;
-  }
-  .cards .customWhiteCard .section {
-    padding-bottom: 110px;
-  }
-  .cards .customWhiteCard .section .label {
-    width: 100%;
-  }
-  .cards .customWhiteCard .section .banner {
-    width: 80%;
-    margin-top: 15px;
-  }
-  .cards .customWhiteCard .section .status {
-    width: 20%;
-    margin-top: 15px;
-  }
-  .appSearchForm .indexTab {
-    display: block;
-  }
+    .yellowGradient {
+        height: 740px;
+    }
+    .cards .whiteCard .applyButton {
+        margin-top: 100px;
+    }
+    .form-card .form-field {
+        width: 100%;
+    }
+    .appSearchForm .searchField {
+        width: 100%;
+    }
+    .greyAppSection .col-3 {
+        width: 100%;
+    }
+    .greyAppSection {
+        height: 444px;
+    }
+    .appRow {
+        width: 100%;
+    }
+    #documentsCard {
+        width: 100%;
+        margin-top: 350px !important;
+    }
+    #actionListCard {
+        width: 100%;
+    }
+    #applicationCard {
+        width: 100%;
+    }
+    .cards .customWhiteCard .appHeader select {
+        float: left;
+        width: 100%;
+    }
+    .cards .customWhiteCard .infoBlock .responsible {
+        display: block;
+    }
+    .cards .customWhiteCard .infoBlock .responsible .admin,
+    .cards .customWhiteCard .infoBlock .responsible .applicant {
+        float: right;
+        margin-top: -25px;
+    }
+    .cards .customWhiteCard .section {
+        padding-bottom: 110px;
+    }
+    .cards .customWhiteCard .section .label {
+        width: 100%;
+    }
+    .cards .customWhiteCard .section .banner {
+        width: 80%;
+        margin-top: 15px;
+    }
+    .cards .customWhiteCard .section .status {
+        width: 20%;
+        margin-top: 15px;
+    }
+    .appSearchForm .indexTab {
+        display: block;
+    }
 }
 
 @media screen and (max-width: 600px) {
-  .topnav a:not(:first-child), .dropdown .dropbtn {
-    display: none;
-  }
-  .topnav a.icon {
-    float: right;
-    display: block;
-  }
-  .topnav.responsive {
-    position: relative;
-  }
-  .topnav.responsive .icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-  .topnav.responsive a {
-    float: none;
-    display: block;
-    text-align: left;
-  }
-  .topnav.responsive .dropdown {
-    float: none;
-  }
-  .topnav.responsive .dropdown-content {
-    position: relative;
-  }
-  .topnav.responsive .dropdown .dropbtn {
-    display: block;
-    width: 100%;
-    text-align: left;
-  }
-  #fullNavbar {
-    height: 100%;
-  }
-  .loginHeader .booking {
-    font-size: 60px;
-  }
-  .buttonSection .sign,
-  .buttonSection .download {
-    width: 100%;
-  }
-  .cards .whiteCard {
-    margin-left: 0px !important;
-  }
-  #lease_table {
-    display: block;
-    overflow-x: auto;
-  }
-  #applicationIndex {
-    display: block;
-  }
-  .appSearchForm .indexTab .keys #indexOne {
-    -webkit-box-pack: start;
+    .topnav a:not(:first-child),
+    .dropdown .dropbtn {
+        display: none;
+    }
+    .topnav a.icon {
+        float: right;
+        display: block;
+    }
+    .topnav.responsive {
+        position: relative;
+    }
+    .topnav.responsive .icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .topnav.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+    .topnav.responsive .dropdown {
+        float: none;
+    }
+    .topnav.responsive .dropdown-content {
+        position: relative;
+    }
+    .topnav.responsive .dropdown .dropbtn {
+        display: block;
+        width: 100%;
+        text-align: left;
+    }
+    #fullNavbar {
+        height: 100%;
+    }
+    .loginHeader .booking {
+        font-size: 60px;
+    }
+    .buttonSection .sign,
+    .buttonSection .download {
+        width: 100%;
+    }
+    .cards .whiteCard {
+        margin-left: 0px !important;
+    }
+    #lease_table {
+        display: block;
+        overflow-x: auto;
+    }
+    #applicationIndex {
+        display: block;
+    }
+    .appSearchForm .indexTab .keys #indexOne {
+        -webkit-box-pack: start;
         -ms-flex-pack: start;
-            justify-content: flex-start;
-    padding: 5px;
-  }
-  #lease_table .await .sorting_1 .await, #lease_table .await .sorting_1 .rejected, #lease_table .await .sorting_1 .approved, #documents_table .sorting_1 .await, #documents_table .sorting_1 .rejected, #documents_table .sorting_1 .approved {
-    background-color: transparent;
-    color: #000;
-  }
-  .whiteYellowCard .appAwait .approved {
-    margin-top: 0px;
-  }
-  .whiteYellowCard .cardHeaderText {
-    line-height: 34px;
-  }
-  #bookingHeaderYellow {
-    height: 500px;
-  }
+        justify-content: flex-start;
+        padding: 5px;
+    }
+    #lease_table .await .sorting_1 .await,
+    #lease_table .await .sorting_1 .rejected,
+    #lease_table .await .sorting_1 .approved,
+    #documents_table .sorting_1 .await,
+    #documents_table .sorting_1 .rejected,
+    #documents_table .sorting_1 .approved {
+        background-color: transparent;
+        color: #000;
+    }
+    .whiteYellowCard .appAwait .approved {
+        margin-top: 0px;
+    }
+    .whiteYellowCard .cardHeaderText {
+        line-height: 34px;
+    }
+    #bookingHeaderYellow {
+        height: 500px;
+    }
 }
 
 @media screen and (max-width: 380px) {
-  .whiteYellowCard .appAwait .approved {
-    float: left;
-  }
-  .loginHeader .booking {
-    font-size: 50px;
-    line-height: 55px;
-  }
-  #rejectApplication, #approveProfile {
-    margin-top: 0px;
-  }
-  .cards .customWhiteCard .section {
-    padding-bottom: 130px;
-  }
-  .cards .customWhiteCard .section .label {
-    width: 100%;
-  }
-  .cards .customWhiteCard .section .banner {
-    width: 90%;
-    margin-top: 15px;
-  }
-  .cards .customWhiteCard .section .status {
-    width: 10%;
-    margin-top: 15px;
-  }
+    .whiteYellowCard .appAwait .approved {
+        float: left;
+    }
+    .loginHeader .booking {
+        font-size: 50px;
+        line-height: 55px;
+    }
+    #rejectApplication,
+    #approveProfile {
+        margin-top: 0px;
+    }
+    .cards .customWhiteCard .section {
+        padding-bottom: 130px;
+    }
+    .cards .customWhiteCard .section .label {
+        width: 100%;
+    }
+    .cards .customWhiteCard .section .banner {
+        width: 90%;
+        margin-top: 15px;
+    }
+    .cards .customWhiteCard .section .status {
+        width: 10%;
+        margin-top: 15px;
+    }
 }
 
 @media screen and (max-width: 350px) {
-  .roomImgBack {
-    height: 626px !important;
-    background-size: 700px 650px;
-  }
-  .roomImgBack .overlay .roomContactBtn {
-    padding: 4px;
-    margin-top: -10px;
-    margin-bottom: 15px;
-  }
-  .whiteYellowCard .appAwait {
-    padding-bottom: 85px;
-  }
+    .roomImgBack {
+        height: 626px !important;
+        background-size: 700px 650px;
+    }
+    .roomImgBack .overlay .roomContactBtn {
+        padding: 4px;
+        margin-top: -10px;
+        margin-bottom: 15px;
+    }
+    .whiteYellowCard .appAwait {
+        padding-bottom: 85px;
+    }
 }
 /*# sourceMappingURL=styles.css.map */

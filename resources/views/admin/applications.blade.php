@@ -5,10 +5,8 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
-<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
-
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <div class="container">
 
@@ -75,7 +73,7 @@
         </div>
         <div class="searchField">
         <label></label><br/>
-            <select name="bookingStatus" id='bookingStatus' style="width:45%">
+            <select name="fieldStatus" id='fieldStatus' style="width:45%">
                 <option value="All" selected>- Select One - </option>
                 <option value="bookingStatus">Booking Status</option>
                 <option value="proofOfPayment">Proof of Payment</option>
@@ -85,7 +83,7 @@
                 <option value="proofOfRegistration">Proof of Registration</option>
                 <option value="nsfasBursaryApproval">NSFAS | Bursary Approval</option>
                 <option value="bankStatements">Bank Statements</option>
-                <option value="leaveStatus">LeaveStatus</option>
+                <option value="leaseStatus">Lease Status</option>
             </select>
             <!-- <select name="bookingStatus" id='bookingStatus' style="width:45%">
                 <option value="All" selected>All Bookings</option>
@@ -99,7 +97,13 @@
                 <option value="Action">&#128993; Pending Application</option>
                 <option value="Empty">&#128308; Invalid Application</option>
             </select> -->
-            
+
+            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:210px;">
+                <option value="Valid">&#128994; Valid</option>
+                <option value="Pending">&#128993; Pending</option>
+                <option value="Incomplete">&#128308; Incomplete</option>
+                <option value="NA">&xcirc; Not Applicable</option>
+            </select>
         </div>
         <div class="searchField">
             <label>Date</label><br/>
@@ -357,6 +361,13 @@ jQuery(document).ready( function($) {
         }
     });
 });
+
+$(function(){
+    $(".js-example-basic-multiple").select2({
+        placeholder: "- Select One -",
+    });
+});
+
 </script>
 
 @endsection
