@@ -1138,21 +1138,21 @@
     $("#changeBookingType").on('click', function(){
 
 
-        if($("#property").val() == "" || $("#roomType").val() == "" || $("#bed_code").val() == null){
-            if($("#property").val() == ""){
-                $("#property").addClass("fieldError")
-                $("#property_error").removeClass("hidden")
-            }
+        if($("#floor").val() !== "Choose a Floor" && $("#bed_code").val() == "Choose a Bed"){
+            // if($("#property").val() == ""){
+            //     $("#property").addClass("fieldError")
+            //     $("#property_error").removeClass("hidden")
+            // }
 
-            if($("#roomType").val() == ""){
-                $("#roomType").addClass("fieldError")
-                $("#roomType_error").removeClass("hidden")
-            }
+            // if($("#roomType").val() == ""){
+            //     $("#roomType").addClass("fieldError")
+            //     $("#roomType_error").removeClass("hidden")
+            // }
 
-            if($("#bed_code").val() == null){
+            // if($("#bed_code").val() == null){
                 $("#bed_code").addClass('fieldError')
                 $("#bed_code_error").removeClass('hidden')
-            }
+            // }
         }else{
             $("#changeBookingType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
             $.ajax({
