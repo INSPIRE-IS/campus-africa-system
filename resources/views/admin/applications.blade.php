@@ -111,7 +111,7 @@
                 <option value="Empty">&#128308; Invalid Application</option>
             </select> -->
 
-            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:210px;">
+            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:160px;">
                 <option value="Valid">&#128994; Valid</option>
                 <option value="Pending">&#128993; Pending</option>
                 <option value="Incomplete">&#128308; Incomplete</option>
@@ -126,10 +126,10 @@
 
         
 
-        <div class="searchTab" style="margin-top:50px;">
+        <div class="searchTab" style="margin-top:70px;">
             <button type="button" id="searchButton">Search</button>
         </div>
-        <div class="indexTab flex" id="applicationIndex" style="margin-top:50px;">
+        <div class="indexTab flex" id="applicationIndex" style="margin-top:70px;">
             <label>Legend</label>
             <div class="keys">
                 <div id="indexOne"><div class="button approved"></div><span class="text">Approved</span></div>
