@@ -63,6 +63,19 @@
         </div>
 
         <div class="searchField">
+            <label>Student Number</label><br/>
+            <input type="text" name="studentNo" id="studentNo"/>
+        </div>
+        <div class="searchField">
+            <label>ID Number / Passport</label><br/>
+            <input type="text" name="idPassport" id="idPassport"/>
+        </div>
+        <div class="searchField">
+            <label>Booking Reference</label><br/>
+            <input type="text" name="bookingRef" id="bookingRef"/>
+        </div>
+
+        <div class="searchField">
         <label></label><br/>
             <select name="student_type" id='student_type'>
                 <option value="All" selected>All Student Types</option>
@@ -71,7 +84,7 @@
                 <option value="Cash / Direct">Cash</option>
             </select>
         </div>
-        <div class="searchField">
+        <div class="searchField" style="height:100px;">
         <label></label><br/>
             <select name="fieldStatus" id='fieldStatus' style="width:45%">
                 <option value="All" selected>- Select One - </option>
@@ -111,10 +124,12 @@
             <br/><br/><br/>
         </div>
 
-        <div class="searchTab">
+        
+
+        <div class="searchTab" style="margin-top:50px;">
             <button type="button" id="searchButton">Search</button>
         </div>
-        <div class="indexTab flex" id="applicationIndex">
+        <div class="indexTab flex" id="applicationIndex" style="margin-top:50px;">
             <label>Legend</label>
             <div class="keys">
                 <div id="indexOne"><div class="button approved"></div><span class="text">Approved</span></div>

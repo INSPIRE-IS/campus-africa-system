@@ -24,6 +24,9 @@ jQuery(document).ready(function ($) {
                         fieldStatus: $("#fieldStatus").val(),
                         status: $("#status").val(), 
                         date: $("#date").val(), 
+                        studentNo: $("#studentNo").val(),
+                        idPassport: $("#idPassport").val(),
+                        bookingRef: $("#bookingRef").val(),
                     },
 
                     success: function (data) {

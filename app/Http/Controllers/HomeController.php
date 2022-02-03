@@ -1957,10 +1957,56 @@ class HomeController extends Controller
                         $bookingStatus = 'users.bookingStatus LIKE "%Action%"';
                         array_push($search_status, $bookingStatus);
                     }
+
+                    if(in_array("NA", $request->status)){
+                        $bookingStatus = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $bookingStatus);
+                    }
+
                 }elseif($request->fieldStatus == "proofOfPayment"){
-                    //
+                    
+                    if(in_array("Incomplete", $request->status)){
+                        $proof_of_payment = 'user_files.fileId = "proof_of_payment" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $proof_of_payment);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $proof_of_payment = 'user_files.fileId = "proof_of_payment" AND user_files.status LIKE "%Approved%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $proof_of_payment);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $proof_of_payment = 'user_files.fileId = "proof_of_payment" AND user_files.status LIKE "%Uploaded%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $proof_of_payment);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $proof_of_payment = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $proof_of_payment);
+                    }
+
                 }elseif($request->fieldStatus == "idCopy"){
-                    //
+                    
+                    if(in_array("Incomplete", $request->status)){
+                        $copyID = 'user_files.fileId = "copyID" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $copyID);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $copyID = 'user_files.fileId = "copyID" AND user_files.status LIKE "%Approved%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $copyID);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $copyID = 'user_files.fileId = "copyID" AND user_files.status LIKE "%Uploaded%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $copyID);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $copyID = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $copyID);
+                    }
+
                 }elseif($request->fieldStatus == "applicationStatus"){
                     if(in_array("Incomplete", $request->status)){
                         $applicationStatus = '(users.applicationStatus LIKE "%Empty%" OR users.applicationStatus LIKE "%Rejected%")';
@@ -1976,16 +2022,132 @@ class HomeController extends Controller
                         $applicationStatus = 'users.applicationStatus LIKE "%Action%"';
                         array_push($search_status, $applicationStatus);
                     }
+
+                    if(in_array("NA", $request->status)){
+                        $applicationStatus = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $applicationStatus);
+                    }
+
                 }elseif($request->fieldStatus == "studentCardCopy"){
-                    //
+                    
+                    if(in_array("Incomplete", $request->status)){
+                        $studentCard = 'user_files.fileId = "studentCard" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $studentCard);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $studentCard = 'user_files.fileId = "studentCard" AND user_files.status LIKE "%Approved%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $studentCard);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $studentCard = 'user_files.fileId = "studentCard" AND user_files.status LIKE "%Uploaded%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $studentCard);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $studentCard = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $studentCard);
+                    }
+
                 }elseif($request->fieldStatus == "proofOfRegistration"){
-                    //
+                    
+                    if(in_array("Incomplete", $request->status)){
+                        $proofRegistration = 'user_files.fileId = "proofRegistration" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $proofRegistration);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $proofRegistration = 'user_files.fileId = "proofRegistration" AND user_files.status LIKE "%Approved%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $proofRegistration);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $proofRegistration = 'user_files.fileId = "proofRegistration" AND user_files.status LIKE "%Uploaded%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $proofRegistration);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $proofRegistration = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $proofRegistration);
+                    }
+
                 }elseif($request->fieldStatus == "nsfasBursaryApproval"){
-                    //
+                    
+                    if(in_array("Incomplete", $request->status)){
+                        $bursaryApproval = 'user_files.fileId = "bursaryApproval" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $bursaryApproval);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $bursaryApproval = 'user_files.fileId = "bursaryApproval" AND user_files.status LIKE "%Approved%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $bursaryApproval);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $bursaryApproval = 'user_files.fileId = "bursaryApproval" AND user_files.status LIKE "%Uploaded%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $bursaryApproval);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $proofRegistration = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $proofRegistration);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $proofRegistration = 'users.studentType LIKE "%Cash / Direct%"';
+                        array_push($search_status, $proofRegistration);
+                    }
+
                 }elseif($request->fieldStatus == "bankStatements"){
-                    //
+                    
+                    if(in_array("Incomplete", $request->status)){
+                        $bankStatement = 'user_files.fileId = "bankStatement" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $bankStatement);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $bankStatement = 'user_files.fileId = "bankStatement" AND user_files.status LIKE "%Approved%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $bankStatement);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $bankStatement = 'user_files.fileId = "bankStatement" AND user_files.status LIKE "%Uploaded%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $bankStatement);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $proofRegistration = 'users.overall_status LIKE "%Cancelled%"';
+                        array_push($search_status, $proofRegistration);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $proofRegistration = 'users.studentType != "Cash / Direct"';
+                        array_push($search_status, $proofRegistration);
+                    }
+
                 }elseif($request->fieldStatus == "leaseStatus"){
-                    //
+                    
+                    if(in_array("Incomplete", $request->status)){
+                        $moveIn = 'user_files.fileId = "moveIn" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $moveIn);
+                    }
+                    
+                    if(in_array("Valid", $request->status)){
+                        $moveIn = 'user_files.fileId = "moveIn" AND user_files.status LIKE "%Approved%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $moveIn);
+                    }
+                    
+                    if(in_array("Pending", $request->status)){
+                        $moveIn = 'user_files.fileId = "moveIn" AND user_files.status LIKE "%Uploaded%" AND users.overall_status != "Cancelled"';
+                        array_push($search_status, $moveIn);
+                    }
+
+                    if(in_array("NA", $request->status)){
+                        $proofRegistration = 'users.overall_status != "Approved Confirmed"';
+                        array_push($search_status, $proofRegistration);
+                    }
+
                 }
             
                 // if($request->bookingStatus == "Empty"){
@@ -2011,6 +2173,25 @@ class HomeController extends Controller
         //         }
         //     }
         // }
+
+
+        if($request->studentNo !== "" && !empty($request->studentNo)){
+            $studentNo = 'users.studentNo LIKE "%'.$request->studentNo.'%"';
+            array_push($search_value, $studentNo);
+        }
+
+        if($request->idPassport !== "" && !empty($request->idPassport)){
+            $idNo = 'users.userId LIKE "%'.$request->idPassport.'%"';
+            array_push($search_status, $idNo);
+
+            $passport = 'users.userPassport LIKE "%'.$request->idPassport.'%"';
+            array_push($search_status, $passport);
+        }
+
+        if($request->bookingRef !== "" && !empty($request->bookingRef)){
+            $bookingRef = 'users.bookingRef LIKE "%'.$request->bookingRef.'%"';
+            array_push($search_value, $bookingRef);
+        }
 
         if($request->property !== "" && !empty($request->property)){
             if($request->property !== "All"){
@@ -2079,9 +2260,9 @@ class HomeController extends Controller
         }
 
         if(count($query) > 0){
-            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0"');
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN user_files on users.id = user_files.userUid LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0" GROUP BY users.id');
         }else{
-            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN user_files on users.id = user_files.userUid LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0"');
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN user_files on users.id = user_files.userUid LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0" GROUP BY users.id.userId');
         }
 
         $userData = [];
