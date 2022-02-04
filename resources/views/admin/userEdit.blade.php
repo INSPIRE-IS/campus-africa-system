@@ -146,6 +146,10 @@
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1" <?php if($user->role_lookup == "1"){echo "checked";} ?>>
                     <label for="role_lookup" style="width:500px">Manage Lookups</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_comment" name="role_comment" value="1" <?php if($user->role_comment == "1"){echo "checked";} ?>>
+                    <label for="role_comment" style="width:500px">Make Comments</label>
+                </li>
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1" <?php if($user->role_update_booking_fee == "1"){echo "checked";} ?>>
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>

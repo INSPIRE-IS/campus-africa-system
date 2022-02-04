@@ -20,6 +20,7 @@ use App\Models\ImportNSFASApproval;
 use App\Models\ImportNSFASStudentAuditLog;
 use ZipStream\ZipStream;
 use ZipStream\Option\Archive as ArchiveOptions;
+use App\Models\Comments;
 
 class HomeController extends Controller
 {
@@ -560,8 +561,10 @@ class HomeController extends Controller
                 }
             }
 
+            $comments = Comments::with('users')->where('user_uid', $userId)->orderBy('created_at', 'desc')->get();
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived]);
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments]);
         }
     }
 
@@ -1096,6 +1099,7 @@ class HomeController extends Controller
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
             "role_lookup" => $request->role_lookup,
+            "role_comment" => $request->role_comment,
         ]);
 
         return redirect()->back();
@@ -1906,6 +1910,7 @@ class HomeController extends Controller
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
             "role_lookup" => $request->role_lookup,
+            "role_comment" => $request->role_comment,
         ]);
 
         if($request->email_details == "1"){
@@ -3700,6 +3705,17 @@ class HomeController extends Controller
                 }
             }
         }
+    }
+
+    public function add_comment(Request $request){
+        
+        Comments::create([
+            'user_uid' => $request->userId,
+            'comment' => $request->comment,
+            'action_user_uid' => Auth::user()->id,
+        ]);
+
+        return 'true';
     }
 
     

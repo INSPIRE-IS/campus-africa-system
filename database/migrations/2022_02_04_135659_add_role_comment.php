@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeUserIdRoom extends Migration
+class AddRoleComment extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class ChangeUserIdRoom extends Migration
      */
     public function up()
     {
-        Schema::table('property_data', function (Blueprint $table) {
-            $table->Integer('user_id_room')->change();
+        Schema::table('users', function (Blueprint $table) {
+            $table->tinyInteger('role_comment')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class ChangeUserIdRoom extends Migration
      */
     public function down()
     {
-        Schema::table('property_data', function (Blueprint $table) {
-                $table->tinyInteger('user_id_room')->change();
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('role_comment');
         });
     }
 }
