@@ -2262,7 +2262,7 @@ class HomeController extends Controller
         if(count($query) > 0){
             $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN user_files on users.id = user_files.userUid LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0" GROUP BY users.id');
         }else{
-            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN user_files on users.id = user_files.userUid LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0" GROUP BY users.id.userId');
+            $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN user_files on users.id = user_files.userUid LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0" GROUP BY users.id');
         }
 
         $userData = [];
