@@ -52,7 +52,7 @@
             </select>
         </div>
         <div class="searchField">
-        <label></label><br/>
+        <label>Room Type</label><br/>
             <select name="room_type" id="room_type">
                 <option value="">Select One</option>
             </select>
@@ -76,7 +76,7 @@
         </div>
 
         <div class="searchField">
-        <label></label><br/>
+        <label>Student Type</label><br/>
             <select name="student_type" id='student_type'>
                 <option value="All" selected>All Student Types</option>
                 <option value="NSFAS">NSFAS</option>
@@ -86,7 +86,7 @@
         </div>
 
         <div class="searchField">
-        <label></label><br/>
+        <label>Documents</label><br/>
             <select name="fieldStatus" id='fieldStatus'>
                 <option value="All" selected>- Select One - </option>
                 <option value="bookingStatus">Booking Status</option>
@@ -112,9 +112,9 @@
                 <option value="Empty">&#128308; Invalid Application</option>
             </select> -->
             </div>
-            <div class="searchField" style="margin-top:56px;">
-
-            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" >
+            <div class="searchField" style="margin-top:26px;">
+            <label>Status</label><br/>
+            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:90%;">
                 <option value="Valid">&#128994; Valid</option>
                 <option value="Pending">&#128993; Pending</option>
                 <option value="Incomplete">&#128308; Incomplete</option>
@@ -123,7 +123,7 @@
         </div>
 
         <div class="searchField">
-            <label>Date</label><br/>
+            <label>Application Date</label><br/>
             <input type="date" name="date" id="date"/>
             
         </div>
