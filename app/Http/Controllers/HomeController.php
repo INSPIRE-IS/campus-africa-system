@@ -2841,7 +2841,6 @@ class HomeController extends Controller
                 // UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
                 //     'status' => 'Rejected'
                 // ]);
-
                 $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first();
 
                 if($fileUploaded && $fileUploaded->fileUrl !== null){
@@ -3895,6 +3894,46 @@ class HomeController extends Controller
                         $updatedDates['lease_to_time'] = $request->lease_to_time;
 
                         Booking::where('id', $user->bookingRef)->update($updatedDates);
+
+                        if($booking->lease_from_date !== $request->lease_from_date){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease From Date Updated From ".$booking->lease_from_date." to ".$request->lease_from_date,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
+
+                        if($booking->lease_from_time !== $request->lease_from_time){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease From Time Updated From ".$booking->lease_from_time." to ".$request->lease_from_time,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
+
+                        if($booking->lease_to_date !== $request->lease_to_date){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease To Date Updated From ".$booking->lease_to_date." to ".$request->lease_to_date,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
+
+                        if($booking->lease_to_time !== $request->lease_to_time){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease To Time Updated From ".$booking->lease_to_time." to ".$request->lease_to_time,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
                     }
                 }
             }

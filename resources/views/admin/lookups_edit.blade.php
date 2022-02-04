@@ -89,8 +89,8 @@
     $("#submitLookup").on('click', function(){
         if($("#group_id").val() == "4"){
             Swal.fire({
-                title: 'Do you want to update All Leases?',
-                text: "All Unapproved students lease dates will be updated",
+                title: 'Update All Lease Dates',
+                text: "Apply this lease period to all existing (unapproved) applications as well?",
                 icon: 'warning',
                 showDenyButton: true,
                 denyButtonText: 'No',

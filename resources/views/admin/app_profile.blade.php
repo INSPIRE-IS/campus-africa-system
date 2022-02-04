@@ -413,6 +413,13 @@
             </div>
 
             <div class="form-field">
+                <label>Room</label>
+                <select name="room" id='room'>
+                    <!--  -->
+                </select>
+            </div>
+
+            <div class="form-field">
                 <label>Bed Code * <span id="bed_code_error" class="hidden"><small style="color:red">This field is required</small></span></label>
                 <select name="bed_code" id='bed_code'>
                     <!--  -->
@@ -537,6 +544,7 @@
 <input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/>
 <input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/>
 <input type="hidden" id="files_to_download" value="{{$files_to_download}}"/>
+<input type="hidden" id="selectedRoom" value=""/>
 
 
 <script>
@@ -815,6 +823,7 @@
             if ($("#property").val() !== "" && $("#roomType").val() !== "") {
                 $('#floor').html('<option>Loading</option>');
                 $('#unit').html('<option>Choose a Unit</option>');
+                $('#room').html('<option>All Rooms</option>');
                 $('#bed_code').html('<option>Choose a Bed</option>');
 
                 $('#room').val('');
@@ -917,11 +926,40 @@
                     let roomData = data[2];
                     let bookedRoomData = data[3];
 
+                    let RoomSelected = $("#selectedRoom").val()
+
                     $('#bed_code').html('<option>Choose a Bed</option>');
+                    $('#room').empty()
+                    $('#room').html('<option value="all">All Rooms</option>');
+
+                    let roomCodes = [];
+
+                   
 
                     Object.keys(roomData).forEach( function(key) {
-                        $('#bed_code').append("<option value='"+roomData[key].bed_code+"' room='"+roomData[key].room+"' bed='"+roomData[key].bed+"'>"+roomData[key].bed_code+"</option>")
+
+                        if(!roomCodes.includes(roomData[key].room)){
+                            roomCodes.push(roomData[key].room)
+                        }
+
+                        if(roomData[key].room == RoomSelected){
+                            $('#bed_code').append("<option value='"+roomData[key].bed_code+"' room='"+roomData[key].room+"' bed='"+roomData[key].bed+"'>"+roomData[key].bed_code+"</option>")
+                        }else if(RoomSelected == "all" || RoomSelected == "" || RoomSelected == "All Rooms"){
+                            $('#bed_code').append("<option value='"+roomData[key].bed_code+"' room='"+roomData[key].room+"' bed='"+roomData[key].bed+"'>"+roomData[key].bed_code+"</option>")
+                        }
                     }); 
+
+                    Object.keys(roomCodes).forEach( function(key) {
+                        console.log(roomCodes[key])
+                        if(RoomSelected == roomCodes[key]){
+                            $('#room').append("<option value='"+roomCodes[key]+"' selected>"+roomCodes[key]+"</option>")
+                        }else{
+                            $('#room').append("<option value='"+roomCodes[key]+"'>"+roomCodes[key]+"</option>")
+                        }
+                    })
+
+                    
+
                     Object.keys(bookedRoomData).forEach( function(key) {
                         $('#bed_code').append("<option disabled value='"+bookedRoomData[key].bed_code+"' room='"+bookedRoomData[key].room+"' bed='"+bookedRoomData[key].bed+"'>"+bookedRoomData[key].bed_code+" (Booked)</option>")
                     });                    
@@ -1094,6 +1132,12 @@
     });
 
     $("#unit").on('change', function(){
+        callRoomDetails('bed_code');
+        $("#selectedRoom").val('all')
+    });
+
+    $("#room").on('change', function(){
+        $("#selectedRoom").val($("#room").val())
         callRoomDetails('bed_code');
     });
     
