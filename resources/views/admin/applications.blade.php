@@ -84,9 +84,10 @@
                 <option value="Cash / Direct">Cash</option>
             </select>
         </div>
-        <div class="searchField" style="height:100px;">
+
+        <div class="searchField">
         <label></label><br/>
-            <select name="fieldStatus" id='fieldStatus' style="width:45%">
+            <select name="fieldStatus" id='fieldStatus'>
                 <option value="All" selected>- Select One - </option>
                 <option value="bookingStatus">Booking Status</option>
                 <option value="proofOfPayment">Proof of Payment</option>
@@ -110,26 +111,35 @@
                 <option value="Action">&#128993; Pending Application</option>
                 <option value="Empty">&#128308; Invalid Application</option>
             </select> -->
+            </div>
+            <div class="searchField" style="margin-top:56px;">
 
-            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:160px;">
+            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" >
                 <option value="Valid">&#128994; Valid</option>
                 <option value="Pending">&#128993; Pending</option>
                 <option value="Incomplete">&#128308; Incomplete</option>
                 <option value="NA">&xcirc; Not Applicable</option>
             </select>
         </div>
+
         <div class="searchField">
             <label>Date</label><br/>
             <input type="date" name="date" id="date"/>
-            <br/><br/><br/>
+            
+        </div>
+        <div class="searchField">
+            <br/><br/><br/><br/><br/><br/>
+        </div>
+        <div class="searchField">
+            <br/><br/><br/><br/><br/><br/>
         </div>
 
         
 
-        <div class="searchTab" style="margin-top:70px;">
+        <div class="searchTab" >
             <button type="button" id="searchButton">Search</button>
         </div>
-        <div class="indexTab flex" id="applicationIndex" style="margin-top:70px;">
+        <div class="indexTab flex" id="applicationIndex" >
             <label>Legend</label>
             <div class="keys">
                 <div id="indexOne"><div class="button approved"></div><span class="text">Approved</span></div>
