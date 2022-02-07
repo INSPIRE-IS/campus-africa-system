@@ -11,6 +11,7 @@ use App\Models\ActionList;
 use PDF;
 use Auth;
 use App\Models\UserFiles;
+use App\Models\Lookups;
 
 class PDFController extends Controller
 {
@@ -37,6 +38,8 @@ class PDFController extends Controller
         }
 
         $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->first();
+
+        $leaseAdminFee = Lookups::where('group_id', '8')->first();
         
 
 
@@ -68,7 +71,7 @@ class PDFController extends Controller
           "actionUserRole" => Auth::user()->userRole,
         ]);
 
-        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time"=> $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time]);
+        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time"=> $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time, "leaseAdminFee" => $leaseAdminFee]);
 
       }else{
 
@@ -77,9 +80,10 @@ class PDFController extends Controller
         $booking = Booking::where('userId', $studentId)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('residence', $propertyData->residence)->first();
+        $leaseAdminFee = Lookups::where('group_id', '8')->first();
 
         // share data to view
-        $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking'));
+        $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee'));
   
         // download PDF file with download method
         // return $pdf->download('lease.pdf');
