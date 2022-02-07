@@ -412,7 +412,7 @@
                 </select>
             </div>
 
-            <div class="form-field">
+            <div class="form-field hidden" id="roomSection">
                 <label>Room</label>
                 <select name="room" id='room'>
                     <!--  -->
@@ -722,6 +722,12 @@
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
 
+        if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
+            $("#roomSection").removeClass('hidden');
+        }else{
+            $("#roomSection").addClass('hidden');
+        }
+
         $("#property").change();
         $("#roomType").val('<?php echo $booking->roomType;?>');
 
@@ -819,6 +825,9 @@
     })
 
     function callRoomDetails(callId){
+
+        
+
         if (callId == "floor") {
             if ($("#property").val() !== "" && $("#roomType").val() !== "") {
                 $('#floor').html('<option>Loading</option>');
@@ -1281,18 +1290,25 @@
         let propValue = $("#property").val();
 
         if(propValue == "Braamlofts"){
+            $("#roomSection").removeClass('hidden');
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
         }else if(propValue == "80 Jorissen"){
+            $("#roomSection").addClass('hidden');
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "49 Jorissen"){
+            $("#roomSection").addClass('hidden');
             $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="Single">Single</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option><option value="Single 4 bedroom">Single | 4 Bedroom</option>')
         }else if(propValue == "Dunvista Mansions"){
+            $("#roomSection").removeClass('hidden');
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "Wynton Joy"){
+            $("#roomSection").removeClass('hidden');
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "126 Siemert"){
+            $("#roomSection").removeClass('hidden');
             $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
         }else if(propValue == "YMCA"){
+            $("#roomSection").addClass('hidden');
             $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single | 3 Bedroom</option>')
         }
 
