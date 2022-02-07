@@ -5,6 +5,9 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <div class="container">
 
 <br/>
@@ -49,7 +52,7 @@
             </select>
         </div>
         <div class="searchField">
-        <label></label><br/>
+        <label>Room Type</label><br/>
             <select name="room_type" id="room_type">
                 <option value="">Select One</option>
             </select>
@@ -60,7 +63,20 @@
         </div>
 
         <div class="searchField">
-        <label></label><br/>
+            <label>Student Number</label><br/>
+            <input type="text" name="studentNo" id="studentNo"/>
+        </div>
+        <div class="searchField">
+            <label>ID Number / Passport</label><br/>
+            <input type="text" name="idPassport" id="idPassport"/>
+        </div>
+        <div class="searchField">
+            <label>Booking Reference</label><br/>
+            <input type="text" name="bookingRef" id="bookingRef"/>
+        </div>
+
+        <div class="searchField">
+        <label>Student Type</label><br/>
             <select name="student_type" id='student_type'>
                 <option value="All" selected>All Student Types</option>
                 <option value="NSFAS">NSFAS</option>
@@ -68,31 +84,62 @@
                 <option value="Cash / Direct">Cash</option>
             </select>
         </div>
+
         <div class="searchField">
-        <label></label><br/>
-            <select name="bookingStatus" id='bookingStatus' style="width:45%">
+        <label>Documents</label><br/>
+            <select name="fieldStatus" id='fieldStatus'>
+                <option value="All" selected>- Select One - </option>
+                <option value="bookingStatus">Booking Status</option>
+                <option value="proofOfPayment">Proof of Payment</option>
+                <option value="idCopy">ID Copy</option>
+                <option value="applicationStatus">Application Status</option>
+                <option value="studentCardCopy">Student Card Copy</option>
+                <option value="proofOfRegistration">Proof of Registration</option>
+                <option value="nsfasBursaryApproval">NSFAS | Bursary Approval</option>
+                <option value="bankStatements">Bank Statements</option>
+                <option value="leaseStatus">Lease Status</option>
+            </select>
+            <!-- <select name="bookingStatus" id='bookingStatus' style="width:45%">
                 <option value="All" selected>All Bookings</option>
                 <option value="Approved">&#128994; Valid Booking</option>
                 <option value="Action">&#128993; Pending Booking</option>
                 <option value="Empty">&#128308; Invalid Booking</option>
-            </select>
-            <select name="applicationStatus" id='applicationStatus' style="width:45%">
+            </select> -->
+            <!-- <select name="applicationStatus" id='applicationStatus' style="width:45%">
                 <option value="All" selected>All Applications</option>
                 <option value="Approved">&#128994; Valid Application</option>
                 <option value="Action">&#128993; Pending Application</option>
                 <option value="Empty">&#128308; Invalid Application</option>
+            </select> -->
+            </div>
+            <div class="searchField" style="margin-top:26px;">
+            <label>Status</label><br/>
+            <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:90%;">
+                <option value="Valid">&#128994; Valid</option>
+                <option value="Pending">&#128993; Pending</option>
+                <option value="Incomplete">&#128308; Incomplete</option>
+                <option value="NA">&xcirc; Not Applicable</option>
             </select>
         </div>
+
         <div class="searchField">
-            <label>Date</label><br/>
+            <label>Application Date</label><br/>
             <input type="date" name="date" id="date"/>
-            <br/><br/><br/>
+            
+        </div>
+        <div class="searchField">
+            <br/><br/><br/><br/><br/><br/>
+        </div>
+        <div class="searchField">
+            <br/><br/><br/><br/><br/><br/>
         </div>
 
-        <div class="searchTab">
+        
+
+        <div class="searchTab" >
             <button type="button" id="searchButton">Search</button>
         </div>
-        <div class="indexTab flex" id="applicationIndex">
+        <div class="indexTab flex" id="applicationIndex" >
             <label>Legend</label>
             <div class="keys">
                 <div id="indexOne"><div class="button approved"></div><span class="text">Approved</span></div>
@@ -339,6 +386,13 @@ jQuery(document).ready( function($) {
         }
     });
 });
+
+$(function(){
+    $(".js-example-basic-multiple").select2({
+        placeholder: "- Select One -",
+    });
+});
+
 </script>
 
 @endsection
