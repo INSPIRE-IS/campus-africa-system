@@ -1100,6 +1100,7 @@ class HomeController extends Controller
             "role_update_booking_fee" => $request->role_update_booking_fee,
             "role_lookup" => $request->role_lookup,
             "role_comment" => $request->role_comment,
+            "user_role_name" => $request->user_role_name,
         ]);
 
         return redirect()->back();
@@ -1911,6 +1912,7 @@ class HomeController extends Controller
             "role_update_booking_fee" => $request->role_update_booking_fee,
             "role_lookup" => $request->role_lookup,
             "role_comment" => $request->role_comment,
+            "user_role_name" => $request->user_role_name,
         ]);
 
         if($request->email_details == "1"){

@@ -50,6 +50,11 @@
         </div>
 
         <div class="form-field">
+            <label>User Role Name</label>
+            <input type="text" name="user_role_name" id="user_role_name"  >
+        </div>
+
+        <div class="form-field">
             <br/>
             <ul style="list-style-type:none">
                 <li style="display:inline-flex">
