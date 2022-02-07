@@ -119,6 +119,8 @@ class User extends Authenticatable
         'role_cancel_booking',
         'role_update_booking_fee',
         'role_lookup',
+        'role_comment',
+        'user_role_name',
     ];
 
     public function files(){

@@ -28,7 +28,7 @@
                     <td>{{$user->userFirstName}}</td>
                     <td>{{$user->userLastname}}</td>
                     <td>{{$user->email}}</td>
-                    <td>@if($user->userRole == "1") Super Admin @elseif($user->userRole == "2") Admin @elseif($user->userRole == "1") Consultant @endif</td>
+                    <td>{{$user->user_role_name}}</td>
                     <td><a href="/user/edit/{{$user->id}}"><button type="button" class="inactiveBtn">Edit</button></a></td>
                 </tr>
             @endforeach

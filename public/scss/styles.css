@@ -274,7 +274,8 @@ body {
     padding: 39px 50px;
 }
 
-.cards .customWhiteCard .actionItemList {
+.cards .customWhiteCard .actionItemList,
+.cards .customWhiteCard .commentItemList {
     max-height: 350px;
     overflow: auto;
 }
