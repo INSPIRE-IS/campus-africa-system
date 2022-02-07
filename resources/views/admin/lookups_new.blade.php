@@ -18,6 +18,7 @@
                 <option value="5" >Nationality</option>
                 <option value="6" >Year of Study</option>
                 <option value="7" >Waive Booking Fee</option>
+                <option value="8" >Lease Admin Fee</option>
             </select>
         </div>
 

@@ -189,7 +189,9 @@
             <span style="font-weight:bold; font-size:14px;">4.	Administration Fee</span>
 
             <ol type="a" style=" text-laign:left; font-size:14px;">
-                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of R{{$residence->booking_rate}}. </li>
+                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of R
+                    @if(($data->studentType == "Cash / Direct") || ($data->studentType == "Bursary" && $data->nsfas_bursar !== 1)) {{$leaseAdminFee->lookup_name}} @else 0 @endif
+                    . </li>
                 <br/>
             </ol>
 
