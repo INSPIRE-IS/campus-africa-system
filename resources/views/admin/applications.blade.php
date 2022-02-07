@@ -137,7 +137,8 @@
         
 
         <div class="searchTab" >
-            <button type="button" id="searchButton">Search</button>
+            <button type="button" id="searchButton">Search</button><br/>
+            <button type="button" id="resetFilter" style="margin-top:5px;">Reset Filters</button>
         </div>
         <div class="indexTab flex" id="applicationIndex" >
             <label>Legend</label>

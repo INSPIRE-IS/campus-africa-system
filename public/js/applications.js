@@ -279,6 +279,19 @@ jQuery(document).ready(function ($) {
         window.location = "/application-profile/"+rowId;
     } );
 
+    $("#resetFilter").on('click', function(){
+        document.getElementById('property').value="All";
+        document.getElementById('room_type').value="";
+        $("#applicant").val('')
+        $("#studentNo").val('')
+        $("#idPassport").val('')
+        $("#bookingRef").val('')
+        document.getElementById('student_type').value="All";
+        document.getElementById('fieldStatus').value="All";
+        $("#date").val('')
+        $('#status').val(null).trigger('change');
+    })
+
 
 
     
