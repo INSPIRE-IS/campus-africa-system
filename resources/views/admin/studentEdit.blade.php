@@ -275,7 +275,12 @@
             </div>
 
             <div class="form-field">
-                <br/>
+                <ul style="list-style-type:none">
+                    <li style="display:inline-flex; margin-top:30px;">
+                        <input type="checkbox" id="nsfas_bursar" name="nsfas_bursar" value="1" style="width:50px !important" <?php if($user->nsfas_bursar == "1"){ echo "checked";} ?>>
+                        <label for="nsfas_bursar" style="width:500px">NSFAS bursar?</label>
+                    </li>
+                </ul>
             </div>
 
             <div class="form-field-big">

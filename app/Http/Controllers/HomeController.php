@@ -1125,13 +1125,30 @@ class HomeController extends Controller
     public function edit_student(Request $request){
 
         $oldData = User::where("id", $request->userUid)->first();
-        $newData = ['userFirstName|First Name' => $request->firstName,'userLastname|Last Name' => $request->lastName,'userTitle|Title' => $request->title,'userDob|Date of Birth' => $request->dob,'userCell|Cellphone Number' => $request->cell_no,'userEmail|Email' => $request->email,'userId|I.D Number' => $request->idNumber,'userNationality|Nationality' => $request->nationality,'userPassport|Passport Number' => $request->passportNo,'institutionStudy|Institution of Study' => $request->institStudy,'studentNo|Student Number' => $request->studNumber,'studentType|Student Type' => $request->studentType,'faculty|Faculty' => $request->faculty,'year|Year' => "2022",'sponFirstName|Parent / Sponser First Name' => $request->pFirstName,'sponLastName| Parent / Sponser Last Name' => $request->pLastName,'sponCell|Parent / Sponser Cellphone Number' => $request->pCell_no,'sponEmail|Parent / Sponser Email' => $request->pEmail,'sponId|Parent / Sponser I.D Number' => $request->pIdNumber,'burCompanyName|Burser Company Name' => $request->bCompanyName,'burRegNo|Burser Registration Number' => $request->bRegistrationNo,'burContactPerson|Burser Contact Person' => $request->bContactPerson,'burContactNo|Burser Contact Number' => $request->bContactNumber,'burEmail|Burser Email' => $request->bEmail,'kinFirstName|Next of Kin First Name' => $request->kFirstName,'kinLastName|Next of Kin Last Name' => $request->kLastName,'kinTitle|Next of Kin Title' => $request->kTitle,'kinId|Next of Kin I.D Number' => $request->kIdNumber,'kinAddressStr|Next of Kin Street Number' => $request->kAddress1,'kinAddressSuburb|Next of Kin Suburb' => $request->kAddress2,'kinAddressCity|Next of Kin City' => $request->kAddressCity,'kinAddressPost|Next of Kin Postal Code' => $request->kAddressPostal,'kinRelationship|Next of Kin Relationship' => $request->kRelationship,'kinTelNo|Next of Kin Telephone Number' => $request->kTeleNo,'kinCellNo|Next of Kin Cellphone Number' => $request->kCellNo,'kinWorkNo|Next of Kin Work Number' => $request->kWorkNo,'kinEmail|Next of Kin Email' => $request->kEmail,'kinNationality|Next of Kin Nationality' => $request->kinNationality,'kinPassportNo|Next of Kin Passport Number' => $request->kinPassportNo,'pNationality|Parent / Sponser Nationality' => $request->pNationality,'pPassportNo|Parent / Sponser Passport Number' => $request->pPassportNo,'pAddress1|Parent / Sponser Street Number' => $request->pAddress1,'pAddress2|Parent / Sponser Suburb' => $request->pAddress2,'pAddressCity|Parent / Sponser City' => $request->pAddressCity,'pAddressPostal|Parent / Sponser Postal Code' => $request->pAddressPostal,'userAddress1|Street Number' => $request->userAddress1,'userAddress2|Suburb' => $request->userAddress2,'userAddressCity|City' => $request->userAddressCity,'userAddressPostal|PostalCode' => $request->userAddressPostal, 'bAddress1|Burser Street Number' => $request->bAddress1,'bAddress2|Burser Suburb' => $request->bAddress2,'bAddressCity|Burser City' => $request->bAddressCity,'bAddressPostal|Burser Postal Code' => $request->bAddressPostal,'bPayment|Burser Payment' => $request->bPayment,'bint|Burser Intermediary' => $request->bint,'bIntName|Burser Intermediary Name' => $request->bIntName,];
+        $newData = ['userFirstName|First Name' => $request->firstName,'userLastname|Last Name' => $request->lastName,'userTitle|Title' => $request->title,'userDob|Date of Birth' => $request->dob,'userCell|Cellphone Number' => $request->cell_no,'userEmail|Email' => $request->email,'userId|I.D Number' => $request->idNumber,'userNationality|Nationality' => $request->nationality,'userPassport|Passport Number' => $request->passportNo,'institutionStudy|Institution of Study' => $request->institStudy,'studentNo|Student Number' => $request->studNumber,'studentType|Student Type' => $request->studentType,'faculty|Faculty' => $request->faculty,'year|Year' => "2022",'sponFirstName|Parent / Sponser First Name' => $request->pFirstName,'sponLastName| Parent / Sponser Last Name' => $request->pLastName,'sponCell|Parent / Sponser Cellphone Number' => $request->pCell_no,'sponEmail|Parent / Sponser Email' => $request->pEmail,'sponId|Parent / Sponser I.D Number' => $request->pIdNumber,'burCompanyName|Burser Company Name' => $request->bCompanyName,'burRegNo|Burser Registration Number' => $request->bRegistrationNo,'burContactPerson|Burser Contact Person' => $request->bContactPerson,'burContactNo|Burser Contact Number' => $request->bContactNumber,'burEmail|Burser Email' => $request->bEmail,'kinFirstName|Next of Kin First Name' => $request->kFirstName,'kinLastName|Next of Kin Last Name' => $request->kLastName,'kinTitle|Next of Kin Title' => $request->kTitle,'kinId|Next of Kin I.D Number' => $request->kIdNumber,'kinAddressStr|Next of Kin Street Number' => $request->kAddress1,'kinAddressSuburb|Next of Kin Suburb' => $request->kAddress2,'kinAddressCity|Next of Kin City' => $request->kAddressCity,'kinAddressPost|Next of Kin Postal Code' => $request->kAddressPostal,'kinRelationship|Next of Kin Relationship' => $request->kRelationship,'kinTelNo|Next of Kin Telephone Number' => $request->kTeleNo,'kinCellNo|Next of Kin Cellphone Number' => $request->kCellNo,'kinWorkNo|Next of Kin Work Number' => $request->kWorkNo,'kinEmail|Next of Kin Email' => $request->kEmail,'kinNationality|Next of Kin Nationality' => $request->kinNationality,'kinPassportNo|Next of Kin Passport Number' => $request->kinPassportNo,'pNationality|Parent / Sponser Nationality' => $request->pNationality,'pPassportNo|Parent / Sponser Passport Number' => $request->pPassportNo,'pAddress1|Parent / Sponser Street Number' => $request->pAddress1,'pAddress2|Parent / Sponser Suburb' => $request->pAddress2,'pAddressCity|Parent / Sponser City' => $request->pAddressCity,'pAddressPostal|Parent / Sponser Postal Code' => $request->pAddressPostal,'userAddress1|Street Number' => $request->userAddress1,'userAddress2|Suburb' => $request->userAddress2,'userAddressCity|City' => $request->userAddressCity,'userAddressPostal|PostalCode' => $request->userAddressPostal, 'bAddress1|Burser Street Number' => $request->bAddress1,'bAddress2|Burser Suburb' => $request->bAddress2,'bAddressCity|Burser City' => $request->bAddressCity,'bAddressPostal|Burser Postal Code' => $request->bAddressPostal,'bPayment|Burser Payment' => $request->bPayment,'bint|Burser Intermediary' => $request->bint,'bIntName|Burser Intermediary Name' => $request->bIntName, 'nsfas_bursar|NSFAS Bursar' => $request->nsfas_bursar,];
 
         foreach($newData as $key => $new){
             
             $info = explode("|", $key);
             $key = $info[0];
             $changedField = $info[1];
+
+            if($changedField == "NSFAS Bursar"){
+                
+                if($oldData->$key !== 1){
+                    $oldData->$key = "No";
+                }else{
+                    $oldData->$key = "Yes";
+                }
+
+                if($new == 1){
+                    $new = "Yes";
+                }else{
+                    $new = "No";
+                }
+
+            }
+
 
             if($oldData->$key !== $new){
                 ActionList::create([
@@ -1205,6 +1222,7 @@ class HomeController extends Controller
             'bPayment' => $request->bPayment,
             'bint' => $request->bint,
             'bIntName' => $request->bIntName,
+            'nsfas_bursar' => $request->nsfas_bursar,
         ]);
 
         // ActionList::create([
@@ -1619,6 +1637,7 @@ class HomeController extends Controller
             'bPayment' => $request->bPayment,
             'bint' => $request->bint,
             'bIntName' => $request->bIntName,
+            'nsfas_bursar' => $request->nsfas_bursar,
         ]);
 
         
@@ -3888,9 +3907,9 @@ class HomeController extends Controller
 
         foreach($allUsers as $user){
 
-            if($user->bookingStatus !== "Approved" && $user->bookingStatus !== "Approved Confirmed" && $user->applicationStatus !== "Approved" && $user->applicationStatus !== "Approved Confirmed"){
+            if($user->bookingStatus !== "Approved Confirmed" && $user->applicationStatus !== "Approved Confirmed"){
 
-                if($user->bookingStatus !== "Rejected" && $user->bookingStatus !== "Rejected Confirmed" && $user->applicationStatus !== "Rejected" && $user->applicationStatus !== "Rejected Confirmed"){
+                if($user->bookingStatus !== "Rejected Confirmed" && $user->applicationStatus !== "Rejected Confirmed"){
                     
                     $booking = Booking::where('id', $user->bookingRef)->first();
 

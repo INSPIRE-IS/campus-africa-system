@@ -121,6 +121,7 @@ class User extends Authenticatable
         'role_lookup',
         'role_comment',
         'user_role_name',
+        'nsfas_bursar',
     ];
 
     public function files(){

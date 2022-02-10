@@ -189,7 +189,9 @@
             <span style="font-weight:bold; font-size:14px;">4.	Administration Fee</span>
 
             <ol type="a" style=" text-laign:left; font-size:14px;">
-                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of R{{$residence->booking_rate}}. </li>
+                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of R
+                    @if(($data->studentType == "Cash / Direct") || ($data->studentType == "Bursary" && $data->nsfas_bursar !== 1)) {{$leaseAdminFee->lookup_name}} @else 0 @endif
+                    . </li>
                 <br/>
             </ol>
 
@@ -533,10 +535,10 @@
             <table style="width:100%">
                 <tr>
                     <td style="width:50%; vertical-align: top;">
-                        <p style="font-size:14px;">OWNER Signature: ………………………………….…<br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
+                        <p style="font-size:14px;">OWNER Signature: <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
                     </td>
                     <td style="vertical-align: top;">
-                        <p style="font-size:14px;">Place: ………………………..........
+                        <p style="font-size:14px;">Place: Braamfontein
                             <br/><br/>
                             Date: <?php echo date('Y-m-d');?>
                         </p>
@@ -715,7 +717,7 @@
             <br/>
             <span style="font-size:14px;">Sign (Lodger) ………………………………………………….</span>
             <br/><br/>
-            <span style="font-size:14px;">Sign (Owner) ………………………………………………….</span>
+            <span style="font-size:14px;">Sign (Owner)  ………………………………………………….</span>
 
             <footer>
                 Page | 10
@@ -854,12 +856,12 @@
                 <p style="font-weight:bold; font-size:14px;">I am an approved bursary holder from {{$data->burCompanyName}}, whose agreement is to pay all accommodation on my behalf. Should it arise that the above-mentioned bursary does not pay the accommodation I will be held liable in my private capacity for all outstanding monies due even if I have vacated the premises.</p>
             @endif
             <br/>
-            <br/>
+            <!-- <br/> -->
             <p style="font-weight:bold; font-size:14px;">Signed at __________________________________ on this <?php echo date('d'); ?> day of <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
             <br/>
             <p style="font-weight:bold; font-size:14px;">_______________<br/>Student</p>
-            <br/>
-            <p style="font-weight:bold; font-size:14px;">_______________<br/>For and on behalf of<br/>Owner</p>
+            <!-- <br/> -->
+            <p style="font-weight:bold; font-size:14px;"><img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/><br/>For and on behalf of<br/>Owner</p>
             <br/>
             <hr/>
             <br/>

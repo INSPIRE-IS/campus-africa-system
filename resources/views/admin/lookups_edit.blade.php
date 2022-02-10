@@ -19,6 +19,7 @@
                 <option value="5" <?php if($lookup->group_id == "5"){echo "selected";}?>>Nationality</option>
                 <option value="6" <?php if($lookup->group_id == "6"){echo "selected";}?>>Year of Study</option>
                 <option value="7" <?php if($lookup->group_id == "7"){echo "selected";}?>>Waive Booking Fee</option>
+                <option value="8" <?php if($lookup->group_id == "8"){echo "selected";}?>>Lease Admin Fee</option>
             </select>
             <input type="hidden" name="lookupId" id="lookupId" value="{{$lookup->id}}"/>
         </div>
