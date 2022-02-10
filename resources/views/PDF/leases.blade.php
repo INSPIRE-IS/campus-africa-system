@@ -538,7 +538,7 @@
                         <p style="font-size:14px;">OWNER Signature: <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
                     </td>
                     <td style="vertical-align: top;">
-                        <p style="font-size:14px;">Place: ………………………..........
+                        <p style="font-size:14px;">Place: Braamfontein
                             <br/><br/>
                             Date: <?php echo date('Y-m-d');?>
                         </p>
@@ -717,7 +717,7 @@
             <br/>
             <span style="font-size:14px;">Sign (Lodger) ………………………………………………….</span>
             <br/><br/>
-            <span style="font-size:14px;">Sign (Owner) <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/></span>
+            <span style="font-size:14px;">Sign (Owner)  ………………………………………………….</span>
 
             <footer>
                 Page | 10
