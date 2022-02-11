@@ -159,7 +159,11 @@
                             <div class="responsible">
                                 <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
                                 @if($action->actionUserRole !== "0" )
-                                    <button type="button" class="admin">Admin</button>
+                                    @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
+                                        <button type="button" class="admin">Admin</button>
+                                    @else
+                                    <button type="button" class="admin">{{$action->users->user_role_name}}</button>
+                                    @endif
                                 @else
                                     <button type="button" class="applicant">Applicant</button>
                                 @endif
@@ -346,6 +350,36 @@
                 </div>
 
 
+            </div>
+
+            <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
+                <h2 class="appHeader">Comments</h2>
+                @if(Auth::user()->role_comment == "1")
+                    <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
+                    <br/>
+                    <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
+                @endif
+
+                <!-- comments -->
+
+                <div class="commentItemList" style="<?php if(Auth::user()->role_comment == "1"){echo "margin-top:73px;";} ?> max-height: 350px; overflow: auto; width:100%">
+
+                @if(count($comments) == 0) <p style="text-align:center">There are no comments!</p>@endif 
+
+                    @foreach($comments as $comment)
+
+                        <div class="infoBlock">
+                            <div class="responsible" style="width:100%">
+                                <p>{{substr($comment->created_at, 8, 2)}}/{{substr($comment->created_at, 5, 2)}}/{{substr($comment->created_at, 0, 4)}} &nbsp; {{substr($comment->created_at, 11, 5)}}  | {{$comment->users->email}} | @if($comment->users->userRole == "1") {{$comment->users->user_role_name}} @endif</p>
+                            </div>
+                            <div class="information">
+                                <p>{{$comment->comment}}</p>
+                            </div>
+                        </div>
+
+                    @endforeach
+                    
+                </div>
             </div>
 
         </div>
@@ -554,6 +588,24 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $("#addComment").on('click', function(){
+        $("#addComment").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "post",
+            url: "/add-comment",
+            data: {
+                userId: "{{$user[0]['userInfo']['id']}}",
+                comment: $("#newComment").val(),
+            },
+
+            success: function (data) {
+                
+                window.location.reload();
+
+            },
+        });
+    })
 
 
     checkUserStatus();
@@ -1845,8 +1897,13 @@
                 
                 data.forEach(myFunction);
                 function myFunction(item, index) {
+                    console.log(item)
                     if(item['actionUserRole'] == "1"){
-                        var role = '<button type="button" class="admin">Admin</button>';
+                        if(item['users']['user_role_name'] == ""){
+                            var role = '<button type="button" class="admin">Admin</button>';
+                        }else{
+                            var role = '<button type="button" class="admin">'+item['users']['user_role_name']+'</button>';
+                        }
                     }else{
                         var role = '<button type="button" class="applicant">Applicant</button>';
                     }

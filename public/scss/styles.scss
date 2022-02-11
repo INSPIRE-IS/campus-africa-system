@@ -252,7 +252,8 @@ body {
         background-color: #f8f8f8;
         padding: 39px 50px;
 
-        .actionItemList {
+        .actionItemList,
+        .commentItemList {
             max-height: 350px;
             overflow: auto;
         }
@@ -1932,7 +1933,8 @@ input:read-only {
 @media only screen and (max-width: 1170px) {
     .cards {
         .customWhiteCard {
-            .actionItemList {
+            .actionItemList,
+            .commentItemList {
                 margin-top: 50px;
             }
             .appHeader {
