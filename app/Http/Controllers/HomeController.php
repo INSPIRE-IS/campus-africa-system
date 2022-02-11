@@ -2548,7 +2548,14 @@ class HomeController extends Controller
         }
 
         $users = [
-			['<b>First Name</b>', '<b>Last Name</b>', '<b>Title</b>', '<b>DOB</b>', '<b>Cell</b>', '<b>Email</b>', '<b>Nationality</b>', '<b>I.D Number</b>', '<b>Passport</b>',  '<b>Student Type</b>', '<b>Year</b>', '<b>Institution of Study</b>', '<b>Student Number</b>', '<b>Year of Study</b>', '<b>Faculty</b>', '<b>Residence</b>', '<b>Room Type</b>', '<b>Burser Company Name</b>', '<b>Burser Registeration Number</b>', '<b>Burser Contact Person</b>', '<b>Burser Contact Number</b>', '<b>Burser Email</b>', '<b>Parent First Name</b>', '<b>Parent Last Name</b>', '<b>Parent Cellphone Number</b>', '<b>Parent Email</b>', '<b>Parent Nationality</b>', '<b>Parent I.D Number</b>', '<b>Parent Passport</b>', '<b>Parent Street No</b>', '<b>Parent Suburb</b>', '<b>Parent City</b>', '<b>Parent Postal Code</b>', '<b>Next of Kin First Name</b>', '<b>Next of Kin Last Name</b>', '<b>Next of Kin Title</b>', '<b>Next of Kin Relationship</b>', '<b>Next of Kin Nationality</b>', '<b>Next of Kin I.D Number</b>', '<b>Next of Kin Passport</b>', '<b>Next of Kin Cellphone Number</b>', '<b>Next of Kin Email</b>', '<b>Next of Kin Work Number</b>', '<b>Next of Kin Telephone Number</b>', '<b>Next of Kin Street No</b>', '<b>Next of Kin Suburb</b>', '<b>Next of Kin City</b>', '<b>Next of Kin Postal Code</b>',],
+			['<b>First Name</b>', '<b>Last Name</b>', '<b>Title</b>', '<b>DOB</b>', '<b>Cell</b>', '<b>Email</b>', '<b>Nationality</b>', '<b>I.D Number</b>', '<b>Passport</b>',  '<b>Student Type</b>', '<b>Year</b>', '<b>Institution of Study</b>', '<b>Student Number</b>', '<b>Year of Study</b>', '<b>Faculty</b>',
+
+            '<b>Processing Status</b>',
+            '<b>Booking Status</b>',
+            '<b>Application Status</b>',
+            '<b>Lease Status</b>',
+            
+            '<b>Residence</b>', '<b>Room Type</b>', '<b>Floor</b>', '<b>Unit</b>', '<b>Bed Code</b>', '<b>Burser Company Name</b>', '<b>Burser Registeration Number</b>', '<b>Burser Contact Person</b>', '<b>Burser Contact Number</b>', '<b>Burser Email</b>', '<b>Parent First Name</b>', '<b>Parent Last Name</b>', '<b>Parent Cellphone Number</b>', '<b>Parent Email</b>', '<b>Parent Nationality</b>', '<b>Parent I.D Number</b>', '<b>Parent Passport</b>', '<b>Parent Street No</b>', '<b>Parent Suburb</b>', '<b>Parent City</b>', '<b>Parent Postal Code</b>', '<b>Next of Kin First Name</b>', '<b>Next of Kin Last Name</b>', '<b>Next of Kin Title</b>', '<b>Next of Kin Relationship</b>', '<b>Next of Kin Nationality</b>', '<b>Next of Kin I.D Number</b>', '<b>Next of Kin Passport</b>', '<b>Next of Kin Cellphone Number</b>', '<b>Next of Kin Email</b>', '<b>Next of Kin Work Number</b>', '<b>Next of Kin Telephone Number</b>', '<b>Next of Kin Street No</b>', '<b>Next of Kin Suburb</b>', '<b>Next of Kin City</b>', '<b>Next of Kin Postal Code</b>',],
 		];
 
         foreach($searched_students as $studentData){
@@ -2562,7 +2569,76 @@ class HomeController extends Controller
             $lookupsInstit = Lookups::where('id', $student->institutionStudy)->first();
             $lookupsFaculty = Lookups::where('id', $student->faculty)->first();
 
-            $studentData = [$student->userFirstName, $student->userLastname, $student->userTitle, $student->userDob, $student->userCell, $student->email, $student->userNationality, $student->userId, $student->userPassport, $student->studentType, $student->year, $lookupsInstit->value, $student->studentNo, $student->yearOfStudy, $lookupsFaculty->value, $booking->property, $booking->roomType, $student->burCompanyName, $student->burRegNo, $student->burContactPerson, $student->burContactNo, $student->burEmail, $student->sponFirstName, $student->sponLastName, $student->sponCell, $student->sponEmail, $student->pNationality, $student->sponId, $student->pPassportNo, $student->pAddress1, $student->pAddress2, $student->pAddressCity, $student->pAddressPostal, $student->kinFirstName, $student->kinLastName, $student->kinTitle, $student->kinRelationship, $student->kinNationality, $student->kinId, $student->kinPassportNo, $student->kinCellNo, $student->kinEmail, $student->kinWorkNo, $student->kinTelNo, $student->kinAddressStr, $student->kinAddressSuburb, $student->kinAddressCity, $student->kinAddressPost ];
+            if($student->bookingStatus == "Action"){
+                $bookingStatus = "Pending";
+            }else if($student->bookingStatus == "Approved" || $student->bookingStatus == "Approved Confirmed"){
+                $bookingStatus = "Approved";
+            }else if($student->bookingStatus == "Cancelled"){
+                $bookingStatus = "Cancelled";
+            }else if($student->bookingStatus == "Rejected Confirmed"){
+                $bookingStatus = "Rejected";
+            }else{
+                $bookingStatus = "Incomplete";
+            }
+
+            if($student->applicationStatus == "Action"){
+                $applicationStatus = "Pending";
+            }else if($student->applicationStatus == "Approved" || $student->applicationStatus == "Approved Confirmed"){
+                $applicationStatus = "Approved";
+            }else if($student->applicationStatus == "Cancelled"){
+                $applicationStatus = "Cancelled";
+            }else if($student->applicationStatus == "Rejected Confirmed"){
+                $applicationStatus = "Rejected";
+            }else{
+                $applicationStatus = "Incomplete";
+            }
+
+            $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
+            $uploaded = [];
+            $data = [];
+
+            $user = User::with('files')->where('id', $studentData->userId)->first();
+
+            foreach($user->files as $file){
+                array_push($uploaded, $file->fileId);
+                array_push($data, ["field" => $file->fileId, "status" => $file->status]);
+            }
+            $left = array_diff($all, $uploaded);
+            foreach($left as $dataLeft){
+                if($dataLeft == "moveIn"){
+                    if($user->applicationStatus == "Approved Confirmed"){
+                        array_push($data, ["field" => $dataLeft, "status" => "Not Uploaded"]);
+                    }else{
+                        array_push($data, ["field" => $dataLeft, "status" => "na"]);
+                    }
+                }               
+            }
+
+
+            foreach($data as $file){
+                if($file['field'] == "moveIn"){
+                    if($file['status'] == "Action" || $file['status'] == "Pending"){
+                        $leaseStatus = "Pending";
+                    }else if($file['status'] == "Approved"){
+                        $leaseStatus = "Approved";
+                    }else if($file['status'] == "Rejected"){
+                        $leaseStatus = "Rejected";
+                    }else if($file['status'] == "Not Uploaded"){
+                        $leaseStatus = "Not Uploaded";
+                    }else if($student->overall_status == "Cancelled"){
+                        $leaseStatus = "Cancelled";
+                    }else{
+                        $leaseStatus = "N/A";
+                    }
+                }
+            }
+
+            $studentData = [$student->userFirstName, $student->userLastname, $student->userTitle, $student->userDob, $student->userCell, $student->email, $student->userNationality, $student->userId, $student->userPassport, $student->studentType, $student->year, $lookupsInstit->lookup_name, $student->studentNo, $student->yearOfStudy, $lookupsFaculty->lookup_name,
+            $student->overall_status,
+            $bookingStatus,
+            $applicationStatus,
+            $leaseStatus,
+            $booking->property, $booking->roomType, $booking->floor, $booking->unit, $booking->bed_code, $student->burCompanyName, $student->burRegNo, $student->burContactPerson, $student->burContactNo, $student->burEmail, $student->sponFirstName, $student->sponLastName, $student->sponCell, $student->sponEmail, $student->pNationality, $student->sponId, $student->pPassportNo, $student->pAddress1, $student->pAddress2, $student->pAddressCity, $student->pAddressPostal, $student->kinFirstName, $student->kinLastName, $student->kinTitle, $student->kinRelationship, $student->kinNationality, $student->kinId, $student->kinPassportNo, $student->kinCellNo, $student->kinEmail, $student->kinWorkNo, $student->kinTelNo, $student->kinAddressStr, $student->kinAddressSuburb, $student->kinAddressCity, $student->kinAddressPost ];
             array_push($users, $studentData);
         }
 
