@@ -3531,7 +3531,8 @@ class HomeController extends Controller
                                 $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
 
                                 $matched ++;
-                                array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "1"]);
+                                // array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "1"]);
+                                array_push($students_Arr, [$user[0], $user[1], "1"]);
             
                                 if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
                                     
@@ -3559,7 +3560,8 @@ class HomeController extends Controller
 
                             }else{
                                 $unmatched ++;
-                                array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "0"]);
+                                // array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "0"]);
+                                array_push($students_Arr, [$user[0], $user[1], "0"]);
                             }
                         }
                     }
@@ -3574,7 +3576,8 @@ class HomeController extends Controller
 
         foreach($students_Arr as $student){
 
-            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $student[1], "student_last_name" => $student[2], "student_email" => $student[3], "student_number" => $student[0], "student_id_number" => $student[4], "status" => $student[5]]);
+            // ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $student[1], "student_last_name" => $student[2], "student_email" => $student[3], "student_number" => $student[0], "student_id_number" => $student[4], "status" => $student[5]]);
+            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_number" => $student[0], "status" => $student[2], "institution" => $student[1]]);
         }
         echo "done";
         
@@ -4178,7 +4181,6 @@ class HomeController extends Controller
 
         return 'true';
     }
-    
     public function download_matched_unmatched(Request $request, $id){
         $allFromFile = ImportNSFASStudentAuditLog::where('importId', $id)->get();
 
