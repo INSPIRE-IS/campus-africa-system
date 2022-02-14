@@ -18,8 +18,6 @@
     @endif
 
     
-
-
     <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">
         <label></label><br/>

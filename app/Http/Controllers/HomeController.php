@@ -3131,7 +3131,8 @@ class HomeController extends Controller
                                 $fileInfo = UserFiles::where('userUid', $student->id)->where('fileId', 'bursaryApproval')->first();
 
                                 $matched ++;
-                                array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "1"]);
+                                // array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "1"]);
+                                array_push($students_Arr, [$user[0], $user[1], "1"]);
             
                                 if(!empty($fileInfo) && $fileInfo->status !== "Approved"){
                                     
@@ -3159,7 +3160,8 @@ class HomeController extends Controller
 
                             }else{
                                 $unmatched ++;
-                                array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "0"]);
+                                // array_push($students_Arr, [$user[0], $user[1], $user[2], $user[3], $user[4], "0"]);
+                                array_push($students_Arr, [$user[0], $user[1], "0"]);
                             }
                         }
                     }
@@ -3174,7 +3176,8 @@ class HomeController extends Controller
 
         foreach($students_Arr as $student){
 
-            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $student[1], "student_last_name" => $student[2], "student_email" => $student[3], "student_number" => $student[0], "student_id_number" => $student[4], "status" => $student[5]]);
+            // ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_first_name" => $student[1], "student_last_name" => $student[2], "student_email" => $student[3], "student_number" => $student[0], "student_id_number" => $student[4], "status" => $student[5]]);
+            ImportNSFASStudentAuditLog::create(["importId" => $newImport->id, "student_number" => $student[0], "status" => $student[2], "institution" => $student[1]]);
         }
         echo "done";
         
@@ -3700,6 +3703,83 @@ class HomeController extends Controller
 
             User::where('id', $user->id)->update(['overall_status' => $overall]);
         }
+    }
+
+    public function update_lease_dates(Request $request){
+        $allUsers = User::where('overall_status', '!=', 'Cancelled')->get();
+
+        // $lookup = Lookups::where('group_id', '4')->first();
+
+        foreach($allUsers as $user){
+
+            if($user->bookingStatus !== "Approved Confirmed" && $user->applicationStatus !== "Approved Confirmed"){
+
+                if($user->bookingStatus !== "Rejected Confirmed" && $user->applicationStatus !== "Rejected Confirmed"){
+                    
+                    $booking = Booking::where('id', $user->bookingRef)->first();
+
+                    if($booking && $booking->lease_unique !== 1){
+                        $updatedDates['lease_from_date'] = $request->lease_from_date;
+                        $updatedDates['lease_from_time'] = $request->lease_from_time;
+                        $updatedDates['lease_to_date'] = $request->lease_to_date;
+                        $updatedDates['lease_to_time'] = $request->lease_to_time;
+
+                        Booking::where('id', $user->bookingRef)->update($updatedDates);
+
+                        if($booking->lease_from_date !== $request->lease_from_date){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease From Date Updated From ".$booking->lease_from_date." to ".$request->lease_from_date,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
+
+                        if($booking->lease_from_time !== $request->lease_from_time){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease From Time Updated From ".$booking->lease_from_time." to ".$request->lease_from_time,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
+
+                        if($booking->lease_to_date !== $request->lease_to_date){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease To Date Updated From ".$booking->lease_to_date." to ".$request->lease_to_date,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
+
+                        if($booking->lease_to_time !== $request->lease_to_time){
+                            ActionList::create([
+                                "userUid" => $user->id,
+                                "action" => "Bulk Lease To Time Updated From ".$booking->lease_to_time." to ".$request->lease_to_time,
+                                "actionUserUid" => Auth::user()->id,
+                                "actionUserDisplayName" => Auth::user()->userFirstName,
+                                "actionUserRole" => Auth::user()->userRole,
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function add_comment(Request $request){
+        
+        Comments::create([
+            'user_uid' => $request->userId,
+            'comment' => $request->comment,
+            'action_user_uid' => Auth::user()->id,
+        ]);
+
+        return 'true';
     }
 
     public function download_matched_unmatched(Request $request, $id){
