@@ -3144,14 +3144,14 @@ class HomeController extends Controller
                                                 $approvalFound++;
                                                 if($file->status !== "Approved"){
                                                     UserFiles::where('userUid', $thisStudent->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'uploaded_by' => 'Import']);
-                                                    array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS / Bursary has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole]);
+                                                    array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS / Bursary has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                                 }
                                             }
                                         }
 
                                         if($approvalFound == 0){
                                             array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
-                                            array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS / Bursary has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole]);
+                                            array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS / Bursary has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                         }
                                     }
                                 }
