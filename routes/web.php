@@ -131,6 +131,11 @@ Route::post('/undo-waive-booking-fee', [HomeController::class, 'undo_waive_booki
 Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees']);
 Route::get('/update/processing-status', [HomeController::class, 'update_processing_status']);
 Route::post('/update/lease-dates', [HomeController::class, 'update_lease_dates']);
+Route::post('/get-upload-info', [HomeController::class, 'get_upload_info']);
+Route::get('/download/matched-unmatched/{id}', [HomeController::class, 'download_matched_unmatched']);
+Route::get('download-nsfas-report', [HomeController::class, 'download_nsfas_report']);
+
+
 
 Route::post('/add-comment', [HomeController::class, 'add_comment']);
 
