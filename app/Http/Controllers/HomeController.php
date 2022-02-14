@@ -2263,16 +2263,7 @@ class HomeController extends Controller
 
         $query = [];
         $i = 0;
-        foreach($search_value as $value){
-            if($i == 0){
-                $statement = "where ".$value;
-                array_push($query, $statement);
-            }else{
-                $statement = " and ".$value;
-                array_push($query, $statement);
-            }
-            $i ++;
-        }
+        
 
         foreach($search_status as $status){
             if($i == 0){
@@ -2280,6 +2271,17 @@ class HomeController extends Controller
                 array_push($query, $statement);
             }else{
                 $statement = "OR (".$status.")";
+                array_push($query, $statement);
+            }
+            $i ++;
+        }
+
+        foreach($search_value as $value){
+            if($i == 0){
+                $statement = "where ".$value;
+                array_push($query, $statement);
+            }else{
+                $statement = " and ".$value;
                 array_push($query, $statement);
             }
             $i ++;
