@@ -2101,7 +2101,7 @@ class HomeController extends Controller
                 }elseif($request->fieldStatus == "nsfasBursaryApproval"){
                     
                     if(in_array("Incomplete", $request->status)){
-                        $bursaryApproval = 'user_files.fileId = "bursaryApproval" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
+                        $bursaryApproval = 'user_files.fileId = "bursaryApproval" AND user_files.status != "Approved" AND user_files.status != "Uploaded" AND users.overall_status != "Cancelled"';
                         array_push($search_status, $bursaryApproval);
                     }
                     
