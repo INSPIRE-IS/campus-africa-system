@@ -40,6 +40,7 @@
                 <th>Unmatched</th>
                 <th>Uploaded By</th>
                 <th>Uploaded At</th>
+                <th>Download</th>
             </tr>
         </thead>
         @foreach($uploads as $upload)
@@ -65,6 +66,9 @@
                 <td>
                     {{$upload->created_at}}
                 </td>
+                <td>
+                <a href="/download/matched-unmatched/{{$upload->id}}"><button type="button" class="detailsChange" id="downloadStudents">Download Matched / Unmatched</button></a>
+                </td>
             </tr>
         @endforeach
         <tbody>
@@ -72,12 +76,12 @@
         </tbody>
     </table>
 
-    <br/><br/>
+    <!-- <br/><br/>
     <input type="hidden" id="id_to_download" value="<?php if($active && $active->id){echo $active->id;} ?>"/>
     <button type="button" class="detailsChange" id="downloadStudents">Download Matched / Unmatched</button>
-    <div class="hidden"><a href="/NSFAS Approval Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
+    <div class="hidden"><a href="/NSFAS Approval Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div> -->
 
-        <br/>
+        <!-- <br/>
         <h1>Unmatched Students in Current Upload</h1>
 
         <br/><br/>
@@ -115,7 +119,7 @@
         <tbody>
             
         </tbody>
-    </table>
+    </table> -->
 </div>
 
 
@@ -133,8 +137,8 @@
                     this.on("complete", function (file) {
                         if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
 
-                            $("#student_upload_table").addClass('hidden')
-                            $("#studentLoading").removeClass('hidden')
+                            // $("#student_upload_table").addClass('hidden')
+                            // $("#studentLoading").removeClass('hidden')
                             $("#upload_table").addClass('hidden')
                             $("#importsLoading").removeClass('hidden')
 
@@ -147,8 +151,8 @@
                                 var datatable1 = $( "#upload_table" ).DataTable();
                                 datatable1.clear();
 
-                                var datatable2 = $( "#student_upload_table" ).DataTable();
-                                datatable2.clear();
+                                // var datatable2 = $( "#student_upload_table" ).DataTable();
+                                // datatable2.clear();
 
                                 results1 = data[0]
                                 results2 = data[1]
@@ -184,21 +188,23 @@
                                         arrayItem['unmatched'],
                                         name,
                                         dateString,
+                                        '<a href="/download/matched-unmatched/'+arrayItem['id']+'"><button type="button" class="detailsChange" id="downloadStudents">Download Matched / Unmatched</button></a>'
+
                                     ] ).draw().node();
                                 })
 
-                                results2.forEach(function (arrayItem) {
-                                    var trDOM = datatable2.row.add( [
-                                        arrayItem['student_number'],
-                                        arrayItem['student_first_name'],
-                                        arrayItem['student_last_name'],
-                                        arrayItem['student_id_number'],
-                                        arrayItem['institution'],
-                                    ] ).draw().node();
-                                })
+                                // results2.forEach(function (arrayItem) {
+                                //     var trDOM = datatable2.row.add( [
+                                //         arrayItem['student_number'],
+                                //         arrayItem['student_first_name'],
+                                //         arrayItem['student_last_name'],
+                                //         arrayItem['student_id_number'],
+                                //         arrayItem['institution'],
+                                //     ] ).draw().node();
+                                // })
 
-                                $("#student_upload_table").removeClass('hidden')
-                                $("#studentLoading").addClass('hidden')
+                                // $("#student_upload_table").removeClass('hidden')
+                                // $("#studentLoading").addClass('hidden')
                                 $("#upload_table").removeClass('hidden')
                                 $("#importsLoading").addClass('hidden')
                             },
@@ -233,31 +239,31 @@
 
                     if(data[0] == undefined){
                         
-                        var datatable2 = $( "#student_upload_table" ).DataTable();
-                        datatable2.clear().draw(); 
+                        // var datatable2 = $( "#student_upload_table" ).DataTable();
+                        // datatable2.clear().draw(); 
 
-                        $("#student_upload_table").removeClass('hidden')
-                        $("#studentLoading").addClass('hidden')
+                        // $("#student_upload_table").removeClass('hidden')
+                        // $("#studentLoading").addClass('hidden')
 
                     }else{
                         $("#id_to_download").val('').val(data[0].importId);
                     
 
-                        var datatable2 = $( "#student_upload_table" ).DataTable();
-                        datatable2.clear(); 
+                        // var datatable2 = $( "#student_upload_table" ).DataTable();
+                        // datatable2.clear(); 
                         
-                        data.forEach(function (arrayItem) {
-                            var trDOM = datatable2.row.add( [
-                                arrayItem['student_number'],
-                                arrayItem['student_first_name'],
-                                arrayItem['student_last_name'],
-                                arrayItem['student_id_number'],
-                                arrayItem['institution'],
-                            ] ).draw().node();
-                        })
+                        // data.forEach(function (arrayItem) {
+                        //     var trDOM = datatable2.row.add( [
+                        //         arrayItem['student_number'],
+                        //         arrayItem['student_first_name'],
+                        //         arrayItem['student_last_name'],
+                        //         arrayItem['student_id_number'],
+                        //         arrayItem['institution'],
+                        //     ] ).draw().node();
+                        // })
 
-                        $("#student_upload_table").removeClass('hidden')
-                        $("#studentLoading").addClass('hidden')
+                        // $("#student_upload_table").removeClass('hidden')
+                        // $("#studentLoading").addClass('hidden')
                     }
 
                     
