@@ -290,6 +290,7 @@ jQuery(document).ready(function ($) {
         document.getElementById('fieldStatus').value="All";
         $("#date").val('')
         $('#status').val(null).trigger('change');
+        $("#searchButton").click();
     })
 
 
