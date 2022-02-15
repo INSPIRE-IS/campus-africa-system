@@ -3816,9 +3816,9 @@ class HomeController extends Controller
         $xlsx = new \SimpleXLSXGen();
 		$xlsx->addSheet( $users, 'Students');
 		$xlsx->saveAs('NSFAS Approval Export.xlsx');
-        $xlsx->downloadAs('NSFAS Approval Export.xlsx');
+        // $xlsx->downloadAs('NSFAS Approval Export.xlsx');
 
-		// return "true";
+		return "true";
         // $this->download_nsfas_report();
         // return $users;
     }

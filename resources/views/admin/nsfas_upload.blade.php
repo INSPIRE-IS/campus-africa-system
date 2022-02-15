@@ -67,7 +67,7 @@
                     {{$upload->created_at}}
                 </td>
                 <td>
-                <a href="/download/matched-unmatched/{{$upload->id}}"><button type="button" class="detailsChange" id="downloadStudents">Download Matched / Unmatched</button></a>
+                <button type="button" class="detailsChange" id="downloadStudents" onClick="downloadThis('{{$upload->id}}')">Download Matched / Unmatched</button>
                 </td>
             </tr>
         @endforeach
@@ -79,7 +79,9 @@
     <!-- <br/><br/>
     <input type="hidden" id="id_to_download" value="<?php if($active && $active->id){echo $active->id;} ?>"/>
     <button type="button" class="detailsChange" id="downloadStudents">Download Matched / Unmatched</button>
-    <div class="hidden"><a href="/NSFAS Approval Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div> -->
+     -->
+
+     <div class="hidden"><a href="/NSFAS Approval Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
 
         <!-- <br/>
         <h1>Unmatched Students in Current Upload</h1>
@@ -188,7 +190,7 @@
                                         arrayItem['unmatched'],
                                         name,
                                         dateString,
-                                        '<a href="/download/matched-unmatched/'+arrayItem['id']+'"><button type="button" class="detailsChange" id="downloadStudents">Download Matched / Unmatched</button></a>'
+                                        '<button type="button" class="detailsChange" id="downloadStudents" onClick="downloadThis(\''+arrayItem['id']+'\')">Download Matched / Unmatched</button>'
 
                                     ] ).draw().node();
                                 })
@@ -276,17 +278,17 @@
         $('#student_upload_table').DataTable();
     } );
 
-    $("#downloadStudents").on('click', function(){
+    function downloadThis(downloadId){
         
         $.ajax({
             type: "get",
-            url: "/download/matched-unmatched/"+$("#id_to_download").val(),
+            url: "/download/matched-unmatched/"+downloadId,
 
             success: function (data) {
                 $("#downloadBtn").click();
             },
         });
-    })
+    }
 </script>
 
 
