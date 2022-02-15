@@ -3548,7 +3548,6 @@ class HomeController extends Controller
                 $i = 0;
                 // $approved = 0;
                 // $skipped = 0;
-                
                 $not_found = 0;
                 $students_Arr = [];
 
