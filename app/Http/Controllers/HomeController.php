@@ -4304,6 +4304,16 @@ class HomeController extends Controller
         return $users;
     }
 
+    public function update_nsfas(Request $request){
+        $files = UserFiles::where('fileId', "bursaryApproval")->where('fileUrl', null)->get();
+
+        foreach($files as $file){
+            User::where('id', $file->userUid)->update(['bursary_approved' => '2', 'burser_approved' => '2']);
+        }
+
+        return 'true';
+    }
+
     
 
     

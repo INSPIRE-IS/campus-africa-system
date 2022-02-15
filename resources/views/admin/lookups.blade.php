@@ -12,6 +12,7 @@
         <a href="/lookups/new"><button type="button" class="detailsChange" >Add New Lookup</button></a>
         <a href="/manage-properties"><button type="button" class="detailsChange" >Manage properties</button></a>
         <!-- <button type="button" id="updateLeaseDates" class="detailsChange" >Update Lease Dates</button> -->
+        <button type="button" id="updateNsfasStudents" class="detailsChange" >Update NSFAS Students</button>
     @endif
     @if(Auth::user()->id == 1)
         <button type="button" id="updateBookingFee" class="detailsChange" >Update All Booking Fees</button>
@@ -119,6 +120,36 @@
     //         }
     //     })
     // })
+
+    $("#updateNsfasStudents").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#updateNsfasStudents").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/update/nsfas",
+
+                    success: function (data) {
+                        $("#updateNsfasStudents").empty().append('Update NSFAS Students');
+
+                        Swal.fire(
+                            'Success',
+                            'All students updated',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
 
     $("#updateBookingFee").on('click', function(){
         Swal.fire({
