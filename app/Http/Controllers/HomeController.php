@@ -2104,10 +2104,9 @@ class HomeController extends Controller
                         // $bursaryApproval = 'user_files.fileId = "bursaryApproval" AND user_files.status != "Approved" AND user_files.status != "Uploaded" AND users.overall_status != "Cancelled"';
                         // array_push($search_status, $bursaryApproval);
 
-                        // $bursaryApproval = 'user_files.fileId = "bursaryApproval" AND user_files.status != "Approved" AND user_files.status != "Uploaded" AND users.overall_status != "Cancelled"';
-                        // array_push($search_status, $bursaryApproval);
+                        $bursaryApproval = 'users.overall_status != "Cancelled"';
+                        array_push($search_value, $bursaryApproval);
 
-                        // select A.* from A left join B on A.BAND = B.HATE where B.HATE IS NULL;
                     }
                     
                     if(in_array("Valid", $request->status)){
@@ -2135,6 +2134,9 @@ class HomeController extends Controller
                     if(in_array("Incomplete", $request->status)){
                         // $bankStatement = 'user_files.fileId = "bankStatement" AND user_files.status LIKE "%Rejected%" AND users.overall_status != "Cancelled"';
                         // array_push($search_status, $bankStatement);
+
+                        $bankStatement = 'users.overall_status != "Cancelled"';
+                        array_push($search_value, $bankStatement);
                     }
                     
                     if(in_array("Valid", $request->status)){
@@ -2328,7 +2330,7 @@ class HomeController extends Controller
                             $skipUser++;
                         }
                         
-                        if($file->fileId == "bankStatement" && ($file->status == "Approved" || $file->status == "Uploaded")){
+                        if($file->fileId == "bankStatement" && ($file->status == "Approved" || $file->status == "Uploaded" || $file->status == "na")){
                             $skipUser++;
                         }
                     }
