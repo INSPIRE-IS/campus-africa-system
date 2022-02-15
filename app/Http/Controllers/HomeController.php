@@ -2124,10 +2124,10 @@ class HomeController extends Controller
                         array_push($search_status, $proofRegistration);
                     }
 
-                    if(in_array("NA", $request->status)){
-                        $proofRegistration = 'users.studentType LIKE "%Cash / Direct%"';
-                        array_push($search_status, $proofRegistration);
-                    }
+                    // if(in_array("NA", $request->status)){
+                    //     $proofRegistration = 'users.studentType LIKE "%Cash / Direct%"';
+                    //     array_push($search_status, $proofRegistration);
+                    // }
 
                 }elseif($request->fieldStatus == "bankStatements"){
                     
@@ -2158,6 +2158,7 @@ class HomeController extends Controller
                         $proofRegistration = 'users.studentType != "Cash / Direct"';
                         array_push($search_status, $proofRegistration);
                     }
+                    
 
                 }elseif($request->fieldStatus == "leaseStatus"){
                     
@@ -3548,7 +3549,6 @@ class HomeController extends Controller
                 $i = 0;
                 // $approved = 0;
                 // $skipped = 0;
-                
                 $not_found = 0;
                 $students_Arr = [];
 
