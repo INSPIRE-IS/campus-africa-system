@@ -78,11 +78,11 @@ jQuery(document).ready(function ($) {
                             }
 
                             if(arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected"){
-                                if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action"){
+                                if(arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action" || arrayItem["applicationStatus"] === "Approved"){
                                     applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                                }else if(arrayItem["applicationStatus"] === "Approved" || arrayItem["applicationStatus"] === "Approved Confirmed"){
+                                }else if(arrayItem["applicationStatus"] === "Approved Confirmed"){
                                     applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                                }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty"){
+                                }else if(arrayItem["applicationStatus"] === "Denied" || arrayItem["applicationStatus"] === null || arrayItem["applicationStatus"] === "Rejected" || arrayItem["applicationStatus"] === "Empty" || arrayItem["applicationStatus"] === "Denied Confimed"){
                                     applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                                 }
                             }else{
