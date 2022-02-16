@@ -549,7 +549,7 @@
         // var required = document.getElementById(fieldId).required
         var required = $("#"+fieldId).hasClass('required')
 
-        if($("#"+fieldId).val() == "" && required == true){
+        if($("#"+fieldId).val() == null && required == true){
             $("#"+$(this)[0]["id"]).addClass('fieldError')
             $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
         }else{
