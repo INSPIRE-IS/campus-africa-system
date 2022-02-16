@@ -2017,25 +2017,25 @@ class HomeController extends Controller
                 $addUser = 0;
             }
 
+            // print_r($file_types);
+            // echo $student->bookingRef . " " . $addUser . " " . $student->bursaryApproval;
+            // die();
+
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
             foreach($file_types as $ft) {
-                if (!empty($request->fieldStatus) && !empty($request->status)) {
+                if ($addUser == 0) {
                     if(in_array("Incomplete", $request->status)){
-                        if(($request->fieldStatus == $ft && $student->{$ft} === "Rejected") || ($request->fieldStatus == $ft && $student->{$ft} === null)){
+                        if(($request->fieldStatus == $ft && $student->{$ft} === "Rejected") || ($request->fieldStatus == $ft && $student->{$ft} == null)){
                             $addUser = 1;
                         }
                     }
     
-                    if(in_array("Valid", $request->status)){
-                        if($request->fieldStatus == $ft && $student->{$ft} === "Approved"){
-                            $addUser = 1;
-                        }
+                    if(in_array("Valid", $request->status) && $request->fieldStatus == $ft && $student->{$ft} == "Approved"){
+                        $addUser = 1;
                     }
     
-                    if(in_array("Pending", $request->status)){
-                        if($request->fieldStatus == $ft && $student->{$ft} == "Uploaded"){
-                            $addUser = 1;
-                        }
+                    if(in_array("Pending", $request->status) && $request->fieldStatus == $ft && $student->{$ft} == "Uploaded"){
+                        $addUser = 1;
                     }
                 }
 
@@ -2057,7 +2057,7 @@ class HomeController extends Controller
                     $counter--;
                     $counter--;
                 }
-            }                
+            } 
             
 
             //Only add users that pass the above checks

@@ -15,7 +15,6 @@ jQuery(document).ready(function ($) {
         $("#searchButton").empty().append("Searching...");
 
         var datatable = $("#application_table").DataTable();
-        datatable.clear().draw();
 
         $.ajax({
             type: "post",
@@ -34,6 +33,8 @@ jQuery(document).ready(function ($) {
             },
 
             success: function (data) {
+                datatable.clear().draw();
+
                 results = JSON.parse(data);
 
                 var i = 0;
@@ -45,129 +46,141 @@ jQuery(document).ready(function ($) {
                         color = "light";
                     }
 
-                    if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
-                        if (arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action") {
-                            var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                        } else if (arrayItem["bookingStatus"] == "Approved") {
-                            var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                        } else if (
-                            arrayItem["bookingStatus"] == "Denied" ||
-                            arrayItem["bookingStatus"] == "" ||
-                            arrayItem["bookingStatus"] == "Empty" ||
-                            arrayItem["bookingStatus"] == "Rejected"
-                        ) {
-                            var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                        } else {
-                            var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
-                        }
-                    } else {
+                    if (arrayItem["overall_status"] === "Cancelled" || arrayItem["overall_status"] === "Rejected") {
                         var bookingStat = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                    }
-
-                    if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
-                        if (
-                            arrayItem["applicationStatus"] === "Pending" ||
-                            arrayItem["applicationStatus"] === "Action" ||
-                            arrayItem["applicationStatus"] === "Approved"
-                        ) {
-                            applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                        } else if (arrayItem["applicationStatus"] === "Approved Confirmed") {
-                            applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                        } else if (
-                            arrayItem["applicationStatus"] === "Denied" ||
-                            arrayItem["applicationStatus"] === null ||
-                            arrayItem["applicationStatus"] === "Rejected" ||
-                            arrayItem["applicationStatus"] === "Empty" ||
-                            arrayItem["applicationStatus"] === "Denied Confimed"
-                        ) {
-                            applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                        var applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
+                        var pop = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        var copyId = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        var studentCard = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        var proofRegistration = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        var moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
+                        var bursaryApproval = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        var bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    } else {
+                        if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
+                            if (arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action") {
+                                var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                            } else if (arrayItem["bookingStatus"] == "Approved") {
+                                var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                            } else if (
+                                arrayItem["bookingStatus"] == "Denied" ||
+                                arrayItem["bookingStatus"] == "" ||
+                                arrayItem["bookingStatus"] == "Empty" ||
+                                arrayItem["bookingStatus"] == "Rejected"
+                            ) {
+                                var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            } else {
+                                var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
+                            }
+                        } else {
+                            var bookingStat = '<span class="hidden">D</span><div class="button na bigButton"></div>';
                         }
-                    } else {
-                        applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
-                    }
 
-                    if (arrayItem["proof_of_payment"] === "Uploaded") {
-                        pop = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                    } else if (arrayItem["proof_of_payment"] === "Approved") {
-                        pop = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                    } else if (arrayItem["proof_of_payment"] === "na") {
-                        pop = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    } else if (arrayItem["proof_of_payment"] === "Rejected" || arrayItem["proof_of_payment"] === "") {
-                        pop = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    } else {
-                        pop = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    }
+                        if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
+                            if (
+                                arrayItem["applicationStatus"] === "Pending" ||
+                                arrayItem["applicationStatus"] === "Action" ||
+                                arrayItem["applicationStatus"] === "Approved"
+                            ) {
+                                applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                            } else if (arrayItem["applicationStatus"] === "Approved Confirmed") {
+                                applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                            } else if (
+                                arrayItem["applicationStatus"] === "Denied" ||
+                                arrayItem["applicationStatus"] === null ||
+                                arrayItem["applicationStatus"] === "Rejected" ||
+                                arrayItem["applicationStatus"] === "Empty" ||
+                                arrayItem["applicationStatus"] === "Denied Confimed"
+                            ) {
+                                applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            }
+                        } else {
+                            applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
+                        }
 
-                    if (arrayItem["copyID"] === "Uploaded") {
-                        copyId = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                    } else if (arrayItem["copyID"] === "Approved") {
-                        copyId = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                    } else if (arrayItem["copyID"] === "na") {
-                        copyId = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    } else if (arrayItem["copyID"] === "Rejected" || arrayItem["copyID"] === "") {
-                        copyId = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    } else {
-                        copyId = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    }
+                        if (arrayItem["proof_of_payment"] === "Uploaded") {
+                            pop = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                        } else if (arrayItem["proof_of_payment"] === "Approved") {
+                            pop = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                        } else if (arrayItem["proof_of_payment"] === "na") {
+                            pop = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        } else if (arrayItem["proof_of_payment"] === "Rejected" || arrayItem["proof_of_payment"] === "") {
+                            pop = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        } else {
+                            pop = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        }
 
-                    if (arrayItem["studentCard"] === "Uploaded") {
-                        studentCard = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                    } else if (arrayItem["studentCard"] === "Approved") {
-                        studentCard = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                    } else if (arrayItem["studentCard"] === "na") {
-                        studentCard = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    } else if (arrayItem["studentCard"] === "Rejected" || arrayItem["studentCard"] === "") {
-                        studentCard = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    } else {
-                        studentCard = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    }
+                        if (arrayItem["copyID"] === "Uploaded") {
+                            copyId = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                        } else if (arrayItem["copyID"] === "Approved") {
+                            copyId = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                        } else if (arrayItem["copyID"] === "na") {
+                            copyId = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        } else if (arrayItem["copyID"] === "Rejected" || arrayItem["copyID"] === "") {
+                            copyId = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        } else {
+                            copyId = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        }
 
-                    if (arrayItem["proofRegistration"] === "Uploaded") {
-                        proofRegistration = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                    } else if (arrayItem["proofRegistration"] === "Approved") {
-                        proofRegistration = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                    } else if (arrayItem["proofRegistration"] === "na") {
-                        proofRegistration = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    } else if (arrayItem["proofRegistration"] === "Rejected" || arrayItem["proofRegistration"] == "") {
-                        proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    } else {
-                        proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    }
+                        if (arrayItem["studentCard"] === "Uploaded") {
+                            studentCard = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                        } else if (arrayItem["studentCard"] === "Approved") {
+                            studentCard = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                        } else if (arrayItem["studentCard"] === "na") {
+                            studentCard = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        } else if (arrayItem["studentCard"] === "Rejected" || arrayItem["studentCard"] === "") {
+                            studentCard = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        } else {
+                            studentCard = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        }
 
-                    if (arrayItem["moveIn"] === "Uploaded") {
-                        moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                    } else if (arrayItem["moveIn"] === "Approved") {
-                        moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                    } else if (arrayItem["moveIn"] === "na") {
-                        moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                    } else if (arrayItem["moveIn"] === "Rejected" || arrayItem["moveIn"] === "") {
-                        moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                    } else {
-                        moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                    }
+                        if (arrayItem["proofRegistration"] === "Uploaded") {
+                            proofRegistration = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                        } else if (arrayItem["proofRegistration"] === "Approved") {
+                            proofRegistration = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                        } else if (arrayItem["proofRegistration"] === "na") {
+                            proofRegistration = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        } else if (arrayItem["proofRegistration"] === "Rejected" || arrayItem["proofRegistration"] == "") {
+                            proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        } else {
+                            proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        }
 
-                    if (arrayItem["bursaryApproval"] === "Uploaded") {
-                        bursaryApproval = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                    } else if (arrayItem["bursaryApproval"] === "Approved") {
-                        bursaryApproval = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                    } else if (arrayItem["bursaryApproval"] === "na") {
-                        bursaryApproval = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    } else if (arrayItem["bursaryApproval"] === "Rejected" || arrayItem["bursaryApproval"] === "") {
-                        bursaryApproval = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    } else {
-                        bursaryApproval = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    }
+                        if (arrayItem["moveIn"] === "Uploaded") {
+                            moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
+                        } else if (arrayItem["moveIn"] === "Approved") {
+                            moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                        } else if (arrayItem["moveIn"] === "na") {
+                            moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
+                        } else if (arrayItem["moveIn"] === "Rejected" || arrayItem["moveIn"] === "") {
+                            moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                        } else {
+                            moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                        }
 
-                    if (arrayItem["bankStatement"] === "Uploaded") {
-                        bankStatement = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                    } else if (arrayItem["bankStatement"] === "Approved") {
-                        bankStatement = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                    } else if (arrayItem["bankStatement"] === "na") {
-                        bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    } else if (arrayItem["bankStatement"] === "Rejected" || arrayItem["bankStatement"] === "") {
-                        bankStatement = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                    } else {
-                        bankStatement = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        if (arrayItem["bursaryApproval"] === "Uploaded") {
+                            bursaryApproval = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                        } else if (arrayItem["bursaryApproval"] === "Approved") {
+                            bursaryApproval = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                        } else if (arrayItem["bursaryApproval"] === "na") {
+                            bursaryApproval = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        } else if (arrayItem["bursaryApproval"] === "Rejected" || arrayItem["bursaryApproval"] === "") {
+                            bursaryApproval = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        } else {
+                            bursaryApproval = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        }
+
+                        if (arrayItem["bankStatement"] === "Uploaded") {
+                            bankStatement = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                        } else if (arrayItem["bankStatement"] === "Approved") {
+                            bankStatement = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                        } else if (arrayItem["bankStatement"] === "na") {
+                            bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                        } else if (arrayItem["bankStatement"] === "Rejected" || arrayItem["bankStatement"] === "") {
+                            bankStatement = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        } else {
+                            bankStatement = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                        }
                     }
 
                     var m = new Date(arrayItem["created_at"]);
