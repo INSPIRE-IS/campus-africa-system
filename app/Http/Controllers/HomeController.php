@@ -2006,8 +2006,7 @@ class HomeController extends Controller
             if($student->studentType == "Cash / Direct"){
                 array_push($file_types, "bankStatement");
                 $student->bursaryApproval = "na";
-            }
-            if($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
+            } elseif($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
                 array_push($file_types, "bursaryApproval");
                 $student->bankStatement = "na";
             }
@@ -2023,7 +2022,7 @@ class HomeController extends Controller
 
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
             foreach($file_types as $ft) {
-                if ($addUser == 0) {
+                if ($addUser === 0) {
                     if(in_array("Incomplete", $request->status)){
                         if(($request->fieldStatus == $ft && $student->{$ft} === "Rejected") || ($request->fieldStatus == $ft && $student->{$ft} == null)){
                             $addUser = 1;
