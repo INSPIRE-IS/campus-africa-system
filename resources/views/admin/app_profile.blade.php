@@ -57,6 +57,9 @@
                     {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, <br/>
                     {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>
                 </p>
+                <br/>
+                NSFAS bursar? <strong><?php if($user[0]['userInfo']['nsfas_bursar'] == "1"){ echo "Yes";}else{echo "No";} ?></strong><br/>
+                <button style="padding:2px 10px; cursor:pointer;" onClick="changeNsfsBursar('{{$user[0]['userInfo']['id']}}', '{{$user[0]['userInfo']['nsfas_bursar']}}')">Change</button>
             @endif
             <br/>
             
@@ -588,6 +591,40 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function changeNsfsBursar(userId, bursar){
+
+        if(bursar == 1){
+            newBursar = "No"
+        }else{
+            newBursar = "Yes"
+        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to change the NSFAS bursar to "+newBursar,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/change-nsfsbursar",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                    },
+        
+                    success: function (data) {
+                        
+                        window.location.reload();
+        
+                    },
+                });
+            }
+        });
+    }
 
     $("#addComment").on('click', function(){
         $("#addComment").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')

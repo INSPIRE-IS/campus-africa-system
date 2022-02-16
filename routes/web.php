@@ -139,4 +139,5 @@ Route::get('download-nsfas-report', [HomeController::class, 'download_nsfas_repo
 
 
 Route::post('/add-comment', [HomeController::class, 'add_comment']);
+Route::post('/change-nsfsbursar', [HomeController::class, 'change_nsfsbursar']);
 
