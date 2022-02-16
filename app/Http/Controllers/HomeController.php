@@ -2082,399 +2082,135 @@ class HomeController extends Controller
         $query = [];
         
 
-        foreach($search_value as $value){
-
-                $statement = " and ".$value;
-                array_push($query, $statement);
-
+        foreach($search_value as $value) {
+            $statement = " and " . $value;
+            array_push($query, $statement);
         }
 
-        if(count($query) > 0){
-            // $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId '.implode($query).' AND users.userRole = "0" GROUP BY users.id');
-            $searched_students = DB::select('SELECT
-                    (select GROUP_CONCAT(uf1.`status`) from user_files uf1 where uf1.userUid = u.id and uf1.fileId = "copyID") as copyID,
-                    (select GROUP_CONCAT(uf2.`status`) from user_files uf2 where uf2.userUid = u.id and uf2.fileId = "proof_of_payment") as proof_of_payment,
-                    (select GROUP_CONCAT(uf3.`status`) from user_files uf3 where uf3.userUid = u.id and uf3.fileId = "studentCard") as studentCard,
-                    (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
-                    (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
-                    (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
-                    (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
-                    u.*, bookings_data.*
-                FROM
-                    users u
-                    LEFT OUTER JOIN bookings_data on u.id = bookings_data.userId
-                WHERE u.overall_status != "Cancelled" 
-                    AND u.userRole = "0"
-                    '.implode($query).';'
-            );
-        }else{
-            // $searched_students = DB::select('SELECT * FROM users LEFT OUTER JOIN bookings_data on users.id = bookings_data.userId WHERE users.userRole = "0" GROUP BY users.id');
-            $searched_students = DB::select('SELECT
-                    (select GROUP_CONCAT(uf1.`status`) from user_files uf1 where uf1.userUid = u.id and uf1.fileId = "copyID") as copyID,
-                    (select GROUP_CONCAT(uf2.`status`) from user_files uf2 where uf2.userUid = u.id and uf2.fileId = "proof_of_payment") as proof_of_payment,
-                    (select GROUP_CONCAT(uf3.`status`) from user_files uf3 where uf3.userUid = u.id and uf3.fileId = "studentCard") as studentCard,
-                    (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
-                    (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
-                    (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
-                    (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
-                    u.*, bookings_data.*
-                FROM
-                    users u
-                    LEFT OUTER JOIN bookings_data on u.id = bookings_data.userId
-                WHERE u.overall_status != "Cancelled" 
-                    AND u.userRole = "0";'
-            );
-        }
+        //Default Query
+        $sql = 'SELECT
+                (select GROUP_CONCAT(uf1.`status`) from user_files uf1 where uf1.userUid = u.id and uf1.fileId = "copyID") as copyID,
+                (select GROUP_CONCAT(uf2.`status`) from user_files uf2 where uf2.userUid = u.id and uf2.fileId = "proof_of_payment") as proof_of_payment,
+                (select GROUP_CONCAT(uf3.`status`) from user_files uf3 where uf3.userUid = u.id and uf3.fileId = "studentCard") as studentCard,
+                (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
+                (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
+                (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
+                (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
+                (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "leaseStatus") as leaseStatus,
+                u.*, bookings_data.*
+            FROM
+                users u
+                LEFT OUTER JOIN bookings_data on u.id = bookings_data.userId
+            WHERE u.overall_status != "Cancelled" 
+                AND u.userRole = 0';
 
+        //Check if we need to add any filters
+        if(count($query) > 0) {
+            $sql .= implode($query);
+        }     
         
+        //Get all of our students
+        $searched_students = DB::select($sql);
 
         $userData = [];
 
-        foreach($searched_students as $student){
-            
-            $user = User::with('files')->where('id', $student->userId)->first();   
-            
-            $skipUser = 0;
+        foreach($searched_students as $student) {
 
-            if(!empty($user)){
+            $addUser = 1;
+            $counter = 0;
 
-                foreach($user->files as $file){
+            if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
+                $counter++;
+            }               
 
-                    if($request->fieldStatus == "proofOfPayment"){
-                        if(in_array("Incomplete", $request->status)){
-                            if($student->proof_of_payment !== "Rejected" && $student->proof_of_payment !== null){
-                                $skipUser++;
-                            }
-                        }
+            //Default files that all students have
+            $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus"];
 
-                        if(in_array("Valid", $request->status)){
-                            if($student->proof_of_payment !== "Approved"){
-                                $skipUser++;
-                            }
-                        }
+            //Add in additional files based on student type. Also block out file types based on student type
+            if($student->studentType == "Cash / Direct"){
+                array_push($file_types, "bankStatement");
+                $student->bursaryApproval = "na";
+            }
+            if($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
+                array_push($file_types, "bursaryApproval");
+                $student->bankStatement = "na";
+            }
 
-                        if(in_array("Pending", $request->status)){
-                            if($student->proof_of_payment !== "Uploaded"){
-                                $skipUser++;
-                            }
-                        }
+            //If we are filtering a document type don't auto add students
+            if (!empty($request->fieldStatus) && !empty($request->status)) {
+                $addUser = 0;  
+            }
 
-                        if(in_array("NA", $request->status)){
-                            $skipUser++;
-                        }
-                    }
-
-                    if($request->fieldStatus == "idCopy"){
-                        if(in_array("Incomplete", $request->status)){
-                            if($student->copyID !== "Rejected" && $student->copyID !== null){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Valid", $request->status)){
-                            if($student->copyID !== "Approved"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Pending", $request->status)){
-                            if($student->copyID !== "Uploaded"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("NA", $request->status)){
-                            $skipUser++;
-                        }
-                    }
-
-                    if($request->fieldStatus == "studentCardCopy"){
-                        if(in_array("Incomplete", $request->status)){
-                            if($student->studentCard !== "Rejected" && $student->studentCard !== null){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Valid", $request->status)){
-                            if($student->studentCard !== "Approved"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Pending", $request->status)){
-                            if($student->studentCard !== "Uploaded"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("NA", $request->status)){
-                            $skipUser++;
-                        }
-                    }
-
-                    if($request->fieldStatus == "proofOfRegistration"){
-                        if(in_array("Incomplete", $request->status)){
-                            if($student->proofRegistration !== "Rejected" && $student->proofRegistration !== null){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Valid", $request->status)){
-                            if($student->proofRegistration !== "Approved"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Pending", $request->status)){
-                            if($student->proofRegistration !== "Uploaded"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("NA", $request->status)){
-                            $skipUser++;
-                        }
-                    }
-
-                    if($request->fieldStatus == "nsfasBursaryApproval"){
-
-
-                        if(in_array("Incomplete", $request->status)){
-                            if($student->bursaryApproval !== "Rejected" && $student->bursaryApproval !== null && $user->studentType == "Cash / Direct"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Valid", $request->status)){
-                            if($student->bursaryApproval !== "Approved"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Pending", $request->status)){
-                            if($student->bursaryApproval !== "Uploaded"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("NA", $request->status)){
-                            if($user->studentType != "Cash / Direct"){
-                                $skipUser++;
-                            }
-                        }
-                    }
-
-                    if($request->fieldStatus == "bankStatements"){
-
-                        if(in_array("Incomplete", $request->status)){
-                            if($student->bankStatement !== "Rejected" && $student->bankStatement !== null && $user->studentType != "Cash / Direct"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Valid", $request->status)){
-                            if($student->bankStatement !== "Approved"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Pending", $request->status)){
-                            if($student->bankStatement !== "Uploaded"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("NA", $request->status)){
-                            if($user->studentType == "Cash / Direct"){
-                                $skipUser++;
-                            }
-                        }
-                    }
-
-                    if($request->fieldStatus == "leaseStatus"){
-
-                        if(in_array("Incomplete", $request->status)){
-                            if($student->moveIn !== "Rejected" || ($student->moveIn !== null && $user->overstall_status != "Approved Confirmed")){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Valid", $request->status)){
-                            if($student->moveIn !== "Approved"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("Pending", $request->status)){
-                            if($student->moveIn !== "Uploaded"){
-                                $skipUser++;
-                            }
-                        }
-
-                        if(in_array("NA", $request->status)){
-                            if($user->overstall_status == "Approved Confirmed"){
-                                $skipUser++;
-                            }
-                        }
-                    }
-                    
-    
-                    // if($request->fieldStatus == "nsfasBursaryApproval"){
-                    //     if(in_array("Incomplete", $request->status)){
-    
-                    //         if($user->studentType == "Cash / Direct"){
-                    //             $skipUser++;
-                    //         }
-                            
-                    //         if($file->fileId == "bursaryApproval" && ($file->status == "Approved" || $file->status == "Uploaded")){
-                    //             $skipUser++;
-                    //         }
-                    //     }
-                    // }
-    
-                    // if($request->fieldStatus == "bankStatements"){
-                    //     if(in_array("Incomplete", $request->status)){
-    
-                    //         if($user->studentType != "Cash / Direct"){
-                    //             $skipUser++;
-                    //         }
-                            
-                    //         if($file->fileId == "bankStatement" && ($file->status == "Approved" || $file->status == "Uploaded" || $file->status == "na")){
-                    //             $skipUser++;
-                    //         }
-                    //     }
-                    // }
-                }
-                
-                if($skipUser == 0){
-                    $uploaded = [];
-                    // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
-                    $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment', 'moveIn'];
-    
-                    if($user->studentType == "Cash / Direct"){
-                        array_push($all, "bankStatement");
-                    }
-                    if($user->studentType == "NSFAS"){
-                        array_push($all, "bursaryApproval");
-                    }
-                    if($user->studentType == "Bursary"){
-                        array_push($all, "bursaryApproval");
-                    }
-                    $data = [];
-                    $counter = 0;
-    
-                    if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected"){
-                        if(!empty($user->files)){
-                            foreach($user->files as $file){
-                                // echo $file->fileId;
-                                array_push($uploaded, $file->fileId);
-                                array_push($data, ["field" => $file->fileId, "status" => $file->status]);
-                            }
-                        }
-        
-                        $left = array_diff($all, $uploaded);
-        
-                        foreach($left as $dataLeft){
-                            if($dataLeft == "moveIn"){
-                                if($user->applicationStatus == "Approved Confirmed"){
-                                    array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
-                                }else{
-                                    array_push($data, ["field" => $dataLeft, "status" => "na"]);
-                                }
-                            }else{
-                                if(!empty($user->studentType) && $user->studentType == "NSFAS" || !empty($user->studentType) && $user->studentType == "Bursary"){
-                                    if($dataLeft == "bankStatement"){
-                                        array_push($data, ["field" => $dataLeft, "status" => "na"]);
-                                    }else{
-                                        array_push($data, ["field" => $dataLeft, "status" => ""]);
-                                    }
-                                }else{
-                                    if($dataLeft == "bursaryApproval"){
-                                        array_push($data, ["field" => $dataLeft, "status" => "na"]);
-                                    }else{
-                                        array_push($data, ["field" => $dataLeft, "status" => ""]);
-                                    }
-                                }
-                            }
-                        }
-                    }else{
-                        foreach($all as $all){
-                            array_push($data, ["field" => $all, "status" => "na"]);
+            //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
+            foreach($file_types as $ft) {
+                if (!empty($request->fieldStatus) && !empty($request->status)) {
+                    if(in_array("Incomplete", $request->status)){
+                        if(($request->fieldStatus == $ft && $student->{$ft} === "Rejected") || ($request->fieldStatus == $ft && $student->{$ft} === null)){
+                            $addUser = 1;
                         }
                     }
     
-                    
+                    if(in_array("Valid", $request->status)){
+                        if($request->fieldStatus == $ft && $student->{$ft} === "Approved"){
+                            $addUser = 1;
+                        }
+                    }
     
-                    foreach($data as $item){
-    
-                        if($user->applicationStatus !== "Approved Confirmed" && $user->overall_status !== "Cancelled"){
-                            $counter++;
-                        }
-      
-                        if($item['status'] == "Uploaded"){
-                            $counter++;
-                        }
-      
-                        if($item['status'] == "" || $item['status'] == "Rejected"){
-                            $counter--;
-                        }
-    
-                        if($item['status'] == "Approved"){
-                            $counter--;
-                            $counter--;
-                        }
-    
-                        if($item['status'] == "na"){
-                            $counter--;
-                            $counter--;
-                            $counter--;
-                        }
-    
-                    }   
-    
-                    $roomBooking = Booking::where('userId', $user->id)->first();
-                    
-                    if(!empty($user)){
-    
-    
-                        if(Auth::user()->role_braamlofts == "1" && $roomBooking->property == "Braamlofts"){
-                            array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code, 'overall_status' => $user->overall_status]);
-                        }
-        
-                        if(Auth::user()->role_80_jorissen == "1" && $roomBooking->property == "80 Jorissen"){
-                            array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code, 'overall_status' => $user->overall_status]);
-                        }
-        
-                        if(Auth::user()->role_49_jorissen == "1" && $roomBooking->property == "49 Jorissen"){
-                            array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code, 'overall_status' => $user->overall_status]);
-                        }
-        
-                        if(Auth::user()->role_dunvista_mansions == "1" && $roomBooking->property == "Dunvista Mansions"){
-                            array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code, 'overall_status' => $user->overall_status]);
-                        }
-        
-                        if(Auth::user()->role_wynton_joy == "1" && $roomBooking->property == "Wynton Joy"){
-                            array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code, 'overall_status' => $user->overall_status]);
-                        }
-        
-                        if(Auth::user()->role_126_siemert == "1" && $roomBooking->property == "126 Siemert"){
-                            array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code, 'overall_status' => $user->overall_status]);
-                        }
-        
-                        if(Auth::user()->role_ymca == "1" && $roomBooking->property == "YMCA"){
-                            array_push($userData, ["id" => $user->id, "bookingRef" => $user->bookingRef, "userFirstName" => $user->userFirstName, "userLastname" => $user->userLastname, "userId" => $user->userId, "roomBlock" => $user->roomBlock, "studentType" => $user->studentType, "bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "files" => $data, "counter"=>$counter, "property"=> $roomBooking->property, "roomType"=> $roomBooking->roomType, "created_at"=>$user->created_at, "bed_code" => $roomBooking->bed_code, 'overall_status' => $user->overall_status]);
+                    if(in_array("Pending", $request->status)){
+                        if($request->fieldStatus == $ft && $student->{$ft} === "Uploaded"){
+                            $addUser = 1;
                         }
                     }
                 }
+
+                if ($student->{$ft} == "Uploaded") {
+                    $counter++;
+                }
+
+                if($student->{$ft} == "" || $student->{$ft} == "Rejected"){
+                    $counter--;
+                }
+    
+                if($student->{$ft} == "Approved"){
+                    $counter--;
+                    $counter--;
+                }
+    
+                if($student->{$ft} == "na" || empty($student->{$ft})){
+                    $counter--;
+                    $counter--;
+                    $counter--;
+                }
+            }                
+
+            //Only add users that pass the above checks
+            if ($addUser == 1) {
+                $roomBooking = Booking::where('userId', $student->id)->first();
+
+                if (!empty($roomBooking)) {
+                    $student->counter = $counter;
+
+                    //Filter data based on the users roles
+                    if(
+                        (Auth::user()->role_braamlofts == "1" && $roomBooking->property == "Braamlofts") ||
+                        (Auth::user()->role_80_jorissen == "1" && $roomBooking->property == "80 Jorissen") ||
+                        (Auth::user()->role_49_jorissen == "1" && $roomBooking->property == "49 Jorissen") ||
+                        (Auth::user()->role_dunvista_mansions == "1" && $roomBooking->property == "Dunvista Mansions") ||
+                        (Auth::user()->role_wynton_joy == "1" && $roomBooking->property == "Wynton Joy") ||
+                        (Auth::user()->role_126_siemert == "1" && $roomBooking->property == "126 Siemert") ||
+                        (Auth::user()->role_ymca == "1" && $roomBooking->property == "YMCA")
+                    ) {
+                        array_push($userData, (array) $student);
+                    }
+                }
             }
+            
+        }   
 
-
-
-
-            }
-            usort($userData, function($a, $b) {
-                return $b['counter'] - $a['counter'];
-            });
+        //Sort our data based on our weighted counter
+        usort($userData, function($a, $b) {
+            return $b['counter'] - $a['counter'];
+        });            
 
         return json_encode($userData);
     }
