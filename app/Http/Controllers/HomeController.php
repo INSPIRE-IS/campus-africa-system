@@ -1846,8 +1846,7 @@ class HomeController extends Controller
         
         $search_value = [];
 
-        if($request->fieldStatus !== "" && !empty($request->fieldStatus)){
-
+        if($request->fieldStatus !== "" && !empty($request->fieldStatus)) {
             if($request->fieldStatus !== "All"){
 
                 if($request->fieldStatus == "bookingStatus"){
@@ -1984,8 +1983,7 @@ class HomeController extends Controller
             FROM
                 users u
                 LEFT OUTER JOIN bookings_data on u.id = bookings_data.userId
-            WHERE u.overall_status != "Cancelled" 
-                AND u.userRole = 0 ' . implode($query);
+            WHERE u.userRole = 0 ' . implode($query);
 
         //Get all of our students
         $searched_students = DB::select($sql);
@@ -2064,23 +2062,19 @@ class HomeController extends Controller
 
             //Only add users that pass the above checks
             if ($addUser == 1) {
-                $roomBooking = Booking::where('userId', $student->id)->first();
+                $student->counter = $counter;
 
-                if (!empty($roomBooking)) {
-                    $student->counter = $counter;
-
-                    //Filter data based on the users roles
-                    if(
-                        (Auth::user()->role_braamlofts == "1" && $roomBooking->property == "Braamlofts") ||
-                        (Auth::user()->role_80_jorissen == "1" && $roomBooking->property == "80 Jorissen") ||
-                        (Auth::user()->role_49_jorissen == "1" && $roomBooking->property == "49 Jorissen") ||
-                        (Auth::user()->role_dunvista_mansions == "1" && $roomBooking->property == "Dunvista Mansions") ||
-                        (Auth::user()->role_wynton_joy == "1" && $roomBooking->property == "Wynton Joy") ||
-                        (Auth::user()->role_126_siemert == "1" && $roomBooking->property == "126 Siemert") ||
-                        (Auth::user()->role_ymca == "1" && $roomBooking->property == "YMCA")
-                    ) {
-                        array_push($userData, (array) $student);
-                    }
+                //Filter data based on the users roles
+                if(
+                    (Auth::user()->role_braamlofts == "1" && $student->property == "Braamlofts") ||
+                    (Auth::user()->role_80_jorissen == "1" && $student->property == "80 Jorissen") ||
+                    (Auth::user()->role_49_jorissen == "1" && $student->property == "49 Jorissen") ||
+                    (Auth::user()->role_dunvista_mansions == "1" && $student->property == "Dunvista Mansions") ||
+                    (Auth::user()->role_wynton_joy == "1" && $student->property == "Wynton Joy") ||
+                    (Auth::user()->role_126_siemert == "1" && $student->property == "126 Siemert") ||
+                    (Auth::user()->role_ymca == "1" && $student->property == "YMCA")
+                ) {
+                    array_push($userData, (array) $student);
                 }
             }
 
