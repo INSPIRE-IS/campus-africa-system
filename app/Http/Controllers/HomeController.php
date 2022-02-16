@@ -2040,7 +2040,7 @@ class HomeController extends Controller
                     }
                     
                     if(in_array("Valid", $request->status)){
-                        $applicationStatus = 'users.applicationStatus LIKE "%Approved Confirmed%"';
+                        $applicationStatus = 'users.applicationStatus = "Approved Confirmed"';
                         array_push($search_status, $applicationStatus);
                     }
                     
@@ -2052,7 +2052,7 @@ class HomeController extends Controller
                         // array_push($search_status, $applicationStatus1);
                     }
                     if(in_array("Pending", $request->status)){
-                        $applicationStatus = 'users.applicationStatus LIKE "%Approved%"';
+                        $applicationStatus = 'users.applicationStatus = "Approved"';
                         array_push($search_status, $applicationStatus);
 
                         // $applicationStatus1 = 'users.applicationStatus LIKE "%Approved%"';
