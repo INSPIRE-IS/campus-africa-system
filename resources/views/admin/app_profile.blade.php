@@ -1479,6 +1479,8 @@
                 var approved = 1;
             }
 
+            
+
             if("{{$user[0]['userInfo']['pNationality']}}" == "South Africa"){
                 var IdData = "<span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['sponId']}}<br/>";
             }else{
