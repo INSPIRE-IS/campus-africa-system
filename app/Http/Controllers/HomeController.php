@@ -1985,13 +1985,8 @@ class HomeController extends Controller
                 users u
                 LEFT OUTER JOIN bookings_data on u.id = bookings_data.userId
             WHERE u.overall_status != "Cancelled" 
-                AND u.userRole = 0';
+                AND u.userRole = 0 ' . implode($query);
 
-        //Check if we need to add any filters
-        if(count($query) > 0) {
-            $sql .= implode($query);
-        }     
-        
         //Get all of our students
         $searched_students = DB::select($sql);
 
@@ -2018,10 +2013,10 @@ class HomeController extends Controller
                 array_push($file_types, "bursaryApproval");
                 $student->bankStatement = "na";
             }
-
+            
             //If we are filtering a document type don't auto add students
-            if (!empty($request->fieldStatus) && !empty($request->status)) {
-                $addUser = 0;  
+            if (!empty($request->fieldStatus) && in_array($request->fieldStatus, $file_types) && !empty($request->status)) {
+                $addUser = 0;
             }
 
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
@@ -2040,7 +2035,7 @@ class HomeController extends Controller
                     }
     
                     if(in_array("Pending", $request->status)){
-                        if($request->fieldStatus == $ft && $student->{$ft} === "Uploaded"){
+                        if($request->fieldStatus == $ft && $student->{$ft} == "Uploaded"){
                             $addUser = 1;
                         }
                     }
@@ -2065,6 +2060,7 @@ class HomeController extends Controller
                     $counter--;
                 }
             }                
+            
 
             //Only add users that pass the above checks
             if ($addUser == 1) {

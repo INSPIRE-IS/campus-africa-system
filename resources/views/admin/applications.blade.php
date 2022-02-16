@@ -88,13 +88,13 @@
             <select name="fieldStatus" id='fieldStatus'>
                 <option value="All" selected>- Select One - </option>
                 <option value="bookingStatus">Booking Status</option>
-                <option value="proofOfPayment">Proof of Payment</option>
-                <option value="idCopy">ID Copy</option>
+                <option value="proof_of_payment">Proof of Payment</option>
+                <option value="copyID">ID Copy</option>
                 <option value="applicationStatus">Application Status</option>
-                <option value="studentCardCopy">Student Card Copy</option>
-                <option value="proofOfRegistration">Proof of Registration</option>
-                <option value="nsfasBursaryApproval">NSFAS | Bursary Approval</option>
-                <option value="bankStatements">Bank Statements</option>
+                <option value="studentCard">Student Card Copy</option>
+                <option value="proofRegistration">Proof of Registration</option>
+                <option value="bursaryApproval">NSFAS | Bursary Approval</option>
+                <option value="bankStatement">Bank Statements</option>
                 <option value="leaseStatus">Lease Status</option>
             </select>
             <!-- <select name="bookingStatus" id='bookingStatus' style="width:45%">
