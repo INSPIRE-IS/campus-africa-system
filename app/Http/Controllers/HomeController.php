@@ -3789,11 +3789,13 @@ class HomeController extends Controller
     public function update_processing_status(){
         $userList = User::get();
 
-        foreach($userList as $user){
+        foreach($userList as $user) {
+
+            $Lease = UserFiles::where("userUid", $user->id)->where('fileId', 'moveIn')->first();
 
             $overall = "Incomplete";
 
-            if($user->bookingStatus == "Approved" || $user->applicationStatus == "Approved Confirmed"){
+            if($user->bookingStatus == "Approved" || $user->applicationStatus == "Approved Confirmed" || $user->applicationStatus == "Approved") {
                 $overall = "Approved";
             }
             
@@ -3801,9 +3803,25 @@ class HomeController extends Controller
                 $overall = "Incomplete";
             }
 
-            if($user->bookingStatus == "Action" || $user->applicationStatus == "Action" || $user->applicationStatus == "Approved"){
+            if($user->bookingStatus == "Action" || $user->applicationStatus == "Action"){
                 $overall = "Pending";
             }
+
+            if ($user->bookingStatus == "Cancelled" && $user->applicationStatus == "Cancelled") {
+                $overall = "Cancelled";
+            }
+
+            //Check for a lease
+            if ($overall == "Approved") {
+                if (empty($Lease) && $user->applicationStatus == "Approved Confirmed") {
+                    $overall = "Incomplete";
+                } elseif (empty($Lease) && $user->applicationStatus == "Approved") {
+                    $overall = "Pending";
+                } elseif ($Lease->status == "Uploaded") {                 
+                    $overall = "Pending";
+                }
+            }
+            
 
             User::where('id', $user->id)->update(['overall_status' => $overall]);
         }
