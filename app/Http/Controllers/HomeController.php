@@ -2012,30 +2012,28 @@ class HomeController extends Controller
             }
             
             //If we are filtering a document type don't auto add students
-            if (!empty($request->fieldStatus) && in_array($request->fieldStatus, $file_types) && !empty($request->status)) {
+            if (!empty($request->fieldStatus) && !empty($request->status)) {
                 $addUser = 0;
             }
 
-            // print_r($file_types);
-            // echo $student->bookingRef . " " . $addUser . " " . $student->bursaryApproval;
-            // die();
-
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
             foreach($file_types as $ft) {
-                if ($addUser === 0) {
-                    if(in_array("Incomplete", $request->status)){
-                        if(($request->fieldStatus == $ft && $student->{$ft} === "Rejected") || ($request->fieldStatus == $ft && $student->{$ft} == null)){
+                if ($addUser == 0) {
+                    if ($request->fieldStatus == $ft) {
+                        if(in_array("Incomplete", $request->status)){
+                            if(($student->{$ft} === "Rejected") || ($student->{$ft} == null)){
+                                $addUser = 1;
+                            }
+                        }
+        
+                        if(in_array("Valid", $request->status) && $student->{$ft} == "Approved"){
                             $addUser = 1;
                         }
-                    }
-    
-                    if(in_array("Valid", $request->status) && $request->fieldStatus == $ft && $student->{$ft} == "Approved"){
-                        $addUser = 1;
-                    }
-    
-                    if(in_array("Pending", $request->status) && $request->fieldStatus == $ft && $student->{$ft} == "Uploaded"){
-                        $addUser = 1;
-                    }
+        
+                        if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded"){
+                            $addUser = 1;
+                        }   
+                    }                 
                 }
 
                 if ($student->{$ft} == "Uploaded") {
