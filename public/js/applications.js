@@ -224,9 +224,7 @@ jQuery(document).ready(function ($) {
                                 "</span> <br/> " +
                                 arrayItem["property"] +
                                 " | " +
-                                arrayItem["roomType"] +
-                                " | " +
-                                arrayItem["counter"],
+                                arrayItem["roomType"],
                             bed_code,
                             dateString,
                             studentType,

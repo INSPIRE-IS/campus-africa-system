@@ -3813,8 +3813,10 @@ class HomeController extends Controller
 
             //Check for a lease
             if ($overall == "Approved") {
-                if (empty($Lease)) {
+                if (empty($Lease) && $user->applicationStatus == "Approved Confirmed") {
                     $overall = "Incomplete";
+                } elseif (empty($Lease) && $user->applicationStatus == "Approved") {
+                    $overall = "Pending";
                 } elseif ($Lease->status == "Uploaded") {                 
                     $overall = "Pending";
                 }
