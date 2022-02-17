@@ -3220,6 +3220,7 @@ class HomeController extends Controller
                                         foreach($files as $file){
                                             if($file->fileId == "bursaryApproval"){
                                                 $approvalFound++;
+
                                                 if($file->status !== "Approved"){
                                                     UserFiles::where('userUid', $thisStudent->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'fileName' => null, 'fileUrl' => null, 'uploaded_by' => 'Import']);
                                                     array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS / Bursary has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
@@ -4014,7 +4015,7 @@ class HomeController extends Controller
                         $phase2 = "Action";
                     }else if($phase2 == "Empty" && $item['status'] == "Approved"){
                         $phase2 = "Approved";
-                    }else if($phase2 == "Empty" && $item['status'] == "Rejected"){
+                    }else if(($phase2 == "Empty" && $item['status'] == "Rejected") || ($phase2 == "Empty" && $item['status'] == "")){
                         $phase2 = "Rejected";
                     }
 
@@ -4030,7 +4031,7 @@ class HomeController extends Controller
                         $phase2 = "Action";
                     }else if($phase2 == "Approved" && $item['status'] == "Approved"){
                         $phase2 = "Approved";
-                    }else if($phase2 == "Approved" && $item['status'] == "Rejected" || $phase2 == "Approved" && $item['status'] == ""){
+                    }else if(($phase2 == "Approved" && $item['status'] == "Rejected") || ($phase2 == "Approved" && $item['status'] == "")){
                         $phase2 = "Rejected";
                     }
 
