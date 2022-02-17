@@ -195,7 +195,7 @@ jQuery(document).ready(function ($) {
                         ("0" + (m.getUTCMonth() + 1)).slice(-2) +
                         "-" +
                         ("0" + m.getUTCDate()).slice(-2) +
-                        " " +
+                        "<br />" +
                         ("0" + m.getUTCHours()).slice(-2) +
                         ":" +
                         ("0" + m.getUTCMinutes()).slice(-2) +
@@ -226,7 +226,7 @@ jQuery(document).ready(function ($) {
                                 " | " +
                                 arrayItem["roomType"],
                             bed_code,
-                            dateString,
+                            '<span style="white-space: nowrap;">' + dateString + "</span>",
                             studentType,
                             arrayItem["overall_status"],
                             bookingStat,
