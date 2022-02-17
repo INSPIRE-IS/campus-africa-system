@@ -2016,15 +2016,18 @@ class HomeController extends Controller
                 $addUser = 0;
             }
 
+            // if ($student->bookingRef == 143) {
+            //     print_r($student);
+            //     die();
+            // }
+
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
             foreach($file_types as $ft) {
                 if ($addUser == 0) {
                     if ($request->fieldStatus == $ft) {
-                        if(in_array("Incomplete", $request->status)){
-                            if(($student->{$ft} === "Rejected") || ($student->{$ft} == null)){
-                                $addUser = 1;
-                            }
-                        }
+                        if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected"){
+                            $addUser = 1;
+                        }                        
         
                         if(in_array("Valid", $request->status) && $student->{$ft} == "Approved"){
                             $addUser = 1;
@@ -2033,6 +2036,14 @@ class HomeController extends Controller
                         if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded"){
                             $addUser = 1;
                         }   
+
+                        if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status != "Cancelled"){
+                            $addUser = 1;
+                        }
+
+                        if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na" && $student->overall_status != "Cancelled"){
+                            $addUser = 1;
+                        }
                     }                 
                 }
 
