@@ -77,14 +77,16 @@ jQuery(document).ready(function ($) {
                         }
 
                         if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
-                            if (
-                                arrayItem["applicationStatus"] === "Pending" ||
-                                arrayItem["applicationStatus"] === "Action" ||
-                                arrayItem["applicationStatus"] === "Approved"
-                            ) {
+                            if (arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action") {
                                 applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
                             } else if (arrayItem["applicationStatus"] === "Approved Confirmed") {
                                 applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
+                            } else if (arrayItem["applicationStatus"] === "Approved") {
+                                if (arrayItem["bookingStatus"] == "Approved") {
+                                    applicationStatus = '<span class="hidden">C</span><div class="button action bigButton"></div>';
+                                } else {
+                                    applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                                }
                             } else if (
                                 arrayItem["applicationStatus"] === "Denied" ||
                                 arrayItem["applicationStatus"] === null ||
@@ -220,7 +222,9 @@ jQuery(document).ready(function ($) {
                                 "</span> <br/> " +
                                 arrayItem["property"] +
                                 " | " +
-                                arrayItem["roomType"],
+                                arrayItem["roomType"] +
+                                " | " +
+                                arrayItem["counter"],
                             bed_code,
                             dateString,
                             studentType,

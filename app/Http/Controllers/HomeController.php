@@ -1997,7 +1997,11 @@ class HomeController extends Controller
 
             if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
                 $counter++;
-            }               
+            }  
+            
+            if($student->overall_status === "Cancelled"){
+                $counter = -30;
+            }  
 
             //Default files that all students have
             $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus", "bankStatement", "bursaryApproval"];
@@ -2062,6 +2066,7 @@ class HomeController extends Controller
 
                 if ($student->{$ft} == "Uploaded") {
                     $counter++;
+                    $counter++;
                 }
 
                 if($student->{$ft} == "" || $student->{$ft} == "Rejected"){
@@ -2071,13 +2076,14 @@ class HomeController extends Controller
                 if($student->{$ft} == "Approved"){
                     $counter--;
                     $counter--;
+                    $counter--;
                 }
     
-                if($student->{$ft} == "na" || empty($student->{$ft})){
-                    $counter--;
-                    $counter--;
-                    $counter--;
-                }
+                // if($student->{$ft} == "na" || empty($student->{$ft})){
+                //     $counter--;
+                //     $counter--;
+                //     $counter--;
+                // }
             } 
             
 
