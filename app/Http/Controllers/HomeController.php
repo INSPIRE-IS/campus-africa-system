@@ -3789,7 +3789,9 @@ class HomeController extends Controller
     public function update_processing_status(){
         $userList = User::get();
 
-        foreach($userList as $user){
+        foreach($userList as $user) {
+
+            $Lease = UserFiles::where("userUid", $user->id)->where('fileId', 'moveIn')->first();
 
             $overall = "Incomplete";
 
@@ -3808,6 +3810,16 @@ class HomeController extends Controller
             if ($user->bookingStatus == "Cancelled" && $user->applicationStatus == "Cancelled") {
                 $overall = "Cancelled";
             }
+
+            //Check for a lease
+            if ($overall == "Approved") {
+                if (empty($Lease)) {
+                    $overall = "Incomplete";
+                } elseif ($Lease->status == "Uploaded") {                 
+                    $overall = "Pending";
+                }
+            }
+            
 
             User::where('id', $user->id)->update(['overall_status' => $overall]);
         }
