@@ -155,7 +155,7 @@ jQuery(document).ready(function ($) {
                         } else if (arrayItem["moveIn"] === "Rejected" || arrayItem["moveIn"] === "") {
                             moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                         } else {
-                            moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
                         }
 
                         if (arrayItem["bursaryApproval"] === "Uploaded") {

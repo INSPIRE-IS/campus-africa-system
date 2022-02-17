@@ -2000,14 +2000,14 @@ class HomeController extends Controller
             }               
 
             //Default files that all students have
-            $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus"];
+            $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus", "bankStatement", "bursaryApproval"];
 
             //Add in additional files based on student type. Also block out file types based on student type
             if($student->studentType == "Cash / Direct"){
-                array_push($file_types, "bankStatement");
+                // array_push($file_types, "bankStatement");
                 $student->bursaryApproval = "na";
             } elseif($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
-                array_push($file_types, "bursaryApproval");
+                // array_push($file_types, "bursaryApproval");
                 $student->bankStatement = "na";
             }
             
@@ -2037,12 +2037,18 @@ class HomeController extends Controller
                             $addUser = 1;
                         }   
 
-                        if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status != "Cancelled"){
-                            $addUser = 1;
-                        }
+                        if ($student->overall_status != "Cancelled") {
+                            if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft})){
+                                $addUser = 1;
+                            }
 
-                        if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na" && $student->overall_status != "Cancelled"){
-                            $addUser = 1;
+                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
+                                $addUser = 1;
+                            }
+
+                            if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
+                                $addUser = 1;
+                            }
                         }
                     }                 
                 }
