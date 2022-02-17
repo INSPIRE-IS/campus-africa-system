@@ -3795,7 +3795,7 @@ class HomeController extends Controller
 
             $overall = "Incomplete";
 
-            if($user->bookingStatus == "Approved" || $user->applicationStatus == "Approved Confirmed"){
+            if($user->bookingStatus == "Approved" || $user->applicationStatus == "Approved Confirmed" || $user->applicationStatus == "Approved") {
                 $overall = "Approved";
             }
             
@@ -3803,7 +3803,7 @@ class HomeController extends Controller
                 $overall = "Incomplete";
             }
 
-            if($user->bookingStatus == "Action" || $user->applicationStatus == "Action" || $user->applicationStatus == "Approved"){
+            if($user->bookingStatus == "Action" || $user->applicationStatus == "Action"){
                 $overall = "Pending";
             }
 
