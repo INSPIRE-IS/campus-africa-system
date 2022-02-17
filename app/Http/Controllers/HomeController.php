@@ -1885,10 +1885,10 @@ class HomeController extends Controller
                         $applicationStatus = 'u.applicationStatus LIKE "%Action%"';
                         array_push($search_value, $applicationStatus);
                     }
-                    if(in_array("Pending", $request->status)){
-                        $applicationStatus = 'u.applicationStatus = "Approved"';
-                        array_push($search_value, $applicationStatus);
-                    }
+                    // if(in_array("Pending", $request->status)){
+                    //     $applicationStatus = 'u.applicationStatus = "Approved"';
+                    //     array_push($search_value, $applicationStatus);
+                    // }
 
                     if(in_array("NA", $request->status)){
                         $applicationStatus = 'u.overall_status LIKE "%Cancelled%"';
@@ -2013,7 +2013,9 @@ class HomeController extends Controller
             
             //If we are filtering a document type don't auto add students
             if (!empty($request->fieldStatus) && !empty($request->status)) {
-                $addUser = 0;
+                if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
+                    $addUser = 0;
+                }
             }
 
             // if ($student->bookingRef == 143) {
@@ -2643,6 +2645,11 @@ class HomeController extends Controller
                         'status' => 'Rejected'
                     ]);
                 }
+
+                //Recalculate booking status
+                User::where('id', $bookingId)->update([
+                    'bookingStatus' => 'Action'
+                ]);
     
                 Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
     
