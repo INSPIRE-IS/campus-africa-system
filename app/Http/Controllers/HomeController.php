@@ -3805,6 +3805,10 @@ class HomeController extends Controller
                 $overall = "Pending";
             }
 
+            if ($user->bookingStatus == "Cancelled" && $user->applicationStatus == "Cancelled") {
+                $overall = "Cancelled";
+            }
+
             User::where('id', $user->id)->update(['overall_status' => $overall]);
         }
     }

@@ -95,6 +95,8 @@ jQuery(document).ready(function ($) {
                                 arrayItem["applicationStatus"] === "Denied Confimed"
                             ) {
                                 applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                            } else {
+                                applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
                             }
                         } else {
                             applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
