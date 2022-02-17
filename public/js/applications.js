@@ -152,7 +152,7 @@ jQuery(document).ready(function ($) {
                             moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
                         } else if (arrayItem["moveIn"] === "na") {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                        } else if (arrayItem["moveIn"] === "Rejected" || arrayItem["moveIn"] === "") {
+                        } else if (arrayItem["moveIn"] === "Rejected" || arrayItem["moveIn"] === "Incomplete") {
                             moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                         } else {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';

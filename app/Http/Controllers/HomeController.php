@@ -2021,6 +2021,10 @@ class HomeController extends Controller
             //     die();
             // }
 
+            if ($student->overall_status != "Cancelled" && empty($student->moveIn) && $student->applicationStatus == "Approved Confirmed") {
+                $student->moveIn = "Incomplete";
+            }
+
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
             foreach($file_types as $ft) {
                 if ($addUser == 0) {
@@ -2048,10 +2052,11 @@ class HomeController extends Controller
 
                             if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
                                 $addUser = 1;
-                            }
+                            }                            
                         }
-                    }                 
-                }
+                        
+                    }
+                }                
 
                 if ($student->{$ft} == "Uploaded") {
                     $counter++;
