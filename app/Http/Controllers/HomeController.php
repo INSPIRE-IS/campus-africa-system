@@ -2330,7 +2330,7 @@ class HomeController extends Controller
             array_push($users, $studentData);
         }
 
-        $xlsx = new \SimpleXLSXGen();
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
 		$xlsx->addSheet( $users, 'Students');
 		$xlsx->saveAs('Student Export.xlsx');
 
@@ -3898,7 +3898,7 @@ class HomeController extends Controller
             array_push($users, $userData);
         }
 
-        $xlsx = new \SimpleXLSXGen();
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
 		$xlsx->addSheet( $users, 'Students');
 		$xlsx->saveAs('NSFAS Approval Export.xlsx');
         // $xlsx->downloadAs('NSFAS Approval Export.xlsx');
@@ -3943,7 +3943,7 @@ class HomeController extends Controller
             array_push($users, $studentData);
         }
 
-        $xlsx = new \SimpleXLSXGen();
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
 		$xlsx->addSheet( $users, 'Students');
 		$xlsx->saveAs('NSFAS Approval Type Export.xlsx');
 
