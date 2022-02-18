@@ -47,6 +47,7 @@ Route::get('/action-list/{userId}/{filter}', [HomeController::class, 'action_lis
 Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document_list']);
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
 Route::post('/reject-application', [HomeController::class, 'reject_application']);
+Route::get('/check-user-status/{userId}', [HomeController::class, 'check_user_status']);
 
 Route::get('/my-profile', [ProfileController::class, 'index'])->name('my-profile');
 Route::post('/update-profile', [ProfileController::class, 'update']);
@@ -99,6 +100,7 @@ Route::post('/download-report', [HomeController::class, 'download_report']);
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
 Route::post('/change-lease', [HomeController::class, 'change_lease']);
+Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::get('/property/edit/{propertyId}', [HomeController::class, 'property_edit']);

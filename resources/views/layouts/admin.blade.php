@@ -104,10 +104,12 @@
                     @if (isset($appProfile) && $appProfile === "true")
                         @if($user[0]['userInfo']['applicationStatus'] !== "Approved Confirmed")
                             <div id="MainAppSection" class="hidden">
-                                <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
-                                <br/><br/><br/>
-                                <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
-                                <br/><br/><br/>     
+                                @if(Auth::user()->role_approve_docs == 1)
+                                    <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
+                                    <br/><br/><br/>
+                                    <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
+                                    <br/><br/><br/>   
+                                @endif  
                             </div>
                         @endif
 
