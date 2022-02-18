@@ -4115,6 +4115,17 @@ class HomeController extends Controller
 
     }
 
+    public function check_user_status($student_id) {
+
+        $user = User::where('id', $student_id)->first();
+
+        if (!empty($user)) {
+            return ["bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "overall_status" => $user->overall_status];
+        } else {
+            return false;
+        }
+    }
+
     
 
     

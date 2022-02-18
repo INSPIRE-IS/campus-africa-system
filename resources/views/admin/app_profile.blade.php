@@ -633,32 +633,48 @@
             $("#approvedAddr").removeClass('hidden')
         }
 
-        if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
-            
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
-                $("#MainAppSection").removeClass('hidden')
-                // document.getElementById("col1").style.marginTop = "-35px";
-                // document.getElementById("col2").style.marginTop = "-35px";
-                // document.getElementById("col3").style.marginTop = "-35px";
-            }
+        //Check if we show/hide the approve user section
+        $.ajax({
+            type: "get",
+            url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
 
-        }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
+            success: function (data) {
+                console.log(data);
+
+                if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
             
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
-                $("#MainAppSection").removeClass('hidden')
-                // document.getElementById("col1").style.marginTop = "-35px";
-                // document.getElementById("col2").style.marginTop = "-35px";
-                // document.getElementById("col3").style.marginTop = "-35px";
+                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+                        $("#MainAppSection").removeClass('hidden')
+                        // document.getElementById("col1").style.marginTop = "-35px";
+                        // document.getElementById("col2").style.marginTop = "-35px";
+                        // document.getElementById("col3").style.marginTop = "-35px";
+                    } else {
+                        $("#MainAppSection").addClass('hidden')
+                    }
+
+                }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
+                    
+                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+                        $("#MainAppSection").removeClass('hidden')
+                        // document.getElementById("col1").style.marginTop = "-35px";
+                        // document.getElementById("col2").style.marginTop = "-35px";
+                        // document.getElementById("col3").style.marginTop = "-35px";
+                    } else {
+                        $("#MainAppSection").addClass('hidden')
+                    }
+                }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
+                    
+                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+                        $("#MainAppSection").removeClass('hidden')
+                        // document.getElementById("col1").style.marginTop = "-35px";
+                        // document.getElementById("col2").style.marginTop = "-35px";
+                        // document.getElementById("col3").style.marginTop = "-35px";
+                    } else {
+                        $("#MainAppSection").addClass('hidden')
+                    }
+                }
             }
-        }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
-            
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
-                $("#MainAppSection").removeClass('hidden')
-                // document.getElementById("col1").style.marginTop = "-35px";
-                // document.getElementById("col2").style.marginTop = "-35px";
-                // document.getElementById("col3").style.marginTop = "-35px";
-            }
-        }
+        })
     }
 
 
@@ -1937,6 +1953,8 @@
                 }
             },
         });
+
+        checkUserStatus();
     }
 
     $("#actionListSort").on("change", function(){
