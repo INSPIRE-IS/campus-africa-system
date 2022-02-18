@@ -1558,7 +1558,9 @@
 
         if (Data !== "") {
             $("#infoToCheck").empty().append(Data);
-        }        
+        } else {
+            approved = 1;
+        }
 
         if(approved !== 1){
             /*var preview1 = document.getElementById("rejected");
