@@ -4126,6 +4126,23 @@ class HomeController extends Controller
         }
     }
 
+    public function unallocate_bed() {
+        $userId = $request->userId;
+
+        //floor unit room bed bed_code
+
+        // Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
+
+        // ActionList::create([
+        //     "userUid" => $userId,
+        //     "action" => "Rejected application and sent rejectment email",
+        //     "actionUserUid" => Auth::user()->id,
+        //     "actionUserDisplayName" => Auth::user()->userFirstName,
+        //     "actionUserRole" => Auth::user()->userRole,
+        // ]);
+
+        return "done";
+    }
     
 
     

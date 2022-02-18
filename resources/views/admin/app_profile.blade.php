@@ -614,7 +614,41 @@
 
             },
         });
-    })
+    });
+
+    $('#btn_clear_bed').on("click", function(e) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to unallocate this bed, the bed will be available to book again",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/unallocate-bed",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                    },
+
+                    success: function (data) {
+
+                        console.log(data);
+
+                        refreshActions();  
+                        checkUserStatus();
+
+                    }
+                })
+
+            }
+        });
+
+        e.preventDefault();
+    });
 
 
     checkUserStatus();
@@ -1543,16 +1577,18 @@
             /*$("#infoChecker").removeClass('hidden')
             $("#infoToCheck").empty().append(Data);*/
         }else{
-            var preview1 = document.getElementById("rejected");
-            preview1.removeAttribute("disabled", "disabled");
-            var preview2 = document.getElementById("approved");
-            preview2.removeAttribute("disabled", "disabled");
-            var preview3 = document.getElementById("amend");
-            preview3.removeAttribute("disabled", "disabled");
-            var preview4 = document.getElementById("rejectReason");
-            preview4.removeAttribute("readonly", "readonly");
-            var preview5 = document.getElementById("actionUserName");
-            preview5.removeAttribute("readonly", "readonly");
+            @if(Auth::user()->role_approve_docs == 1)
+                var preview1 = document.getElementById("rejected");
+                preview1.removeAttribute("disabled", "disabled");
+                var preview2 = document.getElementById("approved");
+                preview2.removeAttribute("disabled", "disabled");
+                var preview3 = document.getElementById("amend");
+                preview3.removeAttribute("disabled", "disabled");
+                var preview4 = document.getElementById("rejectReason");
+                preview4.removeAttribute("readonly", "readonly");
+                var preview5 = document.getElementById("actionUserName");
+                preview5.removeAttribute("readonly", "readonly");
+            @endif
 
             $("#infoButtons").addClass('hidden');
 
@@ -1719,10 +1755,8 @@
                         fileForApproval = $("#FileNameForApproval").val();
 
                         $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                        var preview1 = document.getElementById("rejected");
-                        preview1.setAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.setAttribute("disabled", "disabled");
+                        $("#rejected").attr("disabled", "disabled");
+                        $("#approved").attr("disabled", "disabled");
 
                         // $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
                         let userId = <?php echo $user[0]['userInfo']['id'];?>
@@ -1750,11 +1784,10 @@
                                     refreshActions();
                                     
 
-                                    $("#amend").empty().append('AMEND')
-                                    var preview1 = document.getElementById("rejected");
-                                    preview1.removeAttribute("disabled", "disabled");
-                                    var preview2 = document.getElementById("approved");
-                                    preview2.removeAttribute("disabled", "disabled");
+                                    $("#amend").empty().append('AMEND');
+
+                                    $("#rejected").removeAttr("disabled", "disabled");
+                                    $("#approved").removeAttr("disabled", "disabled");
 
                                     var modal = document.getElementById("myModal");
                                     modal.style.display = "none";
