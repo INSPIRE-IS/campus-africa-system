@@ -102,7 +102,7 @@
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
                 <h4 class="cardHeader" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}}@endif</h4>
+                <h4 class="cardHeader" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} @if(Auth::user()->role_change_bed == "1")<a href="#" id="btn_clear_bed">X</a>@endif @endif</h4>
                 <h4 class="cardHeader">
                     @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
                     @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
@@ -534,9 +534,16 @@
                         <br/>
                         <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
                     </div>
-                    <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
+
+                    @if(Auth::user()->role_approve_docs == 1)
+                        <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
+                    @endif
+
                     <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-                    <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+
+                    @if(Auth::user()->role_approve_docs == 1)
+                        <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+                    @endif
             </div>
 
             <div id="infoChecker">
@@ -544,8 +551,10 @@
                 <div class="flex">
                     <p id="infoToCheck"></p>
                     <div id="infoButtons" class="hidden">
-                        <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
-                        <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
+                        @if(Auth::user()->role_approve_docs == 1)
+                            <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
+                            <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
+                        @endif
                     </div>
                 </div>
                 <br/><br/><hr/>
@@ -1402,15 +1411,6 @@
     function openModal(field, url, uploaded_by, created_at, fileId, status){
         url = url.replace("%27", "'");
 
-        if("{{Auth::user()->role_approve_docs}}" !== "1"){
-            document.getElementById("approveData").setAttribute("disabled", "disabled");
-            document.getElementById("RejectDAta").setAttribute("disabled", "disabled");
-            document.getElementById("rejected").setAttribute("disabled", "disabled");
-            document.getElementById("approved").setAttribute("disabled", "disabled");
-
-            document.getElementById("amend").removeAttribute("disabled", "disabled");
-        }
-
         if(field == "studentCard"){
             var title = "Student card / Proof of student number";
             if($("#student_card_approved").val() != "1" && $("#student_card_approved").val() != "2"){
@@ -1527,8 +1527,10 @@
         if(approved !== 1){
             /*var preview1 = document.getElementById("rejected");
             preview1.setAttribute("disabled", "disabled");*/
+            @if(Auth::user()->role_approve_docs == 1)
             var preview2 = document.getElementById("approved");
             preview2.setAttribute("disabled", "disabled");
+            @endif
             /*var preview3 = document.getElementById("amend");
             preview3.setAttribute("disabled", "disabled");
             var preview4 = document.getElementById("rejectReason");
