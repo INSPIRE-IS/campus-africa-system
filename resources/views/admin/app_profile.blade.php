@@ -101,8 +101,8 @@
             </div>
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
-                <h4 class="cardHeader" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} @if(Auth::user()->role_change_bed == "1")<a href="#" id="btn_clear_bed">X</a>@endif @endif</h4>
+                <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
+                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} {{--@if(Auth::user()->role_change_bed == "1")<a href="#" id="btn_clear_bed">Unallocate Bed</a>@endif--}} @endif</h4>
                 <h4 class="cardHeader">
                     @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
                     @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
@@ -624,7 +624,8 @@
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
+            confirmButtonText: 'Yes!',
+            showLoaderOnConfirm: true
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
@@ -635,8 +636,7 @@
                     },
 
                     success: function (data) {
-
-                        console.log(data);
+                        $("#prop_room_row1, #prop_room_row2").remove();
 
                         refreshActions();  
                         checkUserStatus();
@@ -1556,14 +1556,15 @@
         $("#FileIdForApproval").val(fileId)
         $("#FileNameForApproval").val(field)
 
-        $("#infoToCheck").empty().append(Data);
+        if (Data !== "") {
+            $("#infoToCheck").empty().append(Data);
+        }        
 
         if(approved !== 1){
             /*var preview1 = document.getElementById("rejected");
             preview1.setAttribute("disabled", "disabled");*/
             @if(Auth::user()->role_approve_docs == 1)
-            var preview2 = document.getElementById("approved");
-            preview2.setAttribute("disabled", "disabled");
+                $("#approved").attr("disabled", "disabled");
             @endif
             /*var preview3 = document.getElementById("amend");
             preview3.setAttribute("disabled", "disabled");
@@ -1572,22 +1573,19 @@
             var preview5 = document.getElementById("actionUserName");
             preview5.setAttribute("readonly", "readonly");*/
 
-            $("#infoButtons").removeClass('hidden');
+            if (Data !== "") {
+                $("#infoButtons").removeClass('hidden');
+            }
 
             /*$("#infoChecker").removeClass('hidden')
             $("#infoToCheck").empty().append(Data);*/
         }else{
             @if(Auth::user()->role_approve_docs == 1)
-                var preview1 = document.getElementById("rejected");
-                preview1.removeAttribute("disabled", "disabled");
-                var preview2 = document.getElementById("approved");
-                preview2.removeAttribute("disabled", "disabled");
-                var preview3 = document.getElementById("amend");
-                preview3.removeAttribute("disabled", "disabled");
-                var preview4 = document.getElementById("rejectReason");
-                preview4.removeAttribute("readonly", "readonly");
-                var preview5 = document.getElementById("actionUserName");
-                preview5.removeAttribute("readonly", "readonly");
+                $("#rejected").removeAttr("disabled", "disabled");
+                $("#approved").removeAttr("disabled", "disabled");
+                $("#amend").removeAttr("disabled", "disabled");
+                $("#rejectReason").removeAttr("readonly", "readonly");
+                $("#actionUserName").removeAttr("readonly", "readonly");
             @endif
 
             $("#infoButtons").addClass('hidden');
@@ -1828,30 +1826,24 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 if(type === "Rejected"){
-                        $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                        var preview1 = document.getElementById("amend");
-                        preview1.setAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.setAttribute("disabled", "disabled");
+                        $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                        $("#amend").attr("disabled", "disabled");
+                        $("#approved").attr("disabled", "disabled");
 
                         sendAction(type, action);
 
                 }else{
                     if(action == "Amend"){
-                            $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                            var preview1 = document.getElementById("rejected");
-                            preview1.setAttribute("disabled", "disabled");
-                            var preview2 = document.getElementById("approved");
-                            preview2.setAttribute("disabled", "disabled");
+                            $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                            $("#rejected").attr("disabled", "disabled");
+                            $("#approved").attr("disabled", "disabled");
 
                             sendAction(type, action);
                         
                     }else{
-                            $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                            var preview1 = document.getElementById("rejected");
-                            preview1.setAttribute("disabled", "disabled");
-                            var preview2 = document.getElementById("amend");
-                            preview2.setAttribute("disabled", "disabled");
+                            $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                            $("#rejected").attr("disabled", "disabled");
+                            $("#amend").attr("disabled", "disabled");
 
                             sendAction(type, action);
 
