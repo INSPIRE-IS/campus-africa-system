@@ -105,7 +105,7 @@
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
                 <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} @if(Auth::user()->role_change_bed == "1")<a href="#" id="btn_clear_bed">Unallocate Bed</a>@endif @endif</h4>
+                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} @if(Auth::user()->role_change_bed == "1")<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>@endif @endif</h4>
                 <h4 class="cardHeader">
                     @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
                     @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif

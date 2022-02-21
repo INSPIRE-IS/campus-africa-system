@@ -350,25 +350,13 @@ body {
             }
 
             .approved {
-                background-image: linear-gradient(
-                    140deg,
-                    #94ff64 0%,
-                    #1cb915 100%
-                );
+                background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
             }
             .action {
-                background-image: linear-gradient(
-                    140deg,
-                    #ffec5c 0%,
-                    #ffbb3c 100%
-                );
+                background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
             }
             .rejected {
-                background-image: linear-gradient(
-                    140deg,
-                    #ff5c5c 0%,
-                    #b72626 100%
-                );
+                background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
             }
         }
 
@@ -747,11 +735,7 @@ body {
 
     .overlayCustom {
         bottom: 0;
-        background-image: linear-gradient(
-            to left,
-            rgba(255, 0, 0, 0),
-            rgb(0, 0, 0)
-        );
+        background-image: linear-gradient(to left, rgba(255, 0, 0, 0), rgb(0, 0, 0));
         color: #f1f1f1;
         width: 100%;
         height: 410px;
@@ -779,11 +763,7 @@ body {
 
     .overlay {
         bottom: 0;
-        background-image: linear-gradient(
-            to left,
-            rgba(255, 0, 0, 0),
-            rgb(0, 0, 0)
-        );
+        background-image: linear-gradient(to left, rgba(255, 0, 0, 0), rgb(0, 0, 0));
         color: #f1f1f1;
         width: 100%;
         height: 446px;
@@ -1388,36 +1368,35 @@ input:read-only {
                 }
 
                 .approved {
-                    background-image: linear-gradient(
-                        140deg,
-                        #94ff64 0%,
-                        #1cb915 100%
-                    );
+                    background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
                 }
                 .action {
-                    background-image: linear-gradient(
-                        140deg,
-                        #ffec5c 0%,
-                        #ffbb3c 100%
-                    );
+                    background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
                 }
                 .rejected {
-                    background-image: linear-gradient(
-                        140deg,
-                        #ff5c5c 0%,
-                        #b72626 100%
-                    );
+                    background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
                 }
                 .na {
-                    background-image: linear-gradient(
-                        140deg,
-                        #eaeaea 0%,
-                        #cecece 100%
-                    );
+                    background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
                 }
             }
         }
     }
+}
+
+.unallocateBed {
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 6px;
+    border: 1px solid #464749;
+    padding: 2px;
+    margin: 5px;
+    width: 40%;
+    cursor: pointer;
 }
 
 #downloadAllDocs,
