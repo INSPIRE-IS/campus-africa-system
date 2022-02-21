@@ -1287,6 +1287,21 @@ button:disabled {
     -ms-flex-pack: end;
     justify-content: flex-end;
 }
+
+.updateProfile {
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #464749;
+    padding: 10px;
+    margin: 5px;
+    width: 48%;
+    cursor: pointer;
+}
 .appSearchForm .indexTab .keys #indexOne .text {
     padding: 4px 20px 0px 20px;
     font-size: 11px;

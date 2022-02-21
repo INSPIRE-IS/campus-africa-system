@@ -60,7 +60,7 @@ jQuery(document).ready(function ($) {
                         if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
                             if (arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action") {
                                 var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                            } else if (arrayItem["bookingStatus"] == "Approved") {
+                            } else if (arrayItem["bookingStatus"] == "Approved" || arrayItem["bookingStatus"] == "Approved Confirmed") {
                                 var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
                             } else if (
                                 arrayItem["bookingStatus"] == "Denied" ||

@@ -17,6 +17,7 @@
     @if(Auth::user()->id == 1)
         <button type="button" id="updateBookingFee" class="detailsChange" >Update All Booking Fees</button>
         <button type="button" id="updateProcessingStatus" class="detailsChange" >Update Student Processing Status</button>
+        <button type="button" id="updateStudentsStatus" class="detailsChange" >Update Student Overall Status</button>
     @endif
     <br/>
     <table id="lookups_table" class="display">
@@ -203,6 +204,36 @@
                         Swal.fire(
                             'Success',
                             'All Student Processing Status updated',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
+
+    $("#updateStudentsStatus").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#updateStudentsStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/all_student_update_status",
+
+                    success: function (data) {
+                        $("#updateStudentsStatus").empty().append('Update Students Overall Status');
+
+                        Swal.fire(
+                            'Success',
+                            'All Student Overall Status updated',
                             'success'
                         )
                     },

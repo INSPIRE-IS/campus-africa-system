@@ -13,6 +13,7 @@
                 {{$user[0]['userInfo']['userAddress2']}}<br/>
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
+                @if(Auth::user()->id == "1")<button type="button" class="updateProfile" id="updateProfileStatus">Update status</button>@endif
             </p>
         </div>
         <div class="col-3" id="col2" style="margin-top:16px;">
@@ -634,6 +635,19 @@
             }
         });
     }
+    
+    $("#updateProfileStatus").on('click', function(){
+        $("#updateProfileStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "get",
+            url: "/update-user-status/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                
+                window.location.reload();
+
+            },
+        });
+    })
 
     $("#addComment").on('click', function(){
         $("#addComment").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
