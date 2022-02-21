@@ -4135,7 +4135,7 @@ class HomeController extends Controller
 
         ActionList::create([
             "userUid" => $userId,
-            "action" => "Unallocated Bed ".$booking_old->bed_code." on the ".$booking_old->floor."floor, unit ".$booking_old->unit,
+            "action" => "Unallocated Bed ".$booking_old->bed_code." on the ".$booking_old->floor." floor, unit ".$booking_old->unit,
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
@@ -4177,6 +4177,11 @@ class HomeController extends Controller
     //     $user = User::with('files')->where('id', $request->user_id)->first();
 
     //     //files for booking status === Proof of payment - ID Copy
+    //     $booking = "rejected";
+
+    //     foreach($user->files as $file){
+    //         //
+    //     }
 
     //     //files for application status
 
