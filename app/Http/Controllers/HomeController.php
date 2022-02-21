@@ -1852,59 +1852,59 @@ class HomeController extends Controller
         
         $search_value = [];
 
-        if($request->fieldStatus !== "" && !empty($request->fieldStatus)) {
-            if($request->fieldStatus !== "All"){
+        // if($request->fieldStatus !== "" && !empty($request->fieldStatus)) {
+        //     if($request->fieldStatus !== "All"){
 
-                if($request->fieldStatus == "bookingStatus"){
-                    if(in_array("Incomplete", $request->status)){
-                        $bookingStatus = '(u.bookingStatus LIKE "%Empty%" OR u.bookingStatus LIKE "%Rejected%")';
-                        array_push($search_value, $bookingStatus);
-                    }
+        //         if($request->fieldStatus == "bookingStatus"){
+        //             if(in_array("Incomplete", $request->status)){
+        //                 $bookingStatus = '(u.bookingStatus LIKE "%Empty%" OR u.bookingStatus LIKE "%Rejected%")';
+        //                 array_push($search_value, $bookingStatus);
+        //             }
                     
-                    if(in_array("Valid", $request->status)){
-                        $bookingStatus = 'u.bookingStatus LIKE "%Approved%"';
-                        array_push($search_value, $bookingStatus);
-                    }
+        //             if(in_array("Valid", $request->status)){
+        //                 $bookingStatus = 'u.bookingStatus LIKE "%Approved%"';
+        //                 array_push($search_value, $bookingStatus);
+        //             }
                     
-                    if(in_array("Pending", $request->status)){
-                        $bookingStatus = 'u.bookingStatus LIKE "%Action%"';
-                        array_push($search_value, $bookingStatus);
-                    }
+        //             if(in_array("Pending", $request->status)){
+        //                 $bookingStatus = 'u.bookingStatus LIKE "%Action%"';
+        //                 array_push($search_value, $bookingStatus);
+        //             }
 
-                    if(in_array("NA", $request->status)){
-                        $bookingStatus = 'u.overall_status LIKE "%Cancelled%"';
-                        array_push($search_value, $bookingStatus);
-                    }
+        //             if(in_array("NA", $request->status)){
+        //                 $bookingStatus = 'u.overall_status LIKE "%Cancelled%"';
+        //                 array_push($search_value, $bookingStatus);
+        //             }
 
-                }elseif($request->fieldStatus == "applicationStatus"){
-                    if(in_array("Incomplete", $request->status)){
-                        $applicationStatus = '(u.applicationStatus LIKE "%Empty%" OR u.applicationStatus LIKE "%Rejected%")';
-                        array_push($search_value, $applicationStatus);
-                    }
+        //         }elseif($request->fieldStatus == "applicationStatus"){
+        //             if(in_array("Incomplete", $request->status)){
+        //                 $applicationStatus = '(u.applicationStatus LIKE "%Empty%" OR u.applicationStatus LIKE "%Rejected%")';
+        //                 array_push($search_value, $applicationStatus);
+        //             }
                     
-                    if(in_array("Valid", $request->status)){
-                        $applicationStatus = 'u.applicationStatus = "Approved Confirmed"';
-                        array_push($search_value, $applicationStatus);
-                    }
+        //             if(in_array("Valid", $request->status)){
+        //                 $applicationStatus = 'u.applicationStatus = "Approved Confirmed"';
+        //                 array_push($search_value, $applicationStatus);
+        //             }
                     
-                    if(in_array("Pending", $request->status)){
-                        $applicationStatus = 'u.applicationStatus LIKE "%Action%"';
-                        array_push($search_value, $applicationStatus);
-                    }
-                    // if(in_array("Pending", $request->status)){
-                    //     $applicationStatus = 'u.applicationStatus = "Approved"';
-                    //     array_push($search_value, $applicationStatus);
-                    // }
+        //             if(in_array("Pending", $request->status)){
+        //                 $applicationStatus = 'u.applicationStatus LIKE "%Action%"';
+        //                 array_push($search_value, $applicationStatus);
+        //             }
+        //             // if(in_array("Pending", $request->status)){
+        //             //     $applicationStatus = 'u.applicationStatus = "Approved"';
+        //             //     array_push($search_value, $applicationStatus);
+        //             // }
 
-                    if(in_array("NA", $request->status)){
-                        $applicationStatus = 'u.overall_status LIKE "%Cancelled%"';
-                        array_push($search_value, $applicationStatus);
-                    }
+        //             if(in_array("NA", $request->status)){
+        //                 $applicationStatus = 'u.overall_status LIKE "%Cancelled%"';
+        //                 array_push($search_value, $applicationStatus);
+        //             }
 
-                }
+        //         }
 
-            }
-        }
+        //     }
+        // }
 
 
         if($request->studentNo !== "" && !empty($request->studentNo)){
@@ -1983,8 +1983,8 @@ class HomeController extends Controller
                 (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
                 (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
                 (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
-                (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
-                (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "leaseStatus") as leaseStatus,
+                -- (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
+                (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "moveIn") as leaseStatus,
                 u.*, bookings_data.*
             FROM
                 users u
@@ -2023,8 +2023,44 @@ class HomeController extends Controller
             
             //If we are filtering a document type don't auto add students
             if (!empty($request->fieldStatus) && !empty($request->status)) {
-                if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
+                // if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
+                //     $addUser = 0;
+                // }
+
+                if ($request->fieldStatus == "bookingStatus") {                
                     $addUser = 0;
+
+                    if(in_array("Valid", $request->status) && $student->bookingStatus == "Approved"){
+                        $addUser = 1;
+                    }
+                    if(in_array("Incomplete", $request->status) && ($student->bookingStatus === "Rejected" || $student->bookingStatus == null)){
+                        $addUser = 1;
+                    }
+                    if(in_array("Pending", $request->status) && $student->bookingStatus == "Action"){
+                        $addUser = 1;
+                    }
+                    if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
+                        $addUser = 1;
+                    }
+                }
+
+                if ($request->fieldStatus == "applicationStatus") {                
+                    $addUser = 0;
+
+                    if(in_array("Valid", $request->status) && $student->applicationStatus == "Approved Confirmed"){
+                        $addUser = 1;
+                    }
+
+                    if(in_array("Incomplete", $request->status) && ($student->applicationStatus == "Rejected" || $student->applicationStatus == null || $student->applicationStatus == "Empty")){
+                        $addUser = 1;
+                    }
+
+                    if(in_array("Pending", $request->status) &&( $student->bookingStatus == "Action" ||  $student->bookingStatus == "Approved")){
+                        $addUser = 1;
+                    }
+                    if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
+                        $addUser = 1;
+                    }
                 }
             }
 
@@ -2043,7 +2079,15 @@ class HomeController extends Controller
                     if ($request->fieldStatus == $ft) {
                         if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected"){
                             $addUser = 1;
-                        }                        
+                        }
+                        
+                        if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null){
+                            $addUser = 1;
+                        }
+
+                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
+                            $addUser = 1;
+                        }
         
                         if(in_array("Valid", $request->status) && $student->{$ft} == "Approved"){
                             $addUser = 1;
@@ -2064,7 +2108,11 @@ class HomeController extends Controller
 
                             if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
                                 $addUser = 1;
-                            }                            
+                            }
+                            
+                            if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft})){
+                                $addUser = 1;
+                            }
                         }
                         
                     }
