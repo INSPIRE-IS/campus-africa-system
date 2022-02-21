@@ -314,12 +314,13 @@
                 </div>
 
                 <div class="form-field">
-                    <ul style="list-style-type:none">
+                    <!-- <ul style="list-style-type:none">
                         <li style="display:inline-flex; margin-top:30px;">
                             <input type="checkbox" id="nsfas_bursar" name="nsfas_bursar" value="1" style="width:50px !important">
                             <label for="nsfas_bursar" style="width:500px">NSFAS bursar?</label>
                         </li>
-                    </ul>
+                    </ul> -->
+                    <br/>
                 </div>
 
                 <div class="form-field-big">
@@ -548,7 +549,7 @@
         // var required = document.getElementById(fieldId).required
         var required = $("#"+fieldId).hasClass('required')
 
-        if($("#"+fieldId).val() == "" && required == true){
+        if($("#"+fieldId).val() == null && required == true){
             $("#"+$(this)[0]["id"]).addClass('fieldError')
             $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
         }else{
