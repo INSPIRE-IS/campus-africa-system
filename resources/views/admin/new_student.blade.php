@@ -1163,7 +1163,7 @@
         var req = 1;
 
         $('.required').each( function(){
-            if($(this).val() === ""){
+            if($(this).val() === "" || $(this).val() === null){
                 req = 0
                 console.log($(this)[0]["id"])
 

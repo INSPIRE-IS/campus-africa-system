@@ -104,8 +104,8 @@
             </div>
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
-                <h4 class="cardHeader" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}}@endif</h4>
+                <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
+                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} {{--@if(Auth::user()->role_change_bed == "1")<a href="#" id="btn_clear_bed">Unallocate Bed</a>@endif--}} @endif</h4>
                 <h4 class="cardHeader">
                     @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
                     @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
@@ -537,9 +537,16 @@
                         <br/>
                         <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
                     </div>
-                    <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
+
+                    @if(Auth::user()->role_approve_docs == 1)
+                        <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
+                    @endif
+
                     <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-                    <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+
+                    @if(Auth::user()->role_approve_docs == 1)
+                        <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+                    @endif
             </div>
 
             <div id="infoChecker">
@@ -547,8 +554,10 @@
                 <div class="flex">
                     <p id="infoToCheck"></p>
                     <div id="infoButtons" class="hidden">
-                        <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
-                        <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
+                        @if(Auth::user()->role_approve_docs == 1)
+                            <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
+                            <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
+                        @endif
                     </div>
                 </div>
                 <br/><br/><hr/>
@@ -642,7 +651,41 @@
 
             },
         });
-    })
+    });
+
+    $('#btn_clear_bed').on("click", function(e) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to unallocate this bed, the bed will be available to book again",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!',
+            showLoaderOnConfirm: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/unallocate-bed",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                    },
+
+                    success: function (data) {
+                        $("#prop_room_row1, #prop_room_row2").remove();
+
+                        refreshActions();  
+                        checkUserStatus();
+
+                    }
+                })
+
+            }
+        });
+
+        e.preventDefault();
+    });
 
 
     checkUserStatus();
@@ -670,32 +713,48 @@
             $("#approvedAddr").removeClass('hidden')
         }
 
-        if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
-            
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
-                $("#MainAppSection").removeClass('hidden')
-                // document.getElementById("col1").style.marginTop = "-35px";
-                // document.getElementById("col2").style.marginTop = "-35px";
-                // document.getElementById("col3").style.marginTop = "-35px";
-            }
+        //Check if we show/hide the approve user section
+        $.ajax({
+            type: "get",
+            url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
 
-        }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
+            success: function (data) {
+                console.log(data);
+
+                if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
             
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
-                $("#MainAppSection").removeClass('hidden')
-                // document.getElementById("col1").style.marginTop = "-35px";
-                // document.getElementById("col2").style.marginTop = "-35px";
-                // document.getElementById("col3").style.marginTop = "-35px";
+                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+                        $("#MainAppSection").removeClass('hidden')
+                        // document.getElementById("col1").style.marginTop = "-35px";
+                        // document.getElementById("col2").style.marginTop = "-35px";
+                        // document.getElementById("col3").style.marginTop = "-35px";
+                    } else {
+                        $("#MainAppSection").addClass('hidden')
+                    }
+
+                }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
+                    
+                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+                        $("#MainAppSection").removeClass('hidden')
+                        // document.getElementById("col1").style.marginTop = "-35px";
+                        // document.getElementById("col2").style.marginTop = "-35px";
+                        // document.getElementById("col3").style.marginTop = "-35px";
+                    } else {
+                        $("#MainAppSection").addClass('hidden')
+                    }
+                }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
+                    
+                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+                        $("#MainAppSection").removeClass('hidden')
+                        // document.getElementById("col1").style.marginTop = "-35px";
+                        // document.getElementById("col2").style.marginTop = "-35px";
+                        // document.getElementById("col3").style.marginTop = "-35px";
+                    } else {
+                        $("#MainAppSection").addClass('hidden')
+                    }
+                }
             }
-        }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
-            
-            if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && "{{$user[0]['userInfo']['applicationStatus']}}" !== "Approved Confirmed" && $("#bed_allocated").val() !== ""){
-                $("#MainAppSection").removeClass('hidden')
-                // document.getElementById("col1").style.marginTop = "-35px";
-                // document.getElementById("col2").style.marginTop = "-35px";
-                // document.getElementById("col3").style.marginTop = "-35px";
-            }
-        }
+        })
     }
 
 
@@ -1423,15 +1482,6 @@
     function openModal(field, url, uploaded_by, created_at, fileId, status){
         url = url.replace("%27", "'");
 
-        if("{{Auth::user()->role_approve_docs}}" !== "1"){
-            document.getElementById("approveData").setAttribute("disabled", "disabled");
-            document.getElementById("RejectDAta").setAttribute("disabled", "disabled");
-            document.getElementById("rejected").setAttribute("disabled", "disabled");
-            document.getElementById("approved").setAttribute("disabled", "disabled");
-
-            document.getElementById("amend").removeAttribute("disabled", "disabled");
-        }
-
         if(field == "studentCard"){
             var title = "Student card / Proof of student number";
             if($("#student_card_approved").val() != "1" && $("#student_card_approved").val() != "2"){
@@ -1543,13 +1593,18 @@
         $("#FileIdForApproval").val(fileId)
         $("#FileNameForApproval").val(field)
 
-        $("#infoToCheck").empty().append(Data);
+        if (Data !== "") {
+            $("#infoToCheck").empty().append(Data);
+        } else {
+            approved = 1;
+        }
 
         if(approved !== 1){
             /*var preview1 = document.getElementById("rejected");
             preview1.setAttribute("disabled", "disabled");*/
-            var preview2 = document.getElementById("approved");
-            preview2.setAttribute("disabled", "disabled");
+            @if(Auth::user()->role_approve_docs == 1)
+                $("#approved").attr("disabled", "disabled");
+            @endif
             /*var preview3 = document.getElementById("amend");
             preview3.setAttribute("disabled", "disabled");
             var preview4 = document.getElementById("rejectReason");
@@ -1557,21 +1612,20 @@
             var preview5 = document.getElementById("actionUserName");
             preview5.setAttribute("readonly", "readonly");*/
 
-            $("#infoButtons").removeClass('hidden');
+            if (Data !== "") {
+                $("#infoButtons").removeClass('hidden');
+            }
 
             /*$("#infoChecker").removeClass('hidden')
             $("#infoToCheck").empty().append(Data);*/
         }else{
-            var preview1 = document.getElementById("rejected");
-            preview1.removeAttribute("disabled", "disabled");
-            var preview2 = document.getElementById("approved");
-            preview2.removeAttribute("disabled", "disabled");
-            var preview3 = document.getElementById("amend");
-            preview3.removeAttribute("disabled", "disabled");
-            var preview4 = document.getElementById("rejectReason");
-            preview4.removeAttribute("readonly", "readonly");
-            var preview5 = document.getElementById("actionUserName");
-            preview5.removeAttribute("readonly", "readonly");
+            @if(Auth::user()->role_approve_docs == 1)
+                $("#rejected").removeAttr("disabled", "disabled");
+                $("#approved").removeAttr("disabled", "disabled");
+                $("#amend").removeAttr("disabled", "disabled");
+                $("#rejectReason").removeAttr("readonly", "readonly");
+                $("#actionUserName").removeAttr("readonly", "readonly");
+            @endif
 
             $("#infoButtons").addClass('hidden');
 
@@ -1738,10 +1792,8 @@
                         fileForApproval = $("#FileNameForApproval").val();
 
                         $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                        var preview1 = document.getElementById("rejected");
-                        preview1.setAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.setAttribute("disabled", "disabled");
+                        $("#rejected").attr("disabled", "disabled");
+                        $("#approved").attr("disabled", "disabled");
 
                         // $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
                         let userId = <?php echo $user[0]['userInfo']['id'];?>
@@ -1769,11 +1821,10 @@
                                     refreshActions();
                                     
 
-                                    $("#amend").empty().append('AMEND')
-                                    var preview1 = document.getElementById("rejected");
-                                    preview1.removeAttribute("disabled", "disabled");
-                                    var preview2 = document.getElementById("approved");
-                                    preview2.removeAttribute("disabled", "disabled");
+                                    $("#amend").empty().append('AMEND');
+
+                                    $("#rejected").removeAttr("disabled", "disabled");
+                                    $("#approved").removeAttr("disabled", "disabled");
 
                                     var modal = document.getElementById("myModal");
                                     modal.style.display = "none";
@@ -1814,30 +1865,24 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 if(type === "Rejected"){
-                        $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                        var preview1 = document.getElementById("amend");
-                        preview1.setAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.setAttribute("disabled", "disabled");
+                        $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                        $("#amend").attr("disabled", "disabled");
+                        $("#approved").attr("disabled", "disabled");
 
                         sendAction(type, action);
 
                 }else{
                     if(action == "Amend"){
-                            $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                            var preview1 = document.getElementById("rejected");
-                            preview1.setAttribute("disabled", "disabled");
-                            var preview2 = document.getElementById("approved");
-                            preview2.setAttribute("disabled", "disabled");
+                            $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                            $("#rejected").attr("disabled", "disabled");
+                            $("#approved").attr("disabled", "disabled");
 
                             sendAction(type, action);
                         
                     }else{
-                            $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                            var preview1 = document.getElementById("rejected");
-                            preview1.setAttribute("disabled", "disabled");
-                            var preview2 = document.getElementById("amend");
-                            preview2.setAttribute("disabled", "disabled");
+                            $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+                            $("#rejected").attr("disabled", "disabled");
+                            $("#amend").attr("disabled", "disabled");
 
                             sendAction(type, action);
 
@@ -1974,6 +2019,8 @@
                 }
             },
         });
+
+        checkUserStatus();
     }
 
     $("#actionListSort").on("change", function(){
