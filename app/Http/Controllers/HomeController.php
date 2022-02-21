@@ -4129,13 +4129,14 @@ class HomeController extends Controller
     public function unallocate_bed(Request $request) {
         $userId = $request->userId;
 
-        // $user = User::where('id', $userId)->first();
+        $booking_old = Booking::where('userId', $userId)->first();
 
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
 
         ActionList::create([
             "userUid" => $userId,
-            "action" => "Unallocated Bed","actionUserUid" => Auth::user()->id,
+            "action" => "Unallocated Bed ".$booking_old->bed_code." on the ".$booking_old->floor."floor, unit ".$booking_old->unit,
+            "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
         ]);
@@ -4170,6 +4171,19 @@ class HomeController extends Controller
         return 'done';
 
     }
+
+    // public function update_user_status(Request $request){
+        
+    //     $user = User::with('files')->where('id', $request->user_id)->first();
+
+    //     //files for booking status === Proof of payment - ID Copy
+
+    //     //files for application status
+
+    //     //lease
+
+    //     //overall status
+    // }
 
     
 
