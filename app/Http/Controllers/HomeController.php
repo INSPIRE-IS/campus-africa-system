@@ -4202,7 +4202,7 @@ class HomeController extends Controller
             }
     
             //Check all status in booking to get final booking status
-            if(in_array("Approved", $files_for_booking)){
+            if(count($files_for_booking) == "2" && in_array("Approved", $files_for_booking)){
                 $booking = "Approved";
             }
             if(in_array("Rejected", $files_for_booking)){
@@ -4216,7 +4216,7 @@ class HomeController extends Controller
             }
     
             //Check all status in application to get final booking status
-            if(in_array("Approved", $files_for_application)){
+            if(count($files_for_application) == "3" && in_array("Approved", $files_for_application)){
                 $application = "Approved";
             }
             if(in_array("Rejected", $files_for_application)){
