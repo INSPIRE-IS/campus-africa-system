@@ -1828,6 +1828,14 @@
 
                                     var modal = document.getElementById("myModal");
                                     modal.style.display = "none";
+                                }else if(data[0] == "error"){
+                                    Swal.fire(
+                                        'Error',
+                                        data[1],
+                                        'error'
+                                    )
+
+                                    window.location.reload();
                                 }
                             },
                         });
@@ -2143,6 +2151,12 @@
                     $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
                 }
             },
         });
@@ -2173,6 +2187,13 @@
                     $("#studentCardBanner").empty().append('<button type="Button" onClick="openModal(\'studentCard\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
+                    $("#studentCardSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });  
@@ -2204,6 +2225,13 @@
                     $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
+                    $("#bankStatementSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
@@ -2235,6 +2263,13 @@
                     $("#proofRegistrationBanner").empty().append('<button type="Button" onClick="openModal(\'proofRegistration\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
+                    $("#proofRegistrationSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
@@ -2268,6 +2303,13 @@
 
                     refreshActions();
 
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
+                    $("#proof_of_paymentSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
@@ -2302,6 +2344,13 @@
 
                     refreshActions();
 
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
+                    $("#bursaryApprovalSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
@@ -2336,6 +2385,13 @@
 
                     refreshActions();
 
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
+                    $("#bursaryApprovalSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
@@ -2367,6 +2423,13 @@
                     $("#moveInBanner").empty().append('<button type="Button" onClick="openModal(\'moveIn\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
 
                     refreshActions();
+                }else if(data[0] == "error"){
+                    Swal.fire(
+                        'Error',
+                        data[1],
+                        'error'
+                    )
+                    $("#moveInSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });

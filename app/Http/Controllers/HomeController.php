@@ -1367,11 +1367,17 @@ class HomeController extends Controller
 
                 User::where('id', $userUid)->update(["bookingStatus" => $phase1, "applicationStatus" => $phase2, "overall_status" => $overall]);
 
+                return ["done", $fileUrlBack, $file];
+
+            }else{
+                return ["error", "File Not Valid"];
             }
+        }else{
+            return ["error", "No File Detected"];
         }
 
 
-        return ["done", $fileUrlBack, $file];
+        
     }
 
     public function lookups(Request $request){
