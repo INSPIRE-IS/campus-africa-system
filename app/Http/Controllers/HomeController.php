@@ -2045,7 +2045,6 @@ class HomeController extends Controller
                 }
 
                 if ($request->fieldStatus == "applicationStatus") {                
-                    // $addUser = 0;
 
                     if(in_array("Valid", $request->status) && $student->applicationStatus == "Approved Confirmed"){
                         $addUser = 1;
@@ -2095,7 +2094,11 @@ class HomeController extends Controller
         
                         if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded"){
                             $addUser = 1;
-                        }   
+                        }  
+                        
+                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected") && in_array("NA", $request->status)){
+                            $addUser = 1;
+                        }
 
                         if ($student->overall_status != "Cancelled") {
                             if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft})){
