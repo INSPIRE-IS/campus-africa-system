@@ -4361,13 +4361,13 @@ class HomeController extends Controller
  
     }
 
-    public function all_student_update_status(){
-        $students = User::where('userRole', '0')->get();
+    // public function all_student_update_status(){
+    //     $students = User::where('userRole', '0')->get();
 
-        foreach($students as $student){
-            $this->update_user_status($student->id);
-        }
-    }
+    //     foreach($students as $student){
+    //         $this->update_user_status($student->id);
+    //     }
+    // }
     
 
     
