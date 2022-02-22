@@ -1951,6 +1951,8 @@ class HomeController extends Controller
             }else{
                 $applicant = 'u.userFirstName LIKE "%'.$request->applicant.'%"';
                 array_push($search_value, $applicant);
+                $applicantSurname = 'u.userLastname LIKE "%'.$request->applicant.'%"';
+                array_push($search_value, $applicantSurname);
             }
             
         }
