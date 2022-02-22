@@ -969,6 +969,7 @@ class HomeController extends Controller
             // "userDob" => $request->dob,
             // "userCell" => $request->cell_no,
             "userEmail" => $request->email,
+            "email" => $request->email,
             "userRole" => "1",
             "role_create_app" => $request->create_app,
             "role_edit_app" => $request->edit_app,
@@ -2412,7 +2413,7 @@ class HomeController extends Controller
                 }
             }
 
-            $studentData = [$student->userFirstName, $student->userLastname, $student->userTitle, $student->userDob, $student->userCell, $student->email, $student->userNationality, $student->userId, $student->userPassport, $student->studentType, $student->year, $lookupsInstit->lookup_name, $student->studentNo, $student->yearOfStudy, $lookupsFaculty->lookup_name,
+            $studentData = [$student->userFirstName, $student->userLastname, $student->userTitle, $student->userDob, $student->userCell, $student->userEmail, $student->userNationality, $student->userId, $student->userPassport, $student->studentType, $student->year, $lookupsInstit->lookup_name, $student->studentNo, $student->yearOfStudy, $lookupsFaculty->lookup_name,
             $student->overall_status,
             $bookingStatus,
             $applicationStatus,

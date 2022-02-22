@@ -31,6 +31,7 @@ class ProfileController extends Controller
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,
             'userEmail' => $request->email,
+            'email' => $request->email,
             'userId' => $request->idNumber,
             'userNationality' => $request->nationality,
             'userPassport' => $request->passportNo,

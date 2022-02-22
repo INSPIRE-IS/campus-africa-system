@@ -424,7 +424,7 @@
                         <br/>
                         <span style="font-weight:bold">Unit No:</span> {{$propertyData->bed_code}}
                         <br/>
-                        <span style="font-weight:bold">Email:</span> {{$data->email}}
+                        <span style="font-weight:bold">Email:</span> {{$data->userEmail}}
                         <br/>
                         <span style="font-weight:bold">Cell Number:</span> {{$data->userCell}}
                         <br/><br/>
@@ -434,7 +434,7 @@
                         <br/>
                         <!-- <span style="font-weight:bold">Unit No:</span> ???
                         <br/> -->
-                        <span style="font-weight:bold">Email:</span> {{$data->email}}
+                        <span style="font-weight:bold">Email:</span> {{$data->userEmail}}
                     </li>
                 </ol>
                 <br/>
