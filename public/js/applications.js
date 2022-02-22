@@ -150,13 +150,13 @@ jQuery(document).ready(function ($) {
                             proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                         }
 
-                        if (arrayItem["moveIn"] === "Uploaded") {
+                        if (arrayItem["leaseStatus"] === "Uploaded") {
                             moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                        } else if (arrayItem["moveIn"] === "Approved") {
+                        } else if (arrayItem["leaseStatus"] === "Approved") {
                             moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                        } else if (arrayItem["moveIn"] === "na") {
+                        } else if (arrayItem["leaseStatus"] === "na") {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                        } else if (arrayItem["moveIn"] === "Rejected" || arrayItem["moveIn"] === "Incomplete") {
+                        } else if (arrayItem["leaseStatus"] === "Rejected" || arrayItem["leaseStatus"] === "Incomplete") {
                             moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                         } else {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
