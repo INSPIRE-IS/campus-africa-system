@@ -150,6 +150,8 @@ jQuery(document).ready(function ($) {
                             proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                         }
 
+                        console.log(arrayItem["leaseStatus"])
+
                         if (arrayItem["leaseStatus"] === "Uploaded") {
                             moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
                         } else if (arrayItem["leaseStatus"] === "Approved") {
@@ -157,6 +159,8 @@ jQuery(document).ready(function ($) {
                         } else if (arrayItem["leaseStatus"] === "na") {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
                         } else if (arrayItem["leaseStatus"] === "Rejected" || arrayItem["leaseStatus"] === "Incomplete") {
+                            moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
+                        } else if(arrayItem["leaseStatus"] === null && arrayItem["applicationStatus"] === "Approved Confirmed"){
                             moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                         } else {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
