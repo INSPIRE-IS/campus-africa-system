@@ -2024,11 +2024,11 @@ class HomeController extends Controller
             //If we are filtering a document type don't auto add students
             if (!empty($request->fieldStatus) && !empty($request->status)) {
                 // if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
-                //     $addUser = 0;
+                    $addUser = 0;
                 // }
 
                 if ($request->fieldStatus == "bookingStatus") {                
-                    $addUser = 0;
+                    // $addUser = 0;
 
                     if(in_array("Valid", $request->status) && $student->bookingStatus == "Approved"){
                         $addUser = 1;
@@ -2045,7 +2045,7 @@ class HomeController extends Controller
                 }
 
                 if ($request->fieldStatus == "applicationStatus") {                
-                    $addUser = 0;
+                    // $addUser = 0;
 
                     if(in_array("Valid", $request->status) && $student->applicationStatus == "Approved Confirmed"){
                         $addUser = 1;
