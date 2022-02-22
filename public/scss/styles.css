@@ -4,13 +4,7 @@ body {
 }
 
 .yellowGradient {
-    background-image: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        from(#f0e020),
-        to(#e5b219)
-    );
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f0e020), to(#e5b219));
     background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
     height: 688px;
     width: 90%;
@@ -20,13 +14,7 @@ body {
 }
 
 .yellowGradientSmall {
-    background-image: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        from(#f0e020),
-        to(#e5b219)
-    );
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f0e020), to(#e5b219));
     background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
     height: 316px;
     width: 90%;
@@ -738,13 +726,7 @@ body {
 
 .roomImgBack .overlayCustom {
     bottom: 0;
-    background-image: -webkit-gradient(
-        linear,
-        right top,
-        left top,
-        from(rgba(255, 0, 0, 0)),
-        to(black)
-    );
+    background-image: -webkit-gradient(linear, right top, left top, from(rgba(255, 0, 0, 0)), to(black));
     background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
     color: #f1f1f1;
     width: 100%;
@@ -773,13 +755,7 @@ body {
 
 .roomImgBack .overlay {
     bottom: 0;
-    background-image: -webkit-gradient(
-        linear,
-        right top,
-        left top,
-        from(rgba(255, 0, 0, 0)),
-        to(black)
-    );
+    background-image: -webkit-gradient(linear, right top, left top, from(rgba(255, 0, 0, 0)), to(black));
     background-image: linear-gradient(to left, rgba(255, 0, 0, 0), black);
     color: #f1f1f1;
     width: 100%;
@@ -852,13 +828,7 @@ body {
     font-weight: 600;
     color: #464749;
     line-height: 40px;
-    background-image: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        from(#f0e020),
-        to(#e5b219)
-    );
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f0e020), to(#e5b219));
     background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
@@ -1156,6 +1126,21 @@ body {
     display: flex;
     padding: 50px;
     margin-bottom: 60px;
+}
+
+.unallocateBed {
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #464749;
+    padding: 10px;
+    margin: 5px;
+    width: 48%;
+    cursor: pointer;
 }
 
 .redBannerNotice i {

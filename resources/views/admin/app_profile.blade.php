@@ -13,6 +13,7 @@
                 {{$user[0]['userInfo']['userAddress2']}}<br/>
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
+                @if(Auth::user()->id == "1")<button type="button" class="updateProfile" id="updateProfileStatus">Update status</button>@endif
             </p>
         </div>
         <div class="col-3" id="col2" style="margin-top:16px;">
@@ -105,7 +106,7 @@
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
                 <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} {{--@if(Auth::user()->role_change_bed == "1")<a href="#" id="btn_clear_bed">Unallocate Bed</a>@endif--}} @endif</h4>
+                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} @if(Auth::user()->role_change_bed == "1")<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>@endif @endif</h4>
                 <h4 class="cardHeader">
                     @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
                     @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
@@ -634,6 +635,19 @@
             }
         });
     }
+    
+    $("#updateProfileStatus").on('click', function(){
+        $("#updateProfileStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "get",
+            url: "/update-user-status/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                
+                window.location.reload();
+
+            },
+        });
+    })
 
     $("#addComment").on('click', function(){
         $("#addComment").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -674,9 +688,11 @@
 
                     success: function (data) {
                         $("#prop_room_row1, #prop_room_row2").remove();
+                        $("#bed_allocated").val('')
 
                         refreshActions();  
                         checkUserStatus();
+                        
 
                     }
                 })
