@@ -2675,6 +2675,8 @@ class HomeController extends Controller
             }
         }
 
+        $this->update_user_status($bookingId);
+
 
 
         return "true";
