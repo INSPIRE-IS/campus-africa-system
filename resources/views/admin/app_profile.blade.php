@@ -688,9 +688,11 @@
 
                     success: function (data) {
                         $("#prop_room_row1, #prop_room_row2").remove();
+                        $("#bed_allocated").val('')
 
                         refreshActions();  
                         checkUserStatus();
+                        
 
                     }
                 })
