@@ -2044,7 +2044,7 @@ class HomeController extends Controller
                 if ($request->fieldStatus == "bookingStatus") {                
                     // $addUser = 0;
 
-                    if(in_array("Valid", $request->status) && $student->bookingStatus == "Approved"){
+                    if(in_array("Valid", $request->status) && ($student->bookingStatus == "Approved" || $student->bookingStatus == "Approved Confirmed")){
                         $addUser = 1;
                     }
                     if(in_array("Incomplete", $request->status) && ($student->bookingStatus === "Rejected" || $student->bookingStatus == "Empty" || $student->bookingStatus == null)){
@@ -2071,6 +2071,7 @@ class HomeController extends Controller
                     if(in_array("Pending", $request->status) &&( $student->bookingStatus == "Action" ||  $student->bookingStatus == "Approved")){
                         $addUser = 1;
                     }
+
                     if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
                         $addUser = 1;
                     }
@@ -2094,11 +2095,15 @@ class HomeController extends Controller
                             $addUser = 1;
                         }
                         
-                        if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null){
+                        if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null && $student->applicationStatus != "Approved Confirmed"){
                             $addUser = 1;
                         }
 
-                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
+                        if($ft == "leaseStatus" && in_array("Incomplete", $request->status) && $student->{$ft} === null && $student->applicationStatus == "Approved Confirmed"){
+                            $addUser = 1;
+                        }
+
+                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
                             $addUser = 1;
                         }
         
@@ -2140,8 +2145,14 @@ class HomeController extends Controller
                             if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
                                 $addUser = 1;
                             }
+                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->{$ft} == "na" || $student->{$ft} == null) && $student->overall_status == "Cancelled"){
+                                $addUser = 1;
+                            }
 
                             if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
+                                $addUser = 1;
+                            }
+                            if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == null && $student->overall_status == "Cancelled"){
                                 $addUser = 1;
                             }
                             
