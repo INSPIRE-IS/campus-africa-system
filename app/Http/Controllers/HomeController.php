@@ -773,7 +773,7 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
         ]);
 
-        $this->update_user_status($userId);
+        // $this->update_user_status($userId);
 
     }
 
@@ -805,7 +805,7 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
         ]);
 
-        $this->update_user_status($userId);
+        // $this->update_user_status($userId);
     }
 
     public function documents(Request $request){
