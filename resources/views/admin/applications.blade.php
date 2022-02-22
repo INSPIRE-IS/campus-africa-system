@@ -25,27 +25,27 @@
         <div class="searchField">
         <label></label><br/>
             <select name="property" id="property">
-                <option value="All" selected>All Residences</option>
+                <option value="All" selected <?php if(Session::get('property') == "All"){echo "selected";}?>>All Residences</option>
                 @if(Auth::user()->role_braamlofts == 1)
-                    <option value="Braamlofts">Braamlofts</option>
+                    <option value="Braamlofts" <?php if(Session::get('property') == "Braamlofts"){echo "selected";}?>>Braamlofts</option>
                 @endif
                 @if(Auth::user()->role_80_jorissen == 1)
-                    <option value="80 Jorissen">80 Jorissen</option>
+                    <option value="80 Jorissen" <?php if(Session::get('property') == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>
                 @endif
                 @if(Auth::user()->role_49_jorissen == 1)
-                    <option value="49 Jorissen">49 Jorissen</option>
+                    <option value="49 Jorissen" <?php if(Session::get('property') == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>
                 @endif
                 @if(Auth::user()->role_dunvista_mansions == 1)
-                    <option value="Dunvista Mansions">Dunvista Mansions</option>
+                    <option value="Dunvista Mansions" <?php if(Session::get('property') == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>
                 @endif
                 @if(Auth::user()->role_wynton_joy == 1)
-                    <option value="Wynton Joy">Wynton Joy</option>
+                    <option value="Wynton Joy" <?php if(Session::get('property') == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>
                 @endif
                 @if(Auth::user()->role_126_siemert == 1)
-                    <option value="126 Siemert">126 Siemert</option>
+                    <option value="126 Siemert" <?php if(Session::get('property') == "126 Siemert"){echo "selected";}?>>126 Siemert</option>
                 @endif
                 @if(Auth::user()->role_ymca == 1)
-                    <option value="YMCA">YMCA</option>
+                    <option value="YMCA" <?php if(Session::get('property') == "YMCA"){echo "selected";}?>>YMCA</option>
                 @endif
             </select>
         </div>
