@@ -773,6 +773,8 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
         ]);
 
+        $this->update_user_status($userId);
+
     }
 
     protected function reject_application(Request $request){
@@ -802,6 +804,8 @@ class HomeController extends Controller
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
         ]);
+
+        $this->update_user_status($userId);
     }
 
     public function documents(Request $request){
