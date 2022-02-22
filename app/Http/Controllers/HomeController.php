@@ -2100,7 +2100,25 @@ class HomeController extends Controller
                             $addUser = 1;
                         }
 
-                        if ($student->overall_status != "Cancelled") {
+                        if(!in_array("NA", $request->status)){
+                            if ($student->overall_status != "Cancelled" && $student->overall_status != "Rejected") {
+                                if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft})){
+                                    $addUser = 1;
+                                }
+    
+                                if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
+                                    $addUser = 1;
+                                }
+    
+                                if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
+                                    $addUser = 1;
+                                }
+                                
+                                if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft})){
+                                    $addUser = 1;
+                                }
+                            }
+                        }else{
                             if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft})){
                                 $addUser = 1;
                             }
