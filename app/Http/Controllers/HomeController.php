@@ -1949,8 +1949,9 @@ class HomeController extends Controller
                 $applicant = 'u.userLastname LIKE "%'.$explodeName[1].'%"';
                 array_push($search_value, $applicant);
             }else{
-                $applicant = 'u.userFirstName LIKE "%'.$request->applicant.'%"';
+                $applicant = '(u.userFirstName LIKE "%'.$request->applicant.'%" OR u.userLastname LIKE "%'.$request->applicant.'%")';
                 array_push($search_value, $applicant);
+
                 // $applicantSurname = 'u.userLastname LIKE "%'.$request->applicant.'%"';
                 // array_push($search_value, $applicantSurname);
             }
