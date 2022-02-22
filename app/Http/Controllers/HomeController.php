@@ -2094,11 +2094,15 @@ class HomeController extends Controller
                             $addUser = 1;
                         }
                         
-                        if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null){
+                        if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null && $student->applicationStatus != "Approved Confirmed"){
                             $addUser = 1;
                         }
 
-                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
+                        if($ft == "leaseStatus" && in_array("Incomplete", $request->status) && $student->{$ft} === null && $student->applicationStatus == "Approved Confirmed"){
+                            $addUser = 1;
+                        }
+
+                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
                             $addUser = 1;
                         }
         
