@@ -4402,7 +4402,7 @@ class HomeController extends Controller
 
         ActionList::create([
             "userUid" => $request->userId,
-            "action" => "Approved Lease Rejected due to Bed Change",
+            "action" => "Rejected Approved Lease due to Bed Change",
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
