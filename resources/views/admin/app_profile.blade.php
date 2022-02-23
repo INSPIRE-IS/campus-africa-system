@@ -106,7 +106,14 @@
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
                 <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} @if(Auth::user()->role_change_bed == "1")<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>@endif @endif</h4>
+                <h4 class="cardHeader" id="prop_room_row2" >
+                    @if($booking->bed_code)Bed Code: {{$booking->bed_code}}
+                        @if(Auth::user()->role_change_bed == "1")
+                            @if($leaseApproved == 'false')
+                                <button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>
+                            @endif
+                        @endif 
+                    @endif</h4>
                 <h4 class="cardHeader">
                     @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
                     @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
@@ -123,6 +130,7 @@
                 </div>
                 
                 <div class="buttons">
+                    @if($leaseApproved == 'false')
                         @if(Auth::user()->role_change_bed == "1")
                             <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                         @endif
@@ -130,6 +138,13 @@
                         @if(Auth::user()->role_change_date == "1")
                             <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
                         @endif
+                    @endif
+
+                    @if($leaseApproved == 'true')
+                        @if(Auth::user()->role_cancel_lease == "1")
+                            <button type="button" class="appBooking" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                        @endif
+                    @endif
                     
                 </div>
                 <div class="buttons">
@@ -917,6 +932,33 @@
         var modal = document.getElementById("myModalEditLease");
         modal.style.display = "block";
         
+    }
+
+    function cancelLease(bookingId, type){
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "The current Approved Lease will be rejected.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    type: "post",
+                    url: "/cancel-lease",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                    },
+                });
+
+                changeBooking(bookingId, type);
+
+            }
+        });
     }
 
     $("#generateLease").on('click', function(){

@@ -147,3 +147,4 @@ Route::get('/all_student_update_status', [HomeController::class, 'all_student_up
 
 Route::post('/set-page-session', [HomeController::class, 'set_page_session']);
 
+Route::post('/cancel-lease', [HomeController::class, 'cancel_lease']);
