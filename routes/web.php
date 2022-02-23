@@ -145,3 +145,5 @@ Route::post('/change-nsfsbursar', [HomeController::class, 'change_nsfsbursar']);
 Route::get('/update-user-status/{user_id}', [HomeController::class, 'update_user_status']);
 Route::get('/all_student_update_status', [HomeController::class, 'all_student_update_status']);
 
+Route::post('/set-page-session', [HomeController::class, 'set_page_session']);
+

@@ -21,6 +21,7 @@ use App\Models\ImportNSFASStudentAuditLog;
 use ZipStream\ZipStream;
 use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
+use Session;
 
 class HomeController extends Controller
 {
@@ -1859,9 +1860,27 @@ class HomeController extends Controller
         return 'true';
     }
 
+    public function set_page_session(Request $request){
+        Session::put('page', $request->page);
+    }
+
     public function app_filter(Request $request){
         
         $search_value = [];
+
+        Session::put('property', $request->property);
+        Session::put('room_type', $request->room_type);
+        Session::put('applicant', $request->applicant);
+        Session::put('studentNo', $request->studentNo);
+        Session::put('idPassport', $request->idPassport);
+        Session::put('bookingRef', $request->bookingRef);
+        Session::put('student_type', $request->student_type);
+        Session::put('fieldStatus', $request->fieldStatus);
+        Session::put('status', $request->status);
+        Session::put('date', $request->date);
+
+
+        //Set search session variables
 
         // if($request->fieldStatus !== "" && !empty($request->fieldStatus)) {
         //     if($request->fieldStatus !== "All"){

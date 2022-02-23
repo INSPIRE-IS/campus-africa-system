@@ -5,11 +5,27 @@ jQuery(document).ready(function ($) {
         },
     });
 
-    $("#application_table").DataTable({
+    let table = $("#application_table").DataTable({
         searching: false,
         aaSorting: [],
         stripeClasses: ["odd-row", "even-row"],
     });
+
+    $('#application_table').on( 'page.dt', function () {
+        var info = table.page.info();
+
+        $.ajax({
+            type: "post",
+            url: "/set-page-session",
+            data: {
+                page: info.page,
+            },
+            success: function (data) {
+                page = info.page
+            }
+        });
+    } );   
+
 
     $("#searchButton").on("click", function () {
         $("#searchButton").empty().append("Searching...");
@@ -150,8 +166,6 @@ jQuery(document).ready(function ($) {
                             proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                         }
 
-                        console.log(arrayItem["leaseStatus"])
-
                         if (arrayItem["leaseStatus"] === "Uploaded") {
                             moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
                         } else if (arrayItem["leaseStatus"] === "Approved") {
@@ -192,6 +206,12 @@ jQuery(document).ready(function ($) {
                     }
 
                     var m = new Date(arrayItem["created_at"]);
+
+                    if(page == null || page == "NaN" || page == ""){
+                        page = 0;
+                    }else{
+                        page = parseFloat(page)
+                    }
 
                     var dateString =
                         m.getUTCFullYear() +
@@ -243,7 +263,8 @@ jQuery(document).ready(function ($) {
                             bankStatement,
                             moveIn,
                         ])
-                        .draw()
+                        .page(page)
+                        .draw(false)
                         .node();
 
                     $(trDOM).addClass("table_id_" + arrayItem["userId"]);
@@ -261,6 +282,7 @@ jQuery(document).ready(function ($) {
         //
     });
 
+
     $("#application_table tbody").on("click", "tr", function () {
         var datatable = $("#application_table").DataTable();
         var data2 = datatable.row(this);
@@ -273,6 +295,9 @@ jQuery(document).ready(function ($) {
     });
 
     $("#resetFilter").on("click", function () {
+
+        $('.paginate_button[data-dt-idx="1"]').trigger('click');
+
         document.getElementById("property").value = "All";
         document.getElementById("room_type").value = "";
         $("#applicant").val("");

@@ -57,72 +57,61 @@
         </div>
         <div class="searchField">
             <label>Applicant</label><br/>
-            <input type="text" name="applicant" id="applicant"/>
+            <input type="text" name="applicant" id="applicant" value="<?php echo Session::get('applicant');?>"/>
         </div>
 
         <div class="searchField">
             <label>Student Number</label><br/>
-            <input type="text" name="studentNo" id="studentNo"/>
+            <input type="text" name="studentNo" id="studentNo" value="<?php echo Session::get('studentNo');?>"/>
         </div>
         <div class="searchField">
             <label>ID Number / Passport</label><br/>
-            <input type="text" name="idPassport" id="idPassport"/>
+            <input type="text" name="idPassport" id="idPassport" value="<?php echo Session::get('idPassport');?>"/>
         </div>
         <div class="searchField">
             <label>Booking Reference</label><br/>
-            <input type="text" name="bookingRef" id="bookingRef"/>
+            <input type="text" name="bookingRef" id="bookingRef" value="<?php echo Session::get('bookingRef');?>"/>
         </div>
 
         <div class="searchField">
         <label>Student Type</label><br/>
             <select name="student_type" id='student_type'>
-                <option value="All" selected>All Student Types</option>
-                <option value="NSFAS">NSFAS</option>
-                <option value="Bursary">Bursary</option>
-                <option value="Cash / Direct">Cash</option>
+                <option value="All" selected <?php if( Session::get('student_type') == "All"){ echo "selected";}?>>All Student Types</option>
+                <option value="NSFAS" <?php if( Session::get('student_type') == "NSFAS"){ echo "selected";}?>>NSFAS</option>
+                <option value="Bursary" <?php if( Session::get('student_type') == "Bursary"){ echo "selected";}?>>Bursary</option>
+                <option value="Cash / Direct" <?php if( Session::get('student_type') == "Cash / Direct"){ echo "selected";}?>>Cash</option>
             </select>
         </div>
 
         <div class="searchField">
         <label>Documents</label><br/>
             <select name="fieldStatus" id='fieldStatus'>
-                <option value="All" selected>- Select One - </option>
-                <option value="bookingStatus">Booking Status</option>
-                <option value="proof_of_payment">Proof of Payment</option>
-                <option value="copyID">ID Copy</option>
-                <option value="applicationStatus">Application Status</option>
-                <option value="studentCard">Student Card Copy</option>
-                <option value="proofRegistration">Proof of Registration</option>
-                <option value="bursaryApproval">NSFAS | Bursary Approval</option>
-                <option value="bankStatement">Bank Statements</option>
-                <option value="leaseStatus">Lease Status</option>
+                <option value="All" selected <?php if( Session::get('fieldStatus') == "All"){ echo "selected";}?>>- Select One - </option>
+                <option value="bookingStatus" <?php if( Session::get('fieldStatus') == "bookingStatus"){ echo "selected";}?>>Booking Status</option>
+                <option value="proof_of_payment" <?php if( Session::get('fieldStatus') == "proof_of_payment"){ echo "selected";}?>>Proof of Payment</option>
+                <option value="copyID" <?php if( Session::get('fieldStatus') == "All"){ echo "copyID";}?>>ID Copy</option>
+                <option value="applicationStatus" <?php if( Session::get('fieldStatus') == "applicationStatus"){ echo "selected";}?>>Application Status</option>
+                <option value="studentCard" <?php if( Session::get('fieldStatus') == "studentCard"){ echo "selected";}?>>Student Card Copy</option>
+                <option value="proofRegistration" <?php if( Session::get('fieldStatus') == "proofRegistration"){ echo "selected";}?>>Proof of Registration</option>
+                <option value="bursaryApproval" <?php if( Session::get('fieldStatus') == "bursaryApproval"){ echo "selected";}?>>NSFAS | Bursary Approval</option>
+                <option value="bankStatement" <?php if( Session::get('fieldStatus') == "bankStatement"){ echo "selected";}?>>Bank Statements</option>
+                <option value="leaseStatus" <?php if( Session::get('fieldStatus') == "leaseStatus"){ echo "selected";}?>>Lease Status</option>
             </select>
-            <!-- <select name="bookingStatus" id='bookingStatus' style="width:45%">
-                <option value="All" selected>All Bookings</option>
-                <option value="Approved">&#128994; Valid Booking</option>
-                <option value="Action">&#128993; Pending Booking</option>
-                <option value="Empty">&#128308; Invalid Booking</option>
-            </select> -->
-            <!-- <select name="applicationStatus" id='applicationStatus' style="width:45%">
-                <option value="All" selected>All Applications</option>
-                <option value="Approved">&#128994; Valid Application</option>
-                <option value="Action">&#128993; Pending Application</option>
-                <option value="Empty">&#128308; Invalid Application</option>
-            </select> -->
-            </div>
-            <div class="searchField" style="margin-top:26px;">
+        </div>
+
+        <div class="searchField" style="margin-top:26px;">
             <label>Status</label><br/>
             <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:90%;">
-                <option value="Valid">&#128994; Valid</option>
-                <option value="Pending">&#128993; Pending</option>
-                <option value="Incomplete">&#128308; Incomplete</option>
-                <option value="NA">&xcirc; Not Applicable</option>
+                <option value="Valid" <?php if(Session::get('status') !== null && in_array("Valid", Session::get('status'))){ echo "selected";} ?>>&#128994; Valid</option>
+                <option value="Pending" <?php if(Session::get('status') !== null && in_array("Pending", Session::get('status'))){ echo "selected";} ?>>&#128993; Pending</option>
+                <option value="Incomplete" <?php if(Session::get('status') !== null && in_array("Incomplete", Session::get('status'))){ echo "selected";} ?>>&#128308; Incomplete</option>
+                <option value="NA" <?php if(Session::get('status') !== null && in_array("NA", Session::get('status'))){ echo "selected";} ?>>&xcirc; Not Applicable</option>
             </select>
         </div>
 
         <div class="searchField">
             <label>Application Date</label><br/>
-            <input type="date" name="date" id="date"/>
+            <input type="date" name="date" id="date" value="<?php echo Session::get('date');?>"/>
             
         </div>
         <div class="searchField">
@@ -191,29 +180,75 @@
 
 <Script>
 jQuery(document).ready( function($) {
+
     $("#property").on('change', function(){
         let propValue = $("#property").val();
 
         if(propValue == "Braamlofts"){
-            $("#room_type").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
+                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
+                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'+
+                '<option value="3 Sharing" <?php if(Session::get('room_type') == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>'
+            )
         }else if(propValue == "80 Jorissen"){
-            $("#room_type").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
+                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
+                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
+            )
         }else if(propValue == "49 Jorissen"){
-            $("#room_type").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="Single">Single</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option><option value="Single 4 bedroom">Single | 4 Bedroom</option>')
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
+                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'+
+                '<option value="2 Sharing 2 Bedroom" <?php if(Session::get('room_type') == "2 Sharing 2 Bedroom"){ echo "selected";}?>>2 Sharing | 2 Bedroom</option>'+
+                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
+                '<option value="Single 2 bedroom" <?php if(Session::get('room_type') == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>'+
+                '<option value="Single 3 bedroom" <?php if(Session::get('room_type') == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>'+
+                '<option value="Single 4 bedroom" <?php if(Session::get('room_type') == "Single 4 bedroom"){ echo "selected";}?>>Single | 4 Bedroom</option>'
+            )
         }else if(propValue == "Dunvista Mansions"){
-            $("#room_type").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
+                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
+                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
+            )
         }else if(propValue == "Wynton Joy"){
-            $("#room_type").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
+                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
+                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
+            )
         }else if(propValue == "126 Siemert"){
-            $("#room_type").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
+                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
+                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
+            )
         }else if(propValue == "YMCA"){
-            $("#room_type").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single | 3 Bedroom</option>')
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
+                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'+
+                '<option value="2 Sharing 2 Bedroom" <?php if(Session::get('room_type') == "2 Sharing 2 Bedroom"){ echo "selected";}?>>2 Sharing | 2 Bedroom</option>'+
+                '<option value="2 Sharing 3 Bedroom" <?php if(Session::get('room_type') == "2 Sharing 3 Bedroom"){ echo "selected";}?>>2 Sharing | 3 Bedroom</option>'+
+                '<option value="3 Sharing" <?php if(Session::get('room_type') == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>'+
+                '<option value="Single Small" <?php if(Session::get('room_type') == "Single Small"){ echo "selected";}?>>Single | Small</option>'+
+                '<option value="Single Medium" <?php if(Session::get('room_type') == "Single Medium"){ echo "selected";}?>>Single | Medium</option>'+
+                '<option value="Single Large" <?php if(Session::get('room_type') == "Single Large"){ echo "selected";}?>>Single | Large</option>'+
+                '<option value="Single 3 Bedroom" <?php if(Session::get('room_type') == "Single 3 Bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>'
+            )
         } else {
-            $("#room_type").empty().append('<option value="">Select One</option>');
+            $("#room_type").empty().append(
+                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'
+            );
         }
     });
 
+    $("#property").val("<?php echo Session::get('property');?>").trigger('change')
+    
     $('#searchButton').click();
+
+    
 });
 
 $(function(){
@@ -221,6 +256,10 @@ $(function(){
         placeholder: "- Select One -",
     });
 });
+
+
+
+       
 
 </script>
 
