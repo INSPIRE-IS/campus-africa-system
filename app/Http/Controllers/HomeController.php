@@ -1864,6 +1864,11 @@ class HomeController extends Controller
         Session::put('page', $request->page);
     }
 
+    public function set_page_session_order(Request $request){
+        Session::put('sortId', $request->sortId);
+        Session::put('sortDirection', $request->sortDirection);
+    }
+
     public function app_filter(Request $request){
         
         $search_value = [];

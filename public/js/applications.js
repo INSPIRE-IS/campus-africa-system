@@ -24,7 +24,22 @@ jQuery(document).ready(function ($) {
                 page = info.page
             }
         });
-    } );   
+    } );  
+    
+    $('#application_table').on( 'click', 'thead th', function () {
+        var order = table.order();
+        let sortId = order[0][0]
+        let sortDirection = order[0][1]
+
+        $.ajax({
+            type: "post",
+            url: "/set-page-session-order",
+            data: {
+                sortId: sortId,
+                sortDirection: sortDirection,
+            },
+        });
+      });
 
 
     $("#searchButton").on("click", function () {
@@ -213,6 +228,15 @@ jQuery(document).ready(function ($) {
                         page = parseFloat(page)
                     }
 
+                    if(sortId == '' || sortDirection == ''){
+                        var order = [];
+                    }else{
+                        var order = [sortId, sortDirection];
+                    }
+
+                    
+                    
+
                     var dateString =
                         m.getUTCFullYear() +
                         "-" +
@@ -264,6 +288,7 @@ jQuery(document).ready(function ($) {
                             moveIn,
                         ])
                         .page(page)
+                        .order( order )
                         .draw(false)
                         .node();
 
@@ -297,6 +322,19 @@ jQuery(document).ready(function ($) {
     $("#resetFilter").on("click", function () {
 
         $('.paginate_button[data-dt-idx="1"]').trigger('click');
+
+        $.ajax({
+            type: "post",
+            url: "/set-page-session-order",
+            data: {
+                sortId: '',
+                sortDirection: '',
+            },
+            success: function (data) {
+                sortId = '';
+                sortDirection = '';
+            }
+        });
 
         document.getElementById("property").value = "All";
         document.getElementById("room_type").value = "";
