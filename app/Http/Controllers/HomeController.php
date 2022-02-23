@@ -2068,7 +2068,11 @@ class HomeController extends Controller
                         $addUser = 1;
                     }
 
-                    if(in_array("Pending", $request->status) &&( $student->applicationStatus == "Action" ||  $student->applicationStatus == "Approved")){
+                    if(in_array("Incomplete", $request->status) && $student->bookingStatus == "Rejected" && $student->applicationStatus == "Approved"){
+                        $addUser = 1;
+                    }
+
+                    if(in_array("Pending", $request->status) &&( $student->applicationStatus == "Action" ||  $student->applicationStatus == "Approved") && $student->bookingStatus !== "Rejected"){
                         $addUser = 1;
                     }
 
