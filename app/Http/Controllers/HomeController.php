@@ -446,8 +446,17 @@ class HomeController extends Controller
 
             $comments = Comments::with('users')->where('user_uid', $userId)->orderBy('created_at', 'desc')->get();
 
+            $leaseApproved = 'false';
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments]);
+            foreach($userData[0]['files'] as $userFile){
+                if($userFile['field'] == "moveIn"){
+                    if($userFile['status'] == "XApproved"){
+                        $leaseApproved = "true";
+                    }
+                }
+            }
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved]);
         }
     }
 
@@ -993,6 +1002,7 @@ class HomeController extends Controller
             "role_lookup" => $request->role_lookup,
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
+            "role_cancel_lease" => $request->role_cancel_lease,
         ]);
 
         return redirect()->back();
@@ -1832,6 +1842,7 @@ class HomeController extends Controller
             "role_lookup" => $request->role_lookup,
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
+            "role_cancel_lease" => $request->role_cancel_lease,
         ]);
 
         if($request->email_details == "1"){
@@ -4384,6 +4395,19 @@ class HomeController extends Controller
     //         $this->update_user_status($student->id);
     //     }
     // }
+
+    public function cancel_lease(Request $request){
+        
+        UserFiles::where('userUid', $request->userId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Approved Lease Rejected due to Bed Change",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+    }
     
 
     

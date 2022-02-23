@@ -74,7 +74,7 @@
 
         <div>
             <label>Access Roles</label>
-            <br/><br/>
+            <br/><br/><br/><br/>
             <ul style="list-style-type:none;">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="create_app" name="create_app" value="1" <?php if($user->role_create_app == "1"){echo "checked";} ?>>
@@ -156,6 +156,12 @@
                     <input type="checkbox" id="role_comment" name="role_comment" value="1" <?php if($user->role_comment == "1"){echo "checked";} ?>>
                     <label for="role_comment" style="width:500px">Make Comments</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_cancel_lease" name="role_cancel_lease" value="1" <?php if($user->role_cancel_lease == "1"){echo "checked";} ?>>
+                    <label for="role_cancel_lease" style="width:500px">Cancel Approved Lease</label>
+                </li>
+
+                
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1" <?php if($user->role_update_booking_fee == "1"){echo "checked";} ?>>
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>
