@@ -1973,6 +1973,10 @@
             },
 
             success: function (data) {
+
+                if(type == "Approved" && $("#FileNameForApproval").val() == "moveIn"){
+                    window.location.reload();
+                }
                 
                 refreshActions();
 
