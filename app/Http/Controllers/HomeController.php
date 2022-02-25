@@ -1541,6 +1541,14 @@ class HomeController extends Controller
             // 'nsfas_bursar' => $request->nsfas_bursar,
         ]);
 
+        ActionList::create([
+            "userUid" => $user->id,
+            "action" => "Registered ".$request->firstName." as a new user",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
         
 
         //Booking data        
@@ -1730,14 +1738,6 @@ class HomeController extends Controller
         //Link booking to User
         User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
 
-        ActionList::create([
-            "userUid" => $user->id,
-            "action" => "Registered ".$request->firstName." as a new user",
-            "actionUserUid" => Auth::user()->id,
-            "actionUserDisplayName" => Auth::user()->userFirstName,
-            "actionUserRole" => Auth::user()->userRole,
-        ]);
-
         $residence = Residence::where('residence', $request->property)->first();
 
         if($booking_data['room_rate'] == "0"){
@@ -1753,6 +1753,26 @@ class HomeController extends Controller
             $actionFileData['actionUserRole'] = Auth::user()->userRole;
         
             ActionList::create($actionFileData);
+        }
+
+        if($request->studentType == "NSFAS"){
+            $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
+
+            if(!empty($nsfasStudentsApproval)){
+                UserFiles::create([
+                    'userUid' => $user->id,
+                    'fileId' => 'bursaryApproval',
+                    'status' => 'Approved'
+                ]);
+
+                ActionList::create([
+                    "userUid" => $user->id,
+                    "action" => "NSFAS / Bursary has been Approved via import",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
         }
 
         // if(($request->studentType == "NSFAS" && ($residence->nsfas_booking_rate == "0" || $residence->nsfas_booking_rate == "")) || ($request->studentType == "Bursary" && ($residence->bursary_booking_rate == "0" || $residence->bursary_booking_rate == "")) || ($request->studentType == "Cash / Direct" && ($residence->booking_rate == "0" || $residence->booking_rate == ""))){
