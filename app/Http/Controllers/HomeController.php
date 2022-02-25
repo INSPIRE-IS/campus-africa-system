@@ -510,6 +510,10 @@ class HomeController extends Controller
                 }
             }
 
+            if($userFile['fileId'] == "moveIn" && $action == "Approved"){
+                User::where('id', $userFile->userUid)->update(['overall_status' => "Approved"]);
+            }
+
             if($request->userName !== "" && !empty($request->userName)){
                 $name = $request->userName;
             }else{
@@ -4306,7 +4310,7 @@ class HomeController extends Controller
         
         $user = User::with('files')->where('id', $user_id)->first();
 
-        if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected"){
+        if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected" && $user->applicationStatus !== "Approved Confirmed"){
 
             $booking = "Rejected";
             $files_for_booking = [];
@@ -4401,13 +4405,13 @@ class HomeController extends Controller
  
     }
 
-    // public function all_student_update_status(){
-    //     $students = User::where('userRole', '0')->get();
+    public function all_student_update_status(){
+        $students = User::where('userRole', '0')->get();
 
-    //     foreach($students as $student){
-    //         $this->update_user_status($student->id);
-    //     }
-    // }
+        foreach($students as $student){
+            $this->update_user_status($student->id);
+        }
+    }
     
 
     
