@@ -179,7 +179,14 @@
 <div class="clearSpaceLoginPage"></div>
 
 <Script>
+
+
 jQuery(document).ready( function($) {
+
+    if(performance.navigation.type == 2){
+        window.location.reload()
+     }
+    
 
     $("#property").on('change', function(){
         let propValue = $("#property").val();
