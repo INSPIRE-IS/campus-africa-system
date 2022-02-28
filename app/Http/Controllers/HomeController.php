@@ -1877,16 +1877,31 @@ class HomeController extends Controller
         
         $search_value = [];
 
-        Session::put('property', $request->property);
-        Session::put('room_type', $request->room_type);
-        Session::put('applicant', $request->applicant);
-        Session::put('studentNo', $request->studentNo);
-        Session::put('idPassport', $request->idPassport);
-        Session::put('bookingRef', $request->bookingRef);
-        Session::put('student_type', $request->student_type);
-        Session::put('fieldStatus', $request->fieldStatus);
-        Session::put('status', $request->status);
-        Session::put('date', $request->date);
+        
+        if($request->firstLoad !== "1"){
+
+            Session::put('property', $request->property);
+            Session::put('room_type', $request->room_type);
+            Session::put('applicant', $request->applicant);
+            Session::put('studentNo', $request->studentNo);
+            Session::put('idPassport', $request->idPassport);
+            Session::put('bookingRef', $request->bookingRef);
+            Session::put('student_type', $request->student_type);
+            Session::put('fieldStatus', $request->fieldStatus);
+            Session::put('status', $request->status);
+            Session::put('date', $request->date);
+        }else{
+            $request->property = Session::get('property');
+            $request->room_type = Session::get('room_type');
+            $request->applicant = Session::get('applicant');
+            $request->studentNo = Session::get('studentNo');
+            $request->idPassport = Session::get('idPassport');
+            $request->bookingRef = Session::get('bookingRef');
+            $request->student_type = Session::get('student_type');
+            $request->fieldStatus = Session::get('fieldStatus');
+            $request->status = Session::get('status');
+            $request->date = Session::get('date');
+        }
 
 
         //Set search session variables
@@ -2242,9 +2257,9 @@ class HomeController extends Controller
         //Sort our data based on our weighted counter
         usort($userData, function($a, $b) {
             return $b['counter'] - $a['counter'];
-        });            
+        });      
 
-        return json_encode($userData);
+        return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
     }
 
     public function delete_booking(Request $request){

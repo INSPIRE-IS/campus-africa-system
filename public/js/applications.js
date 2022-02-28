@@ -38,6 +38,7 @@ jQuery(document).ready(function ($) {
                 sortId: sortId,
                 sortDirection: sortDirection,
             },
+
         });
       });
 
@@ -61,12 +62,24 @@ jQuery(document).ready(function ($) {
                 studentNo: $("#studentNo").val(),
                 idPassport: $("#idPassport").val(),
                 bookingRef: $("#bookingRef").val(),
+                firstLoad: $("#firstLoad").val(),
             },
 
             success: function (data) {
+                $("#firstLoad").val('0')
                 datatable.clear().draw();
 
-                results = JSON.parse(data);
+                results = JSON.parse(data)[0];
+
+                
+
+                sortDirection = JSON.parse(data)[1];
+                sortId = JSON.parse(data)[2];
+                page = JSON.parse(data)[3];
+
+                console.log(JSON.parse(data))
+
+                console.log(results)
 
                 var i = 0;
 
@@ -228,7 +241,7 @@ jQuery(document).ready(function ($) {
                         page = parseFloat(page)
                     }
 
-                    if(sortId == '' || sortDirection == ''){
+                    if(sortId == '' || sortId == null || sortDirection == '' || sortDirection == null){
                         var order = [];
                     }else{
                         var order = [sortId, sortDirection];

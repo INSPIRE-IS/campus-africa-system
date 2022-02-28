@@ -177,6 +177,7 @@
 </div>
 
 <div class="clearSpaceLoginPage"></div>
+<input type="hidden" id="firstLoad" value="1"/>
 
 <Script>
 
