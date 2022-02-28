@@ -59,6 +59,8 @@ jQuery(document).ready(function ($) {
                 fieldStatus: $("#fieldStatus").val(),
                 status: $("#status").val(),
                 date: $("#date").val(),
+                beds: $("#beds").val(),
+                processingStatus: $("#processingStatus").val(),
                 studentNo: $("#studentNo").val(),
                 idPassport: $("#idPassport").val(),
                 bookingRef: $("#bookingRef").val(),
@@ -71,15 +73,9 @@ jQuery(document).ready(function ($) {
 
                 results = JSON.parse(data)[0];
 
-                
-
                 sortDirection = JSON.parse(data)[1];
                 sortId = JSON.parse(data)[2];
                 page = JSON.parse(data)[3];
-
-                console.log(JSON.parse(data))
-
-                console.log(results)
 
                 var i = 0;
 
@@ -358,6 +354,8 @@ jQuery(document).ready(function ($) {
         document.getElementById("student_type").value = "All";
         document.getElementById("fieldStatus").value = "All";
         $("#date").val("");
+        $("#beds").val("");
+        $("#processingStatus").val("");
         $("#status").val(null).trigger("change");
         $("#searchButton").click();
     });

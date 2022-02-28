@@ -1890,6 +1890,8 @@ class HomeController extends Controller
             Session::put('fieldStatus', $request->fieldStatus);
             Session::put('status', $request->status);
             Session::put('date', $request->date);
+            Session::put('beds', $request->beds);
+            Session::put('processingStatus', $request->processingStatus);
         }else{
             $request->property = Session::get('property');
             $request->room_type = Session::get('room_type');
@@ -1901,64 +1903,17 @@ class HomeController extends Controller
             $request->fieldStatus = Session::get('fieldStatus');
             $request->status = Session::get('status');
             $request->date = Session::get('date');
+            $request->beds = Session::get('beds');
+            $request->processingStatus = Session::get('processingStatus');
         }
 
+        if($request->processingStatus !== "" && !empty($request->processingStatus)){
+            if($request->processingStatus !== "All" && $request->processingStatus !== "NA"){
 
-        //Set search session variables
-
-        // if($request->fieldStatus !== "" && !empty($request->fieldStatus)) {
-        //     if($request->fieldStatus !== "All"){
-
-        //         if($request->fieldStatus == "bookingStatus"){
-        //             if(in_array("Incomplete", $request->status)){
-        //                 $bookingStatus = '(u.bookingStatus LIKE "%Empty%" OR u.bookingStatus LIKE "%Rejected%")';
-        //                 array_push($search_value, $bookingStatus);
-        //             }
-                    
-        //             if(in_array("Valid", $request->status)){
-        //                 $bookingStatus = 'u.bookingStatus LIKE "%Approved%"';
-        //                 array_push($search_value, $bookingStatus);
-        //             }
-                    
-        //             if(in_array("Pending", $request->status)){
-        //                 $bookingStatus = 'u.bookingStatus LIKE "%Action%"';
-        //                 array_push($search_value, $bookingStatus);
-        //             }
-
-        //             if(in_array("NA", $request->status)){
-        //                 $bookingStatus = 'u.overall_status LIKE "%Cancelled%"';
-        //                 array_push($search_value, $bookingStatus);
-        //             }
-
-        //         }elseif($request->fieldStatus == "applicationStatus"){
-        //             if(in_array("Incomplete", $request->status)){
-        //                 $applicationStatus = '(u.applicationStatus LIKE "%Empty%" OR u.applicationStatus LIKE "%Rejected%")';
-        //                 array_push($search_value, $applicationStatus);
-        //             }
-                    
-        //             if(in_array("Valid", $request->status)){
-        //                 $applicationStatus = 'u.applicationStatus = "Approved Confirmed"';
-        //                 array_push($search_value, $applicationStatus);
-        //             }
-                    
-        //             if(in_array("Pending", $request->status)){
-        //                 $applicationStatus = 'u.applicationStatus LIKE "%Action%"';
-        //                 array_push($search_value, $applicationStatus);
-        //             }
-        //             // if(in_array("Pending", $request->status)){
-        //             //     $applicationStatus = 'u.applicationStatus = "Approved"';
-        //             //     array_push($search_value, $applicationStatus);
-        //             // }
-
-        //             if(in_array("NA", $request->status)){
-        //                 $applicationStatus = 'u.overall_status LIKE "%Cancelled%"';
-        //                 array_push($search_value, $applicationStatus);
-        //             }
-
-        //         }
-
-        //     }
-        // }
+                $processingStatus = 'u.overall_status LIKE "%'.$request->processingStatus.'%"';
+                array_push($search_value, $processingStatus);
+            }
+        }
 
 
         if($request->studentNo !== "" && !empty($request->studentNo)){
@@ -1977,6 +1932,18 @@ class HomeController extends Controller
         if($request->bookingRef !== "" && !empty($request->bookingRef)){
             $bookingRef = 'u.bookingRef LIKE "%'.$request->bookingRef.'%"';
             array_push($search_value, $bookingRef);
+        }
+
+        if($request->beds !== "" && !empty($request->beds)){
+            if($request->beds == "Allocated"){
+                $beds = 'bookings_data.bed_code is not null';
+                array_push($search_value, $beds);
+            }
+
+            if($request->beds == "Unallocated"){
+                $beds = 'bookings_data.bed_code is null';
+                array_push($search_value, $beds);
+            }
         }
 
         if($request->property !== "" && !empty($request->property)){
@@ -2122,6 +2089,14 @@ class HomeController extends Controller
                     if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
                         $addUser = 1;
                     }
+                }
+
+            }
+
+            if($request->processingStatus == "NA"){
+                $addUser = 0;
+                if($student->overall_status == "Cancelled" || $student->overall_status == "Rejected"){
+                    $addUser = 1;
                 }
             }
 
