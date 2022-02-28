@@ -3355,6 +3355,7 @@ class HomeController extends Controller
 
                                 if($thisStudent->studentNo == $user[0]){
                                     $idFound++;
+                                    $this->update_user_status($thisStudent->id);
                                     if($thisStudent->studentType == "NSFAS"){
                                         $files = $thisStudent->files;
                                         $approvalFound = 0;
@@ -3365,14 +3366,14 @@ class HomeController extends Controller
 
                                                 if($file->status !== "Approved"){
                                                     UserFiles::where('userUid', $thisStudent->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'fileName' => null, 'fileUrl' => null, 'uploaded_by' => 'Import']);
-                                                    array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS / Bursary has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
+                                                    array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                                 }
                                             }
                                         }
 
                                         if($approvalFound == 0){
                                             array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
-                                            array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS / Bursary has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
+                                            array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                         }
                                     }
                                 }
@@ -4396,6 +4397,37 @@ class HomeController extends Controller
             }
 
             User::where('id', $user_id)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
+        }
+
+        if($user->applicationStatus == "Approved Confirmed"){
+            //lease
+            $lease = "na";
+    
+            foreach($user->files as $file){
+                if($file->fileId == "moveIn"){
+                    if($file->status == "Approved"){
+                        $lease = "Approved";
+                    }else if($file->status == "Uploaded"){
+                        $lease = "Action";
+                    }else{
+                        $lease = "Rejected";
+                    }
+                }
+            }
+
+            if($lease == "na" || $lease == "Rejected"){
+                $overall = "Incomplete";
+            }
+
+            if($lease == "Action"){
+                $overall = "Pending";
+            }
+
+            if($lease == "Approved"){
+                $overall = "Approved";
+            }
+
+            User::where('id', $user_id)->update(['overall_status' => $overall]);
         }
  
     }
