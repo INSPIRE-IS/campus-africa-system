@@ -2167,7 +2167,8 @@ class HomeController extends Controller
                             if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
                                 $addUser = 1;
                             }
-                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->{$ft} == "na" || $student->{$ft} == null) && $student->overall_status == "Cancelled"){
+
+                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->{$ft} == "na" || $student->{$ft} == null || $student->{$ft} == "Rejected") && $student->overall_status == "Cancelled"){
                                 $addUser = 1;
                             }
 
@@ -2472,6 +2473,7 @@ class HomeController extends Controller
                     $approval = $file->status;
                 }
             }
+
 
             $fileInfo = [$student->userFirstName, $student->userLastname, $student->studentType, $student->studentNo, $approval];
 
