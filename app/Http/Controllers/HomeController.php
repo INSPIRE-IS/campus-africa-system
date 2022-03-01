@@ -2160,7 +2160,7 @@ class HomeController extends Controller
                                 }
                             }
                         }else{
-                            if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled"){
+                            if(in_array("Incomplete", $request->status) && $student->overall_status != "Cancelled"&& $ft == "bursaryApproval" && empty($student->{$ft}) ){
                                 $addUser = 1;
                             }
 
