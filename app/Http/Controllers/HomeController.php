@@ -2129,11 +2129,11 @@ class HomeController extends Controller
                             $addUser = 1;
                         }
         
-                        if(in_array("Valid", $request->status) && $student->{$ft} == "Approved" && $student->overall_status !== "Cancelled"){
+                        if(in_array("Valid", $request->status) && $student->{$ft} == "Approved" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
                             $addUser = 1;
                         }
         
-                        if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded" && $student->overall_status !== "Cancelled"){
+                        if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
                             $addUser = 1;
                         }  
                         
