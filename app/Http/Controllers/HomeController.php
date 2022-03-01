@@ -2113,7 +2113,7 @@ class HomeController extends Controller
             foreach($file_types as $ft) {
                 if ($addUser == 0) {
                     if ($request->fieldStatus == $ft) {
-                        if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected" && $ft !== "bursaryApproval" && $ft !== "bankStatement"){
+                        if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected" && $student->overall_status != "Cancelled" ){
                             $addUser = 1;
                         }
                         
