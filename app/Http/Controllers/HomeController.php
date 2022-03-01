@@ -2470,7 +2470,11 @@ class HomeController extends Controller
 
             foreach($student->files as $file){
                 if($file->fileId == "bursaryApproval"){
-                    $approval = $file->status;
+                    if($student->overall_status == "Rejected" || $student->overall_status == "Cancelled"){
+                        $approval = "N/A";
+                    }else{
+                        $approval = $file->status;
+                    }
                 }
             }
 
