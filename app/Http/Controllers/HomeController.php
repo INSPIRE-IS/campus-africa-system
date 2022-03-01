@@ -2458,8 +2458,29 @@ class HomeController extends Controller
             array_push($users, $studentData);
         }
 
+        $reports = [
+			['<b>First Name</b>', '<b>Last Name</b>','<b>Student Type</b>', '<b>Student Number</b>', '<b>NSFAS Approval</b>',],
+		];
+
+        foreach($searched_students as $studentData){
+            $student = User::with('files')->where('id', $studentData->userId)->first();
+
+            $approval = "";
+
+            foreach($student->files as $file){
+                if($file->fileId == "bursaryApproval"){
+                    $approval = $file->status;
+                }
+            }
+
+            $fileInfo = [$student->userFirstName, $student->userLastname, $student->studentType, $student->studentNo, $approval];
+
+            array_push($reports, $studentData);
+        }
+
         $xlsx = new \Shuchkin\SimpleXLSXGen();
 		$xlsx->addSheet( $users, 'Students');
+        $xlsx->addSheet( $reports, 'NSFAS Approval');
 		$xlsx->saveAs('Student Export.xlsx');
 
 		return "true";
