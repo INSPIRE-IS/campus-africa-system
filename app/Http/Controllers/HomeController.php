@@ -3397,6 +3397,10 @@ class HomeController extends Controller
         UserFiles::insert($fileList);
         ActionList::insert($actionLogList);
 
+        foreach($allStudents as $thisStudent){
+            $this->update_user_status($thisStudent->id);
+        }
+
         ImportNSFASApproval::where('status', '1')->update(["status" => 0]);
 
         $newImport = ImportNSFASApproval::create([ 'file_name' => $inputFileName, 'actionUserId' => Auth::user()->id, "matched" => $matched, "unmatched" => $unmatched, "total_records" => $totalStudents, "status" => 1]);
