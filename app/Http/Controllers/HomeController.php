@@ -2113,7 +2113,7 @@ class HomeController extends Controller
             foreach($file_types as $ft) {
                 if ($addUser == 0) {
                     if ($request->fieldStatus == $ft) {
-                        if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected" && $ft !== "bursaryApproval" && $ft !== "bankStatement"){
+                        if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected"){
                             $addUser = 1;
                         }
                         
@@ -2143,7 +2143,7 @@ class HomeController extends Controller
 
                         if(!in_array("NA", $request->status)){
                             if ($student->overall_status != "Cancelled" && $student->overall_status != "Rejected") {
-                                if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft})){
+                                if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled"){
                                     $addUser = 1;
                                 }
     
@@ -2160,7 +2160,7 @@ class HomeController extends Controller
                                 }
                             }
                         }else{
-                            if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && (empty($student->{$ft} || $student->{$ft} == "Rejected") && $student->overall_status !== "Cancelled") ){
+                            if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft})){
                                 $addUser = 1;
                             }
 
