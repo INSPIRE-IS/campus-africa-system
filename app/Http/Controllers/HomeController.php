@@ -2475,7 +2475,7 @@ class HomeController extends Controller
 
             $fileInfo = [$student->userFirstName, $student->userLastname, $student->studentType, $student->studentNo, $approval];
 
-            array_push($reports, $studentData);
+            array_push($reports, $fileInfo);
         }
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
