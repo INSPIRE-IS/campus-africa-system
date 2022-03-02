@@ -12,7 +12,7 @@
         <a href="/lookups/new"><button type="button" class="detailsChange" >Add New Lookup</button></a>
         <a href="/manage-properties"><button type="button" class="detailsChange" >Manage properties</button></a>
         <!-- <button type="button" id="updateLeaseDates" class="detailsChange" >Update Lease Dates</button> -->
-        <button type="button" id="updateNsfasStudents" class="detailsChange" >Update NSFAS Students</button>
+        <!-- <button type="button" id="updateNsfasStudents" class="detailsChange" >Update NSFAS Students</button> -->
     @endif
     @if(Auth::user()->id == 1)
         <button type="button" id="updateBookingFee" class="detailsChange" >Update All Booking Fees</button>

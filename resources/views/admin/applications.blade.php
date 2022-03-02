@@ -114,13 +114,24 @@
             <input type="date" name="date" id="date" value="<?php echo Session::get('date');?>"/>
             
         </div>
-        <div class="searchField">
-            <br/><br/><br/><br/><br/><br/>
+        <div class="searchField" style="height:80px;">
+            <label>Beds</label><br/>
+            <select name="beds" id='beds'>
+                <option value="All" selected <?php if( Session::get('beds') == "All"){ echo "selected";}?>>All</option>
+                <option value="Allocated" <?php if( Session::get('beds') == "Allocated"){ echo "selected";}?>>Allocated</option>
+                <option value="Unallocated" <?php if( Session::get('beds') == "Unallocated"){ echo "selected";}?>>Unallocated</option>
+            </select>
         </div>
-        <div class="searchField">
-            <br/><br/><br/><br/><br/><br/>
+        <div class="searchField" style="height:80px;">
+            <label>Processing Status</label><br/>
+            <select name="processingStatus" id='processingStatus'>
+                <option value="All" selected >All</option>
+                <option value="Approved" <?php if( Session::get('processingStatus') == "Approved"){ echo "selected";}?>>&#128994; Valid</option>
+                <option value="Pending" <?php if( Session::get('processingStatus') == "Pending"){ echo "selected";}?>>&#128993; Pending</option>
+                <option value="Incomplete" <?php if( Session::get('processingStatus') == "Incomplete"){ echo "selected";}?>>&#128308; Incomplete</option>
+                <option value="NA" <?php if( Session::get('processingStatus') == "NA"){ echo "selected";}?>>⚪ NA</option>
+            </select>
         </div>
-
         
 
         <div class="searchTab" >
@@ -177,9 +188,14 @@
 </div>
 
 <div class="clearSpaceLoginPage"></div>
+<input type="hidden" id="firstLoad" value="1"/>
 
 <Script>
+
+
 jQuery(document).ready( function($) {
+    
+    
 
     $("#property").on('change', function(){
         let propValue = $("#property").val();

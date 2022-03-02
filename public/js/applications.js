@@ -24,7 +24,23 @@ jQuery(document).ready(function ($) {
                 page = info.page
             }
         });
-    } );   
+    } );  
+    
+    $('#application_table').on( 'click', 'thead th', function () {
+        var order = table.order();
+        let sortId = order[0][0]
+        let sortDirection = order[0][1]
+
+        $.ajax({
+            type: "post",
+            url: "/set-page-session-order",
+            data: {
+                sortId: sortId,
+                sortDirection: sortDirection,
+            },
+
+        });
+      });
 
 
     $("#searchButton").on("click", function () {
@@ -43,15 +59,23 @@ jQuery(document).ready(function ($) {
                 fieldStatus: $("#fieldStatus").val(),
                 status: $("#status").val(),
                 date: $("#date").val(),
+                beds: $("#beds").val(),
+                processingStatus: $("#processingStatus").val(),
                 studentNo: $("#studentNo").val(),
                 idPassport: $("#idPassport").val(),
                 bookingRef: $("#bookingRef").val(),
+                firstLoad: $("#firstLoad").val(),
             },
 
             success: function (data) {
+                $("#firstLoad").val('0')
                 datatable.clear().draw();
 
-                results = JSON.parse(data);
+                results = JSON.parse(data)[0];
+
+                sortDirection = JSON.parse(data)[1];
+                sortId = JSON.parse(data)[2];
+                page = JSON.parse(data)[3];
 
                 var i = 0;
 
@@ -213,6 +237,15 @@ jQuery(document).ready(function ($) {
                         page = parseFloat(page)
                     }
 
+                    if(sortId == '' || sortId == null || sortDirection == '' || sortDirection == null){
+                        var order = [];
+                    }else{
+                        var order = [sortId, sortDirection];
+                    }
+
+                    
+                    
+
                     var dateString =
                         m.getUTCFullYear() +
                         "-" +
@@ -264,6 +297,7 @@ jQuery(document).ready(function ($) {
                             moveIn,
                         ])
                         .page(page)
+                        .order( order )
                         .draw(false)
                         .node();
 
@@ -298,6 +332,19 @@ jQuery(document).ready(function ($) {
 
         $('.paginate_button[data-dt-idx="1"]').trigger('click');
 
+        $.ajax({
+            type: "post",
+            url: "/set-page-session-order",
+            data: {
+                sortId: '',
+                sortDirection: '',
+            },
+            success: function (data) {
+                sortId = '';
+                sortDirection = '';
+            }
+        });
+
         document.getElementById("property").value = "All";
         document.getElementById("room_type").value = "";
         $("#applicant").val("");
@@ -307,6 +354,8 @@ jQuery(document).ready(function ($) {
         document.getElementById("student_type").value = "All";
         document.getElementById("fieldStatus").value = "All";
         $("#date").val("");
+        $("#beds").val("");
+        $("#processingStatus").val("");
         $("#status").val(null).trigger("change");
         $("#searchButton").click();
     });

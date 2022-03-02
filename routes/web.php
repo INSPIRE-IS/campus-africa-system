@@ -146,5 +146,6 @@ Route::get('/update-user-status/{user_id}', [HomeController::class, 'update_user
 Route::get('/all_student_update_status', [HomeController::class, 'all_student_update_status']);
 
 Route::post('/set-page-session', [HomeController::class, 'set_page_session']);
+Route::post('/set-page-session-order', [HomeController::class, 'set_page_session_order']);
 
 Route::post('/cancel-lease', [HomeController::class, 'cancel_lease']);
