@@ -11,7 +11,7 @@ jQuery(document).ready(function ($) {
         stripeClasses: ["odd-row", "even-row"],
     });
 
-    $('#application_table').on( 'page.dt', function () {
+    $("#application_table").on("page.dt", function () {
         var info = table.page.info();
 
         $.ajax({
@@ -21,15 +21,15 @@ jQuery(document).ready(function ($) {
                 page: info.page,
             },
             success: function (data) {
-                page = info.page
-            }
+                page = info.page;
+            },
         });
-    } );  
-    
-    $('#application_table').on( 'click', 'thead th', function () {
+    });
+
+    $("#application_table").on("click", "thead th", function () {
         var order = table.order();
-        let sortId = order[0][0]
-        let sortDirection = order[0][1]
+        let sortId = order[0][0];
+        let sortDirection = order[0][1];
 
         $.ajax({
             type: "post",
@@ -38,10 +38,8 @@ jQuery(document).ready(function ($) {
                 sortId: sortId,
                 sortDirection: sortDirection,
             },
-
         });
-      });
-
+    });
 
     $("#searchButton").on("click", function () {
         $("#searchButton").empty().append("Searching...");
@@ -68,7 +66,7 @@ jQuery(document).ready(function ($) {
             },
 
             success: function (data) {
-                $("#firstLoad").val('0')
+                $("#firstLoad").val("0");
                 datatable.clear().draw();
 
                 results = JSON.parse(data)[0];
@@ -198,7 +196,7 @@ jQuery(document).ready(function ($) {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
                         } else if (arrayItem["leaseStatus"] === "Rejected" || arrayItem["leaseStatus"] === "Incomplete") {
                             moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                        } else if(arrayItem["leaseStatus"] === null && arrayItem["applicationStatus"] === "Approved Confirmed"){
+                        } else if (arrayItem["leaseStatus"] === null && arrayItem["applicationStatus"] === "Approved Confirmed") {
                             moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
                         } else {
                             moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
@@ -231,20 +229,17 @@ jQuery(document).ready(function ($) {
 
                     var m = new Date(arrayItem["created_at"]);
 
-                    if(page == null || page == "NaN" || page == ""){
+                    if (page == null || page == "NaN" || page == "") {
                         page = 0;
-                    }else{
-                        page = parseFloat(page)
+                    } else {
+                        page = parseFloat(page);
                     }
 
-                    if(sortId == '' || sortId == null || sortDirection == '' || sortDirection == null){
+                    if (sortId == "" || sortId == null || sortDirection == "" || sortDirection == null) {
                         var order = [];
-                    }else{
+                    } else {
                         var order = [sortId, sortDirection];
                     }
-
-                    
-                    
 
                     var dateString =
                         m.getUTCFullYear() +
@@ -297,7 +292,7 @@ jQuery(document).ready(function ($) {
                             moveIn,
                         ])
                         .page(page)
-                        .order( order )
+                        .order(order)
                         .draw(false)
                         .node();
 
@@ -316,7 +311,6 @@ jQuery(document).ready(function ($) {
         //
     });
 
-
     $("#application_table tbody").on("click", "tr", function () {
         var datatable = $("#application_table").DataTable();
         var data2 = datatable.row(this);
@@ -329,20 +323,19 @@ jQuery(document).ready(function ($) {
     });
 
     $("#resetFilter").on("click", function () {
-
-        $('.paginate_button[data-dt-idx="1"]').trigger('click');
+        $('.paginate_button[data-dt-idx="1"]').trigger("click");
 
         $.ajax({
             type: "post",
             url: "/set-page-session-order",
             data: {
-                sortId: '',
-                sortDirection: '',
+                sortId: "",
+                sortDirection: "",
             },
             success: function (data) {
-                sortId = '';
-                sortDirection = '';
-            }
+                sortId = "";
+                sortDirection = "";
+            },
         });
 
         document.getElementById("property").value = "All";
@@ -360,3 +353,10 @@ jQuery(document).ready(function ($) {
         $("#searchButton").click();
     });
 });
+
+function btn_view_document_ajax(fileId) {
+    $("#myModal > .modal-content").html("Loading");
+    $("#myModal").css("display", "block");
+
+    $("#myModal > .modal-content").load("/documents/view-document/" + fileId);
+}

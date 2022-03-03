@@ -333,30 +333,21 @@
                                     @endif
 
                                     @if($file["status"] === "AUploaded" || $file["status"] === "XApproved")
-                                        <button type="button" onClick="
-                                            openModal(
-                                                '{{$file['field']}}', 
-                                                '<?php echo str_replace("'", "%27", $file['url']); ?>',
-                                                '{{$file['uploaded_by']}}',
-                                                '{{$file['created_at']}}',
-                                                '{{$file['id']}}',
-                                                '{{$file['status']}}'
-                                            )" 
-                                            id="myBtn_<?php echo $i; ?>">View Document
-                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick="btn_view_document_ajax({{$file['id']}})"
+                                        >View Document</button>
                                     @else
                                         
-                                            <!-- <button type="button" id="{{$file['field']}}Error" class="error">Send reminder</button> -->
+                                        @if(Auth::user()->role_upload_docs == 1)
+                                    
+                                            <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
+                                                <span class="text">Upload</span>
+                                                <i class="fas fa-file-upload" ></i>
+                                            </label>
+                                            <input type="file" id="{{$file['field']}}" hidden/>
 
-                                            @if(Auth::user()->role_upload_docs == 1)
-                                        
-                                                <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
-                                                    <span class="text">Upload</span>
-                                                    <i class="fas fa-file-upload" ></i>
-                                                </label>
-                                                <input type="file" id="{{$file['field']}}" hidden/>
-
-                                            @endif
+                                        @endif
                                     @endif
                                 </div>
                             </div>
@@ -403,6 +394,10 @@
 
         </div>
     </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content"></div>
 </div>
 
 <div id="myModalEditApp" class="modal">
@@ -526,66 +521,6 @@
         </div>
 
 
-    </div>
-
-</div>
-
-<div id="myModal" class="modal">
-
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modalHeader"></h2>
-        <small>Uploaded by <span id="uploadedBy"></span> at <span id="uploadedTime"></span> on the <span id="uploadedDate"></span></small>
-        <br/>
-        
-            <input type="hidden" id="FileIdForApproval">
-            <input type="hidden" id="FileNameForApproval">
-            
-            <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
-            <br/>
-            <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
-            
-            <br/>
-            
-            <div class="flex" style="margin-top:35px;" id="buttonSection">
-                    <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
-                        <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
-                        <br/>
-                        <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
-                    </div>
-
-                    @if(Auth::user()->role_approve_docs == 1)
-                        <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
-                    @endif
-
-                    <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-
-                    @if(Auth::user()->role_approve_docs == 1)
-                        <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-                    @endif
-            </div>
-
-            <div id="infoChecker">
-                <br/><hr/><br/>
-                <div class="flex">
-                    <p id="infoToCheck"></p>
-                    <div id="infoButtons" class="hidden">
-                        @if(Auth::user()->role_approve_docs == 1)
-                            <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
-                            <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
-                        @endif
-                    </div>
-                </div>
-                <br/><br/><hr/>
-            </div>
-
-            <div id="approvedDocs" class="hidden">
-                @if(Auth::user()->role_delete_uploaded == 1)
-                    <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
-                @endif
-            </div>
-
-        <div class="pdfSection"></div>
     </div>
 
 </div>
@@ -786,125 +721,6 @@
                         $("#MainAppSection").addClass('hidden')
                     }
                 }
-            }
-        })
-    }
-
-
-    function approveData(){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to approve this data",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var FileNameForApproval = $("#FileNameForApproval").val();
-                $("#approveData").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                var rejBtn = document.getElementById("RejectDAta");
-                rejBtn.setAttribute("disabled", "disabled");
-
-                $.ajax({
-                    type: "post",
-                    url: "/action-data",
-                    data: {
-                        FileNameForApproval: FileNameForApproval, 
-                        type: "1", 
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-
-                    success: function (data) {
-
-                        refreshActions();
-                        
-                        var preview1 = document.getElementById("rejected");
-                        preview1.removeAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.removeAttribute("disabled", "disabled");
-                        var preview3 = document.getElementById("amend");
-                        preview3.removeAttribute("disabled", "disabled");
-                        var preview4 = document.getElementById("rejectReason");
-                        preview4.removeAttribute("readonly", "readonly");
-                        var preview5 = document.getElementById("actionUserName");
-                        preview5.removeAttribute("readonly", "readonly");
-                        var rejBtn = document.getElementById("RejectDAta");
-                        rejBtn.removeAttribute("disabled", "disabled");
-
-                        $("#infoButtons").addClass('hidden');
-                        $("#approveData").empty().append('Approve')
-
-                        /*$("#infoChecker").addClass('hidden')
-                        $("#infoToCheck").empty();
-                        */
-
-                        if(FileNameForApproval == "copyID"){
-                            $("#id_data_approved").val('1')
-                        }else if(FileNameForApproval == "studentCard"){
-                            $("#student_card_approved").val('1')
-                        }else if(FileNameForApproval == "bankStatement"){
-                            $("#bank_approved").val('1')
-                            $("#parent_approved").val('1')
-                        }else if(FileNameForApproval == "proofRegistration"){
-                            $("#registration_approved").val('1')
-                        }else if(FileNameForApproval == "bursaryApproval"){
-                            $("#bursary_approved").val('1')
-                            $("#burser_approved").val('1')
-                        }
-
-                        
-
-                        
-
-                        checkUserStatus();
-                    }
-                })
-
-            }
-        });
-    }
-
-    function rejectData(){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to reject this data",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var FileNameForApproval = $("#FileNameForApproval").val();
-                $("#RejectDAta").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                var approveData = document.getElementById("approveData");
-                approveData.setAttribute("disabled", "disabled");
-
-                $.ajax({
-                    type: "post",
-                    url: "/action-data",
-                    data: {
-                        FileNameForApproval: $("#FileNameForApproval").val(), 
-                        type: "0", 
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-
-                    success: function (data) {
-
-                        refreshActions();
-                        
-                        var approveData = document.getElementById("approveData");
-                        approveData.removeAttribute("disabled", "disabled");
-
-                        $("#RejectDAta").empty().append('Reject')
-
-                        var modal = document.getElementById("myModal");
-                        modal.style.display = "none";
-
-                    },
-                });
             }
         })
     }
@@ -1539,519 +1355,220 @@
         $("#bed_code").empty();
     })
 
-    function openModal(field, url, uploaded_by, created_at, fileId, status){
-        url = url.replace("%27", "'");
+    // function openModal(field, url, uploaded_by, created_at, fileId, status){
+    //     url = url.replace("%27", "'");
 
-        if(field == "studentCard"){
-            var title = "Student card / Proof of student number";
-            if($("#student_card_approved").val() != "1" && $("#student_card_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
-            var Data = "<span style='font-weight:bold'>Student Number:</span> {{$user[0]['userInfo']['studentNo']}}";
-        }else if(field == "proof_of_payment"){
-            var title = "Proof of payment";
-            var approved = 1;
-        }else if(field == "copyID"){
-            var title = "Copy Of ID document";
-            if($("#id_data_approved").val() != "1" && $("#id_data_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
-            if("{{$user[0]['userInfo']['userTitle']}}" == "Mr"){
-                var gender = "<br/><span style='font-weight:bold'>Gender:</span> Male"
-            }else{
-                var gender = "<br/><span style='font-weight:bold'>Gender:</span> Female"
-            }
-            if("{{$user[0]['userInfo']['userNationality']}}" == "South Africa"){
-                var IdData = "<br/><span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['userId']}}";
-            }else{
-                var IdData = "<br/><span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['userPassport']}}";
-            }
-            var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['userFirstName']}} {{$user[0]['userInfo']['userLastname']}}"+
-                "<br/><span style='font-weight:bold'>Nationality:</span>{{$user[0]['userInfo']['userNationality']}}"+
-                IdData+
-                gender;
-        }else if(field == "proofRegistration"){
-            var title = "Proof of registration";
-            if($("#registration_approved").val() != "1" && $("#registration_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
+    //     if(field == "studentCard"){
+    //         var title = "Student card / Proof of student number";
+    //         if($("#student_card_approved").val() != "1" && $("#student_card_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
+    //         var Data = "<span style='font-weight:bold'>Student Number:</span> {{$user[0]['userInfo']['studentNo']}}";
+    //     }else if(field == "proof_of_payment"){
+    //         var title = "Proof of payment";
+    //         var approved = 1;
+    //     }else if(field == "copyID"){
+    //         var title = "Copy Of ID document";
+    //         if($("#id_data_approved").val() != "1" && $("#id_data_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
+    //         if("{{$user[0]['userInfo']['userTitle']}}" == "Mr"){
+    //             var gender = "<br/><span style='font-weight:bold'>Gender:</span> Male"
+    //         }else{
+    //             var gender = "<br/><span style='font-weight:bold'>Gender:</span> Female"
+    //         }
+    //         if("{{$user[0]['userInfo']['userNationality']}}" == "South Africa"){
+    //             var IdData = "<br/><span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['userId']}}";
+    //         }else{
+    //             var IdData = "<br/><span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['userPassport']}}";
+    //         }
+    //         var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['userFirstName']}} {{$user[0]['userInfo']['userLastname']}}"+
+    //             "<br/><span style='font-weight:bold'>Nationality:</span>{{$user[0]['userInfo']['userNationality']}}"+
+    //             IdData+
+    //             gender;
+    //     }else if(field == "proofRegistration"){
+    //         var title = "Proof of registration";
+    //         if($("#registration_approved").val() != "1" && $("#registration_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
 
-            var Institution = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['institutionStudy']){ echo $lookup->lookup_name;}} ?>";
-            var Faculty = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['faculty']){ echo $lookup->lookup_name;}} ?>";
+    //         var Institution = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['institutionStudy']){ echo $lookup->lookup_name;}} ?>";
+    //         var Faculty = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['faculty']){ echo $lookup->lookup_name;}} ?>";
 
-            var Data = "<span style='font-weight:bold'>Institution:</span> "+Institution+
-                "<br/><span style='font-weight:bold'>Faculty:</span> "+Faculty;
-        }else if(field == "bursaryApproval"){
-            var title = "NSFAS / Bursary Approval";
-            if($("#bursary_approved").val() != "1" && $("#bursary_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
+    //         var Data = "<span style='font-weight:bold'>Institution:</span> "+Institution+
+    //             "<br/><span style='font-weight:bold'>Faculty:</span> "+Faculty;
+    //     }else if(field == "bursaryApproval"){
+    //         var title = "NSFAS / Bursary Approval";
+    //         if($("#bursary_approved").val() != "1" && $("#bursary_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
 
-            if("{{$user[0]['userInfo']['bint']}}"){
-                bInt = "<span style='font-weight:bold'>Intermediary:</span> {{$user[0]['userInfo']['bint']}}<br/>"
-            }else{
-                bInt = ""
-            }
-            if("{{$user[0]['userInfo']['bIntName']}}"){
-                bIntName = "<span style='font-weight:bold'>Specify Intermediary Name:</span> {{$user[0]['userInfo']['bIntName']}}<br/>"
-            }else{
-                bIntName = ""
-            }
-            if("{{$user[0]['userInfo']['studentType']}}" !== "NSFAS"){
+    //         if("{{$user[0]['userInfo']['bint']}}"){
+    //             bInt = "<span style='font-weight:bold'>Intermediary:</span> {{$user[0]['userInfo']['bint']}}<br/>"
+    //         }else{
+    //             bInt = ""
+    //         }
+    //         if("{{$user[0]['userInfo']['bIntName']}}"){
+    //             bIntName = "<span style='font-weight:bold'>Specify Intermediary Name:</span> {{$user[0]['userInfo']['bIntName']}}<br/>"
+    //         }else{
+    //             bIntName = ""
+    //         }
+    //         if("{{$user[0]['userInfo']['studentType']}}" !== "NSFAS"){
 
-                var Data = "<span style='font-weight:bold'>Company Name:</span> {{$user[0]['userInfo']['burCompanyName']}}<br/>"+
-                    "<span style='font-weight:bold'>Registration Number:</span> {{$user[0]['userInfo']['burRegNo']}}<br/>"+
-                    "<span style='font-weight:bold'>Contact Person:</span> {{$user[0]['userInfo']['burContactPerson']}}<br/>"+
-                    "<span style='font-weight:bold'>Contact Number:</span> {{$user[0]['userInfo']['burContactNo']}}<br/>"+
-                    "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['burEmail']}}<br/>"+
-                    "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>"+
-                    "<span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user[0]['userInfo']['bPayment']}}<br/>"+bInt+bIntName;
-            }else{
-                var Data = "";
-            }
+    //             var Data = "<span style='font-weight:bold'>Company Name:</span> {{$user[0]['userInfo']['burCompanyName']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Registration Number:</span> {{$user[0]['userInfo']['burRegNo']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Contact Person:</span> {{$user[0]['userInfo']['burContactPerson']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Contact Number:</span> {{$user[0]['userInfo']['burContactNo']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['burEmail']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>"+
+    //                 "<span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user[0]['userInfo']['bPayment']}}<br/>"+bInt+bIntName;
+    //         }else{
+    //             var Data = "";
+    //         }
 
-        }else if(field == "bankStatement"){
-            var title = "Bank statement";
-            if($("#bank_approved").val() != "1" && $("#bank_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
+    //     }else if(field == "bankStatement"){
+    //         var title = "Bank statement";
+    //         if($("#bank_approved").val() != "1" && $("#bank_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
 
             
 
-            if("{{$user[0]['userInfo']['pNationality']}}" == "South Africa"){
-                var IdData = "<span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['sponId']}}<br/>";
-            }else{
-                var IdData = "<span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['pPassportNo']}}<br/>";
-            }
+    //         if("{{$user[0]['userInfo']['pNationality']}}" == "South Africa"){
+    //             var IdData = "<span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['sponId']}}<br/>";
+    //         }else{
+    //             var IdData = "<span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['pPassportNo']}}<br/>";
+    //         }
 
-            var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>"+
-                "<span style='font-weight:bold'>Cellphone Number:</span> {{$user[0]['userInfo']['sponCell']}}<br/>"+
-                "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['sponEmail']}}<br/>"+
-                "<span style='font-weight:bold'>Nationality:</span> {{$user[0]['userInfo']['pNationality']}}<br/>"+
-                IdData+
-                "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['pAddress1']}}, {{$user[0]['userInfo']['pAddress2']}}, {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}<br/>";
+    //         var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>"+
+    //             "<span style='font-weight:bold'>Cellphone Number:</span> {{$user[0]['userInfo']['sponCell']}}<br/>"+
+    //             "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['sponEmail']}}<br/>"+
+    //             "<span style='font-weight:bold'>Nationality:</span> {{$user[0]['userInfo']['pNationality']}}<br/>"+
+    //             IdData+
+    //             "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['pAddress1']}}, {{$user[0]['userInfo']['pAddress2']}}, {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}<br/>";
 
-        }else if(field == "moveIn"){
-            var title = "Lease";
-            var approved = 1;
-        }
+    //     }else if(field == "moveIn"){
+    //         var title = "Lease";
+    //         var approved = 1;
+    //     }
         
-        $("#modalHeader").empty().append(title);
-        $("#uploadedBy").empty().append(uploaded_by)
-        $("#uploadedTime").empty().append(created_at.slice(11, 16))
-        $("#uploadedDate").empty().append(created_at.slice(8, 10)+"|"+created_at.slice(5, 7)+"|"+created_at.slice(0, 4))
-        $("#FileIdForApproval").val(fileId)
-        $("#FileNameForApproval").val(field)
+    //     $("#modalHeader").empty().append(title);
+    //     $("#uploadedBy").empty().append(uploaded_by)
+    //     $("#uploadedTime").empty().append(created_at.slice(11, 16))
+    //     $("#uploadedDate").empty().append(created_at.slice(8, 10)+"|"+created_at.slice(5, 7)+"|"+created_at.slice(0, 4))
+    //     $("#FileIdForApproval").val(fileId)
+    //     $("#FileNameForApproval").val(field)
 
-        if (Data !== "") {
-            $("#infoToCheck").empty().append(Data);
-        } else {
-            approved = 1;
-        }
+    //     if (Data !== "") {
+    //         $("#infoToCheck").empty().append(Data);
+    //     } else {
+    //         approved = 1;
+    //     }
 
-        if(approved !== 1){
-            /*var preview1 = document.getElementById("rejected");
-            preview1.setAttribute("disabled", "disabled");*/
-            @if(Auth::user()->role_approve_docs == 1)
-                $("#approved").attr("disabled", "disabled");
-            @endif
-            /*var preview3 = document.getElementById("amend");
-            preview3.setAttribute("disabled", "disabled");
-            var preview4 = document.getElementById("rejectReason");
-            preview4.setAttribute("readonly", "readonly");
-            var preview5 = document.getElementById("actionUserName");
-            preview5.setAttribute("readonly", "readonly");*/
+    //     if(approved !== 1){
+    //         /*var preview1 = document.getElementById("rejected");
+    //         preview1.setAttribute("disabled", "disabled");*/
+    //         @if(Auth::user()->role_approve_docs == 1)
+    //             $("#approved").attr("disabled", "disabled");
+    //         @endif
+    //         /*var preview3 = document.getElementById("amend");
+    //         preview3.setAttribute("disabled", "disabled");
+    //         var preview4 = document.getElementById("rejectReason");
+    //         preview4.setAttribute("readonly", "readonly");
+    //         var preview5 = document.getElementById("actionUserName");
+    //         preview5.setAttribute("readonly", "readonly");*/
 
-            if (Data !== "") {
-                $("#infoButtons").removeClass('hidden');
-            }
+    //         if (Data !== "") {
+    //             $("#infoButtons").removeClass('hidden');
+    //         }
 
-            /*$("#infoChecker").removeClass('hidden')
-            $("#infoToCheck").empty().append(Data);*/
-        }else{
-            @if(Auth::user()->role_approve_docs == 1)
-                $("#rejected").removeAttr("disabled", "disabled");
-                $("#approved").removeAttr("disabled", "disabled");
-                $("#amend").removeAttr("disabled", "disabled");
-                $("#rejectReason").removeAttr("readonly", "readonly");
-                $("#actionUserName").removeAttr("readonly", "readonly");
-            @endif
+    //         /*$("#infoChecker").removeClass('hidden')
+    //         $("#infoToCheck").empty().append(Data);*/
+    //     }else{
+    //         @if(Auth::user()->role_approve_docs == 1)
+    //             $("#rejected").removeAttr("disabled", "disabled");
+    //             $("#approved").removeAttr("disabled", "disabled");
+    //             $("#amend").removeAttr("disabled", "disabled");
+    //             $("#rejectReason").removeAttr("readonly", "readonly");
+    //             $("#actionUserName").removeAttr("readonly", "readonly");
+    //         @endif
 
-            $("#infoButtons").addClass('hidden');
+    //         $("#infoButtons").addClass('hidden');
 
-            /*$("#infoChecker").addClass('hidden')
-            $("#infoToCheck").empty();*/
-        }
+    //         /*$("#infoChecker").addClass('hidden')
+    //         $("#infoToCheck").empty();*/
+    //     }
 
-        if(status == "Approved" || status == "XApproved"){
-            $("#approvedDocs").removeClass("hidden")
-            $("#actionUserName").addClass("hidden")
-        }else{
-            $("#approvedDocs").addClass("hidden")
-            $("#actionUserName").removeClass("hidden")
-        }
+    //     if(status == "Approved" || status == "XApproved"){
+    //         $("#approvedDocs").removeClass("hidden")
+    //         $("#actionUserName").addClass("hidden")
+    //     }else{
+    //         $("#approvedDocs").addClass("hidden")
+    //         $("#actionUserName").removeClass("hidden")
+    //     }
 
-        if(status == "Approved" || status == "Rejected" || status == "XApproved")
-            $("#buttonSection").addClass('hidden')
-        else
-            $("#buttonSection").removeClass('hidden')
+    //     if(status == "Approved" || status == "Rejected" || status == "XApproved")
+    //         $("#buttonSection").addClass('hidden')
+    //     else
+    //         $("#buttonSection").removeClass('hidden')
 
 
-        if (url.search(".pdf") > 0) {
-            $(".pdfSection").empty().append('<embed id="pdfView" src="/storage/'+url+'"  width="100%" height="600px" />')
-        } else {
-            $(".pdfSection").empty().append('<img id="pdfView" src="/storage/'+url+'" />')
-        }  
+    //     if (url.search(".pdf") > 0) {
+    //         $(".pdfSection").empty().append('<embed id="pdfView" src="/storage/'+url+'"  width="100%" height="600px" />')
+    //     } else {
+    //         $(".pdfSection").empty().append('<img id="pdfView" src="/storage/'+url+'" />')
+    //     }  
         
-        var modal = document.getElementById("myModal");
-        modal.style.display = "block";
-    }
+    //     var modal = document.getElementById("myModal");
+    //     modal.style.display = "block";
+    // }
 
-    var modal = document.getElementById("myModal");
-    var span = document.getElementsByClassName("close")[0];
+    // var modal = document.getElementById("myModal");
+    
+    
+    // var span = document.getElementsByClassName("close")[0];
 
-    span.onclick = function() {
-        modal.style.display = "none";
-        $("#actionUserName").removeClass("errorBorder")
-        $("#rejectReason").removeClass("errorBorder")
-        $("#rejectReason_error").addClass("hidden")
-        $("#actionUserName_error").addClass("hidden")
+    // span.onclick = function() {
+    //     modal.style.display = "none";
+    //     $("#actionUserName").removeClass("errorBorder")
+    //     $("#rejectReason").removeClass("errorBorder")
+    //     $("#rejectReason_error").addClass("hidden")
+    //     $("#actionUserName_error").addClass("hidden")
         
-        $("#rejectReason").val("")
-        $("#approvedDocs").addClass("hidden")
-        document.getElementById("reasonBox").style.marginTop = "-21px";
-    }
+    //     $("#rejectReason").val("")
+    //     $("#approvedDocs").addClass("hidden")
+    //     document.getElementById("reasonBox").style.marginTop = "-21px";
+    // }
 
-    window.onclick = function(event) {
-        if (event.target == modal) {
+    // window.onclick = function(event) {
+    //     if (event.target == modal) {
             
-            modal.style.display = "none";
-            $("#actionUserName").removeClass("errorBorder")
-            $("#rejectReason").removeClass("errorBorder")
-            $("#rejectReason_error").addClass("hidden")
-            $("#actionUserName_error").addClass("hidden")
-            $("#rejectReason").val("")
-            $("#approvedDocs").addClass("hidden")
-            document.getElementById("reasonBox").style.marginTop = "-21px";
-        }
+    //         modal.style.display = "none";
+    //         $("#actionUserName").removeClass("errorBorder")
+    //         $("#rejectReason").removeClass("errorBorder")
+    //         $("#rejectReason_error").addClass("hidden")
+    //         $("#actionUserName_error").addClass("hidden")
+    //         $("#rejectReason").val("")
+    //         $("#approvedDocs").addClass("hidden")
+    //         document.getElementById("reasonBox").style.marginTop = "-21px";
+    //     }
 
-        if (event.target == modalBooking) {
-            //
-            modalBooking.style.display = "none";
-        }
+    //     if (event.target == modalBooking) {
+    //         //
+    //         modalBooking.style.display = "none";
+    //     }
 
-    }
-
-    function removeFile(){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to delete this file",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $("#delete").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-
-                $.ajax({
-                    type: "post",
-                    url: "/action/file",
-                    data: {
-                        file: $("#FileIdForApproval").val(), 
-                        type: "Rejected",
-                        reason: "", 
-                        userName: "",
-                    },
-
-                    success: function (data) {
-                        
-                        refreshActions();
-
-                            $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
-                            $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden>')
-
-
-                        var modal = document.getElementById("myModal");
-                        modal.style.display = "none";
-
-                        $("#delete").empty().append('Delete')
-                    
-
-                        $("#actionUserName").removeClass("errorBorder")
-                        $("#rejectReason").removeClass("errorBorder")
-                        $("#rejectReason_error").addClass("hidden")
-                        $("#actionUserName_error").addClass("hidden")
-                        
-                        $("#rejectReason").val("")
-                        $("#approvedDocs").addClass("hidden")
-                        document.getElementById("reasonBox").style.marginTop = "-21px";
-                    },
-                });
-
-            }
-        })
-    }
-
-    function actionFile(type, action){
-
-        if(type === "Rejected"){
-            actionName = "Reject"
-        }else{
-            if(action == "Amend"){
-                actionName = "Amend"
-            }else{
-                actionName = "Approve"
-            }
-        }
-
-        if(type === "Rejected"){
-            if($("#rejectReason").val() !== "" && $("#actionUserName").val() !== ""){
-                actionSwal(actionName, type, action)
-            }else{
-                if($("#actionUserName").val() == ""){
-                    $("#actionUserName").addClass("errorBorder")
-                    $("#actionUserName_error").removeClass("hidden")
-                }
-
-                if($("#rejectReason").val() == ""){
-                    $("#rejectReason").addClass("errorBorder")
-                    $("#rejectReason_error").removeClass("hidden")
-                }
-                
-                document.getElementById("reasonBox").style.marginTop = "-27px";
-            }
-            
-        }else{
-            if(action == "Amend"){
-                if($("#actionUserName").val() !== ""){
-
-                    start();
-
-                async function start() {
-                    const { value: file } = await Swal.fire({
-                        title: 'Select file',
-                        input: 'file',
-                        inputAttributes: {
-                            'aria-label': 'Upload your file'
-                        }
-                    })
-
-                    if (file) {
-                        fileForApproval = $("#FileNameForApproval").val();
-
-                        $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                        $("#rejected").attr("disabled", "disabled");
-                        $("#approved").attr("disabled", "disabled");
-
-                        // $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-                        var form_data = new FormData();
-                        form_data.append("file", file);
-                        form_data.append("userUid", userId);
-                        form_data.append("fileType", fileForApproval);
-                        form_data.append("adminName", $("#actionUserName").val());
-
-                        $.ajax({
-                            type: "post",
-                            url: "/move-in-form-admin",
-                            data: form_data,
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-
-                            success: function (data) {
-                                if (data[0] == "done") {
-                                    $("#"+fileForApproval+"Status").empty().append('<div class="button action"></div>');
-
-                                    $("#"+fileForApproval+"Banner").empty().append('<button type="Button" onClick="openModal(\''+fileForApproval+'\', \''+data[1]+'\', \''+$("#actionUserName").val()+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                                    refreshActions();
-                                    
-
-                                    $("#amend").empty().append('AMEND');
-
-                                    $("#rejected").removeAttr("disabled", "disabled");
-                                    $("#approved").removeAttr("disabled", "disabled");
-
-                                    var modal = document.getElementById("myModal");
-                                    modal.style.display = "none";
-                                }else if(data[0] == "error"){
-                                    Swal.fire(
-                                        'Error',
-                                        data[1],
-                                        'error'
-                                    )
-
-                                    window.location.reload();
-                                }
-                            },
-                        });
-                    }
-                }
-                    
-                }else{
-                    $("#actionUserName").addClass("errorBorder")
-                    $("#actionUserName_error").removeClass("hidden")
-                }
-     
-                
-            }else{
-                if($("#actionUserName").val() !== ""){
-                    actionSwal(actionName, type, action)
-                }else{
-                    $("#actionUserName").addClass("errorBorder")
-                    $("#actionUserName_error").removeClass("hidden")
-                }
-                
-            }
-        } 
-
-    }
-
-    function actionSwal(actionName, type, action){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to "+actionName+" this file",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                if(type === "Rejected"){
-                        $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                        $("#amend").attr("disabled", "disabled");
-                        $("#approved").attr("disabled", "disabled");
-
-                        sendAction(type, action);
-
-                }else{
-                    if(action == "Amend"){
-                            $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                            $("#rejected").attr("disabled", "disabled");
-                            $("#approved").attr("disabled", "disabled");
-
-                            sendAction(type, action);
-                        
-                    }else{
-                            $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                            $("#rejected").attr("disabled", "disabled");
-                            $("#amend").attr("disabled", "disabled");
-
-                            sendAction(type, action);
-
-                            $("#files_to_download").val('true')
-                        
-                    }
-                }
-            }
-        })
-    }
-
-    function sendAction(type, action){
-        
-        $.ajax({
-            type: "post",
-            url: "/action/file",
-            data: {
-                file: $("#FileIdForApproval").val(), 
-                type: type,
-                reason: $("#rejectReason").val(), 
-                userName: $("#actionUserName").val(),
-            },
-
-            success: function (data) {
-
-                if(type == "Approved" && $("#FileNameForApproval").val() == "moveIn"){
-                    window.location.reload();
-                }
-                
-                refreshActions();
-
-                if(type === "Rejected"){
-                    $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
-                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden onChange="bursaryApp()">')
-
-                    $("#rejected").empty().append('REJECT WITH REASON')
-                    var preview1 = document.getElementById("amend");
-                    preview1.removeAttribute("disabled", "disabled");
-                    var preview2 = document.getElementById("approved");
-                    preview2.removeAttribute("disabled", "disabled");
-                }else{
-                    $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button approved"></div>')
-                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<button type="button" onclick="openModal(\''+$("#FileNameForApproval").val()+'\', \''+data["fileUrl"]+'\', \''+$("#actionUserName").val()+'\', \''+data["created_at"]+'\', \''+data["id"]+'\', \'XApproved\')">View Document</button>')
-
-                    if(action == "Amend"){
-                        $("#amend").empty().append('AMEND')
-                        var preview1 = document.getElementById("rejected");
-                        preview1.removeAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.removeAttribute("disabled", "disabled");
-                    }else{
-                        $("#approved").empty().append('APPROVE')
-                        var preview1 = document.getElementById("rejected");
-                        preview1.removeAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("amend");
-                        preview2.removeAttribute("disabled", "disabled");
-
-                        console.log($("#FileIdForApproval").val() )
-
-                        if($("#FileNameForApproval").val() == "copyID"){
-                            $("#id_data_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "studentCard"){
-                            $("#student_card_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "bankStatement"){
-                            console.log("bankStatement")
-                            $("#bank_approved").val('2')
-                            $("#parent_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "proofRegistration"){
-                            $("#registration_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "bursaryApproval"){
-                            $("#bursary_approved").val('2')
-                            $("#burser_approved").val('2')
-                        }
-
-                        console.log($("#FileNameForApproval").val())
-
-                        if($("#FileNameForApproval").val() == "proof_of_payment"){
-                            $("#AppSummaryPaid").removeClass('hidden')
-                            $("#paidOption").empty().append("Yes")
-                        }
-                    }
-
-                }
-
-                var modal = document.getElementById("myModal");
-                modal.style.display = "none";
-               
-
-                $("#actionUserName").removeClass("errorBorder")
-                $("#rejectReason").removeClass("errorBorder")
-                $("#rejectReason_error").addClass("hidden")
-                $("#actionUserName_error").addClass("hidden")
-                
-                $("#rejectReason").val("")
-                $("#approvedDocs").addClass("hidden")
-                document.getElementById("reasonBox").style.marginTop = "-21px";
-
-                checkUserStatus();
-            },
-        });
-    }
+    // }       
 
     function refreshActions(){
 
@@ -2065,7 +1582,7 @@
                 
                 data.forEach(myFunction);
                 function myFunction(item, index) {
-                    console.log(item)
+                    // console.log(item)
                     if(item['actionUserRole'] == "1"){
                         if(item['users']['user_role_name'] == ""){
                             var role = '<button type="button" class="admin">Admin</button>';
@@ -2156,8 +1673,9 @@
                         var name = 'BANK STATEMENT';
                     }
 
-                    if(item['status'] == "Uploaded" || item['status'] == "Approved"){
-                        var button = '<button type="button" onClick="openModal(\''+item['field']+'\', \''+item['url']+'\',\''+item['uploaded_by']+'\',\''+item['created_at']+'\',\''+item['id']+'\',\''+item['status']+'\')" id="myBtn_'+index+'">View Document</button>';
+                    if(item['status'] == "Uploaded" || item['status'] == "Approved") {
+                        var button = '<button type="button" onClick="btn_view_document_ajax('+item['id']+')">View Document</button>';
+
                     }else{
                         // var button = '<button type="button" class="error">Send reminder</button>';
                     }
@@ -2190,15 +1708,21 @@
         });
     })
 
-    $("#documentsSectionDisplay").on('change', '#copyID', function(){
-        $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+    //File Upload
+    $(document).on('change', '#bursaryApproval, #moveIn, #copyID, #studentCard, #bankStatement, #proofRegistration, #proof_of_payment', function(){
+        let field = $(this).attr('id');
+        console.log(field);
+
+        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
         let userId = <?php echo $user[0]['userInfo']['id'];?>
 
         var form_data = new FormData();
-        form_data.append("file", document.getElementById('copyID').files[0]);
+        form_data.append("file", document.getElementById(field).files[0]);
         form_data.append("userUid", userId);
-        form_data.append("fileType", "copyID");
-        form_data.append("adminName", $("#adminName").val());
+        form_data.append("fileType", field);
+        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
         $.ajax({
             type: "post",
@@ -2209,295 +1733,25 @@
             processData: false,
 
             success: function (data) {
-                if (data[0] == "done") {
-                    $("#copyIDStatus").empty().append('<div class="button action"></div>');
+                if (data> 0) {
+                    $("#" + field + "Status").empty().append('<div class="button action"></div>');
 
-                    $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    var button = '<button type="button" onClick="btn_view_document_ajax('+data+')">View Document</button>';
+                    $("#" + field + "Banner").empty().append(button);
 
                     refreshActions();
-                }else if(data[0] == "error"){
+
+                } else {
                     Swal.fire(
                         'Error',
-                        data[1],
+                        data,
                         'error'
                     )
+                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
-    });
-
-    $("#documentsSectionDisplay").on('change', "#studentCard", function(){
-        $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('studentCard').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "studentCard");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-                    $("#studentCardStatus").empty().append('<div class="button action"></div>');
-
-                    $("#studentCardBanner").empty().append('<button type="Button" onClick="openModal(\'studentCard\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#studentCardSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });  
-    })
-
-    $("#documentsSectionDisplay").on('change', "#bankStatement",  function(){
-        $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bankStatement').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "bankStatement");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-                    
-                    $("#bankStatementStatus").empty().append('<div class="button action"></div>');
-
-                    $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#bankStatementSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
-
-    $("#documentsSectionDisplay").on('change', "#proofRegistration", function(){
-
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proofRegistration').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "proofRegistration");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-                    $("#proofRegistrationStatus").empty().append('<div class="button action"></div>');
-
-                    $("#proofRegistrationBanner").empty().append('<button type="Button" onClick="openModal(\'proofRegistration\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#proofRegistrationSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
-
-
-    $("#documentsSectionDisplay").on('change', "#proof_of_payment", function(){
-        $("#proof_of_paymentSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "proof_of_payment");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-
-                    $("#proof_of_paymentStatus").empty().append('<div class="button action"></div>');
-
-                    $("#proof_of_paymentBanner").empty().append('<button type="Button" onClick="openModal(\'proof_of_payment\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#proof_of_paymentSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
-    
-    function bursaryApp(){
-        $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bursaryApproval').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "bursaryApproval");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-
-
-                    $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
-
-                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#bursaryApprovalSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    }
-
-    $("#bursaryApproval").on('change', function(){
-        $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bursaryApproval').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "bursaryApproval");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-
-
-                    $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
-
-                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#bursaryApprovalSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
-
-    $("#moveIn").on('change', function(){
-        $("#moveInSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('moveIn').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "moveIn");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-                    $("#moveInStatus").empty().append('<div class="button action"></div>');
-
-                    $("#moveInBanner").empty().append('<button type="Button" onClick="openModal(\'moveIn\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#moveInSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    });
+    })    
 
     function unWaiveBookingFee(userId){
         $("#unWaiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')

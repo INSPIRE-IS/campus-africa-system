@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\DocumentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,7 +76,6 @@ Route::post("/delete-admin", [HomeController::class, 'delete_admin']);
 Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
-Route::post('/move-in-form-admin', [HomeController::class, 'adminFileUpload']);
 
 Route::get('/lookups', [HomeController::class, 'lookups'])->name('lookups');
 Route::get('/lookups/new', [HomeController::class, 'add_lookups']);
@@ -149,3 +149,8 @@ Route::post('/set-page-session', [HomeController::class, 'set_page_session']);
 Route::post('/set-page-session-order', [HomeController::class, 'set_page_session_order']);
 
 Route::post('/cancel-lease', [HomeController::class, 'cancel_lease']);
+
+
+//Documents
+Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);
+Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);

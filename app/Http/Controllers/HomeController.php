@@ -469,7 +469,7 @@ class HomeController extends Controller
             $action = $request->type;
             $reason = $request->reason;
 
-            $userFile = UserFiles::where('id', $fileId)->update([
+            UserFiles::where('id', $fileId)->update([
                 'status' => $action,
                 'rejectReason' => $reason,
                 'approved_by' => $request->userName,
@@ -507,6 +507,9 @@ class HomeController extends Controller
 
             if($action == "Rejected"){
                 $text = "Rejected ".$typeName." with reason: ".$reason ;
+
+                User::where('id', $userFile->userUid)->update([$dataField => "0"]);
+
             }else{
                 $text = "Approved ".$typeName;
 
@@ -1173,238 +1176,7 @@ class HomeController extends Controller
         $outstanding = array_diff($all, $uploaded);
 
         return view('admin.studentUpload', ["headerTitle" => "Student File Upload", "user" => $user, "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding, "title" => "Student Upload"]);
-    }
-
-    public function adminFileUpload(Request $request){
-        $userUid = $request->userUid;
-        $fileType = $request->fileType;
-
-        $fileUrlBack = "";
-
-        if ($request->hasFile('file')) {
-            
-            if ($request->file('file')->isValid()) {
-
-                $filenameWithExt  = $request->file('file')->getClientOriginalName();
-                $fileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('file')->extension();
-                $fileNameToStore = $fileName. '_'. time().'.'.$extension;
-
-                $request->file('file')->storeAs('public/files/'.$userUid.'/', $fileNameToStore);
-
-                $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
-                $fileUrlBack = $fileUrl;
-
-                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
-
-                if($fileType == "copyID"){
-                    $typeName = "Copy of ID Document";
-                }elseif($fileType == "studentCard"){
-                    $typeName = "Copy of Student Card";
-                }elseif($fileType == "bankStatement"){
-                    $typeName = "Bank Statements";
-                }elseif($fileType == "proofRegistration"){
-                    $typeName = "Proof of Registration";
-                }elseif($fileType == "proof_of_payment"){
-                    $typeName = "Booking Fee Proof of Payment";
-                }elseif($fileType == "moveIn"){
-                    $typeName = "Lease";
-                    User::where('id', $userUid)->update(['overall_status' => 'Pending']);
-                }elseif($fileType == "bursaryApproval"){
-                    $typeName = "NSFAS / Bursary Approval";
-                }
-
-                // if($typeName == "Lease"){
-                //     $statusAction = "Uploaded";
-                // }else{
-                //     $statusAction = "Uploaded";
-                // }
-                
-
-                if(!$hasFile){
-                    $file = UserFiles::create([
-                        'fileId' => $fileType,
-                        'userUid' => $userUid,
-                        'fileName' => $fileNameToStore,
-                        'fileUrl' => $fileUrl,
-                        'status' => "Uploaded",
-                        'uploaded_by' => Auth::user()->userFirstName,
-                    ]);
-
-                    $text = "Uploaded ".$typeName." for review";
-                }else{
-                    $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
-                        'fileId' => $fileType,
-                        'userUid' => $userUid,
-                        'fileName' => $fileNameToStore,
-                        'fileUrl' => $fileUrl,
-                        'status' => "Uploaded",
-                        'uploaded_by' => Auth::user()->userFirstName,
-                    ]);
-                    $text = "Re-uploaded ".$typeName." for review";
-                }
-
-                
-    
-                ActionList::create([
-                    "userUid" => $userUid,
-                    "action" => $text,
-                    "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => Auth::user()->userFirstName,
-                    "actionUserRole" => Auth::user()->userRole,
-                ]);
-
-                // $uploaded = [];
-                // // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
-
-                // $user = User::where('id', $userUid)->first();
-                // $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
-
-                // // if($user->applicationStatus == "Approved Confirmed"){
-                // //     array_push($all, "moveIn");
-                // // }
-                // if($user->studentType == "Cash / Direct"){
-                //     array_push($all, "bankStatement");
-                // }
-                // if($user->studentType !== "Cash / Direct"){
-                //     array_push($all, "bursaryApproval");
-                // }
-                // $data = [];
-
-                // $phase1 = "Empty";
-                // $phase2 = "Empty";
-
-                // $user = User::with('files')->where('id', $userUid)->first();
-
-                // foreach($user->files as $file){
-                //     array_push($uploaded, $file->fileId);
-                //     array_push($data, ["field" => $file->fileId, "status" => $file->status]);
-                // }
-
-                // $left = array_diff($all, $uploaded);
-
-                // foreach($left as $dataLeft){
-                //     if($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
-                //         if($dataLeft == "bankStatement"){
-                //             array_push($data, ["field" => $dataLeft, "status" => "na"]);
-                //         }else{
-                //             array_push($data, ["field" => $dataLeft, "status" => ""]);
-                //         }
-                //     }else{
-                //         if($dataLeft == "bursaryApproval"){
-                //             array_push($data, ["field" => $dataLeft, "status" => "na"]);
-                //         }else{
-                //             array_push($data, ["field" => $dataLeft, "status" => ""]);
-                //         }
-                //     }
-                // }
-
-                // foreach($data as $item){
-                //     if($item['field'] == "proof_of_payment" || $item['field'] == "copyID"){
-                //         // array_push($phase1, ["field" => $item->field, "status" => $itme->status]);
-                //         if($phase1 == "Empty" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Empty" && $item['status'] == "Approved"){
-                //             $phase1 = "Approved";
-                //         }else if($phase1 == "Empty" && $item['status'] == "Rejected"){
-                //             $phase1 = "Rejected";
-                //         }
-
-                //         if($phase1 == "Action" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Action" && $item['status'] == "Approved"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Action" && $item['status'] == "Rejected"){
-                //             $phase1 = "Action";
-                //         }
-
-                //         if($phase1 == "Approved" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Approved" && $item['status'] == "Approved"){
-                //             $phase1 = "Approved";
-                //         }else if($phase1 == "Action" && $item['status'] == "Rejected"){
-                //             $phase1 = "Rejected";
-                //         }
-
-                //         if($phase1 == "Rejected" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Rejected" && $item['status'] == "Approved"){
-                //             $phase1 = "Rejected";
-                //         }else if($phase1 == "Rejected" && $item['status'] == "Rejected"){
-                //             $phase1 = "Rejected";
-                //         }
-
-                //     }
-                    
-
-                //     if($item['field'] == "studentCard" || $item['field'] == "proofRegistration" || $item['field'] == "bursaryApproval" || $item['field'] == "bankStatement"){
-                //         if($phase2 == "Empty" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Empty" && $item['status'] == "Approved"){
-                //             $phase2 = "Approved";
-                //         }else if($phase2 == "Empty" && $item['status'] == "Rejected"){
-                //             $phase2 = "Rejected";
-                //         }
-
-                //         if($phase2 == "Action" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Action" && $item['status'] == "Approved"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Action" && $item['status'] == "Rejected"){
-                //             $phase2 = "Action";
-                //         }
-
-                //         if($phase2 == "Approved" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Approved" && $item['status'] == "Approved"){
-                //             $phase2 = "Approved";
-                //         }else if($phase2 == "Approved" && $item['status'] == "Rejected" || $phase2 == "Approved" && $item['status'] == ""){
-                //             $phase2 = "Rejected";
-                //         }
-
-                //         if($phase2 == "Rejected" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Rejected" && $item['status'] == "Approved"){
-                //             $phase2 = "Rejected";
-                //         }else if($phase2 == "Rejected" && $item['status'] == "Rejected"){
-                //             $phase2 = "Rejected";
-                //         }
-
-                //     }
-
-                //     //For lease mark application as completed
-                //     if ($item['field'] == "moveIn") {
-                //         $phase2 = "Approved Confirmed";
-                //     }
-
-                // }
-
-                // $overall = "Incomplete";
-
-                // if($phase1 == "Action" || $phase2 == "Action"){
-                //     $overall = "Pending";
-                // }
-
-                // if($fileType == "moveIn"){
-                //     $overall = "Pending";
-                // }
-
-                // User::where('id', $userUid)->update(["bookingStatus" => $phase1, "applicationStatus" => $phase2, "overall_status" => $overall]);
-
-                $this->update_user_status($userUid);
-
-                return ["done", $fileUrlBack, $file];
-
-            }else{
-                return ["error", "File Not Valid"];
-            }
-        }else{
-            return ["error", "No File Detected"];
-        }
-
-
-        
-    }
+    }    
 
     public function lookups(Request $request){
 
