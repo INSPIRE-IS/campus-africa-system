@@ -58,9 +58,13 @@
                     {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, <br/>
                     {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>
                 </p>
-                <br/>
-                NSFAS bursar? <strong><?php if($user[0]['userInfo']['nsfas_bursar'] == "1"){ echo "Yes";}else{echo "No";} ?></strong><br/>
-                <button style="padding:2px 10px; cursor:pointer;" onClick="changeNsfsBursar('{{$user[0]['userInfo']['id']}}', '{{$user[0]['userInfo']['nsfas_bursar']}}')">Change</button>
+
+                
+                    <br/>
+                    NSFAS bursar? <strong><?php if($user[0]['userInfo']['nsfas_bursar'] == "1"){ echo "Yes";}else{echo "No";} ?></strong>
+                    @if(Auth::user()->role_approve_docs == "1")
+                        <br/><button style="padding:2px 10px; cursor:pointer;" onClick="changeNsfsBursar('{{$user[0]['userInfo']['id']}}', '{{$user[0]['userInfo']['nsfas_bursar']}}')">Change</button>
+                    @endif
             @endif
             <br/>
             
