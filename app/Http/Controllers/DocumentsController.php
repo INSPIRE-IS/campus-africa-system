@@ -97,19 +97,26 @@ class DocumentsController extends Controller {
 
                 if($fileType == "copyID"){
                     $typeName = "Copy of ID Document";
+                    $field = "id_data_approved";
                 }elseif($fileType == "studentCard"){
                     $typeName = "Copy of Student Card";
+                    $field = "student_card_approved";
                 }elseif($fileType == "bankStatement"){
                     $typeName = "Bank Statements";
+                    $field = "bank_approved";
                 }elseif($fileType == "proofRegistration"){
                     $typeName = "Proof of Registration";
+                    $field = "registration_approved";
                 }elseif($fileType == "proof_of_payment"){
                     $typeName = "Booking Fee Proof of Payment";
+                    $field = "";
                 }elseif($fileType == "moveIn"){
                     $typeName = "Lease";
                     User::where('id', $userUid)->update(['overall_status' => 'Pending']);
+                    $field = "";
                 }elseif($fileType == "bursaryApproval"){
                     $typeName = "NSFAS / Bursary Approval";
+                    $field = "bursary_approved";
                 }
 
                 // if($typeName == "Lease"){
@@ -140,6 +147,11 @@ class DocumentsController extends Controller {
                         'uploaded_by' => Auth::user()->userFirstName,
                     ]);
                     $text = "Re-uploaded ".$typeName." for review";
+
+                    //Update robot status back to pending
+                    if (!empty($field)) {
+                        User::where('id', $userUid)->update([$field => '1']);
+                    }
                 }
 
                 //Get the file

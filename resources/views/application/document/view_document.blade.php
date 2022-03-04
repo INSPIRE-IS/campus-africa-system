@@ -207,7 +207,7 @@
                         $("#approved").attr("disabled", "disabled");
 
                         // $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                        let userId = "{{$user[0]['userInfo']['id']}}";
+                        let userId = "{{$user->id}}";
 
                         var form_data = new FormData();
                         form_data.append("file", file);
@@ -224,17 +224,17 @@
                             processData: false,
 
                             success: function (data) {
-                                if (data[0] == "done") {
+                                if (data > 0) {
                                     $("#"+fileForApproval+"Status").empty().append('<div class="button action"></div>');
 
                                     refreshActions();                                    
 
                                     refresh_this_modal();
 
-                                }else if(data[0] == "error"){
+                                } else {
                                     Swal.fire(
                                         'Error',
-                                        data[1],
+                                        data,
                                         'error'
                                     )
 
