@@ -322,8 +322,17 @@
 
                 if(type == "Approved" && $("#FileNameForApproval").val() == "moveIn"){
                     window.location.reload();
+
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
+
+                    //Add back upload button
+                    if (type == "Rejected") {
+                        @if(Auth::user()->role_upload_docs == 1)
+                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                            $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+                        @endif
+                    }
                 
                     refreshActions();
 
