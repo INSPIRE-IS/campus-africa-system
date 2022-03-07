@@ -18,56 +18,43 @@ class DocumentsController extends Controller {
         $popupTitle = "";
         $doc_approved = 0;
 
-        if($file->fileId == "copyID"){
-            $field = "id_data_approved";
-            $popupTitle = "Copy Of ID document";
+        $user_status = get_user_status($file->fileId, $user);
 
-            $doc_approved = $user->id_data_approved;
+        // if($file->fileId == "copyID") {            
+        //     $doc_approved = $user->id_data_approved;
 
-        }elseif($file->fileId == "studentCard"){
-            $field = "student_card_approved";
-            $popupTitle = "Student card / Proof of student number";
+        // }elseif($file->fileId == "studentCard"){
+        //     $doc_approved = $user->student_card_approved;
 
-            $doc_approved = $user->student_card_approved;
-
-        }elseif($file->fileId == "bankStatement"){
-            $field = "bank_approved";
-            $popupTitle = "Bank statement";
-
-            $doc_approved = $user->bank_approved;
+        // }elseif($file->fileId == "bankStatement"){
+        //     $doc_approved = $user->bank_approved;
             
-        }elseif($file->fileId == "proofRegistration"){
-            $field = "registration_approved";
-            $popupTitle = "Proof of registration";
+        // }elseif($file->fileId == "proofRegistration"){
+        //     $doc_approved = $user->registration_approved;
 
-            $doc_approved = $user->registration_approved;
+        //     //TODO: What is this fileId?
 
-            //TODO: What is this fileId?
+        // }elseif($file->fileId == "proof_of_payment"){
+        //     $popupTitle = "Proof of payment";
+        //     $doc_approved = 1;
 
-        }elseif($file->fileId == "proof_of_payment"){
-            // $typeName = "Booking Fee Proof of Payment";
-            $popupTitle = "Proof of payment";
-            $doc_approved = 1;
+        // }elseif($file->fileId == "moveIn"){
+        //     // $typeName = "Lease";
+        //     // User::where('id', $userUid)->update(['overall_status' => 'Pending']);
+        //     $popupTitle = "Lease";
+        //     $doc_approved = 1;
 
-        }elseif($file->fileId == "moveIn"){
-            // $typeName = "Lease";
-            // User::where('id', $userUid)->update(['overall_status' => 'Pending']);
-            $popupTitle = "Lease";
-            $doc_approved = 1;
+        // }elseif($file->fileId == "bursaryApproval"){
+        //     $field = "bursary_approved";
+        //     $popupTitle = "NSFAS / Bursary Approval";
+        //     //TODO: Split this up based on student type
 
-        }elseif($file->fileId == "bursaryApproval"){
-            $field = "bursary_approved";
-            $popupTitle = "NSFAS / Bursary Approval";
-            //TODO: Split this up based on student type
-
-            $doc_approved = $user->bursary_approved;
-        }
+        //     $doc_approved = $user->bursary_approved;
+        // }
 
         
 
-        $user->dataField = $field;
-
-        return view('application.document.view_document', ['user' => $user, 'file' => $file, 'popupTitle' => $popupTitle, 'doc_approved' => $doc_approved]);
+        return view('application.document.view_document', ['user' => $user, 'file' => $file, 'popupTitle' => $user_status['typeName'], 'data_approved' => $user_status['data_approved'], 'doc_approved' => $user_status['doc_approved'], 'field_data' => $user_status['field_data']]);
     }
 
 
@@ -95,36 +82,9 @@ class DocumentsController extends Controller {
 
                 $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
 
-                if($fileType == "copyID"){
-                    $typeName = "Copy of ID Document";
-                    $field = "id_data_approved";
-                }elseif($fileType == "studentCard"){
-                    $typeName = "Copy of Student Card";
-                    $field = "student_card_approved";
-                }elseif($fileType == "bankStatement"){
-                    $typeName = "Bank Statements";
-                    $field = "bank_approved";
-                }elseif($fileType == "proofRegistration"){
-                    $typeName = "Proof of Registration";
-                    $field = "registration_approved";
-                }elseif($fileType == "proof_of_payment"){
-                    $typeName = "Booking Fee Proof of Payment";
-                    $field = "";
-                }elseif($fileType == "moveIn"){
-                    $typeName = "Lease";
-                    User::where('id', $userUid)->update(['overall_status' => 'Pending']);
-                    $field = "";
-                }elseif($fileType == "bursaryApproval"){
-                    $typeName = "NSFAS / Bursary Approval";
-                    $field = "bursary_approved";
-                }
-
-                // if($typeName == "Lease"){
-                //     $statusAction = "Uploaded";
-                // }else{
-                //     $statusAction = "Uploaded";
-                // }
-                
+                $user_status = get_user_status($fileType, "");
+                $field_data = $user_status['field_data'];
+                $field_doc = $user_status['field_doc'];                
 
                 if(!$hasFile){
                     UserFiles::create([
@@ -136,7 +96,7 @@ class DocumentsController extends Controller {
                         'uploaded_by' => Auth::user()->userFirstName,
                     ]);
 
-                    $text = "Uploaded ".$typeName." for review";
+                    $text = "Uploaded ".$user_status['typeName']." for review";
                 }else{
                     UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
                         'fileId' => $fileType,
@@ -146,12 +106,22 @@ class DocumentsController extends Controller {
                         'status' => "Uploaded",
                         'uploaded_by' => Auth::user()->userFirstName,
                     ]);
-                    $text = "Re-uploaded ".$typeName." for review";
+                    $text = "Re-uploaded ".$user_status['typeName']." for review";                    
+                }
 
-                    //Update robot status back to pending
-                    if (!empty($field)) {
-                        User::where('id', $userUid)->update([$field => '1']);
+                $cur_status = User::find($userUid);
+
+                //Update data status back to pending
+                if (!empty($field_data)) {
+                    //If the data was already approved then unapprove
+                    if ($cur_status->{$field_data} == 1) {
+                        User::where('id', $userUid)->update([$field_data => '0']);                        
                     }
+                }
+
+                //Update Robot status back to pending
+                if (!empty($field_doc)) {
+                    User::where('id', $userUid)->update([$field_doc => '1']);
                 }
 
                 //Get the file

@@ -19,13 +19,13 @@
         <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
     </div>
 
-    @if(Auth::user()->role_approve_docs == 1 && $doc_approved == 1)
+    @if(Auth::user()->role_approve_docs == 1 && $data_approved == 1 && $doc_approved == 1)
         <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
     @endif
 
     <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
 
-    @if(Auth::user()->role_approve_docs == 1 && $doc_approved == 1)
+    @if(Auth::user()->role_approve_docs == 1 && $data_approved == 1 && $doc_approved == 1)
         <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
     @endif
 
@@ -36,61 +36,66 @@
 
 <div id="infoChecker">
     <br/><hr/><br/>
-    <div class="flex">
-        <p id="infoToCheck">
-            @if($file->fileId == "copyID")
-                <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
-                <br/><span style='font-weight:bold'>Nationality:</span>{{$user->userNationality}}</span>
-                <br/><span style='font-weight:bold'>ID Number:</span>{{$user->userId}}</span>
-                <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
-            @endif
 
-            @if($file->fileId == "studentCard")
-                <span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}</span>
-            @endif
-
-            @if($file->fileId == "proofRegistration")
-                <span style='font-weight:bold'>Institution:</span> ?</span>
-                <br /><span style='font-weight:bold'>Faculty:</span> ?</span>
-            @endif
-            
-            @if($file->fileId == "bursaryApproval")
-                <span style='font-weight:bold'>Company Name:</span> {{$user->burCompanyName}}</span>
-                <br /><span style='font-weight:bold'>Registration Number:</span> {{$user->burRegNo}}</span>
-                <br /><span style='font-weight:bold'>Contact Person:</span> {{$user->burContactPerson}}</span>
-                <br /><span style='font-weight:bold'>Contact Number:</span> {{$user->burContactNo}}</span>
-                <br /><span style='font-weight:bold'>Email Address:</span> {{$user->burEmail}}</span>
-                <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->bAddress1}}, {{$user->bAddress2}}, {{$user->bAddressCity}}, {{$user->bAddressPostal}}</span>
-                <br /><span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user->bPayment}}<br />{{$user->bint}} {{$user->bIntName}}</span>
-            @endif
-
-            @if($file->fileId == "bankStatement")
-                <span style='font-weight:bold'>Name:</span> {{$user->sponFirstName}} {{$user->sponLastName}}</span>
-                <br /><span style='font-weight:bold'>Cellphone Number:</span> {{$user->sponCell}}</span>
-                <br /><span style='font-weight:bold'>Email Address:</span> {{$user->sponEmail}}</span>                
-                <br /><span style='font-weight:bold'>Nationality:</span> {{$user->pNationality}}</span>
-                
-                @if($user->pNationality == "South Africa")
-                    <br /><span style='font-weight:bold'>ID Number:</span> {{$user->sponId}}</span>
-                @else
-                    <br /><span style='font-weight:bold'>Passport Number:</span> {{$user->pPassportNo}}</span>
+    @if (!empty($field_data))
+        <div class="flex">
+            <p id="infoToCheck">
+                @if($file->fileId == "copyID")
+                    <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
+                    <br/><span style='font-weight:bold'>Nationality:</span>{{$user->userNationality}}</span>
+                    <br/><span style='font-weight:bold'>ID Number:</span>{{$user->userId}}</span>
+                    <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
                 @endif
 
-                <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->pAddress1}}, {{$user->pAddress2}}, {{$user->pAddressCity}}, {{$user->pAddressPostal}}</span>
-            @endif
-        </p>
-        
-        <div id="infoButtons">
-            @if(Auth::user()->role_approve_docs == 1 && $doc_approved == 0)
-                <button type="button" class="approve button" style="height:40px; margin-left:100px;" onClick="approveData(1)">Approve</button>
-            @endif
+                @if($file->fileId == "studentCard")
+                    <span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}</span>
+                @endif
 
-            @if(Auth::user()->role_approve_docs == 1 && $doc_approved < 2)
-                <button type="button" class="rejected button" style="height:40px; margin-left:20px;" onClick="approveData(0)">Reject</button>
+                @if($file->fileId == "proofRegistration")
+                    <span style='font-weight:bold'>Institution:</span> ?</span>
+                    <br /><span style='font-weight:bold'>Faculty:</span> ?</span>
+                @endif
+                
+                @if($file->fileId == "bursaryApproval")
+                    <span style='font-weight:bold'>Company Name:</span> {{$user->burCompanyName}}</span>
+                    <br /><span style='font-weight:bold'>Registration Number:</span> {{$user->burRegNo}}</span>
+                    <br /><span style='font-weight:bold'>Contact Person:</span> {{$user->burContactPerson}}</span>
+                    <br /><span style='font-weight:bold'>Contact Number:</span> {{$user->burContactNo}}</span>
+                    <br /><span style='font-weight:bold'>Email Address:</span> {{$user->burEmail}}</span>
+                    <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->bAddress1}}, {{$user->bAddress2}}, {{$user->bAddressCity}}, {{$user->bAddressPostal}}</span>
+                    <br /><span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user->bPayment}}<br />{{$user->bint}} {{$user->bIntName}}</span>
+                @endif
+
+                @if($file->fileId == "bankStatement")
+                    <span style='font-weight:bold'>Name:</span> {{$user->sponFirstName}} {{$user->sponLastName}}</span>
+                    <br /><span style='font-weight:bold'>Cellphone Number:</span> {{$user->sponCell}}</span>
+                    <br /><span style='font-weight:bold'>Email Address:</span> {{$user->sponEmail}}</span>                
+                    <br /><span style='font-weight:bold'>Nationality:</span> {{$user->pNationality}}</span>
+                    
+                    @if($user->pNationality == "South Africa")
+                        <br /><span style='font-weight:bold'>ID Number:</span> {{$user->sponId}}</span>
+                    @else
+                        <br /><span style='font-weight:bold'>Passport Number:</span> {{$user->pPassportNo}}</span>
+                    @endif
+
+                    <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->pAddress1}}, {{$user->pAddress2}}, {{$user->pAddressCity}}, {{$user->pAddressPostal}}</span>
+                @endif
+            </p>        
+            
+            @if(Auth::user()->role_approve_docs == 1)
+                <div id="infoButtons">
+                    @if($data_approved == 0)
+                        <button type="button" class="approve button" style="height:40px; margin-left:100px;" onClick="approveData(1)">Approve</button>
+                    @endif
+
+                    @if($doc_approved == 1)
+                        <button type="button" class="rejected button" style="height:40px; margin-left:20px;" onClick="approveData(0)">Reject</button>
+                    @endif
+                </div>
             @endif
         </div>
-    </div>
-    <br/><br/><hr/>
+        <br/><br/><hr/>
+    @endif
 </div>
 
 
