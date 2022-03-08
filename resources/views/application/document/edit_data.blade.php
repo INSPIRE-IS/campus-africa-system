@@ -1,4 +1,4 @@
-<div class="container form-card">
+<div class="container form-card" style="margin-top: 20px;">
     <form action="/update-student" method="post" id="editDocData" autocomplete="off">
         @csrf
 
