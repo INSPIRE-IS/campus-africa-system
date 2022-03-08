@@ -18,8 +18,16 @@
         outline: none;
     }
 
-    .edit_info input:read-only {
+    .edit_info input:read-only, .edit_info select:read-only {
         opacity: 1;
+    }
+
+    .edit_info select {
+        background-color: #f0f0f0;
+        border-radius: 7px;
+        border: none;
+        width: 65%;
+        padding: 10px;
     }
 </style>
 
@@ -64,9 +72,25 @@
 
         <h3>Info</h3>
 
+        
+
         <div>
             @if($file->fileId == "studentCard")
-                <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
+                <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
+            @endif
+
+            @if($file->fileId == "proofRegistration")
+                <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
+                <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}
+                @if ($user->userNationality == "South Africa")
+                    <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
+                @else
+                    <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
+                @endif
+                <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}
+                <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
+                <br/><span style='font-weight:bold'>Cell:</span> {{$user->userCell}}
+                <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
             @endif
         </div>
         
@@ -79,49 +103,76 @@
                 @csrf
 
                 @if($file->fileId == "copyID")
-                    <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
-                    <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}</span>                    
+                    <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
+                    <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}                    
                     @if ($user->userNationality == "South Africa")
-                        <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}</span>
+                        <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
                     @else
-                        <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}</span>
+                        <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
                     @endif
-                    <br/><span style='font-weight:bold'>DOB:</span> {{$user->userDob}}</span>
+                    <br/><span style='font-weight:bold'>DOB:</span> {{$user->userDob}}
                     <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
                 @endif
 
                 @if($file->fileId == "studentCard")
-                    <span style='font-weight:bold'>Student Number:</span> <input class="noedit required" name="studentNo" disabled type="text" value="{{$user->studentNo}}"></span>
+                    <span style='font-weight:bold'>Student Number:</span> <input class="noedit required" name="studentNo" disabled type="text" value="{{$user->studentNo}}">
                 @endif
 
                 @if($file->fileId == "proofRegistration")
-                    <br/><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($lookup->id == $user->institutionStudy) {{$lookup->lookup_name}} @endif @endforeach</span>
-                    <br /><span style='font-weight:bold'>Faculty:</span> @foreach($lookups as $lookup) @if($lookup->id == $user->faculty) {{$lookup->lookup_name}} @endif @endforeach</span>
+                    <span style='font-weight:bold'>Institution:</span>
+                    <select name="institStudy" class="noedit required" disabled>
+                        <option value="Choose one" selected disabled>Choose one</option>
+                        @foreach($lookups as $lookup)
+                            @if($lookup->group_id == "1")
+                                <option value="{{$lookup->id}}" <?php if($user->institutionStudy == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+
+                    <br /><span style='font-weight:bold'>Faculty:</span>
+                    <select name="faculty" class="noedit required" disabled>
+                        <option value="" disabled selected>Select One</option>
+                        @foreach($lookups as $lookup)
+                            @if($lookup->group_id == "3")
+                                <option value="{{$lookup->id}}" <?php if($user->faculty == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                    
+                    <br /><span style='font-weight:bold'>Year of Study:</span>
+                    <select name="yearOfStudy" class="noedit required" disabled>
+                        <option value="" selected disabled>Please select one</option>
+                        @foreach($lookups as $lookup)
+                            @if($lookup->group_id == "6")
+                                <option value="{{$lookup->lookup_name}}" <?php if($user->yearOfStudy == $lookup->lookup_name){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 @endif
                 
                 @if($file->fileId == "bursaryApproval")
-                    <span style='font-weight:bold'>Company Name:</span> {{$user->burCompanyName}}</span>
-                    <br /><span style='font-weight:bold'>Registration Number:</span> {{$user->burRegNo}}</span>
-                    <br /><span style='font-weight:bold'>Contact Person:</span> {{$user->burContactPerson}}</span>
-                    <br /><span style='font-weight:bold'>Contact Number:</span> {{$user->burContactNo}}</span>
-                    <br /><span style='font-weight:bold'>Email Address:</span> {{$user->burEmail}}</span>
-                    <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->bAddress1}}, {{$user->bAddress2}}, {{$user->bAddressCity}}, {{$user->bAddressPostal}}</span>
-                    <br /><span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user->bPayment}}<br />{{$user->bint}} {{$user->bIntName}}</span>
+                    <span style='font-weight:bold'>Company Name:</span> {{$user->burCompanyName}}
+                    <br /><span style='font-weight:bold'>Registration Number:</span> {{$user->burRegNo}}
+                    <br /><span style='font-weight:bold'>Contact Person:</span> {{$user->burContactPerson}}
+                    <br /><span style='font-weight:bold'>Contact Number:</span> {{$user->burContactNo}}
+                    <br /><span style='font-weight:bold'>Email Address:</span> {{$user->burEmail}}
+                    <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->bAddress1}}, {{$user->bAddress2}}, {{$user->bAddressCity}}, {{$user->bAddressPostal}}
+                    <br /><span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user->bPayment}}<br />{{$user->bint}} {{$user->bIntName}}
                 @endif
 
                 @if($file->fileId == "bankStatement")
-                    <span style='font-weight:bold'>Name:</span> {{$user->sponFirstName}} {{$user->sponLastName}}</span>
-                    <br /><span style='font-weight:bold'>Cellphone Number:</span> {{$user->sponCell}}</span>
-                    <br /><span style='font-weight:bold'>Email Address:</span> {{$user->sponEmail}}</span>                
-                    <br /><span style='font-weight:bold'>Nationality:</span> {{$user->pNationality}}</span>
+                    <span style='font-weight:bold'>Name:</span> {{$user->sponFirstName}} {{$user->sponLastName}}
+                    <br /><span style='font-weight:bold'>Cellphone Number:</span> {{$user->sponCell}}
+                    <br /><span style='font-weight:bold'>Email Address:</span> {{$user->sponEmail}}                
+                    <br /><span style='font-weight:bold'>Nationality:</span> {{$user->pNationality}}
                     
                     @if($user->pNationality == "South Africa")
-                        <br /><span style='font-weight:bold'>ID Number:</span> {{$user->sponId}}</span>
+                        <br /><span style='font-weight:bold'>ID Number:</span> {{$user->sponId}}
                     @else
-                        <br /><span style='font-weight:bold'>Passport Number:</span> {{$user->pPassportNo}}</span>
+                        <br /><span style='font-weight:bold'>Passport Number:</span> {{$user->pPassportNo}}
                     @endif
 
-                    <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->pAddress1}}, {{$user->pAddress2}}, {{$user->pAddressCity}}, {{$user->pAddressPostal}}</span>
+                    <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->pAddress1}}, {{$user->pAddress2}}, {{$user->pAddressCity}}, {{$user->pAddressPostal}}
                 @endif
             
                 @if(Auth::user()->role_approve_docs == 1)
@@ -155,8 +206,12 @@
     <div class="right_pane">
         <div class="pdfSection" style="margin-top: 0;">
             @if(!empty($file))
-            <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
+                @if(strpos($file->fileUrl, "pdf") > 0)
+                    <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
                 @else
+                    <img src="/storage/{{$file->fileUrl}}" alt="">
+                @endif
+            @else
                 No File to show    
             @endif
         </div>

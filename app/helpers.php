@@ -7,6 +7,7 @@ if (!function_exists('get_user_status')) {
             $typeName = "Booking Fee Proof of Payment";
             $field_data = "";
             $field_doc = "rob_10_fee";
+            
 
         } elseif($fileType == "copyID"){
             $typeName = "Copy of ID Document";

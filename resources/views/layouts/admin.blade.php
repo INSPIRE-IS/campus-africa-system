@@ -41,9 +41,6 @@
     <link rel="stylesheet" type="text/css" href="/css/dropzone.css">
     <script src="/js/dropzone.js"></script>
 
-
-
-
     
 </head>
 <body>
