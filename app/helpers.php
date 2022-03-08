@@ -31,7 +31,7 @@ if (!function_exists('get_user_status')) {
         }elseif($fileType == "bankStatement"){
             $typeName = "Bank Statements";
             $field_data = "bank_approved";
-            $field_doc = "rob_35_info";                
+            $field_doc = "rob_30_funds";                
 
         }elseif($fileType == "moveIn"){
             $typeName = "Lease";

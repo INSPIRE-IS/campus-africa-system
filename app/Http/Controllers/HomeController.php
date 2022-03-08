@@ -2158,7 +2158,7 @@ class HomeController extends Controller
                         $oldData->$key = "Unassigned";
                     }
                     ActionList::create([
-                        "userUid" => $request->bookingId,
+                        "userUid" => $bookingId,
                         "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
                         "actionUserUid" => Auth::user()->id,
                         "actionUserDisplayName" => Auth::user()->userFirstName,
@@ -2169,9 +2169,10 @@ class HomeController extends Controller
     
             Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew]);
 
-            
+            //Update the User robot
+            User::where('id', $bookingId)->update(['rob_40_bed' => 0]);
 
-        }else{
+        } else {
 
             $oldData = Booking::where('userId', $bookingId)->first();
             $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomTypeNew, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "bed_code|Bed Code"=> $request->bed_code];
@@ -2205,6 +2206,9 @@ class HomeController extends Controller
             }
     
             Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id]);
+
+            //Update the User robot
+            User::where('id', $bookingId)->update(['rob_40_bed' => 2]);
     
     
             $lookup = Lookups::where('group_id', '7')->first();
@@ -3903,6 +3907,9 @@ class HomeController extends Controller
         $booking_old = Booking::where('userId', $userId)->first();
 
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
+
+        //Update the User robot
+        User::where('id', $userId)->update(['rob_40_bed' => 0]);
 
         ActionList::create([
             "userUid" => $userId,

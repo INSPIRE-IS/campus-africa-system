@@ -32,7 +32,7 @@
 
         @foreach($properties as $property)
             <tr>
-                <td>{{$property->residence}}</td>
+                <td>{{$property->residence}} |{{$property->room_available}}|</td>
                 <td>{{$property->floor}}</td>
                 <td>{{$property->unit}}</td>
                 <td>{{$property->room}}</td>
@@ -41,7 +41,7 @@
                 <td>@if($property->inventory == "1") Yes @else No @endif</td>
                 <td>{{$property->room_type}}</td>
                 <td>{{$property->room_rate}}</td>
-                <td>@if($property->room_available == "1") &#128308; &nbsp; No @else &#128994; &nbsp; Yes @endif</td>
+                <td>@if($property->room_available == "1" && $property->inventory != "1") &#128308; &nbsp; No @else &#128994; &nbsp; Yes @endif</td>
                 <td>
                     <!-- <button type="button" id="tableBtn" class="detailsChange" onClick="deleteProperty('{{$property->id}}')" style="margin:5px;">Delete</button> -->
                     <a href="/property/edit/{{$property->id}}"><button type="button" style="margin:5px;" id="tableBtn" onClick="openModal('{{$property->id}}')" class="detailsChange">Edit</button></a>

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserFiles;
 use Auth;
 use App\Models\ActionList;
+use App\Models\Lookups;
 
 class DocumentsController extends Controller {
     
@@ -52,9 +53,9 @@ class DocumentsController extends Controller {
         //     $doc_approved = $user->bursary_approved;
         // }
 
-        
+        $lookups = Lookups::get();
 
-        return view('application.document.view_document', ['user' => $user, 'file' => $file, 'popupTitle' => $user_status['typeName'], 'data_approved' => $user_status['data_approved'], 'doc_approved' => $user_status['doc_approved'], 'field_data' => $user_status['field_data']]);
+        return view('application.document.view_document', ['user' => $user, 'file' => $file, 'lookups' => $lookups, 'popupTitle' => $user_status['typeName'], 'data_approved' => $user_status['data_approved'], 'doc_approved' => $user_status['doc_approved'], 'field_data' => $user_status['field_data']]);
     }
 
 

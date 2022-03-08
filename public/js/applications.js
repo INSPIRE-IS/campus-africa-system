@@ -77,6 +77,11 @@ jQuery(document).ready(function ($) {
 
                 var i = 0;
 
+                //Set up robot classes
+                let rob_rejected = '<div class="button rejected noBoarder"></div>';
+                let rob_pending = '<div class="button action noBoarder"></div>';
+                let rob_approved = '<div class="button approved noBoarder"></div>';
+
                 results.forEach(function (arrayItem) {
                     if (i % 2 == 0) {
                         color = "dark";
@@ -85,46 +90,98 @@ jQuery(document).ready(function ($) {
                     }
 
                     //Default our robots to Cancelled
-                    var rob_fee = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_id = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_card = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_reg = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_funds = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_info = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_bed = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_other = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_approve = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                    var rob_lease = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_fee = '<div class="button na noBoarder"></div>';
+                    var rob_id = '<div class="button na noBoarder"></div>';
+                    var rob_card = '<div class="button na noBoarder"></div>';
+                    var rob_reg = '<div class="button na noBoarder"></div>';
+                    var rob_funds = '<div class="button na noBoarder"></div>';
+                    var rob_info = '<div class="button na noBoarder"></div>';
+                    var rob_bed = '<div class="button na noBoarder"></div>';
+                    var rob_other = '<div class="button na noBoarder"></div>';
+                    var rob_approve = '<div class="button na noBoarder"></div>';
+                    var rob_lease = '<div class="button na noBoarder"></div>';
 
                     //For non cancelled rows work out the robots
                     if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
                         if (arrayItem["rob_10_fee"] == 0) {
-                            rob_fee = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                            rob_fee = rob_rejected;
                         } else if (arrayItem["rob_10_fee"] == 1) {
-                            rob_fee = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                            rob_fee = rob_pending;
                         } else if (arrayItem["rob_10_fee"] == 2) {
-                            rob_fee = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                            rob_fee = rob_approved;
                         }
 
                         if (arrayItem["rob_15_id"] == 0) {
-                            rob_id = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                            rob_id = rob_rejected;
                         } else if (arrayItem["rob_15_id"] == 1) {
-                            rob_id = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                            rob_id = rob_pending;
                         } else if (arrayItem["rob_15_id"] == 2) {
-                            rob_id = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
+                            rob_id = rob_approved;
                         }
 
-                        // if (arrayItem["proof_of_payment"] === "Uploaded") {
-                        //     pop = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                        // } else if (arrayItem["proof_of_payment"] === "Approved") {
-                        //     pop = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                        // } else if (arrayItem["proof_of_payment"] === "na") {
-                        //     pop = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                        // } else if (arrayItem["proof_of_payment"] === "Rejected" || arrayItem["proof_of_payment"] === "") {
-                        //     pop = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // } else {
-                        //     pop = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // }
+                        if (arrayItem["rob_20_card"] == 0) {
+                            rob_card = rob_rejected;
+                        } else if (arrayItem["rob_20_card"] == 1) {
+                            rob_card = rob_pending;
+                        } else if (arrayItem["rob_20_card"] == 2) {
+                            rob_card = rob_approved;
+                        }
+
+                        if (arrayItem["rob_25_reg"] == 0) {
+                            rob_reg = rob_rejected;
+                        } else if (arrayItem["rob_25_reg"] == 1) {
+                            rob_reg = rob_pending;
+                        } else if (arrayItem["rob_25_reg"] == 2) {
+                            rob_reg = rob_approved;
+                        }
+
+                        if (arrayItem["rob_30_funds"] == 0) {
+                            rob_funds = rob_rejected;
+                        } else if (arrayItem["rob_30_funds"] == 1) {
+                            rob_funds = rob_pending;
+                        } else if (arrayItem["rob_30_funds"] == 2) {
+                            rob_funds = rob_approved;
+                        }
+
+                        if (arrayItem["rob_35_info"] == 0) {
+                            rob_info = rob_rejected;
+                        } else if (arrayItem["rob_35_info"] == 1) {
+                            rob_info = rob_pending;
+                        } else if (arrayItem["rob_35_info"] == 2) {
+                            rob_info = rob_approved;
+                        }
+
+                        if (arrayItem["rob_40_bed"] == 0) {
+                            rob_bed = rob_rejected;
+                        } else if (arrayItem["rob_40_bed"] == 1) {
+                            rob_bed = rob_pending;
+                        } else if (arrayItem["rob_40_bed"] == 2) {
+                            rob_bed = rob_approved;
+                        }
+
+                        if (arrayItem["rob_45_other"] == 0) {
+                            rob_other = rob_rejected;
+                        } else if (arrayItem["rob_45_other"] == 1) {
+                            rob_other = rob_pending;
+                        } else if (arrayItem["rob_45_other"] == 2) {
+                            rob_other = rob_approved;
+                        }
+
+                        if (arrayItem["rob_50_approve"] == 0) {
+                            rob_approve = rob_rejected;
+                        } else if (arrayItem["rob_50_approve"] == 1) {
+                            rob_approve = rob_pending;
+                        } else if (arrayItem["rob_50_approve"] == 2) {
+                            rob_approve = rob_approved;
+                        }
+
+                        if (arrayItem["rob_55_lease"] == 0) {
+                            rob_lease = rob_rejected;
+                        } else if (arrayItem["rob_55_lease"] == 1) {
+                            rob_lease = rob_pending;
+                        } else if (arrayItem["rob_55_lease"] == 2) {
+                            rob_lease = rob_approved;
+                        }
 
                         // if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
                         //     if (arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action") {
@@ -169,30 +226,6 @@ jQuery(document).ready(function ($) {
                         //     }
                         // } else {
                         //     applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
-                        // }
-
-                        // if (arrayItem["studentCard"] === "Uploaded") {
-                        //     studentCard = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                        // } else if (arrayItem["studentCard"] === "Approved") {
-                        //     studentCard = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                        // } else if (arrayItem["studentCard"] === "na") {
-                        //     studentCard = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                        // } else if (arrayItem["studentCard"] === "Rejected" || arrayItem["studentCard"] === "") {
-                        //     studentCard = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // } else {
-                        //     studentCard = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // }
-
-                        // if (arrayItem["proofRegistration"] === "Uploaded") {
-                        //     proofRegistration = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                        // } else if (arrayItem["proofRegistration"] === "Approved") {
-                        //     proofRegistration = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                        // } else if (arrayItem["proofRegistration"] === "na") {
-                        //     proofRegistration = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                        // } else if (arrayItem["proofRegistration"] === "Rejected" || arrayItem["proofRegistration"] == "") {
-                        //     proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // } else {
-                        //     proofRegistration = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
                         // }
 
                         // if (arrayItem["leaseStatus"] === "Uploaded") {

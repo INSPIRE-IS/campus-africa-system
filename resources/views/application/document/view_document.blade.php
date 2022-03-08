@@ -19,13 +19,13 @@
         <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
     </div>
 
-    @if(Auth::user()->role_approve_docs == 1 && $data_approved == 1 && $doc_approved == 1)
+    @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
         <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
     @endif
 
     <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
 
-    @if(Auth::user()->role_approve_docs == 1 && $data_approved == 1 && $doc_approved == 1)
+    @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
         <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
     @endif
 
@@ -41,10 +41,54 @@
         <div class="flex">
             <p id="infoToCheck">
                 @if($file->fileId == "copyID")
-                    <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
-                    <br/><span style='font-weight:bold'>Nationality:</span>{{$user->userNationality}}</span>
-                    <br/><span style='font-weight:bold'>ID Number:</span>{{$user->userId}}</span>
-                    <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
+                    @if ($data_approved == 0)
+                        <form action="/update-student" method="post" id="newUser" autocomplete="off">
+                            @csrf
+                    
+                            <div class="form-field">
+                                <label>First Name * <span id="firstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                <input type="text" name="firstName" id="firstName" value="{{$user->userFirstName}}" class="required">
+                            </div>
+
+                            <div class="form-field">
+                                <label>Last Name * <span id="lastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                <input type="text" name="lastName" id="lastName" value="{{$user->userLastname}}" class="required">
+                            </div>
+
+                            <div class="form-field">
+                                <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
+                                <input type="date" name="dob" id="dob" value="{{$user->userDob}}" max="<?php echo date('Y-m-d'); ?>" class="required">
+                            </div>
+                    
+                            <div class="form-field">
+                                <label>Nationality * <span id="nationality_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                <select name="nationality" id='nationality' class="required">
+                                    <option value="" selected disabled>Please select one</option>
+                                    @foreach($lookups as $lookup)
+                                        @if($lookup->group_id == "5")
+                                            <option value="{{$lookup->lookup_name}}" <?php if($user->userNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                    
+                            <div class="form-field <?php if($user->userNationality !== "South Africa"){echo "hidden";} ?>" id="idField">
+                                <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                                <input type="text" name="idNumber" id="idNumber" value="{{$user->userId}}" <?php if($user->userNationality == "South Africa"){echo "class='required'";} ?>>
+                            </div>
+                    
+                            <div class="form-field <?php if($user->userNationality == "South Africa"){echo "hidden";} ?>" id="passportField">
+                                <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                <input type="text" name="passportNo" id="passportNo" value="{{$user->userPassport}}" <?php if($user->userNationality !== "South Africa"){echo 'class="required"';} ?>>
+                            </div>
+                        </form
+
+                    @else
+                        <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
+                        <br/><span style='font-weight:bold'>Nationality:</span>{{$user->userNationality}}</span>
+                        <br/><span style='font-weight:bold'>ID Number:</span>{{$user->userId}}</span>
+                        <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
+                    @endif
                 @endif
 
                 @if($file->fileId == "studentCard")
@@ -52,8 +96,8 @@
                 @endif
 
                 @if($file->fileId == "proofRegistration")
-                    <span style='font-weight:bold'>Institution:</span> ?</span>
-                    <br /><span style='font-weight:bold'>Faculty:</span> ?</span>
+                    <span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($lookup->id == $user->institutionStudy) {{$lookup->lookup_name}} @endif @endforeach</span>
+                    <br /><span style='font-weight:bold'>Faculty:</span> @foreach($lookups as $lookup) @if($lookup->id == $user->faculty) {{$lookup->lookup_name}} @endif @endforeach</span>
                 @endif
                 
                 @if($file->fileId == "bursaryApproval")
