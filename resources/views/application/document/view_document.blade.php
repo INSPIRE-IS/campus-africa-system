@@ -1,45 +1,83 @@
 <span class="close">&times;</span>
-<h2 id="modalHeader">{{$popupTitle}}</h2>
-<small>Uploaded by {{$file->uploaded_by}} at {{($file->created_at->format("H|m"))}} on the {{($file->created_at->format("d|m|Y"))}}</small>
-<br/>
 
-<input type="hidden" id="FileIdForApproval" value="{{$file->id}}">
-<input type="hidden" id="FileNameForApproval" value="{{$file->fileId}}">
+<style>
+    .panes {
+        display: flex;
+    }
 
-<span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
-<br/>
-<input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
+    .left_pane {
+        width: 30%;
+    }
 
-<br/>
+    .right_pane {
+        flex: 1;
+    }
 
-<div class="flex" style="margin-top:35px;" id="buttonSection">
-    <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
-        <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
+    .noedit {
+        background-color: white !important;
+        outline: none;
+    }
+
+    .edit_info input:read-only {
+        opacity: 1;
+    }
+</style>
+
+<div class="panes">
+    <div class="left_pane">
+        <h2 id="modalHeader">{{$popupTitle}}</h2>
+        <small>Uploaded by {{$file->uploaded_by}} at {{($file->created_at->format("H|m"))}} on the {{($file->created_at->format("d|m|Y"))}}</small>
         <br/>
-        <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
-    </div>
+        
+        <input type="hidden" id="FileIdForApproval" value="{{$file->id}}">
+        <input type="hidden" id="FileNameForApproval" value="{{$file->fileId}}">
+        
+        <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
+        <br/>
+        <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
+        
+        <br/>
 
-    @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
-        <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
-    @endif
+        <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
+            <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
+            <br/>
+            <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
+        </div>
+        
+        <div class="flex" style="margin: 35px 0;" id="buttonSection">
+            @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
+                <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
+            @endif
+        
+            <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
+        
+            @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
+                <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+            @endif
+        
+            @if(Auth::user()->role_delete_uploaded == 1)
+                <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
+            @endif
+        </div>
 
-    <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
+        <hr style="margin-bottom: 35px;">
 
-    @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
-        <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-    @endif
+        <h3>Info</h3>
 
-    @if(Auth::user()->role_delete_uploaded == 1)
-        <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
-    @endif
-</div>
+        <div>
+            @if($file->fileId == "studentCard")
+                <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
+            @endif
+        </div>
+        
+        @if (!empty($field_data))
+            <hr style="margin: 35px 0;">
 
-<div id="infoChecker">
-    <br/><hr/><br/>
+            <h3>Review</h3>
 
-    @if (!empty($field_data))
-        <div class="flex">
-            <p id="infoToCheck" style="flex: 1;">
+            <form class="edit_info">
+                @csrf
+
                 @if($file->fileId == "copyID")
                     <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
                     <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}</span>                    
@@ -53,11 +91,11 @@
                 @endif
 
                 @if($file->fileId == "studentCard")
-                    <span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}</span>
+                    <span style='font-weight:bold'>Student Number:</span> <input class="noedit required" name="studentNo" disabled type="text" value="{{$user->studentNo}}"></span>
                 @endif
 
                 @if($file->fileId == "proofRegistration")
-                    <span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($lookup->id == $user->institutionStudy) {{$lookup->lookup_name}} @endif @endforeach</span>
+                    <br/><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($lookup->id == $user->institutionStudy) {{$lookup->lookup_name}} @endif @endforeach</span>
                     <br /><span style='font-weight:bold'>Faculty:</span> @foreach($lookups as $lookup) @if($lookup->id == $user->faculty) {{$lookup->lookup_name}} @endif @endforeach</span>
                 @endif
                 
@@ -85,35 +123,44 @@
 
                     <br /><span style='font-weight:bold'>Physical Address:</span> {{$user->pAddress1}}, {{$user->pAddress2}}, {{$user->pAddressCity}}, {{$user->pAddressPostal}}</span>
                 @endif
-            </p>        
             
-            @if(Auth::user()->role_approve_docs == 1)
-                <div id="infoButtons">
-                    @if($data_approved == 0)
-                        <button type="button" class="approve button" style="height:40px;" onClick="approveData(1)">Approve</button>
-                        <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
-                    @endif
+                @if(Auth::user()->role_approve_docs == 1)
+                    <div style="margin-top: 35px;" class="btns_approve_data">
+                        @if($data_approved == 0)
+                            <button type="button" class="approve button" style="height:40px;" onClick="approveData('1')">Approve</button>
+                            <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
+                        @endif
 
-                    @if($doc_approved == 1)
-                        <button type="button" class="rejected button" style="height:40px;" onClick="approveData(0)">Reject</button>
+                        @if($doc_approved == 1)
+                            <button type="button" class="rejected button" style="height:40px;" onClick="approveData('0')">Reject</button>
+                        @endif
+                    </div>
+
+                    @if($data_approved == 0)
+                        <div style="margin-top: 35px;display: none;" class="btns_save_data">
+                            <input type="hidden" name="userUid" value="{{$user->id}}">
+                            <input type="hidden" name="type" value="{{$file->fileId}}">
+
+                            <button type="button" class="approve button" style="height:40px;" onClick="updateData()">Update</button>
+                            <button type="button" class="rejected button" style="height:40px;" onClick="cancelEditData()">Cancel</button>
+                        </div>
                     @endif
-                </div>
+                @endif
+            </form>
+    
+            <div id="edit_data"></div>
+        @endif
+    </div>
+
+    <div class="right_pane">
+        <div class="pdfSection" style="margin-top: 0;">
+            @if(!empty($file))
+            <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
+                @else
+                No File to show    
             @endif
         </div>
-
-        <br/><br/><hr/>
-
-        <div id="edit_data"></div>
-    @endif
-</div>
-
-
-<div class="pdfSection">
-    @if(!empty($file))
-    <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="600px" />
-        @else
-        No File to show    
-    @endif
+    </div>
 </div>
 
 <script>
@@ -127,7 +174,9 @@
     function approveData(type) {
         let message = "You are about to approve this data";
 
-        if (type === 0) {
+        console.log(type);
+
+        if (type === "0") {
             let message = "You are about to reject this data";
         }
         Swal.fire({
@@ -419,15 +468,66 @@
     }
 
     function editData() {
-        $("#edit_data").html("Loading form...");
+        $('.edit_info .noedit').removeAttr('disabled');
 
-        $.ajax({
-            type: "get",
-            url: "/documents/edit-data/{{$user->id}}/{{$file->fileId}}",
-            success: function (data) {
-                $('#infoButtons').hide();
-                $("#edit_data").html(data);
-            },
+        $('.edit_info .noedit').addClass('curedit');
+        $('.edit_info .noedit').removeClass('noedit');
+
+        $('.btns_approve_data').hide();
+        $('.btns_save_data').show();
+    }
+
+    function cancelEditData() {
+        $('.edit_info .curedit').attr('disabled', true);
+        $('.edit_info .curedit').addClass('noedit');
+        $('.edit_info .curedit').removeClass('curedit');        
+
+        $('.btns_approve_data').show();
+        $('.btns_save_data').hide();
+    }
+
+    function updateData() {
+        var req = 1;
+
+        $('.edit_info .required').each( function(){
+            if($(this).val() === "" || $(this).val() === null){
+                req = 0
+
+                console.log($(this)[0]["id"])
+
+                $(this).addClass("fieldError")
+                id = $(this)[0]["id"]
+                $("#"+id+"_error").removeClass("hidden")
+            }
         });
+
+        if (req === 1) {
+            $.ajax({
+                type: "post",
+                url: "/documents/save-data",
+                data: $('.edit_info').serialize(),
+
+                success: function (data) {
+
+                    if (data === "done") {
+                        cancelEditData();
+
+                    } else {
+                        alert("error");
+                        console.log(data);
+                    }
+
+                }
+            });            
+
+        } else {
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            );
+        }
+
+        return false;
     }
 </script>

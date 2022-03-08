@@ -39,6 +39,12 @@
                 <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
                 <input type="date" name="dob" id="dob" value="{{$user->userDob}}" max="<?php echo date('Y-m-d'); ?>" class="required">
             </div>
+
+        @elseif ($type == "studentCard")
+            <div class="form-field">
+                <label>Student Number * <span id="studNumber_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                <input type="text" name="studNumber" id="studNumber" value="{{$user->studentNo}}" class="required">
+            </div>
         @endif
 
         <input type="hidden" name="userUid" value="{{$user->id}}">
