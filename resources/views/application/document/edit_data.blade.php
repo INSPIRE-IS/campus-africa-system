@@ -11,12 +11,7 @@
             <div class="form-field">
                 <label>Last Name * <span id="lastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                 <input type="text" name="lastName" id="lastName" value="{{$user->userLastname}}" class="required">
-            </div>
-
-            <div class="form-field">
-                <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
-                <input type="date" name="dob" id="dob" value="{{$user->userDob}}" max="<?php echo date('Y-m-d'); ?>" class="required">
-            </div>
+            </div>            
 
             <div class="form-field">
                 <label>Nationality * <span id="nationality_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
@@ -39,6 +34,11 @@
                 <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                 <input type="text" name="passportNo" id="passportNo" value="{{$user->userPassport}}" <?php if($user->userNationality !== "South Africa"){echo 'class="required"';} ?>>
             </div>
+
+            <div class="form-field">
+                <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
+                <input type="date" name="dob" id="dob" value="{{$user->userDob}}" max="<?php echo date('Y-m-d'); ?>" class="required">
+            </div>
         @endif
 
         <input type="hidden" name="userUid" value="{{$user->id}}">
@@ -59,27 +59,69 @@
         });
 
         $('#editDocData').on('submit', function(e) {
-            $.ajax({
-                type: "post",
-                url: "/documents/save-data",
-                data: $(this).serialize(),
+            var req = 1;
 
-                success: function (data) {
+            $('#editDocData .required').each( function(){
+                if($(this).val() === "" || $(this).val() === null){
+                    req = 0
 
-                    if (data === "done") {
-                        refreshActions();
-                        refresh_this_modal();
+                    console.log($(this)[0]["id"])
 
-                    } else {
-                        alert("error");
-                        console.log(data);
-                    }
-
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
                 }
             });
 
+            if (req === 1) {
+                $.ajax({
+                    type: "post",
+                    url: "/documents/save-data",
+                    data: $(this).serialize(),
+
+                    success: function (data) {
+
+                        if (data === "done") {
+                            refreshActions();
+                            refresh_this_modal();
+
+                        } else {
+                            alert("error");
+                            console.log(data);
+                        }
+
+                    }
+                });
+            } else {
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
+
+                return false;
+            }
+
             e.preventDefault();
             return false;
+        });
+
+        $("#nationality").on('change', function(){
+            if($("#nationality").val() == "South Africa"){
+                $("#passportField").addClass('hidden')
+                $("#idField").removeClass('hidden')
+
+                $("#passportNo").removeClass("required")
+                $("#passportNo").removeClass("fieldError")
+                $("#idNumber").addClass("required")
+            }else{
+                $("#idField").addClass('hidden')
+                $("#passportField").removeClass('hidden')
+
+                $("#passportNo").addClass("required")
+                $("#idNumber").removeClass("required")
+                $("#idNumber").removeClass("fieldError")
+            }
         })
     });
 </script>

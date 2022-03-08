@@ -41,11 +41,14 @@
         <div class="flex">
             <p id="infoToCheck" style="flex: 1;">
                 @if($file->fileId == "copyID")
-                    
-
                     <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
-                    <br/><span style='font-weight:bold'>Nationality:</span>{{$user->userNationality}}</span>
-                    <br/><span style='font-weight:bold'>ID Number:</span>{{$user->userId}}</span>
+                    <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}</span>                    
+                    @if ($user->userNationality == "South Africa")
+                        <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}</span>
+                    @else
+                        <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}</span>
+                    @endif
+                    <br/><span style='font-weight:bold'>DOB:</span> {{$user->userDob}}</span>
                     <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
                 @endif
 
