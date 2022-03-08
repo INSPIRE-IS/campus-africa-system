@@ -8,12 +8,14 @@ use App\Models\UserFiles;
 use Auth;
 use App\Models\ActionList;
 use App\Models\Lookups;
+use App\Models\Booking;
 
 class DocumentsController extends Controller {
     
     public function view_document($id) {        
         $file = UserFiles::find($id);
         $user = User::where('id', $file->userUid)->first();
+        $booking = Booking::where('userId', $file->userUid)->first();
 
         $field = "None";
         $popupTitle = "";
@@ -55,7 +57,7 @@ class DocumentsController extends Controller {
 
         $lookups = Lookups::get();
 
-        return view('application.document.view_document', ['user' => $user, 'file' => $file, 'lookups' => $lookups, 'popupTitle' => $user_status['typeName'], 'data_approved' => $user_status['data_approved'], 'doc_approved' => $user_status['doc_approved'], 'field_data' => $user_status['field_data']]);
+        return view('application.document.view_document', ['user' => $user, 'file' => $file, 'lookups' => $lookups, 'popupTitle' => $user_status['typeName'], 'data_approved' => $user_status['data_approved'], 'doc_approved' => $user_status['doc_approved'], 'field_data' => $user_status['field_data'], 'booking' => $booking]);
     }
 
 

@@ -482,7 +482,10 @@ class HomeController extends Controller
             if($action == "Rejected"){
                 $text = "Rejected ".$user_status['typeName']." with reason: ".$reason ;
 
-                User::where('id', $userFile->userUid)->update([$user_status['field_data'] => "0"]);
+                if (!empty($user_status['field_data'])) {
+                    User::where('id', $userFile->userUid)->update([$user_status['field_data'] => "0"]);
+                }
+                
                 User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "0"]);
 
             } else {

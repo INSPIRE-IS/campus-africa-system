@@ -75,12 +75,11 @@
         
 
         <div>
-            @if($file->fileId == "studentCard")
+            @if($file->fileId != "copyID")
                 <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
             @endif
 
             @if($file->fileId == "proofRegistration")
-                <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
                 <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}
                 @if ($user->userNationality == "South Africa")
                     <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
@@ -91,6 +90,17 @@
                 <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
                 <br/><span style='font-weight:bold'>Cell:</span> {{$user->userCell}}
                 <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
+            @endif
+
+            @if($file->fileId == "proof_of_payment")
+                <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}
+                <br/><span style='font-weight:bold'>Booking Fee:</span> {{ $booking->room_rate }}
+                <br/><span style='font-weight:bold'>Booking Fee Waived:</span> TBD
+                <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}}
+            @endif
+
+            @if($file->fileId == "copyID")
+                <span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
             @endif
         </div>
         
@@ -103,15 +113,22 @@
                 @csrf
 
                 @if($file->fileId == "copyID")
-                    <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
-                    <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}                    
-                    @if ($user->userNationality == "South Africa")
-                        <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
-                    @else
-                        <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
-                    @endif
-                    <br/><span style='font-weight:bold'>DOB:</span> {{$user->userDob}}
-                    <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
+                    <span style='font-weight:bold'>First Name:</span> <input class="noedit required" name="userFirstName" disabled type="text" value="{{$user->userFirstName}}">
+                    <br /><span style='font-weight:bold'>Last Name:</span> <input class="noedit required" name="userLastname" disabled type="text" value="{{$user->userLastname}}">
+                    <br/><span style='font-weight:bold'>Nationality:</span>
+                    <select name="nationality" class="noedit required" disabled>
+                        <option value="" selected disabled>Please select one</option>
+                        @foreach($lookups as $lookup)
+                            @if($lookup->group_id == "5")
+                                <option value="{{$lookup->lookup_name}}" <?php if($user->userNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+
+                    <br /><span style='font-weight:bold'>I.D Number:</span> <input class="noedit required" name="userId" disabled type="text" value="{{$user->userId}}">
+                    <br /><span style='font-weight:bold'>Passport:</span> <input class="noedit required" name="userPassport" disabled type="text" value="{{$user->userPassport}}">                                       
+                    
+                    <br/><span style='font-weight:bold'>DOB:</span> <input class="noedit required" name="userDob" disabled type="text" value="{{$user->userDob}}">                    
                 @endif
 
                 @if($file->fileId == "studentCard")
@@ -231,8 +248,8 @@
 
         console.log(type);
 
-        if (type === "0") {
-            let message = "You are about to reject this data";
+        if (type == "0") {
+            message = "You are about to reject this data";
         }
         Swal.fire({
             title: 'Are you sure?',
@@ -259,7 +276,14 @@
 
                         if (data === "true") {
                             refreshActions();
-                            refresh_this_modal();
+
+                            if (type == "0") {
+                                $("#myModal > .modal-content").html("");
+                                $("#myModal").css("display", "none");   
+                            } else {                                
+                                refresh_this_modal();
+                            }
+                            
 
                         } else {
                             alert("error");
