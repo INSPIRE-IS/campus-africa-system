@@ -39,56 +39,14 @@
 
     @if (!empty($field_data))
         <div class="flex">
-            <p id="infoToCheck">
+            <p id="infoToCheck" style="flex: 1;">
                 @if($file->fileId == "copyID")
-                    @if ($data_approved == 0)
-                        <form action="/update-student" method="post" id="newUser" autocomplete="off">
-                            @csrf
                     
-                            <div class="form-field">
-                                <label>First Name * <span id="firstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                <input type="text" name="firstName" id="firstName" value="{{$user->userFirstName}}" class="required">
-                            </div>
 
-                            <div class="form-field">
-                                <label>Last Name * <span id="lastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                <input type="text" name="lastName" id="lastName" value="{{$user->userLastname}}" class="required">
-                            </div>
-
-                            <div class="form-field">
-                                <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
-                                <input type="date" name="dob" id="dob" value="{{$user->userDob}}" max="<?php echo date('Y-m-d'); ?>" class="required">
-                            </div>
-                    
-                            <div class="form-field">
-                                <label>Nationality * <span id="nationality_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                <select name="nationality" id='nationality' class="required">
-                                    <option value="" selected disabled>Please select one</option>
-                                    @foreach($lookups as $lookup)
-                                        @if($lookup->group_id == "5")
-                                            <option value="{{$lookup->lookup_name}}" <?php if($user->userNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                    
-                            <div class="form-field <?php if($user->userNationality !== "South Africa"){echo "hidden";} ?>" id="idField">
-                                <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-                                <input type="text" name="idNumber" id="idNumber" value="{{$user->userId}}" <?php if($user->userNationality == "South Africa"){echo "class='required'";} ?>>
-                            </div>
-                    
-                            <div class="form-field <?php if($user->userNationality == "South Africa"){echo "hidden";} ?>" id="passportField">
-                                <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                <input type="text" name="passportNo" id="passportNo" value="{{$user->userPassport}}" <?php if($user->userNationality !== "South Africa"){echo 'class="required"';} ?>>
-                            </div>
-                        </form
-
-                    @else
-                        <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
-                        <br/><span style='font-weight:bold'>Nationality:</span>{{$user->userNationality}}</span>
-                        <br/><span style='font-weight:bold'>ID Number:</span>{{$user->userId}}</span>
-                        <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
-                    @endif
+                    <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}</span>
+                    <br/><span style='font-weight:bold'>Nationality:</span>{{$user->userNationality}}</span>
+                    <br/><span style='font-weight:bold'>ID Number:</span>{{$user->userId}}</span>
+                    <br/><span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
                 @endif
 
                 @if($file->fileId == "studentCard")
@@ -129,16 +87,20 @@
             @if(Auth::user()->role_approve_docs == 1)
                 <div id="infoButtons">
                     @if($data_approved == 0)
-                        <button type="button" class="approve button" style="height:40px; margin-left:100px;" onClick="approveData(1)">Approve</button>
+                        <button type="button" class="approve button" style="height:40px;" onClick="approveData(1)">Approve</button>
+                        <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
                     @endif
 
                     @if($doc_approved == 1)
-                        <button type="button" class="rejected button" style="height:40px; margin-left:20px;" onClick="approveData(0)">Reject</button>
+                        <button type="button" class="rejected button" style="height:40px;" onClick="approveData(0)">Reject</button>
                     @endif
                 </div>
             @endif
         </div>
+
         <br/><br/><hr/>
+
+        <div id="edit_data"></div>
     @endif
 </div>
 
@@ -449,6 +411,19 @@
             success: function (data) {
                 $("#myModal > .modal-content").html(data);
                 $("#myModal").css("display", "block");
+            },
+        });
+    }
+
+    function editData() {
+        $("#edit_data").html("Loading form...");
+
+        $.ajax({
+            type: "get",
+            url: "/documents/edit-data/{{$user->id}}/{{$file->fileId}}",
+            success: function (data) {
+                $('#infoButtons').hide();
+                $("#edit_data").html(data);
             },
         });
     }
