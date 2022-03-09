@@ -9,6 +9,7 @@ use Auth;
 use App\Models\ActionList;
 use App\Models\Lookups;
 use App\Models\Booking;
+use App\Models\Residence;
 
 class DocumentsController extends Controller {
     
@@ -17,47 +18,29 @@ class DocumentsController extends Controller {
         $user = User::where('id', $file->userUid)->first();
         $booking = Booking::where('userId', $file->userUid)->first();
 
+        $property = Residence::where('residence', $booking->property)->first();
+
         $field = "None";
         $popupTitle = "";
         $doc_approved = 0;
 
         $user_status = get_user_status($file->fileId, $user);
 
-        // if($file->fileId == "copyID") {            
-        //     $doc_approved = $user->id_data_approved;
-
-        // }elseif($file->fileId == "studentCard"){
-        //     $doc_approved = $user->student_card_approved;
-
-        // }elseif($file->fileId == "bankStatement"){
-        //     $doc_approved = $user->bank_approved;
-            
-        // }elseif($file->fileId == "proofRegistration"){
-        //     $doc_approved = $user->registration_approved;
-
-        //     //TODO: What is this fileId?
-
-        // }elseif($file->fileId == "proof_of_payment"){
-        //     $popupTitle = "Proof of payment";
-        //     $doc_approved = 1;
-
-        // }elseif($file->fileId == "moveIn"){
-        //     // $typeName = "Lease";
-        //     // User::where('id', $userUid)->update(['overall_status' => 'Pending']);
-        //     $popupTitle = "Lease";
-        //     $doc_approved = 1;
-
-        // }elseif($file->fileId == "bursaryApproval"){
-        //     $field = "bursary_approved";
-        //     $popupTitle = "NSFAS / Bursary Approval";
-        //     //TODO: Split this up based on student type
-
-        //     $doc_approved = $user->bursary_approved;
-        // }
-
         $lookups = Lookups::get();
 
-        return view('application.document.view_document', ['user' => $user, 'file' => $file, 'lookups' => $lookups, 'popupTitle' => $user_status['typeName'], 'data_approved' => $user_status['data_approved'], 'doc_approved' => $user_status['doc_approved'], 'field_data' => $user_status['field_data'], 'booking' => $booking]);
+        $data = [
+            'user' => $user, 
+            'file' => $file, 
+            'lookups' => $lookups, 
+            'popupTitle' => $user_status['typeName'], 
+            'data_approved' => $user_status['data_approved'], 
+            'doc_approved' => $user_status['doc_approved'], 
+            'field_data' => $user_status['field_data'], 
+            'booking' => $booking, 
+            'property' => $property
+        ];
+
+        return view('application.document.view_document', $data);
     }
 
 
@@ -78,21 +61,21 @@ class DocumentsController extends Controller {
 
         if ($request->type == "copyID") {
             $newData = [
-                'userFirstName|First Name' => $request->firstName,
-                'userLastname|Last Name' => $request->lastName,
-                'userDob|Date of Birth' => $request->dob,
+                'userFirstName|First Name' => $request->userFirstName,
+                'userLastname|Last Name' => $request->userLastname,
+                'userDob|Date of Birth' => $request->userDob,
                 'userNationality|Nationality' => $request->nationality,
-                'userPassport|Passport Number' => $request->passportNo,
-                'userId|I.D Number' => $request->idNumber
+                'userPassport|Passport Number' => $request->userPassport,
+                'userId|I.D Number' => $request->userId
             ];
 
             $updateData = [
-                'userFirstName' => $request->firstName,
-                'userLastname' => $request->lastName,
-                'userDob' => $request->dob,
-                'userId' => $request->idNumber,
+                'userFirstName' => $request->userFirstName,
+                'userLastname' => $request->userLastname,
+                'userDob' => $request->userDob,
+                'userId' => $request->userId,
                 'userNationality' => $request->nationality,
-                'userPassport' => $request->passportNo
+                'userPassport' => $request->userPassport
             ];
 
         } elseif ($request->type == "studentCard") {
