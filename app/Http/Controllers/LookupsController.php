@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lookups;
+use App\Models\User;
+use App\Models\UserFiles;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -79,5 +81,18 @@ class LookupsController extends Controller {
 
     public function admin_updates_landing() {
         return view('admin.lookups.admin_updates_landing', ['headerTitle' => 'Admin Updates', "title" => "Admin Updates"]);
+    }
+
+    public function admin_updates_fix_data(){
+        $students = User::where('userRole', '0')->get();
+
+        foreach($students as $student){
+            $files = UserFiles::where('id', $student->id)->get();
+
+            foreach($files as $f) {
+                print_r($f);
+                die();
+            }
+        }
     }
 }

@@ -86,7 +86,8 @@ Route::get('/lookups/new', [LookupsController::class, 'add_lookups']);
 Route::post('/new-lookup', [LookupsController::class, 'new_lookups']);
 Route::get('/lookups/edit/{lookupId}', [LookupsController::class, 'edit_lookups']);
 Route::post('/save-lookup', [LookupsController::class, 'save_lookups']);
-Route::get('/admin-updates-landing', [LookupsController::class, 'admin_updates_landing']);
+Route::get('/admin-updates/landing', [LookupsController::class, 'admin_updates_landing']);
+Route::get('/admin-updates/fix-data', [LookupsController::class, 'admin_updates_fix_data']);
 
 
 
