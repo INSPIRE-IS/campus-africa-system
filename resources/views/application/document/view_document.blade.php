@@ -8,7 +8,7 @@
     }
 
     .left_pane {
-        width: 25%;
+        width: 30%;
         padding-right: 20px;
     }
 
@@ -55,7 +55,11 @@
 <div class="panes">
     <div class="left_pane">
         <h2 id="modalHeader">{{$popupTitle}}</h2>
-        <small>Uploaded by {{$file->uploaded_by}} at {{($file->created_at->format("H|m"))}} on the {{($file->created_at->format("d|m|Y"))}}</small>
+        @if (!empty($file->uploaded_by) && !empty($file->created_at))
+            <small>Uploaded by {{$file->uploaded_by}} at {{($file->created_at->format("H|m"))}} on the {{($file->created_at->format("d|m|Y"))}}</small>
+        @else
+            <small>Uploaded by {{$file->uploaded_by}}</small>
+        @endif
         <br/>
         
         <input type="hidden" id="FileIdForApproval" value="{{$file->id}}">
@@ -129,6 +133,19 @@
             @if($file->fileId == "studentCard")
                 <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
                 <br /><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($user->institutionStudy == $lookup->id) {{$lookup->lookup_name}} @endif @endforeach</span>
+            @endif
+
+            @if($file->fileId == "bursaryApproval" || $file->fileId == "bankStatement")
+                <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}
+                @if ($user->userNationality == "South Africa")
+                    <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
+                @else
+                    <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
+                @endif
+                <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
+                <br /><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($user->institutionStudy == $lookup->id) {{$lookup->lookup_name}} @endif @endforeach</span>
+                <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
+                <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
             @endif
         </div>
         
@@ -218,66 +235,96 @@
                         </select>
                     </div>
                 @endif
-                
-                @if($file->fileId == "bursaryApproval")
+
+                @if($file->fileId == "bursaryApproval" && $user->studentType == "NSFAS")
                     <div class="form-field">    
-                        <span style='font-weight:bold'>Company Name:</span> {{$user->burCompanyName}}
+                        <span style='font-weight:bold'>Student Type:</span>
+                        <select name="studentType" id='studentType' class="noedit required" disabled>
+                            <option value="" selected disabled>Select a Student Type</option>
+                            <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                            <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                            <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                        </select>
+                    </div> 
+                @endif
+                
+                @if($file->fileId == "bursaryApproval" && $user->studentType == "Bursary")
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Student Type:</span>
+                        <select name="studentType" id='studentType' class="noedit required" disabled>
+                            <option value="" selected disabled>Select a Student Type</option>
+                            <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                            <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                            <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                        </select>
+                    </div>    
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Company Name:</span> <input class="noedit required" name="burCompanyName" id="burCompanyName" disabled type="text" value="{{$user->burCompanyName}}">
                     </div>
 
                     <div class="form-field">
-                        <span style='font-weight:bold'>Registration Number:</span> {{$user->burRegNo}}
+                        <span style='font-weight:bold'>Registration Number:</span> <input class="noedit required" name="burRegNo" id="burRegNo" disabled type="text" value="{{$user->burRegNo}}">
                     </div>
 
                     <div class="form-field">
-                        <span style='font-weight:bold'>Contact Person:</span> {{$user->burContactPerson}}
+                        <span style='font-weight:bold'>Contact Person:</span> <input class="noedit required" name="burContactPerson" id="burContactPerson" disabled type="text" value="{{$user->burContactPerson}}">
                     </div>
 
                     <div class="form-field">
-                        <span style='font-weight:bold'>Contact Number:</span> {{$user->burContactNo}}
+                        <span style='font-weight:bold'>Contact Number:</span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
                     </div>
 
                     <div class="form-field">
-                        <span style='font-weight:bold'>Email Address:</span> {{$user->burEmail}}
+                        <span style='font-weight:bold'>Email Address:</span> <input class="noedit required" name="burEmail" id="burEmail" disabled type="text" value="{{$user->burEmail}}">
                     </div>
 
                     <div class="form-field">
-                        <span style='font-weight:bold'>Physical Address:</span> {{$user->bAddress1}}, {{$user->bAddress2}}, {{$user->bAddressCity}}, {{$user->bAddressPostal}}
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user->bPayment}}<br />{{$user->bint}} {{$user->bIntName}}
+                        <span style='font-weight:bold'>NSFAS Bursar:</span>
+                        <select name="nsfas_bursar" id='nsfas_bursar' class="noedit required" disabled>                            
+                            <option value="" <?php if($user->nsfas_bursar == ""){echo "selected";} ?>>No</option>
+                            <option value="1" <?php if($user->nsfas_bursar == "1"){echo "selected";} ?>>Yes</option>
+                        </select>
                     </div>
                 @endif
 
                 @if($file->fileId == "bankStatement")
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Student Type:</span>
+                        <select name="studentType" id='studentType' class="noedit required" disabled>
+                            <option value="" selected disabled>Select a Student Type</option>
+                            <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                            <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                            <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                        </select>
+                    </div> 
+
                     <div class="form-field">
-                        <span style='font-weight:bold'>Name:</span> {{$user->sponFirstName}} {{$user->sponLastName}}
+                        <span style='font-weight:bold'>Sponsor First Name:</span> <input class="noedit required" name="sponFirstName" id="sponFirstName" disabled type="text" value="{{$user->sponFirstName}}">                        
                     </div>
 
                     <div class="form-field">
-                        <span style='font-weight:bold'>Cellphone Number:</span> {{$user->sponCell}}
+                        <span style='font-weight:bold'>Sponsor Last Name:</span> <input class="noedit required" name="sponLastName" id="sponLastName" disabled type="text" value="{{$user->sponLastName}}">
                     </div>
 
                     <div class="form-field">
-                        <span style='font-weight:bold'>Email Address:</span> {{$user->sponEmail}}                
+                        <span style='font-weight:bold'>Sponsor Nationality:</span>
+                        <select name="pNationality" id="pNationality" class="noedit required" disabled>
+                            <option value="" selected disabled>Please select one</option>
+                            @foreach($lookups as $lookup)
+                                @if($lookup->group_id == "5")
+                                    <option value="{{$lookup->lookup_name}}" <?php if($user->pNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
+                                @endif
+                            @endforeach
+                        </select>
                     </div>
 
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Nationality:</span> {{$user->pNationality}}
+                    <div class="form-field <?php if($user->pNationality !== "South Africa"){echo "hidden";} ?>" id="pIdField">
+                        <span style='font-weight:bold'>Sponsor I.D Number:</span> <input class="noedit required" name="sponId" id="pIdNumber" disabled type="text" value="{{$user->sponId}}">
                     </div>
-                    
-                    @if($user->pNationality == "South Africa")
-                        <div class="form-field">    
-                            <span style='font-weight:bold'>ID Number:</span> {{$user->sponId}}
-                        </div>
-                    @else
-                        <div class="form-field">
-                            <span style='font-weight:bold'>Passport Number:</span> {{$user->pPassportNo}}
-                        </div>
-                    @endif
 
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Physical Address:</span> {{$user->pAddress1}}, {{$user->pAddress2}}, {{$user->pAddressCity}}, {{$user->pAddressPostal}}
+                    <div class="form-field <?php if($user->pNationality == "South Africa"){echo "hidden";} ?>" id="pPassportField">
+                        <span style='font-weight:bold'>Sponsor Passport:</span> <input class="noedit required" name="pPassportNo" id="pPassportNo" disabled type="text" value="{{$user->pPassportNo}}">                                       
                     </div>
                 @endif
             
@@ -288,7 +335,7 @@
                             <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
                         @endif
 
-                        @if($doc_approved == 1)
+                        @if($doc_approved == 1 || $data_approved == 0)
                             <button type="button" class="rejected button" style="height:40px;" onClick="approveData('0')">Reject</button>
                         @endif
                     </div>
@@ -311,14 +358,14 @@
 
     <div class="right_pane">
         <div class="pdfSection" style="margin-top: 0;">
-            @if(!empty($file))
+            @if(!empty($file) && !empty($file->fileName))
                 @if(strpos($file->fileUrl, "pdf") > 0)
                     <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
                 @else
                     <img src="/storage/{{$file->fileUrl}}" alt="">
                 @endif
             @else
-                No File to show    
+                <div style="text-align: center;">No File to show</div>
             @endif
         </div>
     </div>
@@ -377,6 +424,26 @@
                     $("#passportNo").addClass("required")
                     $("#idNumber").removeClass("required")
                     $("#idNumber").removeClass("fieldError")
+                }
+            });
+        @endif
+
+        @if($file->fileId == "bankStatement")
+            $("#pNationality").on('change', function(){
+                if($("#pNationality").val() == "South Africa"){
+                    $("#pPassportField").addClass('hidden')
+                    $("#pIdField").removeClass('hidden')
+                    
+                    $("#pPassportNo").removeClass("required")
+                    $("#pIdNumber").addClass("required")
+                    $("#pPassportNo").removeClass("fieldError")
+                }else{
+                    $("#pIdField").addClass('hidden')
+                    $("#pPassportField").removeClass('hidden')
+                    
+                    $("#pPassportNo").addClass("required")
+                    $("#pIdNumber").removeClass("required")
+                    $("#pIdNumber").removeClass("fieldError")
                 }
             });
         @endif
