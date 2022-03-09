@@ -394,8 +394,8 @@ jQuery(document).ready(function ($) {
 });
 
 function btn_view_document_ajax(fileId) {
-    $("#myModal > .modal-content").html("Loading");
+    $("#myModal").html("<div class='modal-content'>Loading</div>");
     $("#myModal").css("display", "block");
 
-    $("#myModal > .modal-content").load("/documents/view-document/" + fileId);
+    $("#myModal").load("/documents/view-document/" + fileId);
 }

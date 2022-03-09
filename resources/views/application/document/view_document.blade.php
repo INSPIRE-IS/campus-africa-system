@@ -1,380 +1,382 @@
-<span class="close">&times;</span>
+<div class="modal-content" style="width: @if(!empty($file) && !empty($file->fileName)) {{ "99%" }} @else {{ "50%" }}@endif">
+    <span class="close">&times;</span>
 
-<style>
-    .panes {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-    }
+    <style>
+        .panes {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
 
-    .left_pane {
-        width: 30%;
-        padding-right: 20px;
-    }
+        .left_pane {
+            width: 30%;
+            padding-right: 20px;
+        }
 
-    .right_pane {
-        flex: 70%;
-    }
+        .right_pane {
+            flex: 70%;
+        }
 
-    .noedit {
-        background-color: white !important;
-        outline: none;
-    }
+        .noedit {
+            background-color: white !important;
+            outline: none;
+        }
 
-    .edit_info input:read-only, .edit_info select:read-only {
-        opacity: 1;
-    }
+        .edit_info input:read-only, .edit_info select:read-only {
+            opacity: 1;
+        }
 
-    .edit_info input, .edit_info select {
-        padding: 5px;
-    }
+        .edit_info input, .edit_info select {
+            padding: 5px;
+        }
 
-    .edit_info select {
-        background-color: #f0f0f0;
-        border-radius: 7px;
-        border: none;
-        width: 65%;        
-    }
+        .edit_info select {
+            background-color: #f0f0f0;
+            border-radius: 7px;
+            border: none;
+            width: 65%;        
+        }
 
-    .form-field {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 5px;
-    }
+        .form-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
 
-    .form-field span {
-        width: 40%;
-    }
+        .form-field span {
+            width: 40%;
+        }
 
-    .form-field input, .form-field select {
-        width: 60%;
-    }
-</style>
+        .form-field input, .form-field select {
+            width: 60%;
+        }
+    </style>
 
-<div class="panes">
-    <div class="left_pane">
-        <h2 id="modalHeader">{{$popupTitle}}</h2>
-        @if (!empty($file->uploaded_by) && !empty($file->created_at))
-            <small>Uploaded by {{$file->uploaded_by}} at {{($file->created_at->format("H|m"))}} on the {{($file->created_at->format("d|m|Y"))}}</small>
-        @else
-            <small>Uploaded by {{$file->uploaded_by}}</small>
-        @endif
-        <br/>
-        
-        <input type="hidden" id="FileIdForApproval" value="{{$file->id}}">
-        <input type="hidden" id="FileNameForApproval" value="{{$file->fileId}}">
-        
-        <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
-        <br/>
-        <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
-        
-        <br/>
-
-        <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
-            <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
+    <div class="@if(!empty($file) && !empty($file->fileName)) {{ "panes" }} @endif">
+        <div class="@if(!empty($file) && !empty($file->fileName)) {{ "left_pane" }} @endif">
+            <h2 id="modalHeader">{{$popupTitle}}</h2>
+            @if (!empty($file->uploaded_by) && !empty($file->created_at))
+                <small>Uploaded by {{$file->uploaded_by}} at {{($file->created_at->format("H|m"))}} on the {{($file->created_at->format("d|m|Y"))}}</small>
+            @else
+                <small>Uploaded by {{$file->uploaded_by}}</small>
+            @endif
             <br/>
-            <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
-        </div>
-        
-        <div class="flex" style="margin: 35px 0;" id="buttonSection">
+            
+            <input type="hidden" id="FileIdForApproval" value="{{$file->id}}">
+            <input type="hidden" id="FileNameForApproval" value="{{$file->fileId}}">
+            
             @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
-                <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
+                <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
+                <br/>
+                <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
+                
+                <br/>
+
+                <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
+                    <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
+                    <br/>
+                    <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
+                </div>
             @endif
-        
-            <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-        
-            @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
-                <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-            @endif
-        
-            @if(Auth::user()->role_delete_uploaded == 1)
-                <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
-            @endif
-        </div>
-
-        <hr style="margin-bottom: 35px;">
-
-        <h3>Info</h3>
-
-        
-
-        <div>
-            @if($file->fileId != "copyID" && $file->fileId != "proof_of_payment")
-                <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
-            @endif
-
-            @if($file->fileId == "proofRegistration")
-                <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}
-                @if ($user->userNationality == "South Africa")
-                    <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
-                @else
-                    <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
+            
+            <div class="flex" style="margin: 35px 0;" id="buttonSection">
+                @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
+                    <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                 @endif
-                <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}
-                <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
-                <br/><span style='font-weight:bold'>Cell:</span> {{$user->userCell}}
-                <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
-            @endif
-
-            @if($file->fileId == "proof_of_payment")
-                <br/><span style='font-weight:bold'>Booking Fee:</span> {{ $booking->room_rate }}
-                <br/><span style='font-weight:bold'>Booking Fee Waived:</span> TBD    
-                <br/><span style='font-weight:bold'>Owner:</span> {{ $property->owner }}    
-                <br /><span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
-                <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
-                <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}}
-            @endif
-
-            @if($file->fileId == "copyID")
-                <span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
-            @endif
-
-            @if($file->fileId == "studentCard")
-                <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
-                <br /><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($user->institutionStudy == $lookup->id) {{$lookup->lookup_name}} @endif @endforeach</span>
-            @endif
-
-            @if($file->fileId == "bursaryApproval" || $file->fileId == "bankStatement")
-                <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}
-                @if ($user->userNationality == "South Africa")
-                    <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
-                @else
-                    <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
+            
+                <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
+            
+                @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
+                    <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
                 @endif
-                <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
-                <br /><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($user->institutionStudy == $lookup->id) {{$lookup->lookup_name}} @endif @endforeach</span>
-                <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
-                <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
-            @endif
-        </div>
-        
-        @if (!empty($field_data))
-            <hr style="margin: 35px 0;">
-
-            <h3>Review</h3>
-
-            <form class="edit_info">
-                @csrf
-
-                @if($file->fileId == "copyID")
-                    <div class="form-field">
-                        <span style='font-weight:bold'>First Name:</span>
-                        <input class="noedit required" name="userFirstName" id="userFirstName" disabled type="text" value="{{$user->userFirstName}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Last Name:</span> <input class="noedit required" name="userLastname" id="userLastname" disabled type="text" value="{{$user->userLastname}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Nationality:</span>
-                        <select name="nationality" id="nationality" class="noedit required" disabled>
-                            <option value="" selected disabled>Please select one</option>
-                            @foreach($lookups as $lookup)
-                                @if($lookup->group_id == "5")
-                                    <option value="{{$lookup->lookup_name}}" <?php if($user->userNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="form-field <?php if($user->userNationality !== "South Africa"){echo "hidden";} ?>" id="idField">
-                        <span style='font-weight:bold'>I.D Number:</span> <input class="noedit required" name="userId" id="idNumber" disabled type="text" value="{{$user->userId}}">
-                    </div>
-
-                    <div class="form-field <?php if($user->userNationality == "South Africa"){echo "hidden";} ?>" id="passportField">
-                        <span style='font-weight:bold'>Passport:</span> <input class="noedit required" name="userPassport" id="passportNo" disabled type="text" value="{{$user->userPassport}}">                                       
-                    </div>
-                    
-                    <div class="form-field">
-                        <span style='font-weight:bold'>DOB:</span> <input class="noedit required" name="userDob" id="userDob" disabled type="text" value="{{$user->userDob}}">                    
-                    </div>
+            
+                @if(Auth::user()->role_delete_uploaded == 1)
+                    <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
                 @endif
+            </div>
 
-                @if($file->fileId == "studentCard")
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Student Number:</span> <input class="noedit required" name="studentNo" id="studentNo" disabled type="text" value="{{$user->studentNo}}">
-                    </div>
+            <hr style="margin-bottom: 35px;">
+
+            <h3>Info</h3>
+
+            
+
+            <div>
+                @if($file->fileId != "copyID" && $file->fileId != "proof_of_payment")
+                    <span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
                 @endif
 
                 @if($file->fileId == "proofRegistration")
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Institution:</span>
-                        <select name="institStudy" id="institStudy" class="noedit required" disabled>
-                            <option value="Choose one" selected disabled>Choose one</option>
-                            @foreach($lookups as $lookup)
-                                @if($lookup->group_id == "1")
-                                    <option value="{{$lookup->id}}" <?php if($user->institutionStudy == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Faculty:</span>
-                        <select name="faculty" id="faculty" class="noedit required" disabled>
-                            <option value="" disabled selected>Select One</option>
-                            @foreach($lookups as $lookup)
-                                @if($lookup->group_id == "3")
-                                    <option value="{{$lookup->id}}" <?php if($user->faculty == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Year of Study:</span>
-                        <select name="yearOfStudy" id="yearOfStudy" class="noedit required" disabled>
-                            <option value="" selected disabled>Please select one</option>
-                            @foreach($lookups as $lookup)
-                                @if($lookup->group_id == "6")
-                                    <option value="{{$lookup->lookup_name}}" <?php if($user->yearOfStudy == $lookup->lookup_name){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
+                    <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}
+                    @if ($user->userNationality == "South Africa")
+                        <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
+                    @else
+                        <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
+                    @endif
+                    <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}
+                    <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
+                    <br/><span style='font-weight:bold'>Cell:</span> {{$user->userCell}}
+                    <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
                 @endif
 
-                @if($file->fileId == "bursaryApproval" && $user->studentType == "NSFAS")
-                    <div class="form-field">    
-                        <span style='font-weight:bold'>Student Type:</span>
-                        <select name="studentType" id='studentType' class="noedit required" disabled>
-                            <option value="" selected disabled>Select a Student Type</option>
-                            <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
-                            <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
-                            <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
-                        </select>
-                    </div> 
-                @endif
-                
-                @if($file->fileId == "bursaryApproval" && $user->studentType == "Bursary")
-                    <div class="form-field">    
-                        <span style='font-weight:bold'>Student Type:</span>
-                        <select name="studentType" id='studentType' class="noedit required" disabled>
-                            <option value="" selected disabled>Select a Student Type</option>
-                            <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
-                            <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
-                            <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
-                        </select>
-                    </div>    
-                    
-                    <div class="form-field">    
-                        <span style='font-weight:bold'>Company Name:</span> <input class="noedit required" name="burCompanyName" id="burCompanyName" disabled type="text" value="{{$user->burCompanyName}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Registration Number:</span> <input class="noedit required" name="burRegNo" id="burRegNo" disabled type="text" value="{{$user->burRegNo}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Contact Person:</span> <input class="noedit required" name="burContactPerson" id="burContactPerson" disabled type="text" value="{{$user->burContactPerson}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Contact Number:</span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Email Address:</span> <input class="noedit required" name="burEmail" id="burEmail" disabled type="text" value="{{$user->burEmail}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>NSFAS Bursar:</span>
-                        <select name="nsfas_bursar" id='nsfas_bursar' class="noedit required" disabled>                            
-                            <option value="" <?php if($user->nsfas_bursar == ""){echo "selected";} ?>>No</option>
-                            <option value="1" <?php if($user->nsfas_bursar == "1"){echo "selected";} ?>>Yes</option>
-                        </select>
-                    </div>
+                @if($file->fileId == "proof_of_payment")
+                    <br/><span style='font-weight:bold'>Booking Fee:</span> {{ $booking->room_rate }}
+                    <br/><span style='font-weight:bold'>Booking Fee Waived:</span> TBD    
+                    <br/><span style='font-weight:bold'>Owner:</span> {{ $property->owner }}    
+                    <br /><span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
+                    <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
+                    <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}}
                 @endif
 
-                @if($file->fileId == "bankStatement")
-                    <div class="form-field">    
-                        <span style='font-weight:bold'>Student Type:</span>
-                        <select name="studentType" id='studentType' class="noedit required" disabled>
-                            <option value="" selected disabled>Select a Student Type</option>
-                            <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
-                            <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
-                            <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
-                        </select>
-                    </div> 
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Sponsor First Name:</span> <input class="noedit required" name="sponFirstName" id="sponFirstName" disabled type="text" value="{{$user->sponFirstName}}">                        
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Sponsor Last Name:</span> <input class="noedit required" name="sponLastName" id="sponLastName" disabled type="text" value="{{$user->sponLastName}}">
-                    </div>
-
-                    <div class="form-field">
-                        <span style='font-weight:bold'>Sponsor Nationality:</span>
-                        <select name="pNationality" id="pNationality" class="noedit required" disabled>
-                            <option value="" selected disabled>Please select one</option>
-                            @foreach($lookups as $lookup)
-                                @if($lookup->group_id == "5")
-                                    <option value="{{$lookup->lookup_name}}" <?php if($user->pNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="form-field <?php if($user->pNationality !== "South Africa"){echo "hidden";} ?>" id="pIdField">
-                        <span style='font-weight:bold'>Sponsor I.D Number:</span> <input class="noedit required" name="sponId" id="pIdNumber" disabled type="text" value="{{$user->sponId}}">
-                    </div>
-
-                    <div class="form-field <?php if($user->pNationality == "South Africa"){echo "hidden";} ?>" id="pPassportField">
-                        <span style='font-weight:bold'>Sponsor Passport:</span> <input class="noedit required" name="pPassportNo" id="pPassportNo" disabled type="text" value="{{$user->pPassportNo}}">                                       
-                    </div>
+                @if($file->fileId == "copyID")
+                    <span style='font-weight:bold'>Gender:</span> @if ($user->userTitle == "Mr") Male @else Female @endif</span>
                 @endif
+
+                @if($file->fileId == "studentCard")
+                    <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
+                    <br /><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($user->institutionStudy == $lookup->id) {{$lookup->lookup_name}} @endif @endforeach</span>
+                @endif
+
+                @if($file->fileId == "bursaryApproval" || $file->fileId == "bankStatement")
+                    <br/><span style='font-weight:bold'>Nationality:</span> {{$user->userNationality}}
+                    @if ($user->userNationality == "South Africa")
+                        <br/><span style='font-weight:bold'>I.D Number:</span> {{$user->userId}}
+                    @else
+                        <br/><span style='font-weight:bold'>Passport:</span> {{$user->userPassport}}
+                    @endif
+                    <br /><span style='font-weight:bold'>Academic Year:</span> @foreach($lookups as $lookup) @if($lookup->group_id == "4") {{$lookup->lookup_name}} @endif @endforeach</span>
+                    <br /><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($user->institutionStudy == $lookup->id) {{$lookup->lookup_name}} @endif @endforeach</span>
+                    <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
+                    <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
+                @endif
+            </div>
             
-                @if(Auth::user()->role_approve_docs == 1)
-                    <div style="margin-top: 35px;" class="btns_approve_data">
-                        @if($data_approved == 0)
-                            <button type="button" class="approve button" style="height:40px;" onClick="approveData('1')">Approve</button>
-                            <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
-                        @endif
+            @if (!empty($field_data))
+                <hr style="margin: 35px 0;">
 
-                        @if($doc_approved == 1 || $data_approved == 0)
-                            <button type="button" class="rejected button" style="height:40px;" onClick="approveData('0')">Reject</button>
-                        @endif
-                    </div>
+                <h3>Review</h3>
 
-                    @if($data_approved == 0)
-                        <div style="margin-top: 35px;display: none;" class="btns_save_data">
-                            <input type="hidden" name="userUid" value="{{$user->id}}">
-                            <input type="hidden" name="type" value="{{$file->fileId}}">
+                <form class="edit_info">
+                    @csrf
 
-                            <button type="button" class="approve button" style="height:40px;" onClick="updateData()">Update</button>
-                            <button type="button" class="rejected button" style="height:40px;" onClick="cancelEditData()">Cancel</button>
+                    @if($file->fileId == "copyID")
+                        <div class="form-field">
+                            <span style='font-weight:bold'>First Name:</span>
+                            <input class="noedit required" name="userFirstName" id="userFirstName" disabled type="text" value="{{$user->userFirstName}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Last Name:</span> <input class="noedit required" name="userLastname" id="userLastname" disabled type="text" value="{{$user->userLastname}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Nationality:</span>
+                            <select name="nationality" id="nationality" class="noedit required" disabled>
+                                <option value="" selected disabled>Please select one</option>
+                                @foreach($lookups as $lookup)
+                                    @if($lookup->group_id == "5")
+                                        <option value="{{$lookup->lookup_name}}" <?php if($user->userNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-field <?php if($user->userNationality !== "South Africa"){echo "hidden";} ?>" id="idField">
+                            <span style='font-weight:bold'>I.D Number:</span> <input class="noedit required" name="userId" id="idNumber" disabled type="text" value="{{$user->userId}}">
+                        </div>
+
+                        <div class="form-field <?php if($user->userNationality == "South Africa"){echo "hidden";} ?>" id="passportField">
+                            <span style='font-weight:bold'>Passport:</span> <input class="noedit required" name="userPassport" id="passportNo" disabled type="text" value="{{$user->userPassport}}">                                       
+                        </div>
+                        
+                        <div class="form-field">
+                            <span style='font-weight:bold'>DOB:</span> <input class="noedit required" name="userDob" id="userDob" disabled type="text" value="{{$user->userDob}}">                    
                         </div>
                     @endif
-                @endif
-            </form>
-    
-            <div id="edit_data"></div>
-        @endif
-    </div>
 
-    <div class="right_pane">
-        <div class="pdfSection" style="margin-top: 0;">
-            @if(!empty($file) && !empty($file->fileName))
-                @if(strpos($file->fileUrl, "pdf") > 0)
-                    <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
-                @else
-                    <img src="/storage/{{$file->fileUrl}}" alt="">
-                @endif
-            @else
-                <div style="text-align: center;">No File to show</div>
+                    @if($file->fileId == "studentCard")
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Student Number:</span> <input class="noedit required" name="studentNo" id="studentNo" disabled type="text" value="{{$user->studentNo}}">
+                        </div>
+                    @endif
+
+                    @if($file->fileId == "proofRegistration")
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Institution:</span>
+                            <select name="institStudy" id="institStudy" class="noedit required" disabled>
+                                <option value="Choose one" selected disabled>Choose one</option>
+                                @foreach($lookups as $lookup)
+                                    @if($lookup->group_id == "1")
+                                        <option value="{{$lookup->id}}" <?php if($user->institutionStudy == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Faculty:</span>
+                            <select name="faculty" id="faculty" class="noedit required" disabled>
+                                <option value="" disabled selected>Select One</option>
+                                @foreach($lookups as $lookup)
+                                    @if($lookup->group_id == "3")
+                                        <option value="{{$lookup->id}}" <?php if($user->faculty == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Year of Study:</span>
+                            <select name="yearOfStudy" id="yearOfStudy" class="noedit required" disabled>
+                                <option value="" selected disabled>Please select one</option>
+                                @foreach($lookups as $lookup)
+                                    @if($lookup->group_id == "6")
+                                        <option value="{{$lookup->lookup_name}}" <?php if($user->yearOfStudy == $lookup->lookup_name){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
+                    @if($file->fileId == "bursaryApproval" && $user->studentType == "NSFAS")
+                        <div class="form-field">    
+                            <span style='font-weight:bold'>Student Type:</span>
+                            <select name="studentType" id='studentType' class="noedit required" disabled>
+                                <option value="" selected disabled>Select a Student Type</option>
+                                <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                                <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                                <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                            </select>
+                        </div> 
+                    @endif
+                    
+                    @if($file->fileId == "bursaryApproval" && $user->studentType == "Bursary")
+                        <div class="form-field">    
+                            <span style='font-weight:bold'>Student Type:</span>
+                            <select name="studentType" id='studentType' class="noedit required" disabled>
+                                <option value="" selected disabled>Select a Student Type</option>
+                                <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                                <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                                <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                            </select>
+                        </div>    
+                        
+                        <div class="form-field">    
+                            <span style='font-weight:bold'>Company Name:</span> <input class="noedit required" name="burCompanyName" id="burCompanyName" disabled type="text" value="{{$user->burCompanyName}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Registration Number:</span> <input class="noedit required" name="burRegNo" id="burRegNo" disabled type="text" value="{{$user->burRegNo}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Contact Person:</span> <input class="noedit required" name="burContactPerson" id="burContactPerson" disabled type="text" value="{{$user->burContactPerson}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Contact Number:</span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Email Address:</span> <input class="noedit required" name="burEmail" id="burEmail" disabled type="text" value="{{$user->burEmail}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>NSFAS Bursar:</span>
+                            <select name="nsfas_bursar" id='nsfas_bursar' class="noedit required" disabled>                            
+                                <option value="" <?php if($user->nsfas_bursar == ""){echo "selected";} ?>>No</option>
+                                <option value="1" <?php if($user->nsfas_bursar == "1"){echo "selected";} ?>>Yes</option>
+                            </select>
+                        </div>
+                    @endif
+
+                    @if($file->fileId == "bankStatement")
+                        <div class="form-field">    
+                            <span style='font-weight:bold'>Student Type:</span>
+                            <select name="studentType" id='studentType' class="noedit required" disabled>
+                                <option value="" selected disabled>Select a Student Type</option>
+                                <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                                <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                                <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                            </select>
+                        </div> 
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Sponsor First Name:</span> <input class="noedit required" name="sponFirstName" id="sponFirstName" disabled type="text" value="{{$user->sponFirstName}}">                        
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Sponsor Last Name:</span> <input class="noedit required" name="sponLastName" id="sponLastName" disabled type="text" value="{{$user->sponLastName}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Sponsor Nationality:</span>
+                            <select name="pNationality" id="pNationality" class="noedit required" disabled>
+                                <option value="" selected disabled>Please select one</option>
+                                @foreach($lookups as $lookup)
+                                    @if($lookup->group_id == "5")
+                                        <option value="{{$lookup->lookup_name}}" <?php if($user->pNationality == $lookup->lookup_name){echo "selected";}?>>{{$lookup->lookup_name}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-field <?php if($user->pNationality !== "South Africa"){echo "hidden";} ?>" id="pIdField">
+                            <span style='font-weight:bold'>Sponsor I.D Number:</span> <input class="noedit required" name="sponId" id="pIdNumber" disabled type="text" value="{{$user->sponId}}">
+                        </div>
+
+                        <div class="form-field <?php if($user->pNationality == "South Africa"){echo "hidden";} ?>" id="pPassportField">
+                            <span style='font-weight:bold'>Sponsor Passport:</span> <input class="noedit required" name="pPassportNo" id="pPassportNo" disabled type="text" value="{{$user->pPassportNo}}">                                       
+                        </div>
+                    @endif
+                
+                    @if(Auth::user()->role_approve_docs == 1)
+                        <div style="margin-top: 35px;" class="btns_approve_data">
+                            @if($data_approved == 0)
+                                <button type="button" class="approve button" style="height:40px;" onClick="approveData('1')">Approve</button>
+                                <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
+                            @endif
+
+                            @if($doc_approved == 1 || $data_approved == 0)
+                                <button type="button" class="rejected button" style="height:40px;" onClick="approveData('0')">Reject</button>
+                            @endif
+                        </div>
+
+                        @if($data_approved == 0)
+                            <div style="margin-top: 35px;display: none;" class="btns_save_data">
+                                <input type="hidden" name="userUid" value="{{$user->id}}">
+                                <input type="hidden" name="type" value="{{$file->fileId}}">
+
+                                <button type="button" class="approve button" style="height:40px;" onClick="updateData()">Update</button>
+                                <button type="button" class="rejected button" style="height:40px;" onClick="cancelEditData()">Cancel</button>
+                            </div>
+                        @endif
+                    @endif
+                </form>
+        
+                <div id="edit_data"></div>
             @endif
         </div>
+
+        @if(!empty($file) && !empty($file->fileName))
+            <div class="right_pane">
+                <div class="pdfSection" style="margin-top: 0;">
+                    @if(strpos($file->fileUrl, "pdf") > 0)
+                        <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
+                    @else
+                        <img src="/storage/{{$file->fileUrl}}" alt="">
+                    @endif
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 
 <script>
     jQuery(document).ready( function() {
         $('.close').on("click", function(e) {
-            $("#myModal > .modal-content").html("");
+            $("#myModal").html("");
             $("#myModal").css("display", "none");
         });
 
@@ -484,7 +486,7 @@
                             refreshActions();
 
                             if (type == "0") {
-                                $("#myModal > .modal-content").html("");
+                                $("#myModal").html("");
                                 $("#myModal").css("display", "none");   
                             } else {                                
                                 refresh_this_modal();
@@ -684,7 +686,7 @@
                 
                     refreshActions();
 
-                    $("#myModal > .modal-content").html("");
+                    $("#myModal").html("");
                     $("#myModal").css("display", "none");
                 }
                 
@@ -729,7 +731,7 @@
                         
                         refreshActions();
 
-                        $("#myModal > .modal-content").html("");
+                        $("#myModal").html("");
                         $("#myModal").css("display", "none");
 
                     },
@@ -740,13 +742,13 @@
     } 
 
     function refresh_this_modal() {
-        $("#myModal > .modal-content").html("Loading...");
+        $("#myModal").html("<div class='modal-content'>Loading</div>");
 
         $.ajax({
             type: "get",
             url: "/documents/view-document/{{$file->id}}",
             success: function (data) {
-                $("#myModal > .modal-content").html(data);
+                $("#myModal").html(data);
                 $("#myModal").css("display", "block");
             },
         });

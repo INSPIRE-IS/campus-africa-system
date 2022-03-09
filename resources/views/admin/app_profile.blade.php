@@ -400,9 +400,7 @@
     </div>
 </div>
 
-<div id="myModal" class="modal" style="padding-top: 10px;">
-    <div class="modal-content" style="width: 99%"></div>
-</div>
+<div id="myModal" class="modal" style="padding-top: 10px;"></div>
 
 <div id="myModalEditApp" class="modal">
 

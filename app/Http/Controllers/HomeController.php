@@ -1005,76 +1005,9 @@ class HomeController extends Controller
         return view('admin.studentUpload', ["headerTitle" => "Student File Upload", "user" => $user, "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding, "title" => "Student Upload"]);
     }    
 
-    public function lookups(Request $request){
+    
 
-        $lookups = Lookups::with('users')->get();
-
-        return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
-    }
-
-    public function add_lookups(Request $request){
-
-        return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
-    }
-
-    public function new_lookups(Request $request){
-
-        if($request->group_id == "7"){
-            $data['group_id'] = $request->group_id;
-            $data['lookup_name'] = $request->booking_waiver;
-            $data['waiver_date_from'] = $request->date_from;
-            $data['waiver_date_to'] = $request->date_to;
-            $data['actionUserUid'] = Auth::user()->id;
-        }else{
-            $data['group_id'] = $request->group_id;
-            $data['lookup_name'] = $request->value;
-            $data['actionUserUid'] = Auth::user()->id;
-        }
-
-        Lookups::create($data);
-
-        return redirect()->route('lookups');
-    }
-
-    public function edit_lookups(Request $request, $lookupId){
-
-        $lookup = Lookups::where('id', $lookupId)->first();
-
-        return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
-    }
-
-    public function save_lookups(Request $request){
-
-        if($request->group_id == "4"){
-            $data = [
-                "group_id" => $request->group_id,
-                "lookup_name" => $request->value,
-                "lease_from_date" => $request->lease_from_date,
-                "lease_from_time" => $request->lease_from_time,
-                "lease_to_date" => $request->lease_to_date,
-                "lease_to_time" => $request->lease_to_time,
-                "actionUserUid" => Auth::user()->id,
-            ];
-        }else if($request->group_id == "7"){
-            $data = [
-                "group_id" => $request->group_id,
-                "lookup_name" => $request->booking_waiver,
-                "waiver_date_from" => $request->date_from,
-                "waiver_date_to" => $request->date_to,
-                "actionUserUid" => Auth::user()->id,
-            ];
-        }else{
-            $data = [
-                "group_id" => $request->group_id,
-                "lookup_name" => $request->value,
-                "actionUserUid" => Auth::user()->id,
-            ];
-        }
-
-        Lookups::where('id', $request->lookupId)->update($data);
-
-        return redirect()->route('lookups');
-    }
+    
 
     public function new_student(Request $request){
 
@@ -3039,6 +2972,9 @@ class HomeController extends Controller
                                             array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
                                             array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                         }
+
+                                        //Update robots
+                                        User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                     }
                                 }
                             }

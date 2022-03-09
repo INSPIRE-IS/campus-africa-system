@@ -18,6 +18,7 @@
         <button type="button" id="updateBookingFee" class="detailsChange" >Update All Booking Fees</button>
         <button type="button" id="updateProcessingStatus" class="detailsChange" >Update Student Processing Status</button>
         <button type="button" id="updateStudentsStatus" class="detailsChange" >Update Student Overall Status</button>
+        <a href="/admin-updates-landing">Admin Updates</a>
     @endif
     <br/>
     <table id="lookups_table" class="display">

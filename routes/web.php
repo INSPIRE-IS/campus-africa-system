@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\LookupsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,11 +78,18 @@ Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit'])
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
 
-Route::get('/lookups', [HomeController::class, 'lookups'])->name('lookups');
-Route::get('/lookups/new', [HomeController::class, 'add_lookups']);
-Route::post('/new-lookup', [HomeController::class, 'new_lookups']);
-Route::get('/lookups/edit/{lookupId}', [HomeController::class, 'edit_lookups']);
-Route::post('/save-lookup', [HomeController::class, 'save_lookups']);
+
+
+
+Route::get('/lookups', [LookupsController::class, 'lookups'])->name('lookups');
+Route::get('/lookups/new', [LookupsController::class, 'add_lookups']);
+Route::post('/new-lookup', [LookupsController::class, 'new_lookups']);
+Route::get('/lookups/edit/{lookupId}', [LookupsController::class, 'edit_lookups']);
+Route::post('/save-lookup', [LookupsController::class, 'save_lookups']);
+Route::get('/admin-updates-landing', [LookupsController::class, 'admin_updates_landing']);
+
+
+
 
 Route::get('/new/student', [HomeController::class, 'new_student']);
 Route::post("/add-student", [HomeController::class, 'add_student']);
