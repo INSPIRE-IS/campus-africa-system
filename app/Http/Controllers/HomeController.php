@@ -4048,12 +4048,12 @@ class HomeController extends Controller
     }
 
     public function edit_inline_data(Request $request) {
-        $user = User::find($request->userId);
+        $user = User::find($request->userUid);
 
         if ($request->formId == "inline_edit_address") {
             if ($request->type == "form") {
                 ?>
-                <form class="edit_info">
+                <form class="edit_info_inline">
                     <div class="form-field">    
                         <span style='font-weight:bold'>Address 1:</span>
                         <input class="noedit required" name="userAddress1" id="userAddress1" type="text" value="<?php echo $user->userAddress1; ?>">
@@ -4076,7 +4076,11 @@ class HomeController extends Controller
                         <input class="noedit required" name="userAddressPostal" id="userAddressPostal" type="text" value="<?php echo $user->userAddressPostal; ?>">
                     </div> 
 
-                    <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_address" edittype="data">Cancel</button>
+                    <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
+                    <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+
+                    <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
+                    <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
                 </form>
                 <?php
             } else {
@@ -4086,17 +4090,23 @@ class HomeController extends Controller
                 echo $user->userAddressPostal . "<br/>";
 
                 ?>
-                <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
                 <?php
             }
 
         } elseif ($request->formId == "inline_edit_kin") {
             if ($request->type == "form") {
                 ?>
-                <form class="edit_info">
+                <form class="edit_info_inline">
                     <div class="form-field">    
                         <span style='font-weight:bold'>Title:</span>
-                        <input class="noedit required" name="kinTitle" id="kinTitle" type="text" value="<?php echo $user->kinTitle; ?>">
+                        <select name="kinTitle" id='kinTitle' class="noedit required">
+                            <option value="" disabled selected>Select one</option>
+                            <option value="Mr" <?php if($user->kinTitle == "Mr"){echo "selected";} ?>>Mr</option>
+                            <option value="Ms" <?php if($user->kinTitle == "Ms"){echo "selected";} ?>>Ms</option>
+                            <option value="Mrs" <?php if($user->kinTitle == "Mrs"){echo "selected";} ?>>Mrs</option>
+                            <option value="Miss" <?php if($user->kinTitle == "Miss"){echo "selected";} ?>>Miss</option>
+                        </select>
                     </div> 
                     
                     <div class="form-field">    
@@ -4116,20 +4126,133 @@ class HomeController extends Controller
                         <input class="noedit required" name="kinRelationship" id="kinRelationship" type="text" value="<?php echo $user->kinRelationship; ?>">
                     </div> 
 
-                    <button type="button" class="updateProfile btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Cellphone Number:</span>
+                        <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>">
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Email:</span>
+                        <input class="noedit required" name="kinEmail" id="kinEmail" type="text" value="<?php echo $user->kinEmail; ?>">
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address Street:</span>
+                        <input class="noedit required" name="kinAddressStr" id="kinAddressStr" type="text" value="<?php echo $user->kinAddressStr; ?>">
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address Suburb:</span>
+                        <input class="noedit required" name="kinAddressSuburb" id="kinAddressSuburb" type="text" value="<?php echo $user->kinAddressSuburb; ?>">
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address City:</span>
+                        <input class="noedit required" name="kinAddressCity" id="kinAddressCity" type="text" value="<?php echo $user->kinAddressCity; ?>">
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address Postal:</span>
+                        <input class="noedit required" name="kinAddressPost" id="kinAddressPost" type="text" value="<?php echo $user->kinAddressPost; ?>">
+                    </div> 
+
+                    <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
+                    <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+
+                    <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
+                    <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
                 </form>
                 <?php
             } else {
                 echo $user->kinTitle . " " . $user->kinFirstName . " " . $user->kinLastName . "<br/>";
                 echo $user->kinRelationship . "<br/>";
-                echo $user->kinNationality . "<br/>";
+                echo $user->kinCellNo . "<br/>";
+                echo $user->kinEmail . "<br/>";
+                echo $user->kinAddressStr . ", " . $user->kinAddressSuburb . "<br/>";
+                echo $user->kinAddressCity . ", " . $user->kinAddressPost . "<br/>";
 
                 ?>
-                <button type="button" class="updateProfile btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
                 <?php
             }
             
         }
+    }
+
+    public function save_inline_data(Request $request) {
+        $oldData = User::find($request->userUid);
+
+        if ($request->task == "inline_edit_address") {
+            $newData = [
+                'userAddress1|Address 1' => $request->userAddress1,
+                'userAddress2|Address 2' => $request->userAddress2,
+                'userAddressCity|City' => $request->userAddressCity,
+                'userAddressPostal|Postal' => $request->userAddressPostal
+            ];
+
+            $updateData = [
+                'userAddress1' => $request->userAddress1,
+                'userAddress2' => $request->userAddress2,
+                'userAddressCity' => $request->userAddressCity,
+                'userAddressPostal' => $request->userAddressPostal
+            ];
+
+        } elseif ($request->task == "inline_edit_kin") {
+            $newData = [
+                'kinTitle|Title' => $request->kinTitle,
+                'kinFirstName|First Name' => $request->kinFirstName,
+                'kinLastName|Last Name' => $request->kinLastName,
+                'kinRelationship|Relationship' => $request->kinRelationship,
+                // 'kinNationality|Postal' => $request->kinNationality,
+                // 'kinId|Postal' => $request->kinId,
+                // 'kinPassportNo|Postal' => $request->kinPassportNo,
+                'kinCellNo|Cellphone Number' => $request->kinCellNo,
+                'kinEmail|Email' => $request->kinEmail,
+                'kinAddressStr|Physical Address Street' => $request->kinAddressStr,
+                'kinAddressSuburb|Physical Address Suburb' => $request->kinAddressSuburb,
+                'kinAddressCity|Physical Address City' => $request->kinAddressCity,
+                'kinAddressPost|Physical Address Postal' => $request->kinAddressPost,
+            ];
+
+            $updateData = [
+                'kinTitle' => $request->kinTitle,
+                'kinFirstName' => $request->kinFirstName,
+                'kinLastName' => $request->kinLastName,
+                'kinRelationship' => $request->kinRelationship,
+                // 'kinNationality' => $request->kinNationality,
+                // 'kinId' => $request->kinId,
+                // 'kinPassportNo' => $request->kinPassportNo,
+                'kinCellNo' => $request->kinCellNo,
+                'kinEmail' => $request->kinEmail,
+                'kinAddressStr' => $request->kinAddressStr,
+                'kinAddressSuburb' => $request->kinAddressSuburb,
+                'kinAddressSuburb' => $request->kinAddressSuburb,
+                'kinAddressCity' => $request->kinAddressCity,
+                'kinAddressPost' => $request->kinAddressPost,
+            ];
+        }
+
+        if (isset($newData)) {
+            foreach($newData as $key => $new) {                
+                $info = explode("|", $key);
+                $key = $info[0];
+                $changedField = $info[1];
+
+                if($oldData->$key !== $new){
+                    ActionList::create([
+                        "userUid" => $request->userUid,
+                        "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+                        "actionUserUid" => Auth::user()->id,
+                        "actionUserDisplayName" => Auth::user()->userFirstName,
+                        "actionUserRole" => Auth::user()->userRole,
+                    ]);
+                }
+            }
+
+            User::where('id', $request->userUid)->update($updateData);
+        }
+
+        echo "done";
     }
     
 

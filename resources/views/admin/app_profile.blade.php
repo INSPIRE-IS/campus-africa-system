@@ -5,19 +5,45 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-    .edit_info .form-field {
+    .edit_info_inline .form-field {
         display: flex;
         justify-content: flex-start;
         align-items: center;
         margin-bottom: 5px;
     }
 
-    .edit_info .form-field span {
+    .edit_info_inline .form-field span {
         width: 40%;
     }
 
-    .edit_info .form-field input, .form-field select {
+    .edit_info_inline .form-field input, .form-field select {
         width: 50%;
+        background: white;
+        padding: 5px;
+        border: none;
+        border-radius: 7px;
+    }
+
+    .btn_edit_inline.rejected {
+        background-color: #e74f26;
+    }
+    .btn_edit_inline.amend {
+        background-color: #ffbb3c;
+    }
+    .btn_save_inline.approve {
+        background-color: #1cb915;
+    }
+    .btn_edit_inline.button, .btn_save_inline.button {
+        margin: 0px 5px;
+        border-radius: 7px;
+        border: none;
+        padding: 10px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        text-transform: uppercase;
+        cursor: pointer;
     }
 </style>
 
@@ -25,52 +51,30 @@
     <div class="container">
         <div class="col-3" id="col1" style="margin-top:16px;">
         <div class="flex"><span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128308;</span><p class="listHeader">Physical Address</p></div>
-            <?php /*
-            <p class="list">
-                {{$user[0]['userInfo']['userAddress1']}}<br/>
-                {{$user[0]['userInfo']['userAddress2']}}<br/>
-                {{$user[0]['userInfo']['userAddressCity']}}<br/>
-                {{$user[0]['userInfo']['userAddressPostal']}}<br/>
-                @if(Auth::user()->id == "1")<button type="button" class="updateProfile" id="updateProfileStatus">Update status</button>@endif
-            </p>
-            */ ?>
-
             <div class="form" id="inline_edit_address">
                 {{$user[0]['userInfo']['userAddress1']}}<br/>
                 {{$user[0]['userInfo']['userAddress2']}}<br/>
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+                <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
             </div>
         </div>
         <div class="col-3" id="col2" style="margin-top:16px;">
             
         <div class="flex"><span id="approvedKin" class="hidden">&#128994;</span><span id="rejectedKin">&#128308;</span><p class="listHeader">Next of Kin</p></div>
-            <?php /*<p class="list">
-                {{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
-                {{$user[0]['userInfo']['kinRelationship']}}<br/>
-                {{$user[0]['userInfo']['kinNationality']}}<br/>
-                @if($user[0]['userInfo']['kinId']){{$user[0]['userInfo']['kinId']}}<br/>@endif
-                @if($user[0]['userInfo']['kinPassportNo']){{$user[0]['userInfo']['kinPassportNo']}}<br/>@endif
-                {{$user[0]['userInfo']['kinCellNo']}}<br/>
-                {{$user[0]['userInfo']['kinEmail']}}<br/>
-                {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
-                {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
-            </p>*/ ?>
-
             <div class="form" id="inline_edit_kin">
                 {{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
                 {{$user[0]['userInfo']['kinRelationship']}}<br/>
-                {{$user[0]['userInfo']['kinNationality']}}<br/>
+                {{-- {{$user[0]['userInfo']['kinNationality']}}<br/>
                 @if($user[0]['userInfo']['kinId']){{$user[0]['userInfo']['kinId']}}<br/>@endif
-                @if($user[0]['userInfo']['kinPassportNo']){{$user[0]['userInfo']['kinPassportNo']}}<br/>@endif
+                @if($user[0]['userInfo']['kinPassportNo']){{$user[0]['userInfo']['kinPassportNo']}}<br/>@endif --}}
                 {{$user[0]['userInfo']['kinCellNo']}}<br/>
                 {{$user[0]['userInfo']['kinEmail']}}<br/>
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
 
-                <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
+                <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
             </div>
 
         </div>
@@ -2014,7 +2018,7 @@
                 type: "get",
                 url: "/edit-inline-data",
                 data: {
-                    userId: "{{$user[0]['userInfo']['id']}}",
+                    userUid: "{{$user[0]['userInfo']['id']}}",
                     formId: formId,
                     type: edittype
                 },
@@ -2022,6 +2026,27 @@
                 success: function (data) {
                     
                     $('#' + formId).html(data);
+    
+                },
+            });
+
+            e.preventDefault();
+        });
+
+        $(document).on('click', '.btn_save_inline', function(e) {
+            let formId = $(this).attr('formid');
+            let edittype = $(this).attr('edittype');
+
+            let btn = $(this);
+
+            $.ajax({
+                type: "post",
+                url: "/save-inline-data",
+                data: $('#' + formId + ' form').serialize(),
+    
+                success: function (data) {
+
+                    $(btn).next().click();
     
                 },
             });
