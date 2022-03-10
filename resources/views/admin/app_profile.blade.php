@@ -4,10 +4,28 @@
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<style>
+    .edit_info .form-field {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .edit_info .form-field span {
+        width: 40%;
+    }
+
+    .edit_info .form-field input, .form-field select {
+        width: 50%;
+    }
+</style>
+
 <div class="greyAppSection">
     <div class="container">
         <div class="col-3" id="col1" style="margin-top:16px;">
         <div class="flex"><span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128308;</span><p class="listHeader">Physical Address</p></div>
+            <?php /*
             <p class="list">
                 {{$user[0]['userInfo']['userAddress1']}}<br/>
                 {{$user[0]['userInfo']['userAddress2']}}<br/>
@@ -15,6 +33,16 @@
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
                 @if(Auth::user()->id == "1")<button type="button" class="updateProfile" id="updateProfileStatus">Update status</button>@endif
             </p>
+            */ ?>
+
+            <div class="form" id="inline_edit_address">
+                {{$user[0]['userInfo']['userAddress1']}}<br/>
+                {{$user[0]['userInfo']['userAddress2']}}<br/>
+                {{$user[0]['userInfo']['userAddressCity']}}<br/>
+                {{$user[0]['userInfo']['userAddressPostal']}}<br/>
+
+                <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+            </div>
         </div>
         <div class="col-3" id="col2" style="margin-top:16px;">
             
@@ -1960,6 +1988,33 @@
     // setInterval(function(){
     //     checkData()
     // }, 30000)
+
+    jQuery(document).ready( function($) {
+        $(document).on('click', '.btn_edit_inline', function(e) {
+            let formId = $(this).attr('formid');
+            let edittype = $(this).attr('edittype');
+
+            $('#' + formId).html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+            $.ajax({
+                type: "get",
+                url: "/edit-inline-data",
+                data: {
+                    userId: "{{$user[0]['userInfo']['id']}}",
+                    formId: formId,
+                    type: edittype
+                },
+    
+                success: function (data) {
+                    
+                    $('#' + formId).html(data);
+    
+                },
+            });
+
+            e.preventDefault();
+        });
+    });
 </script>
 
 

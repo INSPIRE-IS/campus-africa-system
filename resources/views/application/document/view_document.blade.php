@@ -51,6 +51,7 @@
         .form-field input, .form-field select {
             width: 60%;
         }
+        
     </style>
 
     <div class="@if(!empty($file) && !empty($file->fileName)) {{ "panes" }} @endif">

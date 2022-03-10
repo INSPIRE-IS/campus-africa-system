@@ -4046,6 +4046,51 @@ class HomeController extends Controller
             $this->update_user_status($student->id);
         }
     }
+
+    public function edit_inline_data(Request $request) {
+        $user = User::find($request->userId);
+
+        if ($request->formId == "inline_edit_address") {
+            if ($request->type == "form") {
+                ?>
+                <form class="edit_info">
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Address 1:</span>
+                        <input class="noedit required" name="userAddress1" id="userAddress1" type="text" value="<?php echo $user->userAddress1; ?>">
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Address 2:</span>
+                        <input class="noedit required" name="userAddress2" id="userAddress2" type="text" value="<?php echo $user->userAddress2; ?>">
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>City:</span>
+                        <input class="noedit required" name="userAddressCity" id="userAddressCity" type="text" value="<?php echo $user->userAddressCity; ?>">
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Postal:</span>
+                        <input class="noedit required" name="userAddressPostal" id="userAddressPostal" type="text" value="<?php echo $user->userAddressPostal; ?>">
+                    </div> 
+
+                    <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_address" edittype="data">Cancel</button>
+                </form>
+                <?php
+            } else {
+                echo $user->userAddress1 . "<br/>";
+                echo $user->userAddress2 . "<br/>";
+                echo $user->userAddressCity . "<br/>";
+                echo $user->userAddressPostal . "<br/>";
+
+                ?>
+                <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+                <?php
+            }
+        }
+    }
     
 
     
