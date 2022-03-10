@@ -89,10 +89,47 @@ class LookupsController extends Controller {
         foreach($students as $student){
             $files = UserFiles::where('id', $student->id)->get();
 
-            foreach($files as $f) {
-                print_r($f);
-                die();
+            $status_data = [
+                'rob_10_fee' => 0,
+                'id_data_approved' => 0,
+                'rob_15_id' => 0,
+                'student_card_approved' => 0,
+                'rob_20_card' => 0,
+                'registration_approved' => 0,
+                'rob_25_reg' => 0,
+
+                'bursary_approved' => 0,
+                'bank_approved' => 0,
+                'rob_30_funds' => 0,
+                
+                'rob_35_info' => 0,
+                'rob_40_bed' => 0,
+                'rob_45_other' => 0,
+                'rob_50_approve' => 0,
+                'rob_55_lease' => 0,
+            ];
+
+            foreach($files as $f) {                
+                if ($f->fileId == "copyID") {
+                    if ($f->status == "Approved") {
+                        $status_data['id_data_approved'] = 1;                        
+                        $status_data['rob_15_id'] = 2;
+                    } elseif ($f->status == "Uploaded") {                                                
+                        $status_data['rob_15_id'] = 1;
+
+                        if ($student->id_data_approved == 2) {
+                            $status_data['id_data_approved'] = 1;
+                        } else {
+                            $status_data['id_data_approved'] = 0;
+                        }
+                    }
+                }
             }
+
+            //Update the students data
+            User::where('id', $student->id)->update($status_data);
         }
+
+        echo "done";
     }
 }
