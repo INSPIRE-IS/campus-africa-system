@@ -87,7 +87,7 @@ class LookupsController extends Controller {
         $students = User::where('userRole', '0')->get();
 
         foreach($students as $student){
-            $files = UserFiles::where('id', $student->id)->get();
+            $files = UserFiles::where('userUid', $student->id)->get();
 
             $status_data = [
                 'rob_10_fee' => 0,
@@ -110,10 +110,18 @@ class LookupsController extends Controller {
             ];
 
             foreach($files as $f) {                
-                if ($f->fileId == "copyID") {
+                if ($f->fileId == "proof_of_payment") {
+                    if ($f->status == "Approved") {
+                        $status_data['rob_10_fee'] = 2;
+                    } elseif ($f->status == "Uploaded") {                                                
+                        $status_data['rob_10_fee'] = 1;
+                    }
+
+                } elseif ($f->fileId == "copyID") {
                     if ($f->status == "Approved") {
                         $status_data['id_data_approved'] = 1;                        
                         $status_data['rob_15_id'] = 2;
+
                     } elseif ($f->status == "Uploaded") {                                                
                         $status_data['rob_15_id'] = 1;
 
@@ -123,6 +131,71 @@ class LookupsController extends Controller {
                             $status_data['id_data_approved'] = 0;
                         }
                     }
+
+                } elseif ($f->fileId == "studentCard") {
+                    if ($f->status == "Approved") {
+                        $status_data['student_card_approved'] = 1;                        
+                        $status_data['rob_20_card'] = 2;
+
+                    } elseif ($f->status == "Uploaded") {                                                
+                        $status_data['rob_20_card'] = 1;
+
+                        if ($student->student_card_approved == 2) {
+                            $status_data['student_card_approved'] = 1;
+                        } else {
+                            $status_data['student_card_approved'] = 0;
+                        }
+                    }
+
+                } elseif ($f->fileId == "proofRegistration") {
+                    if ($f->status == "Approved") {
+                        $status_data['registration_approved'] = 1;                        
+                        $status_data['rob_25_reg'] = 2;
+
+                    } elseif ($f->status == "Uploaded") {                                                
+                        $status_data['rob_25_reg'] = 1;
+
+                        if ($student->registration_approved == 2) {
+                            $status_data['registration_approved'] = 1;
+                        } else {
+                            $status_data['registration_approved'] = 0;
+                        }
+                    }
+
+                } elseif ($f->fileId == "bankStatement" || $f->fileId == "bursaryApproval") {
+                    if ($f->status == "Approved") {
+                        if ($student->studentType == "Bursary" || $student->studentType == "NSFAS") {                            
+                            $status_data['bursary_approved'] = 1;   
+                        } else {
+                            $status_data['bank_approved'] = 1;   
+                        }
+                        $status_data['rob_30_funds'] = 2;
+
+                    } elseif ($f->status == "Uploaded") {                                                
+                        $status_data['rob_30_funds'] = 1;
+
+                        if ($student->studentType == "Bursary" || $student->studentType == "NSFAS") {                            
+                            if ($student->bursary_approved == 2) {
+                                $status_data['bursary_approved'] = 1;
+                            } else {
+                                $status_data['bursary_approved'] = 0;
+                            } 
+                        } else {
+                            if ($student->bank_approved == 2) {
+                                $status_data['bank_approved'] = 1;
+                            } else {
+                                $status_data['bank_approved'] = 0;
+                            } 
+                        }
+                    }                
+
+                } elseif ($f->fileId == "moveIn") {
+                    if ($f->status == "Approved") {
+                        $status_data['rob_55_lease'] = 2;
+                    } elseif ($f->status == "Uploaded") {                                                
+                        $status_data['rob_55_lease'] = 1;
+                    }
+                    
                 }
             }
 
