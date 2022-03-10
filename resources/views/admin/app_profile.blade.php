@@ -47,7 +47,7 @@
         <div class="col-3" id="col2" style="margin-top:16px;">
             
         <div class="flex"><span id="approvedKin" class="hidden">&#128994;</span><span id="rejectedKin">&#128308;</span><p class="listHeader">Next of Kin</p></div>
-            <p class="list">
+            <?php /*<p class="list">
                 {{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
                 {{$user[0]['userInfo']['kinRelationship']}}<br/>
                 {{$user[0]['userInfo']['kinNationality']}}<br/>
@@ -57,7 +57,21 @@
                 {{$user[0]['userInfo']['kinEmail']}}<br/>
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
-            </p>
+            </p>*/ ?>
+
+            <div class="form" id="inline_edit_kin">
+                {{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
+                {{$user[0]['userInfo']['kinRelationship']}}<br/>
+                {{$user[0]['userInfo']['kinNationality']}}<br/>
+                @if($user[0]['userInfo']['kinId']){{$user[0]['userInfo']['kinId']}}<br/>@endif
+                @if($user[0]['userInfo']['kinPassportNo']){{$user[0]['userInfo']['kinPassportNo']}}<br/>@endif
+                {{$user[0]['userInfo']['kinCellNo']}}<br/>
+                {{$user[0]['userInfo']['kinEmail']}}<br/>
+                {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
+                {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
+
+                <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
+            </div>
 
         </div>
         <div class="col-3" id="col3" style="margin-top:16px;">

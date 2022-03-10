@@ -4089,6 +4089,46 @@ class HomeController extends Controller
                 <button type="button" class="updateProfile btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
                 <?php
             }
+
+        } elseif ($request->formId == "inline_edit_kin") {
+            if ($request->type == "form") {
+                ?>
+                <form class="edit_info">
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Title:</span>
+                        <input class="noedit required" name="kinTitle" id="kinTitle" type="text" value="<?php echo $user->kinTitle; ?>">
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>First Name:</span>
+                        <input class="noedit required" name="kinFirstName" id="kinFirstName" type="text" value="<?php echo $user->kinFirstName; ?>">
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Last Name:</span>
+                        <input class="noedit required" name="kinLastName" id="kinLastName" type="text" value="<?php echo $user->kinLastName; ?>">
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Relationship:</span>
+                        <input class="noedit required" name="kinRelationship" id="kinRelationship" type="text" value="<?php echo $user->kinRelationship; ?>">
+                    </div> 
+
+                    <button type="button" class="updateProfile btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
+                </form>
+                <?php
+            } else {
+                echo $user->kinTitle . " " . $user->kinFirstName . " " . $user->kinLastName . "<br/>";
+                echo $user->kinRelationship . "<br/>";
+                echo $user->kinNationality . "<br/>";
+
+                ?>
+                <button type="button" class="updateProfile btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
+                <?php
+            }
+            
         }
     }
     
