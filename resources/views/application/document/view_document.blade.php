@@ -286,7 +286,7 @@
                         <div class="form-field">
                             <span style='font-weight:bold'>NSFAS Bursar:</span>
                             <select name="nsfas_bursar" id='nsfas_bursar' class="noedit required" disabled>                            
-                                <option value="" <?php if($user->nsfas_bursar == ""){echo "selected";} ?>>No</option>
+                                <option value="0" <?php if($user->nsfas_bursar == "" || $user->nsfas_bursar == "0"){echo "selected";} ?>>No</option>
                                 <option value="1" <?php if($user->nsfas_bursar == "1"){echo "selected";} ?>>Yes</option>
                             </select>
                         </div>

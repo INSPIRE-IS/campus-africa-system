@@ -116,9 +116,9 @@
                             </div>
                         @endif
 
-                        @if(Auth::user()->role_edit_app == 1 && $user[0]['userInfo']['overall_status'] != "Approved")
-                            <a href="/student/edit/<?php echo $user[0]['userInfo']['id']; ?>"><button type="button" class="appBtn" style="background-color:#e74f26; border:none">EDIT PROFILE</button></a>
-                        @endif
+                        {{-- @if(Auth::user()->role_edit_app == 1 && $user[0]['userInfo']['overall_status'] != "Approved")
+                            <a href="/student/edit/<?php //echo $user[0]['userInfo']['id']; ?>"><button type="button" class="appBtn" style="background-color:#e74f26; border:none">EDIT PROFILE</button></a>
+                        @endif --}}
                     @endif
 
                     

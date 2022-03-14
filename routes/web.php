@@ -44,6 +44,7 @@ Route::get('/applications', [HomeController::class, 'applications']);
 Route::get('/application-profile/{userId}', [HomeController::class, 'application_profile']);
 Route::get('/edit-inline-data', [HomeController::class, 'edit_inline_data']);
 Route::post('/save-inline-data', [HomeController::class, 'save_inline_data']);
+Route::post('/approve-inline-data', [HomeController::class, 'approve_inline_data']);
 
 Route::post('/action/file', [HomeController::class, 'action_file']);
 

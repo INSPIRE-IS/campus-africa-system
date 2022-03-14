@@ -4,65 +4,31 @@
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<style>
-    .edit_info_inline .form-field {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 5px;
-    }
-
-    .edit_info_inline .form-field span {
-        width: 40%;
-    }
-
-    .edit_info_inline .form-field input, .form-field select {
-        width: 50%;
-        background: white;
-        padding: 5px;
-        border: none;
-        border-radius: 7px;
-    }
-
-    .btn_edit_inline.rejected {
-        background-color: #e74f26;
-    }
-    .btn_edit_inline.amend {
-        background-color: #ffbb3c;
-    }
-    .btn_save_inline.approve {
-        background-color: #1cb915;
-    }
-    .btn_edit_inline.button, .btn_save_inline.button {
-        margin: 0px 5px;
-        border-radius: 7px;
-        border: none;
-        padding: 10px;
-        color: #ffffff;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 18px;
-        text-transform: uppercase;
-        cursor: pointer;
-    }
-</style>
-
 <div class="greyAppSection">
     <div class="container">
-        <div class="col-3" id="col1" style="margin-top:16px;">
-        <div class="flex"><span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128308;</span><p class="listHeader">Physical Address</p></div>
+        <div class="col-3" id="col1">
+        <div class="flex">
+            <span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128308;</span><p class="listHeader">Physical Address</p></div>
             <div class="form" id="inline_edit_address">
                 {{$user[0]['userInfo']['userAddress1']}}<br/>
                 {{$user[0]['userInfo']['userAddress2']}}<br/>
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+                @if(Auth::user()->role_approve_docs == "1")
+                    @if($user[0]['userInfo']['address_approved'] != 1)
+                        <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
+                        <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+                    @else
+                        <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>
+                    @endif
+                @endif
             </div>
         </div>
-        <div class="col-3" id="col2" style="margin-top:16px;">
+        <div class="col-3" id="col2">
             
-        <div class="flex"><span id="approvedKin" class="hidden">&#128994;</span><span id="rejectedKin">&#128308;</span><p class="listHeader">Next of Kin</p></div>
+        <div class="flex">
+            <span id="approvedKin" class="hidden">&#128994;</span><span id="rejectedKin">&#128308;</span><p class="listHeader">Next of Kin</p></div>
             <div class="form" id="inline_edit_kin">
                 {{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
                 {{$user[0]['userInfo']['kinRelationship']}}<br/>
@@ -74,14 +40,21 @@
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
 
-                <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
+                @if(Auth::user()->role_approve_docs == "1")
+                    @if($user[0]['userInfo']['kin_approved'] != 1)
+                        <button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>
+                        <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
+                    @else
+                        <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>
+                    @endif
+                @endif                
             </div>
 
         </div>
-        <div class="col-3" id="col3" style="margin-top:16px;">
+        <div class="col-3" id="col3">
             @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
-            <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
-                <p class="list">
+                <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
+                <div class="form">
                     {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
                     {{$user[0]['userInfo']['sponCellNo']}}<br/>
                     {{$user[0]['userInfo']['sponEmail']}}<br/>
@@ -90,31 +63,22 @@
                     @if($user[0]['userInfo']['sponId']){{$user[0]['userInfo']['sponId']}}<br/>@endif
                     @if($user[0]['userInfo']['pPassportNo']){{$user[0]['userInfo']['pPassportNo']}}<br/>@endif
                     {{$user[0]['userInfo']['pAddress1']}}, {{$user[0]['userInfo']['pAddress2']}}, <br/>
-                    {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}<br/>
-                </p>
+                    {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}
+                </div>
             @endif
 
             @if($user[0]['userInfo']['studentType'] == "Bursary")
-            <div class="flex"><span id="approvedBur" class="hidden">&#128994;</span><span id="rejectedBur">&#128308;</span><p class="listHeader">Bursar</p></div>
-                <p class="list">
+                <div class="flex"><span id="approvedBur" class="hidden">&#128994;</span><span id="rejectedBur">&#128308;</span><p class="listHeader">Bursar</p></div>
+                <div class="form">
                     {{$user[0]['userInfo']['burCompanyName']}}<br/>
                     {{$user[0]['userInfo']['burRegNo']}}<br/>
                     {{$user[0]['userInfo']['burContactPerson']}} - {{$user[0]['userInfo']['burContactNo']}}<br/>
                     {{$user[0]['userInfo']['burEmail']}}<br/>
                     {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, <br/>
                     {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>
-                </p>
-
-                
-                    <br/>
-                    NSFAS bursar? <strong><?php if($user[0]['userInfo']['nsfas_bursar'] == "1"){ echo "Yes";}else{echo "No";} ?></strong>
-                    @if(Auth::user()->role_approve_docs == "1")
-                        <br/><button style="padding:2px 10px; cursor:pointer;" onClick="changeNsfsBursar('{{$user[0]['userInfo']['id']}}', '{{$user[0]['userInfo']['nsfas_bursar']}}')">Change</button>
-                    @endif
+                    <br />NSFAS bursar? <strong><?php if($user[0]['userInfo']['nsfas_bursar'] == "1"){ echo "Yes";}else{echo "No";} ?></strong>
+                </div>
             @endif
-            <br/>
-            
-            <!-- <a href="/student/upload/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Upload Documents</button></a> -->
         </div>
         
     </div>
@@ -126,33 +90,48 @@
         <div class="cards">
 
             <div class="customWhiteCard" >
-                <h2 class="appHeader">Applicant Details</h2>
+                <div class="flex">                    
+                    <span id="app_det_statYes" class="hidden" style="margin-top:10px;">&#128994;</span>                    
+                    <span id="app_det_statNo" style="margin-top:10px;">&#128308;</span>                    
+                    <h2 class="appHeader">Applicant Details</h2>
+                </div>
+                
                 <p class="InfoList">
                     {{$user[0]['userInfo']['userFirstName']}} {{$user[0]['userInfo']['userLastname']}}<br/>
                     {{$user[0]['userInfo']['userDob']}}<br/>
                     {{$user[0]['userInfo']['userNationality']}}<br/>
                     @if($user[0]['userInfo']['userId']){{$user[0]['userInfo']['userId']}}<br/>@endif
                     @if($user[0]['userInfo']['userPassport']){{$user[0]['userInfo']['userPassport']}}<br/>@endif
-                    <br/>
-                    {{$user[0]['userInfo']['userEmail']}}<br/>
-                    {{$user[0]['userInfo']['userCell']}}<br/>
-                    <br/>
+                </p>
+
+                <p class="InfoList">
                     @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['institutionStudy']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['studentNo']}}<br/>
                     @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['faculty']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['yearOfStudy']}}
                 </p>
+
+                <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
+                    {{$user[0]['userInfo']['userEmail']}}<br/>
+                    {{$user[0]['userInfo']['userCell']}}<br/>
+
+                    @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['email_data_approved'] != 1)
+                        <button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>
+                        <button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>
+                    @endif
+                </div>
             </div>
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
-            <div class="flex">
-                @if($booking->bed_code)
-                    <span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>
-                @else
-                    <span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>
-                @endif
-                <h2 class="appHeader">Application Summary</h2>
-            </div>
+                <div class="flex">
+                    @if($booking->bed_code)
+                        <span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>
+                    @else
+                        <span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>
+                    @endif
+                    <h2 class="appHeader">Application Summary</h2>
+                </div>
+
                 <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                 <h4 class="cardHeader" >{{$booking->roomType}}</h4>
                 <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
@@ -590,6 +569,7 @@
 <input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/>
 <input type="hidden" id="files_to_download" value="{{$files_to_download}}"/>
 <input type="hidden" id="selectedRoom" value=""/>
+<input type="hidden" id="email_data_approved" value="{{$user[0]['userInfo']['email_data_approved']}}"/>
 
 
 <script>
@@ -709,24 +689,29 @@
     // MainAppSection
     function checkUserStatus(){
 
-        if($("#parent_approved").val() == "1" || $("#parent_approved").val() == "2"){
+        if($("#parent_approved").val() == "1"){
             $("#rejectedSpon").addClass('hidden')
             $("#approvedSpon").removeClass('hidden')
         }
 
-        if($("#burser_approved").val() == "1" || $("#burser_approved").val() == "2"){
+        if($("#burser_approved").val() == "1"){
             $("#rejectedBur").addClass('hidden')
             $("#approvedBur").removeClass('hidden')
         }
 
-        if($("#kin_approved").val() == "1" || $("#kin_approved").val() == "2"){
+        if($("#kin_approved").val() == "1"){
             $("#rejectedKin").addClass('hidden')
             $("#approvedKin").removeClass('hidden')
         }
 
-        if($("#address_approved").val() == "1" || $("#address_approved").val() == "2"){
+        if($("#address_approved").val() == "1"){
             $("#rejectedAddr").addClass('hidden')
             $("#approvedAddr").removeClass('hidden')
+        }
+        
+        if($("#email_data_approved").val() == "1"){
+            $("#app_det_statNo").addClass('hidden')
+            $("#app_det_statYes").removeClass('hidden')
         }
 
         //Check if we show/hide the approve user section
@@ -2048,6 +2033,60 @@
 
                     $(btn).next().click();
     
+                },
+            });
+
+            e.preventDefault();
+        });
+
+        $(document).on('click', '.btn_approve_inline', function(e) {
+            let formId = $(this).attr('formid');
+            let approvefield = $(this).attr('approvefield');
+            let task = "1";
+
+            let message = "You are about to Approve this information";
+
+            let btn = $(this);
+
+            if ($(this).hasClass("rejected")) {
+                message = "You are about to Reject this information";
+                task = "0";
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!',
+                showLoaderOnConfirm: true,
+                preConfirm: (login) => {
+                    return fetch(`//api.github.com/users/${login}`)
+                    .then(response => {
+                        $.ajax({
+                            type: "post",
+                            url: "/approve-inline-data",
+                            data: {
+                                userUid: "{{$user[0]['userInfo']['id']}}",
+                                formId: formId,
+                                approvefield: approvefield,
+                                task: task
+                            },
+                
+                            success: function (data) {
+
+                                location.reload();
+                
+                            },
+                        });
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                        `Request failed: ${error}`
+                        )
+                    })
                 },
             });
 

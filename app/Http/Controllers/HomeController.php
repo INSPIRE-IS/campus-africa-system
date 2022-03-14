@@ -4090,6 +4090,7 @@ class HomeController extends Controller
                 echo $user->userAddressPostal . "<br/>";
 
                 ?>
+                <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
                 <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
                 <?php
             }
@@ -4172,10 +4173,41 @@ class HomeController extends Controller
                 echo $user->kinAddressCity . ", " . $user->kinAddressPost . "<br/>";
 
                 ?>
+                <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="kin_approved" style="height:40px;">Approve</button>
                 <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
                 <?php
             }
-            
+
+        } elseif ($request->formId == "inline_app_details") {
+            if ($request->type == "form") {
+                ?>
+                <form class="edit_info_inline">
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Email:</span>
+                        <input class="noedit required" name="userEmail" id="userEmail" type="text" value="<?php echo $user->userEmail; ?>">
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Cellphone Number:</span>
+                        <input class="noedit required" name="userCell" id="userCell" type="text" value="<?php echo $user->userCell; ?>">
+                    </div>
+
+                    <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
+                    <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+
+                    <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
+                    <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
+                </form>
+                <?php
+            } else {
+                echo $user->userEmail . "<br/>";
+                echo $user->userCell . "<br/>";
+
+                ?>
+                <button type="button" class="approve button btn_approve_inline" formid="<?php echo $request->formId; ?>" approvefield="email_data_approved" style="height:40px;">Approve</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
+                <?php
+            }
         }
     }
 
@@ -4230,6 +4262,17 @@ class HomeController extends Controller
                 'kinAddressCity' => $request->kinAddressCity,
                 'kinAddressPost' => $request->kinAddressPost,
             ];
+        
+        } elseif ($request->task == "inline_app_details") {
+            $newData = [
+                'userEmail|Email' => $request->userEmail,
+                'userCell|Cellphone Number' => $request->userCell,
+            ];
+
+            $updateData = [
+                'userEmail' => $request->userEmail,
+                'userCell' => $request->userCell,
+            ];
         }
 
         if (isset($newData)) {
@@ -4251,6 +4294,65 @@ class HomeController extends Controller
 
             User::where('id', $request->userUid)->update($updateData);
         }
+
+        echo "done";
+    }
+    
+    public function approve_inline_data(Request $request) {
+        $oldData = User::find($request->userUid);        
+
+        if ($request->formId == "inline_edit_address") {
+            $newData = [
+                $request->approvefield . '|Physical Address' => $request->task == 1 ? "Approved" : "Rejected",
+            ];
+
+        } elseif ($request->formId == "inline_edit_kin") {
+            $newData = [
+                $request->approvefield . '|Next of Kin' => $request->task == 1 ? "Approved" : "Rejected",
+            ];
+
+        } elseif ($request->formId == "inline_app_details") {
+            $newData = [
+                $request->approvefield . '|Application Details' => $request->task == 1 ? "Approved" : "Rejected",
+            ];
+        }
+
+        if (isset($newData)) {
+            $updateData = [
+                $request->approvefield => $request->task
+            ];
+
+            foreach($newData as $key => $new) {                
+                $info = explode("|", $key);
+                $key = $info[0];
+                $changedField = $info[1];
+
+                if($oldData->$key !== $new) {
+                    ActionList::create([
+                        "userUid" => $request->userUid,
+                        "action" => $new . " " . $changedField,
+                        "actionUserUid" => Auth::user()->id,
+                        "actionUserDisplayName" => Auth::user()->userFirstName,
+                        "actionUserRole" => Auth::user()->userRole,
+                    ]);
+                }
+            }
+
+            User::where('id', $request->userUid)->update($updateData);
+        }
+
+        //Update Info robot based on data approved
+        $oldData = User::find($request->userUid);
+        
+        if ($oldData->address_approved == 1 && $oldData->kin_approved == 1 && $oldData->email_data_approved == 1) {
+            $rob_35_info = 1;
+        } else {
+            $rob_35_info = 0;
+        }
+
+        User::where('id', $request->userUid)->update([
+            "rob_35_info" => $rob_35_info
+        ]);
 
         echo "done";
     }
