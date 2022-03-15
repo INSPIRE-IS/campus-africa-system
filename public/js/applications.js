@@ -102,7 +102,7 @@ jQuery(document).ready(function ($) {
                     var rob_lease = '<div class="button na noBoarder"></div>';
 
                     //For non cancelled rows work out the robots
-                    if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
+                    if (arrayItem["rob_60_cancelled"] == 0) {
                         if (arrayItem["rob_10_fee"] == 0) {
                             rob_fee = rob_rejected;
                         } else if (arrayItem["rob_10_fee"] == 1) {

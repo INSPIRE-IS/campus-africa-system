@@ -19,9 +19,9 @@ class AddNewRobotsV1 extends Migration
             $table->tinyInteger('rob_20_card')->default(0);
             $table->tinyInteger('rob_25_reg')->default(0);
             $table->tinyInteger('rob_30_funds')->default(0);
-            $table->tinyInteger('rob_35_info')->default(0);
-            $table->tinyInteger('rob_40_bed')->default(0);
-            $table->tinyInteger('rob_45_other')->default(0);
+            $table->tinyInteger('rob_35_info')->default(1);
+            $table->tinyInteger('rob_40_bed')->default(1);
+            $table->tinyInteger('rob_45_other')->default(2);
             $table->tinyInteger('rob_50_approve')->default(0);
             $table->tinyInteger('rob_55_lease')->default(0);
         });

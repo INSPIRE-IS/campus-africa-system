@@ -93,6 +93,9 @@ class PDFController extends Controller
 
         \Storage::put('public/files/'.$user->userId.'/Lease.pdf',$content) ;
 
+        //Add lease file to user_files
+        //TODO: where is this meant to happen
+
       }
         
 

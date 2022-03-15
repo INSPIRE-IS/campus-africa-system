@@ -15,7 +15,7 @@
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                @if(Auth::user()->role_approve_docs == "1")
+                @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     @if($user[0]['userInfo']['address_approved'] != 1)
                         <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
                         <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
@@ -40,7 +40,7 @@
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
 
-                @if(Auth::user()->role_approve_docs == "1")
+                @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     @if($user[0]['userInfo']['kin_approved'] != 1)
                         <button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>
                         <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
@@ -159,7 +159,7 @@
                 </div>
                 
                 <div class="buttons">
-                    @if($leaseApproved == 'false')
+                    @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                         @if(Auth::user()->role_change_bed == "1")
                             <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                         @endif
@@ -169,7 +169,7 @@
                         @endif
                     @endif
 
-                    @if($leaseApproved == 'true')
+                    @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                         @if(Auth::user()->role_cancel_lease == "1")
                             <button type="button" class="appBooking" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                         @endif
@@ -177,7 +177,7 @@
                     
                 </div>
                 <div class="buttons">
-                    
+                    @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
                         @if(Auth::user()->role_delete_booking == 1)
                             <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
                         @endif
@@ -185,6 +185,7 @@
                         @if(Auth::user()->role_cancel_booking == 1)
                             <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
                         @endif
+                    @endif
                 </div>
             </div>
 
@@ -715,47 +716,47 @@
         }
 
         //Check if we show/hide the approve user section
-        $.ajax({
-            type: "get",
-            url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
+        // $.ajax({
+        //     type: "get",
+        //     url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
 
-            success: function (data) {
-                console.log(data);
+        //     success: function (data) {
+        //         console.log(data);
 
-                if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
+        //         if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
             
-                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
-                        $("#MainAppSection").removeClass('hidden')
-                        // document.getElementById("col1").style.marginTop = "-35px";
-                        // document.getElementById("col2").style.marginTop = "-35px";
-                        // document.getElementById("col3").style.marginTop = "-35px";
-                    } else {
-                        $("#MainAppSection").addClass('hidden')
-                    }
+        //             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+        //                 $("#MainAppSection").removeClass('hidden')
+        //                 // document.getElementById("col1").style.marginTop = "-35px";
+        //                 // document.getElementById("col2").style.marginTop = "-35px";
+        //                 // document.getElementById("col3").style.marginTop = "-35px";
+        //             } else {
+        //                 $("#MainAppSection").addClass('hidden')
+        //             }
 
-                }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
+        //         }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
                     
-                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
-                        $("#MainAppSection").removeClass('hidden')
-                        // document.getElementById("col1").style.marginTop = "-35px";
-                        // document.getElementById("col2").style.marginTop = "-35px";
-                        // document.getElementById("col3").style.marginTop = "-35px";
-                    } else {
-                        $("#MainAppSection").addClass('hidden')
-                    }
-                }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
+        //             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+        //                 $("#MainAppSection").removeClass('hidden')
+        //                 // document.getElementById("col1").style.marginTop = "-35px";
+        //                 // document.getElementById("col2").style.marginTop = "-35px";
+        //                 // document.getElementById("col3").style.marginTop = "-35px";
+        //             } else {
+        //                 $("#MainAppSection").addClass('hidden')
+        //             }
+        //         }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
                     
-                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
-                        $("#MainAppSection").removeClass('hidden')
-                        // document.getElementById("col1").style.marginTop = "-35px";
-                        // document.getElementById("col2").style.marginTop = "-35px";
-                        // document.getElementById("col3").style.marginTop = "-35px";
-                    } else {
-                        $("#MainAppSection").addClass('hidden')
-                    }
-                }
-            }
-        })
+        //             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+        //                 $("#MainAppSection").removeClass('hidden')
+        //                 // document.getElementById("col1").style.marginTop = "-35px";
+        //                 // document.getElementById("col2").style.marginTop = "-35px";
+        //                 // document.getElementById("col3").style.marginTop = "-35px";
+        //             } else {
+        //                 $("#MainAppSection").addClass('hidden')
+        //             }
+        //         }
+        //     }
+        // })
     }
 
     function changeBooking(bookingId, type){

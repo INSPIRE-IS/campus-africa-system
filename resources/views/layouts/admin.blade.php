@@ -93,10 +93,18 @@
                 @if (isset($appProfile) && $appProfile === "true")
                     <h1 class="bookingSub">
                         Application Profile 
-                        @if($user[0]['userInfo']['applicationStatus'] == "Approved Confirmed")
-                            : Approved
-                        @elseif($user[0]['userInfo']['applicationStatus'] == "Rejected Confirmed")
-                            : Rejected
+                        @if($user[0]['userInfo']['rob_60_cancelled'] == 1)
+                            @if ($user[0]['userInfo']['rob_50_approve'] == 3)
+                                : Rejected
+                            @else
+                                : Cancelled
+                            @endif
+                        @else 
+                            @if($user[0]['userInfo']['rob_50_approve'] == 2)
+                                : Approved
+                            @elseif($user[0]['userInfo']['rob_50_approve'] == 3)
+                                : Rejected
+                            @endif
                         @endif
                     </h1>
                 @endif
@@ -105,9 +113,10 @@
                 <div class="buttonSidePanel" style="margin-top:-50px;">
 
                     @if (isset($appProfile) && $appProfile === "true")
-                        @if($user[0]['userInfo']['applicationStatus'] !== "Approved Confirmed")
-                            <div id="MainAppSection" class="hidden">
-                                @if(Auth::user()->role_approve_docs == 1)
+                        @if($user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)                        
+                            <div id="MainAppSection">
+                                @if(Auth::user()->role_approve_docs == 1 && $user[0]['userInfo']['rob_10_fee'] == 2 && $user[0]['userInfo']['rob_15_id'] == 2 && $user[0]['userInfo']['rob_20_card'] == 2 
+                                && $user[0]['userInfo']['rob_25_reg'] == 2 && $user[0]['userInfo']['rob_30_funds'] == 2 && $user[0]['userInfo']['rob_35_info'] == 2 && $user[0]['userInfo']['rob_40_bed'] == 2)
                                     <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
                                     <br/><br/><br/>
                                     <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
@@ -115,12 +124,7 @@
                                 @endif  
                             </div>
                         @endif
-
-                        {{-- @if(Auth::user()->role_edit_app == 1 && $user[0]['userInfo']['overall_status'] != "Approved")
-                            <a href="/student/edit/<?php //echo $user[0]['userInfo']['id']; ?>"><button type="button" class="appBtn" style="background-color:#e74f26; border:none">EDIT PROFILE</button></a>
-                        @endif --}}
                     @endif
-
                     
                 </div>
 
@@ -192,69 +196,55 @@
         });
 
         function approveApplication(userId){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Approve this application',
+                text: "You are about to approve this application and send approval email. Continue?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, approve'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-            if($("#address_approved").val() !== "2" || $("#kin_approved").val() !== "2"){
+                    $.ajax({
+                        type: "post",
+                        url: "/approve-application",
+                        data: {
+                            userId: "{{$user[0]['userInfo']['id']}}", 
+                        },
 
-                if($("#address_approved").val() !== "2"){
-                    addressApp()
-                }else if($("#kin_approved").val() !== "2"){
-                    kinApp();
+                        success: function (data) {
+                            // window.location.reload();
+                            $.ajax({
+                                type: "post",
+                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                data: {
+                                    bookingId: "{{$user[0]['userInfo']['id']}}", 
+                                    property: $("#property").val(),
+                                    roomType: $("#roomType").val(), 
+                                    floor: $("#floor").val(),
+                                    unit: $("#unit").val(),
+                                    room: $("#room").val(),
+                                    bed: $("#bed").val(),
+                                    bed_code: $("#bed_code").val(),
+                                    lease_from_date: $("#lease_from_date").val(),
+                                    lease_from_time: $("#lease_from_time").val(),
+                                    lease_to_date: $("#lease_to_date").val(),
+                                    lease_to_time: $("#lease_to_time").val(),
+                                    type: "auto",
+                                },
+
+                                success: function (data) {
+                                    
+                                    // window.location.reload();
+                                },
+                            });
+                        },
+                    });
                 }
-                        
-            }else{
-
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Approve this application',
-                    text: "You are about to approve this application and send approval email. Continue?",
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, approve'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-                        $.ajax({
-                            type: "post",
-                            url: "/approve-application",
-                            data: {
-                                userId: "{{$user[0]['userInfo']['id']}}", 
-                            },
-
-                            success: function (data) {
-                                // window.location.reload();
-                                $.ajax({
-                                    type: "post",
-                                    url: "/createLease/{{$user[0]['userInfo']['id']}}",
-                                    data: {
-                                        bookingId: "{{$user[0]['userInfo']['id']}}", 
-                                        property: $("#property").val(),
-                                        roomType: $("#roomType").val(), 
-                                        floor: $("#floor").val(),
-                                        unit: $("#unit").val(),
-                                        room: $("#room").val(),
-                                        bed: $("#bed").val(),
-                                        bed_code: $("#bed_code").val(),
-                                        lease_from_date: $("#lease_from_date").val(),
-                                        lease_from_time: $("#lease_from_time").val(),
-                                        lease_to_date: $("#lease_to_date").val(),
-                                        lease_to_time: $("#lease_to_time").val(),
-                                        type: "auto",
-                                    },
-
-                                    success: function (data) {
-                                        
-                                        window.location.reload();
-                                    },
-                                });
-                            },
-                        });
-                    }
-                })
-            }
-
-            
+            });            
         }
 
         function addressApp(){

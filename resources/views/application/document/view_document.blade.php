@@ -82,18 +82,20 @@
             @endif
             
             <div class="flex" style="margin: 35px 0;" id="buttonSection">
-                @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
-                    <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
-                @endif
-            
-                <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-            
-                @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
-                    <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-                @endif
-            
-                @if(Auth::user()->role_delete_uploaded == 1)
-                    <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
+                @if ($user->rob_60_cancelled == 0)
+                    @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
+                        <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
+                    @endif
+                
+                    <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
+                
+                    @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1) && $doc_approved == 1)
+                        <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
+                    @endif
+                
+                    @if(Auth::user()->role_delete_uploaded == 1)
+                        <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
+                    @endif
                 @endif
             </div>
 
@@ -332,7 +334,7 @@
                         </div>
                     @endif
                 
-                    @if(Auth::user()->role_approve_docs == 1)
+                    @if(Auth::user()->role_approve_docs == 1 && $user->rob_60_cancelled == 0)
                         <div style="margin-top: 35px;" class="btns_approve_data">
                             @if($data_approved == 0)
                                 <button type="button" class="approve button" style="height:40px;" onClick="approveData('1')">Approve</button>

@@ -607,7 +607,7 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['applicationStatus' => "Approved Confirmed", 'overall_status' => "Incomplete"]);
+        User::where('id', $userId)->update(['rob_50_approve' => 2, 'rob_55_lease' => 1]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -638,7 +638,7 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['bookingStatus' => "Rejected Confirmed",'applicationStatus' => 'rejected', 'overall_status' => 'Rejected']);
+        User::where('id', $userId)->update(['rob_50_approve' => 3, 'rob_60_cancelled' => 1]);
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
         ActionList::create([
@@ -1818,7 +1818,7 @@ class HomeController extends Controller
     }
 
     public function cancel_booking(Request $request){
-        User::where('id', $request->userId)->update(['overall_status' => 'Cancelled', 'bookingStatus' => 'Cancelled', 'applicationStatus' => 'Cancelled']);
+        User::where('id', $request->userId)->update(['rob_60_cancelled' => 1]);
 
         Booking::where('userId', $request->userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
@@ -4345,9 +4345,9 @@ class HomeController extends Controller
         $oldData = User::find($request->userUid);
         
         if ($oldData->address_approved == 1 && $oldData->kin_approved == 1 && $oldData->email_data_approved == 1) {
-            $rob_35_info = 1;
+            $rob_35_info = 2;
         } else {
-            $rob_35_info = 0;
+            $rob_35_info = 1;
         }
 
         User::where('id', $request->userUid)->update([

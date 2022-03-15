@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Lookups;
 use App\Models\User;
 use App\Models\UserFiles;
+use App\Models\Booking;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -100,11 +101,15 @@ class LookupsController extends Controller {
 
                 'bursary_approved' => 0,
                 'bank_approved' => 0,
-                'rob_30_funds' => 0,
+                'rob_30_funds' => 0,                
                 
-                'rob_35_info' => 0,
-                'rob_40_bed' => 0,
-                'rob_45_other' => 0,
+                'address_approved' => $student->address_approved,
+                'kin_approved' => $student->kin_approved,
+                'email_data_approved' => $student->email_data_approved,
+                'rob_35_info' => 1,
+
+                'rob_40_bed' => 1,
+                'rob_45_other' => 3,
                 'rob_50_approve' => 0,
                 'rob_55_lease' => 0,
             ];
@@ -197,6 +202,25 @@ class LookupsController extends Controller {
                     }
                     
                 }
+            }
+
+            $booking = Booking::where('userId', $student->id)->first();
+            if (!empty($booking->bed_code)) {
+                $status_data['rob_40_bed'] = 2;
+            }
+
+            if ($student->address_approved == 2) {
+                $status_data['address_approved'] = 1;
+            }
+            if ($student->kin_approved == 2) {
+                $status_data['kin_approved'] = 1;
+            }
+            if ($student->email_data_approved == 2) {
+                $status_data['email_data_approved'] = 1;
+            }
+
+            if ($status_data['address_approved'] == 1 && $status_data['kin_approved'] == 1 && $status_data['email_data_approved'] == 1) {
+                $status_data['rob_35_info'] = 2;
             }
 
             //Update the students data
