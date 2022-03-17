@@ -93,9 +93,17 @@ class PDFController extends Controller
 
         \Storage::put('public/files/'.$user->userId.'/Lease.pdf',$content) ;
 
-        //Add lease file to user_files
-        //TODO: where is this meant to happen
-
+        //Add lease file to user_files        
+        $data = array(
+          'fileId' => 'moveIn',
+          'userUid' => $studentId,
+          'fileName' => 'Lease.pdf',
+          'fileUrl' => 'files/'.$user->userId.'/Lease.pdf',
+          'status' => 'Uploaded',
+          'uploaded_by' => Auth::user()->name,
+          'created_at' => date('Y-m-d h:m:s')
+        );
+        UserFiles::insert($data);
       }
         
 
