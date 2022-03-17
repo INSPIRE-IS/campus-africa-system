@@ -15,7 +15,7 @@
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                @if(&& $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                @if($user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     @if($user[0]['userInfo']['address_approved'] != 1)
                         @if(Auth::user()->role_approve_docs == "1")
                             <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
