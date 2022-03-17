@@ -82,11 +82,7 @@
             @endif
             
             <div class="flex" style="margin: 35px 0;" id="buttonSection">
-                @if ($user->rob_60_cancelled == 0)                    
-                    @if (Auth::user()->role_upload_docs == 1)
-                        <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-                    @endif
-
+                @if ($user->rob_60_cancelled == 0)
                     @if ($doc_approved == 2)
                         @if (Auth::user()->role_delete_uploaded == 1)
                             <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
@@ -94,6 +90,7 @@
 
                     @else
                         @if(Auth::user()->role_approve_docs == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1))                            
+                            <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
                             <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
                             <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                         @endif
