@@ -61,7 +61,7 @@
                     <a href="/users">Users</a>
                 @endif
                 
-                <a href="/logout">Hi {{Auth::user()->name}}, Log out</a>
+                <a href="/logout">Hi {{Auth::user()->firstName}}, Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>
                 </a>
