@@ -15,7 +15,7 @@
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     @if($user[0]['userInfo']['address_approved'] != 1)
                         <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
                         <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
@@ -40,7 +40,7 @@
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
 
-                @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     @if($user[0]['userInfo']['kin_approved'] != 1)
                         <button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>
                         <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
@@ -115,7 +115,7 @@
                     {{$user[0]['userInfo']['userEmail']}}<br/>
                     {{$user[0]['userInfo']['userCell']}}<br/>
 
-                    @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['email_data_approved'] != 1)
+                    @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['email_data_approved'] != 1 && $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                         <button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>
                         <button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>
                     @endif
@@ -357,8 +357,11 @@
                                 </div>
 
                                 <div class="banner" id="{{$file['field']}}Banner">
-                                    @if($file["field"] === "moveIn")
-                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>
+                                    @if($file["field"] === "moveIn" && ($file["status"] === "AUploaded" || $file["status"] === "XApproved"))
+                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
+                                    @endif
+
+                                    @if($file["field"] === "moveIn" && $file["status"] !== "XApproved")
                                         <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
                                     @endif
 
