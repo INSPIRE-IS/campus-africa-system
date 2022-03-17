@@ -607,7 +607,7 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['rob_50_approve' => 2, 'rob_55_lease' => 1]);
+        User::where('id', $userId)->update(['rob_50_approve' => 2, 'rob_55_lease' => 0]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -4342,9 +4342,9 @@ class HomeController extends Controller
         }
 
         //Update Info robot based on data approved
-        $oldData = User::find($request->userUid);
+        $checkData = User::find($request->userUid);
         
-        if ($oldData->address_approved == 1 && $oldData->kin_approved == 1 && $oldData->email_data_approved == 1) {
+        if ($checkData->address_approved == 1 && $checkData->kin_approved == 1 && $checkData->email_data_approved == 1) {
             $rob_35_info = 2;
         } else {
             $rob_35_info = 1;

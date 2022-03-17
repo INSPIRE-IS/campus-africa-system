@@ -2092,31 +2092,23 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes!',
                 showLoaderOnConfirm: true,
-                preConfirm: (login) => {
-                    return fetch(`//api.github.com/users/${login}`)
-                    .then(response => {
-                        $.ajax({
-                            type: "post",
-                            url: "/approve-inline-data",
-                            data: {
-                                userUid: "{{$user[0]['userInfo']['id']}}",
-                                formId: formId,
-                                approvefield: approvefield,
-                                task: task
-                            },
-                
-                            success: function (data) {
+                preConfirm: (login) => {                    
+                    $.ajax({
+                        type: "post",
+                        url: "/approve-inline-data",
+                        data: {
+                            userUid: "{{$user[0]['userInfo']['id']}}",
+                            formId: formId,
+                            approvefield: approvefield,
+                            task: task
+                        },
+            
+                        success: function (data) {
 
-                                location.reload();
-                
-                            },
-                        });
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(
-                        `Request failed: ${error}`
-                        )
-                    })
+                            location.reload();
+            
+                        },
+                    });
                 },
             });
 
