@@ -360,7 +360,79 @@
                                     @endif
                                 </div>
                                 <div class="status" id="{{$file['field']}}Status">
+                                    @if($file["field"] === "proof_of_payment")
+                                        @if ($user[0]['userInfo']['rob_10_fee'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_10_fee'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_10_fee'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "copyID")
+                                        @if ($user[0]['userInfo']['rob_15_id'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_15_id'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_15_id'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "studentCard")
+                                        @if ($user[0]['userInfo']['rob_20_card'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_20_card'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_20_card'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "proofRegistration")
+                                        @if ($user[0]['userInfo']['rob_25_reg'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_25_reg'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_25_reg'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "bursaryApproval" || $file["field"] === "bankStatement")
+                                        @if ($user[0]['userInfo']['rob_30_funds'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_30_funds'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_30_funds'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
                                     @if($file["field"] === "moveIn")
+                                        @if ($user[0]['userInfo']['rob_55_lease'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_55_lease'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_55_lease'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+                                    
+                                    {{-- @if($file["field"] === "moveIn")
                                         @if($file["status"] === "XApproved" || $file["status"] === "Approved")
                                             <div class="button approved"></div>
                                         @elseif($file["status"] === "AUploaded")
@@ -378,7 +450,7 @@
                                         @elseif($file["status"] === "na")
                                             <div class="button na"></div>
                                         @endif
-                                    @endif
+                                    @endif --}}
                                     
                                 </div>
 
