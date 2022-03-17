@@ -100,7 +100,7 @@ class PDFController extends Controller
             'userUid' => $studentId,
             'fileName' => 'Lease.pdf',
             'fileUrl' => 'files/'.$user->userId.'/Lease.pdf',
-            'status' => 'Uploaded',
+            'status' => 'Rejected',
             'uploaded_by' => Auth::user()->name,
             'created_at' => date('Y-m-d h:m:s')
         );
@@ -113,7 +113,7 @@ class PDFController extends Controller
             UserFiles::insert($data);
         }
 
-        User::where('id', $studentId)->update(['rob_55_lease' => 1]);
+        User::where('id', $studentId)->update(['rob_55_lease' => 0]);
       }
         
 

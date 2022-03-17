@@ -383,7 +383,7 @@
                                 </div>
 
                                 <div class="banner" id="{{$file['field']}}Banner">
-                                    @if($file["field"] === "moveIn" && ($file["status"] === "AUploaded" || $file["status"] === "XApproved"))
+                                    @if($file["field"] === "moveIn")
                                         <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
                                     @endif
 
