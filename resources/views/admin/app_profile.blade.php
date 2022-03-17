@@ -15,12 +15,19 @@
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                @if(&& $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     @if($user[0]['userInfo']['address_approved'] != 1)
-                        <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
-                        <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+                        @if(Auth::user()->role_approve_docs == "1")
+                            <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
+                        @endif
+
+                        @if(Auth::user()->role_edit_app == "1")
+                            <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
+                        @endif
                     @else
-                        <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>
+                        @if(Auth::user()->role_delete_uploaded == 1)
+                            <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>
+                        @endif
                     @endif
                 @endif
             </div>
@@ -42,10 +49,17 @@
 
                 @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     @if($user[0]['userInfo']['kin_approved'] != 1)
-                        <button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>
-                        <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
+                        @if(Auth::user()->role_approve_docs == "1")
+                            <button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>
+                        @endif
+
+                        @if(Auth::user()->role_edit_app == "1")
+                            <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
+                        @endif
                     @else
-                        <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>
+                        @if(Auth::user()->role_delete_uploaded == 1)
+                            <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>
+                        @endif
                     @endif
                 @endif                
             </div>
@@ -115,10 +129,16 @@
                     {{$user[0]['userInfo']['userEmail']}}<br/>
                     {{$user[0]['userInfo']['userCell']}}<br/>
 
-                    @if(Auth::user()->role_approve_docs == "1" && $user[0]['userInfo']['email_data_approved'] != 1 && $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        <button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>
-                        <button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>
+                    @if ($user[0]['userInfo']['email_data_approved'] != 1 && $user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                        @if(Auth::user()->role_approve_docs == "1")
+                            <button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>
+                        @endif
+
+                        @if(Auth::user()->role_edit_app == "1")
+                            <button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>
+                        @endif
                     @endif
+                    
                 </div>
             </div>
 
