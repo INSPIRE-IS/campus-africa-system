@@ -338,7 +338,7 @@
                         </div>
                     @endif
                 
-                    @if(Auth::user()->role_approve_docs == 1 && $user->rob_60_cancelled == 0)
+                    @if($user->rob_60_cancelled == 0)
                         <div style="margin-top: 35px;" class="btns_approve_data">
                             @if(Auth::user()->role_approve_docs == 1 && $data_approved == 0)
                                 <button type="button" class="approve button" style="height:40px;" onClick="approveData('1')">Approve</button>
