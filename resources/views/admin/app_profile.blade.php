@@ -15,21 +15,8 @@
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                @if($user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                    @if($user[0]['userInfo']['address_approved'] != 1)
-                        @if(Auth::user()->role_approve_docs == "1")
-                            <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
-                        @endif
+                <div class="address_btn"></div>
 
-                        @if(Auth::user()->role_edit_app == "1")
-                            <button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>
-                        @endif
-                    @else
-                        @if(Auth::user()->role_delete_uploaded == 1)
-                            <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>
-                        @endif
-                    @endif
-                @endif
             </div>
         </div>
         <div class="col-3" id="col2">
@@ -116,21 +103,7 @@
                     {{$user[0]['userInfo']['userEmail']}}<br/>
                     {{$user[0]['userInfo']['userCell']}}<br/>
 
-                    @if($user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        @if($user[0]['userInfo']['email_data_approved'] != 1)
-                            @if(Auth::user()->role_approve_docs == "1")
-                                <button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>
-                            @endif
-
-                            @if(Auth::user()->role_edit_app == "1")
-                                <button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>
-                            @endif
-                        @else
-                            @if(Auth::user()->role_delete_uploaded == 1)
-                                <button type="button" class="rejected button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Reject</button>
-                            @endif
-                        @endif
-                    @endif  
+                    <div class="app_details_btn"></div>
                     
                 </div>
             </div>
@@ -778,6 +751,61 @@
     // MainAppSection
     function checkUserStatus(){
 
+        $(".address_btn").empty()
+
+        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+            if($("#address_approved").val() != 1){
+                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                    $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
+                }
+
+                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                    $(".address_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>')
+                }
+            }else{
+                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                    $(".address_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>')
+                }
+            }
+
+        }
+
+        $(".kin_btn").empty()
+
+        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?>" == 0){
+            if($("#kin_approved").val() != 1){
+                if(<?php echo Auth::user()->role_approve_docs; ?> == "1"){
+                    $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
+                }
+
+                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                    $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
+                }
+            }else{
+                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                    $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
+                }
+            }
+        }
+
+        $(".app_details_btn").empty()
+
+        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+            if($("#email_data_approved").val() != 1){
+                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                    $(".app_details_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>')
+                }
+
+                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                    $(".app_details_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>')
+                }
+            }else{
+                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                    $(".app_details_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Reject</button>')
+                }
+            }
+        }
+
         if($("#parent_approved").val() == "1"){
             $("#rejectedSpon").addClass('hidden')
             $("#approvedSpon").removeClass('hidden')
@@ -788,35 +816,28 @@
             $("#approvedBur").removeClass('hidden')
         }
 
-        if(<?php echo $user[0]['userInfo']['rob_50_approve']; ?> == 0 && <?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?> == 0){
-            if(<?php echo $user[0]['userInfo']['kin_approved']; ?> != 1){
-                if(<?php echo Auth::user()->role_approve_docs; ?> == "1"){
-                    $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
-                }
-
-                if(<?php echo Auth::user()->role_edit_app; ?> == "1"){
-                    $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
-                }
-            }else{
-                if(<?php echo Auth::user()->role_delete_uploaded; ?> == 1){
-                    $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
-                }
-            }
-        }
-
         if($("#kin_approved").val() == "1"){
             $("#rejectedKin").addClass('hidden')
             $("#approvedKin").removeClass('hidden')
+        }else{
+            $("#rejectedKin").removeClass('hidden')
+            $("#approvedKin").addClass('hidden')
         }
 
         if($("#address_approved").val() == "1"){
             $("#rejectedAddr").addClass('hidden')
             $("#approvedAddr").removeClass('hidden')
+        }else{
+            $("#rejectedAddr").removeClass('hidden')
+            $("#approvedAddr").addClass('hidden')
         }
         
         if($("#email_data_approved").val() == "1"){
             $("#app_det_statNo").addClass('hidden')
             $("#app_det_statYes").removeClass('hidden')
+        }else{
+            $("#app_det_statNo").removeClass('hidden')
+            $("#app_det_statYes").addClass('hidden')
         }
 
         //Check if we show/hide the approve user section
