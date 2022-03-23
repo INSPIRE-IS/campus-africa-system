@@ -2137,6 +2137,7 @@
                 success: function (data) {
                     
                     $('#' + formId).html(data);
+                    checkUserStatus();
                 },
             });
 

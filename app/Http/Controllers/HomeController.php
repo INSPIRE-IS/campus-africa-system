@@ -4090,8 +4090,9 @@ class HomeController extends Controller
                 echo $user->userAddressPostal . "<br/>";
 
                 ?>
-                <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
-                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
+                <!-- <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button> -->
+                <div class="address_btn"></div>
                 <?php
             }
 
@@ -4173,8 +4174,9 @@ class HomeController extends Controller
                 echo $user->kinAddressCity . ", " . $user->kinAddressPost . "<br/>";
 
                 ?>
-                <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="kin_approved" style="height:40px;">Approve</button>
-                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
+                <!-- <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="kin_approved" style="height:40px;">Approve</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button> -->
+                <div class="kin_btn"></div>
                 <?php
             }
 
@@ -4204,8 +4206,9 @@ class HomeController extends Controller
                 echo $user->userCell . "<br/>";
 
                 ?>
-                <button type="button" class="approve button btn_approve_inline" formid="<?php echo $request->formId; ?>" approvefield="email_data_approved" style="height:40px;">Approve</button>
-                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button>
+                <!-- <button type="button" class="approve button btn_approve_inline" formid="<?php echo $request->formId; ?>" approvefield="email_data_approved" style="height:40px;">Approve</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button> -->
+                <div class="app_details_btn"></div>
                 <?php
             }
         }
