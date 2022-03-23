@@ -47,21 +47,8 @@
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
 
-                @if($user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                    @if($user[0]['userInfo']['kin_approved'] != 1)
-                        @if(Auth::user()->role_approve_docs == "1")
-                            <button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>
-                        @endif
+                <div class="kin_btn"></div>
 
-                        @if(Auth::user()->role_edit_app == "1")
-                            <button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>
-                        @endif
-                    @else
-                        @if(Auth::user()->role_delete_uploaded == 1)
-                            <button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>
-                        @endif
-                    @endif
-                @endif                
             </div>
 
         </div>
@@ -799,6 +786,22 @@
         if($("#burser_approved").val() == "1"){
             $("#rejectedBur").addClass('hidden')
             $("#approvedBur").removeClass('hidden')
+        }
+
+        if(<?php echo $user[0]['userInfo']['rob_50_approve']; ?> == 0 && <?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?> == 0){
+            if(<?php echo $user[0]['userInfo']['kin_approved']; ?> != 1){
+                if(<?php echo Auth::user()->role_approve_docs; ?> == "1"){
+                    $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
+                }
+
+                if(<?php echo Auth::user()->role_edit_app; ?> == "1"){
+                    $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
+                }
+            }else{
+                if(<?php echo Auth::user()->role_delete_uploaded; ?> == 1){
+                    $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
+                }
+            }
         }
 
         if($("#kin_approved").val() == "1"){
@@ -2221,7 +2224,11 @@
             
                         success: function (data) {
 
-                            location.reload();
+                            $("#"+approvefield).val(task)
+
+                            refreshActions();  
+                            checkUserStatus();
+
             
                         },
                     });
