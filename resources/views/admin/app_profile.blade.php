@@ -2113,32 +2113,76 @@
                 success: function (data) {
                     
                     $('#' + formId).html(data);
-    
                 },
             });
 
             e.preventDefault();
         });
 
+        $(document).off('blur').on('blur', 'input', function(e) {
+            let fieldId = e.target.id
+            var required = $("#"+fieldId).hasClass('required')
+
+            if($("#"+fieldId).val() == "" && required == true){
+                $("#"+fieldId).addClass('fieldError')
+                $("#"+fieldId+"_error").removeClass('hidden')
+            }else{
+                $("#"+fieldId).removeClass('fieldError')
+                $("#"+fieldId+"_error").addClass('hidden')
+            }
+        });
+        
+
         $(document).on('click', '.btn_save_inline', function(e) {
-            let formId = $(this).attr('formid');
-            let edittype = $(this).attr('edittype');
 
-            let btn = $(this);
+            let formid = $(this).attr('formid')
 
-            $.ajax({
-                type: "post",
-                url: "/save-inline-data",
-                data: $('#' + formId + ' form').serialize(),
-    
-                success: function (data) {
+            //Check if any hidden fields are required, remove required check
+            $('.edit_info .hidden .fieldError').removeClass('fieldError').val('');
+            
+            var req = 1;
 
-                    $(btn).next().click();
-    
-                },
+            $('#'+formid+' .required').each( function(){
+                if($(this).val() === "" || $(this).val() === null){
+                    if (!$(this).parent().hasClass('hidden')) {
+                        req = 0
+
+                        console.log($(this)[0]["id"])
+
+                        $(this).addClass("fieldError")
+                        id = $(this)[0]["id"]
+                        $("#"+id+"_error").removeClass("hidden")
+                    }
+                }
             });
 
-            e.preventDefault();
+            if (req === 1) {
+                let formId = $(this).attr('formid');
+                let edittype = $(this).attr('edittype');
+
+                let btn = $(this);
+
+                $.ajax({
+                    type: "post",
+                    url: "/save-inline-data",
+                    data: $('#' + formId + ' form').serialize(),
+        
+                    success: function (data) {
+
+                        $(btn).next().click();
+        
+                    },
+                });
+
+                e.preventDefault();           
+
+            } else {
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                );
+            }
         });
 
         $(document).on('click', '.btn_approve_inline', function(e) {
