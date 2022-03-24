@@ -807,6 +807,7 @@
                 }
             }?>
         }
+        
 
         if($("#parent_approved").val() == "1"){
             $("#rejectedSpon").addClass('hidden')
@@ -850,6 +851,12 @@
             success: function (data) {
 
                 // console.log(data)
+
+                if(data['rob_40_bed'] == 2){
+                    $(".bed_code_status").empty().append('<span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>')
+                }else{
+                    $(".bed_code_status").empty().append('<span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>')
+                }
 
                 $(".appSection").empty()
 
@@ -1500,12 +1507,7 @@
                     booking_fee
                 )
 
-                if(bed_code!== ""){
-                    $(".bed_code_status").empty().append('<span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>')
-                }else{
-                    $(".bed_code_status").empty().append('<span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>')
-                }
-
+                checkUserStatus();
 
             },
         });
