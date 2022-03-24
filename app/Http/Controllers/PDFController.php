@@ -117,6 +117,6 @@ class PDFController extends Controller
       }
         
 
-        return 'true';
+        return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->first(), User::where('id', $studentId)->first()];
       }
 }

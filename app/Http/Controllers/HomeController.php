@@ -461,6 +461,70 @@ class HomeController extends Controller
         }
     }
 
+    function get_user_status($fileType, $user) {
+
+        if($fileType == "proof_of_payment"){
+            $typeName = "Booking Fee Proof of Payment";
+            $field_data = "";
+            $field_doc = "rob_10_fee";
+            
+
+        } elseif($fileType == "copyID"){
+            $typeName = "Copy of ID Document";
+            $field_data = "id_data_approved";
+            $field_doc = "rob_15_id";            
+
+        }elseif($fileType == "studentCard"){
+            $typeName = "Copy of Student Card";
+            $field_data = "student_card_approved";
+            $field_doc = "rob_20_card";
+
+        }elseif($fileType == "proofRegistration"){
+            $typeName = "Proof of Registration";
+            $field_data = "registration_approved";
+            $field_doc = "rob_25_reg";
+
+        }elseif($fileType == "bursaryApproval"){
+            $typeName = "NSFAS / Bursary Approval";
+            $field_data = "bursary_approved";
+            $field_doc = "rob_30_funds";
+
+        }elseif($fileType == "bankStatement"){
+            $typeName = "Bank Statements";
+            $field_data = "bank_approved";
+            $field_doc = "rob_30_funds";                
+
+        }elseif($fileType == "moveIn"){
+            $typeName = "Lease";
+            $field_data = "";
+            $field_doc = "rob_55_lease";
+        }
+
+        $data_approved = 0;
+        $doc_approved = 0;
+
+        if (!empty($user)) {
+            if (!empty($field_data) && isset($user->{$field_data})) {
+                $data_approved = $user->{$field_data};
+            }
+
+            if (!empty($field_doc) && isset($user->{$field_doc})) {
+                $doc_approved = $user->{$field_doc};
+            }
+        }
+
+        return [
+            'typeName' => $typeName, 
+
+            'field_data' => $field_data, 
+            'field_doc' => $field_doc,
+
+            'data_approved' => $data_approved,
+            'doc_approved' => $doc_approved
+        ];
+
+    }
+
     public function action_file(Request $request){
 
         if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3"){
@@ -477,7 +541,7 @@ class HomeController extends Controller
 
             $userFile = UserFiles::where('id', $fileId)->first();
 
-            $user_status = get_user_status($userFile['fileId'], "");
+            $user_status = $this->get_user_status($userFile['fileId'], "");
 
             if($action == "Rejected"){
                 $text = "Rejected ".$user_status['typeName']." with reason: ".$reason ;
@@ -514,7 +578,7 @@ class HomeController extends Controller
 
             $this->update_user_status($userFile->userUid);
 
-            return $userFile;
+            return [$userFile, User::where('id', $userFile->userUid)->first()];
 
         }
     }
@@ -2089,11 +2153,73 @@ class HomeController extends Controller
         return ["done", $emailValid, $idNumberValid];
     }
 
+    public function get_booking_details(Request $request){
+        //
+        $booking = Booking::where('userId', $request->userId)->first();
+        $user = User::with('files')->where('id', $request->userId)->first();
+        $residence = Residence::where('residence', $booking->property)->first();
+
+        //Get booking Meta
+        $bookingPropData = Property::where('id', $booking->property_data_id)->first();
+
+        $booking_paid = 'false';
+        $booking_waived = 'false';
+
+        foreach($user['files'] as $file){
+
+            if($file->fileId == "proof_of_payment"){
+                
+                if($file->fileUrl !== null && $file->fileUrl !== '' && $file->status !== "Rejected" && $file->status !== "Uploaded" && $file->status !== "AUploaded"){
+                    $booking_paid = "true";
+                    
+                }else{
+                    if($file->status == "XApproved" || $file->status == "Approved"){
+
+                        $actions = ActionList::where('userUid', $user->id)->orderBy('id', 'DESC')->get();
+
+                        foreach($actions as $action){
+                            if (str_contains($action->action, 'Waived')) {
+                                $booking_waived = 'true';
+                                break;
+                            }
+
+                            if(str_contains($action->action, 'R0')){
+                                $booking_waived = '0';
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        $leaseApproved = 'false';
+
+
+        foreach($user['files'] as $userFile){
+            if($userFile['fileId'] == "moveIn"){
+                if($userFile['status'] == "Approved"){
+                    $leaseApproved = "true";
+                }
+            }
+        }
+
+        return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived];
+    }
+
     public function change_booking(Request $request){
 
         $bookingId = $request->bookingId;
         $property = $request->property;
         $roomTypeNew = $request->roomType;
+
+        $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
+
+        if($userLeaseStatus !== '0'){
+            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+        }
 
         if($request->floor == "Choose a Floor"){
             //Changing Only Property & Room Type
@@ -3144,6 +3270,8 @@ class HomeController extends Controller
             ]);
         }
 
+        User::where('id', $request->userId)->update(["rob_10_fee" => "2"]);
+
     
         ActionList::create([
             "userUid" => $request->userId,
@@ -3152,6 +3280,8 @@ class HomeController extends Controller
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
         ]);
+
+        return UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->pluck('id')->first();
         
     }
 
@@ -3160,6 +3290,8 @@ class HomeController extends Controller
         $lookup = Lookups::where('group_id', '7')->first();
 
         $booking = Booking::where('userId', $request->userId)->first();
+
+        User::where('id', $request->userId)->update(["rob_10_fee" => "0"]);
 
         $booking_data = [];
 
@@ -3627,6 +3759,12 @@ class HomeController extends Controller
         }
     }
 
+    public function get_comment(Request $request){
+        $commentList = Comments::with('users')->where('user_uid', $request->userId)->orderBy('created_at', 'desc')->get();
+
+        return $commentList;
+    }
+
     public function add_comment(Request $request){
         
         Comments::create([
@@ -3854,7 +3992,7 @@ class HomeController extends Controller
         $user = User::where('id', $student_id)->first();
 
         if (!empty($user)) {
-            return ["bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "overall_status" => $user->overall_status];
+            return ["rob_10_fee" => $user->rob_10_fee, "rob_15_id" => $user->rob_15_id, "rob_20_card" => $user->rob_20_card , "rob_25_reg" => $user->rob_25_reg , "rob_30_funds" => $user->rob_30_funds , "rob_35_info" => $user->rob_35_info , "rob_40_bed" => $user->rob_40_bed, "rob_50_approve" => $user->rob_50_approve, "rob_60_cancelled" => $user->rob_60_cancelled ];
         } else {
             return false;
         }

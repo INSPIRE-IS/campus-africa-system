@@ -110,39 +110,12 @@
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
                 <div class="flex">
-                    @if($booking->bed_code)
-                        <span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>
-                    @else
-                        <span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>
-                    @endif
+                    <div class="bed_code_status"></div>
+                    
                     <h2 class="appHeader">Application Summary</h2>
                 </div>
 
-                <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
-                <h4 class="cardHeader" >{{$booking->roomType}}</h4>
-                <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" id="prop_room_row2" >
-                    @if($booking->bed_code)Bed Code: {{$booking->bed_code}}
-                        @if(Auth::user()->role_change_bed == "1")
-                            @if($leaseApproved == 'false')
-                                <button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>
-                            @endif
-                        @endif 
-                    @endif</h4>
-                <h4 class="cardHeader">
-                    @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
-                    @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
-
-                    @if($booking->lease_from_date && $booking->lease_to_date) Lease Duration: <?php $date1 = new DateTime($booking->lease_from_date); $date2 = new DateTime($booking->lease_to_date); $interval = $date1->diff($date2); if($interval->y > 1 || $interval->y < 1){ $years = "years";}else{$years = "year";} echo $interval->y . " ".$years.", " . $interval->m." months, ".$interval->d." days "; ?> @endif
-                </h4>
-                <br/>
-                <div id="AppSummaryPaid" class="<?php if($booking_paid == 'false'){echo "hidden";}?>">
-                    <h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2>
-                    <h4 class="cardHeader" >
-                        R {{$booking->room_rate}}
-                    </h4>
-                    <br/>
-                </div>
+                <div class="app_summary_details"></div>
                 
                 <div class="buttons">
                     @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
@@ -241,24 +214,10 @@
 
                 <h2 class="appSubHeader bold">PAID</h2>
                 <p class="appSubHeader" id="paidOption">
+                <div class="waived_paid_wording"></div>
                     
 
-                    @if($booking_waived == 'true')
-                        Waived 
-                    @elseif($booking_waived == '0')
-                        Yes, no booking fee
-                    @else 
-                        @foreach($user[0]["files"] as $file)
-                            @if($file["field"] === "proof_of_payment")
-                                @if($file["status"] === "XApproved" || $file["status"] === "Approved")
-                                    Yes <br/>
-                                @else
-                                    No <br/>
-                                @endif
-                            @endif
-                        @endforeach
-
-                    @endif
+                    
                 </p>
             </div>
 
@@ -282,13 +241,7 @@
                     <!-- <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
-                    @if($booking_paid == 'false')
-                        @if($booking_waived == 'false')
-                            <button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee('{{$user[0]['userInfo']['id']}}')">Waive Booking Fee</button>
-                        @else
-                            <button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee('{{$user[0]['userInfo']['id']}}')">Undo Booking Fee Waiver </button>
-                        @endif
-                    @endif
+                    <div class="waitve_btn"></div>
                 </div>
 
                 <br/><br/><br/><br/>
@@ -465,20 +418,7 @@
 
                 <div class="commentItemList" style="<?php if(Auth::user()->role_comment == "1"){echo "margin-top:73px;";} ?> max-height: 350px; overflow: auto; width:100%">
 
-                @if(count($comments) == 0) <p style="text-align:center">There are no comments!</p>@endif 
-
-                    @foreach($comments as $comment)
-
-                        <div class="infoBlock">
-                            <div class="responsible" style="width:100%">
-                                <p>{{substr($comment->created_at, 8, 2)}}/{{substr($comment->created_at, 5, 2)}}/{{substr($comment->created_at, 0, 4)}} &nbsp; {{substr($comment->created_at, 11, 5)}}  | {{$comment->users->email}} | @if($comment->users->userRole == "1") {{$comment->users->user_role_name}} @endif</p>
-                            </div>
-                            <div class="information">
-                                <p>{{$comment->comment}}</p>
-                            </div>
-                        </div>
-
-                    @endforeach
+                <div class="comments_block"></div>
                     
                 </div>
             </div>
@@ -633,10 +573,13 @@
 <input type="hidden" id="selectedRoom" value=""/>
 <input type="hidden" id="email_data_approved" value="{{$user[0]['userInfo']['email_data_approved']}}"/>
 
+<input type="hidden" id="booking_fee_paid" value="{{$booking_paid}}" />
+<input type="hidden" id="booking_fee_waived" value="{{$booking_waived}}" />
+
+
+
 
 <script>
-
-
 
     $.ajaxSetup({
         headers: {
@@ -703,11 +646,42 @@
 
             success: function (data) {
                 
-                window.location.reload();
+                // window.location.reload();
+                $("#newComment").val('')
+                $("#addComment").empty().append('Add Comment')
+                getAllComments();
 
             },
         });
     });
+
+    getAllComments();
+
+    function getAllComments(){
+        $.ajax({
+            type: "post",
+            url: "/get-comments",
+            data: {
+                userId: "{{$user[0]['userInfo']['id']}}",
+            },
+
+            success: function (data) {
+                
+                // console.log(data)
+                $(".comments_block").empty()
+
+                if(data.length == 0){
+                    $(".comments_block").append('<p style="text-align:center">There are no comments!</p>');
+                }else{
+
+                    Object.keys(data).forEach( function(key) {
+                        $(".comments_block").append('<div class="infoBlock"><div class="responsible" style="width:100%">'+(data[key].created_at).slice(8, 10)+'/'+(data[key].created_at).slice(5, 7)+'/'+(data[key].created_at).slice(0, 4)+' '+(data[key].created_at).slice(11, 16)+' | '+data[key].users.email+' | '+data[key].users.user_role_name+'</p></div><div class="information"><p>'+data[key].comment+'</p></div></div>')
+                    });
+                }
+
+            },
+        });
+    }
 
     $('#btn_clear_bed').on("click", function(e) {
         Swal.fire({
@@ -806,6 +780,34 @@
             }
         }
 
+        $(".waitve_btn").empty();
+
+        if($("#booking_fee_paid").val() == 'false'){
+            if($("#booking_fee_waived").val() == 'false'){
+                $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
+            }else{
+                $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+            }
+        }
+
+        $(".waived_paid_wording").empty();
+
+        if($("#booking_fee_waived").val() == 'true'){
+            $(".waived_paid_wording").append('Waived')
+        }else if($("#booking_fee_waived").val() == '0'){
+            $(".waived_paid_wording").append('Yes, no booking fee')
+        }else{
+            <?php foreach($user[0]["files"] as $file){ 
+                if($file["field"] === "proof_of_payment"){
+                    if($file["status"] === "XApproved" || $file["status"] === "Approved"){
+                        ?>$(".waived_paid_wording").append('Yes')<?php
+                    }else{
+                        ?>$(".waived_paid_wording").append('No')<?php
+                    }
+                }
+            }?>
+        }
+
         if($("#parent_approved").val() == "1"){
             $("#rejectedSpon").addClass('hidden')
             $("#approvedSpon").removeClass('hidden')
@@ -841,12 +843,49 @@
         }
 
         //Check if we show/hide the approve user section
-        // $.ajax({
-        //     type: "get",
-        //     url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
+        $.ajax({
+            type: "get",
+            url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
 
-        //     success: function (data) {
-        //         console.log(data);
+            success: function (data) {
+
+                // console.log(data)
+
+                $(".appSection").empty()
+
+                if(data['rob_50_approve'] == 0 && data['rob_60_cancelled'] == 0){
+                    $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
+
+                    if("<?php echo Auth::user()->role_approve_docs; ?>" == 1
+                        && data['rob_10_fee'] == 2
+                        && data['rob_15_id'] == 2
+                        && data['rob_20_card'] == 2
+                        && data['rob_25_reg'] == 2
+                        && data['rob_30_funds'] == 2
+                        && data['rob_35_info'] == 2
+                        && data['rob_40_bed'] == 2)
+                    {
+                        $(".main_btn").empty().append('<button type="button" class="appBtn" id="approveProfile" onClick="approveApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">APPROVE APPLICATION AND SEND CONFIRMATION</button><br/><br/><br/><button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">REJECT APPLICATION AND SEND NOTIFICATION</button><br/><br/><br/>')
+                    }
+                }
+
+                if(data['rob_60_cancelled'] == 1){
+                    if(data['rob_50_approve'] == 3){
+                        $(".appStatusText").empty().append(": Rejected")
+                    }else{
+                        $(".appStatusText").empty().append(": Cancelled")
+                    }
+                }else{
+                    if(data['rob_50_approve'] == 2){
+                        $(".appStatusText").empty().append(": Approved")                        
+                    }else if(data['rob_50_approve'] == 3){
+                        $(".appStatusText").empty().append(": Rejected")
+                    }
+                }
+
+                // appStatusText
+            }
+        });
 
         //         if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
             
@@ -1383,6 +1422,95 @@
         modalLease.style.display = "none";
     }
 
+    bookingTypeDetails();
+
+    function bookingTypeDetails(){
+        $.ajax({
+            type: "post",
+            url: "/get-booking-details",
+            data: {
+                userId: "{{$user[0]['userInfo']['id']}}",
+            },
+
+            success: function (data) {
+                                
+                var metaInfo1 = "";
+                var floor = "";
+                var unit = "";
+                if(data[1].meta_info_1 && data[1].meta_info_1 !== ""){
+                    var metaInfo1 = data[1].meta_info_1+", ";
+                }
+                if(data[0].floor !== ""){
+                    var floor = data[0].floor+" Floor,";
+                }
+                if(data[0].unit !== ""){
+                    var unit = data[0].unit+" Unit,";
+                }
+
+                var bed_code = "";
+                var unallocated_bed = "";
+                if(data[0].bed_code !== ""){
+                    var bed_code = "Bed Code: "+data[0].bed_code;
+                    if("<?php echo Auth::user()->role_change_bed; ?>" == "1"){
+                        if(data[2] == 'false'){
+                            var unallocated_bed = '<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
+                        }
+                    }
+                }
+
+                var lease_from = "";
+                if(data[0].lease_from_date !== ""){
+                    var lease_from = 'Lease From: '+data[0].lease_from_date+' at '+data[0].lease_from_time+'</br/>';
+                }
+                var lease_to = "";
+                if(data[0].lease_to_date !== ""){
+                    var lease_to = 'Lease To: '+data[0].lease_to_date+' at '+data[0].lease_to_time+'</br/>';
+                }
+
+                let date1 = new Date(data[0].lease_from_date);
+                let date2 = new Date(data[0].lease_to_date);
+                var diff = new Date(date2.getTime() - date1.getTime());
+                let years = diff.getUTCFullYear() - 1970;
+                let months = diff.getUTCMonth();
+                let days = diff.getUTCDate() - 3;
+                var lease_duration = "";
+                if(data[0].lease_from_date !== "" && data[0].lease_to_date !== ""){
+                    var lease_duration = "Lease Duration: "+years+" years, "+months+" months, "+days+" days ";
+                }
+
+                var booking_fee = "";
+                if(data[3] !== 'false'){
+                    var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
+                }
+                
+
+                $(".app_summary_details").empty().append(
+                    '<h4 class="cardSubHeaderGrey">'+data[0].property+'</h4>'+
+                    '<h4 class="cardHeader" >'+data[0].roomType+'</h4>'+
+                    '<h4 class="cardHeader" id="prop_room_row1" >'+metaInfo1+floor+unit+'</h4>'+
+                    '<h4 class="cardHeader" id="prop_room_row2" >'+
+                    bed_code+
+                    unallocated_bed+
+                    '</h4>'+
+                    '<h4 class="cardHeader">'+
+                    lease_from+
+                    lease_to+
+                    lease_duration+
+                    '</h4><br/>'+
+                    booking_fee
+                )
+
+                if(bed_code!== ""){
+                    $(".bed_code_status").empty().append('<span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>')
+                }else{
+                    $(".bed_code_status").empty().append('<span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>')
+                }
+
+
+            },
+        });
+    }
+
     $("#changeBookingType").on('click', function(){
 
 
@@ -1418,8 +1546,29 @@
                     },
 
                     success: function (data) {
+
+                        // console.log(data)
                         
-                        window.location.reload();
+                        // window.location.reload();
+                        bookingTypeDetails();
+                        refreshActions();
+
+                        $(".waived_paid_wording").empty();
+
+                        if(data[4] == 'true'){
+                            $(".waived_paid_wording").append('Waived')
+                        }else if(data[4] == '0'){
+                            $(".waived_paid_wording").append('Yes, no booking fee')
+                        }else{
+                            if(data[3].status == "Approved"){
+                                $(".waived_paid_wording").append('Yes')
+                            }else{
+                                $(".waived_paid_wording").append('No')
+                            }
+                        }
+
+                        $("#myModalEditApp").html("");
+                        $("#myModalEditApp").css("display", "none");
                     },
                 });
         }
@@ -1442,7 +1591,12 @@
 
                 success: function (data) {
                     
-                    window.location.reload();
+                    // window.location.reload();
+
+                    bookingTypeDetails();
+                    refreshActions();
+                    $("#myModalEditLease").html("");
+                    $("#myModalEditLease").css("display", "none");
                 },
             });
     })
@@ -1871,7 +2025,7 @@
     //File Upload
     $(document).on('change', '#bursaryApproval, #moveIn, #copyID, #studentCard, #bankStatement, #proofRegistration, #proof_of_payment', function(){
         let field = $(this).attr('id');
-        console.log(field);
+        // console.log(field);
 
         $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -1892,10 +2046,16 @@
             processData: false,
 
             success: function (data) {
-                if (data> 0) {
+                if (data[0]> 0) {
+                    
                     $("#" + field + "Status").empty().append('<div class="button action"></div>');
 
-                    var button = '<button type="button" onClick="btn_view_document_ajax('+data+')">View Document</button>';
+                    var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
+
+                    if(field == "moveIn"){
+                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a><button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button><button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
+                    }
+
                     $("#" + field + "Banner").empty().append(button);
 
                     refreshActions();
@@ -1903,7 +2063,7 @@
                 } else {
                     Swal.fire(
                         'Error',
-                        data,
+                        data[0],
                         'error'
                     )
                     $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
@@ -1932,7 +2092,18 @@
                     },
 
                     success: function (data) {
-                        window.location.reload();
+                        // window.location.reload();
+
+                        $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
+
+                        <?php if(Auth::user()->role_upload_docs == 1){ ?>
+                            let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" hidden/>';
+                            $("#proof_of_paymentBanner").empty().append(uploadbtn);
+                        <?php } ?>
+
+                        $("#booking_fee_waived").val('false');
+                        refreshActions();  
+                        checkUserStatus();
                     },
                 });
             }else{
@@ -1974,7 +2145,17 @@
                             },
 
                             success: function (data) {
-                                window.location.reload();
+                                // window.location.reload();
+
+                                $("#proof_of_paymentStatus").empty().append('<div class="button approved"></div>');
+
+                                var button = '<button type="button" onClick="btn_view_document_ajax('+data+')">View Document</button>';
+                                $("#proof_of_paymentBanner").empty().append(button);
+
+                    
+                                $("#booking_fee_waived").val('true');
+                                refreshActions();  
+                                checkUserStatus();
                             },
                         });
                     }else{
@@ -2063,7 +2244,7 @@
         })
     }
 
-    $('#myBtn_regen_lease').on("click", function(e) {
+    $(document).off('click').on('click', '#myBtn_regen_lease', function(e) {
         let btn = $(this);
         $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -2081,6 +2262,7 @@
 
         e.preventDefault();
     });
+
 
     // function checkData(){
     //     $.ajax({

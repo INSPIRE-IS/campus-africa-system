@@ -110,6 +110,8 @@ Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
+
+Route::post('/get-booking-details', [HomeController::class, 'get_booking_details']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
 Route::post('/change-lease', [HomeController::class, 'change_lease']);
 Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
@@ -151,7 +153,7 @@ Route::get('/download/matched-unmatched/{id}', [HomeController::class, 'download
 Route::get('download-nsfas-report', [HomeController::class, 'download_nsfas_report']);
 
 
-
+Route::post('/get-comments', [HomeController::class, 'get_comment']);
 Route::post('/add-comment', [HomeController::class, 'add_comment']);
 Route::post('/change-nsfsbursar', [HomeController::class, 'change_nsfsbursar']);
 Route::get('/update-user-status/{user_id}', [HomeController::class, 'update_user_status']);

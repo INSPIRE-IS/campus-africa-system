@@ -584,7 +584,7 @@
                             processData: false,
 
                             success: function (data) {
-                                if (data > 0) {
+                                if (data[0] > 0) {
                                     $("#"+fileForApproval+"Status").empty().append('<div class="button action"></div>');
 
                                     refreshActions();                                    
@@ -594,7 +594,7 @@
                                 } else {
                                     Swal.fire(
                                         'Error',
-                                        data,
+                                        data[0],
                                         'error'
                                     )
 
@@ -681,17 +681,31 @@
             success: function (data) {
 
                 if(type == "Approved" && $("#FileNameForApproval").val() == "moveIn"){
-                    window.location.reload();
+                    // window.location.reload();
+
+                    $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
+
+                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> <button type="button" onclick="btn_view_document_ajax('+data[0]['id']+')">View Document</button>';
+
+                    $("#"+fileForApproval+"Banner").empty().append(uploadbtn)
+
+                    refreshActions();
+
+                    $("#myModal").html("");
+                    $("#myModal").css("display", "none");
 
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
 
                     //Add back upload button
-                    if (type == "Rejected") {
+                    if (type == "Rejected" && fileForApproval !== "moveIn") {
                         @if(Auth::user()->role_upload_docs == 1)
                             let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                         @endif
+                    }else if(type == "Rejected" && fileForApproval == "moveIn"){
+                        let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> <button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                        $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                     }
                 
                     refreshActions();
@@ -734,10 +748,15 @@
                         $("#"+fileForApproval+"Status").empty().append('<div class="button rejected"></div>');
 
                         //Add back upload button
-                        @if(Auth::user()->role_upload_docs == 1)
-                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                        if (fileForApproval !== "moveIn") {
+                            @if(Auth::user()->role_upload_docs == 1)
+                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                                $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+                            @endif
+                        }else if(fileForApproval == "moveIn"){
+                            let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> <button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
-                        @endif
+                        }
                         
                         refreshActions();
 

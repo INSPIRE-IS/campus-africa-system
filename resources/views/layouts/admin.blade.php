@@ -93,37 +93,14 @@
                 @if (isset($appProfile) && $appProfile === "true")
                     <h1 class="bookingSub">
                         Application Profile 
-                        @if($user[0]['userInfo']['rob_60_cancelled'] == 1)
-                            @if ($user[0]['userInfo']['rob_50_approve'] == 3)
-                                : Rejected
-                            @else
-                                : Cancelled
-                            @endif
-                        @else 
-                            @if($user[0]['userInfo']['rob_50_approve'] == 2)
-                                : Approved
-                            @elseif($user[0]['userInfo']['rob_50_approve'] == 3)
-                                : Rejected
-                            @endif
-                        @endif
+                        <span class="appStatusText"></span>
                     </h1>
                 @endif
                 <h1 class="booking_app">{{$headerTitle}}</h1>
 
                 <div class="buttonSidePanel" style="margin-top:-50px;">
-
                     @if (isset($appProfile) && $appProfile === "true")
-                        @if($user[0]['userInfo']['rob_50_approve'] == 0 && $user[0]['userInfo']['rob_60_cancelled'] == 0)                        
-                            <div id="MainAppSection">
-                                @if(Auth::user()->role_approve_docs == 1 && $user[0]['userInfo']['rob_10_fee'] == 2 && $user[0]['userInfo']['rob_15_id'] == 2 && $user[0]['userInfo']['rob_20_card'] == 2 
-                                && $user[0]['userInfo']['rob_25_reg'] == 2 && $user[0]['userInfo']['rob_30_funds'] == 2 && $user[0]['userInfo']['rob_35_info'] == 2 && $user[0]['userInfo']['rob_40_bed'] == 2)
-                                    <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
-                                    <br/><br/><br/>
-                                    <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
-                                    <br/><br/><br/>   
-                                @endif  
-                            </div>
-                        @endif
+                    <div class="appSection"></div>
                     @endif
                     
                 </div>
@@ -238,7 +215,19 @@
 
                                 success: function (data) {
                                     
-                                    window.location.reload();
+                                    // window.location.reload();
+                                    $("#documentsSectionDisplay").append(
+                                        '<div class="section">'+
+                                            '<div class="label">LEASE</div>'+
+                                            '<div class="status" id="moveInStatus"><div class="button rejected"></div></div>'+
+                                            '<div class="banner" id="moveInBanner">'+
+                                                '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'+
+                                                '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'+
+                                                '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label>'+
+                                                '<input type="file" id="moveIn" hidden>'+
+                                            '</div>'+
+                                        '</div>')
+                                    checkUserStatus();
                                 },
                             });
                         },
@@ -334,7 +323,8 @@
                         },
 
                         success: function (data) {
-                            window.location.reload();
+                            // window.location.reload();
+                            checkUserStatus();
                         },
                     });
                 }
