@@ -409,6 +409,10 @@
                                             </label>
                                             <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" hidden/>
 
+                                            @if(explode("_", $file["field"])[0] == "other")
+                                                <button type="button" style="margin-left:5px;" onClick="deleteFile('{{$file['field']}}')">Delete</button>
+                                            @endif
+
                                         @endif
                                     @endif
                                 </div>
@@ -2535,16 +2539,6 @@
 
                     success: function (data) {
 
-                        // $("#proof_of_paymentStatus").empty().append('<div class="button approved"></div>');
-
-                        // var button = '<button type="button" onClick="btn_view_document_ajax('+data+')">View Document</button>';
-                        // $("#proof_of_paymentBanner").empty().append(button);
-
-            
-                        // $("#booking_fee_waived").val('true');
-                        // refreshActions();  
-                        // checkUserStatus();
-
                         $("#documentsSectionDisplay").append(
                             '<div class="section">'+
                                 '<div class="label">'+
@@ -2559,13 +2553,48 @@
                                         '<i class="fas fa-file-upload"></i>'+
                                     '</label>'+
                                     '<input type="file" id="'+data+'" onChange="UploadDocument(\''+data+'\')" hidden>'+
+                                    '<button type="button" style="margin-left:5px;" onClick="deleteFile(\''+data+'\')">Delete</button>'+
                                 '</div>'+
                             '</div>'
                         )
+
+                        refreshActions();  
+                        checkUserStatus()
                     },
                 });
             }else{
                 $("#waiveThisBookingFee").empty().append('waive booking fee')
+            }
+        })
+    }
+
+    function deleteFile(fileName){
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/remove-document-upload",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        fileName: fileName
+                    },
+
+                    success: function (data) {
+
+                        document.getElementById(fileName+"Status").parentElement.remove();
+
+                        checkUserStatus()
+                    },
+                });
             }
         })
     }

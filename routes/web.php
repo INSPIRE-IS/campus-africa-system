@@ -173,3 +173,4 @@ Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save
 Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);
 
 Route::post('/add-other-document', [DocumentsController::class, 'add_other_document']);
+Route::post('/remove-document-upload', [DocumentsController::class, 'remove_document_upload']);

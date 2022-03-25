@@ -703,7 +703,12 @@
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
 
                     //Add back upload button
-                    if (type == "Rejected" && fileForApproval !== "moveIn") {
+                    if (type == "Rejected" && fileForApproval.substring(0, 5) == "other") {
+                        @if(Auth::user()->role_upload_docs == 1)
+                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/> <button type="button" style="margin-left:5px;" onClick="deleteFile(\'{{$file->fileId}}\')">Delete</button>';
+                            $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+                        @endif
+                    }else if(type == "Rejected" && fileForApproval !== "moveIn" ){
                         @if(Auth::user()->role_upload_docs == 1)
                             let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
