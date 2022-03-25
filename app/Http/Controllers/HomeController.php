@@ -2606,7 +2606,11 @@ class HomeController extends Controller
         }
 
         if (isset($request->getType) && $request->getType == "floor") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
+            // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
+
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->whereNull('room_available')->get();
+
+            // // $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
 
             //Create a unique Floor list
             $floors = [];
@@ -2626,7 +2630,9 @@ class HomeController extends Controller
             return ["true", $selected, $floors];
 
         } elseif (isset($request->getType) && $request->getType == "unit") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->get();
+            // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->get();
+
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->whereNull('room_available')->get();
 
             //Create a unique Unit list
             $units = [];
@@ -2640,7 +2646,7 @@ class HomeController extends Controller
             return ["true", $selected, $units];
 
         } elseif (isset($request->getType) && $request->getType == "bed_code") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->get();
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->whereNull('room_available')->get();
 
             //Create a unique Unit list
             $bed_code = [];
@@ -2655,7 +2661,7 @@ class HomeController extends Controller
                         $bed_code[$pi->bed_code] = $pi;
                     }else{
 
-                        if($bed_used[0]->users->applicationStatus == "Rejected Confirmed" || $bed_used[0]->users->applicationStatus == "Cancelled"){
+                        if($bed_used[0]->users->rob_50_approve == "2" || $bed_used[0]->users->rob_60_cancelled == "1"){
                             $bed_code[$pi->bed_code] = $pi;
                         }else{
                             $booked_bed_codes[$pi->bed_code] = $pi;
