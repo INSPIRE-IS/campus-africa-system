@@ -461,69 +461,6 @@ class HomeController extends Controller
         }
     }
 
-    function get_user_status($fileType, $user) {
-
-        if($fileType == "proof_of_payment"){
-            $typeName = "Booking Fee Proof of Payment";
-            $field_data = "";
-            $field_doc = "rob_10_fee";
-            
-
-        } elseif($fileType == "copyID"){
-            $typeName = "Copy of ID Document";
-            $field_data = "id_data_approved";
-            $field_doc = "rob_15_id";            
-
-        }elseif($fileType == "studentCard"){
-            $typeName = "Copy of Student Card";
-            $field_data = "student_card_approved";
-            $field_doc = "rob_20_card";
-
-        }elseif($fileType == "proofRegistration"){
-            $typeName = "Proof of Registration";
-            $field_data = "registration_approved";
-            $field_doc = "rob_25_reg";
-
-        }elseif($fileType == "bursaryApproval"){
-            $typeName = "NSFAS / Bursary Approval";
-            $field_data = "bursary_approved";
-            $field_doc = "rob_30_funds";
-
-        }elseif($fileType == "bankStatement"){
-            $typeName = "Bank Statements";
-            $field_data = "bank_approved";
-            $field_doc = "rob_30_funds";                
-
-        }elseif($fileType == "moveIn"){
-            $typeName = "Lease";
-            $field_data = "";
-            $field_doc = "rob_55_lease";
-        }
-
-        $data_approved = 0;
-        $doc_approved = 0;
-
-        if (!empty($user)) {
-            if (!empty($field_data) && isset($user->{$field_data})) {
-                $data_approved = $user->{$field_data};
-            }
-
-            if (!empty($field_doc) && isset($user->{$field_doc})) {
-                $doc_approved = $user->{$field_doc};
-            }
-        }
-
-        return [
-            'typeName' => $typeName, 
-
-            'field_data' => $field_data, 
-            'field_doc' => $field_doc,
-
-            'data_approved' => $data_approved,
-            'doc_approved' => $doc_approved
-        ];
-
-    }
 
     public function action_file(Request $request){
 
@@ -541,7 +478,7 @@ class HomeController extends Controller
 
             $userFile = UserFiles::where('id', $fileId)->first();
 
-            $user_status = $this->get_user_status($userFile['fileId'], "");
+            $user_status = get_user_status($userFile['fileId'], "");
 
             if($action == "Rejected"){
                 $text = "Rejected ".$user_status['typeName']." with reason: ".$reason ;
@@ -1537,13 +1474,13 @@ class HomeController extends Controller
 
         }
 
-        if($request->processingStatus !== "" && !empty($request->processingStatus)){
-            if($request->processingStatus !== "All" && $request->processingStatus !== "NA"){
+        // if($request->processingStatus !== "" && !empty($request->processingStatus)){
+        //     if($request->processingStatus !== "All" && $request->processingStatus !== "NA"){
 
-                $processingStatus = 'u.overall_status LIKE "%'.$request->processingStatus.'%"';
-                array_push($search_value, $processingStatus);
-            }
-        }
+        //         $processingStatus = 'u.overall_status LIKE "%'.$request->processingStatus.'%"';
+        //         array_push($search_value, $processingStatus);
+        //     }
+        // }
 
 
         if($request->studentNo !== "" && !empty($request->studentNo)){
@@ -1552,11 +1489,8 @@ class HomeController extends Controller
         }
 
         if($request->idPassport !== "" && !empty($request->idPassport)){
-            $idNo = 'u.userId LIKE "%'.$request->idPassport.'%"';
+            $idNo = '(u.userId LIKE "%'.$request->idPassport.'%" OR u.userPassport LIKE "%'.$request->idPassport.'%")';
             array_push($search_value, $idNo);
-
-            $passport = 'u.userPassport LIKE "%'.$request->idPassport.'%"';
-            array_push($search_value, $passport);
         }
 
         if($request->bookingRef !== "" && !empty($request->bookingRef)){
@@ -1609,6 +1543,26 @@ class HomeController extends Controller
             
         }
 
+
+        if($request->fieldStatus !== null && $request->fieldStatus !== "All"){
+
+            $queryString = "";
+            $i = 1;
+            foreach($request->status as $id){
+                
+                if($i < count($request->status)){
+                    $queryString .= "'".$id."',";
+                }else{
+                    $queryString .= "'".$id."'";
+                }
+                $i++;
+            }
+
+            $value = 'u.'.$request->fieldStatus.' in ('.$queryString.')';
+            array_push($search_value, $value);
+
+        }
+
         if($request->student_type !== "" && !empty($request->student_type)){
             if($request->student_type !== "All"){
                 $student_type = 'u.studentType LIKE "%'.$request->student_type.'%"';
@@ -1631,14 +1585,14 @@ class HomeController extends Controller
 
         //Default Query
         $sql = 'SELECT
-                (select GROUP_CONCAT(uf1.`status`) from user_files uf1 where uf1.userUid = u.id and uf1.fileId = "copyID") as copyID,
-                (select GROUP_CONCAT(uf2.`status`) from user_files uf2 where uf2.userUid = u.id and uf2.fileId = "proof_of_payment") as proof_of_payment,
-                (select GROUP_CONCAT(uf3.`status`) from user_files uf3 where uf3.userUid = u.id and uf3.fileId = "studentCard") as studentCard,
-                (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
-                (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
-                (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
+                -- (select GROUP_CONCAT(uf1.`status`) from user_files uf1 where uf1.userUid = u.id and uf1.fileId = "copyID") as copyID,
+                -- (select GROUP_CONCAT(uf2.`status`) from user_files uf2 where uf2.userUid = u.id and uf2.fileId = "proof_of_payment") as proof_of_payment,
+                -- (select GROUP_CONCAT(uf3.`status`) from user_files uf3 where uf3.userUid = u.id and uf3.fileId = "studentCard") as studentCard,
+                -- (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
+                -- (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
+                -- (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
                 -- (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
-                (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "moveIn") as leaseStatus,
+                -- (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "moveIn") as leaseStatus,
                 u.*, bookings_data.*
             FROM
                 users u
@@ -1655,196 +1609,225 @@ class HomeController extends Controller
             $addUser = 1;
             $counter = 0;
 
-            if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
-                $counter++;
-            }  
+            // if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
+            //     $counter++;
+            // }  
             
-            if($student->overall_status === "Cancelled"){
-                $counter = -30;
-            }  
+            // if($student->overall_status === "Cancelled"){
+            //     $counter = -30;
+            // }  
 
             //Default files that all students have
-            $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus", "bankStatement", "bursaryApproval"];
+            // $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus", "bankStatement", "bursaryApproval"];
 
-            //Add in additional files based on student type. Also block out file types based on student type
-            if($student->studentType == "Cash / Direct"){
-                // array_push($file_types, "bankStatement");
-                $student->bursaryApproval = "na";
-            } elseif($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
-                // array_push($file_types, "bursaryApproval");
-                $student->bankStatement = "na";
-            }
+            // //Add in additional files based on student type. Also block out file types based on student type
+            // if($student->studentType == "Cash / Direct"){
+            //     // array_push($file_types, "bankStatement");
+            //     $student->bursaryApproval = "na";
+            // } elseif($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
+            //     // array_push($file_types, "bursaryApproval");
+            //     $student->bankStatement = "na";
+            // }
             
-            //If we are filtering a document type don't auto add students
-            if (!empty($request->fieldStatus) && !empty($request->status)) {
-                // if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
-                    $addUser = 0;
-                // }
+            // //If we are filtering a document type don't auto add students
+            // if (!empty($request->fieldStatus) && !empty($request->status)) {
+            //     // if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
+            //         $addUser = 0;
+            //     // }
 
-                if ($request->fieldStatus == "bookingStatus") {                
-                    // $addUser = 0;
+            //     if ($request->fieldStatus == "bookingStatus") {                
+            //         // $addUser = 0;
 
-                    if(in_array("Valid", $request->status) && ($student->bookingStatus == "Approved" || $student->bookingStatus == "Approved Confirmed")){
-                        $addUser = 1;
-                    }
-                    if(in_array("Incomplete", $request->status) && ($student->bookingStatus === "Rejected" || $student->bookingStatus == "Empty" || $student->bookingStatus == null)){
-                        $addUser = 1;
-                    }
-                    if(in_array("Pending", $request->status) && $student->bookingStatus == "Action"){
-                        $addUser = 1;
-                    }
-                    if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
-                        $addUser = 1;
-                    }
-                }
+            //         if(in_array("Valid", $request->status) && ($student->bookingStatus == "Approved" || $student->bookingStatus == "Approved Confirmed")){
+            //             $addUser = 1;
+            //         }
+            //         if(in_array("Incomplete", $request->status) && ($student->bookingStatus === "Rejected" || $student->bookingStatus == "Empty" || $student->bookingStatus == null)){
+            //             $addUser = 1;
+            //         }
+            //         if(in_array("Pending", $request->status) && $student->bookingStatus == "Action"){
+            //             $addUser = 1;
+            //         }
+            //         if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
+            //             $addUser = 1;
+            //         }
+            //     }
 
-                if ($request->fieldStatus == "applicationStatus") {                
+            //     if ($request->fieldStatus == "applicationStatus") {                
 
-                    if(in_array("Valid", $request->status) && $student->applicationStatus == "Approved Confirmed"){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Valid", $request->status) && $student->applicationStatus == "Approved Confirmed"){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("Incomplete", $request->status) && ($student->applicationStatus == "Rejected" || $student->applicationStatus == null || $student->applicationStatus == "Empty")){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Incomplete", $request->status) && ($student->applicationStatus == "Rejected" || $student->applicationStatus == null || $student->applicationStatus == "Empty")){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("Incomplete", $request->status) && $student->bookingStatus == "Rejected" && $student->applicationStatus == "Approved"){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Incomplete", $request->status) && $student->bookingStatus == "Rejected" && $student->applicationStatus == "Approved"){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("Pending", $request->status) &&( $student->applicationStatus == "Action" ||  $student->applicationStatus == "Approved") && $student->bookingStatus !== "Rejected"){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Pending", $request->status) &&( $student->applicationStatus == "Action" ||  $student->applicationStatus == "Approved") && $student->bookingStatus !== "Rejected"){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
-                        $addUser = 1;
-                    }
-                }
+            //         if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
+            //             $addUser = 1;
+            //         }
+            //     }
 
-            }
+            // }
 
-            if($request->processingStatus == "NA"){
-                $addUser = 0;
-                if($student->overall_status == "Cancelled" || $student->overall_status == "Rejected"){
-                    $addUser = 1;
-                }
-            }
+            // if($request->processingStatus == "NA"){
+            //     $addUser = 0;
+            //     if($student->overall_status == "Cancelled" || $student->overall_status == "Rejected"){
+            //         $addUser = 1;
+            //     }
+            // }
 
             // if ($student->bookingRef == 143) {
             //     print_r($student);
             //     die();
             // }
 
-            if ($student->overall_status != "Cancelled" && empty($student->moveIn) && $student->applicationStatus == "Approved Confirmed") {
-                $student->moveIn = "Incomplete";
-            }
+            // if ($student->overall_status != "Cancelled" && empty($student->moveIn) && $student->applicationStatus == "Approved Confirmed") {
+            //     $student->moveIn = "Incomplete";
+            // }
 
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
-            foreach($file_types as $ft) {
-                if ($addUser == 0) {
-                    if ($request->fieldStatus == $ft) {
-                        if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected" && $student->overall_status != "Cancelled" && $student->overall_status != "Rejected Confirmed" ){
-                            $addUser = 1;
-                        }
+            // foreach($file_types as $ft) {
+            //     if ($addUser == 0) {
+            //         if ($request->fieldStatus == $ft) {
+            //             if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected" && $student->overall_status != "Cancelled" && $student->overall_status != "Rejected Confirmed" ){
+            //                 $addUser = 1;
+            //             }
                         
-                        if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null && $student->applicationStatus != "Approved Confirmed"){
-                            $addUser = 1;
-                        }
+            //             if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null && $student->applicationStatus != "Approved Confirmed"){
+            //                 $addUser = 1;
+            //             }
 
-                        if($ft == "leaseStatus" && in_array("Incomplete", $request->status) && $student->{$ft} === null && $student->applicationStatus == "Approved Confirmed"){
-                            $addUser = 1;
-                        }
+            //             if($ft == "leaseStatus" && in_array("Incomplete", $request->status) && $student->{$ft} === null && $student->applicationStatus == "Approved Confirmed"){
+            //                 $addUser = 1;
+            //             }
 
-                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
-                            $addUser = 1;
-                        }
+            //             if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
+            //                 $addUser = 1;
+            //             }
         
-                        if(in_array("Valid", $request->status) && $student->{$ft} == "Approved" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                            $addUser = 1;
-                        }
+            //             if(in_array("Valid", $request->status) && $student->{$ft} == "Approved" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                 $addUser = 1;
+            //             }
         
-                        if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                            $addUser = 1;
-                        }  
+            //             if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                 $addUser = 1;
+            //             }  
                         
-                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected") && in_array("NA", $request->status)){
-                            $addUser = 1;
-                        }
+            //             if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected") && in_array("NA", $request->status)){
+            //                 $addUser = 1;
+            //             }
 
-                        if(!in_array("NA", $request->status)){
-                            if ($student->overall_status != "Cancelled" && $student->overall_status != "Rejected") {
-                                if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                    $addUser = 1;
-                                }
+            //             if(!in_array("NA", $request->status)){
+            //                 if ($student->overall_status != "Cancelled" && $student->overall_status != "Rejected") {
+            //                     if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                         $addUser = 1;
+            //                     }
     
-                                if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
-                                    $addUser = 1;
-                                }
+            //                     if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
+            //                         $addUser = 1;
+            //                     }
     
-                                if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
-                                    $addUser = 1;
-                                }
+            //                     if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
+            //                         $addUser = 1;
+            //                     }
                                 
-                                if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                    $addUser = 1;
-                                }
-                            }
-                        }else{
-                            if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                $addUser = 1;
-                            }
+            //                     if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                         $addUser = 1;
+            //                     }
+            //                 }
+            //             }else{
+            //                 if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                     $addUser = 1;
+            //                 }
 
-                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
-                                $addUser = 1;
-                            }
+            //                 if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
+            //                     $addUser = 1;
+            //                 }
 
-                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected Confirmed")){
-                                $addUser = 1;
-                            }
+            //                 if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected Confirmed")){
+            //                     $addUser = 1;
+            //                 }
                             
 
-                            // if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->{$ft} == "na" || $student->{$ft} == null || $student->{$ft} == "Rejected") && $student->overall_status == "Cancelled"){
-                            //     $addUser = 1;
-                            // }
+            //                 // if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->{$ft} == "na" || $student->{$ft} == null || $student->{$ft} == "Rejected") && $student->overall_status == "Cancelled"){
+            //                 //     $addUser = 1;
+            //                 // }
 
-                            if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
-                                $addUser = 1;
-                            }
-                            if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == null && $student->overall_status == "Cancelled"){
-                                $addUser = 1;
-                            }
+            //                 if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
+            //                     $addUser = 1;
+            //                 }
+            //                 if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == null && $student->overall_status == "Cancelled"){
+            //                     $addUser = 1;
+            //                 }
                             
-                            if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                $addUser = 1;
-                            }
-                        }
+            //                 if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                     $addUser = 1;
+            //                 }
+            //             }
                         
-                    }
-                }                
+            //         }
+            //     }     
+                
+                // if ($student->{$ft} == "Uploaded") {
+                //     $counter++;
+                //     $counter++;
+                // }
 
-                if ($student->{$ft} == "Uploaded") {
-                    $counter++;
-                    $counter++;
-                }
-
-                if($student->{$ft} == "" || $student->{$ft} == "Rejected"){
-                    $counter--;
-                }
+                // if($student->{$ft} == "" || $student->{$ft} == "Rejected"){
+                //     $counter--;
+                // }
     
-                if($student->{$ft} == "Approved"){
-                    $counter--;
-                    $counter--;
-                    $counter--;
-                }
+                // if($student->{$ft} == "Approved"){
+                //     $counter--;
+                //     $counter--;
+                //     $counter--;
+                // }
     
                 // if($student->{$ft} == "na" || empty($student->{$ft})){
                 //     $counter--;
                 //     $counter--;
                 //     $counter--;
                 // }
-            } 
-            
+            // } 
 
+            $studentArrCheckList = [
+                $student->rob_10_fee, 
+                $student->rob_15_id, 
+                $student->rob_20_card, 
+                $student->rob_25_reg, 
+                $student->rob_30_funds, 
+                $student->rob_35_info, 
+                $student->rob_40_bed, 
+                $student->rob_45_other, 
+            ];
+
+            foreach($studentArrCheckList as $listItem){
+                if($listItem == 1){
+                    $counter++;
+                    $counter++;
+                    $counter++;
+                    $counter++;
+                }
+
+                if($listItem == 2){
+                    $counter--;
+                    $counter--;
+                }
+
+            }
+
+            if($student->rob_60_cancelled){
+                $counter = -60;
+            }
+            
             //Only add users that pass the above checks
             if ($addUser == 1) {
                 $student->counter = $counter;
