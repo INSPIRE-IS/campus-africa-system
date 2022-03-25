@@ -7,6 +7,7 @@ use App\Models\Lookups;
 use App\Models\User;
 use App\Models\UserFiles;
 use App\Models\Booking;
+use App\Models\Property;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -228,5 +229,14 @@ class LookupsController extends Controller {
         }
 
         echo "done";
+    }
+
+    public function admin_updates_update_properties(Request $request){
+        $bed_used = Booking::get();
+
+        foreach($bed_used as $bed){
+            $thisProperty = Property::where('residence', $bed->property)->where('room_type', $bed->roomType)->where('floor', $bed->floor)->where('unit', $bed->unit)->where('bed_code', $bed->bed_code)->update(['room_available' => '1']);
+        }
+        
     }
 }
