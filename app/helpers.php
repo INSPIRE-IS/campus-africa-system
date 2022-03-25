@@ -38,6 +38,10 @@ if (!function_exists('get_user_status')) {
             $typeName = "Lease";
             $field_data = "";
             $field_doc = "rob_55_lease";
+        }else{
+            $typeName = strtoupper(str_replace("_", " ", $fileType));
+            $field_data = $fileType;
+            $field_doc = "rob_45_other";
         }
 
         $data_approved = 0;

@@ -80,6 +80,8 @@
                     <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
                 </div>
             @endif
+
+            
             
             <div class="flex" style="margin: 35px 0;" id="buttonSection">
                 @if ($user->rob_60_cancelled == 0)
@@ -94,7 +96,7 @@
                         @endif
 
                         @if(Auth::user()->role_approve_docs == 1)
-                            @if ((empty($field_data) || !empty($field_data) && $data_approved == 1))
+                            @if ((empty($field_data) || !empty($field_data) && $data_approved == 1) || explode("_", $file->fileId)[0] == "other")
                                 <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
                                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                             @endif
@@ -337,30 +339,33 @@
                             <span style='font-weight:bold'>Sponsor Passport:</span> <input class="noedit required" name="pPassportNo" id="pPassportNo" disabled type="text" value="{{$user->pPassportNo}}">                                       
                         </div>
                     @endif
+
+                    @if(explode("_", $file->fileId)[0] !== "other")
                 
-                    @if($user->rob_60_cancelled == 0)
-                        <div style="margin-top: 35px;" class="btns_approve_data">
-                            @if(Auth::user()->role_approve_docs == 1 && $data_approved == 0)
-                                <button type="button" class="approve button" style="height:40px;" onClick="approveData('1')">Approve</button>
-                            @endif
+                        @if($user->rob_60_cancelled == 0)
+                            <div style="margin-top: 35px;" class="btns_approve_data">
+                                @if(Auth::user()->role_approve_docs == 1 && $data_approved == 0)
+                                    <button type="button" class="approve button" style="height:40px;" onClick="approveData('1')">Approve</button>
+                                @endif
+
+                                @if(Auth::user()->role_edit_app == 1 && $data_approved == 0)
+                                    <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
+                                @endif
+
+                                @if(Auth::user()->role_approve_docs == 1 && ($doc_approved == 1 || $data_approved == 0))
+                                    <button type="button" class="rejected button" style="height:40px;" onClick="approveData('0')">Reject</button>
+                                @endif
+                            </div>
 
                             @if(Auth::user()->role_edit_app == 1 && $data_approved == 0)
-                                <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
+                                <div style="margin-top: 35px;display: none;" class="btns_save_data">
+                                    <input type="hidden" name="userUid" value="{{$user->id}}">
+                                    <input type="hidden" name="type" value="{{$file->fileId}}">
+
+                                    <button type="button" class="approve button" style="height:40px;" onClick="updateData()">Update</button>
+                                    <button type="button" class="rejected button" style="height:40px;" onClick="cancelEditData()">Cancel</button>
+                                </div>
                             @endif
-
-                            @if(Auth::user()->role_approve_docs == 1 && ($doc_approved == 1 || $data_approved == 0))
-                                <button type="button" class="rejected button" style="height:40px;" onClick="approveData('0')">Reject</button>
-                            @endif
-                        </div>
-
-                        @if(Auth::user()->role_edit_app == 1 && $data_approved == 0)
-                            <div style="margin-top: 35px;display: none;" class="btns_save_data">
-                                <input type="hidden" name="userUid" value="{{$user->id}}">
-                                <input type="hidden" name="type" value="{{$file->fileId}}">
-
-                                <button type="button" class="approve button" style="height:40px;" onClick="updateData()">Update</button>
-                                <button type="button" class="rejected button" style="height:40px;" onClick="cancelEditData()">Cancel</button>
-                            </div>
                         @endif
                     @endif
                 </form>
@@ -700,11 +705,11 @@
                     //Add back upload button
                     if (type == "Rejected" && fileForApproval !== "moveIn") {
                         @if(Auth::user()->role_upload_docs == 1)
-                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                         @endif
                     }else if(type == "Rejected" && fileForApproval == "moveIn"){
-                        let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> <button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                        let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> <button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                         $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                     }
                 
@@ -750,11 +755,11 @@
                         //Add back upload button
                         if (fileForApproval !== "moveIn") {
                             @if(Auth::user()->role_upload_docs == 1)
-                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                                 $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                             @endif
                         }else if(fileForApproval == "moveIn"){
-                            let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> <button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" hidden/>';
+                            let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> <button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                         }
                         

@@ -480,7 +480,10 @@ class HomeController extends Controller
 
             $user_status = get_user_status($userFile['fileId'], "");
 
+            $allOtherFiles = userFiles::where('userUid', $userFile->userUid)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
+
             if($action == "Rejected"){
+
                 $text = "Rejected ".$user_status['typeName']." with reason: ".$reason ;
 
                 if (!empty($user_status['field_data'])) {
@@ -488,11 +491,38 @@ class HomeController extends Controller
                 }
                 
                 User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "0"]);
+                
 
             } else {
+
                 $text = "Approved ".$user_status['typeName'];
 
-                User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "2"]);
+                if(explode("_", $user_status['field_data'])[0] == "other" && count($allOtherFiles) > 1){
+                    $highest = 2;
+
+                    foreach($allOtherFiles as $otherFile){
+                        if($otherFile->status == "Approved"){
+                            $value = 2;
+                        }else if($otherFile->status == "Uploaded"){
+                            $value = 1;
+                        }else{
+                            $value = 0;
+                        }
+
+                        if($value < $highest){
+                            $highest = $value;
+                        }
+                    }
+
+                    //here
+
+                    User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => $highest]);
+
+                }else{
+                    
+                    User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "2"]);
+                }
+                
             }
 
             if($userFile['fileId'] == "moveIn" && $action == "Approved"){

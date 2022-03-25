@@ -171,3 +171,5 @@ Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_d
 Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
 Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save']);
 Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);
+
+Route::post('/add-other-document', [DocumentsController::class, 'add_other_document']);

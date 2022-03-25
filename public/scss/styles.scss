@@ -1418,6 +1418,7 @@ input:read-only {
 }
 
 #downloadAllDocs,
+#addOtherDocument,
 #waiveThisBookingFee,
 #unWaiveThisBookingFee {
     color: #464749;
@@ -1430,7 +1431,7 @@ input:read-only {
     border: 1px solid #464749;
     padding: 10px;
     margin: 5px;
-    width: 44%;
+    width: 30%;
     float: right;
     cursor: pointer;
     margin-top: 50px;

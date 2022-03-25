@@ -242,6 +242,7 @@
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
                     <div class="waitve_btn"></div>
+                    <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
                 </div>
 
                 <br/><br/><br/><br/>
@@ -270,9 +271,26 @@
                                         BANK STATEMENT
                                     @elseif($file["field"] === "moveIn")
                                         LEASE
+                                    @else
+                                        <?php echo strtoupper(str_replace("_", " ", $file["field"])); ?>
                                     @endif
                                 </div>
                                 <div class="status" id="{{$file['field']}}Status">
+
+                                    <!--  -->
+
+                                    @if(explode("_", $file["field"])[0] == "other" && $file["field"] == $file["field"])
+                                        @if($file["status"] == "XApproved")
+                                            <div class="button approved"></div>
+                                        @elseif($file["status"] == "AUploaded")
+                                            <div class="button action"></div>
+                                        @else
+                                            <div class="button rejected"></div>
+                                        @endif
+                                    @endif
+
+                                    
+
                                     @if($file["field"] === "proof_of_payment")
                                         @if ($user[0]['userInfo']['rob_10_fee'] == 0)
                                             <div class="button rejected"></div>
@@ -389,7 +407,7 @@
                                                 <span class="text">Upload</span>
                                                 <i class="fas fa-file-upload" ></i>
                                             </label>
-                                            <input type="file" id="{{$file['field']}}" hidden/>
+                                            <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" hidden/>
 
                                         @endif
                                     @endif
@@ -2023,10 +2041,9 @@
         });
     })
 
-
-    //File Upload
-    $(document).on('change', '#bursaryApproval, #moveIn, #copyID, #studentCard, #bankStatement, #proofRegistration, #proof_of_payment', function(){
-        let field = $(this).attr('id');
+    function UploadDocument(field){
+        console.log("here")
+        // let field = $(this).attr('id');
         // console.log(field);
 
         $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
@@ -2072,7 +2089,58 @@
                 }
             },
         });
-    })    
+    }
+
+
+    // //File Upload
+    // $(document).on('change', '#bursaryApproval, #moveIn, #copyID, #studentCard, #bankStatement, #proofRegistration, #proof_of_payment', function(){
+    //     let field = $(this).attr('id');
+    //     // console.log(field);
+
+    //     $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+    //     let userId = <?php echo $user[0]['userInfo']['id'];?>
+
+    //     var form_data = new FormData();
+    //     form_data.append("file", document.getElementById(field).files[0]);
+    //     form_data.append("userUid", userId);
+    //     form_data.append("fileType", field);
+    //     form_data.append("adminName", "{{Auth::user()->userFirstName}}");
+
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/move-in-form-admin",
+    //         data: form_data,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+
+    //         success: function (data) {
+    //             if (data[0]> 0) {
+                    
+    //                 $("#" + field + "Status").empty().append('<div class="button action"></div>');
+
+    //                 var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
+
+    //                 if(field == "moveIn"){
+    //                     var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a><button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button><button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
+    //                 }
+
+    //                 $("#" + field + "Banner").empty().append(button);
+
+    //                 refreshActions();
+
+    //             } else {
+    //                 Swal.fire(
+    //                     'Error',
+    //                     data[0],
+    //                     'error'
+    //                 )
+    //                 $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
+    //             }
+    //         },
+    //     });
+    // })    
 
     function unWaiveBookingFee(userId){
         $("#unWaiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -2099,7 +2167,7 @@
                         $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
 
                         <?php if(Auth::user()->role_upload_docs == 1){ ?>
-                            let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" hidden/>';
+                            let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
                             $("#proof_of_paymentBanner").empty().append(uploadbtn);
                         <?php } ?>
 
@@ -2444,6 +2512,64 @@
             e.preventDefault();
         });
     });
+
+    function addOtherDoc(){
+        swal.fire({
+            title: 'Please name this document',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/add-other-document",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        docName: result.value
+                    },
+
+                    success: function (data) {
+
+                        // $("#proof_of_paymentStatus").empty().append('<div class="button approved"></div>');
+
+                        // var button = '<button type="button" onClick="btn_view_document_ajax('+data+')">View Document</button>';
+                        // $("#proof_of_paymentBanner").empty().append(button);
+
+            
+                        // $("#booking_fee_waived").val('true');
+                        // refreshActions();  
+                        // checkUserStatus();
+
+                        $("#documentsSectionDisplay").append(
+                            '<div class="section">'+
+                                '<div class="label">'+
+                                    (data.replaceAll("_", " ")).toUpperCase()+
+                                '</div>'+
+                                '<div class="status" id="'+data+'Status">'+
+                                    '<div class="button rejected"></div>'+
+                                '</div>'+
+                                '<div class="banner" id="'+data+'Banner">'+
+                                    '<label for="'+data+'" id="'+data+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">'+
+                                        '<span class="text">Upload</span>'+
+                                        '<i class="fas fa-file-upload"></i>'+
+                                    '</label>'+
+                                    '<input type="file" id="'+data+'" onChange="UploadDocument(\''+data+'\')" hidden>'+
+                                '</div>'+
+                            '</div>'
+                        )
+                    },
+                });
+            }else{
+                $("#waiveThisBookingFee").empty().append('waive booking fee')
+            }
+        })
+    }
+
 </script>
 
 

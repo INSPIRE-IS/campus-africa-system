@@ -241,8 +241,6 @@ class DocumentsController extends Controller {
     }
 
 
-
-
     public function adminFileUpload(Request $request){
         $userUid = $request->userUid;
         $fileType = $request->fileType;
@@ -461,6 +459,21 @@ class DocumentsController extends Controller {
             User::where('id', $user_id)->update(['overall_status' => $overall]);
         }
  
+    }
+
+    public function add_other_document(Request $request){
+        $userUid = $request->userId;
+        $documentNewName = $request->docName;
+
+        UserFiles::create([
+            'fileId' => 'other_'.str_replace(" ", "_", $documentNewName),
+            'userUid' => $userUid,
+        ]);
+
+        User::where('id', $userUid)->update(['rob_45_other' => '0']);
+
+        return 'other_'.str_replace(" ", "_", $documentNewName);
+
     }
 
 }
