@@ -1462,24 +1462,25 @@
             },
 
             success: function (data) {
-                                
+
                 var metaInfo1 = "";
                 var floor = "";
                 var unit = "";
-                if(data[1].meta_info_1 && data[1].meta_info_1 !== ""){
-                    var metaInfo1 = data[1].meta_info_1+", ";
+                if(data[1]?.meta_info_1 && data[1].meta_info_1 !== "" && data[1].meta_info_1 !== null){
+                    metaInfo1 = data[1].meta_info_1+", ";
                 }
-                if(data[0].floor !== ""){
-                    var floor = data[0].floor+" Floor,";
+                if(data[0]?.floor !== "" && data[0].floor !== null){
+                    floor = data[0].floor + " Floor";
                 }
-                if(data[0].unit !== ""){
-                    var unit = data[0].unit+" Unit,";
+                if(data[0]?.unit !== "" && data[0].unit !== null) {
+                    unit = ", Unit " + data[0].unit;
                 }
 
                 var bed_code = "";
                 var unallocated_bed = "";
-                if(data[0].bed_code !== ""){
-                    var bed_code = "Bed Code: "+data[0].bed_code;
+                if(data[0]?.bed_code !== "" && data[0].bed_code !== null){
+                    bed_code = "Bed Code: "+data[0].bed_code;
+
                     if("<?php echo Auth::user()->role_change_bed; ?>" == "1"){
                         if(data[2] == 'false'){
                             var unallocated_bed = '<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
@@ -1512,9 +1513,7 @@
                     var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
                 }
                 
-
-                $(".app_summary_details").empty().append(
-                    '<h4 class="cardSubHeaderGrey">'+data[0].property+'</h4>'+
+                let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].property+'</h4>'+
                     '<h4 class="cardHeader" >'+data[0].roomType+'</h4>'+
                     '<h4 class="cardHeader" id="prop_room_row1" >'+metaInfo1+floor+unit+'</h4>'+
                     '<h4 class="cardHeader" id="prop_room_row2" >'+
@@ -1526,8 +1525,9 @@
                     lease_to+
                     lease_duration+
                     '</h4><br/>'+
-                    booking_fee
-                )
+                    booking_fee;
+
+                $(".app_summary_details").html(app_summary_details);
 
                 checkUserStatus();
 
@@ -2412,7 +2412,79 @@
                 $("#"+fieldId+"_error").addClass('hidden')
             }
         });
+
+        //Inline Form Validation
+        $(document).on('keyup blur', "#userAddressPostal, #kinAddressPost", function(){
+            let postal = $(this).val()
+            let id = $(this).attr('id');
+
+            if(/\b\d{4}\b/g.test(postal)){
+                $("#" + id).removeClass("fieldError")
+            }else{
+                $("#" + id).addClass("fieldError")
+            }            
+        });
         
+        $(document).on('keyup blur', "#kinCellNo", function(){
+            let cell = $(this).val();
+            let id = $(this).attr('id');
+
+            ValidCell(cell, id);
+            // duplicateCell();          
+        });
+        
+        $(document).on('keyup blur', "#kinEmail, #userEmail", function(){
+            let id = $(this).attr('id');
+
+            if(isEmail($("#" + id).val())){
+                $("#" + id).removeClass("fieldError")
+                // $("#email_error").addClass('hidden')
+            }else{
+                $("#" + id).addClass("fieldError")
+                // $("#email_error").removeClass('hidden')
+            }    
+        });
+
+        function ValidCell(cell, fieldId){
+            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                // $("#"+fieldError).addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                // $("#"+fieldError).removeClass('hidden')
+            }
+        }
+
+        function duplicateCell(){
+            $('#kCellNo_duplicate').addClass('hidden');
+            $('#cell_no_duplicate').addClass('hidden');
+            $('#cell_no, #kCellNo').removeClass('fieldDuplicate');
+
+            if ($('#cell_no').val() != "" && $('#cell_no').val() == $('#kCellNo').val()) {
+                $('#kCellNo_duplicate').removeClass('hidden');
+                $('#cell_no_duplicate').removeClass('hidden');
+
+                $('#cell_no_error').removeClass('hidden');
+                $('#kCellNo_error').removeClass('hidden');
+
+                $('#cell_no').addClass('fieldError');
+                $('#kCellNo').addClass('fieldError');
+
+                $('#cell_no').addClass('fieldDuplicate');
+                $('#kCellNo').addClass('fieldDuplicate');
+            } else {
+                cell = $("#cell_no").val()
+                ValidCell(cell, "cell_no", "cell_no_error");
+                
+                cell = $("#kCellNo").val();            
+                ValidCell(cell, "kCellNo", "kCellNo_error");
+            }
+        }
+
+        function isEmail(email) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            return regex.test(email);
+        }
 
         $(document).on('click', '.btn_save_inline', function(e) {
 
@@ -2423,6 +2495,7 @@
             
             var req = 1;
 
+            //Check empty fields that are required
             $('#'+formid+' .required').each( function(){
                 if($(this).val() === "" || $(this).val() === null){
                     if (!$(this).parent().hasClass('hidden')) {
@@ -2436,6 +2509,11 @@
                     }
                 }
             });
+
+            //Check any other fields with validation errors
+            if ($('#'+formid+' .fieldError').length > 0) {
+                req = 0;
+            }
 
             if (req === 1) {
                 let formId = $(this).attr('formid');
