@@ -4211,23 +4211,27 @@ class HomeController extends Controller
                     <div class="form-field">    
                         <span style='font-weight:bold'>Address 1:</span>
                         <input class="noedit required" name="userAddress1" id="userAddress1" type="text" value="<?php echo $user->userAddress1; ?>">
+                        <span id="userAddress1_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>Address 2:</span>
                         <input class="noedit required" name="userAddress2" id="userAddress2" type="text" value="<?php echo $user->userAddress2; ?>">
+                        <span id="userAddress2_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
                     </div> 
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>City:</span>
                         <input class="noedit required" name="userAddressCity" id="userAddressCity" type="text" value="<?php echo $user->userAddressCity; ?>">
+                        <span id="userAddressCity_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
                     </div> 
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>Postal:</span>
                         <input class="noedit required" name="userAddressPostal" id="userAddressPostal" type="text" value="<?php echo $user->userAddressPostal; ?>">
+                        <span id="userAddressPostal_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid postal code</small></span>
                     </div> 
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
@@ -4268,48 +4272,59 @@ class HomeController extends Controller
                     <div class="form-field">    
                         <span style='font-weight:bold'>First Name:</span>
                         <input class="noedit required" name="kinFirstName" id="kinFirstName" type="text" value="<?php echo $user->kinFirstName; ?>">
+                        <span id="kinFirstName_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
                     </div> 
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>Last Name:</span>
                         <input class="noedit required" name="kinLastName" id="kinLastName" type="text" value="<?php echo $user->kinLastName; ?>">
+                        <span id="kinLastName_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
                     </div> 
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>Relationship:</span>
                         <input class="noedit required" name="kinRelationship" id="kinRelationship" type="text" value="<?php echo $user->kinRelationship; ?>">
+                        <span id="kinRelationship_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
 
                     <div class="form-field">    
                         <span style='font-weight:bold'>Cellphone Number:</span>
                         <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>">
+                        <span id="kinCellNo_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                        <span id="kinCellNo_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
+                        <input name="userCell" id="userCell" type="hidden" value="<?php echo $user->userCell; ?>">
                     </div> 
 
                     <div class="form-field">    
                         <span style='font-weight:bold'>Email:</span>
                         <input class="noedit required" name="kinEmail" id="kinEmail" type="text" value="<?php echo $user->kinEmail; ?>">
+                        <span id="kinEmail_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid email</small></span>
                     </div> 
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>Physical Address Street:</span>
                         <input class="noedit required" name="kinAddressStr" id="kinAddressStr" type="text" value="<?php echo $user->kinAddressStr; ?>">
+                        <span id="kinAddressStr_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
 
                     <div class="form-field">    
                         <span style='font-weight:bold'>Physical Address Suburb:</span>
                         <input class="noedit required" name="kinAddressSuburb" id="kinAddressSuburb" type="text" value="<?php echo $user->kinAddressSuburb; ?>">
+                        <span id="kinAddressSuburb_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
 
                     <div class="form-field">    
                         <span style='font-weight:bold'>Physical Address City:</span>
                         <input class="noedit required" name="kinAddressCity" id="kinAddressCity" type="text" value="<?php echo $user->kinAddressCity; ?>">
+                        <span id="kinAddressCity_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                     </div> 
 
                     <div class="form-field">    
                         <span style='font-weight:bold'>Physical Address Postal:</span>
                         <input class="noedit required" name="kinAddressPost" id="kinAddressPost" type="text" value="<?php echo $user->kinAddressPost; ?>">
+                        <span id="kinAddressPost_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid postal code</small></span>
                     </div> 
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
@@ -4341,11 +4356,15 @@ class HomeController extends Controller
                     <div class="form-field">    
                         <span style='font-weight:bold'>Email:</span>
                         <input class="noedit required" name="userEmail" id="userEmail" type="text" value="<?php echo $user->userEmail; ?>">
+                        <span id="userEmail_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid email</small></span>
                     </div> 
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>Cellphone Number:</span>
                         <input class="noedit required" name="userCell" id="userCell" type="text" value="<?php echo $user->userCell; ?>">
+                        <span id="userCell_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                        <span id="cell_no_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
+                        <input type="hidden" name="kinCellNo" id="kinCellNo" value="<?php echo $user->kinCellNo; ?>">
                     </div>
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">

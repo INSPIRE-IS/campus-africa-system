@@ -703,43 +703,7 @@
 
             },
         });
-    }
-
-    $('#btn_clear_bed').on("click", function(e) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to unallocate this bed, the bed will be available to book again",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!',
-            showLoaderOnConfirm: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "post",
-                    url: "/unallocate-bed",
-                    data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-
-                    success: function (data) {
-                        $("#prop_room_row1, #prop_room_row2").remove();
-                        $("#bed_allocated").val('')
-
-                        refreshActions();  
-                        checkUserStatus();
-                        
-
-                    }
-                })
-
-            }
-        });
-
-        e.preventDefault();
-    });
+    }   
 
 
     checkUserStatus();
@@ -2375,6 +2339,42 @@
     // }, 30000)
 
     jQuery(document).ready( function($) {
+        $(document).on("click", '#btn_clear_bed', function(e) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to unallocate this bed, the bed will be available to book again",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!',
+                showLoaderOnConfirm: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "post",
+                        url: "/unallocate-bed",
+                        data: {
+                            userId: "{{$user[0]['userInfo']['id']}}",
+                        },
+
+                        success: function (data) {
+                            $("#prop_room_row1, #prop_room_row2").remove();
+                            $("#bed_allocated").val('')
+
+                            refreshActions();  
+                            checkUserStatus();
+                            
+
+                        }
+                    })
+
+                }
+            });
+
+            e.preventDefault();
+        });
+
         $(document).on('click', '.btn_edit_inline', function(e) {
             let formId = $(this).attr('formid');
             let edittype = $(this).attr('edittype');
@@ -2420,17 +2420,19 @@
 
             if(/\b\d{4}\b/g.test(postal)){
                 $("#" + id).removeClass("fieldError")
+                $("#" + id + "_error").addClass('hidden')
             }else{
                 $("#" + id).addClass("fieldError")
+                $("#" + id + "_error").removeClass('hidden')
             }            
         });
         
-        $(document).on('keyup blur', "#kinCellNo", function(){
+        $(document).on('keyup blur', "#kinCellNo, #userCell", function(){
             let cell = $(this).val();
             let id = $(this).attr('id');
 
             ValidCell(cell, id);
-            // duplicateCell();          
+            duplicateCell();          
         });
         
         $(document).on('keyup blur', "#kinEmail, #userEmail", function(){
@@ -2438,46 +2440,48 @@
 
             if(isEmail($("#" + id).val())){
                 $("#" + id).removeClass("fieldError")
-                // $("#email_error").addClass('hidden')
+                $("#" + id + "_error").addClass('hidden')
             }else{
                 $("#" + id).addClass("fieldError")
-                // $("#email_error").removeClass('hidden')
+                $("#" + id + "_error").removeClass('hidden')
             }    
         });
 
         function ValidCell(cell, fieldId){
             if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
-                // $("#"+fieldError).addClass('hidden')
+                $("#"+fieldId + "_error").addClass('hidden')
             }else{
                 $("#"+fieldId).addClass("fieldError")
-                // $("#"+fieldError).removeClass('hidden')
+                $("#"+fieldId + "_error").removeClass('hidden')
             }
         }
 
         function duplicateCell(){
-            $('#kCellNo_duplicate').addClass('hidden');
+            $('#kinCellNo_duplicate').addClass('hidden');
             $('#cell_no_duplicate').addClass('hidden');
-            $('#cell_no, #kCellNo').removeClass('fieldDuplicate');
+            $('#userCell, #kinCellNo').removeClass('fieldDuplicate');
 
-            if ($('#cell_no').val() != "" && $('#cell_no').val() == $('#kCellNo').val()) {
-                $('#kCellNo_duplicate').removeClass('hidden');
+            console.log($('#userCell').val(), $('#kinCellNo').val());
+
+            if ($('#userCell').val() != "" && $('#userCell').val() == $('#kinCellNo').val()) {
+                $('#kinCellNo_duplicate').removeClass('hidden');
                 $('#cell_no_duplicate').removeClass('hidden');
 
                 $('#cell_no_error').removeClass('hidden');
-                $('#kCellNo_error').removeClass('hidden');
+                $('#kinCellNo_error').removeClass('hidden');
 
-                $('#cell_no').addClass('fieldError');
-                $('#kCellNo').addClass('fieldError');
+                $('#userCell').addClass('fieldError');
+                $('#kinCellNo').addClass('fieldError');
 
-                $('#cell_no').addClass('fieldDuplicate');
-                $('#kCellNo').addClass('fieldDuplicate');
+                $('#userCell').addClass('fieldDuplicate');
+                $('#kinCellNo').addClass('fieldDuplicate');
             } else {
-                cell = $("#cell_no").val()
-                ValidCell(cell, "cell_no", "cell_no_error");
+                cell = $("#userCell").val()
+                ValidCell(cell, "userCell");
                 
-                cell = $("#kCellNo").val();            
-                ValidCell(cell, "kCellNo", "kCellNo_error");
+                cell = $("#kinCellNo").val();            
+                ValidCell(cell, "kinCellNo");
             }
         }
 
