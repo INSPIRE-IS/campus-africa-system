@@ -2435,7 +2435,7 @@
             duplicateCell();          
         });
         
-        $(document).on('keyup blur', "#kinEmail, #userEmail", function(){
+        $(document).on('keyup blur', "#userEmail", function(){
             let id = $(this).attr('id');
 
             if(isEmail($("#" + id).val())){
@@ -2445,6 +2445,20 @@
                 $("#" + id).addClass("fieldError")
                 $("#" + id + "_error").removeClass('hidden')
             }    
+        });
+        
+        $(document).on('keyup blur', "#kinEmail", function(){
+            let id = $(this).attr('id');
+
+            if ($("#" + id).val() !== "") {
+                if(isEmail($("#" + id).val())){
+                    $("#" + id).removeClass("fieldError")
+                    $("#" + id + "_error").addClass('hidden')
+                }else{
+                    $("#" + id).addClass("fieldError")
+                    $("#" + id + "_error").removeClass('hidden')
+                }    
+            }            
         });
 
         function ValidCell(cell, fieldId){
