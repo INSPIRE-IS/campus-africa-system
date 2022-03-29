@@ -171,16 +171,16 @@
 
                     @if($file->fileId == "copyID")
                         <div class="form-field">
-                            <span style='font-weight:bold'>First Name:</span>
+                            <span style='font-weight:bold'>First Name *</span>
                             <input class="noedit required" name="userFirstName" id="userFirstName" disabled type="text" value="{{$user->userFirstName}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Last Name:</span> <input class="noedit required" name="userLastname" id="userLastname" disabled type="text" value="{{$user->userLastname}}">
+                            <span style='font-weight:bold'>Last Name *</span> <input class="noedit required" name="userLastname" id="userLastname" disabled type="text" value="{{$user->userLastname}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Nationality:</span>
+                            <span style='font-weight:bold'>Nationality *</span>
                             <select name="nationality" id="nationality" class="noedit required" disabled>
                                 <option value="" selected disabled>Please select one</option>
                                 @foreach($lookups as $lookup)
@@ -192,27 +192,27 @@
                         </div>
 
                         <div class="form-field <?php if($user->userNationality !== "South Africa"){echo "hidden";} ?>" id="idField">
-                            <span style='font-weight:bold'>I.D Number: <span id="idNumber_error" class="hidden"><small style="color:red">Not a valid ID number</small></span></span> <input class="noedit required" name="userId" id="idNumber" disabled type="text" value="{{$user->userId}}">
+                            <span style='font-weight:bold'>I.D Number * <span id="idNumber_error" class="hidden"><small style="color:red">Not a valid ID number</small></span></span> <input class="noedit required" name="userId" id="idNumber" disabled type="text" value="{{$user->userId}}">
                         </div>
 
                         <div class="form-field <?php if($user->userNationality == "South Africa"){echo "hidden";} ?>" id="passportField">
-                            <span style='font-weight:bold'>Passport:</span> <input class="noedit required" name="userPassport" id="passportNo" disabled type="text" value="{{$user->userPassport}}">                                       
+                            <span style='font-weight:bold'>Passport *</span> <input class="noedit required" name="userPassport" id="passportNo" disabled type="text" value="{{$user->userPassport}}">                                       
                         </div>
                         
                         <div class="form-field">
-                            <span style='font-weight:bold'>DOB: <span id="dob_error" class="hidden"><small style="color:red">Not a valid date of birth</small></span> </span><input class="noedit required" name="userDob" id="userDob" disabled type="date" value="{{$user->userDob}}">       
+                            <span style='font-weight:bold'>DOB * <span id="dob_error" class="hidden"><small style="color:red">Not a valid date of birth</small></span> </span><input class="noedit required" name="userDob" id="userDob" disabled type="date" value="{{$user->userDob}}">       
                         </div>
                     @endif
 
                     @if($file->fileId == "studentCard")
                         <div class="form-field">
-                            <span style='font-weight:bold'>Student Number:</span> <input class="noedit required" name="studentNo" id="studentNo" disabled type="text" value="{{$user->studentNo}}">
+                            <span style='font-weight:bold'>Student Number *</span> <input class="noedit required" name="studentNo" id="studentNo" disabled type="text" value="{{$user->studentNo}}">
                         </div>
                     @endif
 
                     @if($file->fileId == "proofRegistration")
                         <div class="form-field">
-                            <span style='font-weight:bold'>Institution:</span>
+                            <span style='font-weight:bold'>Institution *</span>
                             <select name="institStudy" id="institStudy" class="noedit required" disabled>
                                 <option value="Choose one" selected disabled>Choose one</option>
                                 @foreach($lookups as $lookup)
@@ -224,7 +224,7 @@
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Faculty:</span>
+                            <span style='font-weight:bold'>Faculty *</span>
                             <select name="faculty" id="faculty" class="noedit required" disabled>
                                 <option value="" disabled selected>Select One</option>
                                 @foreach($lookups as $lookup)
@@ -236,7 +236,7 @@
                         </div>
                         
                         <div class="form-field">
-                            <span style='font-weight:bold'>Year of Study:</span>
+                            <span style='font-weight:bold'>Year of Study *</span>
                             <select name="yearOfStudy" id="yearOfStudy" class="noedit required" disabled>
                                 <option value="" selected disabled>Please select one</option>
                                 @foreach($lookups as $lookup)
@@ -250,7 +250,7 @@
 
                     @if($file->fileId == "bursaryApproval" && $user->studentType == "NSFAS")
                         <div class="form-field">    
-                            <span style='font-weight:bold'>Student Type:</span>
+                            <span style='font-weight:bold'>Student Type *</span>
                             <select name="studentType" id='studentType' class="noedit required" disabled>
                                 <option value="" selected disabled>Select a Student Type</option>
                                 <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
@@ -262,7 +262,7 @@
                     
                     @if($file->fileId == "bursaryApproval" && $user->studentType == "Bursary")
                         <div class="form-field">    
-                            <span style='font-weight:bold'>Student Type:</span>
+                            <span style='font-weight:bold'>Student Type *</span>
                             <select name="studentType" id='studentType' class="noedit required" disabled>
                                 <option value="" selected disabled>Select a Student Type</option>
                                 <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
@@ -272,27 +272,27 @@
                         </div>    
                         
                         <div class="form-field">    
-                            <span style='font-weight:bold'>Company Name:</span> <input class="noedit required" name="burCompanyName" id="burCompanyName" disabled type="text" value="{{$user->burCompanyName}}">
+                            <span style='font-weight:bold'>Company Name *</span> <input class="noedit required" name="burCompanyName" id="burCompanyName" disabled type="text" value="{{$user->burCompanyName}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Registration Number:</span> <input class="noedit required" name="burRegNo" id="burRegNo" disabled type="text" value="{{$user->burRegNo}}">
+                            <span style='font-weight:bold'>Registration Number *</span> <input class="noedit required" name="burRegNo" id="burRegNo" disabled type="text" value="{{$user->burRegNo}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Contact Person:</span> <input class="noedit required" name="burContactPerson" id="burContactPerson" disabled type="text" value="{{$user->burContactPerson}}">
+                            <span style='font-weight:bold'>Contact Person *</span> <input class="noedit required" name="burContactPerson" id="burContactPerson" disabled type="text" value="{{$user->burContactPerson}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Contact Number: <span id="burContactNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
+                            <span style='font-weight:bold'>Contact Number * <span id="burContactNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Email Address: <span id="burEmail_error" class="hidden"><small style="color:red">Not a valid email</small></span><span id="burEmail_InUse" class="hidden" ><small style="color:red">Email Address already in use</small></span></span> <input class="noedit required" name="burEmail" id="burEmail" disabled type="text" value="{{$user->burEmail}}">
+                            <span style='font-weight:bold'>Email Address * <span id="burEmail_error" class="hidden"><small style="color:red">Not a valid email</small></span><span id="burEmail_InUse" class="hidden" ><small style="color:red">Email Address already in use</small></span></span> <input class="noedit required" name="burEmail" id="burEmail" disabled type="text" value="{{$user->burEmail}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>NSFAS Bursar:</span>
+                            <span style='font-weight:bold'>NSFAS Bursar *</span>
                             <select name="nsfas_bursar" id='nsfas_bursar' class="noedit required" disabled>                            
                                 <option value="0" <?php if($user->nsfas_bursar == "" || $user->nsfas_bursar == "0"){echo "selected";} ?>>No</option>
                                 <option value="1" <?php if($user->nsfas_bursar == "1"){echo "selected";} ?>>Yes</option>
@@ -302,7 +302,7 @@
 
                     @if($file->fileId == "bankStatement")
                         <div class="form-field">    
-                            <span style='font-weight:bold'>Student Type:</span>
+                            <span style='font-weight:bold'>Student Type *</span>
                             <select name="studentType" id='studentType' class="noedit required" disabled>
                                 <option value="" selected disabled>Select a Student Type</option>
                                 <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
@@ -312,15 +312,15 @@
                         </div> 
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Sponsor First Name:</span> <input class="noedit required" name="sponFirstName" id="sponFirstName" disabled type="text" value="{{$user->sponFirstName}}">                        
+                            <span style='font-weight:bold'>Sponsor First Name *</span> <input class="noedit required" name="sponFirstName" id="sponFirstName" disabled type="text" value="{{$user->sponFirstName}}">                        
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Sponsor Last Name:</span> <input class="noedit required" name="sponLastName" id="sponLastName" disabled type="text" value="{{$user->sponLastName}}">
+                            <span style='font-weight:bold'>Sponsor Last Name *</span> <input class="noedit required" name="sponLastName" id="sponLastName" disabled type="text" value="{{$user->sponLastName}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Sponsor Nationality:</span>
+                            <span style='font-weight:bold'>Sponsor Nationality *</span>
                             <select name="pNationality" id="pNationality" class="noedit required" disabled>
                                 <option value="" selected disabled>Please select one</option>
                                 @foreach($lookups as $lookup)
@@ -332,11 +332,11 @@
                         </div>
 
                         <div class="form-field <?php if($user->pNationality !== "South Africa"){echo "hidden";} ?>" id="pIdField">
-                            <span style='font-weight:bold'>Sponsor I.D Number:</span> <input class="noedit required" name="sponId" id="pIdNumber" disabled type="text" value="{{$user->sponId}}">
+                            <span style='font-weight:bold'>Sponsor I.D Number *</span> <input class="noedit required" name="sponId" id="pIdNumber" disabled type="text" value="{{$user->sponId}}">
                         </div>
 
                         <div class="form-field <?php if($user->pNationality == "South Africa"){echo "hidden";} ?>" id="pPassportField">
-                            <span style='font-weight:bold'>Sponsor Passport:</span> <input class="noedit required" name="pPassportNo" id="pPassportNo" disabled type="text" value="{{$user->pPassportNo}}">                                       
+                            <span style='font-weight:bold'>Sponsor Passport *</span> <input class="noedit required" name="pPassportNo" id="pPassportNo" disabled type="text" value="{{$user->pPassportNo}}">                                       
                         </div>
                     @endif
 
