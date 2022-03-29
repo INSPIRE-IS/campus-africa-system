@@ -25,7 +25,7 @@ class DocumentsController extends Controller {
         $popupTitle = "";
         $doc_approved = 0;
 
-        $user_status = $this->get_user_status($file->fileId, $user);
+        $user_status = $this->get_user_status($file->fileId, $user, $user);
 
         $lookups = Lookups::get();
 
@@ -240,7 +240,7 @@ class DocumentsController extends Controller {
         return "done";
     }
 
-    function get_user_status($fileType, $user) {
+    function get_user_status($fileType, $user, $student) {
 
         if($fileType == "proof_of_payment"){
             $typeName = "Booking Fee Proof of Payment";
@@ -264,7 +264,11 @@ class DocumentsController extends Controller {
             $field_doc = "rob_25_reg";
 
         }elseif($fileType == "bursaryApproval"){
-            $typeName = "NSFAS / Bursary Approval";
+            if($student->studentType == "NSFAS"){
+                $typeName = "NSFAS Approval";
+            }else{
+                $typeName = "Bursary Approval";
+            }
             $field_data = "bursary_approved";
             $field_doc = "rob_30_funds";
 
@@ -330,7 +334,7 @@ class DocumentsController extends Controller {
 
                 $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
 
-                $user_status = $this->get_user_status($fileType, "");
+                $user_status = $this->get_user_status($fileType, "", User::where('id', $userUid)->first());
                 $field_data = $user_status['field_data'];
                 $field_doc = $user_status['field_doc'];                
 

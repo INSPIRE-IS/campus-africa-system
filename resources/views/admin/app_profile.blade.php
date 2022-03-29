@@ -258,7 +258,7 @@
                                 <div class="label">
                                     
                                     @if($file["field"] === "studentCard")
-                                        STUDENT CARD / PROOF OF STUDENT NUMBER
+                                        STUDENT CARD
                                     @elseif($file["field"] === "proof_of_payment")
                                         BOOKING FEE PROOF OF PAYMENT
                                     @elseif($file["field"] === "copyID")
@@ -266,13 +266,17 @@
                                     @elseif($file["field"] === "proofRegistration")
                                         PROOF OF REGISTRATION
                                     @elseif($file["field"] === "bursaryApproval")
-                                        NSFAS / BURSARY APPROVAL
+                                        @if($user[0]['userInfo']['studentType'] == "NSFAS")
+                                            NSFAS APPROVAL
+                                        @else
+                                            BURSARY APPROVAL
+                                        @endif
                                     @elseif($file["field"] === "bankStatement")
                                         BANK STATEMENT
                                     @elseif($file["field"] === "moveIn")
                                         LEASE
                                     @else
-                                        <?php echo strtoupper(str_replace("_", " ", $file["field"])); ?>
+                                        <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file["field"]))); ?>
                                     @endif
                                 </div>
                                 <div class="status" id="{{$file['field']}}Status">
@@ -1660,7 +1664,7 @@
     //     url = url.replace("%27", "'");
 
     //     if(field == "studentCard"){
-    //         var title = "Student card / Proof of student number";
+    //         var title = "Student card";
     //         if($("#student_card_approved").val() != "1" && $("#student_card_approved").val() != "2"){
     //             var approved = 0;
     //         }else{
@@ -1961,7 +1965,7 @@
                 data.forEach(myFunction);
                 function myFunction(item, index) {
                     if(item['field'] == "studentCard"){
-                        var name = 'STUDENT CARD / PROOF OF STUDENT NUMBER';
+                        var name = 'STUDENT CARD';
                     }else if(item['field'] == "proof_of_payment"){
                         var name = 'PROOF OF PAYMENT';
                     }else if(item['field'] == "copyID"){

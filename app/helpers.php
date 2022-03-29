@@ -1,7 +1,7 @@
 <?php
 
 if (!function_exists('get_user_status')) {
-    function get_user_status($fileType, $user) {
+    function get_user_status($fileType, $user, $student) {
 
         if($fileType == "proof_of_payment"){
             $typeName = "Booking Fee Proof of Payment";
@@ -25,7 +25,11 @@ if (!function_exists('get_user_status')) {
             $field_doc = "rob_25_reg";
 
         }elseif($fileType == "bursaryApproval"){
-            $typeName = "NSFAS / Bursary Approval";
+            if($student->studentType == "NSFAS"){
+                $typeName = "NSFAS Approval";
+            }else{
+                $typeName = "Bursary Approval";
+            }
             $field_data = "bursary_approved";
             $field_doc = "rob_30_funds";
 

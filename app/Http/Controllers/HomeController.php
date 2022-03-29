@@ -49,7 +49,7 @@ class HomeController extends Controller
         }
      }
 
-     function get_user_status($fileType, $user) {
+     function get_user_status($fileType, $user, $student) {
 
         if($fileType == "proof_of_payment"){
             $typeName = "Booking Fee Proof of Payment";
@@ -73,7 +73,11 @@ class HomeController extends Controller
             $field_doc = "rob_25_reg";
 
         }elseif($fileType == "bursaryApproval"){
-            $typeName = "NSFAS / Bursary Approval";
+            if($student->studentType == "NSFAS"){
+                $typeName = "NSFAS Approval";
+            }else{
+                $typeName = "Bursary Approval";
+            }
             $field_data = "bursary_approved";
             $field_doc = "rob_30_funds";
 
@@ -546,7 +550,7 @@ class HomeController extends Controller
 
             $userFile = UserFiles::where('id', $fileId)->first();
 
-            $user_status = $this->get_user_status($userFile['fileId'], "");
+            $user_status = $this->get_user_status($userFile['fileId'], "", User::where('id', $userFile->userUid)->first());
 
             $allOtherFiles = UserFiles::where('userUid', $userFile->userUid)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
 
@@ -1410,7 +1414,8 @@ class HomeController extends Controller
 
                 ActionList::create([
                     "userUid" => $user->id,
-                    "action" => "NSFAS / Bursary has been Approved via import",
+                    // "action" => "NSFAS / Bursary has been Approved via import",
+                    "action" => "NSFAS Approval has been Approved via import",
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
@@ -2965,8 +2970,10 @@ class HomeController extends Controller
 
     public function action_data(Request $request){
 
+        $student = User::where('id', $request->userId)->first();
+
         if($request->FileNameForApproval == "studentCard"){
-            $name = 'STUDENT CARD / PROOF OF STUDENT NUMBER';
+            $name = 'STUDENT CARD';
             $field = "student_card_approved";
         }else if($request->FileNameForApproval == "copyID"){
             $name = 'COPY OF ID DOCUMENT';
@@ -2975,7 +2982,11 @@ class HomeController extends Controller
             $name = 'PROOF OF REGISTRATION';
             $field = "registration_approved";
         }else if($request->FileNameForApproval == "bursaryApproval"){
-            $name = 'NSFAS / BURSARY';
+            if($student->studentType == "NSFAS"){
+                $name = 'NSFAS';
+            }else{
+                $name = 'BURSARY';
+            }
             $field = "bursary_approved";
             $field2 = "burser_approved";
         }else if($request->FileNameForApproval == "bankStatement"){
