@@ -397,16 +397,19 @@
 
         $("input").focus(function(){
             let fieldId = $(this)[0]["id"]
-
             if (!$("#"+fieldId).data('old')) {
-
                 const div = document.getElementById(fieldId)
-
                 div.dataset.old = $(this)[0]['value']
-                console.log($(this)[0]['value'])
-                console.log($(this)[0])
             }
+            
+        });
 
+        $("select").focus(function(){
+            let fieldId = $(this)[0]["id"]
+            if (!$("#"+fieldId).data('old')) {
+                const div = document.getElementById(fieldId)
+                div.dataset.old = $(this)[0]['value']
+            }
             
         });
 
@@ -428,6 +431,8 @@
 
         $("select").blur(function(){
             let fieldId = $(this)[0]["id"]
+
+            console.log($(this)[0])
 
             // var required = document.getElementById(fieldId).required
             var required = $("#"+fieldId).hasClass('required')
@@ -917,6 +922,16 @@
                     
                     const div = document.getElementById(fieldId)
                     delete div.dataset.old
+
+                    if(fieldId == "nationality"){
+                        if(data_old == "International"){
+                            $("#passportField").removeClass('hidden')
+                            $("#idField").addClass('hidden')
+                        }else{
+                            $("#idField").removeClass('hidden')
+                            $("#passportField").addClass('hidden')
+                        }
+                    }
                 }
             });
         }else{
@@ -928,6 +943,16 @@
                     const div = document.getElementById(fieldId)
                     delete div.dataset.old
                     div.dataset.new = data_curr
+
+                    if(fieldId == "nationality"){
+                        if(data_curr == "International"){
+                            $("#passportField").removeClass('hidden')
+                            $("#idField").addClass('hidden')
+                        }else{
+                            $("#idField").removeClass('hidden')
+                            $("#passportField").addClass('hidden')
+                        }
+                    }
                 }
             });
         }
