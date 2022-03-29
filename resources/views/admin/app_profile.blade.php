@@ -860,7 +860,8 @@
                         && data['rob_25_reg'] == 2
                         && data['rob_30_funds'] == 2
                         && data['rob_35_info'] == 2
-                        && data['rob_40_bed'] == 2)
+                        && data['rob_40_bed'] == 2
+                        && (data['rob_45_other'] == 3 || data['rob_45_other'] == 2))
                     {
                         $(".main_btn").empty().append('<button type="button" class="appBtn" id="approveProfile" onClick="approveApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">APPROVE APPLICATION AND SEND CONFIRMATION</button><br/><br/><br/><button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">REJECT APPLICATION AND SEND NOTIFICATION</button><br/><br/><br/>')
                     }
@@ -2642,7 +2643,7 @@
                         $("#documentsSectionDisplay").append(
                             '<div class="section">'+
                                 '<div class="label">'+
-                                    (data.replaceAll("_", " ")).toUpperCase()+
+                                    ((data.replace("other", "other |")).replaceAll("_", " ")).toUpperCase()+
                                 '</div>'+
                                 '<div class="status" id="'+data+'Status">'+
                                     '<div class="button rejected"></div>'+
