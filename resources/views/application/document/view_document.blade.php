@@ -395,6 +395,7 @@
             $("#myModal").css("display", "none");
         });
 
+
         $("input").blur(function(){
             let fieldId = $(this)[0]["id"]
 
@@ -465,6 +466,67 @@
             });
         @endif
     });
+
+    $("#idNumber").on('keyup blur', function(){
+        let idNumber = $("#idNumber").val();
+        if(idNumber.length == 13){
+            ValidID(idNumber, "idNumber", "idNumber_error")
+        }else{
+            $("#idNumber").addClass("fieldError")
+            $("#idNumber_error").removeClass('hidden')
+        }  
+    })
+
+    function ValidID(idNumber, idField, errorField){
+        let idArr = Array.from(idNumber);
+        idArr.reverse()
+        let newArr = [];
+
+        for (let i = 0; i < idArr.length; i++) {
+            if((i % 2) !== 0){
+                let newValue = idArr[i]*2
+                if(newValue > 9){
+                    value1 = (newValue.toString()).substr(0,1)
+                    value2 = (newValue.toString()).substr(1, 2)
+                    newValue = parseInt(value1) + parseInt(value2)
+
+                }
+                newArr.push(newValue)
+            }else{
+                newArr.push(idArr[i])
+            }
+        }
+
+
+        let sum = 0;
+        for (let i = 0; i < newArr.length; i++) {
+            sum += parseInt(newArr[i]);
+        }
+
+        let finalSum = sum/10
+
+        console.log(Number.isInteger(finalSum) && idNumber !== "")
+
+        if(Number.isInteger(finalSum) && idNumber !== ""){
+            $("#"+idField).removeClass("fieldError")
+            $("#"+errorField).addClass('hidden')
+        }else{
+            $("#"+idField).addClass("fieldError")
+            $("#"+errorField).removeClass('hidden')
+        }
+    }
+
+    $("#pIdNumber").on('keyup blur', function(){
+        let idNumber = $("#pIdNumber").val();
+
+        if(idNumber.length == 13){
+            ValidID(idNumber, "pIdNumber", "pIdNumber_error")
+        }else{
+            $("#pIdNumber").addClass("fieldError")
+            $("#pIdNumber_error").removeClass('hidden')
+        }
+
+    })
 
     function approveData(type) {
         let message = "You are about to approve this data";
