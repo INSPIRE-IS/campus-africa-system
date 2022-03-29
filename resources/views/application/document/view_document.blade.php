@@ -363,7 +363,7 @@
                                     <input type="hidden" name="type" value="{{$file->fileId}}">
 
                                     <button type="button" class="approve button" style="height:40px;" onClick="updateData()">Update</button>
-                                    <button type="button" class="rejected button" style="height:40px;" onClick="cancelEditData()">Cancel</button>
+                                    <button type="button" class="rejected button" style="height:40px;" onClick="cancelEditData('cancel')">Cancel</button>
                                 </div>
                             @endif
                         @endif
@@ -393,6 +393,21 @@
         $('.close').on("click", function(e) {
             $("#myModal").html("");
             $("#myModal").css("display", "none");
+        });
+
+        $("input").focus(function(){
+            let fieldId = $(this)[0]["id"]
+
+            if (!$("#"+fieldId).data('old')) {
+
+                const div = document.getElementById(fieldId)
+
+                div.dataset.old = $(this)[0]['value']
+                console.log($(this)[0]['value'])
+                console.log($(this)[0])
+            }
+
+            
         });
 
 
@@ -874,6 +889,7 @@
     }
 
     function editData() {
+
         $('.edit_info .noedit').removeAttr('disabled');
 
         $('.edit_info .noedit').addClass('curedit');
@@ -883,7 +899,39 @@
         $('.btns_save_data').show();
     }
 
-    function cancelEditData() {
+    function cancelEditData(type) {
+
+        if(type == "cancel"){
+
+            $('.edit_info .curedit').each( function(){
+                let fieldId = $(this)[0]["id"]
+                if($("#"+fieldId).data('old')){
+
+                    if($("#"+fieldId).data('new')){
+                        var data_old = $("#"+fieldId).data('new')
+                        $("#"+fieldId).val(data_old)
+                    }else{
+                        var data_old = $("#"+fieldId).data('old')
+                        $("#"+fieldId).val(data_old)
+                    }
+                    
+                    const div = document.getElementById(fieldId)
+                    delete div.dataset.old
+                }
+            });
+        }else{
+            $('.edit_info .curedit').each( function(){
+                let fieldId = $(this)[0]["id"]
+                if($("#"+fieldId).data('old')){
+                    var data_curr = $("#"+fieldId).val()
+                    $("#"+fieldId).val(data_curr)
+                    const div = document.getElementById(fieldId)
+                    delete div.dataset.old
+                    div.dataset.new = data_curr
+                }
+            });
+        }
+
         $('.edit_info .curedit').attr('disabled', true);
         $('.edit_info .curedit').addClass('noedit');
         $('.edit_info .curedit').removeClass('curedit');        
@@ -998,7 +1046,7 @@
                 success: function (data) {
 
                     if (data === "done") {
-                        cancelEditData();
+                        cancelEditData('done');
 
                     } else {
                         alert("error");
