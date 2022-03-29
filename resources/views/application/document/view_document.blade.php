@@ -284,11 +284,11 @@
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Contact Number:</span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
+                            <span style='font-weight:bold'>Contact Number: <span id="burContactNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Email Address:</span> <input class="noedit required" name="burEmail" id="burEmail" disabled type="text" value="{{$user->burEmail}}">
+                            <span style='font-weight:bold'>Email Address: <span id="burEmail_error" class="hidden"><small style="color:red">Not a valid email</small></span><span id="burEmail_InUse" class="hidden" ><small style="color:red">Email Address already in use</small></span></span> <input class="noedit required" name="burEmail" id="burEmail" disabled type="text" value="{{$user->burEmail}}">
                         </div>
 
                         <div class="form-field">
@@ -892,6 +892,79 @@
         $('.btns_save_data').hide();
     }
 
+    function ValidCell(cell, fieldId, fieldError){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+            $("#"+fieldId).removeClass("fieldError")
+            $("#"+fieldError).addClass('hidden')
+        }else{
+            $("#"+fieldId).addClass("fieldError")
+            $("#"+fieldError).removeClass('hidden')
+        }
+    }
+
+    function isEmail(email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
+    }
+
+    $("#burEmail").on('keyup blur', function(){
+
+        if(isEmail($("#burEmail").val())){
+            $("#burEmail").removeClass("fieldError")
+            $("#burEmail_error").addClass('hidden')
+        }else{
+            $("#burEmail").addClass("fieldError")
+            $("#burEmail_error").removeClass('hidden')
+        }
+    })
+
+    $("#burEmail, #idNumber").on('blur', function(){
+        $.ajax({
+            type: "post",
+            url: "/email-check",
+            data: {
+                email: $("#burEmail").val(),
+                idNumber: $("#idNumber").val(),
+            },
+
+            success: function (data) {
+                console.log(data)
+                
+                if (data[0] == "done") {
+
+                    if($("#burEmail").val() !== ""){
+                        if(data[1] == false){
+                            $("#burEmail_InUse").removeClass('hidden')
+                            $("#burEmail").addClass('fieldError')
+                        }else{
+                            $("#burEmail_InUse").addClass('hidden')
+                            $("#burEmail").removeClass('fieldError')
+                        }
+                    }
+
+                    // if($("#idNumber").val() !== ""){
+                    //     if(data[2] == false){
+                    //         $("#idNumber_InUse").removeClass('hidden')
+                    //         $("#idNumber").addClass('fieldError')
+                    //     }else{
+                    //         $("#idNumber_InUse").addClass('hidden')
+                    //         $("#idNumber").removeClass('fieldError')
+                    //     }
+                    // }
+
+
+                }
+            },
+        });
+    })
+    
+
+    $("#burContactNo").on('keyup blur', function(){
+        cell = $("#burContactNo").val()
+        ValidCell(cell, "burContactNo", "burContactNo_error");
+    })
+
+
     function updateData() {
         //Check if any hidden fields are required, remove required check
         $('.edit_info .hidden .fieldError').removeClass('fieldError').val('');
@@ -909,6 +982,10 @@
                     id = $(this)[0]["id"]
                     $("#"+id+"_error").removeClass("hidden")
                 }
+            }
+
+            if(!$(this).parent().hasClass('hidden') && $(this).hasClass('fieldError')){
+                req = 0
             }
         });
 
