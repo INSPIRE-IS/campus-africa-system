@@ -1473,7 +1473,7 @@
                 }
 
                 var booking_fee = "";
-                if(data[3] !== 'false'){
+                if(data[3] !== 'false' && data[0].room_rate !== null){
                     var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
                 }
                 
