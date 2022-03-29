@@ -192,7 +192,7 @@
                         </div>
 
                         <div class="form-field <?php if($user->userNationality !== "South Africa"){echo "hidden";} ?>" id="idField">
-                            <span style='font-weight:bold'>I.D Number:</span> <input class="noedit required" name="userId" id="idNumber" disabled type="text" value="{{$user->userId}}">
+                            <span style='font-weight:bold'>I.D Number: <span id="idNumber_error" class="hidden"><small style="color:red">Not a valid ID number</small></span></span> <input class="noedit required" name="userId" id="idNumber" disabled type="text" value="{{$user->userId}}">
                         </div>
 
                         <div class="form-field <?php if($user->userNationality == "South Africa"){echo "hidden";} ?>" id="passportField">
@@ -200,7 +200,7 @@
                         </div>
                         
                         <div class="form-field">
-                            <span style='font-weight:bold'>DOB:</span> <input class="noedit required" name="userDob" id="userDob" disabled type="text" value="{{$user->userDob}}">                    
+                            <span style='font-weight:bold'>DOB: <span id="dob_error" class="hidden"><small style="color:red">Not a valid date of birth</small></span> </span><input class="noedit required" name="userDob" id="userDob" disabled type="date" value="{{$user->userDob}}">       
                         </div>
                     @endif
 
@@ -466,6 +466,24 @@
             });
         @endif
     });
+
+    $("#userDob").on('keyup blur', function(){
+        let dob = $("#userDob").val();
+
+        var d = new Date()
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+        yearBack =(d.getFullYear() - 100);
+
+        if(dob < yearBack+"-01-01" || dob > year+"-"+month+"-"+day){
+            $("#userDob").addClass("fieldError")
+            $("#dob_error").removeClass('hidden')
+        }else{
+            $("#userDob").removeClass("fieldError")
+            $("#dob_error").addClass('hidden')
+        }
+    })
 
     $("#idNumber").on('keyup blur', function(){
         let idNumber = $("#idNumber").val();
