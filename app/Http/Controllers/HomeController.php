@@ -1190,6 +1190,8 @@ class HomeController extends Controller
             'bint' => $request->bint,
             'bIntName' => $request->bIntName,
             // 'nsfas_bursar' => $request->nsfas_bursar,
+            'rob_55_lease' => 3,
+            'rob_45_other' => 3,
         ]);
 
         ActionList::create([

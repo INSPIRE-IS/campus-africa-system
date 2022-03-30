@@ -123,6 +123,8 @@ class User extends Authenticatable
         'user_role_name',
         'nsfas_bursar',
         'role_cancel_lease',
+        'rob_55_lease',
+        'rob_45_other',
     ];
 
     public function files(){

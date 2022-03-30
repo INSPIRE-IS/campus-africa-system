@@ -90,6 +90,7 @@ class LookupsController extends Controller {
 
         foreach($students as $student){
             $files = UserFiles::where('userUid', $student->id)->get();
+            $allOtherFiles = UserFiles::where('userUid', $student->id)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
 
             $status_data = [
                 'rob_10_fee' => 0,
@@ -111,9 +112,35 @@ class LookupsController extends Controller {
 
                 'rob_40_bed' => 1,
                 'rob_45_other' => 3,
-                'rob_50_approve' => 0,
-                'rob_55_lease' => 0,
+                'rob_50_approve' => $student->rob_50_approve,
+                'rob_55_lease' => 3,
             ];
+
+            
+
+            if(count($allOtherFiles) == 0){
+                $status_data['rob_45_other'] = '3';
+            }else{
+                $highest = 2;
+
+                foreach($allOtherFiles as $otherFile){
+                    if($otherFile->status == "Approved"){
+                        $value = 2;
+                    }else if($otherFile->status == "Uploaded"){
+                        $value = 1;
+                    }else{
+                        $value = 0;
+                    }
+
+                    if($value < $highest){
+                        $highest = $value;
+                    }
+                }
+
+                $status_data['rob_45_other'] = $highest;
+            }
+
+            $leaseDocUploaded = 0;
 
             foreach($files as $f) {                
                 if ($f->fileId == "proof_of_payment") {
@@ -196,10 +223,13 @@ class LookupsController extends Controller {
                     }                
 
                 } elseif ($f->fileId == "moveIn") {
+                    $leaseDocUploaded = 1;
                     if ($f->status == "Approved") {
                         $status_data['rob_55_lease'] = 2;
                     } elseif ($f->status == "Uploaded") {                                                
                         $status_data['rob_55_lease'] = 1;
+                    } elseif ($f->status == "Rejected") {                                                
+                        $status_data['rob_55_lease'] = 0;
                     }
                     
                 }
@@ -222,6 +252,10 @@ class LookupsController extends Controller {
 
             if ($status_data['address_approved'] == 1 && $status_data['kin_approved'] == 1 && $status_data['email_data_approved'] == 1) {
                 $status_data['rob_35_info'] = 2;
+            }
+
+            if($leaseDocUploaded == 0 && $status_data['rob_50_approve'] == 2){
+                $status_data['rob_55_lease'] = 0;
             }
 
             //Update the students data
