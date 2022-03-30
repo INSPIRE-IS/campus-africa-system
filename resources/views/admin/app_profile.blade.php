@@ -43,28 +43,14 @@
             @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
                 <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
                 <div class="form">
-                    {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
-                    {{$user[0]['userInfo']['sponCell']}}<br/>
-                    {{$user[0]['userInfo']['sponEmail']}}<br/>
-                    {{$user[0]['userInfo']['sponId']}}<br/>
-                    {{$user[0]['userInfo']['pNationality']}}<br/>
-                    @if($user[0]['userInfo']['sponId']){{$user[0]['userInfo']['sponId']}}<br/>@endif
-                    @if($user[0]['userInfo']['pPassportNo']){{$user[0]['userInfo']['pPassportNo']}}<br/>@endif
-                    {{$user[0]['userInfo']['pAddress1']}}, {{$user[0]['userInfo']['pAddress2']}}, <br/>
-                    {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}
+                    <div class="sponInfoSection"></div>
                 </div>
             @endif
 
             @if($user[0]['userInfo']['studentType'] == "Bursary")
                 <div class="flex"><span id="approvedBur" class="hidden">&#128994;</span><span id="rejectedBur">&#128308;</span><p class="listHeader">Bursar</p></div>
                 <div class="form">
-                    {{$user[0]['userInfo']['burCompanyName']}}<br/>
-                    {{$user[0]['userInfo']['burRegNo']}}<br/>
-                    {{$user[0]['userInfo']['burContactPerson']}} - {{$user[0]['userInfo']['burContactNo']}}<br/>
-                    {{$user[0]['userInfo']['burEmail']}}<br/>
-                    {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, <br/>
-                    {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>
-                    <br />NSFAS bursar? <strong><?php if($user[0]['userInfo']['nsfas_bursar'] == "1"){ echo "Yes";}else{echo "No";} ?></strong>
+                    <div class="burInfoSection"></div>
                 </div>
             @endif
         </div>
@@ -195,11 +181,7 @@
                 <!-- <button type="button" class="reminder">Send reminder</button> -->
                 <h2 class="appSubHeader bold">PAYMENT TYPE </h2>
                 <p class="appSubHeader">
-                    @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif
-
-                    @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <br /> <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") <br/> <span style="color:red;">{{$user[0]['userInfo']['bPayment']}}</span>@endif
-                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <span style="color:red;"> | {{$user[0]['userInfo']['bint']}}</span> @endif
-                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <span style="color:red;"> | {{$user[0]['userInfo']['bIntName']}}</span> @endif
+                    <div class="burPaymentDetails"></div>
                 </p>
                 <br/>
 
@@ -585,16 +567,16 @@
 <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
 
-<input type="hidden" id="id_data_approved" value="{{$user[0]['userInfo']['id_data_approved']}}"/>
-<input type="hidden" id="student_card_approved" value="{{$user[0]['userInfo']['student_card_approved']}}"/>
-<input type="hidden" id="registration_approved" value="{{$user[0]['userInfo']['registration_approved']}}"/>
-<input type="hidden" id="bursary_approved" value="{{$user[0]['userInfo']['bursary_approved']}}"/>
-<input type="hidden" id="bank_approved" value="{{$user[0]['userInfo']['bank_approved']}}"/>
+<!-- <input type="hidden" id="id_data_approved" value="{{$user[0]['userInfo']['id_data_approved']}}"/> -->
+<!-- <input type="hidden" id="student_card_approved" value="{{$user[0]['userInfo']['student_card_approved']}}"/> -->
+<!-- <input type="hidden" id="registration_approved" value="{{$user[0]['userInfo']['registration_approved']}}"/> -->
+<!-- <input type="hidden" id="bursary_approved" value="{{$user[0]['userInfo']['bursary_approved']}}"/> -->
+<!-- <input type="hidden" id="bank_approved" value="{{$user[0]['userInfo']['bank_approved']}}"/> -->
 <input type="hidden" id="address_approved" value="{{$user[0]['userInfo']['address_approved']}}"/>
 <input type="hidden" id="kin_approved" value="{{$user[0]['userInfo']['kin_approved']}}"/>
-<input type="hidden" id="parent_approved" value="{{$user[0]['userInfo']['parent_approved']}}"/>
-<input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/>
-<input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/>
+<!-- <input type="hidden" id="parent_approved" value="{{$user[0]['userInfo']['parent_approved']}}"/> -->
+<!-- <input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/> -->
+<!-- <input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/> -->
 <input type="hidden" id="files_to_download" value="{{$files_to_download}}"/>
 <input type="hidden" id="selectedRoom" value=""/>
 <input type="hidden" id="email_data_approved" value="{{$user[0]['userInfo']['email_data_approved']}}"/>
@@ -799,22 +781,6 @@
         }
         
 
-        if($("#parent_approved").val() == "1"){
-            $("#rejectedSpon").addClass('hidden')
-            $("#approvedSpon").removeClass('hidden')
-        }else{
-            $("#rejectedSpon").removeClass('hidden')
-            $("#approvedSpon").addClass('hidden')
-        }
-
-        if($("#burser_approved").val() == "1"){
-            $("#rejectedBur").addClass('hidden')
-            $("#approvedBur").removeClass('hidden')
-        }else{
-            $("#rejectedBur").removeClass('hidden')
-            $("#approvedBur").addClass('hidden')
-        }
-
         if($("#kin_approved").val() == "1"){
             $("#rejectedKin").addClass('hidden')
             $("#approvedKin").removeClass('hidden')
@@ -839,6 +805,55 @@
             $("#app_det_statYes").addClass('hidden')
         }
 
+        //
+        $.ajax({
+            type: "get",
+            url: "/check-user-payment/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                if(data['nsfas_bursar'] == 1){
+                    var nsfas_bursar = "Yes";
+                }else{
+                    var nsfas_bursar = "No"
+                }
+
+                $(".burInfoSection").empty().append(data['burCompanyName']+"<br/>"+data['burRegNo']+"<br/>"+data['burContactPerson']+" - "+data['burContactNo']+"<br/>"+data['burEmail']+"<br/>"+data['bAddress1']+", "+data['bAddress2']+", <br/>"+data['bAddressCity']+", "+data['bAddressPostal']+"<br/><br/> NSFAS bursar? <strong>"+nsfas_bursar+"</strong>")
+
+                if(data['studentType'] == "Cash / Direct"){
+                    var studentType = "Cash"
+                }else{
+                    var studentType = data['studentType']
+                }
+
+                if(data['bPayment'] !== null){
+
+                    var bPayment = "<span style='color:red;'>"+data['bPayment']+"</span>";
+
+                    if(data['bPayment'] == "Via an INTERMEDIARY" && data['bint'] !== "Other"){
+                        var bint = "<span style='color:red;'> | "+data['bint'];
+                    }else if(data['bPayment'] == "Via an INTERMEDIARY" && data['bint'] == "Other"){
+                        var bint = "<span style='color:red;'> | "+data['bIntName'];
+                    }else{
+                        var bint = "";
+                    }
+                }else{
+                    var bPayment = "";
+                    var bint = "";
+                }
+
+
+                if(data['sponId'] !== null){
+                    var IDspon = data['sponId']
+                }else{
+                    var IDspon = data['pPassportNo']
+                }
+
+                $(".burPaymentDetails").empty().append(studentType+"<br/>"+bPayment+" "+bint)
+
+                $(".sponInfoSection").empty().append(data['sponFirstName']+" "+data['sponLastName']+"<br/>"+data['sponCell']+"<br/>"+data['sponEmail']+"<br/>"+data['pNationality']+"<br/>"+IDspon+"<br/>"+data['pAddress1']+", "+data['pAddress2']+"<br/>"+data['pAddressCity']+", "+data['pAddressPostal'])
+            }
+        });
+
+
         //Check if we show/hide the approve user section
         $.ajax({
             type: "get",
@@ -847,6 +862,22 @@
             success: function (data) {
 
                 // console.log(data)
+
+                if(data['parent_approved'] == 1){
+                    $("#rejectedSpon").addClass('hidden')
+                    $("#approvedSpon").removeClass('hidden')
+                }else{
+                    $("#rejectedSpon").removeClass('hidden')
+                    $("#approvedSpon").addClass('hidden')
+                }
+
+                if(data['burser_approved'] == 1){
+                    $("#rejectedBur").addClass('hidden')
+                    $("#approvedBur").removeClass('hidden')
+                }else{
+                    $("#rejectedBur").removeClass('hidden')
+                    $("#approvedBur").addClass('hidden')
+                }
 
                 if(data['rob_40_bed'] == 2){
                     $(".bed_code_status").empty().append('<span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>')
@@ -2371,7 +2402,7 @@
 
                         success: function (data) {
                             $("#prop_room_row1, #prop_room_row2").remove();
-                            $("#bed_allocated").val('')
+                            // $("#bed_allocated").val('')
 
                             refreshActions();  
                             checkUserStatus();

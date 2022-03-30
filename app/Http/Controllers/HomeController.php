@@ -2989,10 +2989,22 @@ class HomeController extends Controller
             }
             $field = "bursary_approved";
             $field2 = "burser_approved";
+
+            if($request->type == "1"){
+                User::where('id', $request->userId)->update(['burser_approved' => 1]);
+            }else{
+                User::where('id', $request->userId)->update(['burser_approved' => null]);
+            }
         }else if($request->FileNameForApproval == "bankStatement"){
             $name = 'BANK STATEMENT';
             $field = "bank_approved";
             $field2 = "parent_approved";
+
+            if($request->type == "1"){
+                User::where('id', $request->userId)->update(['parent_approved' => 1]);
+            }else{
+                User::where('id', $request->userId)->update(['parent_approved' => null]);
+            }
         }
 
         $dataToUpdate = [
@@ -4088,7 +4100,17 @@ class HomeController extends Controller
         $user = User::where('id', $student_id)->first();
 
         if (!empty($user)) {
-            return ["rob_10_fee" => $user->rob_10_fee, "rob_15_id" => $user->rob_15_id, "rob_20_card" => $user->rob_20_card , "rob_25_reg" => $user->rob_25_reg , "rob_30_funds" => $user->rob_30_funds , "rob_35_info" => $user->rob_35_info , "rob_40_bed" => $user->rob_40_bed, "rob_45_other" => $user->rob_45_other,  "rob_50_approve" => $user->rob_50_approve, "rob_60_cancelled" => $user->rob_60_cancelled ];
+            return ["rob_10_fee" => $user->rob_10_fee, "rob_15_id" => $user->rob_15_id, "rob_20_card" => $user->rob_20_card , "rob_25_reg" => $user->rob_25_reg , "rob_30_funds" => $user->rob_30_funds , "rob_35_info" => $user->rob_35_info , "rob_40_bed" => $user->rob_40_bed, "rob_45_other" => $user->rob_45_other,  "rob_50_approve" => $user->rob_50_approve, "rob_60_cancelled" => $user->rob_60_cancelled, 'parent_approved' => $user->parent_approved, 'burser_approved' => $user->burser_approved ];
+        } else {
+            return false;
+        }
+    }
+
+    public function check_user_payment($student_id){
+        $user = User::where('id', $student_id)->first();
+
+        if (!empty($user)) {
+            return ["burCompanyName" => $user->burCompanyName, "burRegNo" => $user->burRegNo, "burContactPerson" => $user->burContactPerson , "burContactNo" => $user->burContactNo , "burEmail" => $user->burEmail , "bAddress1" => $user->bAddress1 , "bAddress2" => $user->bAddress2, "bAddressCity" => $user->bAddressCity,  "bAddressPostal" => $user->bAddressPostal, "nsfas_bursar" => $user->nsfas_bursar, "studentType" => $user->studentType, 'bPayment' => $user->bPayment, "bint" => $user->bint, "bIntName" => $user->bIntName, "sponFirstName" => $user->sponFirstName, "sponLastName" => $user->sponLastName, "sponCell" => $user->sponCell, "sponEmail" => $user->sponEmail, "sponId" => $user->sponId, "pNationality" => $user->pNationality, "pPassportNo" => $user->pPassportNo, "pAddress1" => $user->pAddress1, "pAddress2" => $user->pAddress2, "pAddressCity" => $user->pAddressCity, "pAddressPostal" => $user->pAddressPostal];
         } else {
             return false;
         }

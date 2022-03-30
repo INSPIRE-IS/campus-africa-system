@@ -714,25 +714,7 @@
 
                     success: function (data) {
 
-                        if("{{$file->fileId}}" == "bursaryApproval"){
-                            if(type !== "0"){
-                                $("#burser_approved").val('1');
-                                checkUserStatus();
-                            }else{
-                                $("#burser_approved").val('0');
-                                checkUserStatus();
-                            }
-                        }
-
-                        if("{{$file->fileId}}" == "bankStatement"){
-                            if(type !== "0"){
-                                $("#parent_approved").val('1');
-                                checkUserStatus();
-                            }else{
-                                $("#parent_approved").val('0');
-                                checkUserStatus();
-                            }
-                        }
+                        checkUserStatus();
 
                         if (data === "true") {
                             refreshActions();
@@ -1006,6 +988,7 @@
                         }
                         
                         refreshActions();
+                        checkUserStatus();
 
                         $("#myModal").html("");
                         $("#myModal").css("display", "none");
@@ -1044,7 +1027,7 @@
     function cancelEditData(type) {
 
         if(type == "cancel"){
-
+            checkUserStatus();
             $('.edit_info .curedit').each( function(){
                 let fieldId = $(this)[0]["id"]
                 if($("#"+fieldId).data('old')){
@@ -1072,6 +1055,7 @@
                 }
             });
         }else{
+            checkUserStatus();
             $('.edit_info .curedit').each( function(){
                 let fieldId = $(this)[0]["id"]
                 if($("#"+fieldId).data('old')){

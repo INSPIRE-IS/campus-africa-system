@@ -236,7 +236,7 @@ class DocumentsController extends Controller {
                 'pAddress1' => $request->pAddress1,
                 'pAddress2' => $request->pAddress2,
                 'pAddressCity' => $request->pAddressCity,
-                'pAddressPostal' => $request->pAddressPostal
+                'pAddressPostal' => $request->pAddressPostal,
             ];
         }
 

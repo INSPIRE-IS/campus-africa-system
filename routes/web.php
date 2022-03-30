@@ -53,6 +53,7 @@ Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
 Route::post('/reject-application', [HomeController::class, 'reject_application']);
 Route::get('/check-user-status/{userId}', [HomeController::class, 'check_user_status']);
+Route::get('/check-user-payment/{userId}', [HomeController::class, 'check_user_payment']);
 
 Route::get('/my-profile', [ProfileController::class, 'index'])->name('my-profile');
 Route::post('/update-profile', [ProfileController::class, 'update']);
