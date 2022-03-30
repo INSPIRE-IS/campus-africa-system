@@ -78,9 +78,9 @@ jQuery(document).ready(function ($) {
                 var i = 0;
 
                 //Set up robot classes
-                let rob_rejected = '<div class="button rejected noBoarder"></div>';
-                let rob_pending = '<div class="button action noBoarder"></div>';
-                let rob_approved = '<div class="button approved noBoarder"></div>';
+                let rob_rejected = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
+                let rob_pending = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
+                let rob_approved = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
 
                 results.forEach(function (arrayItem) {
                     if (i % 2 == 0) {
@@ -90,16 +90,16 @@ jQuery(document).ready(function ($) {
                     }
 
                     //Default our robots to Cancelled
-                    var rob_fee = '<div class="button na noBoarder"></div>';
-                    var rob_id = '<div class="button na noBoarder"></div>';
-                    var rob_card = '<div class="button na noBoarder"></div>';
-                    var rob_reg = '<div class="button na noBoarder"></div>';
-                    var rob_funds = '<div class="button na noBoarder"></div>';
-                    var rob_info = '<div class="button na noBoarder"></div>';
-                    var rob_bed = '<div class="button na noBoarder"></div>';
-                    var rob_other = '<div class="button na noBoarder"></div>';
-                    var rob_approve = '<div class="button na noBoarder"></div>';
-                    var rob_lease = '<div class="button na noBoarder"></div>';
+                    var rob_fee = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_id = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_card = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_reg = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_funds = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_info = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_bed = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_other = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_approve = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_lease = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
 
                     //For non cancelled rows work out the robots
                     if (arrayItem["rob_60_cancelled"] == 0) {
