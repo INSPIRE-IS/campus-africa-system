@@ -336,9 +336,9 @@ jQuery(document).ready(function ($) {
                         .node();
 
                     $(trDOM).addClass("table_id_" + arrayItem["userId"]);
-                    $(trDOM).find("td").eq(6).addClass("bookingBg");
-                    $(trDOM).find("td").eq(9).addClass("bookingBg");
-                    $(trDOM).find("td").eq(14).addClass("bookingBg");
+                    // $(trDOM).find("td").eq(6).addClass("bookingBg");
+                    $(trDOM).find("td").eq(12).addClass("bookingBg");
+                    $(trDOM).find("td").eq(13).addClass("bookingBg");
 
                     i++;
                 });
