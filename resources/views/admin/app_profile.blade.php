@@ -44,7 +44,7 @@
                 <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
                 <div class="form">
                     {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
-                    {{$user[0]['userInfo']['sponCellNo']}}<br/>
+                    {{$user[0]['userInfo']['sponCell']}}<br/>
                     {{$user[0]['userInfo']['sponEmail']}}<br/>
                     {{$user[0]['userInfo']['sponId']}}<br/>
                     {{$user[0]['userInfo']['pNationality']}}<br/>
@@ -802,11 +802,17 @@
         if($("#parent_approved").val() == "1"){
             $("#rejectedSpon").addClass('hidden')
             $("#approvedSpon").removeClass('hidden')
+        }else{
+            $("#rejectedSpon").removeClass('hidden')
+            $("#approvedSpon").addClass('hidden')
         }
 
         if($("#burser_approved").val() == "1"){
             $("#rejectedBur").addClass('hidden')
             $("#approvedBur").removeClass('hidden')
+        }else{
+            $("#rejectedBur").removeClass('hidden')
+            $("#approvedBur").addClass('hidden')
         }
 
         if($("#kin_approved").val() == "1"){

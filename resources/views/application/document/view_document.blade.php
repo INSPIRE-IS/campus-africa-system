@@ -269,8 +269,33 @@
                                 <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
                                 <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
                             </select>
-                        </div>    
+                        </div>
                         
+                        <div class="form-field">    
+                            <span style='font-weight:bold'>How Is the Bursary Paid *</span>
+                            <select name="bPayment" id='bPayment' class="noedit required" disabled>
+                                <option value="" disabled selected>Please select one</option>
+                                <option value="Directly to the RESIDENCE" <?php if($user->bPayment == "Directly to the RESIDENCE"){echo "selected";} ?>>Directly to the RESIDENCE</option>
+                                <option value="Directly to the STUDENT" <?php if($user->bPayment == "Directly to the STUDENT"){echo "selected";} ?>>Directly to the STUDENT</option>
+                                <option value="Via an INTERMEDIARY" <?php if($user->bPayment == "Via an INTERMEDIARY"){echo "selected";} ?>>Via an INTERMEDIARY</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field <?php if($user->bPayment !== 'Via an INTERMEDIARY'){echo 'hidden';}?>" id="viaInt">    
+                            <span style='font-weight:bold'>Intermediary *</span>
+                            <select name="bint" id='bint' class="noedit <?php if($user->bPayment !== 'Via an INTERMEDIARY'){echo 'hidden';}?>" disabled>
+                                <option value="" disabled selected>Please select one</option>
+                                <option value="Fundi" <?php if($user->bint == "Fundi"){echo "selected";} ?>>Fundi</option>
+                                <option value="Intellicard" <?php if($user->bint == "Intellicard"){echo "selected";} ?>>Intellicard</option>
+                                <option value="Other" <?php if($user->bint == "Other"){echo "selected";} ?>>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field <?php if($user->bint !== 'other'){echo 'hidden';}?>" id="spesificInt">    
+                            <span style='font-weight:bold'>Specify Intermediary Name *</span> <input class="noedit <?php if($user->bint !== 'other'){echo 'hidden';}?>" name="bIntName" id="bIntName" disabled type="text" value="{{$user->bIntName}}">
+                        </div>
+                        
+
                         <div class="form-field">    
                             <span style='font-weight:bold'>Company Name *</span> <input class="noedit required" name="burCompanyName" id="burCompanyName" disabled type="text" value="{{$user->burCompanyName}}">
                         </div>
@@ -298,6 +323,23 @@
                                 <option value="1" <?php if($user->nsfas_bursar == "1"){echo "selected";} ?>>Yes</option>
                             </select>
                         </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Street No * </span> <input class="noedit required" name="bAddress1" id="bAddress1" disabled type="text" value="{{$user->bAddress1}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Suburb * </span> <input class="noedit required" name="bAddress2" id="bAddress2" disabled type="text" value="{{$user->bAddress2}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>City * </span> <input class="noedit required" name="bAddressCity" id="bAddressCity" disabled type="text" value="{{$user->bAddressCity}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Postal * <span id="bAddressPostal_error" class="hidden"><small style="color:red">Not a valid postal code</small></span></span> <input class="noedit required" name="bAddressPostal" id="bAddressPostal" disabled type="text" value="{{$user->bAddressPostal}}">
+                        </div>
+                        
                     @endif
 
                     @if($file->fileId == "bankStatement")
@@ -337,6 +379,30 @@
 
                         <div class="form-field <?php if($user->pNationality == "South Africa"){echo "hidden";} ?>" id="pPassportField">
                             <span style='font-weight:bold'>Sponsor Passport *</span> <input class="noedit required" name="pPassportNo" id="pPassportNo" disabled type="text" value="{{$user->pPassportNo}}">                                       
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Sponsor Cellphone * <span id="sponCellNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span> <input class="noedit required" name="sponCellNo" id="sponCellNo" disabled type="text" value="{{$user->sponCell}}">                                       
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Sponsor Email *</span> <input class="noedit required" name="sponEmail" id="sponEmail" disabled type="text" value="{{$user->sponEmail}}">                                       
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Street No * </span> <input class="noedit required" name="pAddress1" id="pAddress1" disabled type="text" value="{{$user->pAddress1}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Suburb * </span> <input class="noedit required" name="pAddress2" id="pAddress2" disabled type="text" value="{{$user->pAddress2}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>City * </span> <input class="noedit required" name="pAddressCity" id="pAddressCity" disabled type="text" value="{{$user->pAddressCity}}">
+                        </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Postal * <span id="pAddressPostal_error" class="hidden"><small style="color:red">Not a valid postal code</small></span></span> <input class="noedit required" name="pAddressPostal" id="pAddressPostal" disabled type="text" value="{{$user->pAddressPostal}}">
                         </div>
                     @endif
 
@@ -413,6 +479,31 @@
             
         });
 
+        $("#bPayment").on('change', function(){
+            if($("#bPayment").val() == "Via an INTERMEDIARY"){
+                $("#viaInt").removeClass("hidden")
+                $("#bint").addClass("required")
+                $("#bint").removeClass("hidden")
+            }else{
+                $("#viaInt").addClass("hidden")
+                $("#bint").removeClass("required")
+                $("#bint").addClass("hidden")
+            }
+        })
+
+        $("#bint").on('change', function(){
+        
+            if($("#bint").val() == "Other"){
+                $("#spesificInt").removeClass("hidden")
+                $("#bIntName").addClass("required")
+                $("#bIntName").removeClass("hidden")
+            }else{
+                $("#spesificInt").addClass("hidden")
+                $("#bIntName").removeClass("required")
+                $("#bIntName").addClass("hidden")
+            }
+        })
+
 
         $("input").blur(function(){
             let fieldId = $(this)[0]["id"]
@@ -486,6 +577,32 @@
             });
         @endif
     });
+
+    $("#bAddressPostal").on('keyup blur', function(){
+        postal = $("#bAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#bAddressPostal").removeClass("fieldError")
+            $("#bAddressPostal_error").addClass('hidden')
+        }else{
+            $("#bAddressPostal").addClass("fieldError")
+            $("#bAddressPostal_error").removeClass('hidden')
+        }
+        
+    })
+
+    $("#pAddressPostal").on('keyup blur', function(){
+        postal = $("#pAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#pAddressPostal").removeClass("fieldError")
+            $("#pAddressPostal_error").addClass('hidden')
+        }else{
+            $("#pAddressPostal").addClass("fieldError")
+            $("#pAddressPostal_error").removeClass('hidden')
+        }
+        
+    })
 
     $("#userDob").on('keyup blur', function(){
         let dob = $("#userDob").val();
@@ -596,6 +713,26 @@
                     },
 
                     success: function (data) {
+
+                        if("{{$file->fileId}}" == "bursaryApproval"){
+                            if(type !== "0"){
+                                $("#burser_approved").val('1');
+                                checkUserStatus();
+                            }else{
+                                $("#burser_approved").val('0');
+                                checkUserStatus();
+                            }
+                        }
+
+                        if("{{$file->fileId}}" == "bankStatement"){
+                            if(type !== "0"){
+                                $("#parent_approved").val('1');
+                                checkUserStatus();
+                            }else{
+                                $("#parent_approved").val('0');
+                                checkUserStatus();
+                            }
+                        }
 
                         if (data === "true") {
                             refreshActions();
@@ -990,6 +1127,16 @@
             $("#burEmail_error").removeClass('hidden')
         }
     })
+    $("#sponEmail").on('keyup blur', function(){
+
+        if(isEmail($("#sponEmail").val())){
+            $("#sponEmail").removeClass("fieldError")
+            $("#sponEmail_error").addClass('hidden')
+        }else{
+            $("#sponEmail").addClass("fieldError")
+            $("#sponEmail_error").removeClass('hidden')
+        }
+    })
 
     $("#burEmail, #idNumber").on('blur', function(){
         $.ajax({
@@ -1036,6 +1183,10 @@
         cell = $("#burContactNo").val()
         ValidCell(cell, "burContactNo", "burContactNo_error");
     })
+    $("#sponCellNo").on('keyup blur', function(){
+        cell = $("#sponCellNo").val()
+        ValidCell(cell, "sponCellNo", "sponCellNo_error");
+    })
 
 
     function updateData() {
@@ -1069,6 +1220,7 @@
                 data: $('.edit_info').serialize(),
 
                 success: function (data) {
+                    
 
                     if (data === "done") {
                         cancelEditData('done');

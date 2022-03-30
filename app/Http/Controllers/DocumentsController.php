@@ -25,7 +25,7 @@ class DocumentsController extends Controller {
         $popupTitle = "";
         $doc_approved = 0;
 
-        $user_status = get_user_status($file->fileId, $user, $user);
+        $user_status = $this->get_user_status($file->fileId, $user, $user);
 
         $lookups = Lookups::get();
 
@@ -53,6 +53,78 @@ class DocumentsController extends Controller {
         $lookups = Lookups::get();
 
         return view('application.document.edit_data', ['user' => $user, 'lookups' => $lookups, 'type' => $type]);
+    }
+
+    function get_user_status($fileType, $user, $student) {
+
+        if($fileType == "proof_of_payment"){
+            $typeName = "Booking Fee Proof of Payment";
+            $field_data = "";
+            $field_doc = "rob_10_fee";
+            
+
+        } elseif($fileType == "copyID"){
+            $typeName = "Copy of ID Document";
+            $field_data = "id_data_approved";
+            $field_doc = "rob_15_id";            
+
+        }elseif($fileType == "studentCard"){
+            $typeName = "Copy of Student Card";
+            $field_data = "student_card_approved";
+            $field_doc = "rob_20_card";
+
+        }elseif($fileType == "proofRegistration"){
+            $typeName = "Proof of Registration";
+            $field_data = "registration_approved";
+            $field_doc = "rob_25_reg";
+
+        }elseif($fileType == "bursaryApproval"){
+            if($student->studentType == "NSFAS"){
+                $typeName = "NSFAS Approval";
+            }else{
+                $typeName = "Bursary Approval";
+            }
+            $field_data = "bursary_approved";
+            $field_doc = "rob_30_funds";
+
+        }elseif($fileType == "bankStatement"){
+            $typeName = "Bank Statements";
+            $field_data = "bank_approved";
+            $field_doc = "rob_30_funds";                
+
+        }elseif($fileType == "moveIn"){
+            $typeName = "Lease";
+            $field_data = "";
+            $field_doc = "rob_55_lease";
+        }else{
+            $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
+            $field_data = $fileType;
+            $field_doc = "rob_45_other";
+        }
+
+        $data_approved = 0;
+        $doc_approved = 0;
+
+        if (!empty($user)) {
+            if (!empty($field_data) && isset($user->{$field_data})) {
+                $data_approved = $user->{$field_data};
+            }
+
+            if (!empty($field_doc) && isset($user->{$field_doc})) {
+                $doc_approved = $user->{$field_doc};
+            }
+        }
+
+        return [
+            'typeName' => $typeName, 
+
+            'field_data' => $field_data, 
+            'field_doc' => $field_doc,
+
+            'data_approved' => $data_approved,
+            'doc_approved' => $doc_approved
+        ];
+
     }
 
 
@@ -110,6 +182,13 @@ class DocumentsController extends Controller {
                 'burContactNo|Burser Contact Number' => $request->burContactNo,
                 'burEmail|Burser Email' => $request->burEmail,                
                 'nsfas_bursar|NSFAS Bursar' => $request->nsfas_bursar,
+                'bAddress1|Bursar Street No' => $request->bAddress1,
+                'bAddress2|Bursar Suburb' => $request->bAddress2,
+                'bAddressCity|Bursar City' => $request->bAddressCity,
+                'bAddressPostal|Bursar Postal' => $request->bAddressPostal,
+                'bPayment|Payment Method' => $request->bPayment,
+                'bint|Intermediary' => $request->bint,
+                'bIntName|Intermediary Name' => $request->bIntName,
             ];
 
             $updateData = [
@@ -120,6 +199,13 @@ class DocumentsController extends Controller {
                 'burContactNo' => $request->burContactNo,
                 'burEmail' => $request->burEmail, 
                 'nsfas_bursar' => $request->nsfas_bursar,
+                'bAddress1' => $request->bAddress1,
+                'bAddress2' => $request->bAddress2,
+                'bAddressCity' => $request->bAddressCity,
+                'bAddressPostal' => $request->bAddressPostal,
+                'bPayment' => $request->bPayment,
+                'bint' => $request->bint,
+                'bIntName' => $request->bIntName,
             ];
 
         } elseif ($request->type == "bankStatement") {
@@ -130,6 +216,12 @@ class DocumentsController extends Controller {
                 'pNationality| Sponsor / Parent Nationality' => $request->pNationality,
                 'sponId| Sponsor / Parent I.D Number' => $request->sponId,
                 'pPassportNo| Sponsor / Parent Passport' => $request->pPassportNo,
+                'sponEmail| Sponsor Email Address' => $request->sponEmail,
+                'sponCell| Sponsor Cellphone Number' => $request->sponCellNo,
+                'pAddress1|Sponsor Street No' => $request->pAddress1,
+                'pAddress2|Sponsor Suburb' => $request->pAddress2,
+                'pAddressCity|Sponsor City' => $request->pAddressCity,
+                'pAddressPostal|Sponsor Postal' => $request->pAddressPostal
             ];
 
             $updateData = [
@@ -139,6 +231,12 @@ class DocumentsController extends Controller {
                 'pNationality' => $request->pNationality,
                 'sponId' => $request->sponId,
                 'pPassportNo' => $request->pPassportNo,
+                'sponEmail' => $request->sponEmail,
+                'sponCell' => $request->sponCellNo,
+                'pAddress1' => $request->pAddress1,
+                'pAddress2' => $request->pAddress2,
+                'pAddressCity' => $request->pAddressCity,
+                'pAddressPostal' => $request->pAddressPostal
             ];
         }
 
@@ -262,7 +360,7 @@ class DocumentsController extends Controller {
 
                 $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
 
-                $user_status = get_user_status($fileType, "", User::where('id', $userUid)->first());
+                $user_status = $this->get_user_status($fileType, "", User::where('id', $userUid)->first());
                 $field_data = $user_status['field_data'];
                 $field_doc = $user_status['field_doc'];                
 
