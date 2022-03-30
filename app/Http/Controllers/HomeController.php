@@ -1925,7 +1925,7 @@ class HomeController extends Controller
                     // $counter++;
                     // $counter++;
 
-                    $counter += 10;
+                    $counter += 15;
                 }
 
                 if($listItem == 0){
