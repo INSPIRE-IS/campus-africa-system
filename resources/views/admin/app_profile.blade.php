@@ -1232,7 +1232,9 @@
                         if(RoomSelected == roomCodes[key]){
                             $('#room').append("<option value='"+roomCodes[key]+"' selected>"+roomCodes[key]+"</option>")
                         }else{
-                            $('#room').append("<option value='"+roomCodes[key]+"'>"+roomCodes[key]+"</option>")
+                            if(roomCodes[key] !== null){
+                                $('#room').append("<option value='"+roomCodes[key]+"'>"+roomCodes[key]+"</option>")
+                            }
                         }
                     })
 
