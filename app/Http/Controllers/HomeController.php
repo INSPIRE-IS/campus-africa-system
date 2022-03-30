@@ -563,6 +563,10 @@ class HomeController extends Controller
                 }
                 
                 User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "0"]);
+
+                if($user_status['field_doc'] == "rob_30_funds"){
+                    User::where('id', $userFile->userUid)->update(['parent_approved' => null, 'burser_approved' => null]);
+                }
                 
 
             } else {
