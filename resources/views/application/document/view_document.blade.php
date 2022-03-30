@@ -715,6 +715,7 @@
                     success: function (data) {
 
                         checkUserStatus();
+                        refreshActions();
 
                         if (data === "true") {
                             refreshActions();
@@ -1028,6 +1029,7 @@
 
         if(type == "cancel"){
             checkUserStatus();
+            refreshActions();
             $('.edit_info .curedit').each( function(){
                 let fieldId = $(this)[0]["id"]
                 if($("#"+fieldId).data('old')){
@@ -1056,6 +1058,7 @@
             });
         }else{
             checkUserStatus();
+            refreshActions();
             $('.edit_info .curedit').each( function(){
                 let fieldId = $(this)[0]["id"]
                 if($("#"+fieldId).data('old')){
