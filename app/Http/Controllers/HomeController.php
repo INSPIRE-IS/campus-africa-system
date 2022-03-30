@@ -1715,6 +1715,9 @@ class HomeController extends Controller
 
             $addUser = 1;
             $counter = 0;
+            $yellow = 0;
+            $red = 0;
+            $green = 0;
 
             // if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
             //     $counter++;
@@ -1914,30 +1917,41 @@ class HomeController extends Controller
                 $student->rob_35_info, 
                 $student->rob_40_bed, 
                 $student->rob_45_other, 
+                $student->rob_50_approve, 
+                $student->rob_55_lease, 
             ];
 
             foreach($studentArrCheckList as $listItem){
                 if($listItem == 1){
                     $counter++;
                     $counter++;
+                    $yellow++;
+                }
+
+                if($listItem == 0){
                     $counter++;
-                    $counter++;
+                    $red++;
                 }
 
                 if($listItem == 2){
                     $counter--;
                     $counter--;
+                    $green++;
                 }
 
             }
 
             if($student->rob_60_cancelled){
                 $counter = -60;
+                $yellow = -60;
+                $red = -60;
             }
             
             //Only add users that pass the above checks
             if ($addUser == 1) {
                 $student->counter = $counter;
+                $student->yellow = $yellow;
+                $student->red = $red;
 
                 //Filter data based on the users roles
                 if(
@@ -1956,9 +1970,15 @@ class HomeController extends Controller
         }   
 
         //Sort our data based on our weighted counter
+        // usort($userData, function($a, $b) {
+        //     return $b['counter'] - $a['counter'];
+        // });  
         usort($userData, function($a, $b) {
-            return $b['counter'] - $a['counter'];
-        });      
+            return $b['red'] - $a['red'];
+        }); 
+        usort($userData, function($a, $b) {
+                return $b['yellow'] - $a['yellow'];
+        });     
 
         return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
     }
