@@ -484,10 +484,17 @@
                 $("#viaInt").removeClass("hidden")
                 $("#bint").addClass("required")
                 $("#bint").removeClass("hidden")
+                if($("#bint").val() == "Other"){
+                    $("#spesificInt").removeClass("hidden")
+                    $("#bIntName").addClass("required")
+                    $("#bIntName").removeClass("hidden")
+                }
             }else{
                 $("#viaInt").addClass("hidden")
                 $("#bint").removeClass("required")
                 $("#bint").addClass("hidden")
+                $("#bIntName").removeClass("required")
+                $("#spesificInt").addClass("hidden")
             }
         })
 
@@ -1047,6 +1054,26 @@
                     const div = document.getElementById(fieldId)
                     delete div.dataset.old
 
+                    if(fieldId == "bPayment"){
+                        if(data_old == "Via an INTERMEDIARY"){
+                            $("#viaInt").removeClass("hidden")
+                            $("#bint").removeClass("hidden")
+                        }else{
+                            $("#viaInt").addClass("hidden")
+                            $("#bint").addClass("hidden")
+                        }
+                    }
+
+                    if(fieldId == "bint"){
+                        if(data_old == "Other"){
+                            $("#spesificInt").removeClass("hidden")
+                            $("#bIntName").removeClass("hidden")
+                        }else{
+                            $("#spesificInt").addClass("hidden")
+                            $("#bIntName").addClass("hidden")
+                        }
+                    }
+
                     if(fieldId == "nationality"){
                         if(data_old == "International"){
                             $("#passportField").removeClass('hidden')
@@ -1055,6 +1082,16 @@
                             $("#idField").removeClass('hidden')
                             $("#passportField").addClass('hidden')
                         }
+                    }
+                }
+
+                if(fieldId == "bint"){
+                    if(!data_old && $("#bint").val() == "Other"){
+                        $("#spesificInt").removeClass("hidden")
+                        $("#bIntName").removeClass("hidden")
+                    }else{
+                        $("#spesificInt").addClass("hidden")
+                        $("#bIntName").addClass("hidden")
                     }
                 }
             });
