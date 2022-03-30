@@ -291,7 +291,7 @@
                             </select>
                         </div>
 
-                        <div class="form-field <?php if($user->bint !== 'Other'){echo 'hidden';}?>" id="spesificInt">    
+                        <div class="form-field <?php if($user->bint !== 'Other' || $user->bPayment !== 'Via an INTERMEDIARY'){echo 'hidden';}?>" id="spesificInt">    
                             <span style='font-weight:bold'>Specify Intermediary Name *</span> <input class="noedit <?php if($user->bint !== 'Other'){echo 'hidden';}?>" name="bIntName" id="bIntName" disabled type="text" value="{{$user->bIntName}}">
                         </div>
                         
