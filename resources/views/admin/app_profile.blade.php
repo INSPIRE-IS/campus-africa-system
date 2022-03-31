@@ -887,7 +887,7 @@
 
                 $(".appSection").empty()
 
-                if(data['rob_50_approve'] == 0 && data['rob_60_cancelled'] == 0){
+                if((data['rob_50_approve'] == 0 || data['rob_50_approve'] == 1) && data['rob_60_cancelled'] == 0){
                     $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
 
                     if("<?php echo Auth::user()->role_approve_docs; ?>" == 1

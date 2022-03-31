@@ -609,6 +609,12 @@ class HomeController extends Controller
                 $name = Auth::user()->userFirstName;
             }
 
+            $status_data = User::where('id', $userFile->userUid)->first();
+
+            if($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0){
+                User::where('id', $userFile->userUid)->update(['rob_50_approve' => 1]);
+            }
+
             ActionList::create([
                 "userUid" => $userFile->userUid,
                 "action" => $text,
@@ -2316,8 +2322,9 @@ class HomeController extends Controller
         $roomTypeNew = $request->roomType;
 
         $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
+        $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
 
-        if($userLeaseStatus !== '0'){
+        if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
             User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
             UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
         }
