@@ -1715,6 +1715,7 @@ class HomeController extends Controller
 
             $addUser = 1;
             $counter = 0;
+            $itemCount = 0;
 
             // if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
             //     $counter++;
@@ -1920,23 +1921,25 @@ class HomeController extends Controller
 
             foreach($studentArrCheckList as $listItem){
                 if($listItem == 1){
-                    // $counter++;
-                    // $counter++;
-                    // $counter++;
-                    // $counter++;
-
                     $counter += 15;
+                    $itemCount ++;
                 }
 
                 if($listItem == 0){
-                    $counter++;
+                    $counter--;
+                    $counter--;
+                    $itemCount ++;
                 }
 
                 if($listItem == 2){
-                    $counter--;
-                    $counter--;
+                    $counter++;
+                    $itemCount ++;
                 }
 
+            }
+
+            if($itemCount == 9 && $counter == 9 || $itemCount == 10 && $counter == 10){
+                $counter = -50;
             }
 
             if($student->rob_60_cancelled){
@@ -1967,8 +1970,6 @@ class HomeController extends Controller
         usort($userData, function($a, $b) {
             return $b['counter'] - $a['counter'];
         });  
-
-        // $userData.sort(function(a,b){return a.col0-b.col0||a.col1-b.col1})
 
         return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
     }
