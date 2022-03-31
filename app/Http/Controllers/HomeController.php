@@ -3047,6 +3047,12 @@ class HomeController extends Controller
             $action = "Rejected";
         }
 
+        $status_data = User::where('id', $request->userId)->first();
+
+        if($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0){
+            User::where('id', $request->userId)->update(['rob_50_approve' => 1]);
+        }
+
         ActionList::create([
             "userUid" => $request->userId,
             "action" => $name." Data ".$action,
