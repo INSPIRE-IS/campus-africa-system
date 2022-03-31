@@ -1921,7 +1921,7 @@ class HomeController extends Controller
 
             foreach($studentArrCheckList as $listItem){
                 if($listItem == 1){
-                    $counter += 15;
+                    $counter += 25;
                     $itemCount ++;
                 }
 
