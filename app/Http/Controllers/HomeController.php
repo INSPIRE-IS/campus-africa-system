@@ -4160,7 +4160,7 @@ class HomeController extends Controller
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
 
         //Update the User robot
-        User::where('id', $userId)->update(['rob_40_bed' => 0]);
+        User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -4171,12 +4171,6 @@ class HomeController extends Controller
         ]);
 
         $status_data = User::where('id', $userId)->first();
-
-        if($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0){
-            User::where('id', $userId)->update(['rob_50_approve' => 1]);
-        }else{
-            User::where('id', $userId)->update(['rob_50_approve' => 0]);
-        }
 
         return 'true';
     }
