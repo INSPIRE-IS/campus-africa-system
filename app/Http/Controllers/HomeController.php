@@ -450,13 +450,46 @@ class HomeController extends Controller
 
             $leaseApproved = 'false';
 
+            $bank = 0;
+            $approval = 0;
+
             foreach($userData[0]['files'] as $userFile){
                 if($userFile['field'] == "moveIn"){
                     if($userFile['status'] == "XApproved"){
                         $leaseApproved = "true";
                     }
                 }
+
+                if($userFile['field'] == "bankStatement"){
+                    $bank = 1;
+                }
+
+                if($userFile['field'] == "bursaryApproval"){
+                    $approval = 1;
+                }
+                
             }
+
+            $i = 0;
+            foreach($userData[0]['files'] as $userFile){
+                
+                if($userData[0]['userInfo']['studentType'] !== "Cash / Direct" && $bank == 1){
+                    if($userData[0]['files'][$i]['field'] == "bankStatement"){
+                        unset($userData[0]['files'][$i]);
+                    }
+                }
+
+                if($userData[0]['userInfo']['studentType'] == "Cash / Direct" && $approval == 1){
+                    if($userData[0]['files'][$i]['field'] == "bursaryApproval"){
+                        unset($userData[0]['files'][$i]);
+                    }
+                }
+
+                $i++;
+            }
+
+            
+            
 
             return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved]);
         }

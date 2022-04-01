@@ -131,6 +131,7 @@ class DocumentsController extends Controller {
     
     public function edit_data_save(Request $request) {
         $oldData = User::where("id", $request->userUid)->first();
+        $studentTypeChanged = 0;
 
         if ($request->type == "copyID") {
             $newData = [
@@ -208,6 +209,10 @@ class DocumentsController extends Controller {
                 'bIntName' => $request->bIntName,
             ];
 
+            if($oldData->studentType !== $request->studentType){
+                $studentTypeChanged = 1;
+            }
+
         } elseif ($request->type == "bankStatement") {
             $newData = [
                 'studentType|Student Type' => $request->studentType,
@@ -238,6 +243,10 @@ class DocumentsController extends Controller {
                 'pAddressCity' => $request->pAddressCity,
                 'pAddressPostal' => $request->pAddressPostal,
             ];
+
+            if($oldData->studentType !== $request->studentType){
+                $studentTypeChanged = 1;
+            }
         }
 
         //$newData = ['userTitle|Title' => $request->title,'userCell|Cellphone Number' => $request->cell_no,'userEmail|Email' => $request->email,'year|Year' => "2022",'sponCell|Parent / Sponser Cellphone Number' => $request->pCell_no,'sponEmail|Parent / Sponser Email' => $request->pEmail,'kinFirstName|Next of Kin First Name' => $request->kFirstName,'kinLastName|Next of Kin Last Name' => $request->kLastName,'kinTitle|Next of Kin Title' => $request->kTitle,'kinId|Next of Kin I.D Number' => $request->kIdNumber,'kinAddressStr|Next of Kin Street Number' => $request->kAddress1,'kinAddressSuburb|Next of Kin Suburb' => $request->kAddress2,'kinAddressCity|Next of Kin City' => $request->kAddressCity,'kinAddressPost|Next of Kin Postal Code' => $request->kAddressPostal,'kinRelationship|Next of Kin Relationship' => $request->kRelationship,'kinTelNo|Next of Kin Telephone Number' => $request->kTeleNo,'kinCellNo|Next of Kin Cellphone Number' => $request->kCellNo,'kinWorkNo|Next of Kin Work Number' => $request->kWorkNo,'kinEmail|Next of Kin Email' => $request->kEmail,'kinNationality|Next of Kin Nationality' => $request->kinNationality,'kinPassportNo|Next of Kin Passport Number' => $request->kinPassportNo,'pAddress1|Parent / Sponser Street Number' => $request->pAddress1,'pAddress2|Parent / Sponser Suburb' => $request->pAddress2,'pAddressCity|Parent / Sponser City' => $request->pAddressCity,'pAddressPostal|Parent / Sponser Postal Code' => $request->pAddressPostal,'userAddress1|Street Number' => $request->userAddress1,'userAddress2|Suburb' => $request->userAddress2,'userAddressCity|City' => $request->userAddressCity,'userAddressPostal|PostalCode' => $request->userAddressPostal, 'bAddress1|Burser Street Number' => $request->bAddress1,'bAddress2|Burser Suburb' => $request->bAddress2,'bAddressCity|Burser City' => $request->bAddressCity,'bAddressPostal|Burser Postal Code' => $request->bAddressPostal,'bPayment|Burser Payment' => $request->bPayment,'bint|Burser Intermediary' => $request->bint,'bIntName|Burser Intermediary Name' => $request->bIntName,];
@@ -335,7 +344,7 @@ class DocumentsController extends Controller {
         //     // 'nsfas_bursar' => $request->nsfas_bursar,
         // ]);
 
-        return "done";
+        return ["done", $studentTypeChanged];
     }
 
     public function adminFileUpload(Request $request){

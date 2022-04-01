@@ -87,13 +87,17 @@
 
                     success: function (data) {
 
-                        if (data === "done") {
+                        if (data[0] === "done") {
                             refreshActions();
                             refresh_this_modal();
 
                         } else {
                             alert("error");
                             console.log(data);
+                        }
+
+                        if(data[1] == '1'){
+                            window.location.reload();
                         }
 
                     }
