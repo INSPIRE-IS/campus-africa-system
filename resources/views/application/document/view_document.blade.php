@@ -93,6 +93,11 @@
                     @else
                         @if(Auth::user()->role_upload_docs == 1)
                             <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
+                            @if(Auth::user()->role_approve_docs == 1)
+                                @if ((empty($field_data) || !empty($field_data) && $data_approved == 0) || explode("_", $file->fileId)[0] == "other")
+                                    <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
+                                @endif
+                            @endif
                         @endif
 
                         @if(Auth::user()->role_approve_docs == 1)
