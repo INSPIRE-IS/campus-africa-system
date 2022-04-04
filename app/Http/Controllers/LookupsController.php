@@ -266,9 +266,9 @@ class LookupsController extends Controller {
             $actions = ActionList::where('userUid', $student->id)->orderBy('id', 'DESC')->get();
 
             foreach($actions as $action){
-                if (str_contains($action->action, 'cancelled')) {
+                if ($action->action == 'Application Cancelled') {
                     $status_data['rob_60_cancelled'] = 1;
-                    break;
+                    // break;
                 }
             }
 
