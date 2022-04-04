@@ -1708,6 +1708,8 @@ class HomeController extends Controller
 
             if(!in_array("3", $request->status)){
                 $value .= " AND rob_60_cancelled = '0'";
+            }else{
+                $value .= " AND rob_60_cancelled = '1'";
             }
 
             array_push($search_value, $value);
