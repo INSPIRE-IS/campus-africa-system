@@ -262,6 +262,14 @@ class LookupsController extends Controller {
                 $status_data['rob_50_approve'] = 1;
             }
 
+            $actions = ActionList::where('userUid', $user->id)->orderBy('id', 'DESC')->get();
+
+            foreach($actions as $action){
+                if (str_contains($action->action, 'cancelled')) {
+                    $status_data['rob_60_cancelled'] = 1;
+                }
+            }
+
             //Update the students data
             User::where('id', $student->id)->update($status_data);
         }
