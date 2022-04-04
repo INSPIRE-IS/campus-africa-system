@@ -1705,6 +1705,11 @@ class HomeController extends Controller
             }
 
             $value = 'u.'.$request->fieldStatus.' in ('.$queryString.')';
+
+            if(!in_array("3", $request->status)){
+                $value .= " AND rob_60_cancelled = '0'";
+            }
+
             array_push($search_value, $value);
 
         }
