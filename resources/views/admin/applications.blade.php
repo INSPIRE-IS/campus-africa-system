@@ -93,6 +93,8 @@
                 <option value="rob_25_reg" <?php if( Session::get('fieldStatus') == "rob_25_reg"){ echo "selected";}?>>Reg</option>
                 <option value="rob_30_funds" <?php if( Session::get('fieldStatus') == "rob_30_funds"){ echo "selected";}?>>Funds</option>
                 <option value="rob_35_info" <?php if( Session::get('fieldStatus') == "rob_35_info"){ echo "selected";}?>>Info</option>
+                <option value="rob_40_bed" <?php if( Session::get('fieldStatus') == "rob_40_bed"){ echo "selected";}?>>Bed</option>
+                <option value="rob_45_other" <?php if( Session::get('fieldStatus') == "rob_45_other"){ echo "selected";}?>>Other</option>
                 <option value="rob_50_approve" <?php if( Session::get('fieldStatus') == "rob_50_approve"){ echo "selected";}?>>Approve</option>
                 <option value="rob_55_lease" <?php if( Session::get('fieldStatus') == "rob_55_lease"){ echo "selected";}?>>Lease</option>
             </select>
