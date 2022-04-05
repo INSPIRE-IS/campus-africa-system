@@ -272,6 +272,10 @@ class LookupsController extends Controller {
                 }
             }
 
+            if($status_data['rob_55_lease'] == 2){
+                $status_data['rob_50_approve'] = 2;
+            }
+
             if($status_data['rob_50_approve'] == 2){
                 $status_data['rob_35_info'] = 2;
             }
