@@ -278,6 +278,9 @@ class LookupsController extends Controller {
 
             if($status_data['rob_50_approve'] == 2){
                 $status_data['rob_35_info'] = 2;
+                $status_data['burser_approved'] = 1;
+                $status_data['parent_approved'] = 1;
+                $status_data['email_data_approved'] = 1;
             }
 
             //Update the students data
