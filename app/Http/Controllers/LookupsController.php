@@ -272,6 +272,10 @@ class LookupsController extends Controller {
                 }
             }
 
+            if($status_data['rob_50_approve'] == 2){
+                $status_data['rob_35_info'] = 2;
+            }
+
             //Update the students data
             User::where('id', $student->id)->update($status_data);
         }
