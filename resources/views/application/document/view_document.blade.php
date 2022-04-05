@@ -558,6 +558,14 @@
                     $("#passportNo").removeClass("required")
                     $("#passportNo").removeClass("fieldError")
                     $("#idNumber").addClass("required")
+
+                    let idNumber = $("#idNumber").val();
+                    if(idNumber.length == 13){
+                        ValidID(idNumber, "idNumber", "idNumber_error")
+                    }else{
+                        $("#idNumber").addClass("fieldError")
+                        $("#idNumber_error").removeClass('hidden')
+                    } 
                 }else{
                     $("#idField").addClass('hidden')
                     $("#passportField").removeClass('hidden')
