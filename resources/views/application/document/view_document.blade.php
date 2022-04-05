@@ -1230,6 +1230,17 @@
 
     function updateData() {
         //Check if any hidden fields are required, remove required check
+
+        if($("#nationality").val() == "South Africa"){
+            let idNumber = $("#idNumber").val();
+            if(idNumber.length == 13){
+                ValidID(idNumber, "idNumber", "idNumber_error")
+            }else{
+                $("#idNumber").addClass("fieldError")
+                $("#idNumber_error").removeClass('hidden')
+            } 
+        }
+
         $('.edit_info .hidden .fieldError').removeClass('fieldError').val('');
         
         var req = 1;
