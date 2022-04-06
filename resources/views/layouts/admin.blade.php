@@ -158,7 +158,7 @@
         </div>
         <!-- <div class="footerClearfix"></div> -->
         <!-- <div class="footerClearfix"></div> -->
-        <div class="container">
+        <div class="container" style="margin-top:300px;">
             <br/>
             <p class="footerRights">Campus Africa - All Right Reserved</p>
         </div>
