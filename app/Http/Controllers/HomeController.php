@@ -22,6 +22,7 @@ use ZipStream\ZipStream;
 use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
 use Session;
+use App\Models\UserResetToken;
 
 class HomeController extends Controller
 {
@@ -1504,15 +1505,21 @@ class HomeController extends Controller
         return $randomString;
     }
 
+    public function generateRandomLongString($length = 24) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
     public function add_admin(Request $request){
 
-        // if($request->password == ""){
-            $password = $this->generateRandomString();
-        // }else{
-        //     $password = $request->password;
-        // }
+        $password = $this->generateRandomString();
 
-        User::create([
+        $newUser = User::create([
             "name" => $request->firstName,
             "userFirstName" => $request->firstName,
             "userLastname" => $request->lastName,
@@ -1551,14 +1558,16 @@ class HomeController extends Controller
 
         if($request->email_details == "1"){
 
+            $userToken = UserResetToken::create(["userUid" => $newUser->id, "userToken" => $this->generateRandomLongString()]);
+
             $data['name'] = $request->firstName;
             $data['email'] = $request->email;
-            $data['password'] = $password;
+            $data['userToken'] = $userToken->userToken;
 
             Mail::send('email.system_user_application', $data, function($message) use ($data) {
                 $message->to($data['email'], $data['name'])->subject
                     ('Campus Africa User Registered');
-                $message->from('hello@campusafrica.co.za','Campus Africa');
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
 
         }

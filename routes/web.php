@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LookupsController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -175,3 +176,7 @@ Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload
 
 Route::post('/add-other-document', [DocumentsController::class, 'add_other_document']);
 Route::post('/remove-document-upload', [DocumentsController::class, 'remove_document_upload']);
+
+//New user / email change user password update
+Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswordUser']);
+Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);

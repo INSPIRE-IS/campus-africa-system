@@ -12,7 +12,7 @@
 
             <div class="rightMenu">
                 
-                <button type="button" class="contactButton">contact us</button>
+                <a href="https://campusafrica.co.za/contact-us/" target="_blank"><button type="button" class="contactButton">contact us</button></a>
                 <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
             </div>
         </nav>
