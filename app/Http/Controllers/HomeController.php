@@ -995,6 +995,16 @@ class HomeController extends Controller
             }
 
             $userToken = UserResetToken::create(["userUid" => $request->userUid, "userToken" => $this->generateRandomLongString()]);
+
+            $data['name'] = $request->firstName;
+            $data['email'] = $request->email;
+            $data['userToken'] = $userToken->userToken;
+
+            Mail::send('email.system_user_application', $data, function($message) use ($data) {
+                $message->to($data['email'], $data['name'])->subject
+                    ('Campus Africa User Registered');
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
+            });
         }
 
         return redirect()->back();
