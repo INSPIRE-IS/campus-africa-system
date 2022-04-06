@@ -35,9 +35,15 @@ class ResetPasswordController extends Controller
     public function resetPasswordUser(Request $request, $userCustomId){
 
         $userToken = UserResetToken::where('userToken', $userCustomId)->where('active', '1')->first();
-        $user = User::where('id', $userToken->userUid)->first();
 
-        return view('outSession.updatePassword', ["userCustomId" => $userCustomId, "user" => $user]);
+        if($userToken && !empty($userToken)){
+            $user = User::where('id', $userToken->userUid)->first();
+
+            return view('outSession.updatePassword', ["userCustomId" => $userCustomId, "user" => $user]);
+        }else{
+            return "404 Error";
+        }
+        
     }
 
     public function updatePasswordUser(Request $request, $userCustomId){

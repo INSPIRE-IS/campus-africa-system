@@ -949,6 +949,8 @@ class HomeController extends Controller
     }
 
     public function edit_admin(Request $request){
+
+        $oldUser = User::where('id', $request->userUid)->first();
         
 
         User::where('id', $request->userUid)->update([
@@ -984,6 +986,16 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
         ]);
+
+        if($oldUser->userEmail !== $request->email){
+            $otherTokens = UserResetToken::where("userUid", $request->userUid)->where('active', 1)->get();
+
+            foreach($otherTokens as $old){
+                UserResetToken::where("id", $old->id)->update(['active' => 0]);
+            }
+
+            $userToken = UserResetToken::create(["userUid" => $request->userUid, "userToken" => $this->generateRandomLongString()]);
+        }
 
         return redirect()->back();
     }
