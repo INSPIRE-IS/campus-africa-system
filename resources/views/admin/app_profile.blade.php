@@ -379,7 +379,9 @@
                                     @endif
 
                                     @if($file["field"] === "moveIn" && $file["status"] !== "XApproved")
-                                        <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
+                                        @if(Auth::user()->role_lease_regen == '1')
+                                            <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
+                                        @endif
                                     @endif
 
                                     @if($file["status"] === "AUploaded" || $file["status"] === "XApproved")
@@ -2086,7 +2088,13 @@
                     var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
 
                     if(field == "moveIn"){
-                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a><button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button><button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
+                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'
+                        
+                        if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                            button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                        }
+                        
+                        button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
                     }
 
                     $("#" + field + "Banner").empty().append(button);

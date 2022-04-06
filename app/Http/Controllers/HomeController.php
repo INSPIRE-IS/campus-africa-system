@@ -986,6 +986,7 @@ class HomeController extends Controller
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
+            "role_lease_regen" => $request->role_lease_regen,
         ]);
 
         if($oldUser->userEmail !== $request->email){
@@ -1578,6 +1579,7 @@ class HomeController extends Controller
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
+            "role_lease_regen" => $request->role_lease_regen,
         ]);
 
         // if($request->email_details == "1"){

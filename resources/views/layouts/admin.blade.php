@@ -215,6 +215,11 @@
                                 },
 
                                 success: function (data) {
+
+                                    var regen = "";
+                                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                        var regen = '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                                    }
                                     
                                     // window.location.reload();
                                     $("#documentsSectionDisplay").append(
@@ -223,7 +228,7 @@
                                             '<div class="status" id="moveInStatus"><div class="button rejected"></div></div>'+
                                             '<div class="banner" id="moveInBanner">'+
                                                 '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'+
-                                                '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'+
+                                                regen+
                                                 '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label>'+
                                                 '<input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')"  hidden>'+
                                             '</div>'+
