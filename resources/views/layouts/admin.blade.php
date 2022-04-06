@@ -121,7 +121,7 @@
     </div>
     <footer class="footer">
         <div class="footerBanner">
-            <div class="container">
+            <div class="container flex">
                 <div class="col-3">
                     <h2 class="footerHeader">
                         Campus Africa
@@ -131,7 +131,7 @@
                     </p>
                 </div>
     
-                <div class="col-3" style="padding-left:6%; width:19%">
+                <div class="col-3" style="padding-left:6%; width:19%; float:left">
                     <p class="linkHeader">Home</p>
                     <p class="link"><a href="https://campusafrica.whitehart.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
                     <!-- Campus Africa Life<br/> -->
@@ -140,23 +140,24 @@
                 </div>
     
                 <div class="col-3">
-                <p class="linkHeader">Contact Us</p>
-                <p class="link"><a href="mailto:info@campusafrica.co.za" style="color:inherit; text-decoration:none;">info@campusafrica.co.za</a><br/>
-                <a href="tel:0101091700" style="color:inherit; text-decoration:none;">010 109 1700</a></p>
+                    <p class="linkHeader">Contact Us</p>
+                    <p class="link"><a href="mailto:info@campusafrica.co.za" style="color:inherit; text-decoration:none;">info@campusafrica.co.za</a><br/>
+                    <a href="tel:0101091700" style="color:inherit; text-decoration:none;">010 109 1700</a></p>
                 </div>
     
                 <div class="col-3">
-                <p class="linkHeader">Follow Us</p>
-                <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
-                <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
-                <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
-                <br/>
-                <a href="mailto:info@campusafrica.co.za"><img src="/images/footer/email.png" alt="Email" width="43" height="43"></a>
-                <a href="https://wa.me/27719991246" target="_blank"><img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43"></a>
+                    <p class="linkHeader">Follow Us</p>
+                    <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
+                    <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
+                    <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
+                    <br/>
+                    <a href="mailto:info@campusafrica.co.za"><img src="/images/footer/email.png" alt="Email" width="43" height="43"></a>
+                    <a href="https://wa.me/27719991246" target="_blank"><img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43"></a>
                 </div>
             </div>
         </div>
-        <div class="footerClearfix"></div>
+        <!-- <div class="footerClearfix"></div> -->
+        <!-- <div class="footerClearfix"></div> -->
         <div class="container">
             <br/>
             <p class="footerRights">Campus Africa - All Right Reserved</p>
