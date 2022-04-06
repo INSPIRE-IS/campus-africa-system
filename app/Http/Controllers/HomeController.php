@@ -962,7 +962,7 @@ class HomeController extends Controller
             "userEmail" => $request->email,
             "email" => $request->email,
             "userRole" => "1",
-            "email_info" => $request->email_details,
+            // "email_info" => $request->email_details,
             "role_create_app" => $request->create_app,
             "role_edit_app" => $request->edit_app,
             "role_upload_docs" => $request->upload_docs,
@@ -988,7 +988,7 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
         ]);
 
-        if($request->email_details == "1"){
+        if($oldUser->userEmail !== $request->email){
             $otherTokens = UserResetToken::where("userUid", $request->userUid)->where('active', 1)->get();
 
             foreach($otherTokens as $old){
@@ -1570,7 +1570,7 @@ class HomeController extends Controller
             "role_change_date" => $request->role_change_date,
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
-            "email_info" => $request->email_details,
+            // "email_info" => $request->email_details,
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
@@ -1580,7 +1580,7 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
         ]);
 
-        if($request->email_details == "1"){
+        // if($request->email_details == "1"){
 
             $userToken = UserResetToken::create(["userUid" => $newUser->id, "userToken" => $this->generateRandomLongString()]);
 
@@ -1595,7 +1595,7 @@ class HomeController extends Controller
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
 
-        }
+        // }
         
 
         return redirect()->route('users');
