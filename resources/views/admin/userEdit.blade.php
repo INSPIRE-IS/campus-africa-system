@@ -172,12 +172,43 @@
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>
 
-    <form action="/delete-admin" method="post" autocomplete="off">
-        @csrf
+    <!-- <form action="/delete-admin" method="post" autocomplete="off"> -->
+        <!-- @csrf -->
 
-        <input type="submit" value="Delete User" class="profileSubmit" style="opacity:1"/>
-        <input type="hidden" name="userUid" id="userUid" value="{{$user->id}}" required >
-    </form>
+        <input type="submit" value="Delete User" class="profileSubmit" id="deleteUser" style="opacity:1"/>
+        <!-- <input type="hidden" name="userUid" id="userUid" value="{{$user->id}}" required > -->
+    <!-- </form> -->
 </div>
+
+<script>
+    
+    $("#deleteUser").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to delete this user",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/delete-admin",
+                    data: {
+                        userUid: "{{$user->id}}",
+                    },
+        
+                    success: function (data) {
+                        
+                        window.location.replace('/users');
+        
+                    },
+                });
+            }
+        });
+    })
+</script>
 
 @endsection
