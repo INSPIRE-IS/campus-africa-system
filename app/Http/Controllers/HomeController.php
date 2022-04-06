@@ -962,6 +962,7 @@ class HomeController extends Controller
             "userEmail" => $request->email,
             "email" => $request->email,
             "userRole" => "1",
+            "email_info" => $request->email_details,
             "role_create_app" => $request->create_app,
             "role_edit_app" => $request->edit_app,
             "role_upload_docs" => $request->upload_docs,
@@ -987,7 +988,7 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
         ]);
 
-        if($oldUser->userEmail !== $request->email){
+        if($request->email_details == "1"){
             $otherTokens = UserResetToken::where("userUid", $request->userUid)->where('active', 1)->get();
 
             foreach($otherTokens as $old){
@@ -999,10 +1000,11 @@ class HomeController extends Controller
             $data['name'] = $request->firstName;
             $data['email'] = $request->email;
             $data['userToken'] = $userToken->userToken;
+            $data['type'] = "updated";
 
             Mail::send('email.system_user_application', $data, function($message) use ($data) {
                 $message->to($data['email'], $data['name'])->subject
-                    ('Campus Africa User Registered');
+                    ('Campus Africa User Updated');
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
         }
@@ -1585,6 +1587,7 @@ class HomeController extends Controller
             $data['name'] = $request->firstName;
             $data['email'] = $request->email;
             $data['userToken'] = $userToken->userToken;
+            $data['type'] = "registered";
 
             Mail::send('email.system_user_application', $data, function($message) use ($data) {
                 $message->to($data['email'], $data['name'])->subject
