@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
 
     <script src="../../js/register.js?v=<?php echo rand();?>"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="../../js/jSignature.min.js"></script>
     
 </head>
 <body>

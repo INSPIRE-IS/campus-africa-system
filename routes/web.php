@@ -182,3 +182,4 @@ Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePas
 
 //Students to sign lease
 Route::get('/sign-lease/{id}', [LeaseController::class, 'view_sign_lease']);
+Route::post('/save-signed-lease/{id}', [LeaseController::class, 'save_signed_lease']);
