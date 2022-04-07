@@ -14,11 +14,11 @@
                     <br/>
                     <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Hi [name], we’re excited to inform you that your application for<br/> Room [room_no] has been approved! We look forward to seeing you <br/>in the near future.</p>
 
-                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Should you have any questions please contact ….</p>
-                    
-                    
+                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">Please complete your application by signing your lease in the link below.</p>
+
+                    <p style="color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;">[lease_link]<button type="button" style="color:#fff; background-color: #e74f26; border-radius: 7px; padding:10px; border:none; width:250px ">Sign Lease</button>[close_lease_link]</p>
+
                     <br/>
-                    <button type="button" style="color:#fff; background-color: #e74f26; border-radius: 7px; padding:10px; border:none; width:250px ">VIEW PROFILE</button>
 
                     <h3 style="color: #fff; font-size: 15px; font-weight: 400; line-height: 20px;">If you have any questions, please reply to this email or contact us at <br/>hello@campusafrica.co.za</h3>
                 </td>

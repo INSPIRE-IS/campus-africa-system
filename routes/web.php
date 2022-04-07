@@ -83,6 +83,7 @@ Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit'])
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
 
+Route::get("/testApproved", [HomeController::class, 'applicationApproved']);
 
 
 

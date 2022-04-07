@@ -23,6 +23,7 @@ use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
 use Session;
 use App\Models\UserResetToken;
+use App\Models\UserLeaseToken;
 
 class HomeController extends Controller
 {
@@ -834,6 +835,12 @@ class HomeController extends Controller
         $leases = UserFiles::with('users')->where('fileId', 'moveIn')->get();
 
         return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases, "title" => "Leases"]);
+    }
+
+    public function applicationApproved(Request $request){
+        
+
+        return view('email.application_approved');
     }
 
     public function mailing(Request $request){
