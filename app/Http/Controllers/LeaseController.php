@@ -29,30 +29,25 @@ class LeaseController extends Controller
         
         // get the base64 string
         $data = $request->signature_string;
+
         // clean any symbols to decode
         list($type, $data) = explode(';', $data);
         list(,$extension) = explode('/',$type);
         list(,$data)      = explode(',', $data);
+
         // decode the string to the correct format
         $data = base64_decode($data);
 
-        // path variable for saving in the db
-        // $path = 'students' . DIRECTORY_SEPARATOR;
-        // 
 
         // generate a random name
-        $new_name = $user->id . '_' .strtotime("now").'_'.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyz', ceil(20/strlen($x)) )),1,20).'.'.$extension;
+        $new_name = $user->userId . '_' .strtotime("now").'_'.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyz', ceil(20/strlen($x)) )),1,20).'.'.$extension;
 
-        // if (!is_dir(storage_path().'/app/public/files/'.$lease_link->userUid)) {
-        //     dd("NO");
-        // }else{
-        //     //
-        // }
+        file_put_contents(storage_path().'/app/public/files/'.$user->userId.'/'.$new_name, $data);
 
-        $success = file_put_contents(storage_path().'/app/public/files/'.$lease_link->userUid, $data);
+        //Update Toke to signed & inactive
+        // UserLeaseToken::where('leaseToken', $lease_link)->update(['active' => 0, 'signed' => 1, 'signature_url' => $new_name]);
 
-        // $data->storeAs('public/files/'.$lease_link->userUid.'/', $new_name);
-        // file_put_contents('/storage/app/public/files/'.$lease_link->userUid.'/', $data);
+
 
     }
 }

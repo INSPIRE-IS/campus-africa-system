@@ -16,5 +16,6 @@ class UserLeaseToken extends Model
         'leaseToken',
         'active',
         'signed',
+        'signature_url',
     ];
 }
