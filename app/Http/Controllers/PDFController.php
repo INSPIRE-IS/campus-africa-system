@@ -12,6 +12,9 @@ use PDF;
 use Auth;
 use App\Models\UserFiles;
 use App\Models\Lookups;
+use App\Models\UserLeaseToken;
+use App\Models\MailerList;
+use Mail;
 
 class PDFController extends Controller
 {
@@ -114,9 +117,49 @@ class PDFController extends Controller
         }
 
         User::where('id', $studentId)->update(['rob_55_lease' => 0]);
+
+
+        // Create Lease Link
+        $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
+        $userForLease = User::where('id', $studentId)->first();
+
+        $message_replace['booking_application'] = $userForLease->bookingRef;
+        $message_replace['name'] = $userForLease->userFirstName;
+        $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
+        $message_replace['close_lease_link']="</a>";
+
+        $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
+
+        $mailerMessage = $mailerForMessage->message;
+
+        $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+        $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
+        $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
+
+        $data['messageForMail'] = $newMessage;
+        $data['email'] = $userForLease->userEmail;
+        $data['name'] = $userForLease->userFirstName;
+
+        Mail::send('email.green_back', $data, function($message) use ($data) {
+            $message->to($data['email'], $data['name'])->subject
+                ('Application Approved');
+            $message->from('noreply@campusafrica.co.za','Campus Africa');
+        });
+
       }
         
 
         return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->first(), User::where('id', $studentId)->first()];
       }
+
+      public function generateRandomLongString($length = 24) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
 }

@@ -837,12 +837,6 @@ class HomeController extends Controller
         return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases, "title" => "Leases"]);
     }
 
-    public function applicationApproved(Request $request){
-        
-
-        return view('email.application_approved');
-    }
-
     public function mailing(Request $request){
 
         $thankYou = view('email.application_thank_you');

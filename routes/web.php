@@ -9,6 +9,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LookupsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\LeaseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,9 +83,6 @@ Route::post("/delete-admin", [HomeController::class, 'delete_admin']);
 Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
-
-Route::get("/testApproved", [HomeController::class, 'applicationApproved']);
-
 
 
 Route::get('/lookups', [LookupsController::class, 'lookups'])->name('lookups');
@@ -181,3 +179,6 @@ Route::post('/remove-document-upload', [DocumentsController::class, 'remove_docu
 //New user / email change user password update
 Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswordUser']);
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
+
+//Students to sign lease
+Route::get('/sign-lease/{id}', [LeaseController::class, 'view_sign_lease']);

@@ -467,6 +467,10 @@
             success: function (data) {
                 console.log(data)
                 $(".saveTxtMailAav").empty().append("Save Text")
+
+                var modal = document.getElementById("ApplicationApproved");
+                modal.style.display = "none";
+                
             },
         });
     } 
