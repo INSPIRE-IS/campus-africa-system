@@ -952,7 +952,14 @@ class HomeController extends Controller
     public function edit_admin(Request $request){
 
         $oldUser = User::where('id', $request->userUid)->first();
-        
+
+        $regen = "0";
+
+        if($request->role_lease_regen !== "1"){
+            $regen = "0";
+        }else{
+            $regen = "1";
+        }        
 
         User::where('id', $request->userUid)->update([
             "userFirstName" => $request->firstName,
@@ -987,7 +994,7 @@ class HomeController extends Controller
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
-            "role_lease_regen" => $request->role_lease_regen,
+            "role_lease_regen" => $regen,
         ]);
 
         if($oldUser->userEmail !== $request->email){
@@ -1545,6 +1552,14 @@ class HomeController extends Controller
 
         $password = $this->generateRandomString();
 
+        $regen = "0";
+
+        if($request->role_lease_regen !== "1"){
+            $regen = "0";
+        }else{
+            $regen = "1";
+        }
+
         $newUser = User::create([
             "name" => $request->firstName,
             "userFirstName" => $request->firstName,
@@ -1580,7 +1595,7 @@ class HomeController extends Controller
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
-            "role_lease_regen" => $request->role_lease_regen,
+            "role_lease_regen" => $regen,
         ]);
 
         // if($request->email_details == "1"){
