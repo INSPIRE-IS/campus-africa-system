@@ -158,7 +158,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_cancel_lease" name="role_cancel_lease" value="1" <?php if($user->role_cancel_lease == "1"){echo "checked";} ?>>
-                    <label for="role_cancel_lease" style="width:500px">Cancel Approved Lease</label>
+                    <label for="role_cancel_lease" style="width:500px">Change Bed on Approved Lease</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_lease_regen" name="role_lease_regen" value="1" <?php if($user->role_lease_regen == "1"){echo "checked";} ?>>
