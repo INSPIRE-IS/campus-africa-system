@@ -84,17 +84,24 @@ class PDFController extends Controller
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('residence', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
+        $owner = storage_path().'/leases/kim_degenaar.jpeg';
 
         // share data to view
-        $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee'));
+        $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner'));
   
         // download PDF file with download method
         // return $pdf->download('lease.pdf');
 
+        if($data->userId == ""){
+            $userIdentification = $data->userPassport;
+        }else{
+            $userIdentification = $data->userId;
+        }
+
         $content = $pdf->download('lease.pdf')->getOriginalContent();
         $user = User::where('id', $studentId)->first();
 
-        \Storage::put('public/files/'.$user->userId.'/Lease.pdf', $content);
+        \Storage::put('public/files/'.$userIdentification.'/Lease.pdf', $content);
 
         //Check if there is an existing lease to overwrite
         $lease = UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->first();        
@@ -102,7 +109,7 @@ class PDFController extends Controller
         $data = array(
             'userUid' => $studentId,
             'fileName' => 'Lease.pdf',
-            'fileUrl' => 'files/'.$user->userId.'/Lease.pdf',
+            'fileUrl' => 'files/'.$userIdentification.'/Lease.pdf',
             'status' => 'Rejected',
             'uploaded_by' => Auth::user()->name,
             'created_at' => date('Y-m-d h:m:s')

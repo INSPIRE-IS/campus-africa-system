@@ -5,6 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\UserLeaseToken;
 use App\Models\User;
+use App\Models\UserFiles;
+use App\Models\Booking;
+use App\Models\Property;
+use App\Models\Residence;
+use App\Models\Lookups;
+use PDF;
+use Auth;
 
 class LeaseController extends Controller
 {
@@ -14,10 +21,11 @@ class LeaseController extends Controller
 
         if($lease_link && !empty($lease_link)){
             $user = User::where('id', $lease_link->userUid)->first();
+            $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->first();
 
-            return view('outSession.signLease', ["userCustomId" => $lease_link_url, "user" => $user]);
+            return view('outSession.signLease', ["userCustomId" => $lease_link_url, "user" => $user, "file" => $file]);
         }else{
-            return "404 Error";
+            return "This link has expired";
         }
 
     }
@@ -38,16 +46,56 @@ class LeaseController extends Controller
         // decode the string to the correct format
         $data = base64_decode($data);
 
+        if($user->userId == ""){
+            $userIdentification = $user->userPassport;
+        }else{
+            $userIdentification = $user->userId;
+        }
+
 
         // generate a random name
-        $new_name = $user->userId . '_' .strtotime("now").'_'.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyz', ceil(20/strlen($x)) )),1,20).'.'.$extension;
+        $new_name = $userIdentification . '_' .strtotime("now").'_'.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyz', ceil(20/strlen($x)) )),1,20).'.'.$extension;
 
-        file_put_contents(storage_path().'/app/public/files/'.$user->userId.'/'.$new_name, $data);
+        file_put_contents(storage_path().'/app/public/files/'.$userIdentification.'/'.$new_name, $data);
 
-        //Update Toke to signed & inactive
-        // UserLeaseToken::where('leaseToken', $lease_link)->update(['active' => 0, 'signed' => 1, 'signature_url' => $new_name]);
+        //generate the signed lease
 
+        // retreive all records from db
+        $data = User::where('id', $user->id)->first();
+        $booking = Booking::where('userId', $user->id)->first();
+        $propertyData = Property::where('id', $booking->property_data_id)->first();
+        $residence = Residence::where('residence', $propertyData->residence)->first();
+        $leaseAdminFee = Lookups::where('group_id', '8')->first();
+        $signed_at = $request->signed_at;
+        $signature = storage_path().'/app/public/files/'.$userIdentification.'/'.$new_name;
+        $owner = storage_path().'/leases/kim_degenaar.jpeg';
 
+        // share data to view
+        $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner'));
+  
+        // download PDF file with download method
+        // return $pdf->download('lease.pdf');
+
+        $content = $pdf->download('lease_Signed.pdf')->getOriginalContent();
+        $user = User::where('id', $user->id)->first();
+
+        \Storage::put('public/files/'.$userIdentification.'/lease_Signed.pdf', $content);
+      
+        //Data to update
+        $data = array(
+            'fileName' => 'lease_Signed.pdf',
+            'fileUrl' => 'files/'.$userIdentification.'/lease_Signed.pdf',
+            'status' => 'Uploaded',
+        );
+
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->id)->update($data);
+
+        User::where('id', $user->id)->update(['rob_55_lease' => 1]);
+
+        //Update Token to signed & inactive
+        UserLeaseToken::where('leaseToken', $lease_link->leaseToken)->update(['active' => 0, 'signed' => 1, 'signature_url' => $new_name]);
+
+        return 'Completed';
 
     }
 }

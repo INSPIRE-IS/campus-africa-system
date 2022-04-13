@@ -29,6 +29,29 @@
             @csrf
             <div class="scrollable">
                 <h2>Echo lease here</h2>
+                <div class="pdfSection" style="margin-top: 0;">
+                    @if(strpos($file->fileUrl, "pdf") > 0)
+                        <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
+                    @else
+                        <img src="/storage/{{$file->fileUrl}}" alt="">
+                    @endif
+                </div>
+            </div>
+
+            <div style="margin-top:30px; margin-bottom:20px;">
+                <label for="signed_at">Lease Accept</label><br/><br/>
+                <ul style="list-style-type:none">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="lease_accept" name="lease_accept" value="1"  style="margin:4px;">
+                        <label for="lease_accept" style="width:500px">I have read and accept the Lease</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <label for="signed_at">Signed At</label><br/>
+                <input type="text" name="signed_at" id="signed_at">
+                <div><small>Place / Location</small></div>
             </div>
 
 
@@ -76,9 +99,9 @@
             // Alter image source
             $('#signature_string').val(data);
             
-            if (sigdiv.jSignature('getData', 'native').length != 0) {
+            if (sigdiv.jSignature('getData', 'native').length != 0 && $("#signed_at").val() !== "" && $("#lease_accept").is(':checked') === true) {
                 $(this).html('<span></span>Generating <i class="fas fa-circle-notch fa-spin"></i>');
-                // $(this).attr('disabled', 'disabled');
+                $(this).attr('disabled', 'disabled');
 
                 $.ajax({
                     type: "post",
@@ -86,20 +109,17 @@
                     data: $('#sign_lease').serialize(),
 
                     success: function(data) {
-                        // Swal.fire({
-                        //     title: 'Information has been saved!',
-                        //     text: '',
-                        //     icon: 'success',
-                        //     allowOutsideClick: true,
-                        //     customClass: {
-                        //         confirmButton: 'btn gold'
-                        //     },                    
-                        //     buttonsStyling: false
-                        // }).then(()=> {                            
-                        //     window.location.reload();
-                        // })
 
-                        console.log("SUCESS")
+                        Swal.fire({
+                            title: 'Your lease has been uploaded!',
+                            text: '',
+                            icon: 'success',
+                            allowOutsideClick: true,
+                        }).then(()=> {          
+                            $(this).html('<span></span>Completed');                  
+                            window.location.reload();
+                        })
+
                     },
 
                     error: function(data) {
@@ -114,10 +134,24 @@
                 });
 
             } else {
+                var reason = "";
+
+                if(sigdiv.jSignature('getData', 'native').length == 0){
+                    var reason = "Please sign the lease"
+                }
+
+                if($("#signed_at").val() == ""){
+                    var reason = "Please fill in the signed at section"
+                }
+
+                if($("#lease_accept").is(':checked') === false){
+                    var reason = "Please accept the lease"
+                }
+
                 Swal.fire({
                     icon: 'warning',
                     title: 'We need more information!',
-                    text: 'Please sign the lease',
+                    text: reason,
                 })
             }
         })
