@@ -505,7 +505,7 @@
                     <td style="vertical-align: top;">
                         <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                             <br/>
-                            <img src="<?php echo $signature; ?>" style='width:200px;'/>
+                            <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/>
                         </p>
                     </td>
                 </tr>
@@ -519,7 +519,7 @@
                     <td style="vertical-align: top;">
                         <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                             <br/>
-                            <img src="<?php echo $signature; ?>" style='width:200px;'/>
+                            <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/>
                         </p>
                     </td>
                 </tr>
@@ -533,7 +533,7 @@
                     <td style="vertical-align: top;">
                         <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                             <br/>
-                            <img src="<?php echo $signature; ?>" style='width:200px;'/>
+                            <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/>
                         </p>
                     </td>
                 </tr>
@@ -544,7 +544,7 @@
             <table style="width:100%">
                 <tr>
                     <td style="width:50%; vertical-align: top;">
-                        <p style="font-size:14px;">OWNER Signature: <img src="<?php echo $owner; ?>" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
+                        <p style="font-size:14px;">OWNER Signature: <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $owner; ?>" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
                     </td>
                     <td style="vertical-align: top;">
                         <p style="font-size:14px;">Place: Braamfontein
@@ -559,7 +559,7 @@
             <table style="width:100%">
                 <tr>
                     <td style="width:50%; vertical-align: top;">
-                        <p style="font-size:14px;">LODGER's Signature: <img src="<?php echo $signature; ?>" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
+                        <p style="font-size:14px;">LODGER's Signature: <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
                     </td>
                     <td style="vertical-align: top;">
                         <p style="font-size:14px;">Place: {{$signed_at}}
@@ -724,7 +724,7 @@
             </table>
             <br/>
             <br/>
-            <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo $signature; ?>" style='width:200px;'/></span>
+            <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/></span>
             <br/><br/><br/>
             <span style="font-size:14px;">Sign (Owner)  ………………………………………………….</span>
 
@@ -868,9 +868,9 @@
             <!-- <br/> -->
             <p style="font-weight:bold; font-size:14px;">Signed at {{$signed_at}} on this <?php echo date('d'); ?> day of <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
             <br/>
-            <p style="font-weight:bold; font-size:14px;"><img src="<?php echo $signature; ?>" style='width:200px;'/><br/>Student</p>
+            <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/><br/>Student</p>
             <!-- <br/> -->
-            <p style="font-weight:bold; font-size:14px;"><img src="<?php echo $owner; ?>" alt="Kim Degenaar" style='width:200px;'/><br/>For and on behalf of<br/>Owner</p>
+            <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $owner; ?>" alt="Kim Degenaar" style='width:200px;'/><br/>For and on behalf of<br/>Owner</p>
             <br/>
             <hr/>
             <br/>

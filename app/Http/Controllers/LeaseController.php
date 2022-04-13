@@ -25,7 +25,7 @@ class LeaseController extends Controller
 
             return view('outSession.signLease', ["userCustomId" => $lease_link_url, "user" => $user, "file" => $file]);
         }else{
-            return "This link has expired";
+            return "Finished signing.";
         }
 
     }
@@ -67,8 +67,8 @@ class LeaseController extends Controller
         $residence = Residence::where('residence', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
         $signed_at = $request->signed_at;
-        $signature = storage_path().'/app/public/files/'.$userIdentification.'/'.$new_name;
-        $owner = storage_path().'/leases/kim_degenaar.jpeg';
+        $signature = 'storage/files/'.$userIdentification.'/'.$new_name;
+        $owner = 'storage/leases/kim_degenaar.jpeg';
 
         // share data to view
         $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner'));
