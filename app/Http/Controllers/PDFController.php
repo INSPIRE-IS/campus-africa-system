@@ -152,7 +152,7 @@ class PDFController extends Controller
             // $message->to($data['email'], $data['name'])->subject('Application Approved');
             $message->to(['campusafricaforms@gmail.com', 'roger@whitehart.co.za'])->subject('Application Approved');
             $message->from('noreply@campusafrica.co.za','Campus Africa');
-            $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
+            // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
         });
 
       }
