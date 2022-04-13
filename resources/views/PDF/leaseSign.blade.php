@@ -544,7 +544,7 @@
             <table style="width:100%">
                 <tr>
                     <td style="width:50%; vertical-align: top;">
-                        <p style="font-size:14px;">OWNER Signature: <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $owner; ?>" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
+                        <p style="font-size:14px;">OWNER Signature: <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
                     </td>
                     <td style="vertical-align: top;">
                         <p style="font-size:14px;">Place: Braamfontein
@@ -870,7 +870,7 @@
             <br/>
             <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/><br/>Student</p>
             <!-- <br/> -->
-            <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $owner; ?>" alt="Kim Degenaar" style='width:200px;'/><br/>For and on behalf of<br/>Owner</p>
+            <p style="font-weight:bold; font-size:14px;"><img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/><br/>For and on behalf of<br/>Owner</p>
             <br/>
             <hr/>
             <br/>
