@@ -11,7 +11,7 @@
 
             <div class="rightMenu">
                 
-                <a href="https://campusafrica.co.za/contact-us/" target="_blank"><button type="button" class="contactButton">contact us</button></a>
+                <a href="https://campusafrica.co.za/contact-us/" target="_blank"><button type="button" class="contactButton" <?php if($agent->isMobile()){ echo 'style="width:120px !important"';} ?>>contact us</button></a>
             </div>
         </nav>
 
