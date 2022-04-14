@@ -1887,6 +1887,7 @@ input:read-only {
     height: 120px !important;
   }
 
+
   #documents_table .await {
     padding: 5px;
   }
@@ -2320,7 +2321,7 @@ input:read-only {
 }
 
 .jSignature {
-  width: 50% !important;
+  width: 70% !important;
   margin: 0 auto !important;
   height: 200px !important;
   border: 2px solid #e9e9e9 !important;

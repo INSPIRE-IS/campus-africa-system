@@ -52,7 +52,7 @@
 
             <div class="column full center signature_container">
                 <div>Please sign here</div>
-                <div class="signature" <?php if($agent->isMobile()){ echo 'style="width:100%"';} ?>></div>
+                <div class="signature"></div>
 
                 <input type="hidden" id="signature_string" name="signature_string">
                 <input type="hidden" id="signature_given" value="0">
@@ -73,6 +73,7 @@
 
 <script>
     jQuery(document).ready( function($) {
+        
         var sigdiv = $(".signature").jSignature({
             'background-color': 'transparent',
             'decor-color': 'transparent',
