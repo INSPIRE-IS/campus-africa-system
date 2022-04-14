@@ -1,6 +1,6 @@
 
     <div class="container mt-5">
-        <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:44%;">
+        <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
         <h2 style="text-align:center">TEMPORARY LODGING AGREEMENT</h2>
         <p style="text-align:center; font-size:13px; font-weight:bold;">BETWEEN</p>
         <h4 style="text-align:center;">CONSOLIDATED URBAN MANAGEMENT CORPORATION (PTY) LTD</h4>
@@ -66,7 +66,7 @@
         <div class="page_break"><br/><br/><br/></div>
 
 
-        <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+        <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
 
             <ol style="list-style-type:none; text-laign:left; font-size:14px;">
                 <li><span style="margin-left:-20px;">f. </span><strong>“Swipe Card”</strong> means: a payment mechanism provided to Students of tertiary institutions who receive bursary, loan, sponsorship or related allowances, for the consumption of student necessities, by suppliers, which suppliers for the purposes of this agreement include but are not limited to, ‘NSFAS’, ‘Intellicard’, ‘Eduloan’ and ‘Wizzard’; </li>
@@ -120,7 +120,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <span style="font-weight:bold; font-size:14px;">3. Payment of Accommodation and Student Meal Fees </span>
 
@@ -179,7 +179,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
 
                 <li>If the deposit is insufficient to cover the amount required to cover such repairs or remedies as are permitted deductions under this Temporary Lodging Agreement, the Student shall pay on demand such further sum as the Owner reasonably requires in order to cover the amount which the deposit would have otherwise covered. </li>
@@ -237,7 +237,7 @@
                     <div class="page_break"><br/><br/><br/></div>
 
 
-                    <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+                    <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
                     <br/>
 
                     <li>Permit any third party to use the Accommodation, otherwise than explicitly provided for by this Temporary Lodging Agreement. </li>
@@ -296,7 +296,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
 
             <span style="font-weight:bold; font-size:14px;">9.	Guests of the Student </span>
@@ -348,7 +348,7 @@
                     <div class="page_break"><br/><br/><br/></div>
 
 
-                    <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+                    <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
                     <br/>
                     <li>have a common law right to retain the Student’s movables to ensure payment of his or her Accommodation Fees, and </li>
                     <br/>
@@ -416,7 +416,7 @@
                     <div class="page_break"><br/><br/><br/></div>
 
 
-                    <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+                    <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
                     <br/>
                     <li>delivered by hand to a responsible person during ordinary business hours at the physical address chosen as its domicilium shall be deemed to have been received on the day of delivery; or </li>
                     <br/>
@@ -454,7 +454,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <table style="width:100%; border:1px solid #000;">
                 <tr>
@@ -494,34 +494,46 @@
             <br/>
             <p style="font-size:14px;">SIGNED BY PARTIES AS FOLLOWS:</p>
             <br/><br/>
+            <?php if(!$agent->isMobile()){ ?>
+                <table style="width:100%">
+                    <tr>
+                        <td style="width:50%; vertical-align: top;">
+                        <?php } ?>
+                            <p style="font-size:14px;">OWNER Signature: <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
+                        <?php if(!$agent->isMobile()){ ?>
+                        </td>
+                        <td style="vertical-align: top;">
+                        <?php } ?>
+                            <p style="font-size:14px;">Place: Braamfontein
+                                <br/><br/>
+                                Date: <?php echo date('Y-m-d');?>
+                            </p>
+                        <?php if(!$agent->isMobile()){ ?>
+                        </td>
+                    </tr>
+                </table>
+            <?php } ?>
+            <br/><br/>
+            <br/><br/>
+            <?php if(!$agent->isMobile()){ ?>
             <table style="width:100%">
                 <tr>
                     <td style="width:50%; vertical-align: top;">
-                        <p style="font-size:14px;">OWNER Signature: <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/><br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
-                    </td>
-                    <td style="vertical-align: top;">
-                        <p style="font-size:14px;">Place: Braamfontein
-                            <br/><br/>
-                            Date: <?php echo date('Y-m-d');?>
-                        </p>
-                    </td>
-                </tr>
-            </table>
-            <br/><br/>
-            <br/><br/>
-            <table style="width:100%">
-                <tr>
-                    <td style="width:50%; vertical-align: top;">
+                    <?php } ?>
                         <p style="font-size:14px;">LODGER's Signature: ………………………………….…<br/>(Who if signing in a representative capacity<br/>warrants that he is duly authorized thereto)</p>
+                    <?php if(!$agent->isMobile()){ ?>
                     </td>
                     <td style="vertical-align: top;">
+                    <?php } ?>
                         <p style="font-size:14px;">Place: ………………………..........
                             <br/><br/>
                             Date: <?php echo date('Y-m-d');?>
                         </p>
+                    <?php if(!$agent->isMobile()){ ?>
                     </td>
                 </tr>
             </table>
+            <?php } ?>
 
             <footer style="text-align:center; color:#ccc;">
                 Page | 9
@@ -530,7 +542,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/><br/>
             <span style="font-weight:bold; font-size:14px;"> ANNEXURE A: Inventory of contents of Room – UNIT: {{$propertyData->residence}}, {{$propertyData->bed_code}}, {{$data->userFirstName}}, {{$data->userLastname}}, {{$data->year}}</span>
             <br/><br/>
@@ -677,9 +689,9 @@
             </table>
             <br/>
             <br/>
-            <span style="font-size:14px;">Sign (Lodger) ………………………………………………….</span>
+            <span style="font-size:14px;">Sign (Lodger) …………………………………….</span>
             <br/><br/>
-            <span style="font-size:14px;">Sign (Owner)  ………………………………………………….</span>
+            <span style="font-size:14px;">Sign (Owner)  …………………………………….</span>
 
             <footer style="text-align:center; color:#ccc;">
                 Page | 10
@@ -688,7 +700,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <span style="font-weight:bold; font-size:14px;">ANNEXURE B</span>
             <br/><br/>
@@ -803,7 +815,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:47%;">
+            <img src='https://campusafrica.whitehart.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <br/>
             <span style="font-weight:bold; font-size:14px;">ANNEXURE C: Acknowledgement of obligation for accommodation payments</span>
@@ -819,7 +831,7 @@
             @endif
             <br/>
             <!-- <br/> -->
-            <p style="font-weight:bold; font-size:14px;">Signed at __________________________________ on this <?php echo date('d'); ?> day of <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
+            <p style="font-weight:bold; font-size:14px;">Signed at ______________________________ on this <?php echo date('d'); ?> day of <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
             <br/>
             <p style="font-weight:bold; font-size:14px;">_______________<br/>Student</p>
             <!-- <br/> -->
@@ -836,15 +848,25 @@
                 Hereby acknowledge that I am jointly and severally liable for any rental/accommodation payments due on demand to the Owner for accommodation supplied to the student mentioned in this lease at the student accommodation centre as indicated in clause 12.a.ii of this lease. 
             </p>
             <br/>
-            <p style="font-weight:bold; font-size:14px;">Signed at __________________________________ on this ____ day of ____________ 20__.</p>
+            <p style="font-weight:bold; font-size:14px;">Signed at ______________________________ on this ____ day of ____________ 20__.</p>
             <br/>
             <br/>
+            <?php if(!$agent->isMobile()){ ?>
             <table style="width:100%">
                 <tr>
-                    <td style="width:75%"><p>_______________<br/>Parent/Guardian</p></td>
-                    <td><p>_______________<br/>Witness</p></td>
+                    <td style="width:75%">
+                    <?php } ?>
+                        <p>_______________<br/>Parent/Guardian</p>
+                    <?php if(!$agent->isMobile()){ ?>
+                    </td>
+                    <td>
+                    <?php } ?>
+                        <p>_______________<br/>Witness</p>
+                    <?php if(!$agent->isMobile()){ ?>
+                    </td>
                 </tr>
             </table>
+            <?php } ?>
 
             <footer style="text-align:center; color:#ccc;">
                 Page | 12
