@@ -2678,6 +2678,7 @@ class HomeController extends Controller
                 Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
     
                 $actionFileData['userUid'] = $bookingId;
+                $actionFileData['action'] = "Booking Fee updated to R".$booking_data['room_rate'];
                 $actionFileData['actionUserUid'] = Auth::user()->id;
                 $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
                 $actionFileData['actionUserRole'] = Auth::user()->userRole;
