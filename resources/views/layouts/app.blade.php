@@ -40,7 +40,7 @@
     </div>
     <footer class="footer">
         <div class="footerBanner">
-            <div class="container flex">
+            <div class="container <?php if(!$agent->isMobile()){ echo 'flex';} ?>">
                 <div class="col-3">
                     <h2 class="footerHeader">
                         Campus Africa

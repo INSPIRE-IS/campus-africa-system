@@ -28,13 +28,22 @@
         <form class="form" id="sign_lease" method="post">
             @csrf
             <div class="scrollable">
-                <h2>Echo lease here</h2>
                 <div class="pdfSection" style="margin-top: 0;">
-                    @if(strpos($file->fileUrl, "pdf") > 0)
-                        <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
-                    @else
-                        <img src="/storage/{{$file->fileUrl}}" alt="">
-                    @endif
+
+                        @if ($agent->isMobile())
+                            <object data="/storage/{{$file->fileUrl}}" type="application/pdf" width="100%" height="100%">
+                                <p>Your web browser doesn't have a PDF plugin.
+                                Instead you can <a href="filename.pdf">click here to
+                                download the PDF file.</a></p>
+                            </object>
+                        @else
+                            @if(strpos($file->fileUrl, "pdf") > 0)
+                                <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
+                            @else
+                                <img src="/storage/{{$file->fileUrl}}" alt="">
+                            @endif
+                        @endif
+                    
                 </div>
             </div>
 
@@ -50,14 +59,14 @@
 
             <div>
                 <label for="signed_at">Signed At</label><br/>
-                <input type="text" name="signed_at" id="signed_at">
+                <input type="text" name="signed_at" id="signed_at" <?php if($agent->isMobile()){ echo 'style="width:100%"';} ?>>
                 <div><small>Place / Location</small></div>
             </div>
 
 
             <div class="column full center signature_container">
                 <div>Please sign here</div>
-                <div class="signature"></div>
+                <div class="signature" <?php if($agent->isMobile()){ echo 'style="width:100%"';} ?>></div>
 
                 <input type="hidden" id="signature_string" name="signature_string">
                 <input type="hidden" id="signature_given" value="0">
