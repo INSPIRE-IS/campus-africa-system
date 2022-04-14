@@ -23,7 +23,16 @@ class LeaseController extends Controller
             $user = User::where('id', $lease_link->userUid)->first();
             $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->first();
 
-            return view('outSession.signLease', ["userCustomId" => $lease_link_url, "user" => $user, "file" => $file]);
+            $data = User::where('id', $lease_link->userUid)->first();
+            $booking = Booking::where('userId', $lease_link->userUid)->first();
+            $propertyData = Property::where('id', $booking->property_data_id)->first();
+            $residence = Residence::where('residence', $propertyData->residence)->first();
+            $leaseAdminFee = Lookups::where('group_id', '8')->first();
+            $owner = storage_path().'/leases/kim_degenaar.jpeg';
+
+            $pdf = view('PDF.leasesForScreen', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner'));
+
+            return view('outSession.signLease', ["userCustomId" => $lease_link_url, "user" => $user, "file" => $file, "pdf" => $pdf]);
         }else{
             return "Finished signing.";
         }

@@ -28,29 +28,15 @@
         <form class="form" id="sign_lease" method="post">
             @csrf
             <div class="scrollable">
-                <div class="pdfSection" style="margin-top: 0;">
-
-                        @if ($agent->isMobile())
-                            <object data="/storage/{{$file->fileUrl}}" type="application/pdf" width="100%" height="100%">
-                                <p>Your web browser doesn't have a PDF plugin.
-                                Instead you can <a href="filename.pdf">click here to
-                                download the PDF file.</a></p>
-                            </object>
-                        @else
-                            @if(strpos($file->fileUrl, "pdf") > 0)
-                                <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
-                            @else
-                                <img src="/storage/{{$file->fileUrl}}" alt="">
-                            @endif
-                        @endif
-                    
+                <div class="pdfSection" style="margin-top: 0; height:80vh; overflow-y:scroll; border:1px solid #000; margin-top:50px;">
+                        {!!$pdf!!}
                 </div>
             </div>
 
             <div style="margin-top:30px; margin-bottom:20px;">
                 <label for="signed_at">Lease Accept</label><br/><br/>
                 <ul style="list-style-type:none">
-                    <li style="display:inline-flex">
+                    <li style=" <?php if(!$agent->isMobile()){ echo 'display:inline-flex';} ?> ">
                         <input type="checkbox" id="lease_accept" name="lease_accept" value="1"  style="margin:4px;">
                         <label for="lease_accept" style="width:500px">I have read and accept the Lease</label>
                     </li>
