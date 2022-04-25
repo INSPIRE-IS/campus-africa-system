@@ -588,11 +588,6 @@
 <input type="hidden" id="booking_fee_paid" value="{{$booking_paid}}" />
 <input type="hidden" id="booking_fee_waived" value="{{$booking_waived}}" />
 
-<input type="hidden" id="booking_room" value="" />
-<input type="hidden" id="booking_floor" value="" />
-<input type="hidden" id="booking_unit" value="" />
-<input type="hidden" id="booking_bed" value="" />
-
 
 
 
@@ -1155,17 +1150,8 @@
 
                             let meta = roomData[key].meta_info_1 !== null ? roomData[key].meta_info_1 : "";
 
-                            if(roomData[key].floor !== $("#booking_floor").val()){
-                                $('#floor').append("<option "+selected+" value='"+roomData[key].floor+"' meta='"+meta+"'>"+floor_name+"</option>")
-                            }
-
-                           
-                        });    
-                        
-                        if($("#booking_room").val() == $("#roomType").val()){
-                            $('#floor').append("<option selected value='"+$("#booking_floor").val()+"' meta=''>"+$("#booking_floor").val()+"</option>")
-                            callRoomDetails('unit');
-                        }
+                            $('#floor').append("<option "+selected+" value='"+roomData[key].floor+"' meta='"+meta+"'>"+floor_name+"</option>")
+                        });                  
                     }
                 });
             }
@@ -1195,15 +1181,8 @@
                     $('#unit').html('<option>Choose a Unit</option>');
 
                     Object.keys(roomData).forEach( function(key) {
-                        if(roomData[key].unit !== $("#booking_unit").val()){
-                            $('#unit').append("<option value='"+roomData[key].unit+"'>"+roomData[key].unit+"</option>")
-                        }
-                    });  
-                    
-                    if($("#floor").val() == $("#booking_floor").val()){
-                        $('#unit').append("<option selected value='"+$("#booking_unit").val()+"' meta=''>"+$("#booking_unit").val()+"</option>")
-                        callRoomDetails('bed_code')
-                    }
+                        $('#unit').append("<option value='"+roomData[key].unit+"'>"+roomData[key].unit+"</option>")
+                    });                    
                 }
             });
 
@@ -1266,15 +1245,8 @@
                     
 
                     Object.keys(bookedRoomData).forEach( function(key) {
-                        if(bookedRoomData[key].bed_code !== $("#booking_bed").val()){
-                            $('#bed_code').append("<option disabled value='"+bookedRoomData[key].bed_code+"' room='"+bookedRoomData[key].room+"' bed='"+bookedRoomData[key].bed+"'>"+bookedRoomData[key].bed_code+" (Booked)</option>")
-                        }
-                    });  
-                          
-                    
-                    if($("#unit").val() == $("#booking_unit").val()){
-                        $('#bed_code').append("<option selected value='"+$("#booking_bed").val()+"' meta=''>"+$("#booking_bed").val()+"</option>")
-                    }
+                        $('#bed_code').append("<option disabled value='"+bookedRoomData[key].bed_code+"' room='"+bookedRoomData[key].room+"' bed='"+bookedRoomData[key].bed+"'>"+bookedRoomData[key].bed_code+" (Booked)</option>")
+                    });                    
                 }
             });
         }
@@ -1552,11 +1524,6 @@
                 if(data[3] !== 'false' && data[0].room_rate !== null){
                     var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
                 }
-
-                $("#booking_room").val(data[0].roomType);
-                $("#booking_floor").val(data[0].floor);
-                $("#booking_unit").val(data[0].unit);
-                $("#booking_bed").val(data[0].bed_code);
                 
                 let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].property+'</h4>'+
                     '<h4 class="cardHeader" >'+data[0].roomType+'</h4>'+
@@ -1581,8 +1548,6 @@
     }
 
     $("#changeBookingType").on('click', function(){
-
-        
 
 
         if($("#floor").val() !== "Choose a Floor" && $("#bed_code").val() == "Choose a Bed"){
