@@ -50,7 +50,7 @@
             <input type="text" name="user_role_name" id="user_role_name" value="{{$user->user_role_name}}"  >
         </div>
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <br/>
             <ul style="list-style-type:none">
                 <li style="display:inline-flex">
@@ -58,7 +58,7 @@
                     <label for="email_details" style="width:500px">Email login details to user.</label>
                 </li>
             </ul>
-        </div>
+        </div> -->
         <!-- <div class="form-field">
             <br/>
         </div> -->
@@ -74,7 +74,7 @@
 
         <div>
             <label>Access Roles</label>
-            <br/><br/>
+            <br/><br/><br/><br/>
             <ul style="list-style-type:none;">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="create_app" name="create_app" value="1" <?php if($user->role_create_app == "1"){echo "checked";} ?>>
@@ -156,6 +156,16 @@
                     <input type="checkbox" id="role_comment" name="role_comment" value="1" <?php if($user->role_comment == "1"){echo "checked";} ?>>
                     <label for="role_comment" style="width:500px">Make Comments</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_cancel_lease" name="role_cancel_lease" value="1" <?php if($user->role_cancel_lease == "1"){echo "checked";} ?>>
+                    <label for="role_cancel_lease" style="width:500px">Change Bed on Approved Lease</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_lease_regen" name="role_lease_regen" value="1" <?php if($user->role_lease_regen == "1"){echo "checked";} ?>>
+                    <label for="role_lease_regen" style="width:500px">Regen Lease</label>
+                </li>
+
+                
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1" <?php if($user->role_update_booking_fee == "1"){echo "checked";} ?>>
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>
@@ -166,12 +176,43 @@
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>
 
-    <form action="/delete-admin" method="post" autocomplete="off">
-        @csrf
+    <!-- <form action="/delete-admin" method="post" autocomplete="off"> -->
+        <!-- @csrf -->
 
-        <input type="submit" value="Delete User" class="profileSubmit" style="opacity:1"/>
-        <input type="hidden" name="userUid" id="userUid" value="{{$user->id}}" required >
-    </form>
+        <input type="submit" value="Delete User" class="profileSubmit" id="deleteUser" style="opacity:1"/>
+        <!-- <input type="hidden" name="userUid" id="userUid" value="{{$user->id}}" required > -->
+    <!-- </form> -->
 </div>
+
+<script>
+    
+    $("#deleteUser").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to delete this user",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/delete-admin",
+                    data: {
+                        userUid: "{{$user->id}}",
+                    },
+        
+                    success: function (data) {
+                        
+                        window.location.replace('/users');
+        
+                    },
+                });
+            }
+        });
+    })
+</script>
 
 @endsection

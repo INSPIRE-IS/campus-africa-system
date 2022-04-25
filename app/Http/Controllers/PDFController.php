@@ -91,11 +91,32 @@ class PDFController extends Controller
         $content = $pdf->download('lease.pdf')->getOriginalContent();
         $user = User::where('id', $studentId)->first();
 
-        \Storage::put('public/files/'.$user->userId.'/Lease.pdf',$content) ;
+        \Storage::put('public/files/'.$user->userId.'/Lease.pdf', $content);
 
+        //Check if there is an existing lease to overwrite
+        $lease = UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->first();        
+
+        $data = array(
+            'userUid' => $studentId,
+            'fileName' => 'Lease.pdf',
+            'fileUrl' => 'files/'.$user->userId.'/Lease.pdf',
+            'status' => 'Rejected',
+            'uploaded_by' => Auth::user()->name,
+            'created_at' => date('Y-m-d h:m:s')
+        );
+
+        if (!empty($lease)) {
+          UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->update($data);
+        } else {
+            $data['fileId'] = 'moveIn';
+    
+            UserFiles::insert($data);
+        }
+
+        User::where('id', $studentId)->update(['rob_55_lease' => 0]);
       }
         
 
-        return 'true';
+        return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->first(), User::where('id', $studentId)->first()];
       }
 }

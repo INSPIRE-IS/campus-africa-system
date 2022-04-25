@@ -9,15 +9,11 @@
             <tr width="100%" style="background-color: #f1cc3e;">
                 <td colspan="2" style="width: 100%; padding: 30px 6% 30px 6%;; line-height: 22px">   
                 
-                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">User registered</p>
+                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">User {{$type}}</p>
                     <br/>
-                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Hi {{$name}}, we’ve registered you account.</p>
+                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Hi {{$name}}, we’ve {{$type}} your account.</p>
 
-                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Please go to: <a href="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/login"><?php echo "https://$_SERVER[HTTP_HOST]"; ?>/login</a></p>
-                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Login with:
-                        <br/><b>Email:</b> {{$email}}
-                        <br/><b>Password:</b> {{$password}}
-                    </p>
+                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Please reset your password to login at: <a href="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/reset-password/{{$userToken}}"><?php echo "https://$_SERVER[HTTP_HOST]"; ?>/reset-password/{{$userToken}}</a></p>
 
                     <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">The Campus Africa Team</p>
                     

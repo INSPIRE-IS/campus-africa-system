@@ -6,6 +6,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\LookupsController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +43,9 @@ Route::post('/move-in-form', [HomeController::class, 'fileUpload']);
 Route::get('/complete-reservation', [HomeController::class, 'complete_reservation']);
 Route::get('/applications', [HomeController::class, 'applications']);
 Route::get('/application-profile/{userId}', [HomeController::class, 'application_profile']);
+Route::get('/edit-inline-data', [HomeController::class, 'edit_inline_data']);
+Route::post('/save-inline-data', [HomeController::class, 'save_inline_data']);
+Route::post('/approve-inline-data', [HomeController::class, 'approve_inline_data']);
 
 Route::post('/action/file', [HomeController::class, 'action_file']);
 
@@ -48,6 +54,7 @@ Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
 Route::post('/reject-application', [HomeController::class, 'reject_application']);
 Route::get('/check-user-status/{userId}', [HomeController::class, 'check_user_status']);
+Route::get('/check-user-payment/{userId}', [HomeController::class, 'check_user_payment']);
 
 Route::get('/my-profile', [ProfileController::class, 'index'])->name('my-profile');
 Route::post('/update-profile', [ProfileController::class, 'update']);
@@ -75,13 +82,21 @@ Route::post("/delete-admin", [HomeController::class, 'delete_admin']);
 Route::get("/student/edit/{studentId}", [HomeController::class, 'student_edit']);
 Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
-Route::post('/move-in-form-admin', [HomeController::class, 'adminFileUpload']);
 
-Route::get('/lookups', [HomeController::class, 'lookups'])->name('lookups');
-Route::get('/lookups/new', [HomeController::class, 'add_lookups']);
-Route::post('/new-lookup', [HomeController::class, 'new_lookups']);
-Route::get('/lookups/edit/{lookupId}', [HomeController::class, 'edit_lookups']);
-Route::post('/save-lookup', [HomeController::class, 'save_lookups']);
+
+
+
+Route::get('/lookups', [LookupsController::class, 'lookups'])->name('lookups');
+Route::get('/lookups/new', [LookupsController::class, 'add_lookups']);
+Route::post('/new-lookup', [LookupsController::class, 'new_lookups']);
+Route::get('/lookups/edit/{lookupId}', [LookupsController::class, 'edit_lookups']);
+Route::post('/save-lookup', [LookupsController::class, 'save_lookups']);
+Route::get('/admin-updates/landing', [LookupsController::class, 'admin_updates_landing']);
+Route::get('/admin-updates/fix-data', [LookupsController::class, 'admin_updates_fix_data']);
+Route::get('/admin-updates/update-properties', [LookupsController::class, 'admin_updates_update_properties']);
+
+
+
 
 Route::get('/new/student', [HomeController::class, 'new_student']);
 Route::post("/add-student", [HomeController::class, 'add_student']);
@@ -98,6 +113,8 @@ Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
+
+Route::post('/get-booking-details', [HomeController::class, 'get_booking_details']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
 Route::post('/change-lease', [HomeController::class, 'change_lease']);
 Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
@@ -139,7 +156,7 @@ Route::get('/download/matched-unmatched/{id}', [HomeController::class, 'download
 Route::get('download-nsfas-report', [HomeController::class, 'download_nsfas_report']);
 
 
-
+Route::post('/get-comments', [HomeController::class, 'get_comment']);
 Route::post('/add-comment', [HomeController::class, 'add_comment']);
 Route::post('/change-nsfsbursar', [HomeController::class, 'change_nsfsbursar']);
 Route::get('/update-user-status/{user_id}', [HomeController::class, 'update_user_status']);
@@ -148,3 +165,18 @@ Route::get('/all_student_update_status', [HomeController::class, 'all_student_up
 Route::post('/set-page-session', [HomeController::class, 'set_page_session']);
 Route::post('/set-page-session-order', [HomeController::class, 'set_page_session_order']);
 
+Route::post('/cancel-lease', [HomeController::class, 'cancel_lease']);
+
+
+//Documents
+Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);
+Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
+Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save']);
+Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);
+
+Route::post('/add-other-document', [DocumentsController::class, 'add_other_document']);
+Route::post('/remove-document-upload', [DocumentsController::class, 'remove_document_upload']);
+
+//New user / email change user password update
+Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswordUser']);
+Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
