@@ -151,7 +151,12 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                @if(!empty($action->users))
+                                    <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                @else
+                                    <p>{{$action->actionUserDisplayName}}</p>
+                                @endif
+                                
                                 @if($action->actionUserRole !== "0" )
                                     @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
                                         <button type="button" class="admin">Admin</button>
