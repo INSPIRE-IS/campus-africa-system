@@ -130,6 +130,10 @@
                         @if(Auth::user()->role_cancel_booking == 1)
                             <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
                         @endif
+                    @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
+                        @if(Auth::user()->role_cancel_booking == 1)
+                            <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -235,7 +239,7 @@
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
                     <div class="waitve_btn"></div>
-                    @if(Auth::user()->role_upload_docs == 1)
+                    @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                         <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
                     @endif
                 </div>
@@ -402,7 +406,7 @@
                                         >View Document</button>
                                     @else
                                         
-                                        @if(Auth::user()->role_upload_docs == 1)
+                                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                                     
                                             <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
                                                 <span class="text">Upload</span>
@@ -431,7 +435,7 @@
 
             <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                 <h2 class="appHeader">Comments</h2>
-                @if(Auth::user()->role_comment == "1")
+                @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
                     <br/>
                     <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
@@ -713,8 +717,10 @@
     function checkUserStatus(){
 
         $(".address_btn").empty()
+        
 
-        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+        if(("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0) || ("<?php echo Auth::user()->role_modify_approved; ?>" == 1 && "<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 2 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0)){
+            console.log("1")
             if($("#address_approved").val() != 1){
                 if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
                     $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
@@ -733,7 +739,7 @@
 
         $(".kin_btn").empty()
 
-        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?>" == 0){
+        if(("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?>" == 0) || ("<?php echo Auth::user()->role_modify_approved; ?>" == 1 && "<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 2 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0)){
             if($("#kin_approved").val() != 1){
                 if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
                     $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
@@ -751,7 +757,7 @@
 
         $(".app_details_btn").empty()
 
-        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+        if(("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0) || ("<?php echo Auth::user()->role_modify_approved; ?>" == 1 && "<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 2 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0)){
             if($("#email_data_approved").val() != 1){
                 if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
                     $(".app_details_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>')
@@ -770,10 +776,12 @@
         $(".waitve_btn").empty();
 
         if($("#booking_fee_paid").val() == 'false'){
-            if($("#booking_fee_waived").val() == 'false'){
-                $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
-            }else{
-                $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+            if("{{$user[0]['userInfo']['rob_60_cancelled'] == 0}}"){
+                if($("#booking_fee_waived").val() == 'false'){
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
+                }else{
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+                }
             }
         }
 
@@ -2293,10 +2301,37 @@
         }
     }
 
+    function restoreBooking(bookingId, userId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This booking will become active again!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, activate it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/restore/booking",
+                    data: {
+                        bookingId: bookingId, 
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location = "/applications";
+                    },
+                });
+            }
+        })
+    }
+
     function cancelBooking(bookingId, userId){
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "You will cancel this booking!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

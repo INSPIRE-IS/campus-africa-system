@@ -994,6 +994,7 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
+            "role_modify_approved" => $request->role_modify_approved,
         ]);
 
         if($oldUser->userEmail !== $request->email){
@@ -1595,6 +1596,7 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
+            "role_modify_approved" => $request->role_modify_approved,
         ]);
 
         // if($request->email_details == "1"){
@@ -2087,6 +2089,20 @@ class HomeController extends Controller
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Application Cancelled",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        return 'true';
+    }
+
+    public function restore_booking(Request $request){
+        User::where('id', $request->userId)->update(['rob_60_cancelled' => 0]);
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Restored Cancelled Application",
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,

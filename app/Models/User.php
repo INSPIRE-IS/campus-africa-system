@@ -126,6 +126,7 @@ class User extends Authenticatable
         'rob_55_lease',
         'rob_45_other',
         'role_lease_regen',
+        'role_modify_approved',
     ];
 
     public function files(){
