@@ -167,7 +167,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_modify_approved" name="role_modify_approved" value="1">
-                    <label for="role_modify_approved" style="width:500px">Modify Approved Application</label>
+                    <label for="role_modify_approved" style="width:500px">Modify Approved Lease</label>
                 </li>
 
                 

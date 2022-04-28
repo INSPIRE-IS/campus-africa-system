@@ -117,7 +117,7 @@
                         @endif
 
                         @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                            @if(Auth::user()->role_cancel_lease == "1")
+                            @if(Auth::user()->role_cancel_lease == "1" || Auth::user()->role_modify_approved == 1)
                                 <button type="button" class="appBooking" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                             @endif
                         @endif
@@ -134,11 +134,11 @@
                                 <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
                             @endif
 
-                            @if(Auth::user()->role_cancel_booking == 1)
+                            @if(Auth::user()->role_cancel_booking == 1 && $user[0]['userInfo']['rob_55_lease'] != 2)
                                 <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
                             @endif
                         @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
-                            @if(Auth::user()->role_cancel_booking == 1)
+                            @if(Auth::user()->role_cancel_booking == 1 && $user[0]['userInfo']['rob_55_lease'] != 2)
                                 <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
                             @endif
                         @endif
