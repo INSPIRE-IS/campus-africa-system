@@ -110,10 +110,10 @@
             <label>Bed</label>
             <select name="bed" id='bed'>
                 <option value="" selected disabled>Select One</option>
-                <option value="A" <?php if(!empty($propertyData) && ($propertyData->bed == "A" || $propertyData->bed == "a")){echo "selected";}?>>A</option>
-                <option value="B" <?php if(!empty($propertyData) && ($propertyData->bed == "B" || $propertyData->bed == "b")){echo "selected";}?>>B</option>
-                <option value="C" <?php if(!empty($propertyData) && ($propertyData->bed == "C" || $propertyData->bed == "c")){echo "selected";}?>>C</option>
-                <option value="D" <?php if(!empty($propertyData) && ($propertyData->bed == "D" || $propertyData->bed == "d")){echo "selected";}?>>D</option>
+                <option value="a" <?php if(!empty($propertyData) && ($propertyData->bed == "A" || $propertyData->bed == "a")){echo "selected";}?>>a</option>
+                <option value="b" <?php if(!empty($propertyData) && ($propertyData->bed == "B" || $propertyData->bed == "b")){echo "selected";}?>>b</option>
+                <option value="c" <?php if(!empty($propertyData) && ($propertyData->bed == "C" || $propertyData->bed == "c")){echo "selected";}?>>c</option>
+                <option value="d" <?php if(!empty($propertyData) && ($propertyData->bed == "D" || $propertyData->bed == "d")){echo "selected";}?>>d</option>
             </select>
         </div>
 
