@@ -2816,6 +2816,64 @@ class HomeController extends Controller
         return redirect("/manage-properties");
     }
 
+    public function check_rooms(Request $request){
+        $propertyInfo = Property::whereNull('room_available')->get();
+
+        $property = [];
+        $roomTypes126Siemert = [];
+        $roomTypes49Jorissen = [];
+        $roomTypes80Jorissen = [];
+        $roomTypesBraamlofts = [];
+        $roomTypesDunvista = [];
+        $roomTypesWynton = [];
+        $roomTypesYMCA = [];
+
+        foreach($propertyInfo as $pi){
+            
+            if(!in_array($pi->residence, $property)){
+                array_push($property, $pi->residence);
+            }
+
+            if($pi->residence == "126 SIEMERT"){
+                if(!in_array($pi->room_type, $roomTypes126Siemert)){
+                    array_push($roomTypes126Siemert, $pi->room_type);
+                }
+            }
+            if($pi->residence == "49 JORISSEN"){
+                if(!in_array($pi->room_type, $roomTypes49Jorissen)){
+                    array_push($roomTypes49Jorissen, $pi->room_type);
+                }
+            }
+            if($pi->residence == "80 JORISSEN"){
+                if(!in_array($pi->room_type, $roomTypes80Jorissen)){
+                    array_push($roomTypes80Jorissen, $pi->room_type);
+                }
+            }
+            if($pi->residence == "BRAAMLOFTS"){
+                if(!in_array($pi->room_type, $roomTypesBraamlofts)){
+                    array_push($roomTypesBraamlofts, $pi->room_type);
+                }
+            }
+            if($pi->residence == "DUNVISTA MANSIONS"){
+                if(!in_array($pi->room_type, $roomTypesDunvista)){
+                    array_push($roomTypesDunvista, $pi->room_type);
+                }
+            }
+            if($pi->residence == "WYNTON JOY"){
+                if(!in_array($pi->room_type, $roomTypesWynton)){
+                    array_push($roomTypesWynton, $pi->room_type);
+                }
+            }
+            if($pi->residence == "YMCA"){
+                if(!in_array($pi->room_type, $roomTypesYMCA)){
+                    array_push($roomTypesYMCA, $pi->room_type);
+                }
+            }
+        }
+
+        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA];
+    }
+
     public function get_booking_info(Request $request){
         $bookingData = Booking::where('userId', $request->bookingId)->first();
 

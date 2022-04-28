@@ -180,3 +180,5 @@ Route::post('/remove-document-upload', [DocumentsController::class, 'remove_docu
 //New user / email change user password update
 Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswordUser']);
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
+
+Route::get('/check-rooms', [HomeController::class, 'check_rooms']);
