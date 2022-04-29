@@ -2817,6 +2817,13 @@ class HomeController extends Controller
 
         return redirect("/manage-properties");
     }
+    
+    public function delete_bed (Request $request){
+
+        Property::where('id', $request->propertyId)->delete();
+
+        return "done";
+    }
 
     public function check_rooms(Request $request){
         $propertyInfo = Property::whereNull('room_available')->where('room_type', '!=', 'Building Manager')->get();

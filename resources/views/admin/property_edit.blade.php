@@ -137,8 +137,12 @@
         </div>
 
 
-        <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
+        <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>        
     </form>
+
+    <?php if(!empty($propertyData)) { ?>
+        <input type="button" id="btn_delete_bed" class="profileSubmit" style="opacity:1" value="Delete Bed" />
+    <?php } ?>
 </div>
 
 <script>
@@ -161,6 +165,38 @@
             $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="Single small">Single | small</option><option value="Single medium">Single | Medium</option><option value="Single large">Single | Large</option>')
         }
     })
+
+    <?php if(!empty($propertyData)) { ?>
+        $(document).ready( function($) {
+            $('#btn_delete_bed').on("click", function(e) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to delete this Bed, this cannot be undone",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "post",
+                            url: "/delete-bed",
+                            data: {
+                                propertyId: "{{$propertyData->id}}",
+                            },
+
+                            success: function (data) {                        
+                                window.location = "/manage-properties";                
+                            },
+                        });
+                    }
+                });
+
+                e.preventDefault();
+            });
+        });
+    <?php } ?>
 </script>
 
 @endsection
