@@ -945,7 +945,7 @@
                     $("#myModal").css("display", "none");
 
                     @if(Auth::user()->role_cancel_lease == "1" || Auth::user()->role_modify_approved == 1)
-                        $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease(\'{{$user[0]['userInfo']['id']}}\', \'generate\')">Change Bed</button>');
+                        $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease(' + data[1]['userId'] + ', "generate")">Change Bed</button>');
                     @endif
 
                     $("#btn_clear_bed").addClass('hidden')
