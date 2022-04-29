@@ -2084,6 +2084,8 @@ class HomeController extends Controller
 
         Booking::where('userId', $request->userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
+        Property::where('user_id_room', $request->userId)->update(["user_id_room" => null, "room_available" => null]);
+
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Application Cancelled",
@@ -2817,7 +2819,7 @@ class HomeController extends Controller
     }
 
     public function check_rooms(Request $request){
-        $propertyInfo = Property::whereNull('room_available')->get();
+        $propertyInfo = Property::whereNull('room_available')->where('room_type', '!=', 'Building Manager')->get();
 
         $property = [];
         $roomTypes126Siemert = [];
@@ -4307,6 +4309,7 @@ class HomeController extends Controller
         $booking_old = Booking::where('userId', $userId)->first();
 
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
+        Property::where('user_id_room', $userId)->update(["user_id_room" => null, "room_available" => null]);
 
         //Update the User robot
         User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
