@@ -268,7 +268,13 @@ class LookupsController extends Controller {
             foreach($actions as $action){
                 if ($action->action == 'Application Cancelled') {
                     $status_data['rob_60_cancelled'] = 1;
-                    // break;
+                }
+
+            }
+            foreach($actions as $action){
+
+                if ($action->action == 'Restored Cancelled Application') {
+                    $status_data['rob_60_cancelled'] = 0;
                 }
             }
 

@@ -994,6 +994,7 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
+            "role_modify_approved" => $request->role_modify_approved,
         ]);
 
         if($oldUser->userEmail !== $request->email){
@@ -1019,6 +1020,7 @@ class HomeController extends Controller
 
         return redirect()->back();
     }
+
 
     public function delete_admin(Request $request){
         
@@ -1595,6 +1597,7 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
+            "role_modify_approved" => $request->role_modify_approved,
         ]);
 
         // if($request->email_details == "1"){
@@ -2080,7 +2083,7 @@ class HomeController extends Controller
     }
 
     public function cancel_booking(Request $request){
-        User::where('id', $request->userId)->update(['rob_60_cancelled' => 1]);
+        User::where('id', $request->userId)->update(['rob_60_cancelled' => 1, 'rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
         Booking::where('userId', $request->userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
@@ -2089,6 +2092,20 @@ class HomeController extends Controller
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Application Cancelled",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        return 'true';
+    }
+
+    public function restore_booking(Request $request){
+        User::where('id', $request->userId)->update(['rob_60_cancelled' => 0]);
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Restored Cancelled Application",
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
@@ -2727,6 +2744,22 @@ class HomeController extends Controller
         }
 
         $this->update_user_status($bookingId);
+
+        if($request->change_bed_type == "cancel"){
+
+            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+    
+            ActionList::create([
+                "userUid" => $bookingId,
+                "action" => "Rejected Approved Lease to Change Bed",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+        }
+
+
 
 
 
@@ -4320,6 +4353,9 @@ class HomeController extends Controller
 
         //Update the User robot
         User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
+
+        //Delete the Lease
+        UserFiles::where('userUid', $userId)->delete();
 
         ActionList::create([
             "userUid" => $userId,

@@ -86,9 +86,13 @@
             <div class="flex" style="margin: 35px 0;" id="buttonSection">
                 @if ($user->rob_60_cancelled == 0)
                     @if ($doc_approved == 2)
-                        @if (Auth::user()->role_delete_uploaded == 1)
-                            <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
+
+                        @if($user->rob_50_approve != 2 || Auth::user()->role_modify_approved == 1)
+                            @if (Auth::user()->role_delete_uploaded == 1)
+                                <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
+                            @endif
                         @endif
+                       
 
                     @else
                         @if(Auth::user()->role_upload_docs == 1)
@@ -940,6 +944,12 @@
                     $("#myModal").html("");
                     $("#myModal").css("display", "none");
 
+                    @if(Auth::user()->role_cancel_lease == "1" || Auth::user()->role_modify_approved == 1)
+                        $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease(' + data[1]['userId'] + ', "generate")">Change Bed</button>');
+                    @endif
+
+                    $("#btn_clear_bed").addClass('hidden')
+
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
 
@@ -963,6 +973,8 @@
                         
                         uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                         $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+
+                        bookingTypeDetails();
                     }
                 
                     refreshActions();
@@ -1020,6 +1032,7 @@
                             
                             uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+
                         }
                         
                         refreshActions();

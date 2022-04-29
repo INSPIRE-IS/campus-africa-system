@@ -103,34 +103,38 @@
 
                 <div class="app_summary_details"></div>
                 
-                <div class="buttons">
-                    @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        @if(Auth::user()->role_change_bed == "1")
-                            <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                <div class="buttons" id="buttonTop">
+
+                        @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_change_bed == "1")
+                                <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                            @endif
+
+                            @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                <button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                            @endif
                         @endif
 
-                        @if(Auth::user()->role_change_date == "1")
-                            <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                        @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_cancel_lease == "1" || Auth::user()->role_modify_approved == 1)
+                                <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                            @endif
                         @endif
-                    @endif
-
-                    @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        @if(Auth::user()->role_cancel_lease == "1")
-                            <button type="button" class="appBooking" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
-                        @endif
-                    @endif
-                    
                 </div>
-                <div class="buttons">
-                    @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        @if(Auth::user()->role_delete_booking == 1)
-                            <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
-                        @endif
+                <div class="buttons" id="buttonBottom">
+                        @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_delete_booking == 1)
+                                <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
+                            @endif
 
-                        @if(Auth::user()->role_cancel_booking == 1)
-                            <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                            @if((Auth::user()->role_cancel_booking == 1 && $user[0]['userInfo']['rob_55_lease'] != 2) || (Auth::user()->role_modify_approved == 1  && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                            @endif
+                        @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
+                            @if((Auth::user()->role_cancel_booking == 1 && $user[0]['userInfo']['rob_55_lease'] != 2) || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                            @endif
                         @endif
-                    @endif
                 </div>
             </div>
 
@@ -151,13 +155,24 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                @if(!empty($action->users))
+                                    <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                @else
+                                    <p>{{$action->actionUserDisplayName}}</p>
+                                @endif
+                                
                                 @if($action->actionUserRole !== "0" )
-                                    @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
-                                        <button type="button" class="admin">Admin</button>
+
+                                    @if(!empty($action->users))
+                                        @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
+                                            <button type="button" class="admin">Admin</button>
+                                        @else
+                                        <button type="button" class="admin">{{$action->users->user_role_name}}</button>
+                                        @endif
                                     @else
-                                    <button type="button" class="admin">{{$action->users->user_role_name}}</button>
+                                        <button type="button" class="admin">Admin</button>
                                     @endif
+                                    
                                 @else
                                     <button type="button" class="applicant">Applicant</button>
                                 @endif
@@ -224,8 +239,10 @@
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
                     <div class="waitve_btn"></div>
-                    @if(Auth::user()->role_upload_docs == 1)
-                        <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
+                    @if((Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_50_approve'] == 2) || $user[0]['userInfo']['rob_50_approve'] == 0)
+                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
+                        @endif
                     @endif
                 </div>
 
@@ -391,7 +408,7 @@
                                         >View Document</button>
                                     @else
                                         
-                                        @if(Auth::user()->role_upload_docs == 1)
+                                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                                     
                                             <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
                                                 <span class="text">Upload</span>
@@ -420,7 +437,7 @@
 
             <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                 <h2 class="appHeader">Comments</h2>
-                @if(Auth::user()->role_comment == "1")
+                @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
                     <br/>
                     <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
@@ -567,6 +584,8 @@
 <input type="hidden" id="booking_fee_paid" value="{{$booking_paid}}" />
 <input type="hidden" id="booking_fee_waived" value="{{$booking_waived}}" />
 
+<input type="hidden" id="change_bed_type" value="" />
+
 
 
 
@@ -681,8 +700,10 @@
     function checkUserStatus(){
 
         $(".address_btn").empty()
+        
 
         if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+            console.log("1")
             if($("#address_approved").val() != 1){
                 if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
                     $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
@@ -738,10 +759,12 @@
         $(".waitve_btn").empty();
 
         if($("#booking_fee_paid").val() == 'false'){
-            if($("#booking_fee_waived").val() == 'false'){
-                $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
-            }else{
-                $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+            if(("{{Auth::user()->role_modify_approved}}" == 1 && "{{$user[0]['userInfo']['rob_50_approve']}}" == 2) || ("{{$user[0]['userInfo']['rob_60_cancelled']}}" == 0 &&  "{{$user[0]['userInfo']['rob_50_approve']}}" != 2)){
+                if($("#booking_fee_waived").val() == 'false'){
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
+                }else{
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+                }
             }
         }
 
@@ -943,6 +966,9 @@
 
     function changeBooking(bookingId, type){
 
+        console.log(bookingId)
+        console.log(type)
+
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
@@ -1016,14 +1042,15 @@
         }).then((result) => {
             if (result.isConfirmed) {
 
-                $.ajax({
-                    type: "post",
-                    url: "/cancel-lease",
-                    data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-                });
+                // $.ajax({
+                //     type: "post",
+                //     url: "/cancel-lease",
+                //     data: {
+                //         userId: "{{$user[0]['userInfo']['id']}}",
+                //     },
+                // });
 
+                $("#change_bed_type").val('cancel')
                 changeBooking(bookingId, type);
 
             }
@@ -1502,7 +1529,7 @@
 
                 var bed_code = "";
                 var unallocated_bed = "";
-                if(data[0]?.bed_code !== "" && data[0].bed_code !== null){
+                if(data[0].bed_code !== "" && data[0].bed_code !== null){
                     bed_code = "Bed Code: "+data[0].bed_code;
 
                     if("<?php echo Auth::user()->role_change_bed; ?>" == "1"){
@@ -1591,6 +1618,7 @@
                         room: $("#room").val(),
                         bed: $("#bed").val(),
                         bed_code: $("#bed_code").val(),
+                        change_bed_type: $("#change_bed_type").val(),
                     },
 
                     success: function (data) {
@@ -1598,6 +1626,40 @@
                         // console.log(data)
                         
                         // window.location.reload();
+
+                        if($("#change_bed_type").val() == "cancel"){
+                            $.ajax({
+                                type: "post",
+                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                data: {
+                                    type: "auto",
+                                },
+
+                                success: function (data) {          
+                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                        uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
+                                    }
+                                    
+                                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                                    $("#moveInBanner").empty().append(uploadbtn);
+                                    $("#moveInStatus").empty().append('<div class="button rejected"></div>');
+
+                                    $("#buttonTop").empty();
+
+                                    @if(Auth::user()->role_change_bed == "1")
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking(\'{{$user[0]['userInfo']['id']}}\', \'generate\')">Change Bed</button>');
+                                    @endif
+
+                                    @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease(\'{{$user[0]['userInfo']['id']}}\')">Change Lease Dates</button>');
+                                    @endif
+                                },
+                            });
+                        }
+
+                        $("#change_bed_type").val();
                         bookingTypeDetails();
                         refreshActions();
 
@@ -1615,7 +1677,9 @@
                             }
                         }
 
-                        $("#myModalEditApp").html("");
+                        $("#changeBookingType").empty().append('Change booking')
+
+                        // $("#myModalEditApp").html("");
                         $("#myModalEditApp").css("display", "none");
                     },
                 });
@@ -2353,10 +2417,37 @@
         }
     }
 
+    function restoreBooking(bookingId, userId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This booking will become active again!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, activate it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/restore/booking",
+                    data: {
+                        bookingId: bookingId, 
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location = "/applications";
+                    },
+                });
+            }
+        })
+    }
+
     function cancelBooking(bookingId, userId){
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "You will cancel this booking!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -2418,7 +2509,10 @@
                 type: "auto",
             },
 
-            success: function (data) {                
+            success: function (data) {          
+                // if($("#change_bed_type").val() == "cancel"){
+                    console.log(data)
+                // }      
                 $(btn).html('REGEN LEASE');
             },
         });
@@ -2486,6 +2580,8 @@
                         success: function (data) {
                             $("#prop_room_row1, #prop_room_row2").remove();
                             // $("#bed_allocated").val('')
+
+                            $('#moveInStatus').parent().remove();
 
                             refreshActions();  
                             checkUserStatus();

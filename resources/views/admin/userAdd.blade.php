@@ -147,7 +147,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_cancel_booking" name="role_cancel_booking" value="1">
-                    <label for="role_cancel_booking" style="width:500px">Cancel Bookings</label>
+                    <label for="role_cancel_booking" style="width:500px">Cancel & Restore Bookings</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1">
@@ -165,6 +165,12 @@
                     <input type="checkbox" id="role_lease_regen" name="role_lease_regen" value="1">
                     <label for="role_lease_regen" style="width:500px">Regen Lease</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_modify_approved" name="role_modify_approved" value="1">
+                    <label for="role_modify_approved" style="width:500px">Modify Approved Lease</label>
+                </li>
+
+                
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1">
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>
