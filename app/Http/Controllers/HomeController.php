@@ -4286,6 +4286,9 @@ class HomeController extends Controller
         //Update the User robot
         User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
+        //Delete the Lease
+        UserFiles::where('userUid', $userId)->delete();
+
         ActionList::create([
             "userUid" => $userId,
             "action" => "Unallocated Bed ".$booking_old->bed_code." on the ".$booking_old->floor." floor, unit ".$booking_old->unit,
