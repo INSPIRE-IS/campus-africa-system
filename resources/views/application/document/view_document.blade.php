@@ -944,6 +944,12 @@
                     $("#myModal").html("");
                     $("#myModal").css("display", "none");
 
+                    @if(Auth::user()->role_cancel_lease == "1" || Auth::user()->role_modify_approved == 1)
+                        $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease(\'{{$user[0]['userInfo']['id']}}\', \'generate\')">Change Bed</button>');
+                    @endif
+
+                    $("#btn_clear_bed").addClass('hidden')
+
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
 
@@ -967,6 +973,8 @@
                         
                         uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                         $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+
+                        bookingTypeDetails();
                     }
                 
                     refreshActions();
@@ -1024,6 +1032,7 @@
                             
                             uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+
                         }
                         
                         refreshActions();

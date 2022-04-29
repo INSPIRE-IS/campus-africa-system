@@ -103,11 +103,11 @@
 
                 <div class="app_summary_details"></div>
                 
-                <div class="buttons">
+                <div class="buttons" id="buttonTop">
 
                         @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_change_bed == "1")
-                                <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                             @endif
 
                             @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
@@ -117,11 +117,11 @@
 
                         @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_cancel_lease == "1" || Auth::user()->role_modify_approved == 1)
-                                <button type="button" class="appBooking" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                             @endif
                         @endif
                 </div>
-                <div class="buttons">
+                <div class="buttons" id="buttonBottom">
                         @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_delete_booking == 1)
                                 <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
@@ -605,6 +605,8 @@
 <input type="hidden" id="booking_fee_paid" value="{{$booking_paid}}" />
 <input type="hidden" id="booking_fee_waived" value="{{$booking_waived}}" />
 
+<input type="hidden" id="change_bed_type" value="" />
+
 
 
 
@@ -1026,14 +1028,15 @@
         }).then((result) => {
             if (result.isConfirmed) {
 
-                $.ajax({
-                    type: "post",
-                    url: "/cancel-lease",
-                    data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-                });
+                // $.ajax({
+                //     type: "post",
+                //     url: "/cancel-lease",
+                //     data: {
+                //         userId: "{{$user[0]['userInfo']['id']}}",
+                //     },
+                // });
 
+                $("#change_bed_type").val('cancel')
                 changeBooking(bookingId, type);
 
             }
@@ -1514,7 +1517,7 @@
 
                 var bed_code = "";
                 var unallocated_bed = "";
-                if(data[0]?.bed_code !== "" && data[0].bed_code !== null){
+                if(data[0].bed_code !== "" && data[0].bed_code !== null){
                     bed_code = "Bed Code: "+data[0].bed_code;
 
                     if("<?php echo Auth::user()->role_change_bed; ?>" == "1"){
@@ -1603,6 +1606,7 @@
                         room: $("#room").val(),
                         bed: $("#bed").val(),
                         bed_code: $("#bed_code").val(),
+                        change_bed_type: $("#change_bed_type").val(),
                     },
 
                     success: function (data) {
@@ -1610,6 +1614,40 @@
                         // console.log(data)
                         
                         // window.location.reload();
+
+                        if($("#change_bed_type").val() == "cancel"){
+                            $.ajax({
+                                type: "post",
+                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                data: {
+                                    type: "auto",
+                                },
+
+                                success: function (data) {          
+                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                        uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
+                                    }
+                                    
+                                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                                    $("#moveInBanner").empty().append(uploadbtn);
+                                    $("#moveInStatus").empty().append('<div class="button rejected"></div>');
+
+                                    $("#buttonTop").empty();
+
+                                    @if(Auth::user()->role_change_bed == "1")
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking(\'{{$user[0]['userInfo']['id']}}\', \'generate\')">Change Bed</button>');
+                                    @endif
+
+                                    @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease(\'{{$user[0]['userInfo']['id']}}\')">Change Lease Dates</button>');
+                                    @endif
+                                },
+                            });
+                        }
+
+                        $("#change_bed_type").val();
                         bookingTypeDetails();
                         refreshActions();
 
@@ -1626,6 +1664,8 @@
                                 $(".waived_paid_wording").append('No')
                             }
                         }
+
+                        $("#changeBookingType").empty().append('Change booking')
 
                         // $("#myModalEditApp").html("");
                         $("#myModalEditApp").css("display", "none");
@@ -2398,7 +2438,10 @@
                 type: "auto",
             },
 
-            success: function (data) {                
+            success: function (data) {          
+                // if($("#change_bed_type").val() == "cancel"){
+                    console.log(data)
+                // }      
                 $(btn).html('REGEN LEASE');
             },
         });

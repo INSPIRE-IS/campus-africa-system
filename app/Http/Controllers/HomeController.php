@@ -1021,6 +1021,7 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
+
     public function delete_admin(Request $request){
         
 
@@ -2741,6 +2742,22 @@ class HomeController extends Controller
         }
 
         $this->update_user_status($bookingId);
+
+        if($request->change_bed_type == "cancel"){
+
+            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+    
+            ActionList::create([
+                "userUid" => $bookingId,
+                "action" => "Rejected Approved Lease to Change Bed",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+        }
+
+
 
 
 
