@@ -127,12 +127,16 @@
                                 <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
                             @endif
 
-                            @if((Auth::user()->role_cancel_booking == 1 && $user[0]['userInfo']['rob_55_lease'] != 2) || (Auth::user()->role_modify_approved == 1  && $user[0]['userInfo']['rob_55_lease'] == 2))
-                                <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                            @if(Auth::user()->role_cancel_booking == 1)
+                                @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                    <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                                @endif
                             @endif
                         @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
-                            @if((Auth::user()->role_cancel_booking == 1 && $user[0]['userInfo']['rob_55_lease'] != 2) || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
-                                <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                            @if(Auth::user()->role_cancel_booking == 1)
+                                @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                    <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                                @endif
                             @endif
                         @endif
                 </div>
@@ -1002,18 +1006,18 @@
                             $('#property').append('<option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";}?>>126 Siemert</option>')
                         }
                         if(properties[key] == "YMCA" && "{{Auth::user()->role_ymca}}" == 1){
-                            $('#property').append('<option value="YMCA" <?php if($booking->property == "YMCA"){echo "YMCA";}?>>Braamlofts</option>')
+                            $('#property').append('<option value="YMCA" <?php if($booking->property == "YMCA"){echo "YMCA";}?>>YMCA</option>')
                         }
                     })
 
-                    if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
+                    if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
                         $("#roomSection").removeClass('hidden');
                     }else{
                         $("#roomSection").addClass('hidden');
                     }
 
                     $("#property").change();
-                    // $("#roomType").val('<?php echo $booking->roomType;?>');
+                    // $("#roomType").val('<?php //echo $booking->roomType;?>');
                 }
             });
 
@@ -1533,9 +1537,11 @@
                     bed_code = "Bed Code: "+data[0].bed_code;
 
                     if("<?php echo Auth::user()->role_change_bed; ?>" == "1"){
-                        if(data[2] == 'false'){
-                            var unallocated_bed = '<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
-                        }
+                        // if(data[2] == 'false'){                            
+                            var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
+                        // }
+
+                        // console.log(data);
                     }
                 }
 
@@ -2559,9 +2565,15 @@
 
     jQuery(document).ready( function($) {
         $(document).on("click", '#btn_clear_bed', function(e) {
+            var msg = "You are about to unallocate this bed, the bed will be available to book again";
+
+            if ($(this).data("lease") === "true") {
+                msg = "You are about to unallocate this bed, the bed will be available to book again. The Lease will also be rejected.";
+            }
+
             Swal.fire({
                 title: 'Are you sure?',
-                text: "You are about to unallocate this bed, the bed will be available to book again",
+                text: msg,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -2582,6 +2594,9 @@
                             // $("#bed_allocated").val('')
 
                             $('#moveInStatus').parent().remove();
+
+                            //Update change bed to not show lease cancel message
+                            $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="changeBooking({{$user[0]['userInfo']['id']}}, \'generate\')">Change Bed</button>');
 
                             refreshActions();  
                             checkUserStatus();

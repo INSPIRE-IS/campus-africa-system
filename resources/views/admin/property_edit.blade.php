@@ -11,12 +11,12 @@
             <label>Residence</label>
             <select name="residence" id='residence'>
                 <option value="" selected disabled>Select One</option>
-                <option value="Braamlofts" <?php if(!empty($propertyData) && $propertyData->residence == "Braamlofts"){echo "selected";}?>>Braamlofts</option>
-                <option value="80 Jorissen" <?php if(!empty($propertyData) && $propertyData->residence == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>
-                <option value="49 Jorissen" <?php if(!empty($propertyData) && $propertyData->residence == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>
-                <option value="Dunvista Mansions" <?php if(!empty($propertyData) && $propertyData->residence == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>
-                <option value="Wynton Joy" <?php if(!empty($propertyData) && $propertyData->residence == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>
-                <option value="126 Siemert" <?php if(!empty($propertyData) && $propertyData->residence == "126 Siemert"){echo "selected";}?>>126 Siemert</option>
+                <option value="BRAAMLOFTS" <?php if(!empty($propertyData) && ($propertyData->residence == "BRAAMLOFTS" || $propertyData->residence == "Braamlofts")){echo "selected";}?>>Braamlofts</option>
+                <option value="80 JORISSEN" <?php if(!empty($propertyData) && ($propertyData->residence == "80 JORISSEN" || $propertyData->residence == "80 Jorrisen")){echo "selected";}?>>80 Jorissen</option>
+                <option value="49 JORISSEN" <?php if(!empty($propertyData) && ($propertyData->residence == "49 JORISSEN" || $propertyData->residence == "49 Jorrisen")){echo "selected";}?>>49 Jorissen</option>
+                <option value="DUNVISTA MANSIONS" <?php if(!empty($propertyData) && ($propertyData->residence == "DUNVISTA MANSIONS" || $propertyData->residence == "Dunvista Mansions")){echo "selected";}?>>Dunvista Mansions</option>
+                <option value="WYNTON JOY" <?php if(!empty($propertyData) && ($propertyData->residence == "WYNTON JOY" || $propertyData->residence == "Wynton Joy")){echo "selected";}?>>Wynton Joy</option>
+                <option value="126 SIEMERT" <?php if(!empty($propertyData) && ($propertyData->residence == "126 SIEMERT" || $propertyData->residence == "126 Siemert")){echo "selected";}?>>126 Siemert</option>
                 <option value="YMCA" <?php if(!empty($propertyData) && $propertyData->residence == "YMCA"){echo "selected";}?>>YMCA</option>
             </select>
             <input type="hidden" name="propertyId" id="propertyId" value="<?php if(!empty($propertyData)){echo $propertyData->id;}else{echo "0";}?>"/>
@@ -26,18 +26,18 @@
             <label>Room Type</label>
             <select name="roomType" id='roomType' class="required">
                 <option value="" selected disabled>Select a Room Type</option>
-                <?php if(!empty($propertyData) && $propertyData->residence == "Braamlofts"){?>
+                <?php if(!empty($propertyData) && ($propertyData->residence == "BRAAMLOFTS" || $propertyData->residence == "Braamlofts")){?>
                     <option value="Single" <?php if($propertyData->room_type == "Single"){ echo "selected";}?>>Single</option>
                     <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
                     <option value="3 Sharing" <?php if($propertyData->room_type == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
                 <?php } ?>
 
-                <?php if(!empty($propertyData) && $propertyData->residence == "80 Jorissen" || !empty($propertyData) && $propertyData->residence == "Dunvista Mansions" || !empty($propertyData) && $propertyData->residence == "Wynton Joy" || !empty($propertyData) && $propertyData->residence == "126 Siemert"){?>
+                <?php if(!empty($propertyData) && ($propertyData->residence == "80 JORISSEN" || $propertyData->residence == "80 Jorrisen") || !empty($propertyData) && ($propertyData->residence == "DUNVISTA MANSIONS" || $propertyData->residence == "Dunvista Mansions") || !empty($propertyData) && ($propertyData->residence == "WYNTON JOY" || $propertyData->residence == "Wynton Joy") || !empty($propertyData) && ($propertyData->residence == "126 SIEMERT" || $propertyData->residence == "126 Siemert")){?>
                     <option value="Single" <?php if($propertyData->room_type == "Single"){ echo "selected";}?>>Single</option>
                     <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
                 <?php } ?>
 
-                <?php if(!empty($propertyData) && $propertyData->residence == "49 Jorissen"){?>
+                <?php if(!empty($propertyData) && ($propertyData->residence == "49 JORISSEN" || $propertyData->residence == "49 Jorrisen")){?>
                     <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
                     <option value="Single 2 bedroom" <?php if($propertyData->room_type == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
                     <option value="Single 3 bedroom" <?php if($propertyData->room_type == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
@@ -68,25 +68,25 @@
             <label>Floor</label>
             <select name="floor" id='floor'>
                 <option value="" selected disabled>Select One</option>
-                <option value="Basement" <?php if(!empty($propertyData) && $propertyData->floor == "Basement"){echo "selected";}?>>Basement</option>
-                <option value="Ground" <?php if(!empty($propertyData) && $propertyData->floor == "Ground"){echo "selected";}?>>Ground</option>
-                <option value="1st" <?php if(!empty($propertyData) && $propertyData->floor == "1st"){echo "selected";}?>>1st</option>
-                <option value="2nd" <?php if(!empty($propertyData) && $propertyData->floor == "2nd"){echo "selected";}?>>2nd</option>
-                <option value="3rd" <?php if(!empty($propertyData) && $propertyData->floor == "3rd"){echo "selected";}?>>3rd</option>
-                <option value="4th" <?php if(!empty($propertyData) && $propertyData->floor == "4th"){echo "selected";}?>>4th</option>
-                <option value="5th" <?php if(!empty($propertyData) && $propertyData->floor == "5th"){echo "selected";}?>>5th</option>
-                <option value="6th" <?php if(!empty($propertyData) && $propertyData->floor == "6th"){echo "selected";}?>>6th</option>
-                <option value="7th" <?php if(!empty($propertyData) && $propertyData->floor == "7th"){echo "selected";}?>>7th</option>
-                <option value="8th" <?php if(!empty($propertyData) && $propertyData->floor == "8th"){echo "selected";}?>>8th</option>
-                <option value="9th" <?php if(!empty($propertyData) && $propertyData->floor == "9th"){echo "selected";}?>>9th</option>
-                <option value="10th" <?php if(!empty($propertyData) && $propertyData->floor == "10th"){echo "selected";}?>>10th</option>
-                <option value="11th" <?php if(!empty($propertyData) && $propertyData->floor == "11th"){echo "selected";}?>>11th</option>
-                <option value="12th" <?php if(!empty($propertyData) && $propertyData->floor == "12th"){echo "selected";}?>>12th</option>
-                <option value="13th" <?php if(!empty($propertyData) && $propertyData->floor == "13th"){echo "selected";}?>>13th</option>
-                <option value="14th" <?php if(!empty($propertyData) && $propertyData->floor == "14th"){echo "selected";}?>>14th</option>
-                <option value="15th" <?php if(!empty($propertyData) && $propertyData->floor == "15th"){echo "selected";}?>>15th</option>
-                <option value="16th" <?php if(!empty($propertyData) && $propertyData->floor == "16th"){echo "selected";}?>>16th</option>
-                <option value="17th" <?php if(!empty($propertyData) && $propertyData->floor == "17th"){echo "selected";}?>>17th</option>
+                <option value="BASEMENT" <?php if(!empty($propertyData) && ($propertyData->floor == "BASEMENT" || $propertyData->floor == "Basement")){echo "selected";}?>>Basement</option>
+                <option value="GROUND" <?php if(!empty($propertyData) && ($propertyData->floor == "GROUND" || $propertyData->floor == "Ground")){echo "selected";}?>>Ground</option>
+                <option value="1ST" <?php if(!empty($propertyData) && ($propertyData->floor == "1ST" || $propertyData->floor == "1st")){echo "selected";}?>>1st</option>
+                <option value="2ND" <?php if(!empty($propertyData) && ($propertyData->floor == "2ND" || $propertyData->floor == "2nd")){echo "selected";}?>>2nd</option>
+                <option value="3RD" <?php if(!empty($propertyData) && ($propertyData->floor == "3RD" || $propertyData->floor == "3rd")){echo "selected";}?>>3rd</option>
+                <option value="4TH" <?php if(!empty($propertyData) && ($propertyData->floor == "4TH" || $propertyData->floor == "4th")){echo "selected";}?>>4th</option>
+                <option value="5TH" <?php if(!empty($propertyData) && ($propertyData->floor == "5TH" || $propertyData->floor == "5th")){echo "selected";}?>>5th</option>
+                <option value="6TH" <?php if(!empty($propertyData) && ($propertyData->floor == "6TH" || $propertyData->floor == "6th")){echo "selected";}?>>6th</option>
+                <option value="7TH" <?php if(!empty($propertyData) && ($propertyData->floor == "7TH" || $propertyData->floor == "7th")){echo "selected";}?>>7th</option>
+                <option value="8TH" <?php if(!empty($propertyData) && ($propertyData->floor == "8TH" || $propertyData->floor == "8th")){echo "selected";}?>>8th</option>
+                <option value="9TH" <?php if(!empty($propertyData) && ($propertyData->floor == "9TH" || $propertyData->floor == "9th")){echo "selected";}?>>9th</option>
+                <option value="10TH" <?php if(!empty($propertyData) && ($propertyData->floor == "10TH" || $propertyData->floor == "10th")){echo "selected";}?>>10th</option>
+                <option value="11TH" <?php if(!empty($propertyData) && ($propertyData->floor == "11TH" || $propertyData->floor == "11th")){echo "selected";}?>>11th</option>
+                <option value="12TH" <?php if(!empty($propertyData) && ($propertyData->floor == "12TH" || $propertyData->floor == "12th")){echo "selected";}?>>12th</option>
+                <option value="13TH" <?php if(!empty($propertyData) && ($propertyData->floor == "13TH" || $propertyData->floor == "13th")){echo "selected";}?>>13th</option>
+                <option value="14TH" <?php if(!empty($propertyData) && ($propertyData->floor == "14TH" || $propertyData->floor == "14th")){echo "selected";}?>>14th</option>
+                <option value="15TH" <?php if(!empty($propertyData) && ($propertyData->floor == "15TH" || $propertyData->floor == "15th")){echo "selected";}?>>15th</option>
+                <option value="16TH" <?php if(!empty($propertyData) && ($propertyData->floor == "16TH" || $propertyData->floor == "16th")){echo "selected";}?>>16th</option>
+                <option value="17TH" <?php if(!empty($propertyData) && ($propertyData->floor == "17TH" || $propertyData->floor == "17th")){echo "selected";}?>>17th</option>
             </select>
         </div>
 
@@ -127,7 +127,7 @@
             <select name="inventory" id='inventory'>
                 <option value="" selected disabled>Select One</option>
                 <option value="1" <?php if(!empty($propertyData) && $propertyData->inventory == "1"){echo "selected";}?>>Yes</option>
-                <option value="0" <?php if(!empty($propertyData) && $propertyData->inventory == "0"){echo "selected";}?>>No</option>
+                <option value="0" <?php if(!empty($propertyData) && ($propertyData->inventory == "0" || $propertyData->inventory == null)){echo "selected";}?>>No</option>
             </select>
         </div>
 

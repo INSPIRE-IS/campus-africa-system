@@ -23,10 +23,10 @@
         <!-- <div class="form-field">
             <label>Title</label>
             <select name="title" id='title'>
-                <option value="Mr" <?php if($user->userTitle == "Mr"){echo "selected";} ?>>Mr</option>
-                <option value="Ms" <?php if($user->userTitle == "Ms"){echo "selected";} ?>>Ms</option>
-                <option value="Mrs" <?php if($user->userTitle == "Mrs"){echo "selected";} ?>>Mrs</option>
-                <option value="Miss" <?php if($user->userTitle == "Miss"){echo "selected";} ?>>Miss</option>
+                <option value="Mr" <?php //if($user->userTitle == "Mr"){echo "selected";} ?>>Mr</option>
+                <option value="Ms" <?php //if($user->userTitle == "Ms"){echo "selected";} ?>>Ms</option>
+                <option value="Mrs" <?php //if($user->userTitle == "Mrs"){echo "selected";} ?>>Mrs</option>
+                <option value="Miss" <?php //if($user->userTitle == "Miss"){echo "selected";} ?>>Miss</option>
             </select>
         </div>
 
@@ -54,7 +54,7 @@
             <br/>
             <ul style="list-style-type:none">
                 <li style="display:inline-flex">
-                    <input type="checkbox" id="email_details" name="email_details" value="1" style="width:50px !important" <?php if($user->email_info == "1"){ echo "checked";}?>>
+                    <input type="checkbox" id="email_details" name="email_details" value="1" style="width:50px !important" <?php //if($user->email_info == "1"){ echo "checked";}?>>
                     <label for="email_details" style="width:500px">Email login details to user.</label>
                 </li>
             </ul>

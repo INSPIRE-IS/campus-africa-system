@@ -2089,6 +2089,9 @@ class HomeController extends Controller
 
         Property::where('user_id_room', $request->userId)->update(["user_id_room" => null, "room_available" => null]);
 
+        //Delete the Lease
+        UserFiles::where('userUid', $request->userId)->where('fileId', 'moveIn')->delete();
+
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Application Cancelled",
@@ -4355,7 +4358,7 @@ class HomeController extends Controller
         User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
         //Delete the Lease
-        UserFiles::where('userUid', $userId)->delete();
+        UserFiles::where('userUid', $userId)->where('fileId', 'moveIn')->delete();
 
         ActionList::create([
             "userUid" => $userId,
