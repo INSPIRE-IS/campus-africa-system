@@ -123,6 +123,7 @@ Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::get('/property/edit/{propertyId}', [HomeController::class, 'property_edit']);
 Route::post('/save-property', [HomeController::class, 'save_property']);
+Route::post('/delete-bed', [HomeController::class, 'delete_bed']);
 Route::post('/get-booking-info', [HomeController::class, 'get_booking_info']);
 
 Route::get('/properties-import', [HomeController::class, 'properties_import']);
@@ -181,3 +182,5 @@ Route::post('/remove-document-upload', [DocumentsController::class, 'remove_docu
 //New user / email change user password update
 Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswordUser']);
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
+
+Route::get('/check-rooms', [HomeController::class, 'check_rooms']);

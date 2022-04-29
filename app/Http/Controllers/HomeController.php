@@ -2087,6 +2087,8 @@ class HomeController extends Controller
 
         Booking::where('userId', $request->userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
+        Property::where('user_id_room', $request->userId)->update(["user_id_room" => null, "room_available" => null]);
+
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Application Cancelled",
@@ -2847,6 +2849,71 @@ class HomeController extends Controller
         }
 
         return redirect("/manage-properties");
+    }
+    
+    public function delete_bed (Request $request){
+
+        Property::where('id', $request->propertyId)->delete();
+
+        return "done";
+    }
+
+    public function check_rooms(Request $request){
+        $propertyInfo = Property::whereNull('room_available')->where('room_type', '!=', 'Building Manager')->get();
+
+        $property = [];
+        $roomTypes126Siemert = [];
+        $roomTypes49Jorissen = [];
+        $roomTypes80Jorissen = [];
+        $roomTypesBraamlofts = [];
+        $roomTypesDunvista = [];
+        $roomTypesWynton = [];
+        $roomTypesYMCA = [];
+
+        foreach($propertyInfo as $pi){
+            
+            if(!in_array($pi->residence, $property)){
+                array_push($property, $pi->residence);
+            }
+
+            if($pi->residence == "126 SIEMERT"){
+                if(!in_array($pi->room_type, $roomTypes126Siemert)){
+                    array_push($roomTypes126Siemert, $pi->room_type);
+                }
+            }
+            if($pi->residence == "49 JORISSEN"){
+                if(!in_array($pi->room_type, $roomTypes49Jorissen)){
+                    array_push($roomTypes49Jorissen, $pi->room_type);
+                }
+            }
+            if($pi->residence == "80 JORISSEN"){
+                if(!in_array($pi->room_type, $roomTypes80Jorissen)){
+                    array_push($roomTypes80Jorissen, $pi->room_type);
+                }
+            }
+            if($pi->residence == "BRAAMLOFTS"){
+                if(!in_array($pi->room_type, $roomTypesBraamlofts)){
+                    array_push($roomTypesBraamlofts, $pi->room_type);
+                }
+            }
+            if($pi->residence == "DUNVISTA MANSIONS"){
+                if(!in_array($pi->room_type, $roomTypesDunvista)){
+                    array_push($roomTypesDunvista, $pi->room_type);
+                }
+            }
+            if($pi->residence == "WYNTON JOY"){
+                if(!in_array($pi->room_type, $roomTypesWynton)){
+                    array_push($roomTypesWynton, $pi->room_type);
+                }
+            }
+            if($pi->residence == "YMCA"){
+                if(!in_array($pi->room_type, $roomTypesYMCA)){
+                    array_push($roomTypesYMCA, $pi->room_type);
+                }
+            }
+        }
+
+        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA];
     }
 
     public function get_booking_info(Request $request){
@@ -4282,6 +4349,7 @@ class HomeController extends Controller
         $booking_old = Booking::where('userId', $userId)->first();
 
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
+        Property::where('user_id_room', $userId)->update(["user_id_room" => null, "room_available" => null]);
 
         //Update the User robot
         User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
