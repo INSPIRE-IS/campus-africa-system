@@ -234,6 +234,7 @@
                                             '</div>'+
                                         '</div>')
                                     checkUserStatus();
+                                    $("#changeDatesLease").addClass('hidden');
                                 },
                             });
                         },

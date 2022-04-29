@@ -110,8 +110,8 @@
                                 <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                             @endif
 
-                            @if(Auth::user()->role_change_date == "1")
-                                <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                            @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                <button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
                             @endif
                         @endif
 
@@ -985,6 +985,9 @@
 
     function changeBooking(bookingId, type){
 
+        console.log(bookingId)
+        console.log(type)
+
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
@@ -1624,7 +1627,7 @@
                             }
                         }
 
-                        $("#myModalEditApp").html("");
+                        // $("#myModalEditApp").html("");
                         $("#myModalEditApp").css("display", "none");
                     },
                 });

@@ -2082,7 +2082,7 @@ class HomeController extends Controller
     }
 
     public function cancel_booking(Request $request){
-        User::where('id', $request->userId)->update(['rob_60_cancelled' => 1]);
+        User::where('id', $request->userId)->update(['rob_60_cancelled' => 1, 'rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
         Booking::where('userId', $request->userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
