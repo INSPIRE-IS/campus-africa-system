@@ -2822,9 +2822,12 @@ class HomeController extends Controller
         }else{
             $head = "Edit";
             $propertyData = Property::where('id', $propertyId)->first();
+
+            //Get bookings tied to this bed
+            $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();            
         }
 
-        return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData]);
+        return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings]);
     }
 
     public function save_property (Request $request){
@@ -2842,13 +2845,31 @@ class HomeController extends Controller
             "bed_code" => $request->bed_code,
             "inventory" => $request->inventory,
             "room_type" => $request->roomType,
-            "room_rate" => $request->room_rate
+            "room_rate" => $request->room_rate,
+            "year" => $request->year
         ];
 
         if($propertyId == "0"){
             Property::create($data);
         }else{
             Property::where('id', $propertyId)->update($data);
+
+            //Update bookings with this bed
+            $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();
+            
+            foreach($bookings as $b) {
+                $booking_data = [
+                    "floor" => $request->floor,
+                    "unit" => $request->unit,
+                    "room" => $request->room,
+                    "bed" => $request->bed,
+                    "bed_code" => $request->bed_code,
+                    "roomType" => $request->roomType,
+                    "property" => $request->residence,
+                ];
+
+                Booking::where('id', $b->id)->update($booking_data);
+            }
         }
 
         return redirect("/manage-properties");

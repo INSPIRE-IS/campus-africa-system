@@ -25,6 +25,7 @@
                 <th>Room Type</th>
                 <th>2022 Rate</th>
                 <th>Available</th>
+                <th>Year</th>
                 <th></th>
             </tr> 
         </thead>
@@ -41,6 +42,7 @@
                 <td>@if($property->inventory == "1") Yes @else No @endif</td>
                 <td>{{$property->room_type}}</td>
                 <td>{{$property->room_rate}}</td>
+                <td>{{$property->year == 0 ? "All" : $property->year}}</td>
                 <td>@if($property->room_available == "1" && $property->inventory != "1") &#128308; &nbsp; No @else &#128994; &nbsp; Yes @endif</td>
                 <td>
                     <!-- <button type="button" id="tableBtn" class="detailsChange" onClick="deleteProperty('{{$property->id}}')" style="margin:5px;">Delete</button> -->

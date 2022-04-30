@@ -110,10 +110,14 @@
             <label>Bed</label>
             <select name="bed" id='bed'>
                 <option value="" selected disabled>Select One</option>
-                <option value="a" <?php if(!empty($propertyData) && ($propertyData->bed == "A" || $propertyData->bed == "a")){echo "selected";}?>>a</option>
-                <option value="b" <?php if(!empty($propertyData) && ($propertyData->bed == "B" || $propertyData->bed == "b")){echo "selected";}?>>b</option>
-                <option value="c" <?php if(!empty($propertyData) && ($propertyData->bed == "C" || $propertyData->bed == "c")){echo "selected";}?>>c</option>
-                <option value="d" <?php if(!empty($propertyData) && ($propertyData->bed == "D" || $propertyData->bed == "d")){echo "selected";}?>>d</option>
+                <option value="a" <?php if(!empty($propertyData) && $propertyData->bed == "a"){echo "selected";}?>>a</option>
+                <option value="b" <?php if(!empty($propertyData) && $propertyData->bed == "b"){echo "selected";}?>>b</option>
+                <option value="c" <?php if(!empty($propertyData) && $propertyData->bed == "c"){echo "selected";}?>>c</option>
+                <option value="d" <?php if(!empty($propertyData) && $propertyData->bed == "d"){echo "selected";}?>>d</option>
+                <option value="A" <?php if(!empty($propertyData) && $propertyData->bed == "A"){echo "selected";}?>>A</option>
+                <option value="B" <?php if(!empty($propertyData) && $propertyData->bed == "B"){echo "selected";}?>>B</option>
+                <option value="C" <?php if(!empty($propertyData) && $propertyData->bed == "C"){echo "selected";}?>>C</option>
+                <option value="D" <?php if(!empty($propertyData) && $propertyData->bed == "D"){echo "selected";}?>>D</option>
             </select>
         </div>
 
@@ -136,13 +140,32 @@
             <input type="text" name="room_rate" id="room_rate" value="<?php if(!empty($propertyData)){echo $propertyData->room_rate;}?>">
         </div>
 
+        <div class="form-field">
+            <label for="year">Year (Set to 0 for all years)</label>
+            <input type="text" name="year" id="year" value="<?php if(!empty($propertyData)){echo $propertyData->year;}?>">
+        </div>
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>        
     </form>
 
-    <?php if(!empty($propertyData)) { ?>
-        <input type="button" id="btn_delete_bed" class="profileSubmit" style="opacity:1" value="Delete Bed" />
-    <?php } ?>
+    @if(!empty($propertyData))
+        @if (count($bookingData) == 0)
+            <input type="button" id="btn_delete_bed" class="profileSubmit" style="opacity:1" value="Delete Bed" />
+        @else
+            <p style="text-align: center">This bed cannot be deleted with active bookings</p>
+        @endif
+    @endif
+
+    <h2>Bookings</h2>
+    @if (count($bookingData) > 0)
+        <div>
+            <?php foreach($bookingData as $bd) { ?>
+                <a target="_blank" href="/application-profile/{{$bd->userId}}"><?php echo "#" . $bd->id . " - " . $bd->users->userFirstName . " " . $bd->users->userLastname . " (" . $bd->lease_from_date . " to " . $bd->lease_to_date . ")"; ?></a>
+            <?php } ?>
+        </div>
+    @else
+        <p>No Bookings</p>
+    @endif
 </div>
 
 <script>
