@@ -140,13 +140,12 @@
             <input type="text" name="room_rate" id="room_rate" value="<?php if(!empty($propertyData)){echo $propertyData->room_rate;}?>">
         </div>
 
-        <div class="form-field">
-            <label for="year">Year (Set to 0 for all years)</label>
-            <input type="text" name="year" id="year" value="<?php if(!empty($propertyData)){echo $propertyData->year;}?>">
-        </div>
+        <input type="hidden" name="submit_type" id="submit_type" value="">
 
-        <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>        
+        <!-- <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>         -->
     </form>
+
+    <input type="button" id="btn_submit_frm" class="profileSubmit" style="opacity:1" value="Update" />
 
     @if(!empty($propertyData))
         @if (count($bookingData) == 0)
@@ -188,6 +187,31 @@
             $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="Single small">Single | small</option><option value="Single medium">Single | Medium</option><option value="Single large">Single | Large</option>')
         }
     })
+
+    $('#btn_submit_frm').on('click', function(e) {
+        Swal.fire({
+            text: "Will this change apply to bookings in the current Academic Year (2022) or the next Academic Year (2023) going forward?",
+            icon: 'warning',
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonColor: '#3085d6',
+            denyButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Current Academic Year',
+            denyButtonText: 'Next Academic Year'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#submit_type").val('current');
+            } else if (result.isDenied) {
+                $("#submit_type").val('next');
+            }
+
+            $('form').submit();
+            
+        })
+
+        e.preventDefault();
+    });
 
     <?php if(!empty($propertyData)) { ?>
         $(document).ready( function($) {

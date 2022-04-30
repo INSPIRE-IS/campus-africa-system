@@ -32,23 +32,33 @@
         <tbody>
 
         @foreach($properties as $property)
-            <tr>
-                <td>{{$property->residence}} |{{$property->room_available}}|</td>
-                <td>{{$property->floor}}</td>
-                <td>{{$property->unit}}</td>
-                <td>{{$property->room}}</td>
-                <td>{{$property->bed}}</td>
-                <td>{{$property->bed_code}}</td>
-                <td>@if($property->inventory == "1") Yes @else No @endif</td>
-                <td>{{$property->room_type}}</td>
-                <td>{{$property->room_rate}}</td>
-                <td>{{$property->year == 0 ? "All" : $property->year}}</td>
-                <td>@if($property->room_available == "1" && $property->inventory != "1") &#128308; &nbsp; No @else &#128994; &nbsp; Yes @endif</td>
-                <td>
-                    <!-- <button type="button" id="tableBtn" class="detailsChange" onClick="deleteProperty('{{$property->id}}')" style="margin:5px;">Delete</button> -->
-                    <a href="/property/edit/{{$property->id}}"><button type="button" style="margin:5px;" id="tableBtn" onClick="openModal('{{$property->id}}')" class="detailsChange">Edit</button></a>
-                </td>
-            </tr>
+            @if ($property->year <= $property->year_end || $property->year_end == 0)
+                <tr>
+                    <td>{{$property->residence}} |{{$property->room_available}}|</td>
+                    <td>{{$property->floor}}</td>
+                    <td>{{$property->unit}}</td>
+                    <td>{{$property->room}}</td>
+                    <td>{{$property->bed}}</td>
+                    <td>{{$property->bed_code}}</td>
+                    <td>@if($property->inventory == "1") Yes @else No @endif</td>
+                    <td>{{$property->room_type}}</td>
+                    <td>{{$property->room_rate}}</td>
+                    <td>
+                        <?php
+                        if ($property->year == $this_year) {
+                            echo "Current Academic Year";
+                        } else {
+                            echo "Next Academic Year";
+                        }
+                        ?>
+                    </td>
+                    <td>@if($property->room_available == "1" && $property->inventory != "1") &#128308; &nbsp; No @else &#128994; &nbsp; Yes @endif</td>
+                    <td>
+                        <!-- <button type="button" id="tableBtn" class="detailsChange" onClick="deleteProperty('{{$property->id}}')" style="margin:5px;">Delete</button> -->
+                        <a href="/property/edit/{{$property->id}}"><button type="button" style="margin:5px;" id="tableBtn" onClick="openModal('{{$property->id}}')" class="detailsChange">Edit</button></a>
+                    </td>
+                </tr>
+            @endif
         @endforeach
 
         </tbody>

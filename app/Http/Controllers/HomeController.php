@@ -2808,9 +2808,13 @@ class HomeController extends Controller
 
     public function manage_properties(Request $request){
 
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $properties = Property::get();
 
-        return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "properties" => $properties, "title" => "Manage Properties"]);
+        return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "properties" => $properties, "title" => "Manage Properties", "this_year" => $this_year]);
     }
 
     public function property_edit(Request $request, $propertyId){
@@ -2834,6 +2838,10 @@ class HomeController extends Controller
     }
 
     public function save_property (Request $request){
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        
 
         $propertyId = $request->propertyId;
 
@@ -2849,30 +2857,42 @@ class HomeController extends Controller
             "inventory" => $request->inventory,
             "room_type" => $request->roomType,
             "room_rate" => $request->room_rate,
-            "year" => $request->year
         ];
+
+        if ($request->submit_type == "current") {
+            $data['year'] = $this_year;
+            $data['year_end'] = $this_year;
+        } else {
+            $data['year'] = $this_year + 1;
+            $data['year_end'] = 0;
+        }
 
         if($propertyId == "0"){
             Property::create($data);
         }else{
-            Property::where('id', $propertyId)->update($data);
+            //First delete the old one
+            Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
 
+            //Now add the new one
+            Property::create($data);
+
+            //TODO: only update current data
             //Update bookings with this bed
-            $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();
+            // $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();
             
-            foreach($bookings as $b) {
-                $booking_data = [
-                    "floor" => $request->floor,
-                    "unit" => $request->unit,
-                    "room" => $request->room,
-                    "bed" => $request->bed,
-                    "bed_code" => $request->bed_code,
-                    "roomType" => $request->roomType,
-                    "property" => $request->residence,
-                ];
+            // foreach($bookings as $b) {
+            //     $booking_data = [
+            //         "floor" => $request->floor,
+            //         "unit" => $request->unit,
+            //         "room" => $request->room,
+            //         "bed" => $request->bed,
+            //         "bed_code" => $request->bed_code,
+            //         "roomType" => $request->roomType,
+            //         "property" => $request->residence,
+            //     ];
 
-                Booking::where('id', $b->id)->update($booking_data);
-            }
+            //     Booking::where('id', $b->id)->update($booking_data);
+            // }
         }
 
         return redirect("/manage-properties");
@@ -2948,6 +2968,9 @@ class HomeController extends Controller
 
         $property = Property::where('user_id_room', $request->bookingId)->first();
 
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+
         if(!empty($property)){
             $selected = $property;
         }else{
@@ -2965,14 +2988,18 @@ class HomeController extends Controller
             $floors = [];
 
             foreach($propertyInfo as $pi) {
-                $new_floor = $pi->floor;
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if ($this_year->lookup_name == $pi->year) {
+                        $new_floor = $pi->floor;
 
-                if (!empty($pi->meta_info_1)) {
-                    $new_floor .= $pi->meta_info_1;
-                }
+                        if (!empty($pi->meta_info_1)) {
+                            $new_floor .= $pi->meta_info_1;
+                        }
 
-                if (!isset($floors[$new_floor])) {
-                    $floors[$new_floor] = $pi;
+                        if (!isset($floors[$new_floor])) {
+                            $floors[$new_floor] = $pi;
+                        }
+                    }
                 }
             }
 
@@ -2987,8 +3014,12 @@ class HomeController extends Controller
             $units = [];
 
             foreach($propertyInfo as $pi) {
-                if (!isset($units[$pi->unit])) {
-                    $units[$pi->unit] = $pi;
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if ($this_year->lookup_name == $pi->year) {
+                        if (!isset($units[$pi->unit])) {
+                            $units[$pi->unit] = $pi;
+                        }                                 
+                    }
                 }
             }
 

@@ -14,7 +14,7 @@ class AddPropertyYear extends Migration
     public function up()
     {
         Schema::table('property_data', function (Blueprint $table) {
-            $table->string('year')->default("0");
+            $table->string('year')->default("2022");
         });
     }
 
