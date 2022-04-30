@@ -107,11 +107,21 @@ class PDFController extends Controller
 
         if (!empty($lease)) {
           UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->update($data);
+          $action_type = "Regenerated Lease";
+          
         } else {
-            $data['fileId'] = 'moveIn';
-    
+            $data['fileId'] = 'moveIn';    
             UserFiles::insert($data);
+            $action_type = "Generated Lease";
         }
+
+        ActionList::create([
+          "userUid" => $studentId,
+          "action" => $action_type,
+          "actionUserUid" => Auth::user()->id,
+          "actionUserDisplayName" => Auth::user()->userFirstName,
+          "actionUserRole" => Auth::user()->userRole,
+      ]);
 
         User::where('id', $studentId)->update(['rob_55_lease' => 0]);
       }

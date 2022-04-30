@@ -973,6 +973,11 @@
         console.log(bookingId)
         console.log(type)
 
+        if (type === "generate" && $('#moveInStatus').length) {
+            console.log('regen lease');
+            $("#change_bed_type").val('cancel')
+        }
+
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
