@@ -23,9 +23,9 @@
                 <th>Bed Code</th>
                 <th>Inventory</th>
                 <th>Room Type</th>
-                <th>2022 Rate</th>
-                <th>Available</th>
+                <th>2022 Rate</th>                
                 <th>Year</th>
+                <th>Available</th>
                 <th></th>
             </tr> 
         </thead>

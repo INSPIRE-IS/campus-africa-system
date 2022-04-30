@@ -2819,6 +2819,9 @@ class HomeController extends Controller
         if($propertyId == "0"){
             $head = "Add";
             $propertyData = "";
+
+            $bookings = [];
+            
         }else{
             $head = "Edit";
             $propertyData = Property::where('id', $propertyId)->first();
