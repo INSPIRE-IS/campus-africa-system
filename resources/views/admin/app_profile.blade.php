@@ -107,7 +107,11 @@
 
                         @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_change_bed == "1")
-                                <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                @if ($user[0]['userInfo']['rob_50_approve'] > 0)
+                                    <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                @else
+                                    <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                @endif                                
                             @endif
 
                             @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
@@ -983,48 +987,48 @@
         modal.style.display = "block";
 
         $.ajax({
-                type: "get",
-                url: "/check-rooms",
-                success: function (data) {
-                    let properties = data[0];
+            type: "get",
+            url: "/check-rooms",
+            success: function (data) {
+                let properties = data[0];
 
-                    properties.sort();
-                    $('#property').empty()
+                properties.sort();
+                $('#property').empty()
 
-                    Object.keys(properties).forEach( function(key) {
-                        if(properties[key] == "BRAAMLOFTS" && "{{Auth::user()->role_braamlofts}}" == 1){
-                            $('#property').append('<option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";}?>>Braamlofts</option>')
-                        }
-                        if(properties[key] == "80 JORISSEN" && "{{Auth::user()->role_80_jorissen}}" == 1){
-                            $('#property').append('<option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>')
-                        }
-                        if(properties[key] == "49 JORISSEN" && "{{Auth::user()->role_49_jorissen}}" == 1){
-                            $('#property').append('<option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>')
-                        }
-                        if(properties[key] == "DUNVISTA MANSIONS" && "{{Auth::user()->role_dunvista_mansions}}" == 1){
-                            $('#property').append('<option value="Dunvista Mansions" <?php if($booking->property == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>')
-                        }
-                        if(properties[key] == "WYNTON JOY" && "{{Auth::user()->role_wynton_joy}}" == 1){
-                            $('#property').append('<option value="Wynton Joy" <?php if($booking->property == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>')
-                        }
-                        if(properties[key] == "126 SIEMERT" && "{{Auth::user()->role_126_siemert}}" == 1){
-                            $('#property').append('<option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";}?>>126 Siemert</option>')
-                        }
-                        if(properties[key] == "YMCA" && "{{Auth::user()->role_ymca}}" == 1){
-                            $('#property').append('<option value="YMCA" <?php if($booking->property == "YMCA"){echo "YMCA";}?>>YMCA</option>')
-                        }
-                    })
-
-                    if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
-                        $("#roomSection").removeClass('hidden');
-                    }else{
-                        $("#roomSection").addClass('hidden');
+                Object.keys(properties).forEach( function(key) {
+                    if(properties[key] == "BRAAMLOFTS" && "{{Auth::user()->role_braamlofts}}" == 1){
+                        $('#property').append('<option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";}?>>Braamlofts</option>')
                     }
+                    if(properties[key] == "80 JORISSEN" && "{{Auth::user()->role_80_jorissen}}" == 1){
+                        $('#property').append('<option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>')
+                    }
+                    if(properties[key] == "49 JORISSEN" && "{{Auth::user()->role_49_jorissen}}" == 1){
+                        $('#property').append('<option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>')
+                    }
+                    if(properties[key] == "DUNVISTA MANSIONS" && "{{Auth::user()->role_dunvista_mansions}}" == 1){
+                        $('#property').append('<option value="Dunvista Mansions" <?php if($booking->property == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>')
+                    }
+                    if(properties[key] == "WYNTON JOY" && "{{Auth::user()->role_wynton_joy}}" == 1){
+                        $('#property').append('<option value="Wynton Joy" <?php if($booking->property == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>')
+                    }
+                    if(properties[key] == "126 SIEMERT" && "{{Auth::user()->role_126_siemert}}" == 1){
+                        $('#property').append('<option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";}?>>126 Siemert</option>')
+                    }
+                    if(properties[key] == "YMCA" && "{{Auth::user()->role_ymca}}" == 1){
+                        $('#property').append('<option value="YMCA" <?php if($booking->property == "YMCA"){echo "YMCA";}?>>YMCA</option>')
+                    }
+                })
 
-                    $("#property").change();
-                    // $("#roomType").val('<?php //echo $booking->roomType;?>');
+                if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
+                    $("#roomSection").removeClass('hidden');
+                }else{
+                    $("#roomSection").addClass('hidden');
                 }
-            });
+
+                $("#property").change();
+                // $("#roomType").val('<?php //echo $booking->roomType;?>');
+            }
+        });
 
         callRoomDetails('floor','', '', '', '', '', 'open')
         
@@ -1038,11 +1042,17 @@
         
     }
 
-    function cancelLease(bookingId, type){
+    function cancelLease(bookingId, type) {
+
+        @if ($user[0]['userInfo']['rob_55_lease'] == 2)
+            let msg = "The current Approved Lease will be rejected.";
+        @else
+            let msg = "The current Lease will be regenerated.";
+        @endif
         
         Swal.fire({
             title: 'Are you sure?',
-            text: "The current Approved Lease will be rejected.",
+            text: msg,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
