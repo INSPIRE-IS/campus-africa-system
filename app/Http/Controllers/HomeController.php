@@ -2898,9 +2898,10 @@ class HomeController extends Controller
         return redirect("/manage-properties");
     }
     
-    public function delete_bed (Request $request){
+    public function delete_bed (Request $request) {
+        $property = Property::where('id', $request->propertyId)->first();
 
-        Property::where('id', $request->propertyId)->delete();
+        Property::where('id', $request->propertyId)->update(['year_end' => $property->year - 1]);
 
         return "done";
     }
