@@ -192,7 +192,10 @@
                     $("#searchButton_prop").empty().append("Search");
                 },
             });
-        });
+        });                
+
+        $("#property").val("<?php echo Session::get('property');?>").trigger('change');
+        $("#year").val("<?php echo Session::get('year');?>").trigger('change');
 
         $("#searchButton_prop").click();
     });

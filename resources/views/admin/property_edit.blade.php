@@ -243,7 +243,7 @@
                 e.preventDefault();
             });
         });
-    <?php } ?>
+    <?php } ?>    
 </script>
 
 @endsection

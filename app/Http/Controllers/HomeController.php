@@ -2839,9 +2839,11 @@ class HomeController extends Controller
         //Get current booking year
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
-        
 
         $propertyId = $request->propertyId;
+
+        //Get current property data
+        $current_data = Property::where('id', $propertyId)->first();
 
         $data = [
             "residence" => $request->residence,
@@ -2859,38 +2861,40 @@ class HomeController extends Controller
 
         if ($request->submit_type == "current") {
             $data['year'] = $this_year;
-            $data['year_end'] = $this_year;
+            $data['year_end'] = $current_data->year_end == 0 ? 0 : $this_year;
         } else {
             $data['year'] = $this_year + 1;
             $data['year_end'] = 0;
         }
 
-        if($propertyId == "0"){
+        if($propertyId == "0") {
             Property::create($data);
         }else{
             //First delete the old one
             Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
 
             //Now add the new one
-            Property::create($data);
+            $new_id = Property::create($data)->id;
 
-            //TODO: only update current data
             //Update bookings with this bed
-            // $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();
-            
-            // foreach($bookings as $b) {
-            //     $booking_data = [
-            //         "floor" => $request->floor,
-            //         "unit" => $request->unit,
-            //         "room" => $request->room,
-            //         "bed" => $request->bed,
-            //         "bed_code" => $request->bed_code,
-            //         "roomType" => $request->roomType,
-            //         "property" => $request->residence,
-            //     ];
+            if ($request->submit_type == "current") {
+                $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();
+                
+                foreach($bookings as $b) {
+                    $booking_data = [
+                        "floor" => $request->floor,
+                        "unit" => $request->unit,
+                        "room" => $request->room,
+                        "bed" => $request->bed,
+                        "bed_code" => $request->bed_code,
+                        "roomType" => $request->roomType,
+                        "property" => $request->residence,
+                        "property_data_id" => $new_id
+                    ];
 
-            //     Booking::where('id', $b->id)->update($booking_data);
-            // }
+                    Booking::where('id', $b->id)->update($booking_data);
+                }
+            }
         }
 
         return redirect("/manage-properties");
@@ -4406,7 +4410,7 @@ class HomeController extends Controller
         $booking_old = Booking::where('userId', $userId)->first();
 
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
-        Property::where('user_id_room', $userId)->update(["user_id_room" => null, "room_available" => null]);
+        Property::where('id', $booking_old->property_data_id)->update(["user_id_room" => null, "room_available" => null]);
 
         //Update the User robot
         User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
@@ -4945,9 +4949,11 @@ class HomeController extends Controller
         
         if ($request->firstLoad !== "1") {
             Session::put('property', $request->property);
+            Session::put('year', $request->year);
 
         } else {
             $request->property = Session::get('property');
+            $request->year = Session::get('year');
         }        
 
         if($request->property !== "" && !empty($request->property)){
