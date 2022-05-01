@@ -151,7 +151,7 @@
         @if (count($bookingData) == 0)
             <input type="button" id="btn_delete_bed" class="profileSubmit" style="opacity:1" value="Delete Bed" />
         @else
-            <p style="text-align: center">This bed cannot be deleted with active bookings</p>
+            <p style="text-align: center">This bed cannot be deleted with an active booking. Please Unallocate the bed from the booking first. The booking is listed below and clickable.</p>
         @endif
     @endif
 
