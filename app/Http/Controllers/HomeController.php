@@ -4976,7 +4976,7 @@ class HomeController extends Controller
             FROM property_data
             WHERE 1=1 ' . implode($query) . '
             
-            order by residence, cast(floor as unsigned), cast(bed_code as unsigned), year, year_end ASC';
+            order by residence, cast(floor as unsigned), cast(unit as unsigned), room, bed, year, year_end ASC';
 
         //Get all of our students
         $searched_data = DB::select($sql);

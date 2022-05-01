@@ -109,7 +109,7 @@
         <div class="form-field">
             <label>Bed</label>
             <select name="bed" id='bed'>
-                <option value="" selected disabled>Select One</option>
+                <option value="" selected>Select One</option>
                 <option value="a" <?php if(!empty($propertyData) && $propertyData->bed == "a"){echo "selected";}?>>a</option>
                 <option value="b" <?php if(!empty($propertyData) && $propertyData->bed == "b"){echo "selected";}?>>b</option>
                 <option value="c" <?php if(!empty($propertyData) && $propertyData->bed == "c"){echo "selected";}?>>c</option>
