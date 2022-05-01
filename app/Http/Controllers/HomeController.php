@@ -2861,7 +2861,7 @@ class HomeController extends Controller
 
         if ($request->submit_type == "current") {
             $data['year'] = $this_year;
-            $data['year_end'] = $current_data->year_end == 0 ? 0 : $this_year;
+            $data['year_end'] = isset($current_data->year_end) && $current_data->year_end == 0 ? 0 : $this_year;
         } else {
             $data['year'] = $this_year + 1;
             $data['year_end'] = 0;
