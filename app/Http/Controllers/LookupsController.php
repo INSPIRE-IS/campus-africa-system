@@ -9,6 +9,7 @@ use App\Models\UserFiles;
 use App\Models\Booking;
 use App\Models\Property;
 use App\Models\ActionList;
+use Auth;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
