@@ -162,7 +162,7 @@
 
                         let inventory = "Yes";
 
-                        if (arrayItem["inventory"] == "0") {
+                        if (arrayItem["inventory"] == "0" || arrayItem["inventory"] == null) {
                             inventory = "No";
                         }
 
