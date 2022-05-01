@@ -12,6 +12,57 @@
     <a href="/properties-info"><button type="button" class="detailsChange" >Residence Info</button></a>
     <a href="/property/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
     <br/>
+
+    <div class="appSearchForm" style="margin-top: 22px;">
+        <div class="searchField">
+            <label>Property</label><br/>
+            <select name="property" id="property">
+                <option value="All" selected>All Residences</option>
+                @if(Auth::user()->role_braamlofts == 1)
+                    <option value="BRAAMLOFTS">Braamlofts</option>
+                @endif
+                @if(Auth::user()->role_80_jorissen == 1)
+                    <option value="80 JORISSEN">80 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_49_jorissen == 1)
+                    <option value="49 JORISSEN">49 Jorissen</option>
+                @endif
+                @if(Auth::user()->role_dunvista_mansions == 1)
+                    <option value="DUNVISTA MANSIONS">Dunvista Mansions</option>
+                @endif
+                @if(Auth::user()->role_wynton_joy == 1)
+                    <option value="WYNTON JOY">Wynton Joy</option>
+                @endif
+                @if(Auth::user()->role_126_siemert == 1)
+                    <option value="126 SIEMERT">126 Siemert</option>
+                @endif
+                @if(Auth::user()->role_ymca == 1)
+                    <option value="YMCA">YMCA</option>
+                @endif
+            </select>
+        </div>
+
+        <div class="searchField">
+            <label for="year">Year</label>
+            <select name="year" id="year">
+                <option value="All">All</option>
+                <option value="current">Current Year</option>
+                <option value="next">Next Year</option>
+            </select>
+        </div>
+        
+        <div class="searchField"></div>
+
+        <div class="searchTab" >
+            <button type="button" id="searchButton_prop">Search</button><br/>
+            <input type="hidden" id="firstLoad_prop" value="1"/>
+        </div>
+    </div>
+
+    <div style="clear: both"></div>
+
+    <div style="margin-top: 30px"></div>
+
     <table id="properties_table" class="display">
         <thead>
             <tr>
@@ -24,46 +75,13 @@
                 <th>Inventory</th>
                 <th>Room Type</th>
                 <th>2022 Rate</th>                
-                <th>Year</th>
+                <th style="width: 95px">Year</th>
                 <th>Available</th>
                 <th></th>
             </tr> 
         </thead>
-        <tbody>
 
-        @foreach($properties as $property)
-            @if ($property->year <= $property->year_end || $property->year_end == 0)
-                <tr>
-                    <td>{{$property->residence}} |{{$property->room_available}}|</td>
-                    <td>{{$property->floor}}</td>
-                    <td>{{$property->unit}}</td>
-                    <td>{{$property->room}}</td>
-                    <td>{{$property->bed}}</td>
-                    <td>{{$property->bed_code}}</td>
-                    <td>@if($property->inventory == "1") Yes @else No @endif</td>
-                    <td>{{$property->room_type}}</td>
-                    <td>{{$property->room_rate}}</td>
-                    <td>
-                        <?php
-                        if ($property->year_end == 0) {
-                            echo $property->year . " to ~";
-                        } else if ($property->year == 0) {
-                            echo "~ to " . $property->year_end;
-                        } else {
-                            echo $property->year . " to " . $property->year_end;
-                        }
-                        ?>
-                    </td>
-                    <td>@if($property->room_available == "1" && $property->inventory != "1") &#128308; &nbsp; No @else &#128994; &nbsp; Yes @endif</td>
-                    <td>
-                        <!-- <button type="button" id="tableBtn" class="detailsChange" onClick="deleteProperty('{{$property->id}}')" style="margin:5px;">Delete</button> -->
-                        <a href="/property/edit/{{$property->id}}"><button type="button" style="margin:5px;" id="tableBtn" onClick="openModal('{{$property->id}}')" class="detailsChange">Edit</button></a>
-                    </td>
-                </tr>
-            @endif
-        @endforeach
-
-        </tbody>
+        <tbody></tbody>
     </table>
     <br/>
 </div>
@@ -71,43 +89,113 @@
 
 
 <script>
+    jQuery(document).ready( function($) {
+        var datatable = $("#properties_table").DataTable();
 
-    $(document).ready( function () {
-        $('#properties_table').DataTable();
-    } );
+        $("#searchButton_prop").on("click", function () {
+            $("#searchButton_prop").empty().append("Searching...");
 
-    // $.ajaxSetup({
-    //     headers: {
-    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //     }
-    // });
+            $.ajax({
+                type: "post",
+                url: "/manage-properties-filter",
+                data: {
+                    property: $("#property").val(),
+                    year: $("#year").val(),
+                },
 
-    // function deleteProperty(propertyId){
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "You won't be able to revert this!",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Yes, delete it!'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             $.ajax({
-    //                 type: "post",
-    //                 url: "/delete/lookup",
-    //                 data: {
-    //                     propertyId: propertyId, 
-    //                 },
+                success: function (data) {
+                    $("#firstLoad_prop").val("0");
+                    datatable.clear().draw();
 
-    //                 success: function (data) {
-    //                     window.location.reload();
-    //                 },
-    //             });
-    //         }
-    //     })
-    // }
+                    results = JSON.parse(data)[0];
 
+                    sortDirection = JSON.parse(data)[1];
+                    sortId = JSON.parse(data)[2];
+                    page = JSON.parse(data)[3];
+
+                    var i = 0;
+
+                    results.forEach(function (arrayItem) {
+                        var m = new Date(arrayItem["created_at"]);
+
+                        if (page == null || page == "NaN" || page == "") {
+                            page = 0;
+                        } else {
+                            page = parseFloat(page);
+                        }
+
+                        if (sortId == "" || sortId == null || sortDirection == "" || sortDirection == null) {
+                            var order = [];
+                        } else {
+                            var order = [sortId, sortDirection];
+                        }
+
+                        var dateString =
+                            m.getUTCFullYear() +
+                            "-" +
+                            ("0" + (m.getUTCMonth() + 1)).slice(-2) +
+                            "-" +
+                            ("0" + m.getUTCDate()).slice(-2) +
+                            "<br />" +
+                            ("0" + m.getUTCHours()).slice(-2) +
+                            ":" +
+                            ("0" + m.getUTCMinutes()).slice(-2) +
+                            ":" +
+                            ("0" + m.getUTCSeconds()).slice(-2);     
+                            
+                            
+                        let year = "";
+
+                        if (arrayItem['year_end'] == 0) {
+                            year = arrayItem['year'] + " to ~";
+                        } else if (arrayItem['year'] == 0) {
+                            year = "~ to " + arrayItem['year_end'];
+                        } else {
+                            year = arrayItem['year'] + " to " + arrayItem['year_end'];
+                        }
+
+                        let available = "&#128994; &nbsp; Yes";
+
+                        if (arrayItem['room_available'] == "1" && arrayItem["inventory"] != -1) {
+                            available = "&#128308; &nbsp; No";
+                        }
+
+                        let inventory = "Yes";
+
+                        if (arrayItem["inventory"] == "0") {
+                            inventory = "No";
+                        }
+
+                        var trDOM = datatable.row
+                            .add([
+                                arrayItem["residence"],
+                                arrayItem["floor"],
+                                arrayItem["unit"],
+                                arrayItem["room"],
+                                arrayItem["bed"],
+                                arrayItem["bed_code"],
+                                inventory,
+                                arrayItem["room_type"],
+                                arrayItem["room_rate"],
+                                year,
+                                available,
+                                '<a href="/property/edit/'+arrayItem['id']+'"><button type="button" style="margin:5px;" id="tableBtn" onClick="openModal('+arrayItem['id']+')" class="detailsChange">Edit</button></a>'
+                            ])
+                            .page(page)
+                            .order(order)
+                            .draw(false)
+                            .node();
+
+                        i++;
+                    });
+
+                    $("#searchButton_prop").empty().append("Search");
+                },
+            });
+        });
+
+        $("#searchButton_prop").click();
+    });
 </script>
 
 

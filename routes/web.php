@@ -121,6 +121,7 @@ Route::post('/change-lease', [HomeController::class, 'change_lease']);
 Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
+Route::post("/manage-properties-filter", [HomeController::class, 'properties_filter']);
 Route::get('/property/edit/{propertyId}', [HomeController::class, 'property_edit']);
 Route::post('/save-property', [HomeController::class, 'save_property']);
 Route::post('/delete-bed', [HomeController::class, 'delete_bed']);

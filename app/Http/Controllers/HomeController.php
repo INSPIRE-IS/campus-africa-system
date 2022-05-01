@@ -2812,9 +2812,7 @@ class HomeController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $properties = Property::get();
-
-        return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "properties" => $properties, "title" => "Manage Properties", "this_year" => $this_year]);
+        return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "title" => "Manage Properties", "this_year" => $this_year]);
     }
 
     public function property_edit(Request $request, $propertyId){
@@ -2990,7 +2988,7 @@ class HomeController extends Controller
 
             foreach($propertyInfo as $pi) {
                 if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
-                    if ($this_year->lookup_name == $pi->year) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
                         $new_floor = $pi->floor;
 
                         if (!empty($pi->meta_info_1)) {
@@ -3016,7 +3014,7 @@ class HomeController extends Controller
 
             foreach($propertyInfo as $pi) {
                 if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
-                    if ($this_year->lookup_name == $pi->year) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
                         if (!isset($units[$pi->unit])) {
                             $units[$pi->unit] = $pi;
                         }                                 
@@ -4933,6 +4931,82 @@ class HomeController extends Controller
         }
 
         echo "done";
+    }
+
+
+    public function properties_filter(Request $request){
+
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        
+        $search_value = [];
+
+        
+        if ($request->firstLoad !== "1") {
+            Session::put('property', $request->property);
+
+        } else {
+            $request->property = Session::get('property');
+        }        
+
+        if($request->property !== "" && !empty($request->property)){
+            if($request->property !== "All"){
+                $property = 'residence = "'.$request->property.'"';
+                array_push($search_value, $property);
+            }
+        }       
+
+        $query = [];
+        
+
+        foreach($search_value as $value) {
+            $statement = " and " . $value;
+            array_push($query, $statement);
+        }
+
+        //Default Query
+        $sql = 'SELECT *
+            FROM property_data
+            WHERE 1=1 ' . implode($query) . '
+            
+            order by residence, cast(floor as unsigned), cast(bed_code as unsigned), year, year_end ASC';
+
+        //Get all of our students
+        $searched_data = DB::select($sql);
+
+        $userData = [];
+
+        foreach($searched_data as $data) {            
+            //Filter data based on the users roles
+            if(
+                (Auth::user()->role_braamlofts == "1" && ($data->residence == "BRAAMLOFTS")) ||
+                (Auth::user()->role_80_jorissen == "1" && $data->residence == "80 JORISSEN") ||
+                (Auth::user()->role_49_jorissen == "1" && $data->residence == "49 JORISSEN") ||
+                (Auth::user()->role_dunvista_mansions == "1" && $data->residence == "DUNVISTA MANSIONS") ||
+                (Auth::user()->role_wynton_joy == "1" && $data->residence == "WYNTON JOY") ||
+                (Auth::user()->role_126_siemert == "1" && $data->residence == "126 SIEMERT") ||
+                (Auth::user()->role_ymca == "1" && $data->residence == "YMCA")
+            ) {
+
+                if ($data->year <= $data->year_end || $data->year_end == 0) {
+                    if($request->year !== "All"){
+                        if ($request->year == "next") {
+                            $this_year++;
+                        }
+
+                        if (($this_year >= $data->year && $data->year_end == 0) || ($this_year >= $data->year && $this_year <= $data->year_end)) {
+                            array_push($userData, (array) $data);
+                        }
+                    } else {
+                        array_push($userData, (array) $data);
+                    }
+                    
+                }                
+            }
+        }
+
+        return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
     }
     
 
