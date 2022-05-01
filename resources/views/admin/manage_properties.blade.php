@@ -45,10 +45,12 @@
                     <td>{{$property->room_rate}}</td>
                     <td>
                         <?php
-                        if ($property->year == $this_year) {
-                            echo "Current Academic Year";
+                        if ($property->year_end == 0) {
+                            echo $property->year . " to ~";
+                        } else if ($property->year == 0) {
+                            echo "~ to " . $property->year_end;
                         } else {
-                            echo "Next Academic Year";
+                            echo $property->year . " to " . $property->year_end;
                         }
                         ?>
                     </td>
