@@ -46,8 +46,8 @@
             <label for="year">Academic Year</label>
             <select name="year" id="year">
                 <option value="All">All</option>
-                <option value="current">Current Academic Year</option>
-                <option value="next">Next Academic Year</option>
+                <option value="current">{{$this_year}}</option>
+                <option value="next">{{$this_year + 1}}</option>
             </select>
         </div>
         
@@ -195,7 +195,7 @@
         });                
 
         $("#property").val("<?php echo Session::get('property');?>").trigger('change');
-        $("#year").val("<?php echo Session::get('year');?>").trigger('change');
+        $("#year").val("<?php if (Session::get('year')) { echo Session::get('year'); } else { echo 'current'; } ?>").trigger('change');
 
         $("#searchButton_prop").click();
     });
