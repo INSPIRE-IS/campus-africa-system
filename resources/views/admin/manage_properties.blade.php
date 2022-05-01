@@ -43,11 +43,11 @@
         </div>
 
         <div class="searchField">
-            <label for="year">Year</label>
+            <label for="year">Academic Year</label>
             <select name="year" id="year">
                 <option value="All">All</option>
-                <option value="current">Current Year</option>
-                <option value="next">Next Year</option>
+                <option value="current">Current Academic Year</option>
+                <option value="next">Next Academic Year</option>
             </select>
         </div>
         
