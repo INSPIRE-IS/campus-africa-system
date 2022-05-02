@@ -2862,9 +2862,33 @@ class HomeController extends Controller
         if ($request->submit_type == "current") {
             $data['year'] = $this_year;
             $data['year_end'] = isset($current_data->year_end) && $current_data->year_end == 0 ? 0 : $this_year;
+
         } else {
             $data['year'] = $this_year + 1;
             $data['year_end'] = 0;
+        }
+
+        //Duplicate check
+        if ($current_data->year <> $data['year']) {
+            $filter_data = [
+                "floor" => $request->floor, 
+                "unit" => $request->unit, 
+                "room" => $request->room, 
+                "bed" => $request->bed, 
+                "year" => $data['year']
+            ];
+            $duplicate_data = Property::where($filter_data)->get();
+
+            $found = 0;
+            foreach($duplicate_data as $dd) {
+                if ($dd->year_end == 0 || $dd->year_end >= $dd->year) {
+                    $found++;
+                }
+            }
+
+            if ($found > 0) {
+                return 'A bed for next year already exists';
+            }
         }
 
         if($propertyId == "0") {
@@ -2872,7 +2896,15 @@ class HomeController extends Controller
             Property::create($data);
         }else{
             //First delete the old one
-            Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
+            if ($request->submit_type == "current") {
+                Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
+            } else {
+                if ($current_data->year == $this_year) {
+                    Property::where('id', $propertyId)->update(["year_end" => $this_year]);
+                } else {
+                    Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
+                }
+            }            
 
             //Now add the new one
             $new_id = Property::create($data)->id;
@@ -2898,7 +2930,7 @@ class HomeController extends Controller
             }
         }
 
-        return redirect("/manage-properties");
+        return "done";
     }
     
     public function delete_bed (Request $request) {

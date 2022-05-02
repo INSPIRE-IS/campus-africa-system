@@ -4,7 +4,6 @@
 
 <div class="container form-card">
 <form action="/save-property" method="post" autocomplete="off">
-    @csrf
         <br/><br/>
 
         <div class="form-field">
@@ -162,7 +161,7 @@
         <!-- <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>         -->
     </form>
 
-    <input type="button" id="btn_submit_frm" class="profileSubmit" style="opacity:1" value="Update" />
+    <input type="button" id="btn_submit_frm" class="profileSubmit" style="opacity:1" value="Update Bed" />
 
     @if(!empty($propertyData))
         @if (count($bookingData) == 0)
@@ -185,6 +184,12 @@
 </div>
 
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     $("#residence").on('change', function(){
         let propValue = $("#residence").val();
 
@@ -203,9 +208,12 @@
         }else if(propValue == "YMCA"){
             $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="Single small">Single | small</option><option value="Single medium">Single | Medium</option><option value="Single large">Single | Large</option>')
         }
-    })
+    });
 
     $('#btn_submit_frm').on('click', function(e) {
+        let btn = $(this);
+        $(btn).val('Saving...');
+
         Swal.fire({
             text: "Will this change apply to bookings in the current Academic Year (2022) or the next Academic Year (2023) going forward?",
             icon: 'warning',
@@ -223,7 +231,27 @@
                 $("#submit_type").val('next');
             }
 
-            $('form').submit();
+            // $('form').submit();
+
+            $.ajax({
+                type: "post",
+                url: "/save-property",
+                data: $('form').serialize(),
+
+                success: function (data) {          
+                    if (data == "done") {
+                        window.location = '/manage-properties';
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            data,
+                            'error'
+                        );
+
+                        $(btn).val('Update Bed');
+                    }
+                },
+            });
             
         })
 
