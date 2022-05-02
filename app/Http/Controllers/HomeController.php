@@ -2868,6 +2868,7 @@ class HomeController extends Controller
         }
 
         if($propertyId == "0") {
+            $data['year_end'] = 0;            
             Property::create($data);
         }else{
             //First delete the old one

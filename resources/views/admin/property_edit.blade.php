@@ -140,6 +140,23 @@
             <input type="text" name="room_rate" id="room_rate" value="<?php if(!empty($propertyData)){echo $propertyData->room_rate;}?>">
         </div>
 
+        <?php if (!empty($propertyData)) { ?>
+            <div class="form-field">
+                <label>Academic Year</label>
+                <div>
+                    <?php
+                    if ($propertyData->year_end == 0) {
+                        echo $propertyData->year . " to ~";
+                    } else if ($propertyData->year == 0) {
+                        echo "~ to " . $propertyData->year_end;
+                    } else {
+                        echo $propertyData->year . " to " . $propertyData->year_end;
+                    }
+                    ?>
+                </div>
+            </div>
+        <?php } ?>
+
         <input type="hidden" name="submit_type" id="submit_type" value="">
 
         <!-- <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>         -->
