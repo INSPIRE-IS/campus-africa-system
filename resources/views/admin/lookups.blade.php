@@ -14,7 +14,7 @@
         <!-- <button type="button" id="updateLeaseDates" class="detailsChange" >Update Lease Dates</button> -->
         <!-- <button type="button" id="updateNsfasStudents" class="detailsChange" >Update NSFAS Students</button> -->
     @endif
-    @if(Auth::user()->id == 1)
+    @if(Auth::user()->id == 1 || Auth::user()->email == "roger@whitehart.co.za")
         <a href="/admin-updates/landing">Admin Updates</a>
     @endif
     <br/>

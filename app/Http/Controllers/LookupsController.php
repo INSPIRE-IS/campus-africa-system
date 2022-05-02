@@ -298,10 +298,44 @@ class LookupsController extends Controller {
     }
 
     public function admin_updates_update_properties(Request $request){
-        $bed_used = Booking::get();
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+
+        //First make all rooms available
+        Property::where('room_available', '0')->update(['room_available' => null]);
+        Property::where('room_available', '1')->update(['room_available' => null]);
+
+        //Set Inventory to Yes for all
+        Property::where('inventory', '0')->update(['inventory' => '1']);
+        Property::where('inventory', null)->update(['inventory' => '1']);
+
+        //Now find building manager beds and mark inventory no
+        Property::where('residence', 'BRAAMLOFTS')->where('bed_code', '102')->update(['inventory' => '0']);
+        Property::where('residence', 'YMCA')->where('bed_code', 'Y2P10')->update(['inventory' => '0']);
+        
+        //Then run through and mark all booked rooms
+        $bed_used = Booking::get();        
 
         foreach($bed_used as $bed){
-            $thisProperty = Property::where('residence', $bed->property)->where('room_type', $bed->roomType)->where('floor', $bed->floor)->where('unit', $bed->unit)->where('bed_code', $bed->bed_code)->update(['room_available' => '1']);
+            $thisProperty = Property::where('residence', $bed->property)->where('room_type', $bed->roomType)->where('floor', $bed->floor)->where('unit', $bed->unit)->where('bed_code', $bed->bed_code)->get();
+            $propertyData = "";
+
+            //Find the correct bed
+            foreach($thisProperty as $pi) {
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        $propertyData = $pi;
+                    }
+                }
+            }
+            
+            if (!empty($propertyData)) {
+                //Update the bed availability
+                Property::where('id', $propertyData->id)->update(['room_available' => '1']);
+
+                //Update the booking with proper bed
+                Booking::where('id', $bed->id)->update(['property_data_id' => $propertyData->id]);
+            }
         }
         
     }

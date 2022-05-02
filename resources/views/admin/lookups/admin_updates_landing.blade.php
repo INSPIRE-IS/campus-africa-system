@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container">    
-    @if(Auth::user()->id == 1)
+    @if(Auth::user()->id == 1 || Auth::user()->email == "roger@whitehart.co.za")
         <h1>New</h1>
         <div>
             <button style="float: none;" type="button" id="updateDataNewRobots" class="detailsChange" >New Robots - Data Update</button>

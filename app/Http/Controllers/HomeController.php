@@ -2477,6 +2477,9 @@ class HomeController extends Controller
 
         } else {
 
+            //Get current booking year
+            $this_year = Lookups::where('group_id', '4')->first();
+
             $oldData = Booking::where('userId', $bookingId)->first();
             $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomTypeNew, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "bed_code|Bed Code"=> $request->bed_code];
     
@@ -2484,9 +2487,17 @@ class HomeController extends Controller
     
             Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
     
-            $propertyData = Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->first();
-            
-    
+            $propertyDataAll = Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->get();
+            $propertyData = "";
+
+            //Find the correct bed
+            foreach($propertyDataAll as $pi) {
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        $propertyData = $pi;
+                    }
+                }
+            }    
     
             foreach($newData as $key => $new){
                 
@@ -3016,7 +3027,7 @@ class HomeController extends Controller
         if (isset($request->getType) && $request->getType == "floor") {
             // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
 
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->whereNull('room_available')->get();
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->whereNull('room_available')->where('inventory', '1')->get();
 
             // // $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
 
@@ -3044,7 +3055,7 @@ class HomeController extends Controller
         } elseif (isset($request->getType) && $request->getType == "unit") {
             // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->get();
 
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->whereNull('room_available')->get();
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->whereNull('room_available')->where('inventory', '1')->get();
 
             //Create a unique Unit list
             $units = [];
@@ -3062,7 +3073,7 @@ class HomeController extends Controller
             return ["true", $selected, $units];
 
         } elseif (isset($request->getType) && $request->getType == "bed_code") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->whereNull('room_available')->get();
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->whereNull('room_available')->where('inventory', '1')->get();
 
             //Create a unique Unit list
             $bed_code = [];
