@@ -2867,8 +2867,13 @@ class HomeController extends Controller
             "bed_code" => $request->bed_code,
             "inventory" => $request->inventory,
             "room_type" => $request->roomType,
-            "room_rate" => $request->room_rate,
+            "room_rate" => $request->room_rate,            
         ];
+
+        if (isset($current_data->room_available)) {
+            $data['room_available'] = $current_data->room_available;
+            $data['user_id_room'] = $current_data->user_id_room;
+        }
 
         if ($request->submit_type == "current") {
             $data['year'] = $this_year;
@@ -5017,7 +5022,7 @@ class HomeController extends Controller
         }
 
         //Default Query
-        $sql = 'SELECT *
+        $sql = 'SELECT id, residence, floor, unit, room, bed, bed_code, inventory, year, year_end, room_available, room_type, room_rate
             FROM property_data
             WHERE 1=1 ' . implode($query) . '
             

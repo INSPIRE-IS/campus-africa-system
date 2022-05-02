@@ -116,8 +116,6 @@
                     var i = 0;
 
                     results.forEach(function (arrayItem) {
-                        var m = new Date(arrayItem["created_at"]);
-
                         if (page == null || page == "NaN" || page == "") {
                             page = 0;
                         } else {
@@ -128,21 +126,7 @@
                             var order = [];
                         } else {
                             var order = [sortId, sortDirection];
-                        }
-
-                        var dateString =
-                            m.getUTCFullYear() +
-                            "-" +
-                            ("0" + (m.getUTCMonth() + 1)).slice(-2) +
-                            "-" +
-                            ("0" + m.getUTCDate()).slice(-2) +
-                            "<br />" +
-                            ("0" + m.getUTCHours()).slice(-2) +
-                            ":" +
-                            ("0" + m.getUTCMinutes()).slice(-2) +
-                            ":" +
-                            ("0" + m.getUTCSeconds()).slice(-2);     
-                            
+                        }                            
                             
                         let year = "";
 
