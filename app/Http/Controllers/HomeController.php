@@ -2829,6 +2829,10 @@ class HomeController extends Controller
     public function property_edit(Request $request, $propertyId){
         // $propertyId
 
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         if($propertyId == "0"){
             $head = "Add";
             $propertyData = "";
@@ -2843,7 +2847,7 @@ class HomeController extends Controller
             $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();            
         }
 
-        return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings]);
+        return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year]);
     }
 
     public function save_property (Request $request){
@@ -2909,7 +2913,8 @@ class HomeController extends Controller
         }
 
         if($propertyId == "0") {
-            $data['year_end'] = 0;            
+            $data['year_end'] = 0;   
+            $data['room_available'] = null;
             Property::create($data);
         }else{
             //First delete the old one
@@ -5063,6 +5068,137 @@ class HomeController extends Controller
         }
 
         return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
+    }
+
+    public function properties_filter_v2(Request $request) {        
+
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        
+        $search_value = [];
+
+        
+        if ($request->firstLoad !== "1") {
+            Session::put('property', $request->property);
+            Session::put('year', $request->year);
+
+        } else {
+            $request->property = Session::get('property');
+            $request->year = Session::get('year');
+        }  
+        
+        if (!empty($request->columns[0]['search']['value']) && $request->columns[0]['search']['value'] != "All") {
+            $property = 'residence = "'.$request->columns[0]['search']['value'].'"';
+            array_push($search_value, $property);
+        }    
+        
+        if (!empty($request->columns[9]['search']['value']) && $request->columns[9]['search']['value'] != "All") {
+            if ($request->columns[9]['search']['value'] == "next") {
+                $this_year++;
+            }
+
+            $year = '(';
+            $year .= '("'.$this_year.'" >= year and year_end = 0)';
+            $year .= 'or ("'.$this_year.'" >= year and "'.$this_year.'" <= year_end)';
+            $year .= ')';
+
+            array_push($search_value, $year);
+        }    
+
+        if (!empty($request->search['value'])) {
+            $other_search = '(residence LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ' or floor LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ' or unit LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ' or room LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ' or bed LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ' or bed_code LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ' or year LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ' or year_end LIKE "%'.$request->search['value'].'%"';
+            $other_search .= ')';
+
+            array_push($search_value, $other_search);
+        }
+
+        $query = [];
+        
+
+        foreach($search_value as $value) {
+            $statement = " and " . $value;
+            array_push($query, $statement);
+        }
+
+        /** Paging */
+        $sLimit = "";
+        if (isset($request->start) && $request->length != '-1') {
+            $sLimit = " LIMIT " . intval($request->start) . ", " . intval($request->length);
+        }
+
+        //Default Query
+        $sql = 'SELECT id, residence, floor, unit, room, bed, bed_code, inventory, room_type, room_rate, year, year_end, room_available
+            FROM property_data
+            WHERE (`year` <= year_end or year_end = 0)
+            ' . implode($query) . '
+            
+            order by residence, cast(floor as unsigned), cast(unit as unsigned), room, bed, year, year_end ASC
+
+            ' . $sLimit;
+
+        //Get all of our students
+        $searched_data = DB::select($sql);
+
+        // $userData = [];
+
+        // foreach($searched_data as $data) {            
+        //     //Filter data based on the users roles
+        //     if(
+        //         (Auth::user()->role_braamlofts == "1" && ($data->residence == "BRAAMLOFTS")) ||
+        //         (Auth::user()->role_80_jorissen == "1" && $data->residence == "80 JORISSEN") ||
+        //         (Auth::user()->role_49_jorissen == "1" && $data->residence == "49 JORISSEN") ||
+        //         (Auth::user()->role_dunvista_mansions == "1" && $data->residence == "DUNVISTA MANSIONS") ||
+        //         (Auth::user()->role_wynton_joy == "1" && $data->residence == "WYNTON JOY") ||
+        //         (Auth::user()->role_126_siemert == "1" && $data->residence == "126 SIEMERT") ||
+        //         (Auth::user()->role_ymca == "1" && $data->residence == "YMCA")
+        //     ) {
+
+        //         if ($data->year <= $data->year_end || $data->year_end == 0) {
+        //             if(isset($request->year) && $request->year !== "All"){
+        //                 if ($request->year == "next") {
+        //                     $this_year++;
+        //                 }
+
+        //                 if (($this_year >= $data->year && $data->year_end == 0) || ($this_year >= $data->year && $this_year <= $data->year_end)) {
+        //                     $userData[] = (array) $data;
+        //                 }
+        //             } else {
+        //                 $userData[] = (array) $data;
+        //             }
+                    
+        //         }    
+                
+        //         // $userData[] = (array) $data;
+        //     }
+        // }
+
+        // return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
+
+        /* Total data set length */
+        $sQuery = "SELECT COUNT(id) as totcount FROM property_data where (`year` <= year_end or year_end = 0)" . implode($query);
+        $rResultTotal = DB::select($sQuery);
+        $aResultTotal = $rResultTotal[0]->totcount;
+        $iTotal = $aResultTotal;
+
+        $output = (object) array(
+            // "draw" => 1,
+            "recordsTotal" => $iTotal,
+            "recordsFiltered" => $iTotal,
+            "data" => (array) $searched_data,
+            // 'columns' => $columns
+        );
+
+        // echo json_encode($userData);
+
+        echo json_encode($output);
     }
     
 

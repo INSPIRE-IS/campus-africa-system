@@ -53,10 +53,10 @@
         
         <div class="searchField"></div>
 
-        <div class="searchTab" >
+        <!-- <div class="searchTab" >
             <button type="button" id="searchButton_prop">Search</button><br/>
             <input type="hidden" id="firstLoad_prop" value="1"/>
-        </div>
+        </div> -->
     </div>
 
     <div style="clear: both"></div>
@@ -77,11 +77,8 @@
                 <th>2022 Rate</th>                
                 <th style="width: 95px">Year</th>
                 <th>Available</th>
-                <th></th>
             </tr> 
         </thead>
-
-        <tbody></tbody>
     </table>
     <br/>
 </div>
@@ -90,7 +87,74 @@
 
 <script>
     jQuery(document).ready( function($) {
-        var datatable = $("#properties_table").DataTable();
+        var datatable = $("#properties_table").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "/manage-properties-filter-v2",
+            "columns": [
+                { "data": "residence" },
+                { "data": "floor" },
+                { "data": "unit" },
+                { "data": "room" },
+                { "data": "bed" },
+                { "data": "bed_code" },
+                {
+                    "data": "inventory",
+                    "render": function( data, type, row) {
+                        let inventory = "Yes";
+
+                        if (row["inventory"] == "0" || row["inventory"] == null) {
+                            inventory = "No";
+                        }
+
+                        return inventory;
+                    }
+                },
+                { "data": "room_type" },
+                { "data": "room_rate" },
+                { 
+                    "data": "year",
+                    "render": function( data, type, row ) {
+                        let year = "";
+
+                        if (row['year_end'] == 0) {
+                            year = row['year'] + " to ~";
+                        } else if (row['year'] == 0) {
+                            year = "~ to " + row['year_end'];
+                        } else {
+                            year = row['year'] + " to " + row['year_end'];
+                        }
+
+                        return year
+                    }
+                },
+                { 
+                    "data": "room_available",
+                    "render": function( data, type, row ) {
+                        let available = "&#128994; &nbsp; Yes";
+
+                        if (row['room_available'] == "1" && row["inventory"] != -1) {
+                            available = "&#128308; &nbsp; No";
+                        }
+
+                        return available;
+                    }
+                },
+            ],
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+
+        $("#properties_table").on("click", "tr", function(event){
+            window.location = "/property/edit/" + datatable.row(this).data()['id'];
+	    });
+
+        $('#property').change( function() {
+	    	datatable.column(0).search($(this).val()).draw();
+	    });
+        
+        $('#year').change( function() {
+	    	datatable.column(9).search($(this).val()).draw();
+	    });
 
         $("#searchButton_prop").on("click", function () {
             $("#searchButton_prop").empty().append("Searching...");
@@ -181,7 +245,7 @@
         $("#property").val("<?php echo Session::get('property');?>").trigger('change');
         $("#year").val("<?php if (Session::get('year')) { echo Session::get('year'); } else { echo 'current'; } ?>").trigger('change');
 
-        $("#searchButton_prop").click();
+        // $("#searchButton_prop").click();
     });
 </script>
 

@@ -171,6 +171,8 @@
         @endif
     @endif
 
+    <a style="width: 95% !important;height: 36px;border-radius: 5px;border-radius: 5px !important;border: none;padding: 10px;display: block;text-align: center; text-decoration: none;line-height: 16px;" href="/manage-properties" class="profileSubmit">Cancel</a>
+
     <h2>Bookings</h2>
     @if (count($bookingData) > 0)
         <div>
@@ -215,7 +217,7 @@
         $(btn).val('Saving...');
 
         Swal.fire({
-            text: "Will this change apply to bookings in the current Academic Year (2022) or the next Academic Year (2023) going forward?",
+            text: "Will this change apply to bookings in the current Academic Year (<?php echo $this_year; ?>) or the next Academic Year (<?php echo ($this_year+1); ?>) going forward?",
             icon: 'warning',
             showCancelButton: true,
             showDenyButton: true,
@@ -229,9 +231,10 @@
                 $("#submit_type").val('current');
             } else if (result.isDenied) {
                 $("#submit_type").val('next');
+            } else {
+                $(btn).val('Update Bed');
+                return false;
             }
-
-            // $('form').submit();
 
             $.ajax({
                 type: "post",
