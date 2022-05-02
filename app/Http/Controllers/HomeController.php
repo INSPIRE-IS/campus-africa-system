@@ -2882,6 +2882,7 @@ class HomeController extends Controller
         //Duplicate check
         if ((isset($current_data->year) && $current_data->year <> $data['year']) || $propertyId == "0") {
             $filter_data = [
+                "residence" => $request->residence,
                 "floor" => $request->floor, 
                 "unit" => $request->unit, 
                 "room" => $request->room, 
