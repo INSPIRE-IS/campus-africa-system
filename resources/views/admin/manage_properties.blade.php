@@ -101,10 +101,10 @@
                 {
                     "data": "inventory",
                     "render": function( data, type, row) {
-                        let inventory = "Yes";
+                        let inventory = "&#128994; &nbsp; Yes";
 
                         if (row["inventory"] == "0" || row["inventory"] == null) {
-                            inventory = "No";
+                            inventory = "&#128308; &nbsp; No";
                         }
 
                         return inventory;
