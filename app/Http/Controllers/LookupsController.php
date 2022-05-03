@@ -310,8 +310,7 @@ class LookupsController extends Controller {
         Property::where('inventory', null)->update(['inventory' => '1']);
 
         //Now find building manager beds and mark inventory no
-        Property::where('residence', 'BRAAMLOFTS')->where('bed_code', '102')->update(['inventory' => '0']);
-        Property::where('residence', 'YMCA')->where('bed_code', 'Y2P10')->update(['inventory' => '0']);
+        Property::where('room_type', 'Building Manager')->update(['inventory' => '0']);
         
         //Then run through and mark all booked rooms
         $bed_used = Booking::get();        
