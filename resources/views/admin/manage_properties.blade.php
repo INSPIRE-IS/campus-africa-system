@@ -137,6 +137,10 @@
                             available = "&#128308; &nbsp; No";
                         }
 
+                        if ("{{$this_year}}" < row['year']) {
+                            available = "⚪ N/A";
+                        }
+
                         return available;
                     }
                 },

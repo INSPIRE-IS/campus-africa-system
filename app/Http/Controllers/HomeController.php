@@ -2970,7 +2970,7 @@ class HomeController extends Controller
         return "done";
     }
 
-    public function check_rooms(Request $request){
+    public function check_rooms($bookingId){
         $propertyInfo = Property::whereNull('room_available')->where('room_type', '!=', 'Building Manager')->get();
 
         $property = [];
@@ -3025,7 +3025,9 @@ class HomeController extends Controller
             }
         }
 
-        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA];
+        $booking = Booking::where('userId', $bookingId)->first();
+
+        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA, $booking];
     }
 
     public function get_booking_info(Request $request){
