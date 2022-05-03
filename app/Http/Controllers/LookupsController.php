@@ -63,22 +63,25 @@ class LookupsController extends Controller {
                 "actionUserUid" => Auth::user()->id,
             ];
 
+            
             $year = Lookups::where('group_id', '4')->first();
 
-            if(date($year->lookup_name) < date($request->value)){
+            $this->admin_updates_update_properties($year->lookup_name);
 
-                $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $year->lookup_name)->get();
+            // if(date($year->lookup_name) < date($request->value)){
+
+            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $year->lookup_name)->get();
     
-                foreach($bookingsList as $booking){
-                    Property::where('id', $booking->property_data_id)->update(['room_available' => null]);
-                }
-            }else{
-                $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $request->value)->get();
+            //     foreach($bookingsList as $booking){
+            //         Property::where('id', $booking->property_data_id)->update(['room_available' => null]);
+            //     }
+            // }else{
+            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $request->value)->get();
 
-                foreach($bookingsList as $booking){
-                    Property::where('id', $booking->property_data_id)->update(['room_available' => '1']);
-                }
-            }
+            //     foreach($bookingsList as $booking){
+            //         Property::where('id', $booking->property_data_id)->update(['room_available' => '1']);
+            //     }
+            // }
 
 
         }else if($request->group_id == "7"){
@@ -316,13 +319,13 @@ class LookupsController extends Controller {
         echo "done";
     }
 
-    public function admin_updates_update_properties(Request $request){
+    public function admin_updates_update_properties($year){
         //Get current booking year
         $this_year = Lookups::where('group_id', '4')->first();
 
         //First make all rooms available
-        Property::where('room_available', '0')->update(['room_available' => null]);
-        Property::where('room_available', '1')->update(['room_available' => null]);
+        Property::where('room_available', '0')->update(['room_available' => null, 'user_id_room' => null]);
+        Property::where('room_available', '1')->update(['room_available' => null, 'user_id_room' => null]);
 
         //Set Inventory to Yes for all
         Property::where('inventory', '0')->update(['inventory' => '1']);
@@ -332,7 +335,7 @@ class LookupsController extends Controller {
         Property::where('room_type', 'Building Manager')->update(['inventory' => '0']);
         
         //Then run through and mark all booked rooms
-        $bed_used = Booking::get();        
+        $bed_used = Booking::where('year', $year)->get();  
 
         foreach($bed_used as $bed){
             $thisProperty = Property::where('residence', $bed->property)->where('room_type', $bed->roomType)->where('floor', $bed->floor)->where('unit', $bed->unit)->where('bed_code', $bed->bed_code)->get();
@@ -345,6 +348,9 @@ class LookupsController extends Controller {
                         $propertyData = $pi;
                     }
                 }
+                // if($pi->id == $bed->property_data_id){
+                //     $propertyData = $pi;
+                // }
             }
             
             if (!empty($propertyData)) {
