@@ -2929,7 +2929,13 @@ class HomeController extends Controller
                 } else {
                     Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
                 }
-            }            
+            }    
+            
+            if ($request->submit_type !== "current") {
+                $data['year_end'] = 0;   
+                $data['room_available'] = null;
+                $data['user_id_room'] = null;
+            }
 
             //Now add the new one
             $new_id = Property::create($data)->id;
