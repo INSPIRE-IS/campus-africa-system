@@ -1282,7 +1282,8 @@ class HomeController extends Controller
         $booking_data = array(
             "userId" => $user->id, 
             "property" => $request->property, 
-            "roomType" => $request->roomType
+            "roomType" => $request->roomType,
+            "year" => $request->year
         );
 
         $lookup = Lookups::where('group_id', '7')->first();
@@ -2843,8 +2844,10 @@ class HomeController extends Controller
             $head = "Edit";
             $propertyData = Property::where('id', $propertyId)->first();
 
+            $lookup = Lookups::where('group_id', '4')->first();
+
             //Get bookings tied to this bed
-            $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();            
+            $bookings = Booking::where('property_data_id', $propertyId)->where('year', $lookup->lookup_name)->with('users')->get();            
         }
 
         return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year]);
@@ -5070,6 +5073,7 @@ class HomeController extends Controller
         return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
     }
 
+
     public function properties_filter_v2(Request $request) {        
 
         //Get current booking year
@@ -5079,14 +5083,17 @@ class HomeController extends Controller
         $search_value = [];
 
         
-        if ($request->firstLoad !== "1") {
-            Session::put('property', $request->property);
-            Session::put('year', $request->year);
+        // if ($request->firstLoad !== "1") {
+        //     Session::put('manage_property', $request->property);
+        //     Session::put('manage_year', $request->year);
 
-        } else {
-            $request->property = Session::get('property');
-            $request->year = Session::get('year');
-        }  
+        // } else {
+        //     $request->property = Session::get('manage_property');
+        //     $request->year = Session::get('manage_year');
+        // }  
+
+        Session::put('manage_property', $request->columns[0]['search']['value']);
+        Session::put('manage_year', $request->columns[9]['search']['value']);
         
         if (!empty($request->columns[0]['search']['value']) && $request->columns[0]['search']['value'] != "All") {
             $property = 'residence = "'.$request->columns[0]['search']['value'].'"';

@@ -141,7 +141,8 @@
                     }
                 },
             ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "page": 2
         });
 
         $("#properties_table").on("click", "tr", function(event){
@@ -242,8 +243,9 @@
             });
         });                
 
-        $("#property").val("<?php echo Session::get('property');?>").trigger('change');
-        $("#year").val("<?php if (Session::get('year')) { echo Session::get('year'); } else { echo 'current'; } ?>").trigger('change');
+        console.log("<?php echo Session::get('manage_property');?>")
+        $("#property").val("<?php echo Session::get('manage_property');?>").trigger('change');
+        $("#year").val("<?php if (Session::get('manage_year')) { echo Session::get('manage_year'); } else { echo 'current'; } ?>").trigger('change');
 
         // $("#searchButton_prop").click();
     });

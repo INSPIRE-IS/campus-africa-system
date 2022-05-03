@@ -62,6 +62,25 @@ class LookupsController extends Controller {
                 "lease_to_time" => $request->lease_to_time,
                 "actionUserUid" => Auth::user()->id,
             ];
+
+            $year = Lookups::where('group_id', '4')->first();
+
+            if(date($year->lookup_name) < date($request->value)){
+
+                $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $year->lookup_name)->get();
+    
+                foreach($bookingsList as $booking){
+                    Property::where('id', $booking->property_data_id)->update(['room_available' => null]);
+                }
+            }else{
+                $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $request->value)->get();
+
+                foreach($bookingsList as $booking){
+                    Property::where('id', $booking->property_data_id)->update(['room_available' => '1']);
+                }
+            }
+
+
         }else if($request->group_id == "7"){
             $data = [
                 "group_id" => $request->group_id,
