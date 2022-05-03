@@ -1778,6 +1778,10 @@ class HomeController extends Controller
             }
         }
 
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        array_push($search_value, "bookings_data.year = '" . $this_year->lookup_name . "'");
+
         if($request->date !== "" && !empty($request->date)){
             $date = 'u.created_at LIKE "%'.$request->date.'%"';
             array_push($search_value, $date);
