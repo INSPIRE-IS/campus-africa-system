@@ -145,7 +145,8 @@
                     }
                 },
             ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "stateSave": true
         });
 
         $("#properties_table").on("click", "tr", function(event){
