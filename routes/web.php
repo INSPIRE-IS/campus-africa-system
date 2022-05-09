@@ -185,4 +185,4 @@ Route::post('/remove-document-upload', [DocumentsController::class, 'remove_docu
 Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswordUser']);
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
 
-Route::get('/check-rooms', [HomeController::class, 'check_rooms']);
+Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);

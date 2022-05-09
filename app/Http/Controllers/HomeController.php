@@ -1778,6 +1778,10 @@ class HomeController extends Controller
             }
         }
 
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        array_push($search_value, "bookings_data.year = '" . $this_year->lookup_name . "'");
+
         if($request->date !== "" && !empty($request->date)){
             $date = 'u.created_at LIKE "%'.$request->date.'%"';
             array_push($search_value, $date);
@@ -2978,7 +2982,7 @@ class HomeController extends Controller
         return "done";
     }
 
-    public function check_rooms(Request $request){
+    public function check_rooms($bookingId){
         $propertyInfo = Property::whereNull('room_available')->where('room_type', '!=', 'Building Manager')->get();
 
         $property = [];
@@ -3033,7 +3037,9 @@ class HomeController extends Controller
             }
         }
 
-        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA];
+        $booking = Booking::where('userId', $bookingId)->first();
+
+        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA, $booking];
     }
 
     public function get_booking_info(Request $request){
@@ -5174,11 +5180,43 @@ class HomeController extends Controller
             $sLimit = " LIMIT " . intval($request->start) . ", " . intval($request->length);
         }
 
+        //Auth Location Checks
+        $auth_loc_check = $sep = "";
+        if (Auth::user()->role_braamlofts == "1") {
+            $auth_loc_check = "'BRAAMLOFTS'";
+            $sep = ",";
+        }
+        if (Auth::user()->role_80_jorissen == "1") {
+            $auth_loc_check .= $sep . "'80 JORISSEN'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_49_jorissen == "1") {
+            $auth_loc_check .= $sep . "'49 JORISSEN'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_dunvista_mansions == "1") {
+            $auth_loc_check .= $sep . "'DUNVISTA MANSIONS'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_wynton_joy == "1") {
+            $auth_loc_check .= $sep . "'WYNTON JOY'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_126_siemert == "1") {
+            $auth_loc_check .= $sep . "'126 SIEMERT'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_ymca == "1") {
+            $auth_loc_check .= $sep . "'YMCA'";
+            $sep = ",";            
+        }
+
         //Default Query
         $sql = 'SELECT id, residence, floor, unit, room, bed, bed_code, inventory, room_type, room_rate, year, year_end, room_available
             FROM property_data
             WHERE (`year` <= year_end or year_end = 0)
             ' . implode($query) . '
+            and residence in ('.$auth_loc_check.')
             
             order by residence, cast(floor as unsigned), cast(unit as unsigned), room, bed, year, year_end ASC
 
@@ -5187,56 +5225,19 @@ class HomeController extends Controller
         //Get all of our students
         $searched_data = DB::select($sql);
 
-        // $userData = [];
-
-        // foreach($searched_data as $data) {            
-        //     //Filter data based on the users roles
-        //     if(
-        //         (Auth::user()->role_braamlofts == "1" && ($data->residence == "BRAAMLOFTS")) ||
-        //         (Auth::user()->role_80_jorissen == "1" && $data->residence == "80 JORISSEN") ||
-        //         (Auth::user()->role_49_jorissen == "1" && $data->residence == "49 JORISSEN") ||
-        //         (Auth::user()->role_dunvista_mansions == "1" && $data->residence == "DUNVISTA MANSIONS") ||
-        //         (Auth::user()->role_wynton_joy == "1" && $data->residence == "WYNTON JOY") ||
-        //         (Auth::user()->role_126_siemert == "1" && $data->residence == "126 SIEMERT") ||
-        //         (Auth::user()->role_ymca == "1" && $data->residence == "YMCA")
-        //     ) {
-
-        //         if ($data->year <= $data->year_end || $data->year_end == 0) {
-        //             if(isset($request->year) && $request->year !== "All"){
-        //                 if ($request->year == "next") {
-        //                     $this_year++;
-        //                 }
-
-        //                 if (($this_year >= $data->year && $data->year_end == 0) || ($this_year >= $data->year && $this_year <= $data->year_end)) {
-        //                     $userData[] = (array) $data;
-        //                 }
-        //             } else {
-        //                 $userData[] = (array) $data;
-        //             }
-                    
-        //         }    
-                
-        //         // $userData[] = (array) $data;
-        //     }
-        // }
-
         // return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
 
         /* Total data set length */
-        $sQuery = "SELECT COUNT(id) as totcount FROM property_data where (`year` <= year_end or year_end = 0)" . implode($query);
+        $sQuery = "SELECT COUNT(id) as totcount FROM property_data where (`year` <= year_end or year_end = 0)" . implode($query) . "and residence in (".$auth_loc_check.")";
         $rResultTotal = DB::select($sQuery);
         $aResultTotal = $rResultTotal[0]->totcount;
         $iTotal = $aResultTotal;
 
         $output = (object) array(
-            // "draw" => 1,
             "recordsTotal" => $iTotal,
             "recordsFiltered" => $iTotal,
             "data" => (array) $searched_data,
-            // 'columns' => $columns
         );
-
-        // echo json_encode($userData);
 
         echo json_encode($output);
     }

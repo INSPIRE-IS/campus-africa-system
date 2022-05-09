@@ -127,9 +127,8 @@
 
         <div class="form-field">
             <label>Inventory</label>
-            <select name="inventory" id='inventory'>
-                <option value="" selected disabled>Select One</option>
-                <option value="1" <?php if(!empty($propertyData) && $propertyData->inventory == "1"){echo "selected";}?>>Yes</option>
+            <select name="inventory" id='inventory'>                
+                <option value="1" <?php if(empty($propertyData) || $propertyData->inventory == "1"){echo "selected";}?>>Yes</option>
                 <option value="0" <?php if(!empty($propertyData) && ($propertyData->inventory == "0" || $propertyData->inventory == null)){echo "selected";}?>>No</option>
             </select>
         </div>

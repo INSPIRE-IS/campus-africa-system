@@ -988,36 +988,40 @@
 
         $.ajax({
             type: "get",
-            url: "/check-rooms",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
             success: function (data) {
                 let properties = data[0];
+
+                let selProp = data[8].property;
 
                 properties.sort();
                 $('#property').empty()
 
                 Object.keys(properties).forEach( function(key) {
                     if(properties[key] == "BRAAMLOFTS" && "{{Auth::user()->role_braamlofts}}" == 1){
-                        $('#property').append('<option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";}?>>Braamlofts</option>')
+                        $('#property').append('<option value="Braamlofts">Braamlofts</option>')
                     }
                     if(properties[key] == "80 JORISSEN" && "{{Auth::user()->role_80_jorissen}}" == 1){
-                        $('#property').append('<option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>')
+                        $('#property').append('<option value="80 Jorissen">80 Jorissen</option>')
                     }
                     if(properties[key] == "49 JORISSEN" && "{{Auth::user()->role_49_jorissen}}" == 1){
-                        $('#property').append('<option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>')
+                        $('#property').append('<option value="49 Jorissen">49 Jorissen</option>')
                     }
                     if(properties[key] == "DUNVISTA MANSIONS" && "{{Auth::user()->role_dunvista_mansions}}" == 1){
-                        $('#property').append('<option value="Dunvista Mansions" <?php if($booking->property == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>')
+                        $('#property').append('<option value="Dunvista Mansions">Dunvista Mansions</option>')
                     }
                     if(properties[key] == "WYNTON JOY" && "{{Auth::user()->role_wynton_joy}}" == 1){
-                        $('#property').append('<option value="Wynton Joy" <?php if($booking->property == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>')
+                        $('#property').append('<option value="Wynton Joy">Wynton Joy</option>')
                     }
                     if(properties[key] == "126 SIEMERT" && "{{Auth::user()->role_126_siemert}}" == 1){
-                        $('#property').append('<option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";}?>>126 Siemert</option>')
+                        $('#property').append('<option value="126 Siemert">126 Siemert</option>')
                     }
                     if(properties[key] == "YMCA" && "{{Auth::user()->role_ymca}}" == 1){
-                        $('#property').append('<option value="YMCA" <?php if($booking->property == "YMCA"){echo "YMCA";}?>>YMCA</option>')
+                        $('#property').append('<option value="YMCA">YMCA</option>')
                     }
-                })
+                });
+
+                $('#property').val(selProp);
 
                 if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
                     $("#roomSection").removeClass('hidden');
@@ -1775,7 +1779,7 @@
 
         $.ajax({
             type: "get",
-            url: "/check-rooms",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
             success: function (data) {
                 //
                 

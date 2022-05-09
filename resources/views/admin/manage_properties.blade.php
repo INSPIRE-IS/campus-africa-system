@@ -104,10 +104,10 @@
                 {
                     "data": "inventory",
                     "render": function( data, type, row) {
-                        let inventory = "Yes";
+                        let inventory = "&#128994; &nbsp; Yes";
 
                         if (row["inventory"] == "0" || row["inventory"] == null) {
-                            inventory = "No";
+                            inventory = "&#128308; &nbsp; No";
                         }
 
                         return inventory;
@@ -140,11 +140,16 @@
                             available = "&#128308; &nbsp; No";
                         }
 
+                        if ("{{$this_year}}" < row['year']) {
+                            available = "⚪ N/A";
+                        }
+
                         return available;
                     }
                 },
             ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "stateSave": true
         });
 
         $("#properties_table").on("click", "tr", function(event){

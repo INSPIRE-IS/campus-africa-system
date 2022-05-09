@@ -114,6 +114,9 @@ class LookupsController extends Controller {
 
         Lookups::where('id', $request->lookupId)->update($data);
 
+        //Update bookings
+        $this->admin_updates_update_properties();
+
         return redirect()->route('lookups');
     }
 
@@ -331,7 +334,7 @@ class LookupsController extends Controller {
         echo "done";
     }
 
-    public function admin_updates_update_properties(Request $request){
+    public function admin_updates_update_properties(){
         //Get current booking year
         $this_year = Lookups::where('group_id', '4')->first();
 
@@ -347,7 +350,7 @@ class LookupsController extends Controller {
         Property::where('room_type', 'Building Manager')->update(['inventory' => '0']);
         
         //Then run through and mark all booked rooms
-        $bed_used = Booking::get();        
+        $bed_used = Booking::where('year', $this_year->lookup_name)->get();        
 
         foreach($bed_used as $bed){
             $thisProperty = Property::where('residence', $bed->property)->where('room_type', $bed->roomType)->where('floor', $bed->floor)->where('unit', $bed->unit)->where('bed_code', $bed->bed_code)->get();
