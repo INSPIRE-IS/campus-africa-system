@@ -120,7 +120,7 @@
                         @endif
 
                         @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                            @if(Auth::user()->role_cancel_lease == "1" || Auth::user()->role_modify_approved == 1)
+                            @if(Auth::user()->role_modify_approved == 1)
                                 <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                             @endif
                         @endif
@@ -1551,7 +1551,7 @@
                 if(data[0].bed_code !== "" && data[0].bed_code !== null){
                     bed_code = "Bed Code: "+data[0].bed_code;
 
-                    if("<?php echo Auth::user()->role_change_bed; ?>" == "1"){
+                    if("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2){
                         // if(data[2] == 'false'){                            
                             var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
                         // }

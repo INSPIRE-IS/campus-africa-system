@@ -14,14 +14,24 @@ use Auth;
 class LookupsController extends Controller {
     public function lookups(Request $request){
 
-        $lookups = Lookups::with('users')->get();
+        if(Auth::user()->role_lookup == 1){
+            $lookups = Lookups::with('users')->get();
+    
+            return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
+        }else{
+            return "404 Error";
+        }
 
-        return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
     }
 
     public function add_lookups(Request $request){
 
-        return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
+        if(Auth::user()->role_lookup == 1){
+
+            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function new_lookups(Request $request){
@@ -45,9 +55,14 @@ class LookupsController extends Controller {
 
     public function edit_lookups(Request $request, $lookupId){
 
-        $lookup = Lookups::where('id', $lookupId)->first();
+        if(Auth::user()->role_lookup == 1){
 
-        return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
+            $lookup = Lookups::where('id', $lookupId)->first();
+
+            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function save_lookups(Request $request){

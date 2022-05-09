@@ -2426,7 +2426,7 @@ class HomeController extends Controller
             }
         }
 
-        return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived];
+        return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived, $user];
     }
 
     public function change_booking(Request $request){
@@ -2820,37 +2820,49 @@ class HomeController extends Controller
 
     public function manage_properties(Request $request){
 
-        //Get current booking year
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        if(Auth::user()->role_lookup == 1){
+            //Get current booking year
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
 
-        return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "title" => "Manage Properties", "this_year" => $this_year]);
+            return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "title" => "Manage Properties", "this_year" => $this_year]);
+        }else{
+            return "404 Error";
+        }
+
+        
     }
 
     public function property_edit(Request $request, $propertyId){
         // $propertyId
 
-        //Get current booking year
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        if(Auth::user()->role_lookup == 1){
+            //Get current booking year
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
 
-        if($propertyId == "0"){
-            $head = "Add";
-            $propertyData = "";
+            if($propertyId == "0"){
+                $head = "Add";
+                $propertyData = "";
 
-            $bookings = [];
-            
+                $bookings = [];
+                
+            }else{
+                $head = "Edit";
+                $propertyData = Property::where('id', $propertyId)->first();
+
+                $lookup = Lookups::where('group_id', '4')->first();
+
+                //Get bookings tied to this bed
+                $bookings = Booking::where('property_data_id', $propertyId)->where('year', $lookup->lookup_name)->with('users')->get();            
+            }
+
+            return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year]);
         }else{
-            $head = "Edit";
-            $propertyData = Property::where('id', $propertyId)->first();
-
-            $lookup = Lookups::where('group_id', '4')->first();
-
-            //Get bookings tied to this bed
-            $bookings = Booking::where('property_data_id', $propertyId)->where('year', $lookup->lookup_name)->with('users')->get();            
+            return "404 Error";
         }
 
-        return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year]);
+        
     }
 
     public function save_property (Request $request){
@@ -3188,21 +3200,32 @@ class HomeController extends Controller
     }
 
     public function properties_info(Request $request){
-        $residences = Residence::get();
 
-        return view('admin.property_address', ["headerTitle" => "Residense Info", "title" => "Residense Info", "residences" => $residences]);
+        if(Auth::user()->role_lookup == 1){
+            $residences = Residence::get();
+
+            return view('admin.property_address', ["headerTitle" => "Residense Info", "title" => "Residense Info", "residences" => $residences]);
+        }else{
+            return "404 Error";
+        }
+        
     }
 
     public function residence_edit(Request $request, $residenceId){
-        if($residenceId == "0"){
-            $head = "Add";
-            $propertyData = "";
-        }else{
-            $head = "Edit";
-            $propertyData = Residence::where('id', $residenceId)->first();
-        }
 
-        return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData]);
+        if(Auth::user()->role_lookup == 1){
+            if($residenceId == "0"){
+                $head = "Add";
+                $propertyData = "";
+            }else{
+                $head = "Edit";
+                $propertyData = Residence::where('id', $residenceId)->first();
+            }
+
+            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function save_residence (Request $request){
@@ -3406,24 +3429,34 @@ class HomeController extends Controller
 
     public function room_types(Request $request){
 
-        $room_types = RoomTypes::get();
-        
+        if(Auth::user()->role_lookup == 1){
 
-        return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types"]);
+            $room_types = RoomTypes::get();
+            
+
+            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types"]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function room_type_edit(Request $request, $id){
-        if($id == "0"){
-            $head = "Add";
-            $roomTypeData = "";
+
+        if(Auth::user()->role_lookup == 1){
+            if($id == "0"){
+                $head = "Add";
+                $roomTypeData = "";
+            }else{
+                $head = "Edit";
+                $roomTypeData = RoomTypes::where('id', $id)->first();
+            }
+
+            $residence = Residence::get();
+
+            return view('admin.room_type_edit', ["headerTitle" => $head." Room Type", "title" => $head." Room Type", "roomTypeData" => $roomTypeData, "residence" => $residence]);
         }else{
-            $head = "Edit";
-            $roomTypeData = RoomTypes::where('id', $id)->first();
+            return "404 Error";
         }
-
-        $residence = Residence::get();
-
-        return view('admin.room_type_edit', ["headerTitle" => $head." Room Type", "title" => $head." Room Type", "roomTypeData" => $roomTypeData, "residence" => $residence]);
     }
 
     public function save_room_type (Request $request){

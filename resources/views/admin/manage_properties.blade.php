@@ -51,7 +51,10 @@
             </select>
         </div>
         
-        <div class="searchField"></div>
+        <div class="searchTab">
+            <br/>
+            <button type="button" id="clear_filters">Clear Filters</button>
+        </div>
 
         <!-- <div class="searchTab" >
             <button type="button" id="searchButton_prop">Search</button><br/>
@@ -248,6 +251,11 @@
 
         // $("#searchButton_prop").click();
     });
+
+    $("#clear_filters").on('click', function(){
+        $("#property").val("All").trigger('change');
+        $("#year").val("current").trigger('change');
+    })
 </script>
 
 
