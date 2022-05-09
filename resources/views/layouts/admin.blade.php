@@ -54,7 +54,9 @@
                 <a href="/leases">Leases</a>
                 <a href="/invoices">Invoices</a>
                 <a href="/mailing">Mailing</a>
-                <a href="/lookups">Lookups</a>
+                @if(Auth::user()->role_lookup == "1")
+                    <a href="/lookups">Lookups</a>
+                @endif
                 <a href="/reports">Reports</a>
 
                 @if(Auth::user()->role_manage_users == "1")
