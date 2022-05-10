@@ -5153,15 +5153,16 @@ class HomeController extends Controller
         }    
 
         if (!empty($request->search['value'])) {
-            $other_search = '(residence LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ' or floor LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ' or unit LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ' or room LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ' or bed LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ' or bed_code LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ' or year LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ' or year_end LIKE "%'.$request->search['value'].'%"';
-            $other_search .= ')';
+            // $other_search = '(residence LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or floor LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or unit LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or room LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or bed LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or bed_code LIKE "%'.$request->search['value'].'%"';
+            $other_search = 'bed_code LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or year LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or year_end LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ')';
 
             array_push($search_value, $other_search);
         }
