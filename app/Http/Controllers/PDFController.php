@@ -150,7 +150,7 @@ class PDFController extends Controller
 
         Mail::send('email.green_back', $data, function($message) use ($data) {
             // $message->to($data['email'], $data['name'])->subject('Application Approved');
-            $message->to(['campusafricaforms@gmail.com', 'roger@whitehart.co.za'])->subject('Application Approved');
+            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Application Approved');
             $message->from('noreply@campusafrica.co.za','Campus Africa');
             // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
         });
