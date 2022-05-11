@@ -1469,6 +1469,9 @@ class HomeController extends Controller
         $residence = Residence::where('residence', $request->property)->first();
 
         if($booking_data['room_rate'] == "0"){
+
+            User::where('id', $user->id)->update(["rob_10_fee" => 2]);
+
             UserFiles::create([
                 'userUid'=> $user->id,
                 'fileId' => 'proof_of_payment',
@@ -1484,6 +1487,9 @@ class HomeController extends Controller
         }
 
         if($request->studentType == "NSFAS"){
+
+            User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+            
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
 
             if(!empty($nsfasStudentsApproval)){
