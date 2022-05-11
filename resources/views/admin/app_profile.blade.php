@@ -268,7 +268,7 @@
                                     <!--  -->
 
                                     @if(explode("_", $file["field"])[0] == "other" && $file["field"] == $file["field"])
-                                        @if($file["status"] == "XApproved")
+                                        @if($file["status"] == "XApproved" || $file["status"] == "Approved")
                                             <div class="button approved"></div>
                                         @elseif($file["status"] == "AUploaded")
                                             <div class="button action"></div>
