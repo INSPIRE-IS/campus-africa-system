@@ -22,6 +22,7 @@ use ZipStream\ZipStream;
 use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
 use Session;
+use App\Models\UserResetToken;
 
 class HomeController extends Controller
 {
@@ -48,6 +49,7 @@ class HomeController extends Controller
             return redirect()->route('login');
         }
      }
+
     public function dashboard()
     {
 
@@ -345,7 +347,7 @@ class HomeController extends Controller
 
             $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
 
-            if($user->applicationStatus == "Approved Confirmed" && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null){
+            if($user->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null){
                 array_push($all, "moveIn");
             }
             if($user->studentType == "Cash / Direct"){
@@ -447,9 +449,123 @@ class HomeController extends Controller
 
             $comments = Comments::with('users')->where('user_uid', $userId)->orderBy('created_at', 'desc')->get();
 
+            $leaseApproved = 'false';
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments]);
+            $bank = 0;
+            $approval = 0;
+
+            foreach($userData[0]['files'] as $userFile){
+                if($userFile['field'] == "moveIn"){
+                    if($userFile['status'] == "XApproved"){
+                        $leaseApproved = "true";
+                    }
+                }
+
+                if($userFile['field'] == "bankStatement"){
+                    $bank = 1;
+                }
+
+                if($userFile['field'] == "bursaryApproval"){
+                    $approval = 1;
+                }
+                
+            }
+
+            $i = 0;
+            foreach($userData[0]['files'] as $userFile){
+                
+                if($userData[0]['userInfo']['studentType'] !== "Cash / Direct" && $bank == 1){
+                    if($userData[0]['files'][$i]['field'] == "bankStatement"){
+                        unset($userData[0]['files'][$i]);
+                    }
+                }
+
+                if($userData[0]['userInfo']['studentType'] == "Cash / Direct" && $approval == 1){
+                    if($userData[0]['files'][$i]['field'] == "bursaryApproval"){
+                        unset($userData[0]['files'][$i]);
+                    }
+                }
+
+                $i++;
+            }
+
+            
+            
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved]);
         }
+    }
+
+    function get_user_status($fileType, $user, $student) {
+
+        if($fileType == "proof_of_payment"){
+            $typeName = "Booking Fee Proof of Payment";
+            $field_data = "";
+            $field_doc = "rob_10_fee";
+            
+
+        } elseif($fileType == "copyID"){
+            $typeName = "Copy of ID Document";
+            $field_data = "id_data_approved";
+            $field_doc = "rob_15_id";            
+
+        }elseif($fileType == "studentCard"){
+            $typeName = "Copy of Student Card";
+            $field_data = "student_card_approved";
+            $field_doc = "rob_20_card";
+
+        }elseif($fileType == "proofRegistration"){
+            $typeName = "Proof of Registration";
+            $field_data = "registration_approved";
+            $field_doc = "rob_25_reg";
+
+        }elseif($fileType == "bursaryApproval"){
+            if($student->studentType == "NSFAS"){
+                $typeName = "NSFAS Approval";
+            }else{
+                $typeName = "Bursary Approval";
+            }
+            $field_data = "bursary_approved";
+            $field_doc = "rob_30_funds";
+
+        }elseif($fileType == "bankStatement"){
+            $typeName = "Bank Statements";
+            $field_data = "bank_approved";
+            $field_doc = "rob_30_funds";                
+
+        }elseif($fileType == "moveIn"){
+            $typeName = "Lease";
+            $field_data = "";
+            $field_doc = "rob_55_lease";
+        }else{
+            $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
+            $field_data = $fileType;
+            $field_doc = "rob_45_other";
+        }
+
+        $data_approved = 0;
+        $doc_approved = 0;
+
+        if (!empty($user)) {
+            if (!empty($field_data) && isset($user->{$field_data})) {
+                $data_approved = $user->{$field_data};
+            }
+
+            if (!empty($field_doc) && isset($user->{$field_doc})) {
+                $doc_approved = $user->{$field_doc};
+            }
+        }
+
+        return [
+            'typeName' => $typeName, 
+
+            'field_data' => $field_data, 
+            'field_doc' => $field_doc,
+
+            'data_approved' => $data_approved,
+            'doc_approved' => $doc_approved
+        ];
+
     }
 
     public function action_file(Request $request){
@@ -460,7 +576,7 @@ class HomeController extends Controller
             $action = $request->type;
             $reason = $request->reason;
 
-            $userFile = UserFiles::where('id', $fileId)->update([
+            UserFiles::where('id', $fileId)->update([
                 'status' => $action,
                 'rejectReason' => $reason,
                 'approved_by' => $request->userName,
@@ -468,46 +584,53 @@ class HomeController extends Controller
 
             $userFile = UserFiles::where('id', $fileId)->first();
 
-            if($userFile['fileId'] == "copyID"){
-                $typeName = "Copy of ID Document";
-                $dataField = "id_data_approved";
-                $dataField2 = "";
-            }elseif($userFile['fileId'] == "studentCard"){
-                $typeName = "Copy of Student Card";
-                $dataField = "student_card_approved";
-                $dataField2 = "";
-            }elseif($userFile['fileId'] == "bankStatement"){
-                $typeName = "Bank Statements";
-                $dataField = "bank_approved";
-                $dataField2 = "parent_approved";
-            }elseif($userFile['fileId'] == "proofRegistration"){
-                $typeName = "Proof of Registration";
-                $dataField = "registration_approved";
-                $dataField2 = "";
-            }elseif($userFile['fileId'] == "proof_of_payment"){
-                $typeName = "Booking Fee Proof of Payment";
-                $dataField = "";
-            }elseif($userFile['fileId'] == "moveIn"){
-                $typeName = "Lease";
-                $dataField = "";
-            }elseif($userFile['fileId'] == "bursaryApproval"){
-                $typeName = "NSFAS Approval";
-                $dataField = "bursary_approved";
-                $dataField2 = "burser_approved";
-            }
+            $user_status = $this->get_user_status($userFile['fileId'], "", User::where('id', $userFile->userUid)->first());
+
+            $allOtherFiles = UserFiles::where('userUid', $userFile->userUid)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
 
             if($action == "Rejected"){
-                $text = "Rejected ".$typeName." with reason: ".$reason ;
-            }else{
-                $text = "Approved ".$typeName;
 
-                if($dataField !== ""){
-                    User::where('id', $userFile->userUid)->update([$dataField => "2"]);
-                    
-                    if($dataField2 !== ""){
-                        User::where('id', $userFile->userUid)->update([$dataField2 => "2"]);
-                    }
+                $text = "Rejected ".$user_status['typeName']." with reason: ".$reason ;
+
+                if (!empty($user_status['field_data']) && explode("_", $user_status['field_data'])[0] !== "other") {
+                    User::where('id', $userFile->userUid)->update([$user_status['field_data'] => "0"]);
                 }
+                
+                User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "0"]);
+
+                if($user_status['field_doc'] == "rob_30_funds"){
+                    User::where('id', $userFile->userUid)->update(['parent_approved' => null, 'burser_approved' => null]);
+                }
+                
+
+            } else {
+
+                $text = "Approved ".$user_status['typeName'];
+
+                if(explode("_", $user_status['field_data'])[0] == "other" && count($allOtherFiles) > 1){
+                    $highest = 2;
+
+                    foreach($allOtherFiles as $otherFile){
+                        if($otherFile->status == "Approved"){
+                            $value = 2;
+                        }else if($otherFile->status == "Uploaded"){
+                            $value = 1;
+                        }else{
+                            $value = 0;
+                        }
+
+                        if($value < $highest){
+                            $highest = $value;
+                        }
+                    }
+
+                    User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => $highest]);
+
+                }else{
+                    
+                    User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "2"]);
+                }
+                
             }
 
             if($userFile['fileId'] == "moveIn" && $action == "Approved"){
@@ -520,6 +643,12 @@ class HomeController extends Controller
                 $name = Auth::user()->userFirstName;
             }
 
+            $status_data = User::where('id', $userFile->userUid)->first();
+
+            if($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0){
+                User::where('id', $userFile->userUid)->update(['rob_50_approve' => 1]);
+            }
+
             ActionList::create([
                 "userUid" => $userFile->userUid,
                 "action" => $text,
@@ -528,154 +657,9 @@ class HomeController extends Controller
                 "actionUserRole" => Auth::user()->userRole,
             ]);
 
-            // $uploaded = [];
-            // // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
-            // $user = User::where('id', $userFile->userUid)->first();
-            // $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
-
-            // if($user->applicationStatus == "Approved Confirmed"){
-            //     array_push($all, "moveIn");
-            // }
-            // if($user->studentType == "Cash / Direct"){
-            //     array_push($all, "bankStatement");
-            // }
-            // if($user->studentType !== "Cash / Direct"){
-            //     array_push($all, "bursaryApproval");
-            // }
-            // $data = [];
-
-            // $phase1Arr = [];
-            // $phase2 = "Empty";
-            // $phase2Arr = [];
-
-            // $user = User::with('files')->where('id', $userFile->userUid)->first();
-
-            // foreach($user->files as $file){
-            //     array_push($uploaded, $file->fileId);
-            //     array_push($data, ["field" => $file->fileId, "status" => $file->status]);
-            // }
-
-            // $left = array_diff($all, $uploaded);
-
-            // foreach($left as $dataLeft){
-            //     if($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
-            //         if($dataLeft == "bankStatement"){
-            //             array_push($data, ["field" => $dataLeft, "status" => "na"]);
-            //         }else{
-            //             array_push($data, ["field" => $dataLeft, "status" => ""]);
-            //         }
-            //     }else{
-            //         if($dataLeft == "bursaryApproval"){
-            //             array_push($data, ["field" => $dataLeft, "status" => "na"]);
-            //         }else{
-            //             array_push($data, ["field" => $dataLeft, "status" => ""]);
-            //         }
-            //     }
-            // }
-
-            // foreach($data as $item){
-            //     if($item['field'] == "proof_of_payment" || $item['field'] == "copyID"){
-
-            //         if($item['status'] == "Approved"){
-            //             array_push($phase1Arr, 2);
-            //         }
-
-            //         if($item['status'] == "Uploaded"){
-            //             array_push($phase1Arr, 1);
-            //         }
-
-            //         if($item['status'] == "Rejected" || $item['status'] == ""){
-            //             array_push($phase1Arr, 0);
-            //         }
-
-            //     }
-
-                
-
-            //     if($item['field'] == "studentCard" || $item['field'] == "proofRegistration" || $item['field'] == "bursaryApproval" || $item['field'] == "bankStatement"){
-                    
-            //         if($phase2 == "Empty" && $item['status'] == "Uploaded"){
-            //             $phase2 = "Action";
-            //         }else if($phase2 == "Empty" && $item['status'] == "Approved"){
-            //             $phase2 = "Approved";
-            //         }else if($phase2 == "Empty" && $item['status'] == "Rejected"){
-            //             $phase2 = "Rejected";
-            //         }
-
-            //         if($phase2 == "Action" && $item['status'] == "Uploaded"){
-            //             $phase2 = "Action";
-            //         }else if($phase2 == "Action" && $item['status'] == "Approved"){
-            //             $phase2 = "Action";
-            //         }else if($phase2 == "Action" && $item['status'] == "Rejected"){
-            //             $phase2 = "Action";
-            //         }
-
-            //         if($phase2 == "Approved" && $item['status'] == "Uploaded"){
-            //             $phase2 = "Action";
-            //         }else if($phase2 == "Approved" && $item['status'] == "Approved"){
-            //             $phase2 = "Approved";
-            //         }else if($phase2 == "Approved" && $item['status'] == "Rejected" || $phase2 == "Approved" && $item['status'] == ""){
-            //             $phase2 = "Rejected";
-            //         }
-
-            //         if($phase2 == "Rejected" && $item['status'] == "Uploaded"){
-            //             $phase2 = "Action";
-            //         }else if($phase2 == "Rejected" && $item['status'] == "Approved"){
-            //             $phase2 = "Rejected";
-            //         }else if($phase2 == "Rejected" && $item['status'] == "Rejected"){
-            //             $phase2 = "Rejected";
-            //         }
-
-            //     }
-
-            //     //For lease mark application as completed
-            //     if ($item['field'] == "moveIn") {
-            //         $phase2 = "Approved Confirmed";
-            //     }
-
-            // }
-
-            // $booking = "Rejected";
-
-            // if (!in_array(0, $phase1Arr)) {
-            //     $booking =  "Approved";
-            // }
-
-            // if (in_array(1, $phase1Arr)) {
-            //     $booking = "Action";
-            // }
-
-
-            // $overall = "Incomplete";
-
-            // if($booking == "Approved Confirmed" || $phase2 == "Approved Confirmed"){
-            //     $overall = "Approved";
-            // }
-
-            // if($booking == "Rejected" || $booking == "Empty" || $phase2 == "Rejected" || $phase2 == "Empty"){
-            //     $overall = "Incomplete";
-            // }
-
-            // if($booking == "Action" || $phase2 == "Action"|| $phase2 == "Approved"){
-            //     $overall = "Pending";
-            // }
-
-            // if($userFile['fileId'] == "moveIn"){
-            //     if($request->type == "Approved"){
-            //         $overall = "Approved";
-            //     }else{
-            //         $overall = "Incomplete";
-            //     }
-            // }
-
-            // User::where('id', $userFile->userUid)->update(["bookingStatus" => $booking, "applicationStatus" => $phase2, 'overall_status' => $overall]);
-
-
-
             $this->update_user_status($userFile->userUid);
 
-            return $userFile;
-
+            return [$userFile, User::where('id', $userFile->userUid)->first()];
 
         }
     }
@@ -768,7 +752,7 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['applicationStatus' => "Approved Confirmed", 'overall_status' => "Incomplete"]);
+        User::where('id', $userId)->update(['rob_50_approve' => 2, 'rob_55_lease' => 0]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -799,7 +783,7 @@ class HomeController extends Controller
         //     $message->from('test@test.com','test@test.com');
         // });
 
-        User::where('id', $userId)->update(['bookingStatus' => "Rejected Confirmed",'applicationStatus' => 'rejected', 'overall_status' => 'Rejected']);
+        User::where('id', $userId)->update(['rob_50_approve' => 3, 'rob_60_cancelled' => 1]);
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
 
         ActionList::create([
@@ -965,7 +949,16 @@ class HomeController extends Controller
     }
 
     public function edit_admin(Request $request){
-        
+
+        $oldUser = User::where('id', $request->userUid)->first();
+
+        $regen = "0";
+
+        if($request->role_lease_regen !== "1"){
+            $regen = "0";
+        }else{
+            $regen = "1";
+        }        
 
         User::where('id', $request->userUid)->update([
             "userFirstName" => $request->firstName,
@@ -976,6 +969,7 @@ class HomeController extends Controller
             "userEmail" => $request->email,
             "email" => $request->email,
             "userRole" => "1",
+            // "email_info" => $request->email_details,
             "role_create_app" => $request->create_app,
             "role_edit_app" => $request->edit_app,
             "role_upload_docs" => $request->upload_docs,
@@ -998,10 +992,35 @@ class HomeController extends Controller
             "role_lookup" => $request->role_lookup,
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
+            "role_cancel_lease" => $request->role_cancel_lease,
+            "role_lease_regen" => $regen,
+            "role_modify_approved" => $request->role_modify_approved,
         ]);
+
+        if($oldUser->userEmail !== $request->email){
+            $otherTokens = UserResetToken::where("userUid", $request->userUid)->where('active', 1)->get();
+
+            foreach($otherTokens as $old){
+                UserResetToken::where("id", $old->id)->update(['active' => 0]);
+            }
+
+            $userToken = UserResetToken::create(["userUid" => $request->userUid, "userToken" => $this->generateRandomLongString()]);
+
+            $data['name'] = $request->firstName;
+            $data['email'] = $request->email;
+            $data['userToken'] = $userToken->userToken;
+            $data['type'] = "updated";
+
+            Mail::send('email.system_user_application', $data, function($message) use ($data) {
+                $message->to($data['email'], $data['name'])->subject
+                    ('Campus Africa User Updated');
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
+            });
+        }
 
         return redirect()->back();
     }
+
 
     public function delete_admin(Request $request){
         
@@ -1163,309 +1182,11 @@ class HomeController extends Controller
         $outstanding = array_diff($all, $uploaded);
 
         return view('admin.studentUpload', ["headerTitle" => "Student File Upload", "user" => $user, "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding, "title" => "Student Upload"]);
-    }
+    }    
 
-    public function adminFileUpload(Request $request){
-        $userUid = $request->userUid;
-        $fileType = $request->fileType;
-
-        $fileUrlBack = "";
-
-        if ($request->hasFile('file')) {
-            
-            if ($request->file('file')->isValid()) {
-
-                $filenameWithExt  = $request->file('file')->getClientOriginalName();
-                $fileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('file')->extension();
-                $fileNameToStore = $fileName. '_'. time().'.'.$extension;
-
-                $request->file('file')->storeAs('public/files/'.$userUid.'/', $fileNameToStore);
-
-                $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
-                $fileUrlBack = $fileUrl;
-
-                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
-
-                if($fileType == "copyID"){
-                    $typeName = "Copy of ID Document";
-                }elseif($fileType == "studentCard"){
-                    $typeName = "Copy of Student Card";
-                }elseif($fileType == "bankStatement"){
-                    $typeName = "Bank Statements";
-                }elseif($fileType == "proofRegistration"){
-                    $typeName = "Proof of Registration";
-                }elseif($fileType == "proof_of_payment"){
-                    $typeName = "Booking Fee Proof of Payment";
-                }elseif($fileType == "moveIn"){
-                    $typeName = "Lease";
-                    User::where('id', $userUid)->update(['overall_status' => 'Pending']);
-                }elseif($fileType == "bursaryApproval"){
-                    $typeName = "NSFAS / Bursary Approval";
-                }
-
-                // if($typeName == "Lease"){
-                //     $statusAction = "Uploaded";
-                // }else{
-                //     $statusAction = "Uploaded";
-                // }
-                
-
-                if(!$hasFile){
-                    $file = UserFiles::create([
-                        'fileId' => $fileType,
-                        'userUid' => $userUid,
-                        'fileName' => $fileNameToStore,
-                        'fileUrl' => $fileUrl,
-                        'status' => "Uploaded",
-                        'uploaded_by' => Auth::user()->userFirstName,
-                    ]);
-
-                    $text = "Uploaded ".$typeName." for review";
-                }else{
-                    $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
-                        'fileId' => $fileType,
-                        'userUid' => $userUid,
-                        'fileName' => $fileNameToStore,
-                        'fileUrl' => $fileUrl,
-                        'status' => "Uploaded",
-                        'uploaded_by' => Auth::user()->userFirstName,
-                    ]);
-                    $text = "Re-uploaded ".$typeName." for review";
-                }
-
-                
     
-                ActionList::create([
-                    "userUid" => $userUid,
-                    "action" => $text,
-                    "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => Auth::user()->userFirstName,
-                    "actionUserRole" => Auth::user()->userRole,
-                ]);
 
-                // $uploaded = [];
-                // // $all = [0 => 'moveIn', 1 => 'proof_of_payment', 2 => 'copyID', 3 => 'studentCard', 4 => 'proofRegistration', 5 => 'bursaryApproval', 6 => "bankStatement" ];
-
-                // $user = User::where('id', $userUid)->first();
-                // $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
-
-                // // if($user->applicationStatus == "Approved Confirmed"){
-                // //     array_push($all, "moveIn");
-                // // }
-                // if($user->studentType == "Cash / Direct"){
-                //     array_push($all, "bankStatement");
-                // }
-                // if($user->studentType !== "Cash / Direct"){
-                //     array_push($all, "bursaryApproval");
-                // }
-                // $data = [];
-
-                // $phase1 = "Empty";
-                // $phase2 = "Empty";
-
-                // $user = User::with('files')->where('id', $userUid)->first();
-
-                // foreach($user->files as $file){
-                //     array_push($uploaded, $file->fileId);
-                //     array_push($data, ["field" => $file->fileId, "status" => $file->status]);
-                // }
-
-                // $left = array_diff($all, $uploaded);
-
-                // foreach($left as $dataLeft){
-                //     if($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
-                //         if($dataLeft == "bankStatement"){
-                //             array_push($data, ["field" => $dataLeft, "status" => "na"]);
-                //         }else{
-                //             array_push($data, ["field" => $dataLeft, "status" => ""]);
-                //         }
-                //     }else{
-                //         if($dataLeft == "bursaryApproval"){
-                //             array_push($data, ["field" => $dataLeft, "status" => "na"]);
-                //         }else{
-                //             array_push($data, ["field" => $dataLeft, "status" => ""]);
-                //         }
-                //     }
-                // }
-
-                // foreach($data as $item){
-                //     if($item['field'] == "proof_of_payment" || $item['field'] == "copyID"){
-                //         // array_push($phase1, ["field" => $item->field, "status" => $itme->status]);
-                //         if($phase1 == "Empty" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Empty" && $item['status'] == "Approved"){
-                //             $phase1 = "Approved";
-                //         }else if($phase1 == "Empty" && $item['status'] == "Rejected"){
-                //             $phase1 = "Rejected";
-                //         }
-
-                //         if($phase1 == "Action" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Action" && $item['status'] == "Approved"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Action" && $item['status'] == "Rejected"){
-                //             $phase1 = "Action";
-                //         }
-
-                //         if($phase1 == "Approved" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Approved" && $item['status'] == "Approved"){
-                //             $phase1 = "Approved";
-                //         }else if($phase1 == "Action" && $item['status'] == "Rejected"){
-                //             $phase1 = "Rejected";
-                //         }
-
-                //         if($phase1 == "Rejected" && $item['status'] == "Uploaded"){
-                //             $phase1 = "Action";
-                //         }else if($phase1 == "Rejected" && $item['status'] == "Approved"){
-                //             $phase1 = "Rejected";
-                //         }else if($phase1 == "Rejected" && $item['status'] == "Rejected"){
-                //             $phase1 = "Rejected";
-                //         }
-
-                //     }
-                    
-
-                //     if($item['field'] == "studentCard" || $item['field'] == "proofRegistration" || $item['field'] == "bursaryApproval" || $item['field'] == "bankStatement"){
-                //         if($phase2 == "Empty" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Empty" && $item['status'] == "Approved"){
-                //             $phase2 = "Approved";
-                //         }else if($phase2 == "Empty" && $item['status'] == "Rejected"){
-                //             $phase2 = "Rejected";
-                //         }
-
-                //         if($phase2 == "Action" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Action" && $item['status'] == "Approved"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Action" && $item['status'] == "Rejected"){
-                //             $phase2 = "Action";
-                //         }
-
-                //         if($phase2 == "Approved" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Approved" && $item['status'] == "Approved"){
-                //             $phase2 = "Approved";
-                //         }else if($phase2 == "Approved" && $item['status'] == "Rejected" || $phase2 == "Approved" && $item['status'] == ""){
-                //             $phase2 = "Rejected";
-                //         }
-
-                //         if($phase2 == "Rejected" && $item['status'] == "Uploaded"){
-                //             $phase2 = "Action";
-                //         }else if($phase2 == "Rejected" && $item['status'] == "Approved"){
-                //             $phase2 = "Rejected";
-                //         }else if($phase2 == "Rejected" && $item['status'] == "Rejected"){
-                //             $phase2 = "Rejected";
-                //         }
-
-                //     }
-
-                //     //For lease mark application as completed
-                //     if ($item['field'] == "moveIn") {
-                //         $phase2 = "Approved Confirmed";
-                //     }
-
-                // }
-
-                // $overall = "Incomplete";
-
-                // if($phase1 == "Action" || $phase2 == "Action"){
-                //     $overall = "Pending";
-                // }
-
-                // if($fileType == "moveIn"){
-                //     $overall = "Pending";
-                // }
-
-                // User::where('id', $userUid)->update(["bookingStatus" => $phase1, "applicationStatus" => $phase2, "overall_status" => $overall]);
-
-                $this->update_user_status($userUid);
-
-                return ["done", $fileUrlBack, $file];
-
-            }else{
-                return ["error", "File Not Valid"];
-            }
-        }else{
-            return ["error", "No File Detected"];
-        }
-
-
-        
-    }
-
-    public function lookups(Request $request){
-
-        $lookups = Lookups::with('users')->get();
-
-        return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
-    }
-
-    public function add_lookups(Request $request){
-
-        return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
-    }
-
-    public function new_lookups(Request $request){
-
-        if($request->group_id == "7"){
-            $data['group_id'] = $request->group_id;
-            $data['lookup_name'] = $request->booking_waiver;
-            $data['waiver_date_from'] = $request->date_from;
-            $data['waiver_date_to'] = $request->date_to;
-            $data['actionUserUid'] = Auth::user()->id;
-        }else{
-            $data['group_id'] = $request->group_id;
-            $data['lookup_name'] = $request->value;
-            $data['actionUserUid'] = Auth::user()->id;
-        }
-
-        Lookups::create($data);
-
-        return redirect()->route('lookups');
-    }
-
-    public function edit_lookups(Request $request, $lookupId){
-
-        $lookup = Lookups::where('id', $lookupId)->first();
-
-        return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
-    }
-
-    public function save_lookups(Request $request){
-
-        if($request->group_id == "4"){
-            $data = [
-                "group_id" => $request->group_id,
-                "lookup_name" => $request->value,
-                "lease_from_date" => $request->lease_from_date,
-                "lease_from_time" => $request->lease_from_time,
-                "lease_to_date" => $request->lease_to_date,
-                "lease_to_time" => $request->lease_to_time,
-                "actionUserUid" => Auth::user()->id,
-            ];
-        }else if($request->group_id == "7"){
-            $data = [
-                "group_id" => $request->group_id,
-                "lookup_name" => $request->booking_waiver,
-                "waiver_date_from" => $request->date_from,
-                "waiver_date_to" => $request->date_to,
-                "actionUserUid" => Auth::user()->id,
-            ];
-        }else{
-            $data = [
-                "group_id" => $request->group_id,
-                "lookup_name" => $request->value,
-                "actionUserUid" => Auth::user()->id,
-            ];
-        }
-
-        Lookups::where('id', $request->lookupId)->update($data);
-
-        return redirect()->route('lookups');
-    }
+    
 
     public function new_student(Request $request){
 
@@ -1543,6 +1264,8 @@ class HomeController extends Controller
             'bint' => $request->bint,
             'bIntName' => $request->bIntName,
             // 'nsfas_bursar' => $request->nsfas_bursar,
+            'rob_55_lease' => 3,
+            'rob_45_other' => 3,
         ]);
 
         ActionList::create([
@@ -1559,7 +1282,8 @@ class HomeController extends Controller
         $booking_data = array(
             "userId" => $user->id, 
             "property" => $request->property, 
-            "roomType" => $request->roomType
+            "roomType" => $request->roomType,
+            "year" => $request->year
         );
 
         $lookup = Lookups::where('group_id', '7')->first();
@@ -1745,6 +1469,9 @@ class HomeController extends Controller
         $residence = Residence::where('residence', $request->property)->first();
 
         if($booking_data['room_rate'] == "0"){
+
+            User::where('id', $user->id)->update(["rob_10_fee" => 2]);
+
             UserFiles::create([
                 'userUid'=> $user->id,
                 'fileId' => 'proof_of_payment',
@@ -1760,6 +1487,9 @@ class HomeController extends Controller
         }
 
         if($request->studentType == "NSFAS"){
+
+            User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+            
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
 
             if(!empty($nsfasStudentsApproval)){
@@ -1771,7 +1501,8 @@ class HomeController extends Controller
 
                 ActionList::create([
                     "userUid" => $user->id,
-                    "action" => "NSFAS / Bursary has been Approved via import",
+                    // "action" => "NSFAS / Bursary has been Approved via import",
+                    "action" => "NSFAS Approval has been Approved via import",
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
@@ -1815,15 +1546,29 @@ class HomeController extends Controller
         return $randomString;
     }
 
+    public function generateRandomLongString($length = 24) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
     public function add_admin(Request $request){
 
-        // if($request->password == ""){
-            $password = $this->generateRandomString();
-        // }else{
-        //     $password = $request->password;
-        // }
+        $password = $this->generateRandomString();
 
-        User::create([
+        $regen = "0";
+
+        if($request->role_lease_regen !== "1"){
+            $regen = "0";
+        }else{
+            $regen = "1";
+        }
+
+        $newUser = User::create([
             "name" => $request->firstName,
             "userFirstName" => $request->firstName,
             "userLastname" => $request->lastName,
@@ -1850,28 +1595,34 @@ class HomeController extends Controller
             "role_change_date" => $request->role_change_date,
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
-            "email_info" => $request->email_details,
+            // "email_info" => $request->email_details,
             "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
             "role_cancel_booking" => $request->role_cancel_booking,
             "role_update_booking_fee" => $request->role_update_booking_fee,
             "role_lookup" => $request->role_lookup,
             "role_comment" => $request->role_comment,
             "user_role_name" => $request->user_role_name,
+            "role_cancel_lease" => $request->role_cancel_lease,
+            "role_lease_regen" => $regen,
+            "role_modify_approved" => $request->role_modify_approved,
         ]);
 
-        if($request->email_details == "1"){
+        // if($request->email_details == "1"){
+
+            $userToken = UserResetToken::create(["userUid" => $newUser->id, "userToken" => $this->generateRandomLongString()]);
 
             $data['name'] = $request->firstName;
             $data['email'] = $request->email;
-            $data['password'] = $password;
+            $data['userToken'] = $userToken->userToken;
+            $data['type'] = "registered";
 
             Mail::send('email.system_user_application', $data, function($message) use ($data) {
                 $message->to($data['email'], $data['name'])->subject
                     ('Campus Africa User Registered');
-                $message->from('hello@campusafrica.co.za','Campus Africa');
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
 
-        }
+        // }
         
 
         return redirect()->route('users');
@@ -1898,7 +1649,7 @@ class HomeController extends Controller
         $search_value = [];
 
         
-        if($request->firstLoad !== "1"){
+        if ($request->firstLoad !== "1") {
 
             Session::put('property', $request->property);
             Session::put('room_type', $request->room_type);
@@ -1912,7 +1663,9 @@ class HomeController extends Controller
             Session::put('date', $request->date);
             Session::put('beds', $request->beds);
             Session::put('processingStatus', $request->processingStatus);
-        }else{
+
+        } else {
+
             $request->property = Session::get('property');
             $request->room_type = Session::get('room_type');
             $request->applicant = Session::get('applicant');
@@ -1925,15 +1678,16 @@ class HomeController extends Controller
             $request->date = Session::get('date');
             $request->beds = Session::get('beds');
             $request->processingStatus = Session::get('processingStatus');
+
         }
 
-        if($request->processingStatus !== "" && !empty($request->processingStatus)){
-            if($request->processingStatus !== "All" && $request->processingStatus !== "NA"){
+        // if($request->processingStatus !== "" && !empty($request->processingStatus)){
+        //     if($request->processingStatus !== "All" && $request->processingStatus !== "NA"){
 
-                $processingStatus = 'u.overall_status LIKE "%'.$request->processingStatus.'%"';
-                array_push($search_value, $processingStatus);
-            }
-        }
+        //         $processingStatus = 'u.overall_status LIKE "%'.$request->processingStatus.'%"';
+        //         array_push($search_value, $processingStatus);
+        //     }
+        // }
 
 
         if($request->studentNo !== "" && !empty($request->studentNo)){
@@ -1942,11 +1696,8 @@ class HomeController extends Controller
         }
 
         if($request->idPassport !== "" && !empty($request->idPassport)){
-            $idNo = 'u.userId LIKE "%'.$request->idPassport.'%"';
+            $idNo = '(u.userId LIKE "%'.$request->idPassport.'%" OR u.userPassport LIKE "%'.$request->idPassport.'%")';
             array_push($search_value, $idNo);
-
-            $passport = 'u.userPassport LIKE "%'.$request->idPassport.'%"';
-            array_push($search_value, $passport);
         }
 
         if($request->bookingRef !== "" && !empty($request->bookingRef)){
@@ -1999,12 +1750,43 @@ class HomeController extends Controller
             
         }
 
+
+        if($request->fieldStatus !== null && $request->fieldStatus !== "All"){
+
+            $queryString = "";
+            $i = 1;
+            foreach($request->status as $id){
+                
+                if($i < count($request->status)){
+                    $queryString .= "'".$id."',";
+                }else{
+                    $queryString .= "'".$id."'";
+                }
+                $i++;
+            }
+
+            
+
+            if(!in_array("3", $request->status)){
+                $value = 'u.'.$request->fieldStatus.' in ('.$queryString.') AND rob_60_cancelled = "0"';
+            }else{
+                $value = '(u.'.$request->fieldStatus.' in ('.$queryString.') OR rob_60_cancelled = "1")';
+            }
+
+            array_push($search_value, $value);
+
+        }
+
         if($request->student_type !== "" && !empty($request->student_type)){
             if($request->student_type !== "All"){
                 $student_type = 'u.studentType LIKE "%'.$request->student_type.'%"';
                 array_push($search_value, $student_type);
             }
         }
+
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        array_push($search_value, "bookings_data.year = '" . $this_year->lookup_name . "'");
 
         if($request->date !== "" && !empty($request->date)){
             $date = 'u.created_at LIKE "%'.$request->date.'%"';
@@ -2021,14 +1803,14 @@ class HomeController extends Controller
 
         //Default Query
         $sql = 'SELECT
-                (select GROUP_CONCAT(uf1.`status`) from user_files uf1 where uf1.userUid = u.id and uf1.fileId = "copyID") as copyID,
-                (select GROUP_CONCAT(uf2.`status`) from user_files uf2 where uf2.userUid = u.id and uf2.fileId = "proof_of_payment") as proof_of_payment,
-                (select GROUP_CONCAT(uf3.`status`) from user_files uf3 where uf3.userUid = u.id and uf3.fileId = "studentCard") as studentCard,
-                (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
-                (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
-                (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
+                -- (select GROUP_CONCAT(uf1.`status`) from user_files uf1 where uf1.userUid = u.id and uf1.fileId = "copyID") as copyID,
+                -- (select GROUP_CONCAT(uf2.`status`) from user_files uf2 where uf2.userUid = u.id and uf2.fileId = "proof_of_payment") as proof_of_payment,
+                -- (select GROUP_CONCAT(uf3.`status`) from user_files uf3 where uf3.userUid = u.id and uf3.fileId = "studentCard") as studentCard,
+                -- (select GROUP_CONCAT(uf4.`status`) from user_files uf4 where uf4.userUid = u.id and uf4.fileId = "proofRegistration") as proofRegistration,
+                -- (select GROUP_CONCAT(uf5.`status`) from user_files uf5 where uf5.userUid = u.id and uf5.fileId = "bursaryApproval") as bursaryApproval,
+                -- (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
                 -- (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
-                (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "moveIn") as leaseStatus,
+                -- (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "moveIn") as leaseStatus,
                 u.*, bookings_data.*
             FROM
                 users u
@@ -2044,197 +1826,237 @@ class HomeController extends Controller
 
             $addUser = 1;
             $counter = 0;
+            $itemCount = 0;
 
-            if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
-                $counter++;
-            }  
+            // if($student->applicationStatus !== "Approved Confirmed" && $student->overall_status !== "Cancelled"){
+            //     $counter++;
+            // }  
             
-            if($student->overall_status === "Cancelled"){
-                $counter = -30;
-            }  
+            // if($student->overall_status === "Cancelled"){
+            //     $counter = -30;
+            // }  
 
             //Default files that all students have
-            $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus", "bankStatement", "bursaryApproval"];
+            // $file_types = ["proof_of_payment", "copyID", "studentCard", "proofRegistration", "leaseStatus", "bankStatement", "bursaryApproval"];
 
-            //Add in additional files based on student type. Also block out file types based on student type
-            if($student->studentType == "Cash / Direct"){
-                // array_push($file_types, "bankStatement");
-                $student->bursaryApproval = "na";
-            } elseif($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
-                // array_push($file_types, "bursaryApproval");
-                $student->bankStatement = "na";
-            }
+            // //Add in additional files based on student type. Also block out file types based on student type
+            // if($student->studentType == "Cash / Direct"){
+            //     // array_push($file_types, "bankStatement");
+            //     $student->bursaryApproval = "na";
+            // } elseif($student->studentType == "NSFAS" || $student->studentType == "Bursary"){
+            //     // array_push($file_types, "bursaryApproval");
+            //     $student->bankStatement = "na";
+            // }
             
-            //If we are filtering a document type don't auto add students
-            if (!empty($request->fieldStatus) && !empty($request->status)) {
-                // if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
-                    $addUser = 0;
-                // }
+            // //If we are filtering a document type don't auto add students
+            // if (!empty($request->fieldStatus) && !empty($request->status)) {
+            //     // if ($request->fieldStatus != "bookingStatus" && $request->fieldStatus != "applicationStatus") {                
+            //         $addUser = 0;
+            //     // }
 
-                if ($request->fieldStatus == "bookingStatus") {                
-                    // $addUser = 0;
+            //     if ($request->fieldStatus == "bookingStatus") {                
+            //         // $addUser = 0;
 
-                    if(in_array("Valid", $request->status) && ($student->bookingStatus == "Approved" || $student->bookingStatus == "Approved Confirmed")){
-                        $addUser = 1;
-                    }
-                    if(in_array("Incomplete", $request->status) && ($student->bookingStatus === "Rejected" || $student->bookingStatus == "Empty" || $student->bookingStatus == null)){
-                        $addUser = 1;
-                    }
-                    if(in_array("Pending", $request->status) && $student->bookingStatus == "Action"){
-                        $addUser = 1;
-                    }
-                    if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
-                        $addUser = 1;
-                    }
-                }
+            //         if(in_array("Valid", $request->status) && ($student->bookingStatus == "Approved" || $student->bookingStatus == "Approved Confirmed")){
+            //             $addUser = 1;
+            //         }
+            //         if(in_array("Incomplete", $request->status) && ($student->bookingStatus === "Rejected" || $student->bookingStatus == "Empty" || $student->bookingStatus == null)){
+            //             $addUser = 1;
+            //         }
+            //         if(in_array("Pending", $request->status) && $student->bookingStatus == "Action"){
+            //             $addUser = 1;
+            //         }
+            //         if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
+            //             $addUser = 1;
+            //         }
+            //     }
 
-                if ($request->fieldStatus == "applicationStatus") {                
+            //     if ($request->fieldStatus == "applicationStatus") {                
 
-                    if(in_array("Valid", $request->status) && $student->applicationStatus == "Approved Confirmed"){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Valid", $request->status) && $student->applicationStatus == "Approved Confirmed"){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("Incomplete", $request->status) && ($student->applicationStatus == "Rejected" || $student->applicationStatus == null || $student->applicationStatus == "Empty")){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Incomplete", $request->status) && ($student->applicationStatus == "Rejected" || $student->applicationStatus == null || $student->applicationStatus == "Empty")){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("Incomplete", $request->status) && $student->bookingStatus == "Rejected" && $student->applicationStatus == "Approved"){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Incomplete", $request->status) && $student->bookingStatus == "Rejected" && $student->applicationStatus == "Approved"){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("Pending", $request->status) &&( $student->applicationStatus == "Action" ||  $student->applicationStatus == "Approved") && $student->bookingStatus !== "Rejected"){
-                        $addUser = 1;
-                    }
+            //         if(in_array("Pending", $request->status) &&( $student->applicationStatus == "Action" ||  $student->applicationStatus == "Approved") && $student->bookingStatus !== "Rejected"){
+            //             $addUser = 1;
+            //         }
 
-                    if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
-                        $addUser = 1;
-                    }
-                }
+            //         if(in_array("NA", $request->status) && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected")){
+            //             $addUser = 1;
+            //         }
+            //     }
 
-            }
+            // }
 
-            if($request->processingStatus == "NA"){
-                $addUser = 0;
-                if($student->overall_status == "Cancelled" || $student->overall_status == "Rejected"){
-                    $addUser = 1;
-                }
-            }
+            // if($request->processingStatus == "NA"){
+            //     $addUser = 0;
+            //     if($student->overall_status == "Cancelled" || $student->overall_status == "Rejected"){
+            //         $addUser = 1;
+            //     }
+            // }
 
             // if ($student->bookingRef == 143) {
             //     print_r($student);
             //     die();
             // }
 
-            if ($student->overall_status != "Cancelled" && empty($student->moveIn) && $student->applicationStatus == "Approved Confirmed") {
-                $student->moveIn = "Incomplete";
-            }
+            // if ($student->overall_status != "Cancelled" && empty($student->moveIn) && $student->applicationStatus == "Approved Confirmed") {
+            //     $student->moveIn = "Incomplete";
+            // }
 
             //Loop over file types and check if we add users or not. Also adjust the students sort count based on what they have
-            foreach($file_types as $ft) {
-                if ($addUser == 0) {
-                    if ($request->fieldStatus == $ft) {
-                        if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected" && $student->overall_status != "Cancelled" && $student->overall_status != "Rejected Confirmed" ){
-                            $addUser = 1;
-                        }
+            // foreach($file_types as $ft) {
+            //     if ($addUser == 0) {
+            //         if ($request->fieldStatus == $ft) {
+            //             if(in_array("Incomplete", $request->status) && $student->{$ft} === "Rejected" && $student->overall_status != "Cancelled" && $student->overall_status != "Rejected Confirmed" ){
+            //                 $addUser = 1;
+            //             }
                         
-                        if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null && $student->applicationStatus != "Approved Confirmed"){
-                            $addUser = 1;
-                        }
+            //             if($ft == "leaseStatus" && in_array("NA", $request->status) && $student->{$ft} === null && $student->applicationStatus != "Approved Confirmed"){
+            //                 $addUser = 1;
+            //             }
 
-                        if($ft == "leaseStatus" && in_array("Incomplete", $request->status) && $student->{$ft} === null && $student->applicationStatus == "Approved Confirmed"){
-                            $addUser = 1;
-                        }
+            //             if($ft == "leaseStatus" && in_array("Incomplete", $request->status) && $student->{$ft} === null && $student->applicationStatus == "Approved Confirmed"){
+            //                 $addUser = 1;
+            //             }
 
-                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
-                            $addUser = 1;
-                        }
+            //             if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && $student->overall_status != "Cancelled" && in_array("Incomplete", $request->status) && $student->{$ft} === null){
+            //                 $addUser = 1;
+            //             }
         
-                        if(in_array("Valid", $request->status) && $student->{$ft} == "Approved" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                            $addUser = 1;
-                        }
+            //             if(in_array("Valid", $request->status) && $student->{$ft} == "Approved" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                 $addUser = 1;
+            //             }
         
-                        if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                            $addUser = 1;
-                        }  
+            //             if(in_array("Pending", $request->status) && $student->{$ft} == "Uploaded" && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                 $addUser = 1;
+            //             }  
                         
-                        if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected") && in_array("NA", $request->status)){
-                            $addUser = 1;
-                        }
+            //             if($ft !== "bursaryApproval" && $ft !== "bankStatement" && $ft !== "leaseStatus" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected") && in_array("NA", $request->status)){
+            //                 $addUser = 1;
+            //             }
 
-                        if(!in_array("NA", $request->status)){
-                            if ($student->overall_status != "Cancelled" && $student->overall_status != "Rejected") {
-                                if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                    $addUser = 1;
-                                }
+            //             if(!in_array("NA", $request->status)){
+            //                 if ($student->overall_status != "Cancelled" && $student->overall_status != "Rejected") {
+            //                     if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                         $addUser = 1;
+            //                     }
     
-                                if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
-                                    $addUser = 1;
-                                }
+            //                     if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
+            //                         $addUser = 1;
+            //                     }
     
-                                if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
-                                    $addUser = 1;
-                                }
+            //                     if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
+            //                         $addUser = 1;
+            //                     }
                                 
-                                if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                    $addUser = 1;
-                                }
-                            }
-                        }else{
-                            if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                $addUser = 1;
-                            }
+            //                     if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                         $addUser = 1;
+            //                     }
+            //                 }
+            //             }else{
+            //                 if(in_array("Incomplete", $request->status) && $ft == "bursaryApproval" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                     $addUser = 1;
+            //                 }
 
-                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
-                                $addUser = 1;
-                            }
+            //                 if(in_array("NA", $request->status) && $ft == "bursaryApproval" && $student->{$ft} == "na"){
+            //                     $addUser = 1;
+            //                 }
 
-                            if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected Confirmed")){
-                                $addUser = 1;
-                            }
+            //                 if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->overall_status == "Cancelled" || $student->overall_status == "Rejected Confirmed")){
+            //                     $addUser = 1;
+            //                 }
                             
 
-                            // if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->{$ft} == "na" || $student->{$ft} == null || $student->{$ft} == "Rejected") && $student->overall_status == "Cancelled"){
-                            //     $addUser = 1;
-                            // }
+            //                 // if(in_array("NA", $request->status) && $ft == "bursaryApproval" && ($student->{$ft} == "na" || $student->{$ft} == null || $student->{$ft} == "Rejected") && $student->overall_status == "Cancelled"){
+            //                 //     $addUser = 1;
+            //                 // }
 
-                            if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
-                                $addUser = 1;
-                            }
-                            if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == null && $student->overall_status == "Cancelled"){
-                                $addUser = 1;
-                            }
+            //                 if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == "na"){
+            //                     $addUser = 1;
+            //                 }
+            //                 if(in_array("NA", $request->status) && $ft == "bankStatement" && $student->{$ft} == null && $student->overall_status == "Cancelled"){
+            //                     $addUser = 1;
+            //                 }
                             
-                            if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
-                                $addUser = 1;
-                            }
-                        }
+            //                 if(in_array("Incomplete", $request->status) && $ft == "bankStatement" && empty($student->{$ft}) && $student->overall_status !== "Cancelled" && $student->overall_status != "Rejected Confirmed"){
+            //                     $addUser = 1;
+            //                 }
+            //             }
                         
-                    }
-                }                
+            //         }
+            //     }     
+                
+                // if ($student->{$ft} == "Uploaded") {
+                //     $counter++;
+                //     $counter++;
+                // }
 
-                if ($student->{$ft} == "Uploaded") {
-                    $counter++;
-                    $counter++;
-                }
-
-                if($student->{$ft} == "" || $student->{$ft} == "Rejected"){
-                    $counter--;
-                }
+                // if($student->{$ft} == "" || $student->{$ft} == "Rejected"){
+                //     $counter--;
+                // }
     
-                if($student->{$ft} == "Approved"){
-                    $counter--;
-                    $counter--;
-                    $counter--;
-                }
+                // if($student->{$ft} == "Approved"){
+                //     $counter--;
+                //     $counter--;
+                //     $counter--;
+                // }
     
                 // if($student->{$ft} == "na" || empty($student->{$ft})){
                 //     $counter--;
                 //     $counter--;
                 //     $counter--;
                 // }
-            } 
-            
+            // } 
 
+            $studentArrCheckList = [
+                $student->rob_10_fee, 
+                $student->rob_15_id, 
+                $student->rob_20_card, 
+                $student->rob_25_reg, 
+                $student->rob_30_funds, 
+                $student->rob_35_info, 
+                $student->rob_40_bed, 
+                $student->rob_45_other, 
+                $student->rob_50_approve, 
+                $student->rob_55_lease, 
+            ];
+
+            foreach($studentArrCheckList as $listItem){
+                if($listItem == 1){
+                    $counter += 25;
+                    $itemCount ++;
+                }
+
+                if($listItem == 0){
+                    $counter--;
+                    $counter--;
+                    $itemCount ++;
+                }
+
+                if($listItem == 2){
+                    $counter++;
+                    $itemCount ++;
+                }
+
+            }
+
+            if($itemCount == 9 && $counter == 9 || $itemCount == 10 && $counter == 10){
+                $counter = -50;
+            }
+
+            if($student->rob_60_cancelled){
+                $counter = -60;
+            }
+            
             //Only add users that pass the above checks
             if ($addUser == 1) {
                 $student->counter = $counter;
@@ -2258,7 +2080,7 @@ class HomeController extends Controller
         //Sort our data based on our weighted counter
         usort($userData, function($a, $b) {
             return $b['counter'] - $a['counter'];
-        });      
+        });  
 
         return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
     }
@@ -2272,13 +2094,32 @@ class HomeController extends Controller
     }
 
     public function cancel_booking(Request $request){
-        User::where('id', $request->userId)->update(['overall_status' => 'Cancelled', 'bookingStatus' => 'Cancelled', 'applicationStatus' => 'Cancelled']);
+        User::where('id', $request->userId)->update(['rob_60_cancelled' => 1, 'rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
         Booking::where('userId', $request->userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
+
+        Property::where('user_id_room', $request->userId)->update(["user_id_room" => null, "room_available" => null]);
+
+        //Delete the Lease
+        UserFiles::where('userUid', $request->userId)->where('fileId', 'moveIn')->delete();
 
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Application Cancelled",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        return 'true';
+    }
+
+    public function restore_booking(Request $request){
+        User::where('id', $request->userId)->update(['rob_60_cancelled' => 0]);
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Restored Cancelled Application",
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
@@ -2543,11 +2384,74 @@ class HomeController extends Controller
         return ["done", $emailValid, $idNumberValid];
     }
 
+    public function get_booking_details(Request $request){
+        //
+        $booking = Booking::where('userId', $request->userId)->first();
+        $user = User::with('files')->where('id', $request->userId)->first();
+        $residence = Residence::where('residence', $booking->property)->first();
+
+        //Get booking Meta
+        $bookingPropData = Property::where('id', $booking->property_data_id)->first();
+
+        $booking_paid = 'false';
+        $booking_waived = 'false';
+
+        foreach($user['files'] as $file){
+
+            if($file->fileId == "proof_of_payment"){
+                
+                if($file->fileUrl !== null && $file->fileUrl !== '' && $file->status !== "Rejected" && $file->status !== "Uploaded" && $file->status !== "AUploaded"){
+                    $booking_paid = "true";
+                    
+                }else{
+                    if($file->status == "XApproved" || $file->status == "Approved"){
+
+                        $actions = ActionList::where('userUid', $user->id)->orderBy('id', 'DESC')->get();
+
+                        foreach($actions as $action){
+                            if (str_contains($action->action, 'Waived')) {
+                                $booking_waived = 'true';
+                                break;
+                            }
+
+                            if(str_contains($action->action, 'R0')){
+                                $booking_waived = '0';
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        $leaseApproved = 'false';
+
+
+        foreach($user['files'] as $userFile){
+            if($userFile['fileId'] == "moveIn"){
+                if($userFile['status'] == "Approved"){
+                    $leaseApproved = "true";
+                }
+            }
+        }
+
+        return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived, $user];
+    }
+
     public function change_booking(Request $request){
 
         $bookingId = $request->bookingId;
         $property = $request->property;
         $roomTypeNew = $request->roomType;
+
+        $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
+        $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
+
+        if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
+            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+        }
 
         if($request->floor == "Choose a Floor"){
             //Changing Only Property & Room Type
@@ -2568,7 +2472,7 @@ class HomeController extends Controller
                         $oldData->$key = "Unassigned";
                     }
                     ActionList::create([
-                        "userUid" => $request->bookingId,
+                        "userUid" => $bookingId,
                         "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
                         "actionUserUid" => Auth::user()->id,
                         "actionUserDisplayName" => Auth::user()->userFirstName,
@@ -2579,9 +2483,13 @@ class HomeController extends Controller
     
             Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew]);
 
-            
+            //Update the User robot
+            User::where('id', $bookingId)->update(['rob_40_bed' => 0]);
 
-        }else{
+        } else {
+
+            //Get current booking year
+            $this_year = Lookups::where('group_id', '4')->first();
 
             $oldData = Booking::where('userId', $bookingId)->first();
             $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomTypeNew, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "bed_code|Bed Code"=> $request->bed_code];
@@ -2590,9 +2498,17 @@ class HomeController extends Controller
     
             Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
     
-            $propertyData = Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->first();
-            
-    
+            $propertyDataAll = Property::where('residence', $property)->where('room_type', $roomTypeNew)->where("floor", $request->floor)->where('unit', $request->unit)->where('bed_code', $request->bed_code)->get();
+            $propertyData = "";
+
+            //Find the correct bed
+            foreach($propertyDataAll as $pi) {
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        $propertyData = $pi;
+                    }
+                }
+            }    
     
             foreach($newData as $key => $new){
                 
@@ -2615,6 +2531,9 @@ class HomeController extends Controller
             }
     
             Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id]);
+
+            //Update the User robot
+            User::where('id', $bookingId)->update(['rob_40_bed' => 2]);
     
     
             $lookup = Lookups::where('group_id', '7')->first();
@@ -2843,7 +2762,29 @@ class HomeController extends Controller
             }
         }
 
+        $status_data = User::where('id', $bookingId)->first();
+
+        if($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0){
+            User::where('id', $bookingId)->update(['rob_50_approve' => 1]);
+        }
+
         $this->update_user_status($bookingId);
+
+        if($request->change_bed_type == "cancel"){
+
+            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+    
+            ActionList::create([
+                "userUid" => $bookingId,
+                "action" => "Rejected Approved Lease to Change Bed",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+        }
+
+
 
 
 
@@ -2889,28 +2830,60 @@ class HomeController extends Controller
 
     public function manage_properties(Request $request){
 
-        $properties = Property::get();
+        if(Auth::user()->role_lookup == 1){
+            //Get current booking year
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
 
-        return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "properties" => $properties, "title" => "Manage Properties"]);
+            return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "title" => "Manage Properties", "this_year" => $this_year]);
+        }else{
+            return "404 Error";
+        }
+
+        
     }
 
     public function property_edit(Request $request, $propertyId){
         // $propertyId
 
-        if($propertyId == "0"){
-            $head = "Add";
-            $propertyData = "";
+        if(Auth::user()->role_lookup == 1){
+            //Get current booking year
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+
+            if($propertyId == "0"){
+                $head = "Add";
+                $propertyData = "";
+
+                $bookings = [];
+                
+            }else{
+                $head = "Edit";
+                $propertyData = Property::where('id', $propertyId)->first();
+
+                $lookup = Lookups::where('group_id', '4')->first();
+
+                //Get bookings tied to this bed
+                $bookings = Booking::where('property_data_id', $propertyId)->where('year', $lookup->lookup_name)->with('users')->get();            
+            }
+
+            return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year]);
         }else{
-            $head = "Edit";
-            $propertyData = Property::where('id', $propertyId)->first();
+            return "404 Error";
         }
 
-        return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData]);
+        
     }
 
     public function save_property (Request $request){
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
 
         $propertyId = $request->propertyId;
+
+        //Get current property data
+        $current_data = Property::where('id', $propertyId)->first();
 
         $data = [
             "residence" => $request->residence,
@@ -2923,22 +2896,165 @@ class HomeController extends Controller
             "bed_code" => $request->bed_code,
             "inventory" => $request->inventory,
             "room_type" => $request->roomType,
-            "room_rate" => $request->room_rate
+            "room_rate" => $request->room_rate,            
         ];
 
-        if($propertyId == "0"){
-            Property::create($data);
-        }else{
-            Property::where('id', $propertyId)->update($data);
+        if (isset($current_data->room_available)) {
+            $data['room_available'] = $current_data->room_available;
+            $data['user_id_room'] = $current_data->user_id_room;
         }
 
-        return redirect("/manage-properties");
+        if ($request->submit_type == "current") {
+            $data['year'] = $this_year;
+            $data['year_end'] = isset($current_data->year_end) && $current_data->year_end == 0 ? 0 : $this_year;
+
+        } else {
+            $data['year'] = $this_year + 1;
+            $data['year_end'] = 0;
+        }
+
+        //Duplicate check
+        if ((isset($current_data->year) && $current_data->year <> $data['year']) || $propertyId == "0") {
+            $filter_data = [
+                "residence" => $request->residence,
+                "floor" => $request->floor, 
+                "unit" => $request->unit, 
+                "room" => $request->room, 
+                "bed" => $request->bed, 
+                "year" => $data['year']
+            ];
+            $duplicate_data = Property::where($filter_data)->get();
+
+            $found = 0;
+            foreach($duplicate_data as $dd) {
+                if ($dd->year_end == 0 || $dd->year_end >= $dd->year) {
+                    $found++;
+                }
+            }
+
+            if ($found > 0) {
+                return 'A bed for next year already exists';
+            }
+        }
+
+        if($propertyId == "0") {
+            $data['year_end'] = 0;   
+            $data['room_available'] = null;
+            Property::create($data);
+        }else{
+            //First delete the old one
+            if ($request->submit_type == "current") {
+                Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
+            } else {
+                if ($current_data->year == $this_year) {
+                    Property::where('id', $propertyId)->update(["year_end" => $this_year]);
+                } else {
+                    Property::where('id', $propertyId)->update(["year_end" => $this_year - 1]);
+                }
+            }    
+
+            //Now add the new one
+            $new_id = Property::create($data)->id;
+
+            //Update bookings with this bed
+            if ($request->submit_type == "current") {
+                $bookings = Booking::where('property_data_id', $propertyId)->with('users')->get();
+                
+                foreach($bookings as $b) {
+                    $booking_data = [
+                        "floor" => $request->floor,
+                        "unit" => $request->unit,
+                        "room" => $request->room,
+                        "bed" => $request->bed,
+                        "bed_code" => $request->bed_code,
+                        "roomType" => $request->roomType,
+                        "property" => $request->residence,
+                        "property_data_id" => $new_id
+                    ];
+
+                    Booking::where('id', $b->id)->update($booking_data);
+                }
+            }
+        }
+
+        return "done";
+    }
+    
+    public function delete_bed (Request $request) {
+        $property = Property::where('id', $request->propertyId)->first();
+
+        Property::where('id', $request->propertyId)->update(['year_end' => $property->year - 1]);
+
+        return "done";
+    }
+
+    public function check_rooms($bookingId){
+        $propertyInfo = Property::whereNull('room_available')->where('room_type', '!=', 'Building Manager')->get();
+
+        $property = [];
+        $roomTypes126Siemert = [];
+        $roomTypes49Jorissen = [];
+        $roomTypes80Jorissen = [];
+        $roomTypesBraamlofts = [];
+        $roomTypesDunvista = [];
+        $roomTypesWynton = [];
+        $roomTypesYMCA = [];
+
+        foreach($propertyInfo as $pi){
+            
+            if(!in_array($pi->residence, $property)){
+                array_push($property, $pi->residence);
+            }
+
+            if($pi->residence == "126 SIEMERT"){
+                if(!in_array($pi->room_type, $roomTypes126Siemert)){
+                    array_push($roomTypes126Siemert, $pi->room_type);
+                }
+            }
+            if($pi->residence == "49 JORISSEN"){
+                if(!in_array($pi->room_type, $roomTypes49Jorissen)){
+                    array_push($roomTypes49Jorissen, $pi->room_type);
+                }
+            }
+            if($pi->residence == "80 JORISSEN"){
+                if(!in_array($pi->room_type, $roomTypes80Jorissen)){
+                    array_push($roomTypes80Jorissen, $pi->room_type);
+                }
+            }
+            if($pi->residence == "BRAAMLOFTS"){
+                if(!in_array($pi->room_type, $roomTypesBraamlofts)){
+                    array_push($roomTypesBraamlofts, $pi->room_type);
+                }
+            }
+            if($pi->residence == "DUNVISTA MANSIONS"){
+                if(!in_array($pi->room_type, $roomTypesDunvista)){
+                    array_push($roomTypesDunvista, $pi->room_type);
+                }
+            }
+            if($pi->residence == "WYNTON JOY"){
+                if(!in_array($pi->room_type, $roomTypesWynton)){
+                    array_push($roomTypesWynton, $pi->room_type);
+                }
+            }
+            if($pi->residence == "YMCA"){
+                if(!in_array($pi->room_type, $roomTypesYMCA)){
+                    array_push($roomTypesYMCA, $pi->room_type);
+                }
+            }
+        }
+
+        $booking = Booking::where('userId', $bookingId)->first();
+
+        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA, $booking];
     }
 
     public function get_booking_info(Request $request){
         $bookingData = Booking::where('userId', $request->bookingId)->first();
 
         $property = Property::where('user_id_room', $request->bookingId)->first();
+
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
 
         if(!empty($property)){
             $selected = $property;
@@ -2947,41 +3063,55 @@ class HomeController extends Controller
         }
 
         if (isset($request->getType) && $request->getType == "floor") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
+            // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->get();
+
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->whereNull('room_available')->where('inventory', '1')->get();
+
+            // // $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
 
             //Create a unique Floor list
             $floors = [];
 
             foreach($propertyInfo as $pi) {
-                $new_floor = $pi->floor;
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        $new_floor = $pi->floor;
 
-                if (!empty($pi->meta_info_1)) {
-                    $new_floor .= $pi->meta_info_1;
-                }
+                        if (!empty($pi->meta_info_1)) {
+                            $new_floor .= $pi->meta_info_1;
+                        }
 
-                if (!isset($floors[$new_floor])) {
-                    $floors[$new_floor] = $pi;
+                        if (!isset($floors[$new_floor])) {
+                            $floors[$new_floor] = $pi;
+                        }
+                    }
                 }
             }
 
             return ["true", $selected, $floors];
 
         } elseif (isset($request->getType) && $request->getType == "unit") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->get();
+            // $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->get();
+
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('meta_info_1', $request->meta)->whereNull('room_available')->where('inventory', '1')->get();
 
             //Create a unique Unit list
             $units = [];
 
             foreach($propertyInfo as $pi) {
-                if (!isset($units[$pi->unit])) {
-                    $units[$pi->unit] = $pi;
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        if (!isset($units[$pi->unit])) {
+                            $units[$pi->unit] = $pi;
+                        }                                 
+                    }
                 }
             }
 
             return ["true", $selected, $units];
 
         } elseif (isset($request->getType) && $request->getType == "bed_code") {
-            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->get();
+            $propertyInfo = Property::where('residence', $request->property)->where('room_type', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->whereNull('room_available')->where('inventory', '1')->get();
 
             //Create a unique Unit list
             $bed_code = [];
@@ -2996,7 +3126,7 @@ class HomeController extends Controller
                         $bed_code[$pi->bed_code] = $pi;
                     }else{
 
-                        if($bed_used[0]->users->applicationStatus == "Rejected Confirmed" || $bed_used[0]->users->applicationStatus == "Cancelled"){
+                        if($bed_used[0]->users->rob_50_approve == "2" || $bed_used[0]->users->rob_60_cancelled == "1"){
                             $bed_code[$pi->bed_code] = $pi;
                         }else{
                             $booked_bed_codes[$pi->bed_code] = $pi;
@@ -3082,21 +3212,32 @@ class HomeController extends Controller
     }
 
     public function properties_info(Request $request){
-        $residences = Residence::get();
 
-        return view('admin.property_address', ["headerTitle" => "Residense Info", "title" => "Residense Info", "residences" => $residences]);
+        if(Auth::user()->role_lookup == 1){
+            $residences = Residence::get();
+
+            return view('admin.property_address', ["headerTitle" => "Residense Info", "title" => "Residense Info", "residences" => $residences]);
+        }else{
+            return "404 Error";
+        }
+        
     }
 
     public function residence_edit(Request $request, $residenceId){
-        if($residenceId == "0"){
-            $head = "Add";
-            $propertyData = "";
-        }else{
-            $head = "Edit";
-            $propertyData = Residence::where('id', $residenceId)->first();
-        }
 
-        return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData]);
+        if(Auth::user()->role_lookup == 1){
+            if($residenceId == "0"){
+                $head = "Add";
+                $propertyData = "";
+            }else{
+                $head = "Edit";
+                $propertyData = Residence::where('id', $residenceId)->first();
+            }
+
+            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function save_residence (Request $request){
@@ -3204,8 +3345,10 @@ class HomeController extends Controller
 
     public function action_data(Request $request){
 
+        $student = User::where('id', $request->userId)->first();
+
         if($request->FileNameForApproval == "studentCard"){
-            $name = 'STUDENT CARD / PROOF OF STUDENT NUMBER';
+            $name = 'STUDENT CARD';
             $field = "student_card_approved";
         }else if($request->FileNameForApproval == "copyID"){
             $name = 'COPY OF ID DOCUMENT';
@@ -3214,13 +3357,29 @@ class HomeController extends Controller
             $name = 'PROOF OF REGISTRATION';
             $field = "registration_approved";
         }else if($request->FileNameForApproval == "bursaryApproval"){
-            $name = 'NSFAS / BURSARY';
+            if($student->studentType == "NSFAS"){
+                $name = 'NSFAS';
+            }else{
+                $name = 'BURSARY';
+            }
             $field = "bursary_approved";
             $field2 = "burser_approved";
+
+            if($request->type == "1"){
+                User::where('id', $request->userId)->update(['burser_approved' => 1]);
+            }else{
+                User::where('id', $request->userId)->update(['burser_approved' => null]);
+            }
         }else if($request->FileNameForApproval == "bankStatement"){
             $name = 'BANK STATEMENT';
             $field = "bank_approved";
             $field2 = "parent_approved";
+
+            if($request->type == "1"){
+                User::where('id', $request->userId)->update(['parent_approved' => 1]);
+            }else{
+                User::where('id', $request->userId)->update(['parent_approved' => null]);
+            }
         }
 
         $dataToUpdate = [
@@ -3237,6 +3396,12 @@ class HomeController extends Controller
             $action = "Approved";
         }else{
             $action = "Rejected";
+        }
+
+        $status_data = User::where('id', $request->userId)->first();
+
+        if($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0){
+            User::where('id', $request->userId)->update(['rob_50_approve' => 1]);
         }
 
         ActionList::create([
@@ -3276,24 +3441,34 @@ class HomeController extends Controller
 
     public function room_types(Request $request){
 
-        $room_types = RoomTypes::get();
-        
+        if(Auth::user()->role_lookup == 1){
 
-        return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types"]);
+            $room_types = RoomTypes::get();
+            
+
+            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types"]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function room_type_edit(Request $request, $id){
-        if($id == "0"){
-            $head = "Add";
-            $roomTypeData = "";
+
+        if(Auth::user()->role_lookup == 1){
+            if($id == "0"){
+                $head = "Add";
+                $roomTypeData = "";
+            }else{
+                $head = "Edit";
+                $roomTypeData = RoomTypes::where('id', $id)->first();
+            }
+
+            $residence = Residence::get();
+
+            return view('admin.room_type_edit', ["headerTitle" => $head." Room Type", "title" => $head." Room Type", "roomTypeData" => $roomTypeData, "residence" => $residence]);
         }else{
-            $head = "Edit";
-            $roomTypeData = RoomTypes::where('id', $id)->first();
+            return "404 Error";
         }
-
-        $residence = Residence::get();
-
-        return view('admin.room_type_edit', ["headerTitle" => $head." Room Type", "title" => $head." Room Type", "roomTypeData" => $roomTypeData, "residence" => $residence]);
     }
 
     public function save_room_type (Request $request){
@@ -3422,6 +3597,9 @@ class HomeController extends Controller
                                             array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
                                             array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                         }
+
+                                        //Update robots
+                                        User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                     }
                                 }
                             }
@@ -3591,6 +3769,8 @@ class HomeController extends Controller
             ]);
         }
 
+        User::where('id', $request->userId)->update(["rob_10_fee" => "2"]);
+
     
         ActionList::create([
             "userUid" => $request->userId,
@@ -3599,6 +3779,8 @@ class HomeController extends Controller
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
         ]);
+
+        return UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->pluck('id')->first();
         
     }
 
@@ -3607,6 +3789,8 @@ class HomeController extends Controller
         $lookup = Lookups::where('group_id', '7')->first();
 
         $booking = Booking::where('userId', $request->userId)->first();
+
+        User::where('id', $request->userId)->update(["rob_10_fee" => "0"]);
 
         $booking_data = [];
 
@@ -4074,6 +4258,12 @@ class HomeController extends Controller
         }
     }
 
+    public function get_comment(Request $request){
+        $commentList = Comments::with('users')->where('user_uid', $request->userId)->orderBy('created_at', 'desc')->get();
+
+        return $commentList;
+    }
+
     public function add_comment(Request $request){
         
         Comments::create([
@@ -4301,7 +4491,17 @@ class HomeController extends Controller
         $user = User::where('id', $student_id)->first();
 
         if (!empty($user)) {
-            return ["bookingStatus" => $user->bookingStatus, "applicationStatus" => $user->applicationStatus, "overall_status" => $user->overall_status];
+            return ["rob_10_fee" => $user->rob_10_fee, "rob_15_id" => $user->rob_15_id, "rob_20_card" => $user->rob_20_card , "rob_25_reg" => $user->rob_25_reg , "rob_30_funds" => $user->rob_30_funds , "rob_35_info" => $user->rob_35_info , "rob_40_bed" => $user->rob_40_bed, "rob_45_other" => $user->rob_45_other,  "rob_50_approve" => $user->rob_50_approve, "rob_60_cancelled" => $user->rob_60_cancelled, 'parent_approved' => $user->parent_approved, 'burser_approved' => $user->burser_approved ];
+        } else {
+            return false;
+        }
+    }
+
+    public function check_user_payment($student_id){
+        $user = User::where('id', $student_id)->first();
+
+        if (!empty($user)) {
+            return ["burCompanyName" => $user->burCompanyName, "burRegNo" => $user->burRegNo, "burContactPerson" => $user->burContactPerson , "burContactNo" => $user->burContactNo , "burEmail" => $user->burEmail , "bAddress1" => $user->bAddress1 , "bAddress2" => $user->bAddress2, "bAddressCity" => $user->bAddressCity,  "bAddressPostal" => $user->bAddressPostal, "nsfas_bursar" => $user->nsfas_bursar, "studentType" => $user->studentType, 'bPayment' => $user->bPayment, "bint" => $user->bint, "bIntName" => $user->bIntName, "sponFirstName" => $user->sponFirstName, "sponLastName" => $user->sponLastName, "sponCell" => $user->sponCell, "sponEmail" => $user->sponEmail, "sponId" => $user->sponId, "pNationality" => $user->pNationality, "pPassportNo" => $user->pPassportNo, "pAddress1" => $user->pAddress1, "pAddress2" => $user->pAddress2, "pAddressCity" => $user->pAddressCity, "pAddressPostal" => $user->pAddressPostal];
         } else {
             return false;
         }
@@ -4313,6 +4513,13 @@ class HomeController extends Controller
         $booking_old = Booking::where('userId', $userId)->first();
 
         Booking::where('userId', $userId)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
+        Property::where('id', $booking_old->property_data_id)->update(["user_id_room" => null, "room_available" => null]);
+
+        //Update the User robot
+        User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
+
+        //Delete the Lease
+        UserFiles::where('userUid', $userId)->where('fileId', 'moveIn')->delete();
 
         ActionList::create([
             "userUid" => $userId,
@@ -4321,6 +4528,8 @@ class HomeController extends Controller
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
         ]);
+
+        $status_data = User::where('id', $userId)->first();
 
         return 'true';
     }
@@ -4489,6 +4698,555 @@ class HomeController extends Controller
         foreach($students as $student){
             $this->update_user_status($student->id);
         }
+    }
+
+    public function edit_inline_data(Request $request) {
+        $user = User::find($request->userUid);
+
+        if ($request->formId == "inline_edit_address") {
+            if ($request->type == "form") {
+                ?>
+                <form class="edit_info_inline">
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Address 1:</span>
+                        <input class="noedit required" name="userAddress1" id="userAddress1" type="text" value="<?php echo $user->userAddress1; ?>">
+                        <span id="userAddress1_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Address 2:</span>
+                        <input class="noedit required" name="userAddress2" id="userAddress2" type="text" value="<?php echo $user->userAddress2; ?>">
+                        <span id="userAddress2_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>City:</span>
+                        <input class="noedit required" name="userAddressCity" id="userAddressCity" type="text" value="<?php echo $user->userAddressCity; ?>">
+                        <span id="userAddressCity_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Postal:</span>
+                        <input class="noedit required" name="userAddressPostal" id="userAddressPostal" type="text" value="<?php echo $user->userAddressPostal; ?>">
+                        <span id="userAddressPostal_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid postal code</small></span>
+                    </div> 
+
+                    <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
+                    <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+
+                    <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
+                    <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
+                </form>
+                <?php
+            } else {
+                echo $user->userAddress1 . "<br/>";
+                echo $user->userAddress2 . "<br/>";
+                echo $user->userAddressCity . "<br/>";
+                echo $user->userAddressPostal . "<br/>";
+
+                ?>
+                <!-- <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button> -->
+                <div class="address_btn"></div>
+                <?php
+            }
+
+        } elseif ($request->formId == "inline_edit_kin") {
+            if ($request->type == "form") {
+                ?>
+                <form class="edit_info_inline">
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Title:</span>
+                        <select name="kinTitle" id='kinTitle' class="noedit required">
+                            <option value="" disabled selected>Select one</option>
+                            <option value="Mr" <?php if($user->kinTitle == "Mr"){echo "selected";} ?>>Mr</option>
+                            <option value="Ms" <?php if($user->kinTitle == "Ms"){echo "selected";} ?>>Ms</option>
+                            <option value="Mrs" <?php if($user->kinTitle == "Mrs"){echo "selected";} ?>>Mrs</option>
+                            <option value="Miss" <?php if($user->kinTitle == "Miss"){echo "selected";} ?>>Miss</option>
+                        </select>
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>First Name *</span>
+                        <input class="noedit required" name="kinFirstName" id="kinFirstName" type="text" value="<?php echo $user->kinFirstName; ?>">
+                        <span id="kinFirstName_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Last Name *</span>
+                        <input class="noedit required" name="kinLastName" id="kinLastName" type="text" value="<?php echo $user->kinLastName; ?>">
+                        <span id="kinLastName_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Relationship *</span>
+                        <input class="noedit required" name="kinRelationship" id="kinRelationship" type="text" value="<?php echo $user->kinRelationship; ?>">
+                        <span id="kinRelationship_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Cellphone Number *</span>
+                        <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>">
+                        <span id="kinCellNo_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                        <span id="kinCellNo_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
+                        <input name="userCell" id="userCell" type="hidden" value="<?php echo $user->userCell; ?>">
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Email Address</span>
+                        <input class="noedit" name="kinEmail" id="kinEmail" type="text" value="<?php echo $user->kinEmail; ?>">
+                        <span id="kinEmail_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid email</small></span>
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address Street *</span>
+                        <input class="noedit required" name="kinAddressStr" id="kinAddressStr" type="text" value="<?php echo $user->kinAddressStr; ?>">
+                        <span id="kinAddressStr_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address Suburb *</span>
+                        <input class="noedit required" name="kinAddressSuburb" id="kinAddressSuburb" type="text" value="<?php echo $user->kinAddressSuburb; ?>">
+                        <span id="kinAddressSuburb_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address City *</span>
+                        <input class="noedit required" name="kinAddressCity" id="kinAddressCity" type="text" value="<?php echo $user->kinAddressCity; ?>">
+                        <span id="kinAddressCity_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                    </div> 
+
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Physical Address Postal *</span>
+                        <input class="noedit required" name="kinAddressPost" id="kinAddressPost" type="text" value="<?php echo $user->kinAddressPost; ?>">
+                        <span id="kinAddressPost_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid postal code</small></span>
+                    </div> 
+
+                    <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
+                    <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+
+                    <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
+                    <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
+                </form>
+                <?php
+            } else {
+                echo $user->kinTitle . " " . $user->kinFirstName . " " . $user->kinLastName . "<br/>";
+                echo $user->kinRelationship . "<br/>";
+                echo $user->kinCellNo . "<br/>";
+                echo $user->kinEmail . "<br/>";
+                echo $user->kinAddressStr . ", " . $user->kinAddressSuburb . "<br/>";
+                echo $user->kinAddressCity . ", " . $user->kinAddressPost . "<br/>";
+
+                ?>
+                <!-- <button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="kin_approved" style="height:40px;">Approve</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button> -->
+                <div class="kin_btn"></div>
+                <?php
+            }
+
+        } elseif ($request->formId == "inline_app_details") {
+            if ($request->type == "form") {
+                ?>
+                <form class="edit_info_inline">
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Email *</span>
+                        <input class="noedit required" name="userEmail" id="userEmail" type="text" value="<?php echo $user->userEmail; ?>">
+                        <span id="userEmail_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid email</small></span>
+                    </div> 
+                    
+                    <div class="form-field">    
+                        <span style='font-weight:bold'>Cellphone Number *</span>
+                        <input class="noedit required" name="userCell" id="userCell" type="text" value="<?php echo $user->userCell; ?>">
+                        <span id="userCell_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                        <span id="cell_no_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
+                        <input type="hidden" name="kinCellNo" id="kinCellNo" value="<?php echo $user->kinCellNo; ?>">
+                    </div>
+
+                    <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
+                    <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+
+                    <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
+                    <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
+                </form>
+                <?php
+            } else {
+                echo $user->userEmail . "<br/>";
+                echo $user->userCell . "<br/>";
+
+                ?>
+                <!-- <button type="button" class="approve button btn_approve_inline" formid="<?php echo $request->formId; ?>" approvefield="email_data_approved" style="height:40px;">Approve</button>
+                <button type="button" class="amend button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="form">Edit</button> -->
+                <div class="app_details_btn"></div>
+                <?php
+            }
+        }
+    }
+
+    public function save_inline_data(Request $request) {
+        $oldData = User::find($request->userUid);
+
+        if ($request->task == "inline_edit_address") {
+            $newData = [
+                'userAddress1|Address 1' => $request->userAddress1,
+                'userAddress2|Address 2' => $request->userAddress2,
+                'userAddressCity|City' => $request->userAddressCity,
+                'userAddressPostal|Postal' => $request->userAddressPostal
+            ];
+
+            $updateData = [
+                'userAddress1' => $request->userAddress1,
+                'userAddress2' => $request->userAddress2,
+                'userAddressCity' => $request->userAddressCity,
+                'userAddressPostal' => $request->userAddressPostal
+            ];
+
+        } elseif ($request->task == "inline_edit_kin") {
+            $newData = [
+                'kinTitle|Title' => $request->kinTitle,
+                'kinFirstName|First Name' => $request->kinFirstName,
+                'kinLastName|Last Name' => $request->kinLastName,
+                'kinRelationship|Relationship' => $request->kinRelationship,
+                // 'kinNationality|Postal' => $request->kinNationality,
+                // 'kinId|Postal' => $request->kinId,
+                // 'kinPassportNo|Postal' => $request->kinPassportNo,
+                'kinCellNo|Cellphone Number' => $request->kinCellNo,
+                'kinEmail|Email' => $request->kinEmail,
+                'kinAddressStr|Physical Address Street' => $request->kinAddressStr,
+                'kinAddressSuburb|Physical Address Suburb' => $request->kinAddressSuburb,
+                'kinAddressCity|Physical Address City' => $request->kinAddressCity,
+                'kinAddressPost|Physical Address Postal' => $request->kinAddressPost,
+            ];
+
+            $updateData = [
+                'kinTitle' => $request->kinTitle,
+                'kinFirstName' => $request->kinFirstName,
+                'kinLastName' => $request->kinLastName,
+                'kinRelationship' => $request->kinRelationship,
+                // 'kinNationality' => $request->kinNationality,
+                // 'kinId' => $request->kinId,
+                // 'kinPassportNo' => $request->kinPassportNo,
+                'kinCellNo' => $request->kinCellNo,
+                'kinEmail' => $request->kinEmail,
+                'kinAddressStr' => $request->kinAddressStr,
+                'kinAddressSuburb' => $request->kinAddressSuburb,
+                'kinAddressSuburb' => $request->kinAddressSuburb,
+                'kinAddressCity' => $request->kinAddressCity,
+                'kinAddressPost' => $request->kinAddressPost,
+            ];
+        
+        } elseif ($request->task == "inline_app_details") {
+            $newData = [
+                'userEmail|Email' => $request->userEmail,
+                'userCell|Cellphone Number' => $request->userCell,
+            ];
+
+            $updateData = [
+                'userEmail' => $request->userEmail,
+                'userCell' => $request->userCell,
+            ];
+        }
+
+        if (isset($newData)) {
+            foreach($newData as $key => $new) {                
+                $info = explode("|", $key);
+                $key = $info[0];
+                $changedField = $info[1];
+
+                if($oldData->$key !== $new){
+                    ActionList::create([
+                        "userUid" => $request->userUid,
+                        "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+                        "actionUserUid" => Auth::user()->id,
+                        "actionUserDisplayName" => Auth::user()->userFirstName,
+                        "actionUserRole" => Auth::user()->userRole,
+                    ]);
+                }
+            }
+
+            User::where('id', $request->userUid)->update($updateData);
+        }
+
+        echo "done";
+    }
+    
+    public function approve_inline_data(Request $request) {
+        $oldData = User::find($request->userUid);        
+
+        if ($request->formId == "inline_edit_address") {
+            $newData = [
+                $request->approvefield . '|Physical Address' => $request->task == 1 ? "Approved" : "Rejected",
+            ];
+
+        } elseif ($request->formId == "inline_edit_kin") {
+            $newData = [
+                $request->approvefield . '|Next of Kin' => $request->task == 1 ? "Approved" : "Rejected",
+            ];
+
+        } elseif ($request->formId == "inline_app_details") {
+            $newData = [
+                $request->approvefield . '|Application Details' => $request->task == 1 ? "Approved" : "Rejected",
+            ];
+        }
+
+        if (isset($newData)) {
+            $updateData = [
+                $request->approvefield => $request->task
+            ];
+
+            foreach($newData as $key => $new) {                
+                $info = explode("|", $key);
+                $key = $info[0];
+                $changedField = $info[1];
+
+                if($oldData->$key !== $new) {
+                    ActionList::create([
+                        "userUid" => $request->userUid,
+                        "action" => $new . " " . $changedField,
+                        "actionUserUid" => Auth::user()->id,
+                        "actionUserDisplayName" => Auth::user()->userFirstName,
+                        "actionUserRole" => Auth::user()->userRole,
+                    ]);
+                }
+            }
+
+            User::where('id', $request->userUid)->update($updateData);
+        }
+
+        //Update Info robot based on data approved
+        $checkData = User::find($request->userUid);
+        
+        if ($checkData->address_approved == 1 && $checkData->kin_approved == 1 && $checkData->email_data_approved == 1) {
+            $rob_35_info = 2;
+        } else {
+            $rob_35_info = 1;
+        }
+
+        User::where('id', $request->userUid)->update([
+            "rob_35_info" => $rob_35_info
+        ]);
+
+        $status_data = User::where('id', $request->userUid)->first();
+
+        if($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0){
+            User::where('id', $request->userUid)->update(['rob_50_approve' => 1]);
+        }else{
+            User::where('id', $request->userUid)->update(['rob_50_approve' => 0]);
+        }
+
+        echo "done";
+    }
+
+
+    public function properties_filter(Request $request){
+
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        
+        $search_value = [];
+
+        
+        if ($request->firstLoad !== "1") {
+            Session::put('property', $request->property);
+            Session::put('year', $request->year);
+
+        } else {
+            $request->property = Session::get('property');
+            $request->year = Session::get('year');
+        }        
+
+        if($request->property !== "" && !empty($request->property)){
+            if($request->property !== "All"){
+                $property = 'residence = "'.$request->property.'"';
+                array_push($search_value, $property);
+            }
+        }       
+
+        $query = [];
+        
+
+        foreach($search_value as $value) {
+            $statement = " and " . $value;
+            array_push($query, $statement);
+        }
+
+        //Default Query
+        $sql = 'SELECT id, residence, floor, unit, room, bed, bed_code, inventory, year, year_end, room_available, room_type, room_rate
+            FROM property_data
+            WHERE 1=1 ' . implode($query) . '
+            
+            order by residence, cast(floor as unsigned), cast(unit as unsigned), room, bed, year, year_end ASC';
+
+        //Get all of our students
+        $searched_data = DB::select($sql);
+
+        $userData = [];
+
+        foreach($searched_data as $data) {            
+            //Filter data based on the users roles
+            if(
+                (Auth::user()->role_braamlofts == "1" && ($data->residence == "BRAAMLOFTS")) ||
+                (Auth::user()->role_80_jorissen == "1" && $data->residence == "80 JORISSEN") ||
+                (Auth::user()->role_49_jorissen == "1" && $data->residence == "49 JORISSEN") ||
+                (Auth::user()->role_dunvista_mansions == "1" && $data->residence == "DUNVISTA MANSIONS") ||
+                (Auth::user()->role_wynton_joy == "1" && $data->residence == "WYNTON JOY") ||
+                (Auth::user()->role_126_siemert == "1" && $data->residence == "126 SIEMERT") ||
+                (Auth::user()->role_ymca == "1" && $data->residence == "YMCA")
+            ) {
+
+                if ($data->year <= $data->year_end || $data->year_end == 0) {
+                    if($request->year !== "All"){
+                        if ($request->year == "next") {
+                            $this_year++;
+                        }
+
+                        if (($this_year >= $data->year && $data->year_end == 0) || ($this_year >= $data->year && $this_year <= $data->year_end)) {
+                            array_push($userData, (array) $data);
+                        }
+                    } else {
+                        array_push($userData, (array) $data);
+                    }
+                    
+                }                
+            }
+        }
+
+        return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
+    }
+
+
+    public function properties_filter_v2(Request $request) {        
+
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        
+        $search_value = [];
+
+        
+        // if ($request->firstLoad !== "1") {
+        //     Session::put('manage_property', $request->property);
+        //     Session::put('manage_year', $request->year);
+
+        // } else {
+        //     $request->property = Session::get('manage_property');
+        //     $request->year = Session::get('manage_year');
+        // }  
+
+        Session::put('manage_property', $request->columns[0]['search']['value']);
+        Session::put('manage_year', $request->columns[9]['search']['value']);
+        
+        if (!empty($request->columns[0]['search']['value']) && $request->columns[0]['search']['value'] != "All") {
+            $property = 'residence = "'.$request->columns[0]['search']['value'].'"';
+            array_push($search_value, $property);
+        }    
+        
+        if (!empty($request->columns[9]['search']['value']) && $request->columns[9]['search']['value'] != "All") {
+            if ($request->columns[9]['search']['value'] == "next") {
+                $this_year++;
+            }
+
+            $year = '(';
+            $year .= '("'.$this_year.'" >= year and year_end = 0)';
+            $year .= 'or ("'.$this_year.'" >= year and "'.$this_year.'" <= year_end)';
+            $year .= ')';
+
+            array_push($search_value, $year);
+        }    
+
+        if (!empty($request->search['value'])) {
+            // $other_search = '(residence LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or floor LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or unit LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or room LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or bed LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or bed_code LIKE "%'.$request->search['value'].'%"';
+            $other_search = 'bed_code LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or year LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ' or year_end LIKE "%'.$request->search['value'].'%"';
+            // $other_search .= ')';
+
+            array_push($search_value, $other_search);
+        }
+
+        $query = [];
+        
+
+        foreach($search_value as $value) {
+            $statement = " and " . $value;
+            array_push($query, $statement);
+        }
+
+        /** Paging */
+        $sLimit = "";
+        if (isset($request->start) && $request->length != '-1') {
+            $sLimit = " LIMIT " . intval($request->start) . ", " . intval($request->length);
+        }
+
+        //Auth Location Checks
+        $auth_loc_check = $sep = "";
+        if (Auth::user()->role_braamlofts == "1") {
+            $auth_loc_check = "'BRAAMLOFTS'";
+            $sep = ",";
+        }
+        if (Auth::user()->role_80_jorissen == "1") {
+            $auth_loc_check .= $sep . "'80 JORISSEN'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_49_jorissen == "1") {
+            $auth_loc_check .= $sep . "'49 JORISSEN'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_dunvista_mansions == "1") {
+            $auth_loc_check .= $sep . "'DUNVISTA MANSIONS'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_wynton_joy == "1") {
+            $auth_loc_check .= $sep . "'WYNTON JOY'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_126_siemert == "1") {
+            $auth_loc_check .= $sep . "'126 SIEMERT'";
+            $sep = ",";            
+        }
+        if (Auth::user()->role_ymca == "1") {
+            $auth_loc_check .= $sep . "'YMCA'";
+            $sep = ",";            
+        }
+
+        //Default Query
+        $sql = 'SELECT id, residence, floor, unit, room, bed, bed_code, inventory, room_type, room_rate, year, year_end, room_available
+            FROM property_data
+            WHERE (`year` <= year_end or year_end = 0)
+            ' . implode($query) . '
+            and residence in ('.$auth_loc_check.')
+            
+            order by residence, cast(floor as unsigned), cast(unit as unsigned), room, bed, year, year_end ASC
+
+            ' . $sLimit;
+
+        //Get all of our students
+        $searched_data = DB::select($sql);
+
+        // return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
+
+        /* Total data set length */
+        $sQuery = "SELECT COUNT(id) as totcount FROM property_data where (`year` <= year_end or year_end = 0)" . implode($query) . "and residence in (".$auth_loc_check.")";
+        $rResultTotal = DB::select($sQuery);
+        $aResultTotal = $rResultTotal[0]->totcount;
+        $iTotal = $aResultTotal;
+
+        $output = (object) array(
+            "recordsTotal" => $iTotal,
+            "recordsFiltered" => $iTotal,
+            "data" => (array) $searched_data,
+        );
+
+        echo json_encode($output);
     }
     
 

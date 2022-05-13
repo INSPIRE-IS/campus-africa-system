@@ -6,69 +6,53 @@
 
 <div class="greyAppSection">
     <div class="container">
-        <div class="col-3" id="col1" style="margin-top:16px;">
-        <div class="flex"><span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128308;</span><p class="listHeader">Physical Address</p></div>
-            <p class="list">
+        <div class="col-3" id="col1">
+        <div class="flex">
+            <span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128308;</span><p class="listHeader">Physical Address</p></div>
+            <div class="form" id="inline_edit_address">
                 {{$user[0]['userInfo']['userAddress1']}}<br/>
                 {{$user[0]['userInfo']['userAddress2']}}<br/>
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
-                @if(Auth::user()->id == "1")<button type="button" class="updateProfile" id="updateProfileStatus">Update status</button>@endif
-            </p>
+
+                <div class="address_btn"></div>
+
+            </div>
         </div>
-        <div class="col-3" id="col2" style="margin-top:16px;">
+        <div class="col-3" id="col2">
             
-        <div class="flex"><span id="approvedKin" class="hidden">&#128994;</span><span id="rejectedKin">&#128308;</span><p class="listHeader">Next of Kin</p></div>
-            <p class="list">
+        <div class="flex">
+            <span id="approvedKin" class="hidden">&#128994;</span><span id="rejectedKin">&#128308;</span><p class="listHeader">Next of Kin</p></div>
+            <div class="form" id="inline_edit_kin">
                 {{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
                 {{$user[0]['userInfo']['kinRelationship']}}<br/>
-                {{$user[0]['userInfo']['kinNationality']}}<br/>
+                {{-- {{$user[0]['userInfo']['kinNationality']}}<br/>
                 @if($user[0]['userInfo']['kinId']){{$user[0]['userInfo']['kinId']}}<br/>@endif
-                @if($user[0]['userInfo']['kinPassportNo']){{$user[0]['userInfo']['kinPassportNo']}}<br/>@endif
+                @if($user[0]['userInfo']['kinPassportNo']){{$user[0]['userInfo']['kinPassportNo']}}<br/>@endif --}}
                 {{$user[0]['userInfo']['kinCellNo']}}<br/>
                 {{$user[0]['userInfo']['kinEmail']}}<br/>
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
-            </p>
+
+                <div class="kin_btn"></div>
+
+            </div>
 
         </div>
-        <div class="col-3" id="col3" style="margin-top:16px;">
+        <div class="col-3" id="col3">
             @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
-            <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
-                <p class="list">
-                    {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>
-                    {{$user[0]['userInfo']['sponCellNo']}}<br/>
-                    {{$user[0]['userInfo']['sponEmail']}}<br/>
-                    {{$user[0]['userInfo']['sponId']}}<br/>
-                    {{$user[0]['userInfo']['pNationality']}}<br/>
-                    @if($user[0]['userInfo']['sponId']){{$user[0]['userInfo']['sponId']}}<br/>@endif
-                    @if($user[0]['userInfo']['pPassportNo']){{$user[0]['userInfo']['pPassportNo']}}<br/>@endif
-                    {{$user[0]['userInfo']['pAddress1']}}, {{$user[0]['userInfo']['pAddress2']}}, <br/>
-                    {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}<br/>
-                </p>
+                <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
+                <div class="form">
+                    <div class="sponInfoSection"></div>
+                </div>
             @endif
 
             @if($user[0]['userInfo']['studentType'] == "Bursary")
-            <div class="flex"><span id="approvedBur" class="hidden">&#128994;</span><span id="rejectedBur">&#128308;</span><p class="listHeader">Bursar</p></div>
-                <p class="list">
-                    {{$user[0]['userInfo']['burCompanyName']}}<br/>
-                    {{$user[0]['userInfo']['burRegNo']}}<br/>
-                    {{$user[0]['userInfo']['burContactPerson']}} - {{$user[0]['userInfo']['burContactNo']}}<br/>
-                    {{$user[0]['userInfo']['burEmail']}}<br/>
-                    {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, <br/>
-                    {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>
-                </p>
-
-                
-                    <br/>
-                    NSFAS bursar? <strong><?php if($user[0]['userInfo']['nsfas_bursar'] == "1"){ echo "Yes";}else{echo "No";} ?></strong>
-                    @if(Auth::user()->role_approve_docs == "1")
-                        <br/><button style="padding:2px 10px; cursor:pointer;" onClick="changeNsfsBursar('{{$user[0]['userInfo']['id']}}', '{{$user[0]['userInfo']['nsfas_bursar']}}')">Change</button>
-                    @endif
+                <div class="flex"><span id="approvedBur" class="<?php if($user[0]['userInfo']['burser_approved'] != '1'){ echo "hidden";} ?>">&#128994;</span><span id="rejectedBur" class="<?php if($user[0]['userInfo']['burser_approved'] == '1'){ echo "hidden";} ?>">&#128308;</span><p class="listHeader">Bursar</p></div>
+                <div class="form">
+                    <div class="burInfoSection"></div>
+                </div>
             @endif
-            <br/>
-            
-            <!-- <a href="/student/upload/{{$user[0]['userInfo']['id']}}"><button type="button" class="inactiveBtn">Upload Documents</button></a> -->
         </div>
         
     </div>
@@ -80,70 +64,84 @@
         <div class="cards">
 
             <div class="customWhiteCard" >
-                <h2 class="appHeader">Applicant Details</h2>
+                <div class="flex">                    
+                    <span id="app_det_statYes" class="hidden" style="margin-top:10px;">&#128994;</span>                    
+                    <span id="app_det_statNo" style="margin-top:10px;">&#128308;</span>                    
+                    <h2 class="appHeader">Applicant Details</h2>
+                </div>
+                
                 <p class="InfoList">
                     {{$user[0]['userInfo']['userFirstName']}} {{$user[0]['userInfo']['userLastname']}}<br/>
                     {{$user[0]['userInfo']['userDob']}}<br/>
                     {{$user[0]['userInfo']['userNationality']}}<br/>
                     @if($user[0]['userInfo']['userId']){{$user[0]['userInfo']['userId']}}<br/>@endif
                     @if($user[0]['userInfo']['userPassport']){{$user[0]['userInfo']['userPassport']}}<br/>@endif
-                    <br/>
-                    {{$user[0]['userInfo']['userEmail']}}<br/>
-                    {{$user[0]['userInfo']['userCell']}}<br/>
-                    <br/>
+                </p>
+
+                <p class="InfoList">
                     @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['institutionStudy']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['studentNo']}}<br/>
                     @foreach($lookups as $lookup) @if($lookup->id == $user[0]['userInfo']['faculty']) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$user[0]['userInfo']['yearOfStudy']}}
                 </p>
+
+                <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
+                    {{$user[0]['userInfo']['userEmail']}}<br/>
+                    {{$user[0]['userInfo']['userCell']}}<br/>
+
+                    <div class="app_details_btn"></div>
+                    
+                </div>
             </div>
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
-            <div class="flex">
-                @if($booking->bed_code)
-                    <span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>
-                @else
-                    <span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>
-                @endif
-                <h2 class="appHeader">Application Summary</h2>
-            </div>
-                <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
-                <h4 class="cardHeader" >{{$booking->roomType}}</h4>
-                <h4 class="cardHeader" id="prop_room_row1" >@if(isset($bookingPropData->meta_info_1) && !empty($bookingPropData->meta_info_1)) {{$bookingPropData->meta_info_1}}, @endif @if($booking->floor){{$booking->floor}} Floor,@endif @if($booking->unit) Unit {{$booking->unit}},@endif</h4>
-                <h4 class="cardHeader" id="prop_room_row2" >@if($booking->bed_code)Bed Code: {{$booking->bed_code}} @if(Auth::user()->role_change_bed == "1")<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>@endif @endif</h4>
-                <h4 class="cardHeader">
-                    @if($booking->lease_from_date) Lease From: {{$booking->lease_from_date}} at {{$booking->lease_from_time}} <br/>@endif
-                    @if($booking->lease_to_date) Lease To: {{$booking->lease_to_date}} at {{$booking->lease_to_time}} <br/>@endif
-
-                    @if($booking->lease_from_date && $booking->lease_to_date) Lease Duration: <?php $date1 = new DateTime($booking->lease_from_date); $date2 = new DateTime($booking->lease_to_date); $interval = $date1->diff($date2); if($interval->y > 1 || $interval->y < 1){ $years = "years";}else{$years = "year";} echo $interval->y . " ".$years.", " . $interval->m." months, ".$interval->d." days "; ?> @endif
-                </h4>
-                <br/>
-                <div id="AppSummaryPaid" class="<?php if($booking_paid == 'false'){echo "hidden";}?>">
-                    <h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2>
-                    <h4 class="cardHeader" >
-                        R {{$booking->room_rate}}
-                    </h4>
-                    <br/>
+                <div class="flex">
+                    <div class="bed_code_status"></div>
+                    
+                    <h2 class="appHeader">Application Summary</h2>
                 </div>
+
+                <div class="app_summary_details"></div>
                 
-                <div class="buttons">
-                        @if(Auth::user()->role_change_bed == "1")
-                            <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                <div class="buttons" id="buttonTop">
+
+                        @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_change_bed == "1")
+                                @if ($user[0]['userInfo']['rob_50_approve'] > 0)
+                                    <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                @else
+                                    <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                @endif                                
+                            @endif
+
+                            @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                <button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                            @endif
                         @endif
 
-                        @if(Auth::user()->role_change_date == "1")
-                            <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                        @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_modify_approved == 1)
+                                <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                            @endif
                         @endif
-                    
                 </div>
-                <div class="buttons">
-                    
-                        @if(Auth::user()->role_delete_booking == 1)
-                            <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
-                        @endif
+                <div class="buttons" id="buttonBottom">
+                        @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_delete_booking == 1)
+                                <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
+                            @endif
 
-                        @if(Auth::user()->role_cancel_booking == 1)
-                            <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                            @if(Auth::user()->role_cancel_booking == 1)
+                                @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                    <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                                @endif
+                            @endif
+                        @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
+                            @if(Auth::user()->role_cancel_booking == 1)
+                                @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                    <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                                @endif
+                            @endif
                         @endif
                 </div>
             </div>
@@ -165,13 +163,24 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                @if(!empty($action->users))
+                                    <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                @else
+                                    <p>{{$action->actionUserDisplayName}}</p>
+                                @endif
+                                
                                 @if($action->actionUserRole !== "0" )
-                                    @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
-                                        <button type="button" class="admin">Admin</button>
+
+                                    @if(!empty($action->users))
+                                        @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
+                                            <button type="button" class="admin">Admin</button>
+                                        @else
+                                        <button type="button" class="admin">{{$action->users->user_role_name}}</button>
+                                        @endif
                                     @else
-                                    <button type="button" class="admin">{{$action->users->user_role_name}}</button>
+                                        <button type="button" class="admin">Admin</button>
                                     @endif
+                                    
                                 @else
                                     <button type="button" class="applicant">Applicant</button>
                                 @endif
@@ -195,11 +204,7 @@
                 <!-- <button type="button" class="reminder">Send reminder</button> -->
                 <h2 class="appSubHeader bold">PAYMENT TYPE </h2>
                 <p class="appSubHeader">
-                    @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif
-
-                    @if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT") <br /> <span style="color:red;">Directly to the STUDENT</span>  @elseif($user[0]['userInfo']['bPayment'] !== "") <br/> <span style="color:red;">{{$user[0]['userInfo']['bPayment']}}</span>@endif
-                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] != "Other") <span style="color:red;"> | {{$user[0]['userInfo']['bint']}}</span> @endif
-                        @if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY" && $user[0]['userInfo']['bint'] == "Other") <span style="color:red;"> | {{$user[0]['userInfo']['bIntName']}}</span> @endif
+                    <div class="burPaymentDetails"></div>
                 </p>
                 <br/>
 
@@ -214,24 +219,10 @@
 
                 <h2 class="appSubHeader bold">PAID</h2>
                 <p class="appSubHeader" id="paidOption">
+                <div class="waived_paid_wording"></div>
                     
 
-                    @if($booking_waived == 'true')
-                        Waived 
-                    @elseif($booking_waived == '0')
-                        Yes, no booking fee
-                    @else 
-                        @foreach($user[0]["files"] as $file)
-                            @if($file["field"] === "proof_of_payment")
-                                @if($file["status"] === "XApproved" || $file["status"] === "Approved")
-                                    Yes <br/>
-                                @else
-                                    No <br/>
-                                @endif
-                            @endif
-                        @endforeach
-
-                    @endif
+                    
                 </p>
             </div>
 
@@ -255,11 +246,10 @@
                     <!-- <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
-                    @if($booking_paid == 'false')
-                        @if($booking_waived == 'false')
-                            <button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee('{{$user[0]['userInfo']['id']}}')">Waive Booking Fee</button>
-                        @else
-                            <button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee('{{$user[0]['userInfo']['id']}}')">Undo Booking Fee Waiver </button>
+                    <div class="waitve_btn"></div>
+                    @if((Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_50_approve'] == 2) || $user[0]['userInfo']['rob_50_approve'] == 0)
+                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
                         @endif
                     @endif
                 </div>
@@ -277,7 +267,7 @@
                                 <div class="label">
                                     
                                     @if($file["field"] === "studentCard")
-                                        STUDENT CARD / PROOF OF STUDENT NUMBER
+                                        STUDENT CARD
                                     @elseif($file["field"] === "proof_of_payment")
                                         BOOKING FEE PROOF OF PAYMENT
                                     @elseif($file["field"] === "copyID")
@@ -285,15 +275,108 @@
                                     @elseif($file["field"] === "proofRegistration")
                                         PROOF OF REGISTRATION
                                     @elseif($file["field"] === "bursaryApproval")
-                                        NSFAS / BURSARY APPROVAL
+                                        @if($user[0]['userInfo']['studentType'] == "NSFAS")
+                                            NSFAS APPROVAL
+                                        @else
+                                            BURSARY APPROVAL
+                                        @endif
                                     @elseif($file["field"] === "bankStatement")
                                         BANK STATEMENT
                                     @elseif($file["field"] === "moveIn")
                                         LEASE
+                                    @else
+                                        <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file["field"]))); ?>
                                     @endif
                                 </div>
                                 <div class="status" id="{{$file['field']}}Status">
+
+                                    <!--  -->
+
+                                    @if(explode("_", $file["field"])[0] == "other" && $file["field"] == $file["field"])
+                                        @if($file["status"] == "XApproved")
+                                            <div class="button approved"></div>
+                                        @elseif($file["status"] == "AUploaded")
+                                            <div class="button action"></div>
+                                        @else
+                                            <div class="button rejected"></div>
+                                        @endif
+                                    @endif
+
+                                    
+
+                                    @if($file["field"] === "proof_of_payment")
+                                        @if ($user[0]['userInfo']['rob_10_fee'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_10_fee'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_10_fee'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "copyID")
+                                        @if ($user[0]['userInfo']['rob_15_id'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_15_id'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_15_id'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "studentCard")
+                                        @if ($user[0]['userInfo']['rob_20_card'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_20_card'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_20_card'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "proofRegistration")
+                                        @if ($user[0]['userInfo']['rob_25_reg'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_25_reg'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_25_reg'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
+                                    @if($file["field"] === "bursaryApproval" || $file["field"] === "bankStatement")
+                                        @if ($user[0]['userInfo']['rob_30_funds'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_30_funds'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_30_funds'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+
                                     @if($file["field"] === "moveIn")
+                                        @if ($user[0]['userInfo']['rob_55_lease'] == 0)
+                                            <div class="button rejected"></div>
+                                        @elseif ($user[0]['userInfo']['rob_55_lease'] == 1)
+                                            <div class="button action"></div>
+                                        @elseif ($user[0]['userInfo']['rob_55_lease'] == 2)
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button na"></div>
+                                        @endif
+                                    @endif
+                                    
+                                    {{-- @if($file["field"] === "moveIn")
                                         @if($file["status"] === "XApproved" || $file["status"] === "Approved")
                                             <div class="button approved"></div>
                                         @elseif($file["status"] === "AUploaded")
@@ -311,41 +394,41 @@
                                         @elseif($file["status"] === "na")
                                             <div class="button na"></div>
                                         @endif
-                                    @endif
+                                    @endif --}}
                                     
                                 </div>
 
                                 <div class="banner" id="{{$file['field']}}Banner">
                                     @if($file["field"] === "moveIn")
-                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>
-                                        <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
+                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
+                                    @endif
+
+                                    @if($file["field"] === "moveIn" && $file["status"] !== "XApproved")
+                                        @if(Auth::user()->role_lease_regen == '1')
+                                            <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
+                                        @endif
                                     @endif
 
                                     @if($file["status"] === "AUploaded" || $file["status"] === "XApproved")
-                                        <button type="button" onClick="
-                                            openModal(
-                                                '{{$file['field']}}', 
-                                                '<?php echo str_replace("'", "%27", $file['url']); ?>',
-                                                '{{$file['uploaded_by']}}',
-                                                '{{$file['created_at']}}',
-                                                '{{$file['id']}}',
-                                                '{{$file['status']}}'
-                                            )" 
-                                            id="myBtn_<?php echo $i; ?>">View Document
-                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick="btn_view_document_ajax({{$file['id']}})"
+                                        >View Document</button>
                                     @else
                                         
-                                            <!-- <button type="button" id="{{$file['field']}}Error" class="error">Send reminder</button> -->
+                                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                                    
+                                            <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
+                                                <span class="text">Upload</span>
+                                                <i class="fas fa-file-upload" ></i>
+                                            </label>
+                                            <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" hidden/>
 
-                                            @if(Auth::user()->role_upload_docs == 1)
-                                        
-                                                <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
-                                                    <span class="text">Upload</span>
-                                                    <i class="fas fa-file-upload" ></i>
-                                                </label>
-                                                <input type="file" id="{{$file['field']}}" hidden/>
-
+                                            @if(explode("_", $file["field"])[0] == "other")
+                                                <button type="button" style="margin-left:5px;" onClick="deleteFile('{{$file['field']}}')">Delete</button>
                                             @endif
+
+                                        @endif
                                     @endif
                                 </div>
                             </div>
@@ -362,7 +445,7 @@
 
             <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                 <h2 class="appHeader">Comments</h2>
-                @if(Auth::user()->role_comment == "1")
+                @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
                     <br/>
                     <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
@@ -372,20 +455,7 @@
 
                 <div class="commentItemList" style="<?php if(Auth::user()->role_comment == "1"){echo "margin-top:73px;";} ?> max-height: 350px; overflow: auto; width:100%">
 
-                @if(count($comments) == 0) <p style="text-align:center">There are no comments!</p>@endif 
-
-                    @foreach($comments as $comment)
-
-                        <div class="infoBlock">
-                            <div class="responsible" style="width:100%">
-                                <p>{{substr($comment->created_at, 8, 2)}}/{{substr($comment->created_at, 5, 2)}}/{{substr($comment->created_at, 0, 4)}} &nbsp; {{substr($comment->created_at, 11, 5)}}  | {{$comment->users->email}} | @if($comment->users->userRole == "1") {{$comment->users->user_role_name}} @endif</p>
-                            </div>
-                            <div class="information">
-                                <p>{{$comment->comment}}</p>
-                            </div>
-                        </div>
-
-                    @endforeach
+                <div class="comments_block"></div>
                     
                 </div>
             </div>
@@ -393,6 +463,8 @@
         </div>
     </div>
 </div>
+
+<div id="myModal" class="modal" style="padding-top: 10px;"></div>
 
 <div id="myModalEditApp" class="modal">
 
@@ -409,27 +481,6 @@
 
                 <select name="property" id='property' class="required">
                     <option value="" selected disabled>Select a Residence</option>
-                    @if(Auth::user()->role_braamlofts == 1)
-                        <option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";}?>>Braamlofts</option>
-                    @endif
-                    @if(Auth::user()->role_80_jorissen == 1)
-                        <option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>
-                    @endif
-                    @if(Auth::user()->role_49_jorissen == 1)
-                        <option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>
-                    @endif
-                    @if(Auth::user()->role_dunvista_mansions == 1)
-                        <option value="Dunvista Mansions" <?php if($booking->property == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>
-                    @endif
-                    @if(Auth::user()->role_wynton_joy == 1)
-                        <option value="Wynton Joy" <?php if($booking->property == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>
-                    @endif
-                    @if(Auth::user()->role_126_siemert == 1)
-                        <option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";}?>>126 Siemert</option>
-                    @endif
-                    @if(Auth::user()->role_ymca == 1)
-                        <option value="YMCA" <?php if($booking->property == "YMCA"){echo "selected";}?>>YMCA</option>
-                    @endif
                 </select>
             </div>
 
@@ -519,88 +570,34 @@
 
 </div>
 
-<div id="myModal" class="modal">
-
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modalHeader"></h2>
-        <small>Uploaded by <span id="uploadedBy"></span> at <span id="uploadedTime"></span> on the <span id="uploadedDate"></span></small>
-        <br/>
-        
-            <input type="hidden" id="FileIdForApproval">
-            <input type="hidden" id="FileNameForApproval">
-            
-            <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
-            <br/>
-            <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
-            
-            <br/>
-            
-            <div class="flex" style="margin-top:35px;" id="buttonSection">
-                    <div id="reasonBox" style="height:38px; margin-top:-21px; width:65%">
-                        <span id="rejectReason_error" class="hidden" ><small style="color:red">This field is required</small></span>
-                        <br/>
-                        <input type="text" id="rejectReason" placeholder="Type field for rejection reason" style="width:100%">
-                    </div>
-
-                    @if(Auth::user()->role_approve_docs == 1)
-                        <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
-                    @endif
-
-                    <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-
-                    @if(Auth::user()->role_approve_docs == 1)
-                        <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-                    @endif
-            </div>
-
-            <div id="infoChecker">
-                <br/><hr/><br/>
-                <div class="flex">
-                    <p id="infoToCheck"></p>
-                    <div id="infoButtons" class="hidden">
-                        @if(Auth::user()->role_approve_docs == 1)
-                            <button type="button" class="approve button" style="height:40px; margin-left:100px;" id="approveData" onClick="approveData()">Approve</button>
-                            <button type="button" class="rejected button" style="height:40px; margin-left:20px;" id="RejectDAta" onClick="rejectData()">Reject</button>
-                        @endif
-                    </div>
-                </div>
-                <br/><br/><hr/>
-            </div>
-
-            <div id="approvedDocs" class="hidden">
-                @if(Auth::user()->role_delete_uploaded == 1)
-                    <button type="button" class="rejected button" id="delete" onClick="removeFile()">Delete</button>
-                @endif
-            </div>
-
-        <div class="pdfSection"></div>
-    </div>
-
-</div>
-
 <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
 
-<input type="hidden" id="id_data_approved" value="{{$user[0]['userInfo']['id_data_approved']}}"/>
-<input type="hidden" id="student_card_approved" value="{{$user[0]['userInfo']['student_card_approved']}}"/>
-<input type="hidden" id="registration_approved" value="{{$user[0]['userInfo']['registration_approved']}}"/>
-<input type="hidden" id="bursary_approved" value="{{$user[0]['userInfo']['bursary_approved']}}"/>
-<input type="hidden" id="bank_approved" value="{{$user[0]['userInfo']['bank_approved']}}"/>
+<!-- <input type="hidden" id="id_data_approved" value="{{$user[0]['userInfo']['id_data_approved']}}"/> -->
+<!-- <input type="hidden" id="student_card_approved" value="{{$user[0]['userInfo']['student_card_approved']}}"/> -->
+<!-- <input type="hidden" id="registration_approved" value="{{$user[0]['userInfo']['registration_approved']}}"/> -->
+<!-- <input type="hidden" id="bursary_approved" value="{{$user[0]['userInfo']['bursary_approved']}}"/> -->
+<!-- <input type="hidden" id="bank_approved" value="{{$user[0]['userInfo']['bank_approved']}}"/> -->
 <input type="hidden" id="address_approved" value="{{$user[0]['userInfo']['address_approved']}}"/>
 <input type="hidden" id="kin_approved" value="{{$user[0]['userInfo']['kin_approved']}}"/>
-<input type="hidden" id="parent_approved" value="{{$user[0]['userInfo']['parent_approved']}}"/>
-<input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/>
-<input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/>
+<!-- <input type="hidden" id="parent_approved" value="{{$user[0]['userInfo']['parent_approved']}}"/> -->
+<!-- <input type="hidden" id="burser_approved" value="{{$user[0]['userInfo']['burser_approved']}}"/> -->
+<!-- <input type="hidden" id="bed_allocated" value="{{$booking->bed_code}}"/> -->
 <input type="hidden" id="files_to_download" value="{{$files_to_download}}"/>
 <input type="hidden" id="selectedRoom" value=""/>
+<input type="hidden" id="email_data_approved" value="{{$user[0]['userInfo']['email_data_approved']}}"/>
+
+<input type="hidden" id="booking_fee_paid" value="{{$booking_paid}}" />
+<input type="hidden" id="booking_fee_waived" value="{{$booking_waived}}" />
+
+<input type="hidden" id="change_bed_type" value="" />
+
+
 
 
 <script>
-
-
 
     $.ajaxSetup({
         headers: {
@@ -667,47 +664,42 @@
 
             success: function (data) {
                 
-                window.location.reload();
+                // window.location.reload();
+                $("#newComment").val('')
+                $("#addComment").empty().append('Add Comment')
+                getAllComments();
 
             },
         });
     });
 
-    $('#btn_clear_bed').on("click", function(e) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to unallocate this bed, the bed will be available to book again",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!',
-            showLoaderOnConfirm: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "post",
-                    url: "/unallocate-bed",
-                    data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
+    getAllComments();
 
-                    success: function (data) {
-                        $("#prop_room_row1, #prop_room_row2").remove();
-                        $("#bed_allocated").val('')
+    function getAllComments(){
+        $.ajax({
+            type: "post",
+            url: "/get-comments",
+            data: {
+                userId: "{{$user[0]['userInfo']['id']}}",
+            },
 
-                        refreshActions();  
-                        checkUserStatus();
-                        
+            success: function (data) {
+                
+                // console.log(data)
+                $(".comments_block").empty()
 
-                    }
-                })
+                if(data.length == 0){
+                    $(".comments_block").append('<p style="text-align:center">There are no comments!</p>');
+                }else{
 
-            }
+                    Object.keys(data).forEach( function(key) {
+                        $(".comments_block").append('<div class="infoBlock"><div class="responsible" style="width:100%">'+(data[key].created_at).slice(8, 10)+'/'+(data[key].created_at).slice(5, 7)+'/'+(data[key].created_at).slice(0, 4)+' '+(data[key].created_at).slice(11, 16)+' | '+data[key].users.email+' | '+data[key].users.user_role_name+'</p></div><div class="information"><p>'+data[key].comment+'</p></div></div>')
+                    });
+                }
+
+            },
         });
-
-        e.preventDefault();
-    });
+    }   
 
 
     checkUserStatus();
@@ -715,25 +707,166 @@
     // MainAppSection
     function checkUserStatus(){
 
-        if($("#parent_approved").val() == "1" || $("#parent_approved").val() == "2"){
-            $("#rejectedSpon").addClass('hidden')
-            $("#approvedSpon").removeClass('hidden')
+        $(".address_btn").empty()
+        
+
+        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+            console.log("1")
+            if($("#address_approved").val() != 1){
+                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                    $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
+                }
+
+                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                    $(".address_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>')
+                }
+            }else{
+                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                    $(".address_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>')
+                }
+            }
+
         }
 
-        if($("#burser_approved").val() == "1" || $("#burser_approved").val() == "2"){
-            $("#rejectedBur").addClass('hidden')
-            $("#approvedBur").removeClass('hidden')
+        $(".kin_btn").empty()
+
+        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?>" == 0){
+            if($("#kin_approved").val() != 1){
+                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                    $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
+                }
+
+                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                    $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
+                }
+            }else{
+                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                    $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
+                }
+            }
         }
 
-        if($("#kin_approved").val() == "1" || $("#kin_approved").val() == "2"){
+        $(".app_details_btn").empty()
+
+        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+            if($("#email_data_approved").val() != 1){
+                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                    $(".app_details_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>')
+                }
+
+                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                    $(".app_details_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>')
+                }
+            }else{
+                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                    $(".app_details_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Reject</button>')
+                }
+            }
+        }
+
+        $(".waitve_btn").empty();
+
+        if($("#booking_fee_paid").val() == 'false'){
+            if(("{{Auth::user()->role_modify_approved}}" == 1 && "{{$user[0]['userInfo']['rob_50_approve']}}" == 2) || ("{{$user[0]['userInfo']['rob_60_cancelled']}}" == 0 &&  "{{$user[0]['userInfo']['rob_50_approve']}}" != 2)){
+                if($("#booking_fee_waived").val() == 'false'){
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
+                }else{
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+                }
+            }
+        }
+
+        $(".waived_paid_wording").empty();
+
+        if($("#booking_fee_waived").val() == 'true'){
+            $(".waived_paid_wording").append('Waived')
+        }else if($("#booking_fee_waived").val() == '0'){
+            $(".waived_paid_wording").append('Yes, no booking fee')
+        }else{
+            <?php foreach($user[0]["files"] as $file){ 
+                if($file["field"] === "proof_of_payment"){
+                    if($file["status"] === "XApproved" || $file["status"] === "Approved"){
+                        ?>$(".waived_paid_wording").append('Yes')<?php
+                    }else{
+                        ?>$(".waived_paid_wording").append('No')<?php
+                    }
+                }
+            }?>
+        }
+        
+
+        if($("#kin_approved").val() == "1"){
             $("#rejectedKin").addClass('hidden')
             $("#approvedKin").removeClass('hidden')
+        }else{
+            $("#rejectedKin").removeClass('hidden')
+            $("#approvedKin").addClass('hidden')
         }
 
-        if($("#address_approved").val() == "1" || $("#address_approved").val() == "2"){
+        if($("#address_approved").val() == "1"){
             $("#rejectedAddr").addClass('hidden')
             $("#approvedAddr").removeClass('hidden')
+        }else{
+            $("#rejectedAddr").removeClass('hidden')
+            $("#approvedAddr").addClass('hidden')
         }
+        
+        if($("#email_data_approved").val() == "1"){
+            $("#app_det_statNo").addClass('hidden')
+            $("#app_det_statYes").removeClass('hidden')
+        }else{
+            $("#app_det_statNo").removeClass('hidden')
+            $("#app_det_statYes").addClass('hidden')
+        }
+
+        //
+        $.ajax({
+            type: "get",
+            url: "/check-user-payment/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                if(data['nsfas_bursar'] == 1){
+                    var nsfas_bursar = "Yes";
+                }else{
+                    var nsfas_bursar = "No"
+                }
+
+                $(".burInfoSection").empty().append(data['burCompanyName']+"<br/>"+data['burRegNo']+"<br/>"+data['burContactPerson']+" - "+data['burContactNo']+"<br/>"+data['burEmail']+"<br/>"+data['bAddress1']+", "+data['bAddress2']+", <br/>"+data['bAddressCity']+", "+data['bAddressPostal']+"<br/><br/> NSFAS bursar? <strong>"+nsfas_bursar+"</strong>")
+
+                if(data['studentType'] == "Cash / Direct"){
+                    var studentType = "Cash"
+                }else{
+                    var studentType = data['studentType']
+                }
+
+                if(data['bPayment'] !== null){
+
+                    var bPayment = "<span style='color:red;'>"+data['bPayment']+"</span>";
+
+                    if(data['bPayment'] == "Via an INTERMEDIARY" && data['bint'] !== "Other"){
+                        var bint = "<span style='color:red;'> | "+data['bint'];
+                    }else if(data['bPayment'] == "Via an INTERMEDIARY" && data['bint'] == "Other"){
+                        var bint = "<span style='color:red;'> | "+data['bIntName'];
+                    }else{
+                        var bint = "";
+                    }
+                }else{
+                    var bPayment = "";
+                    var bint = "";
+                }
+
+
+                if(data['sponId'] !== null){
+                    var IDspon = data['sponId']
+                }else{
+                    var IDspon = data['pPassportNo']
+                }
+
+                $(".burPaymentDetails").empty().append(studentType+"<br/>"+bPayment+" "+bint)
+
+                $(".sponInfoSection").empty().append(data['sponFirstName']+" "+data['sponLastName']+"<br/>"+data['sponCell']+"<br/>"+data['sponEmail']+"<br/>"+data['pNationality']+"<br/>"+IDspon+"<br/>"+data['pAddress1']+", "+data['pAddress2']+"<br/>"+data['pAddressCity']+", "+data['pAddressPostal'])
+            }
+        });
+
 
         //Check if we show/hide the approve user section
         $.ajax({
@@ -741,177 +874,165 @@
             url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
 
             success: function (data) {
-                console.log(data);
 
-                if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
-            
-                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
-                        $("#MainAppSection").removeClass('hidden')
-                        // document.getElementById("col1").style.marginTop = "-35px";
-                        // document.getElementById("col2").style.marginTop = "-35px";
-                        // document.getElementById("col3").style.marginTop = "-35px";
-                    } else {
-                        $("#MainAppSection").addClass('hidden')
-                    }
+                // console.log(data)
 
-                }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
-                    
-                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
-                        $("#MainAppSection").removeClass('hidden')
-                        // document.getElementById("col1").style.marginTop = "-35px";
-                        // document.getElementById("col2").style.marginTop = "-35px";
-                        // document.getElementById("col3").style.marginTop = "-35px";
-                    } else {
-                        $("#MainAppSection").addClass('hidden')
-                    }
-                }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
-                    
-                    if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
-                        $("#MainAppSection").removeClass('hidden')
-                        // document.getElementById("col1").style.marginTop = "-35px";
-                        // document.getElementById("col2").style.marginTop = "-35px";
-                        // document.getElementById("col3").style.marginTop = "-35px";
-                    } else {
-                        $("#MainAppSection").addClass('hidden')
+                if(data['parent_approved'] == 1){
+                    $("#rejectedSpon").addClass('hidden')
+                    $("#approvedSpon").removeClass('hidden')
+                }else{
+                    $("#rejectedSpon").removeClass('hidden')
+                    $("#approvedSpon").addClass('hidden')
+                }
+
+                if(data['burser_approved'] == 1){
+                    $("#rejectedBur").addClass('hidden')
+                    $("#approvedBur").removeClass('hidden')
+                }else{
+                    $("#rejectedBur").removeClass('hidden')
+                    $("#approvedBur").addClass('hidden')
+                }
+
+                if(data['rob_40_bed'] == 2){
+                    $(".bed_code_status").empty().append('<span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>')
+                }else{
+                    $(".bed_code_status").empty().append('<span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>')
+                }
+
+                $(".appSection").empty()
+
+                if((data['rob_50_approve'] == 0 || data['rob_50_approve'] == 1) && data['rob_60_cancelled'] == 0){
+                    $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
+
+                    if("<?php echo Auth::user()->role_approve_docs; ?>" == 1
+                        && data['rob_10_fee'] == 2
+                        && data['rob_15_id'] == 2
+                        && data['rob_20_card'] == 2
+                        && data['rob_25_reg'] == 2
+                        && data['rob_30_funds'] == 2
+                        && data['rob_35_info'] == 2
+                        && data['rob_40_bed'] == 2
+                        && (data['rob_45_other'] == 3 || data['rob_45_other'] == 2))
+                    {
+                        $(".main_btn").empty().append('<button type="button" class="appBtn" id="approveProfile" onClick="approveApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">APPROVE APPLICATION AND SEND CONFIRMATION</button><br/><br/><br/><button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">REJECT APPLICATION AND SEND NOTIFICATION</button><br/><br/><br/>')
                     }
                 }
-            }
-        })
-    }
 
-
-    function approveData(){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to approve this data",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var FileNameForApproval = $("#FileNameForApproval").val();
-                $("#approveData").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                var rejBtn = document.getElementById("RejectDAta");
-                rejBtn.setAttribute("disabled", "disabled");
-
-                $.ajax({
-                    type: "post",
-                    url: "/action-data",
-                    data: {
-                        FileNameForApproval: FileNameForApproval, 
-                        type: "1", 
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-
-                    success: function (data) {
-
-                        refreshActions();
-                        
-                        var preview1 = document.getElementById("rejected");
-                        preview1.removeAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.removeAttribute("disabled", "disabled");
-                        var preview3 = document.getElementById("amend");
-                        preview3.removeAttribute("disabled", "disabled");
-                        var preview4 = document.getElementById("rejectReason");
-                        preview4.removeAttribute("readonly", "readonly");
-                        var preview5 = document.getElementById("actionUserName");
-                        preview5.removeAttribute("readonly", "readonly");
-                        var rejBtn = document.getElementById("RejectDAta");
-                        rejBtn.removeAttribute("disabled", "disabled");
-
-                        $("#infoButtons").addClass('hidden');
-                        $("#approveData").empty().append('Approve')
-
-                        /*$("#infoChecker").addClass('hidden')
-                        $("#infoToCheck").empty();
-                        */
-
-                        if(FileNameForApproval == "copyID"){
-                            $("#id_data_approved").val('1')
-                        }else if(FileNameForApproval == "studentCard"){
-                            $("#student_card_approved").val('1')
-                        }else if(FileNameForApproval == "bankStatement"){
-                            $("#bank_approved").val('1')
-                            $("#parent_approved").val('1')
-                        }else if(FileNameForApproval == "proofRegistration"){
-                            $("#registration_approved").val('1')
-                        }else if(FileNameForApproval == "bursaryApproval"){
-                            $("#bursary_approved").val('1')
-                            $("#burser_approved").val('1')
-                        }
-
-                        
-
-                        
-
-                        checkUserStatus();
+                if(data['rob_60_cancelled'] == 1){
+                    if(data['rob_50_approve'] == 3){
+                        $(".appStatusText").empty().append(": Rejected")
+                    }else{
+                        $(".appStatusText").empty().append(": Cancelled")
                     }
-                })
+                }else{
+                    if(data['rob_50_approve'] == 2){
+                        $(".appStatusText").empty().append(": Approved")                        
+                    }else if(data['rob_50_approve'] == 3){
+                        $(".appStatusText").empty().append(": Rejected")
+                    }
+                }
 
+                // appStatusText
             }
         });
-    }
 
-    function rejectData(){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to reject this data",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var FileNameForApproval = $("#FileNameForApproval").val();
-                $("#RejectDAta").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                var approveData = document.getElementById("approveData");
-                approveData.setAttribute("disabled", "disabled");
+        //         if("{{$user[0]['userInfo']['studentType']}}" == "Cash / Direct"){
+            
+        //             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bank_approved").val() == "2" && $("#parent_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+        //                 $("#MainAppSection").removeClass('hidden')
+        //                 // document.getElementById("col1").style.marginTop = "-35px";
+        //                 // document.getElementById("col2").style.marginTop = "-35px";
+        //                 // document.getElementById("col3").style.marginTop = "-35px";
+        //             } else {
+        //                 $("#MainAppSection").addClass('hidden')
+        //             }
 
-                $.ajax({
-                    type: "post",
-                    url: "/action-data",
-                    data: {
-                        FileNameForApproval: $("#FileNameForApproval").val(), 
-                        type: "0", 
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-
-                    success: function (data) {
-
-                        refreshActions();
-                        
-                        var approveData = document.getElementById("approveData");
-                        approveData.removeAttribute("disabled", "disabled");
-
-                        $("#RejectDAta").empty().append('Reject')
-
-                        var modal = document.getElementById("myModal");
-                        modal.style.display = "none";
-
-                    },
-                });
-            }
-        })
+        //         }else if("{{$user[0]['userInfo']['studentType']}}" == "NSFAS"){
+                    
+        //             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+        //                 $("#MainAppSection").removeClass('hidden')
+        //                 // document.getElementById("col1").style.marginTop = "-35px";
+        //                 // document.getElementById("col2").style.marginTop = "-35px";
+        //                 // document.getElementById("col3").style.marginTop = "-35px";
+        //             } else {
+        //                 $("#MainAppSection").addClass('hidden')
+        //             }
+        //         }else if("{{$user[0]['userInfo']['studentType']}}" == "Bursary"){
+                    
+        //             if($("#id_data_approved").val() == "2" && $("#student_card_approved").val() == "2" && $("#registration_approved").val() == "2" && $("#bursary_approved").val() == "2" && $("#burser_approved").val() == "2" && data.bookingStatus === "Approved" && data.applicationStatus === "Approved" && data.overall_status === "Pending" && $("#bed_allocated").val() !== ""){
+        //                 $("#MainAppSection").removeClass('hidden')
+        //                 // document.getElementById("col1").style.marginTop = "-35px";
+        //                 // document.getElementById("col2").style.marginTop = "-35px";
+        //                 // document.getElementById("col3").style.marginTop = "-35px";
+        //             } else {
+        //                 $("#MainAppSection").addClass('hidden')
+        //             }
+        //         }
+        //     }
+        // })
     }
 
     function changeBooking(bookingId, type){
+
+        console.log(bookingId)
+        console.log(type)
+
+        if (type === "generate" && $('#moveInStatus').length) {
+            console.log('regen lease');
+            $("#change_bed_type").val('cancel')
+        }
 
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
 
-        if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
-            $("#roomSection").removeClass('hidden');
-        }else{
-            $("#roomSection").addClass('hidden');
-        }
+        $.ajax({
+            type: "get",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                let properties = data[0];
 
-        $("#property").change();
-        $("#roomType").val('<?php echo $booking->roomType;?>');
+                let selProp = data[8].property;
+
+                properties.sort();
+                $('#property').empty()
+
+                Object.keys(properties).forEach( function(key) {
+                    if(properties[key] == "BRAAMLOFTS" && "{{Auth::user()->role_braamlofts}}" == 1){
+                        $('#property').append('<option value="Braamlofts">Braamlofts</option>')
+                    }
+                    if(properties[key] == "80 JORISSEN" && "{{Auth::user()->role_80_jorissen}}" == 1){
+                        $('#property').append('<option value="80 Jorissen">80 Jorissen</option>')
+                    }
+                    if(properties[key] == "49 JORISSEN" && "{{Auth::user()->role_49_jorissen}}" == 1){
+                        $('#property').append('<option value="49 Jorissen">49 Jorissen</option>')
+                    }
+                    if(properties[key] == "DUNVISTA MANSIONS" && "{{Auth::user()->role_dunvista_mansions}}" == 1){
+                        $('#property').append('<option value="Dunvista Mansions">Dunvista Mansions</option>')
+                    }
+                    if(properties[key] == "WYNTON JOY" && "{{Auth::user()->role_wynton_joy}}" == 1){
+                        $('#property').append('<option value="Wynton Joy">Wynton Joy</option>')
+                    }
+                    if(properties[key] == "126 SIEMERT" && "{{Auth::user()->role_126_siemert}}" == 1){
+                        $('#property').append('<option value="126 Siemert">126 Siemert</option>')
+                    }
+                    if(properties[key] == "YMCA" && "{{Auth::user()->role_ymca}}" == 1){
+                        $('#property').append('<option value="YMCA">YMCA</option>')
+                    }
+                });
+
+                $('#property').val(selProp);
+
+                if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
+                    $("#roomSection").removeClass('hidden');
+                }else{
+                    $("#roomSection").addClass('hidden');
+                }
+
+                $("#property").change();
+                // $("#roomType").val('<?php //echo $booking->roomType;?>');
+            }
+        });
 
         callRoomDetails('floor','', '', '', '', '', 'open')
         
@@ -923,6 +1044,40 @@
         var modal = document.getElementById("myModalEditLease");
         modal.style.display = "block";
         
+    }
+
+    function cancelLease(bookingId, type) {
+
+        @if ($user[0]['userInfo']['rob_55_lease'] == 2)
+            let msg = "The current Approved Lease will be rejected.";
+        @else
+            let msg = "The current Lease will be regenerated.";
+        @endif
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: msg,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                // $.ajax({
+                //     type: "post",
+                //     url: "/cancel-lease",
+                //     data: {
+                //         userId: "{{$user[0]['userInfo']['id']}}",
+                //     },
+                // });
+
+                $("#change_bed_type").val('cancel')
+                changeBooking(bookingId, type);
+
+            }
+        });
     }
 
     $("#generateLease").on('click', function(){
@@ -1007,8 +1162,6 @@
     })
 
     function callRoomDetails(callId){
-
-        
 
         if (callId == "floor") {
             if ($("#property").val() !== "" && $("#roomType").val() !== "") {
@@ -1145,7 +1298,9 @@
                         if(RoomSelected == roomCodes[key]){
                             $('#room').append("<option value='"+roomCodes[key]+"' selected>"+roomCodes[key]+"</option>")
                         }else{
-                            $('#room').append("<option value='"+roomCodes[key]+"'>"+roomCodes[key]+"</option>")
+                            if(roomCodes[key] !== null){
+                                $('#room').append("<option value='"+roomCodes[key]+"'>"+roomCodes[key]+"</option>")
+                            }
                         }
                     })
 
@@ -1370,6 +1525,92 @@
         modalLease.style.display = "none";
     }
 
+    bookingTypeDetails();
+
+    function bookingTypeDetails(){
+        $.ajax({
+            type: "post",
+            url: "/get-booking-details",
+            data: {
+                userId: "{{$user[0]['userInfo']['id']}}",
+            },
+
+            success: function (data) {
+
+                var metaInfo1 = "";
+                var floor = "";
+                var unit = "";
+                if(data[1]?.meta_info_1 && data[1].meta_info_1 !== "" && data[1].meta_info_1 !== null){
+                    metaInfo1 = data[1].meta_info_1+", ";
+                }
+                if(data[0]?.floor !== "" && data[0].floor !== null){
+                    floor = data[0].floor + " Floor";
+                }
+                if(data[0]?.unit !== "" && data[0].unit !== null) {
+                    unit = ", Unit " + data[0].unit;
+                }
+
+                var bed_code = "";
+                var unallocated_bed = "";
+                if(data[0].bed_code !== "" && data[0].bed_code !== null){
+                    bed_code = "Bed Code: "+data[0].bed_code;
+
+                    if("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2){
+                        // if(data[2] == 'false'){                            
+                            var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
+                        // }
+
+                        // console.log(data);
+                    }
+                }
+
+                var lease_from = "";
+                if(data[0].lease_from_date !== ""){
+                    var lease_from = 'Lease From: '+data[0].lease_from_date+' at '+data[0].lease_from_time+'</br/>';
+                }
+                var lease_to = "";
+                if(data[0].lease_to_date !== ""){
+                    var lease_to = 'Lease To: '+data[0].lease_to_date+' at '+data[0].lease_to_time+'</br/>';
+                }
+
+                let date1 = new Date(data[0].lease_from_date);
+                let date2 = new Date(data[0].lease_to_date);
+                var diff = new Date(date2.getTime() - date1.getTime());
+                let years = diff.getUTCFullYear() - 1970;
+                let months = diff.getUTCMonth();
+                let days = diff.getUTCDate() - 3;
+                var lease_duration = "";
+                if(data[0].lease_from_date !== "" && data[0].lease_to_date !== ""){
+                    var lease_duration = "Lease Duration: "+years+" years, "+months+" months, "+days+" days ";
+                }
+
+                var booking_fee = "";
+                if(data[3] !== 'false' && data[0].room_rate !== null){
+                    var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
+                }
+                
+                let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].property+'</h4>'+
+                    '<h4 class="cardHeader" >'+data[0].roomType+'</h4>'+
+                    '<h4 class="cardHeader" id="prop_room_row1" >'+metaInfo1+floor+unit+'</h4>'+
+                    '<h4 class="cardHeader" id="prop_room_row2" >'+
+                    bed_code+
+                    unallocated_bed+
+                    '</h4>'+
+                    '<h4 class="cardHeader">'+
+                    lease_from+
+                    lease_to+
+                    lease_duration+
+                    '</h4><br/>'+
+                    booking_fee;
+
+                $(".app_summary_details").html(app_summary_details);
+
+                checkUserStatus();
+
+            },
+        });
+    }
+
     $("#changeBookingType").on('click', function(){
 
 
@@ -1402,11 +1643,69 @@
                         room: $("#room").val(),
                         bed: $("#bed").val(),
                         bed_code: $("#bed_code").val(),
+                        change_bed_type: $("#change_bed_type").val(),
                     },
 
                     success: function (data) {
+
+                        // console.log(data)
                         
-                        window.location.reload();
+                        // window.location.reload();
+
+                        if($("#change_bed_type").val() == "cancel"){
+                            $.ajax({
+                                type: "post",
+                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                data: {
+                                    type: "auto",
+                                },
+
+                                success: function (data) {          
+                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                        uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
+                                    }
+                                    
+                                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                                    $("#moveInBanner").empty().append(uploadbtn);
+                                    $("#moveInStatus").empty().append('<div class="button rejected"></div>');
+
+                                    $("#buttonTop").empty();
+
+                                    @if(Auth::user()->role_change_bed == "1")
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking(\'{{$user[0]['userInfo']['id']}}\', \'generate\')">Change Bed</button>');
+                                    @endif
+
+                                    @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease(\'{{$user[0]['userInfo']['id']}}\')">Change Lease Dates</button>');
+                                    @endif
+                                },
+                            });
+                        }
+
+                        $("#change_bed_type").val();
+                        bookingTypeDetails();
+                        refreshActions();
+
+                        $(".waived_paid_wording").empty();
+
+                        if(data[4] == 'true'){
+                            $(".waived_paid_wording").append('Waived')
+                        }else if(data[4] == '0'){
+                            $(".waived_paid_wording").append('Yes, no booking fee')
+                        }else{
+                            if(data[3].status == "Approved"){
+                                $(".waived_paid_wording").append('Yes')
+                            }else{
+                                $(".waived_paid_wording").append('No')
+                            }
+                        }
+
+                        $("#changeBookingType").empty().append('Change booking')
+
+                        // $("#myModalEditApp").html("");
+                        $("#myModalEditApp").css("display", "none");
                     },
                 });
         }
@@ -1429,7 +1728,12 @@
 
                 success: function (data) {
                     
-                    window.location.reload();
+                    // window.location.reload();
+
+                    bookingTypeDetails();
+                    refreshActions();
+                    $("#myModalEditLease").html("");
+                    $("#myModalEditLease").css("display", "none");
                 },
             });
     })
@@ -1471,545 +1775,309 @@
     $("#property").on('change', function(){
         let propValue = $("#property").val();
 
-        if(propValue == "Braamlofts"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
-        }else if(propValue == "80 Jorissen"){
-            $("#roomSection").addClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "49 Jorissen"){
-            $("#roomSection").addClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="Single">Single</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option><option value="Single 4 bedroom">Single | 4 Bedroom</option>')
-        }else if(propValue == "Dunvista Mansions"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "Wynton Joy"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "126 Siemert"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "YMCA"){
-            $("#roomSection").addClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single | 3 Bedroom</option>')
-        }
+        //here
 
-        $("#floor").empty();
-        $("#unit").empty();
-        $("#room").empty();
-        $("#bed").empty();
-        $("#bed_code").empty();
+        $.ajax({
+            type: "get",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                //
+                
+                if(propValue == "Braamlofts"){
+                    $("#roomSection").removeClass('hidden');
+
+                    let roomtypes = data[4];
+                    $("#roomType").empty().append('<option value="">Select One</option>');
+                    Object.keys(roomtypes).forEach( function(key) {
+                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
+                    });
+
+                }else if(propValue == "80 Jorissen"){
+                    $("#roomSection").addClass('hidden');
+
+                    let roomtypes = data[3];
+                    $("#roomType").empty().append('<option value="">Select One</option>');
+                    Object.keys(roomtypes).forEach( function(key) {
+                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
+                    });
+                }else if(propValue == "49 Jorissen"){
+                    $("#roomSection").addClass('hidden');
+
+                    let roomtypes = data[2];
+                    $("#roomType").empty().append('<option value="">Select One</option>');
+                    Object.keys(roomtypes).forEach( function(key) {
+                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
+                    });
+                }else if(propValue == "Dunvista Mansions"){
+                    $("#roomSection").removeClass('hidden');
+
+                    let roomtypes = data[5];
+                    $("#roomType").empty().append('<option value="">Select One</option>');
+                    Object.keys(roomtypes).forEach( function(key) {
+                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
+                    });
+                }else if(propValue == "Wynton Joy"){
+                    $("#roomSection").removeClass('hidden');
+                    
+                    let roomtypes = data[6];
+                    $("#roomType").empty().append('<option value="">Select One</option>');
+                    Object.keys(roomtypes).forEach( function(key) {
+                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
+                    });
+                }else if(propValue == "126 Siemert"){
+                    $("#roomSection").removeClass('hidden');
+                    
+                    let roomtypes = data[1];
+                    $("#roomType").empty().append('<option value="">Select One</option>');
+                    Object.keys(roomtypes).forEach( function(key) {
+                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
+                    });
+                }else if(propValue == "YMCA"){
+                    $("#roomSection").addClass('hidden');
+                    
+                    let roomtypes = data[7];
+                    $("#roomType").empty().append('<option value="">Select One</option>');
+                    Object.keys(roomtypes).forEach( function(key) {
+                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
+                    });
+                }
+
+                $("#floor").empty();
+                $("#unit").empty();
+                $("#room").empty();
+                $("#bed").empty();
+                $("#bed_code").empty();
+                $("#roomType").val('<?php echo $booking->roomType;?>');
+                callRoomDetails('floor');
+            }
+        })
+
+        
+
+        
     })
 
-    function openModal(field, url, uploaded_by, created_at, fileId, status){
-        url = url.replace("%27", "'");
+    // function openModal(field, url, uploaded_by, created_at, fileId, status){
+    //     url = url.replace("%27", "'");
 
-        if(field == "studentCard"){
-            var title = "Student card / Proof of student number";
-            if($("#student_card_approved").val() != "1" && $("#student_card_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
-            var Data = "<span style='font-weight:bold'>Student Number:</span> {{$user[0]['userInfo']['studentNo']}}";
-        }else if(field == "proof_of_payment"){
-            var title = "Proof of payment";
-            var approved = 1;
-        }else if(field == "copyID"){
-            var title = "Copy Of ID document";
-            if($("#id_data_approved").val() != "1" && $("#id_data_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
-            if("{{$user[0]['userInfo']['userTitle']}}" == "Mr"){
-                var gender = "<br/><span style='font-weight:bold'>Gender:</span> Male"
-            }else{
-                var gender = "<br/><span style='font-weight:bold'>Gender:</span> Female"
-            }
-            if("{{$user[0]['userInfo']['userNationality']}}" == "South Africa"){
-                var IdData = "<br/><span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['userId']}}";
-            }else{
-                var IdData = "<br/><span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['userPassport']}}";
-            }
-            var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['userFirstName']}} {{$user[0]['userInfo']['userLastname']}}"+
-                "<br/><span style='font-weight:bold'>Nationality:</span>{{$user[0]['userInfo']['userNationality']}}"+
-                IdData+
-                gender;
-        }else if(field == "proofRegistration"){
-            var title = "Proof of registration";
-            if($("#registration_approved").val() != "1" && $("#registration_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
+    //     if(field == "studentCard"){
+    //         var title = "Student card";
+    //         if($("#student_card_approved").val() != "1" && $("#student_card_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
+    //         var Data = "<span style='font-weight:bold'>Student Number:</span> {{$user[0]['userInfo']['studentNo']}}";
+    //     }else if(field == "proof_of_payment"){
+    //         var title = "Proof of payment";
+    //         var approved = 1;
+    //     }else if(field == "copyID"){
+    //         var title = "Copy Of ID document";
+    //         if($("#id_data_approved").val() != "1" && $("#id_data_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
+    //         if("{{$user[0]['userInfo']['userTitle']}}" == "Mr"){
+    //             var gender = "<br/><span style='font-weight:bold'>Gender:</span> Male"
+    //         }else{
+    //             var gender = "<br/><span style='font-weight:bold'>Gender:</span> Female"
+    //         }
+    //         if("{{$user[0]['userInfo']['userNationality']}}" == "South Africa"){
+    //             var IdData = "<br/><span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['userId']}}";
+    //         }else{
+    //             var IdData = "<br/><span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['userPassport']}}";
+    //         }
+    //         var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['userFirstName']}} {{$user[0]['userInfo']['userLastname']}}"+
+    //             "<br/><span style='font-weight:bold'>Nationality:</span>{{$user[0]['userInfo']['userNationality']}}"+
+    //             IdData+
+    //             gender;
+    //     }else if(field == "proofRegistration"){
+    //         var title = "Proof of registration";
+    //         if($("#registration_approved").val() != "1" && $("#registration_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
 
-            var Institution = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['institutionStudy']){ echo $lookup->lookup_name;}} ?>";
-            var Faculty = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['faculty']){ echo $lookup->lookup_name;}} ?>";
+    //         var Institution = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['institutionStudy']){ echo $lookup->lookup_name;}} ?>";
+    //         var Faculty = "<?php foreach($lookups as $lookup){ if($lookup->id == $user[0]['userInfo']['faculty']){ echo $lookup->lookup_name;}} ?>";
 
-            var Data = "<span style='font-weight:bold'>Institution:</span> "+Institution+
-                "<br/><span style='font-weight:bold'>Faculty:</span> "+Faculty;
-        }else if(field == "bursaryApproval"){
-            var title = "NSFAS / Bursary Approval";
-            if($("#bursary_approved").val() != "1" && $("#bursary_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
+    //         var Data = "<span style='font-weight:bold'>Institution:</span> "+Institution+
+    //             "<br/><span style='font-weight:bold'>Faculty:</span> "+Faculty;
+    //     }else if(field == "bursaryApproval"){
+    //         var title = "NSFAS / Bursary Approval";
+    //         if($("#bursary_approved").val() != "1" && $("#bursary_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
 
-            if("{{$user[0]['userInfo']['bint']}}"){
-                bInt = "<span style='font-weight:bold'>Intermediary:</span> {{$user[0]['userInfo']['bint']}}<br/>"
-            }else{
-                bInt = ""
-            }
-            if("{{$user[0]['userInfo']['bIntName']}}"){
-                bIntName = "<span style='font-weight:bold'>Specify Intermediary Name:</span> {{$user[0]['userInfo']['bIntName']}}<br/>"
-            }else{
-                bIntName = ""
-            }
-            if("{{$user[0]['userInfo']['studentType']}}" !== "NSFAS"){
+    //         if("{{$user[0]['userInfo']['bint']}}"){
+    //             bInt = "<span style='font-weight:bold'>Intermediary:</span> {{$user[0]['userInfo']['bint']}}<br/>"
+    //         }else{
+    //             bInt = ""
+    //         }
+    //         if("{{$user[0]['userInfo']['bIntName']}}"){
+    //             bIntName = "<span style='font-weight:bold'>Specify Intermediary Name:</span> {{$user[0]['userInfo']['bIntName']}}<br/>"
+    //         }else{
+    //             bIntName = ""
+    //         }
+    //         if("{{$user[0]['userInfo']['studentType']}}" !== "NSFAS"){
 
-                var Data = "<span style='font-weight:bold'>Company Name:</span> {{$user[0]['userInfo']['burCompanyName']}}<br/>"+
-                    "<span style='font-weight:bold'>Registration Number:</span> {{$user[0]['userInfo']['burRegNo']}}<br/>"+
-                    "<span style='font-weight:bold'>Contact Person:</span> {{$user[0]['userInfo']['burContactPerson']}}<br/>"+
-                    "<span style='font-weight:bold'>Contact Number:</span> {{$user[0]['userInfo']['burContactNo']}}<br/>"+
-                    "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['burEmail']}}<br/>"+
-                    "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>"+
-                    "<span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user[0]['userInfo']['bPayment']}}<br/>"+bInt+bIntName;
-            }else{
-                var Data = "";
-            }
+    //             var Data = "<span style='font-weight:bold'>Company Name:</span> {{$user[0]['userInfo']['burCompanyName']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Registration Number:</span> {{$user[0]['userInfo']['burRegNo']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Contact Person:</span> {{$user[0]['userInfo']['burContactPerson']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Contact Number:</span> {{$user[0]['userInfo']['burContactNo']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['burEmail']}}<br/>"+
+    //                 "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['bAddress1']}}, {{$user[0]['userInfo']['bAddress2']}}, {{$user[0]['userInfo']['bAddressCity']}}, {{$user[0]['userInfo']['bAddressPostal']}}<br/>"+
+    //                 "<span style='font-weight:bold'>How is the Bursary Paid:</span> {{$user[0]['userInfo']['bPayment']}}<br/>"+bInt+bIntName;
+    //         }else{
+    //             var Data = "";
+    //         }
 
-        }else if(field == "bankStatement"){
-            var title = "Bank statement";
-            if($("#bank_approved").val() != "1" && $("#bank_approved").val() != "2"){
-                var approved = 0;
-            }else{
-                var approved = 1;
-            }
+    //     }else if(field == "bankStatement"){
+    //         var title = "Bank statement";
+    //         if($("#bank_approved").val() != "1" && $("#bank_approved").val() != "2"){
+    //             var approved = 0;
+    //         }else{
+    //             var approved = 1;
+    //         }
 
             
 
-            if("{{$user[0]['userInfo']['pNationality']}}" == "South Africa"){
-                var IdData = "<span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['sponId']}}<br/>";
-            }else{
-                var IdData = "<span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['pPassportNo']}}<br/>";
-            }
+    //         if("{{$user[0]['userInfo']['pNationality']}}" == "South Africa"){
+    //             var IdData = "<span style='font-weight:bold'>ID Number:</span>{{$user[0]['userInfo']['sponId']}}<br/>";
+    //         }else{
+    //             var IdData = "<span style='font-weight:bold'>Passport Number:</span>{{$user[0]['userInfo']['pPassportNo']}}<br/>";
+    //         }
 
-            var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>"+
-                "<span style='font-weight:bold'>Cellphone Number:</span> {{$user[0]['userInfo']['sponCell']}}<br/>"+
-                "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['sponEmail']}}<br/>"+
-                "<span style='font-weight:bold'>Nationality:</span> {{$user[0]['userInfo']['pNationality']}}<br/>"+
-                IdData+
-                "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['pAddress1']}}, {{$user[0]['userInfo']['pAddress2']}}, {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}<br/>";
+    //         var Data = "<span style='font-weight:bold'>Name:</span> {{$user[0]['userInfo']['sponFirstName']}} {{$user[0]['userInfo']['sponLastName']}}<br/>"+
+    //             "<span style='font-weight:bold'>Cellphone Number:</span> {{$user[0]['userInfo']['sponCell']}}<br/>"+
+    //             "<span style='font-weight:bold'>Email Address:</span> {{$user[0]['userInfo']['sponEmail']}}<br/>"+
+    //             "<span style='font-weight:bold'>Nationality:</span> {{$user[0]['userInfo']['pNationality']}}<br/>"+
+    //             IdData+
+    //             "<span style='font-weight:bold'>Physical Address:</span> {{$user[0]['userInfo']['pAddress1']}}, {{$user[0]['userInfo']['pAddress2']}}, {{$user[0]['userInfo']['pAddressCity']}}, {{$user[0]['userInfo']['pAddressPostal']}}<br/>";
 
-        }else if(field == "moveIn"){
-            var title = "Lease";
-            var approved = 1;
-        }
+    //     }else if(field == "moveIn"){
+    //         var title = "Lease";
+    //         var approved = 1;
+    //     }
         
-        $("#modalHeader").empty().append(title);
-        $("#uploadedBy").empty().append(uploaded_by)
-        $("#uploadedTime").empty().append(created_at.slice(11, 16))
-        $("#uploadedDate").empty().append(created_at.slice(8, 10)+"|"+created_at.slice(5, 7)+"|"+created_at.slice(0, 4))
-        $("#FileIdForApproval").val(fileId)
-        $("#FileNameForApproval").val(field)
+    //     $("#modalHeader").empty().append(title);
+    //     $("#uploadedBy").empty().append(uploaded_by)
+    //     $("#uploadedTime").empty().append(created_at.slice(11, 16))
+    //     $("#uploadedDate").empty().append(created_at.slice(8, 10)+"|"+created_at.slice(5, 7)+"|"+created_at.slice(0, 4))
+    //     $("#FileIdForApproval").val(fileId)
+    //     $("#FileNameForApproval").val(field)
 
-        if (Data !== "") {
-            $("#infoToCheck").empty().append(Data);
-        } else {
-            approved = 1;
-        }
+    //     if (Data !== "") {
+    //         $("#infoToCheck").empty().append(Data);
+    //     } else {
+    //         approved = 1;
+    //     }
 
-        if(approved !== 1){
-            /*var preview1 = document.getElementById("rejected");
-            preview1.setAttribute("disabled", "disabled");*/
-            @if(Auth::user()->role_approve_docs == 1)
-                $("#approved").attr("disabled", "disabled");
-            @endif
-            /*var preview3 = document.getElementById("amend");
-            preview3.setAttribute("disabled", "disabled");
-            var preview4 = document.getElementById("rejectReason");
-            preview4.setAttribute("readonly", "readonly");
-            var preview5 = document.getElementById("actionUserName");
-            preview5.setAttribute("readonly", "readonly");*/
+    //     if(approved !== 1){
+    //         /*var preview1 = document.getElementById("rejected");
+    //         preview1.setAttribute("disabled", "disabled");*/
+    //         @if(Auth::user()->role_approve_docs == 1)
+    //             $("#approved").attr("disabled", "disabled");
+    //         @endif
+    //         /*var preview3 = document.getElementById("amend");
+    //         preview3.setAttribute("disabled", "disabled");
+    //         var preview4 = document.getElementById("rejectReason");
+    //         preview4.setAttribute("readonly", "readonly");
+    //         var preview5 = document.getElementById("actionUserName");
+    //         preview5.setAttribute("readonly", "readonly");*/
 
-            if (Data !== "") {
-                $("#infoButtons").removeClass('hidden');
-            }
+    //         if (Data !== "") {
+    //             $("#infoButtons").removeClass('hidden');
+    //         }
 
-            /*$("#infoChecker").removeClass('hidden')
-            $("#infoToCheck").empty().append(Data);*/
-        }else{
-            @if(Auth::user()->role_approve_docs == 1)
-                $("#rejected").removeAttr("disabled", "disabled");
-                $("#approved").removeAttr("disabled", "disabled");
-                $("#amend").removeAttr("disabled", "disabled");
-                $("#rejectReason").removeAttr("readonly", "readonly");
-                $("#actionUserName").removeAttr("readonly", "readonly");
-            @endif
+    //         /*$("#infoChecker").removeClass('hidden')
+    //         $("#infoToCheck").empty().append(Data);*/
+    //     }else{
+    //         @if(Auth::user()->role_approve_docs == 1)
+    //             $("#rejected").removeAttr("disabled", "disabled");
+    //             $("#approved").removeAttr("disabled", "disabled");
+    //             $("#amend").removeAttr("disabled", "disabled");
+    //             $("#rejectReason").removeAttr("readonly", "readonly");
+    //             $("#actionUserName").removeAttr("readonly", "readonly");
+    //         @endif
 
-            $("#infoButtons").addClass('hidden');
+    //         $("#infoButtons").addClass('hidden');
 
-            /*$("#infoChecker").addClass('hidden')
-            $("#infoToCheck").empty();*/
-        }
+    //         /*$("#infoChecker").addClass('hidden')
+    //         $("#infoToCheck").empty();*/
+    //     }
 
-        if(status == "Approved" || status == "XApproved"){
-            $("#approvedDocs").removeClass("hidden")
-            $("#actionUserName").addClass("hidden")
-        }else{
-            $("#approvedDocs").addClass("hidden")
-            $("#actionUserName").removeClass("hidden")
-        }
+    //     if(status == "Approved" || status == "XApproved"){
+    //         $("#approvedDocs").removeClass("hidden")
+    //         $("#actionUserName").addClass("hidden")
+    //     }else{
+    //         $("#approvedDocs").addClass("hidden")
+    //         $("#actionUserName").removeClass("hidden")
+    //     }
 
-        if(status == "Approved" || status == "Rejected" || status == "XApproved")
-            $("#buttonSection").addClass('hidden')
-        else
-            $("#buttonSection").removeClass('hidden')
+    //     if(status == "Approved" || status == "Rejected" || status == "XApproved")
+    //         $("#buttonSection").addClass('hidden')
+    //     else
+    //         $("#buttonSection").removeClass('hidden')
 
 
-        if (url.search(".pdf") > 0) {
-            $(".pdfSection").empty().append('<embed id="pdfView" src="/storage/'+url+'"  width="100%" height="600px" />')
-        } else {
-            $(".pdfSection").empty().append('<img id="pdfView" src="/storage/'+url+'" />')
-        }  
+    //     if (url.search(".pdf") > 0) {
+    //         $(".pdfSection").empty().append('<embed id="pdfView" src="/storage/'+url+'"  width="100%" height="600px" />')
+    //     } else {
+    //         $(".pdfSection").empty().append('<img id="pdfView" src="/storage/'+url+'" />')
+    //     }  
         
-        var modal = document.getElementById("myModal");
-        modal.style.display = "block";
-    }
+    //     var modal = document.getElementById("myModal");
+    //     modal.style.display = "block";
+    // }
 
-    var modal = document.getElementById("myModal");
-    var span = document.getElementsByClassName("close")[0];
+    // var modal = document.getElementById("myModal");
+    
+    
+    // var span = document.getElementsByClassName("close")[0];
 
-    span.onclick = function() {
-        modal.style.display = "none";
-        $("#actionUserName").removeClass("errorBorder")
-        $("#rejectReason").removeClass("errorBorder")
-        $("#rejectReason_error").addClass("hidden")
-        $("#actionUserName_error").addClass("hidden")
+    // span.onclick = function() {
+    //     modal.style.display = "none";
+    //     $("#actionUserName").removeClass("errorBorder")
+    //     $("#rejectReason").removeClass("errorBorder")
+    //     $("#rejectReason_error").addClass("hidden")
+    //     $("#actionUserName_error").addClass("hidden")
         
-        $("#rejectReason").val("")
-        $("#approvedDocs").addClass("hidden")
-        document.getElementById("reasonBox").style.marginTop = "-21px";
-    }
+    //     $("#rejectReason").val("")
+    //     $("#approvedDocs").addClass("hidden")
+    //     document.getElementById("reasonBox").style.marginTop = "-21px";
+    // }
 
-    window.onclick = function(event) {
-        if (event.target == modal) {
+    // window.onclick = function(event) {
+    //     if (event.target == modal) {
             
-            modal.style.display = "none";
-            $("#actionUserName").removeClass("errorBorder")
-            $("#rejectReason").removeClass("errorBorder")
-            $("#rejectReason_error").addClass("hidden")
-            $("#actionUserName_error").addClass("hidden")
-            $("#rejectReason").val("")
-            $("#approvedDocs").addClass("hidden")
-            document.getElementById("reasonBox").style.marginTop = "-21px";
-        }
+    //         modal.style.display = "none";
+    //         $("#actionUserName").removeClass("errorBorder")
+    //         $("#rejectReason").removeClass("errorBorder")
+    //         $("#rejectReason_error").addClass("hidden")
+    //         $("#actionUserName_error").addClass("hidden")
+    //         $("#rejectReason").val("")
+    //         $("#approvedDocs").addClass("hidden")
+    //         document.getElementById("reasonBox").style.marginTop = "-21px";
+    //     }
 
-        if (event.target == modalBooking) {
-            //
-            modalBooking.style.display = "none";
-        }
+    //     if (event.target == modalBooking) {
+    //         //
+    //         modalBooking.style.display = "none";
+    //     }
 
-    }
-
-    function removeFile(){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to delete this file",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $("#delete").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-
-                $.ajax({
-                    type: "post",
-                    url: "/action/file",
-                    data: {
-                        file: $("#FileIdForApproval").val(), 
-                        type: "Rejected",
-                        reason: "", 
-                        userName: "",
-                    },
-
-                    success: function (data) {
-                        
-                        refreshActions();
-
-                            $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
-                            $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden>')
-
-
-                        var modal = document.getElementById("myModal");
-                        modal.style.display = "none";
-
-                        $("#delete").empty().append('Delete')
-                    
-
-                        $("#actionUserName").removeClass("errorBorder")
-                        $("#rejectReason").removeClass("errorBorder")
-                        $("#rejectReason_error").addClass("hidden")
-                        $("#actionUserName_error").addClass("hidden")
-                        
-                        $("#rejectReason").val("")
-                        $("#approvedDocs").addClass("hidden")
-                        document.getElementById("reasonBox").style.marginTop = "-21px";
-                    },
-                });
-
-            }
-        })
-    }
-
-    function actionFile(type, action){
-
-        if(type === "Rejected"){
-            actionName = "Reject"
-        }else{
-            if(action == "Amend"){
-                actionName = "Amend"
-            }else{
-                actionName = "Approve"
-            }
-        }
-
-        if(type === "Rejected"){
-            if($("#rejectReason").val() !== "" && $("#actionUserName").val() !== ""){
-                actionSwal(actionName, type, action)
-            }else{
-                if($("#actionUserName").val() == ""){
-                    $("#actionUserName").addClass("errorBorder")
-                    $("#actionUserName_error").removeClass("hidden")
-                }
-
-                if($("#rejectReason").val() == ""){
-                    $("#rejectReason").addClass("errorBorder")
-                    $("#rejectReason_error").removeClass("hidden")
-                }
-                
-                document.getElementById("reasonBox").style.marginTop = "-27px";
-            }
-            
-        }else{
-            if(action == "Amend"){
-                if($("#actionUserName").val() !== ""){
-
-                    start();
-
-                async function start() {
-                    const { value: file } = await Swal.fire({
-                        title: 'Select file',
-                        input: 'file',
-                        inputAttributes: {
-                            'aria-label': 'Upload your file'
-                        }
-                    })
-
-                    if (file) {
-                        fileForApproval = $("#FileNameForApproval").val();
-
-                        $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                        $("#rejected").attr("disabled", "disabled");
-                        $("#approved").attr("disabled", "disabled");
-
-                        // $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-                        var form_data = new FormData();
-                        form_data.append("file", file);
-                        form_data.append("userUid", userId);
-                        form_data.append("fileType", fileForApproval);
-                        form_data.append("adminName", $("#actionUserName").val());
-
-                        $.ajax({
-                            type: "post",
-                            url: "/move-in-form-admin",
-                            data: form_data,
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-
-                            success: function (data) {
-                                if (data[0] == "done") {
-                                    $("#"+fileForApproval+"Status").empty().append('<div class="button action"></div>');
-
-                                    $("#"+fileForApproval+"Banner").empty().append('<button type="Button" onClick="openModal(\''+fileForApproval+'\', \''+data[1]+'\', \''+$("#actionUserName").val()+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                                    refreshActions();
-                                    
-
-                                    $("#amend").empty().append('AMEND');
-
-                                    $("#rejected").removeAttr("disabled", "disabled");
-                                    $("#approved").removeAttr("disabled", "disabled");
-
-                                    var modal = document.getElementById("myModal");
-                                    modal.style.display = "none";
-                                }else if(data[0] == "error"){
-                                    Swal.fire(
-                                        'Error',
-                                        data[1],
-                                        'error'
-                                    )
-
-                                    window.location.reload();
-                                }
-                            },
-                        });
-                    }
-                }
-                    
-                }else{
-                    $("#actionUserName").addClass("errorBorder")
-                    $("#actionUserName_error").removeClass("hidden")
-                }
-     
-                
-            }else{
-                if($("#actionUserName").val() !== ""){
-                    actionSwal(actionName, type, action)
-                }else{
-                    $("#actionUserName").addClass("errorBorder")
-                    $("#actionUserName_error").removeClass("hidden")
-                }
-                
-            }
-        } 
-
-    }
-
-    function actionSwal(actionName, type, action){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to "+actionName+" this file",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                if(type === "Rejected"){
-                        $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                        $("#amend").attr("disabled", "disabled");
-                        $("#approved").attr("disabled", "disabled");
-
-                        sendAction(type, action);
-
-                }else{
-                    if(action == "Amend"){
-                            $("#amend").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                            $("#rejected").attr("disabled", "disabled");
-                            $("#approved").attr("disabled", "disabled");
-
-                            sendAction(type, action);
-                        
-                    }else{
-                            $("#approved").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                            $("#rejected").attr("disabled", "disabled");
-                            $("#amend").attr("disabled", "disabled");
-
-                            sendAction(type, action);
-
-                            $("#files_to_download").val('true')
-                        
-                    }
-                }
-            }
-        })
-    }
-
-    function sendAction(type, action){
-        
-        $.ajax({
-            type: "post",
-            url: "/action/file",
-            data: {
-                file: $("#FileIdForApproval").val(), 
-                type: type,
-                reason: $("#rejectReason").val(), 
-                userName: $("#actionUserName").val(),
-            },
-
-            success: function (data) {
-                
-                refreshActions();
-
-                if(type === "Rejected"){
-                    $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button rejected"></div>')
-                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<label for="'+$("#FileNameForApproval").val()+'" id="'+$("#FileNameForApproval").val()+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label><input type="file" id="'+$("#FileNameForApproval").val()+'" hidden onChange="bursaryApp()">')
-
-                    $("#rejected").empty().append('REJECT WITH REASON')
-                    var preview1 = document.getElementById("amend");
-                    preview1.removeAttribute("disabled", "disabled");
-                    var preview2 = document.getElementById("approved");
-                    preview2.removeAttribute("disabled", "disabled");
-                }else{
-                    $("#"+$("#FileNameForApproval").val()+"Status").empty().append('<div class="button approved"></div>')
-                    $("#"+$("#FileNameForApproval").val()+"Banner").empty().append('<button type="button" onclick="openModal(\''+$("#FileNameForApproval").val()+'\', \''+data["fileUrl"]+'\', \''+$("#actionUserName").val()+'\', \''+data["created_at"]+'\', \''+data["id"]+'\', \'XApproved\')">View Document</button>')
-
-                    if(action == "Amend"){
-                        $("#amend").empty().append('AMEND')
-                        var preview1 = document.getElementById("rejected");
-                        preview1.removeAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("approved");
-                        preview2.removeAttribute("disabled", "disabled");
-                    }else{
-                        $("#approved").empty().append('APPROVE')
-                        var preview1 = document.getElementById("rejected");
-                        preview1.removeAttribute("disabled", "disabled");
-                        var preview2 = document.getElementById("amend");
-                        preview2.removeAttribute("disabled", "disabled");
-
-                        console.log($("#FileIdForApproval").val() )
-
-                        if($("#FileNameForApproval").val() == "copyID"){
-                            $("#id_data_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "studentCard"){
-                            $("#student_card_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "bankStatement"){
-                            console.log("bankStatement")
-                            $("#bank_approved").val('2')
-                            $("#parent_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "proofRegistration"){
-                            $("#registration_approved").val('2')
-                        }else if($("#FileNameForApproval").val() == "bursaryApproval"){
-                            $("#bursary_approved").val('2')
-                            $("#burser_approved").val('2')
-                        }
-
-                        console.log($("#FileNameForApproval").val())
-
-                        if($("#FileNameForApproval").val() == "proof_of_payment"){
-                            $("#AppSummaryPaid").removeClass('hidden')
-                            $("#paidOption").empty().append("Yes")
-                        }
-                    }
-
-                }
-
-                var modal = document.getElementById("myModal");
-                modal.style.display = "none";
-               
-
-                $("#actionUserName").removeClass("errorBorder")
-                $("#rejectReason").removeClass("errorBorder")
-                $("#rejectReason_error").addClass("hidden")
-                $("#actionUserName_error").addClass("hidden")
-                
-                $("#rejectReason").val("")
-                $("#approvedDocs").addClass("hidden")
-                document.getElementById("reasonBox").style.marginTop = "-21px";
-
-                checkUserStatus();
-            },
-        });
-    }
+    // }       
 
     function refreshActions(){
 
@@ -2023,7 +2091,7 @@
                 
                 data.forEach(myFunction);
                 function myFunction(item, index) {
-                    console.log(item)
+                    // console.log(item)
                     if(item['actionUserRole'] == "1"){
                         if(item['users']['user_role_name'] == ""){
                             var role = '<button type="button" class="admin">Admin</button>';
@@ -2101,7 +2169,7 @@
                 data.forEach(myFunction);
                 function myFunction(item, index) {
                     if(item['field'] == "studentCard"){
-                        var name = 'STUDENT CARD / PROOF OF STUDENT NUMBER';
+                        var name = 'STUDENT CARD';
                     }else if(item['field'] == "proof_of_payment"){
                         var name = 'PROOF OF PAYMENT';
                     }else if(item['field'] == "copyID"){
@@ -2114,8 +2182,9 @@
                         var name = 'BANK STATEMENT';
                     }
 
-                    if(item['status'] == "Uploaded" || item['status'] == "Approved"){
-                        var button = '<button type="button" onClick="openModal(\''+item['field']+'\', \''+item['url']+'\',\''+item['uploaded_by']+'\',\''+item['created_at']+'\',\''+item['id']+'\',\''+item['status']+'\')" id="myBtn_'+index+'">View Document</button>';
+                    if(item['status'] == "Uploaded" || item['status'] == "Approved") {
+                        var button = '<button type="button" onClick="btn_view_document_ajax('+item['id']+')">View Document</button>';
+
                     }else{
                         // var button = '<button type="button" class="error">Send reminder</button>';
                     }
@@ -2148,15 +2217,20 @@
         });
     })
 
-    $("#documentsSectionDisplay").on('change', '#copyID', function(){
-        $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    function UploadDocument(field){
+        console.log("here")
+        // let field = $(this).attr('id');
+        // console.log(field);
+
+        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
         let userId = <?php echo $user[0]['userInfo']['id'];?>
 
         var form_data = new FormData();
-        form_data.append("file", document.getElementById('copyID').files[0]);
+        form_data.append("file", document.getElementById(field).files[0]);
         form_data.append("userUid", userId);
-        form_data.append("fileType", "copyID");
-        form_data.append("adminName", $("#adminName").val());
+        form_data.append("fileType", field);
+        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
         $.ajax({
             type: "post",
@@ -2167,295 +2241,88 @@
             processData: false,
 
             success: function (data) {
-                if (data[0] == "done") {
-                    $("#copyIDStatus").empty().append('<div class="button action"></div>');
-
-                    $("#copyIDBanner").empty().append('<button type="Button" onClick="openModal(\'copyID\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                }
-            },
-        });
-    });
-
-    $("#documentsSectionDisplay").on('change', "#studentCard", function(){
-        $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('studentCard').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "studentCard");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-                    $("#studentCardStatus").empty().append('<div class="button action"></div>');
-
-                    $("#studentCardBanner").empty().append('<button type="Button" onClick="openModal(\'studentCard\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#studentCardSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });  
-    })
-
-    $("#documentsSectionDisplay").on('change', "#bankStatement",  function(){
-        $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bankStatement').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "bankStatement");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
+                if (data[0]> 0) {
                     
-                    $("#bankStatementStatus").empty().append('<div class="button action"></div>');
+                    $("#" + field + "Status").empty().append('<div class="button action"></div>');
 
-                    $("#bankStatementBanner").empty().append('<button type="Button" onClick="openModal(\'bankStatement\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
 
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#bankStatementSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
+                    if(field == "moveIn"){
+                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'
+                        
+                        if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                            button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                        }
+                        
+                        button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
+                    }
 
-    $("#documentsSectionDisplay").on('change', "#proofRegistration", function(){
-
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proofRegistration').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "proofRegistration");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-                    $("#proofRegistrationStatus").empty().append('<div class="button action"></div>');
-
-                    $("#proofRegistrationBanner").empty().append('<button type="Button" onClick="openModal(\'proofRegistration\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#proofRegistrationSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
-
-
-    $("#documentsSectionDisplay").on('change', "#proof_of_payment", function(){
-        $("#proof_of_paymentSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "proof_of_payment");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-
-                    $("#proof_of_paymentStatus").empty().append('<div class="button action"></div>');
-
-                    $("#proof_of_paymentBanner").empty().append('<button type="Button" onClick="openModal(\'proof_of_payment\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+                    $("#" + field + "Banner").empty().append(button);
 
                     refreshActions();
 
-                }else if(data[0] == "error"){
+                } else {
                     Swal.fire(
                         'Error',
-                        data[1],
+                        data[0],
                         'error'
                     )
-                    $("#proof_of_paymentSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
-    
-    function bursaryApp(){
-        $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bursaryApproval').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "bursaryApproval");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-
-
-                    $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
-
-                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#bursaryApprovalSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
+                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
     }
 
-    $("#bursaryApproval").on('change', function(){
-        $("#bursaryApprovalSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
+    // //File Upload
+    // $(document).on('change', '#bursaryApproval, #moveIn, #copyID, #studentCard, #bankStatement, #proofRegistration, #proof_of_payment', function(){
+    //     let field = $(this).attr('id');
+    //     // console.log(field);
 
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bursaryApproval').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "bursaryApproval");
-        form_data.append("adminName", $("#adminName").val());
+    //     $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
+    //     let userId = <?php echo $user[0]['userInfo']['id'];?>
 
-            success: function (data) {
-                if (data[0] == "done") {
+    //     var form_data = new FormData();
+    //     form_data.append("file", document.getElementById(field).files[0]);
+    //     form_data.append("userUid", userId);
+    //     form_data.append("fileType", field);
+    //     form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/move-in-form-admin",
+    //         data: form_data,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
 
-                    $("#bursaryApprovalStatus").empty().append('<div class="button action"></div>');
+    //         success: function (data) {
+    //             if (data[0]> 0) {
+                    
+    //                 $("#" + field + "Status").empty().append('<div class="button action"></div>');
 
-                    $("#bursaryApprovalBanner").empty().append('<button type="Button" onClick="openModal(\'bursaryApproval\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
+    //                 var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
 
-                    refreshActions();
+    //                 if(field == "moveIn"){
+    //                     var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a><button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button><button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
+    //                 }
 
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#bursaryApprovalSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    })
+    //                 $("#" + field + "Banner").empty().append(button);
 
-    $("#moveIn").on('change', function(){
-        $("#moveInSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    //                 refreshActions();
 
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('moveIn').files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", "moveIn");
-        form_data.append("adminName", $("#adminName").val());
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data[0] == "done") {
-                    $("#moveInStatus").empty().append('<div class="button action"></div>');
-
-                    $("#moveInBanner").empty().append('<button type="Button" onClick="openModal(\'moveIn\', \''+data[1].replace("'", "%27")+'\', \''+data[2]["uploaded_by"]+'\', \''+data[2]["created_at"]+'\', \''+data[2]["id"]+'\', \'Uploaded\')">View Document</button>');
-
-                    refreshActions();
-                }else if(data[0] == "error"){
-                    Swal.fire(
-                        'Error',
-                        data[1],
-                        'error'
-                    )
-                    $("#moveInSection").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
-    });
+    //             } else {
+    //                 Swal.fire(
+    //                     'Error',
+    //                     data[0],
+    //                     'error'
+    //                 )
+    //                 $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
+    //             }
+    //         },
+    //     });
+    // })    
 
     function unWaiveBookingFee(userId){
         $("#unWaiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -2477,7 +2344,18 @@
                     },
 
                     success: function (data) {
-                        window.location.reload();
+                        // window.location.reload();
+
+                        $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
+
+                        <?php if(Auth::user()->role_upload_docs == 1){ ?>
+                            let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
+                            $("#proof_of_paymentBanner").empty().append(uploadbtn);
+                        <?php } ?>
+
+                        $("#booking_fee_waived").val('false');
+                        refreshActions();  
+                        checkUserStatus();
                     },
                 });
             }else{
@@ -2519,7 +2397,17 @@
                             },
 
                             success: function (data) {
-                                window.location.reload();
+                                // window.location.reload();
+
+                                $("#proof_of_paymentStatus").empty().append('<div class="button approved"></div>');
+
+                                var button = '<button type="button" onClick="btn_view_document_ajax('+data+')">View Document</button>';
+                                $("#proof_of_paymentBanner").empty().append(button);
+
+                    
+                                $("#booking_fee_waived").val('true');
+                                refreshActions();  
+                                checkUserStatus();
                             },
                         });
                     }else{
@@ -2554,10 +2442,37 @@
         }
     }
 
+    function restoreBooking(bookingId, userId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This booking will become active again!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, activate it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/restore/booking",
+                    data: {
+                        bookingId: bookingId, 
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location = "/applications";
+                    },
+                });
+            }
+        })
+    }
+
     function cancelBooking(bookingId, userId){
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "You will cancel this booking!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -2608,7 +2523,7 @@
         })
     }
 
-    $('#myBtn_regen_lease').on("click", function(e) {
+    $(document).off('click').on('click', '#myBtn_regen_lease', function(e) {
         let btn = $(this);
         $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -2619,13 +2534,17 @@
                 type: "auto",
             },
 
-            success: function (data) {                
+            success: function (data) {          
+                // if($("#change_bed_type").val() == "cancel"){
+                    console.log(data)
+                // }      
                 $(btn).html('REGEN LEASE');
             },
         });
 
         e.preventDefault();
     });
+
 
     // function checkData(){
     //     $.ajax({
@@ -2662,6 +2581,375 @@
     // setInterval(function(){
     //     checkData()
     // }, 30000)
+
+    jQuery(document).ready( function($) {
+        $(document).on("click", '#btn_clear_bed', function(e) {
+            var msg = "You are about to unallocate this bed, the bed will be available to book again";
+
+            if ($(this).data("lease") === "true") {
+                msg = "You are about to unallocate this bed, the bed will be available to book again. The Lease will also be rejected.";
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: msg,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!',
+                showLoaderOnConfirm: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "post",
+                        url: "/unallocate-bed",
+                        data: {
+                            userId: "{{$user[0]['userInfo']['id']}}",
+                        },
+
+                        success: function (data) {
+                            $("#prop_room_row1, #prop_room_row2").remove();
+                            // $("#bed_allocated").val('')
+
+                            $('#moveInStatus').parent().remove();
+
+                            //Update change bed to not show lease cancel message
+                            $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="changeBooking({{$user[0]['userInfo']['id']}}, \'generate\')">Change Bed</button>');
+
+                            refreshActions();  
+                            checkUserStatus();
+                            
+
+                        }
+                    })
+
+                }
+            });
+
+            e.preventDefault();
+        });
+
+        $(document).on('click', '.btn_edit_inline', function(e) {
+            let formId = $(this).attr('formid');
+            let edittype = $(this).attr('edittype');
+
+            $('#' + formId).html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+            $.ajax({
+                type: "get",
+                url: "/edit-inline-data",
+                data: {
+                    userUid: "{{$user[0]['userInfo']['id']}}",
+                    formId: formId,
+                    type: edittype
+                },
+    
+                success: function (data) {
+                    
+                    $('#' + formId).html(data);
+                    checkUserStatus();
+                },
+            });
+
+            e.preventDefault();
+        });
+
+        $(document).off('blur').on('blur', 'input', function(e) {
+            let fieldId = e.target.id
+            var required = $("#"+fieldId).hasClass('required')
+
+            if($("#"+fieldId).val() == "" && required == true){
+                $("#"+fieldId).addClass('fieldError')
+                $("#"+fieldId+"_error").removeClass('hidden')
+            }else{
+                $("#"+fieldId).removeClass('fieldError')
+                $("#"+fieldId+"_error").addClass('hidden')
+            }
+        });
+
+        //Inline Form Validation
+        $(document).on('keyup blur', "#userAddressPostal, #kinAddressPost", function(){
+            let postal = $(this).val()
+            let id = $(this).attr('id');
+
+            if(/\b\d{4}\b/g.test(postal)){
+                $("#" + id).removeClass("fieldError")
+                $("#" + id + "_error").addClass('hidden')
+            }else{
+                $("#" + id).addClass("fieldError")
+                $("#" + id + "_error").removeClass('hidden')
+            }            
+        });
+        
+        $(document).on('keyup blur', "#kinCellNo, #userCell", function(){
+            let cell = $(this).val();
+            let id = $(this).attr('id');
+
+            ValidCell(cell, id);
+            duplicateCell();          
+        });
+        
+        $(document).on('keyup blur', "#userEmail", function(){
+            let id = $(this).attr('id');
+
+            if(isEmail($("#" + id).val())){
+                $("#" + id).removeClass("fieldError")
+                $("#" + id + "_error").addClass('hidden')
+            }else{
+                $("#" + id).addClass("fieldError")
+                $("#" + id + "_error").removeClass('hidden')
+            }    
+        });
+        
+        $(document).on('keyup blur', "#kinEmail", function(){
+            let id = $(this).attr('id');
+
+            if ($("#" + id).val() !== "") {
+                if(isEmail($("#" + id).val())){
+                    $("#" + id).removeClass("fieldError")
+                    $("#" + id + "_error").addClass('hidden')
+                }else{
+                    $("#" + id).addClass("fieldError")
+                    $("#" + id + "_error").removeClass('hidden')
+                }    
+            }            
+        });
+
+        function ValidCell(cell, fieldId){
+            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldId + "_error").addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldId + "_error").removeClass('hidden')
+            }
+        }
+
+        function duplicateCell(){
+            $('#kinCellNo_duplicate').addClass('hidden');
+            $('#cell_no_duplicate').addClass('hidden');
+            $('#userCell, #kinCellNo').removeClass('fieldDuplicate');
+
+            console.log($('#userCell').val(), $('#kinCellNo').val());
+
+            if ($('#userCell').val() != "" && $('#userCell').val() == $('#kinCellNo').val()) {
+                $('#kinCellNo_duplicate').removeClass('hidden');
+                $('#cell_no_duplicate').removeClass('hidden');
+
+                $('#cell_no_error').removeClass('hidden');
+                $('#kinCellNo_error').removeClass('hidden');
+
+                $('#userCell').addClass('fieldError');
+                $('#kinCellNo').addClass('fieldError');
+
+                $('#userCell').addClass('fieldDuplicate');
+                $('#kinCellNo').addClass('fieldDuplicate');
+            } else {
+                cell = $("#userCell").val()
+                ValidCell(cell, "userCell");
+                
+                cell = $("#kinCellNo").val();            
+                ValidCell(cell, "kinCellNo");
+            }
+        }
+
+        function isEmail(email) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            return regex.test(email);
+        }
+
+        $(document).on('click', '.btn_save_inline', function(e) {
+
+            let formid = $(this).attr('formid')
+
+            //Check if any hidden fields are required, remove required check
+            $('.edit_info .hidden .fieldError').removeClass('fieldError').val('');
+            
+            var req = 1;
+
+            //Check empty fields that are required
+            $('#'+formid+' .required').each( function(){
+                if($(this).val() === "" || $(this).val() === null){
+                    if (!$(this).parent().hasClass('hidden')) {
+                        req = 0
+
+                        console.log($(this)[0]["id"])
+
+                        $(this).addClass("fieldError")
+                        id = $(this)[0]["id"]
+                        $("#"+id+"_error").removeClass("hidden")
+                    }
+                }
+            });
+
+            //Check any other fields with validation errors
+            if ($('#'+formid+' .fieldError').length > 0) {
+                req = 0;
+            }
+
+            if (req === 1) {
+                let formId = $(this).attr('formid');
+                let edittype = $(this).attr('edittype');
+
+                let btn = $(this);
+
+                $.ajax({
+                    type: "post",
+                    url: "/save-inline-data",
+                    data: $('#' + formId + ' form').serialize(),
+        
+                    success: function (data) {
+
+                        $(btn).next().click();
+        
+                    },
+                });
+
+                e.preventDefault();           
+
+            } else {
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                );
+            }
+        });
+
+        $(document).on('click', '.btn_approve_inline', function(e) {
+            let formId = $(this).attr('formid');
+            let approvefield = $(this).attr('approvefield');
+            let task = "1";
+
+            let message = "You are about to Approve this information";
+
+            let btn = $(this);
+
+            if ($(this).hasClass("rejected")) {
+                message = "You are about to Reject this information";
+                task = "0";
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!',
+                showLoaderOnConfirm: true,
+                preConfirm: (login) => {                    
+                    $.ajax({
+                        type: "post",
+                        url: "/approve-inline-data",
+                        data: {
+                            userUid: "{{$user[0]['userInfo']['id']}}",
+                            formId: formId,
+                            approvefield: approvefield,
+                            task: task
+                        },
+            
+                        success: function (data) {
+
+                            $("#"+approvefield).val(task)
+
+                            refreshActions();  
+                            checkUserStatus();
+
+            
+                        },
+                    });
+                },
+            });
+
+            e.preventDefault();
+        });
+    });
+
+    function addOtherDoc(){
+        swal.fire({
+            title: 'Please name this document',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/add-other-document",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        docName: result.value
+                    },
+
+                    success: function (data) {
+
+                        $("#documentsSectionDisplay").append(
+                            '<div class="section">'+
+                                '<div class="label">'+
+                                    ((data.replace("other", "other |")).replaceAll("_", " ")).toUpperCase()+
+                                '</div>'+
+                                '<div class="status" id="'+data+'Status">'+
+                                    '<div class="button rejected"></div>'+
+                                '</div>'+
+                                '<div class="banner" id="'+data+'Banner">'+
+                                    '<label for="'+data+'" id="'+data+'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">'+
+                                        '<span class="text">Upload</span>'+
+                                        '<i class="fas fa-file-upload"></i>'+
+                                    '</label>'+
+                                    '<input type="file" id="'+data+'" onChange="UploadDocument(\''+data+'\')" hidden>'+
+                                    '<button type="button" style="margin-left:5px;" onClick="deleteFile(\''+data+'\')">Delete</button>'+
+                                '</div>'+
+                            '</div>'
+                        )
+
+                        refreshActions();  
+                        checkUserStatus()
+                    },
+                });
+            }else{
+                $("#waiveThisBookingFee").empty().append('waive booking fee')
+            }
+        })
+    }
+
+    function deleteFile(fileName){
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/remove-document-upload",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        fileName: fileName
+                    },
+
+                    success: function (data) {
+
+                        document.getElementById(fileName+"Status").parentElement.remove();
+
+                        checkUserStatus()
+                    },
+                });
+            }
+        })
+    }
+
 </script>
 
 

@@ -41,9 +41,6 @@
     <link rel="stylesheet" type="text/css" href="/css/dropzone.css">
     <script src="/js/dropzone.js"></script>
 
-
-
-
     
 </head>
 <body>
@@ -57,14 +54,16 @@
                 <a href="/leases">Leases</a>
                 <a href="/invoices">Invoices</a>
                 <a href="/mailing">Mailing</a>
-                <a href="/lookups">Lookups</a>
+                @if(Auth::user()->role_lookup == "1")
+                    <a href="/lookups">Lookups</a>
+                @endif
                 <a href="/reports">Reports</a>
 
                 @if(Auth::user()->role_manage_users == "1")
                     <a href="/users">Users</a>
                 @endif
                 
-                <a href="/logout">Log out</a>
+                <a href="/logout">Hi {{Auth::user()->userFirstName}}, Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>
                 </a>
@@ -96,34 +95,15 @@
                 @if (isset($appProfile) && $appProfile === "true")
                     <h1 class="bookingSub">
                         Application Profile 
-                        @if($user[0]['userInfo']['applicationStatus'] == "Approved Confirmed")
-                            : Approved
-                        @elseif($user[0]['userInfo']['applicationStatus'] == "Rejected Confirmed")
-                            : Rejected
-                        @endif
+                        <span class="appStatusText"></span>
                     </h1>
                 @endif
                 <h1 class="booking_app">{{$headerTitle}}</h1>
 
                 <div class="buttonSidePanel" style="margin-top:-50px;">
-
                     @if (isset($appProfile) && $appProfile === "true")
-                        @if($user[0]['userInfo']['applicationStatus'] !== "Approved Confirmed")
-                            <div id="MainAppSection" class="hidden">
-                                @if(Auth::user()->role_approve_docs == 1)
-                                    <button type="button" class="appBtn" id="approveProfile" onClick="approveApplication('<?php echo $user[0]['userInfo']['id']; ?>')">APPROVE APPLICATION AND SEND CONFIRMATION</button>
-                                    <br/><br/><br/>
-                                    <button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication('<?php echo $user[0]['userInfo']['id']; ?>')">REJECT APPLICATION AND SEND NOTIFICATION</button>        
-                                    <br/><br/><br/>   
-                                @endif  
-                            </div>
-                        @endif
-
-                        @if(Auth::user()->role_edit_app == 1 && $user[0]['userInfo']['overall_status'] != "Approved")
-                            <a href="/student/edit/<?php echo $user[0]['userInfo']['id']; ?>"><button type="button" class="appBtn" style="background-color:#e74f26; border:none">EDIT PROFILE</button></a>
-                        @endif
+                    <div class="appSection"></div>
                     @endif
-
                     
                 </div>
 
@@ -143,7 +123,7 @@
     </div>
     <footer class="footer">
         <div class="footerBanner">
-            <div class="container">
+            <div class="container flex">
                 <div class="col-3">
                     <h2 class="footerHeader">
                         Campus Africa
@@ -153,7 +133,7 @@
                     </p>
                 </div>
     
-                <div class="col-3" style="padding-left:6%; width:19%">
+                <div class="col-3" style="padding-left:6%; width:19%; float:left">
                     <p class="linkHeader">Home</p>
                     <p class="link"><a href="https://campusafrica.whitehart.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
                     <!-- Campus Africa Life<br/> -->
@@ -162,24 +142,25 @@
                 </div>
     
                 <div class="col-3">
-                <p class="linkHeader">Contact Us</p>
-                <p class="link"><a href="mailto:info@campusafrica.co.za" style="color:inherit; text-decoration:none;">info@campusafrica.co.za</a><br/>
-                <a href="tel:0101091700" style="color:inherit; text-decoration:none;">010 109 1700</a></p>
+                    <p class="linkHeader">Contact Us</p>
+                    <p class="link"><a href="mailto:info@campusafrica.co.za" style="color:inherit; text-decoration:none;">info@campusafrica.co.za</a><br/>
+                    <a href="tel:0101091700" style="color:inherit; text-decoration:none;">010 109 1700</a></p>
                 </div>
     
                 <div class="col-3">
-                <p class="linkHeader">Follow Us</p>
-                <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
-                <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
-                <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
-                <br/>
-                <a href="mailto:info@campusafrica.co.za"><img src="/images/footer/email.png" alt="Email" width="43" height="43"></a>
-                <a href="https://wa.me/27719991246" target="_blank"><img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43"></a>
+                    <p class="linkHeader">Follow Us</p>
+                    <a href="https://www.facebook.com/WeAreCampusAfrica/" target="_blank"><img src="/images/footer/facebook.png" alt="Facebook" width="43" height="43"></a>
+                    <a href="https://www.instagram.com/campus.africa/" target="_blank"><img src="/images/footer/instagram.png" alt="Instagram" width="43" height="43"></a>
+                    <a href="https://www.youtube.com/channel/UCo4MDLF6rXA2_d3jxwxzTmg" target="_blank"><img src="/images/footer/youtube.png" alt="Youtube" width="43" height="43"></a>
+                    <br/>
+                    <a href="mailto:info@campusafrica.co.za"><img src="/images/footer/email.png" alt="Email" width="43" height="43"></a>
+                    <a href="https://wa.me/27719991246" target="_blank"><img src="/images/footer/whatsapp.png" alt="Whatsapp" width="43" height="43"></a>
                 </div>
             </div>
         </div>
-        <div class="footerClearfix"></div>
-        <div class="container">
+        <!-- <div class="footerClearfix"></div> -->
+        <!-- <div class="footerClearfix"></div> -->
+        <div class="container" style="margin-top:500px;">
             <br/>
             <p class="footerRights">Campus Africa - All Right Reserved</p>
         </div>
@@ -195,69 +176,73 @@
         });
 
         function approveApplication(userId){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Approve this application',
+                text: "You are about to approve this application and send approval email. Continue?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, approve'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-            if($("#address_approved").val() !== "2" || $("#kin_approved").val() !== "2"){
+                    $.ajax({
+                        type: "post",
+                        url: "/approve-application",
+                        data: {
+                            userId: "{{$user[0]['userInfo']['id']}}", 
+                        },
 
-                if($("#address_approved").val() !== "2"){
-                    addressApp()
-                }else if($("#kin_approved").val() !== "2"){
-                    kinApp();
+                        success: function (data) {
+                            // window.location.reload();
+                            $.ajax({
+                                type: "post",
+                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                data: {
+                                    bookingId: "{{$user[0]['userInfo']['id']}}", 
+                                    property: $("#property").val(),
+                                    roomType: $("#roomType").val(), 
+                                    floor: $("#floor").val(),
+                                    unit: $("#unit").val(),
+                                    room: $("#room").val(),
+                                    bed: $("#bed").val(),
+                                    bed_code: $("#bed_code").val(),
+                                    lease_from_date: $("#lease_from_date").val(),
+                                    lease_from_time: $("#lease_from_time").val(),
+                                    lease_to_date: $("#lease_to_date").val(),
+                                    lease_to_time: $("#lease_to_time").val(),
+                                    type: "auto",
+                                },
+
+                                success: function (data) {
+
+                                    var regen = "";
+                                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                        var regen = '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                                    }
+                                    
+                                    // window.location.reload();
+                                    $("#documentsSectionDisplay").append(
+                                        '<div class="section">'+
+                                            '<div class="label">LEASE</div>'+
+                                            '<div class="status" id="moveInStatus"><div class="button rejected"></div></div>'+
+                                            '<div class="banner" id="moveInBanner">'+
+                                                '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'+
+                                                regen+
+                                                '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label>'+
+                                                '<input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')"  hidden>'+
+                                            '</div>'+
+                                        '</div>')
+                                    checkUserStatus();
+                                    $("#changeDatesLease").addClass('hidden');
+                                },
+                            });
+                        },
+                    });
                 }
-                        
-            }else{
-
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Approve this application',
-                    text: "You are about to approve this application and send approval email. Continue?",
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, approve'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-                        $.ajax({
-                            type: "post",
-                            url: "/approve-application",
-                            data: {
-                                userId: "{{$user[0]['userInfo']['id']}}", 
-                            },
-
-                            success: function (data) {
-                                // window.location.reload();
-                                $.ajax({
-                                    type: "post",
-                                    url: "/createLease/{{$user[0]['userInfo']['id']}}",
-                                    data: {
-                                        bookingId: "{{$user[0]['userInfo']['id']}}", 
-                                        property: $("#property").val(),
-                                        roomType: $("#roomType").val(), 
-                                        floor: $("#floor").val(),
-                                        unit: $("#unit").val(),
-                                        room: $("#room").val(),
-                                        bed: $("#bed").val(),
-                                        bed_code: $("#bed_code").val(),
-                                        lease_from_date: $("#lease_from_date").val(),
-                                        lease_from_time: $("#lease_from_time").val(),
-                                        lease_to_date: $("#lease_to_date").val(),
-                                        lease_to_time: $("#lease_to_time").val(),
-                                        type: "auto",
-                                    },
-
-                                    success: function (data) {
-                                        
-                                        window.location.reload();
-                                    },
-                                });
-                            },
-                        });
-                    }
-                })
-            }
-
-            
+            });            
         }
 
         function addressApp(){
@@ -347,7 +332,8 @@
                         },
 
                         success: function (data) {
-                            window.location.reload();
+                            // window.location.reload();
+                            checkUserStatus();
                         },
                     });
                 }

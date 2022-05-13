@@ -122,6 +122,11 @@ class User extends Authenticatable
         'role_comment',
         'user_role_name',
         'nsfas_bursar',
+        'role_cancel_lease',
+        'rob_55_lease',
+        'rob_45_other',
+        'role_lease_regen',
+        'role_modify_approved',
     ];
 
     public function files(){

@@ -87,25 +87,26 @@
         <label>Documents</label><br/>
             <select name="fieldStatus" id='fieldStatus'>
                 <option value="All" selected <?php if( Session::get('fieldStatus') == "All"){ echo "selected";}?>>- Select One - </option>
-                <option value="bookingStatus" <?php if( Session::get('fieldStatus') == "bookingStatus"){ echo "selected";}?>>Booking Status</option>
-                <option value="proof_of_payment" <?php if( Session::get('fieldStatus') == "proof_of_payment"){ echo "selected";}?>>Proof of Payment</option>
-                <option value="copyID" <?php if( Session::get('fieldStatus') == "All"){ echo "copyID";}?>>ID Copy</option>
-                <option value="applicationStatus" <?php if( Session::get('fieldStatus') == "applicationStatus"){ echo "selected";}?>>Application Status</option>
-                <option value="studentCard" <?php if( Session::get('fieldStatus') == "studentCard"){ echo "selected";}?>>Student Card Copy</option>
-                <option value="proofRegistration" <?php if( Session::get('fieldStatus') == "proofRegistration"){ echo "selected";}?>>Proof of Registration</option>
-                <option value="bursaryApproval" <?php if( Session::get('fieldStatus') == "bursaryApproval"){ echo "selected";}?>>NSFAS | Bursary Approval</option>
-                <option value="bankStatement" <?php if( Session::get('fieldStatus') == "bankStatement"){ echo "selected";}?>>Bank Statements</option>
-                <option value="leaseStatus" <?php if( Session::get('fieldStatus') == "leaseStatus"){ echo "selected";}?>>Lease Status</option>
+                <option value="rob_10_fee" <?php if( Session::get('fieldStatus') == "rob_10_fee"){ echo "selected";}?>>Fee</option>
+                <option value="rob_15_id" <?php if( Session::get('fieldStatus') == "rob_15_id"){ echo "selected";}?>>ID</option>
+                <option value="rob_20_card" <?php if( Session::get('fieldStatus') == "rob_20_card"){ echo "selected";}?>>Card</option>
+                <option value="rob_25_reg" <?php if( Session::get('fieldStatus') == "rob_25_reg"){ echo "selected";}?>>Reg</option>
+                <option value="rob_30_funds" <?php if( Session::get('fieldStatus') == "rob_30_funds"){ echo "selected";}?>>Funds</option>
+                <option value="rob_35_info" <?php if( Session::get('fieldStatus') == "rob_35_info"){ echo "selected";}?>>Info</option>
+                <option value="rob_40_bed" <?php if( Session::get('fieldStatus') == "rob_40_bed"){ echo "selected";}?>>Bed</option>
+                <option value="rob_45_other" <?php if( Session::get('fieldStatus') == "rob_45_other"){ echo "selected";}?>>Other</option>
+                <option value="rob_50_approve" <?php if( Session::get('fieldStatus') == "rob_50_approve"){ echo "selected";}?>>Approve</option>
+                <option value="rob_55_lease" <?php if( Session::get('fieldStatus') == "rob_55_lease"){ echo "selected";}?>>Lease</option>
             </select>
         </div>
 
         <div class="searchField" style="margin-top:26px;">
             <label>Status</label><br/>
             <select class="js-example-basic-multiple" multiple="multiple" name="status" id="status" style="width:90%;">
-                <option value="Valid" <?php if(Session::get('status') !== null && in_array("Valid", Session::get('status'))){ echo "selected";} ?>>&#128994; Valid</option>
-                <option value="Pending" <?php if(Session::get('status') !== null && in_array("Pending", Session::get('status'))){ echo "selected";} ?>>&#128993; Pending</option>
-                <option value="Incomplete" <?php if(Session::get('status') !== null && in_array("Incomplete", Session::get('status'))){ echo "selected";} ?>>&#128308; Incomplete</option>
-                <option value="NA" <?php if(Session::get('status') !== null && in_array("NA", Session::get('status'))){ echo "selected";} ?>>&xcirc; Not Applicable</option>
+                <option value="2" <?php if(Session::get('status') !== null && in_array("2", Session::get('status'))){ echo "selected";} ?>>&#128994; Valid</option>
+                <option value="1" <?php if(Session::get('status') !== null && in_array("1", Session::get('status'))){ echo "selected";} ?>>&#128993; Pending</option>
+                <option value="0" <?php if(Session::get('status') !== null && in_array("0", Session::get('status'))){ echo "selected";} ?>>&#128308; Incomplete</option>
+                <option value="3" <?php if(Session::get('status') !== null && in_array("3", Session::get('status'))){ echo "selected";} ?>>&xcirc; Not Applicable</option>
             </select>
         </div>
 
@@ -123,14 +124,15 @@
             </select>
         </div>
         <div class="searchField" style="height:80px;">
-            <label>Processing Status</label><br/>
+            <br/><br/><br/>
+            <!-- <label>Processing Status</label><br/>
             <select name="processingStatus" id='processingStatus'>
                 <option value="All" selected >All</option>
                 <option value="Approved" <?php if( Session::get('processingStatus') == "Approved"){ echo "selected";}?>>&#128994; Valid</option>
                 <option value="Pending" <?php if( Session::get('processingStatus') == "Pending"){ echo "selected";}?>>&#128993; Pending</option>
                 <option value="Incomplete" <?php if( Session::get('processingStatus') == "Incomplete"){ echo "selected";}?>>&#128308; Incomplete</option>
                 <option value="NA" <?php if( Session::get('processingStatus') == "NA"){ echo "selected";}?>>⚪ NA</option>
-            </select>
+            </select> -->
         </div>
         
 
@@ -162,19 +164,19 @@
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
                         <th style="width:50%">APPLICANT | ROOM</th>
-                        <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
-                        <th>PROCESSING STATUS</th>
-                        <th style="background-color:#ccc; color:#000">BOOKING STATUS</th>
-                        <th>PROOF OF PAYMENT</th>
-                        <th>ID COPY</th>
-                        <th style="background-color:#ccc; color:#000">APPLICATION STATUS</th>
-                        <th>STUDENT CARD COPY</th>
-                        <th>PROOF OF REGISTRATION</th>
-                        <th>NSFAS | BURSARY APPROVAL</th>
-                        <th>BANK STATEMENTS</th>
-                        <th style="background-color:#ccc; color:#000">LEASE STATUS</th>
+
+                        <th>FEE</th>
+                        <th>ID</th>
+                        <th>CARD</th>
+                        <th>REG</th>
+                        <th>FUNDS</th>
+                        <th>INFO</th>
+                        <th>BED</th>
+                        <th>OTHER</th>
+                        <th>APPROVE</th>
+                        <th>LEASE</th>
                     </tr>
                 </thead>
                 <tbody id="applicantsSection">                

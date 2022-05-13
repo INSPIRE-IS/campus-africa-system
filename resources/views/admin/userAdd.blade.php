@@ -54,7 +54,7 @@
             <input type="text" name="user_role_name" id="user_role_name"  >
         </div>
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <br/>
             <ul style="list-style-type:none">
                 <li style="display:inline-flex">
@@ -62,7 +62,7 @@
                     <label for="email_details" style="width:500px">Email login details to user.</label>
                 </li>
             </ul>
-        </div>
+        </div> -->
 
         <!-- <div class="form-field">
             <label>User Role</label>
@@ -75,7 +75,7 @@
 
         <div>
             <label>Access Roles</label>
-            <br/><br/>
+            <br/><br/><br/><br/>
             <ul style="list-style-type:none">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="create_app" name="create_app" value="1">
@@ -147,7 +147,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_cancel_booking" name="role_cancel_booking" value="1">
-                    <label for="role_cancel_booking" style="width:500px">Cancel Bookings</label>
+                    <label for="role_cancel_booking" style="width:500px">Cancel & Restore Bookings</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1">
@@ -157,6 +157,20 @@
                     <input type="checkbox" id="role_comment" name="role_comment" value="1">
                     <label for="role_comment" style="width:500px">Make Comments</label>
                 </li>
+                <!-- <li style="display:inline-flex">
+                    <input type="checkbox" id="role_cancel_lease" name="role_cancel_lease" value="1">
+                    <label for="role_cancel_lease" style="width:500px">Change Bed on Approved Lease</label>
+                </li> -->
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_lease_regen" name="role_lease_regen" value="1">
+                    <label for="role_lease_regen" style="width:500px">Regen Lease</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_modify_approved" name="role_modify_approved" value="1">
+                    <label for="role_modify_approved" style="width:500px">Modify Approved Lease</label>
+                </li>
+
+                
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1">
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>
