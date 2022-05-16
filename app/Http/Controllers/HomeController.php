@@ -23,6 +23,7 @@ use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
 use Session;
 use App\Models\UserResetToken;
+use App\Models\PropertyPermission;
 
 class HomeController extends Controller
 {
@@ -940,9 +941,18 @@ class HomeController extends Controller
     public function user_edit(Request $request, $userId){
         
         $user = User::where('id', $userId)->first();
+
+        $propertyList = Property::groupBy('residence')->pluck('residence');
+        
+        $userAccess = PropertyPermission::where('userUid', $userId)->get();
+        $accessString = "";
+
+        foreach($userAccess as $access){
+            $accessString .= $access->property.",";
+        }
         
         if(Auth::user()->role_manage_users == "1") {
-            return view('admin.userEdit', ["headerTitle" => "User Edit", "user" => $user, "title" => "Edit User"]);
+            return view('admin.userEdit', ["headerTitle" => "User Edit", "user" => $user, "title" => "Edit User", "propertyList" => $propertyList, "accessString" => $accessString, "userAccess" => $userAccess]);
         } else {
             return "404 Error";
         }
@@ -958,7 +968,7 @@ class HomeController extends Controller
             $regen = "0";
         }else{
             $regen = "1";
-        }        
+        }       
 
         User::where('id', $request->userUid)->update([
             "userFirstName" => $request->firstName,
@@ -976,13 +986,13 @@ class HomeController extends Controller
             "role_approve_docs" => $request->approve_docs,
             "role_delete_booking" => $request->delete_booking,
             "role_delete_uploaded" => $request->delete_uploaded,
-            "role_braamlofts" => $request->role_braamlofts,
-            "role_80_jorissen" => $request->role_80_jorissen,
-            "role_49_jorissen" => $request->role_49_jorissen,
-            "role_dunvista_mansions" => $request->role_dunvista_mansions,
-            "role_wynton_joy" => $request->role_wynton_joy,
-            "role_126_siemert" => $request->role_126_siemert,
-            "role_ymca" => $request->role_ymca,
+            // "role_braamlofts" => $request->role_braamlofts,
+            // "role_80_jorissen" => $request->role_80_jorissen,
+            // "role_49_jorissen" => $request->role_49_jorissen,
+            // "role_dunvista_mansions" => $request->role_dunvista_mansions,
+            // "role_wynton_joy" => $request->role_wynton_joy,
+            // "role_126_siemert" => $request->role_126_siemert,
+            // "role_ymca" => $request->role_ymca,
             "role_change_date" => $request->role_change_date,
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
@@ -994,8 +1004,27 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
-            "role_modify_approved" => $request->role_modify_approved,
+            "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 : 1,
         ]);
+
+        $allAccess = explode(",", $request->propertyAccess);
+        $userAccess = PropertyPermission::where('userUid', $request->userUid)->get();
+
+        foreach($userAccess as $access){
+            if(!in_array($access->property, $allAccess)){
+                PropertyPermission::where('id', $access->id)->delete();
+            }
+        }
+
+        foreach($allAccess as $access){
+            if($access !== ""){
+                $currentAccess = PropertyPermission::where('userUid', $request->userUid)->where('property', $access)->first();
+    
+                if(!$currentAccess || empty($currentAccess)){
+                    PropertyPermission::create(['userUid'=> $request->userUid, "property" => $access]);
+                }
+            }
+        }
 
         if($oldUser->userEmail !== $request->email){
             $otherTokens = UserResetToken::where("userUid", $request->userUid)->where('active', 1)->get();
@@ -1533,7 +1562,9 @@ class HomeController extends Controller
 
     public function new_admin(Request $request){
 
-        return view('admin.userAdd', ["headerTitle" => "Add New System User", "title" => "Add User"]);
+        $propertyList = Property::groupBy('residence')->pluck('residence');
+
+        return view('admin.userAdd', ["headerTitle" => "Add New System User", "title" => "Add User", "propertyList" => $propertyList]);
     }
 
     public function generateRandomString($length = 8) {
@@ -1585,13 +1616,13 @@ class HomeController extends Controller
             "role_approve_docs" => $request->approve_docs,
             "role_delete_booking" => $request->delete_booking,
             "role_delete_uploaded" => $request->delete_uploaded,
-            "role_braamlofts" => $request->role_braamlofts,
-            "role_80_jorissen" => $request->role_80_jorissen,
-            "role_49_jorissen" => $request->role_49_jorissen,
-            "role_dunvista_mansions" => $request->role_dunvista_mansions,
-            "role_wynton_joy" => $request->role_wynton_joy,
-            "role_126_siemert" => $request->role_126_siemert,
-            "role_ymca" => $request->role_ymca,
+            // "role_braamlofts" => $request->role_braamlofts,
+            // "role_80_jorissen" => $request->role_80_jorissen,
+            // "role_49_jorissen" => $request->role_49_jorissen,
+            // "role_dunvista_mansions" => $request->role_dunvista_mansions,
+            // "role_wynton_joy" => $request->role_wynton_joy,
+            // "role_126_siemert" => $request->role_126_siemert,
+            // "role_ymca" => $request->role_ymca,
             "role_change_date" => $request->role_change_date,
             "role_change_bed" => $request->role_change_bed,
             "role_manage_users" => $request->role_manage_users,
@@ -1604,8 +1635,16 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
-            "role_modify_approved" => $request->role_modify_approved,
+            "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 : 1,
         ]);
+
+        $allAccess = explode(",", $request->propertyAccess);
+
+        foreach($allAccess as $access){
+            if($access !== ""){
+                PropertyPermission::create(['userUid'=> $newUser->id, "property" => $access]);
+            }
+        }
 
         // if($request->email_details == "1"){
 

@@ -74,7 +74,7 @@
 
         <div>
             <label>Access Roles</label>
-            <br/><br/><br/><br/>
+            <br/>
             <ul style="list-style-type:none;">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="create_app" name="create_app" value="1" <?php if($user->role_create_app == "1"){echo "checked";} ?>>
@@ -100,7 +100,7 @@
                     <input type="checkbox" id="delete_uploaded" name="delete_uploaded" value="1" <?php if($user->role_delete_uploaded == "1"){echo "checked";} ?>>
                     <label for="delete_uploaded" style="width:500px">Delete Approved Documents</label>
                 </li>
-                <li style="display:inline-flex">
+                <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_braamlofts" name="role_braamlofts" value="1" <?php if($user->role_braamlofts == "1"){echo "checked";} ?>>
                     <label for="role_braamlofts" style="width:500px">Braamlofts</label>
                 </li>
@@ -127,7 +127,7 @@
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_ymca" name="role_ymca" value="1" <?php if($user->role_ymca == "1"){echo "checked";} ?>>
                     <label for="role_ymca" style="width:500px">YMCA</label>
-                </li>
+                </li> -->
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_change_date" name="role_change_date" value="1" <?php if($user->role_change_date == "1"){echo "checked";} ?>>
                     <label for="role_change_date" style="width:500px">Change Lease Dates</label>
@@ -177,6 +177,21 @@
             </ul>
         </div>
 
+        <div>
+            <br/><br/>
+            <label>Property Access</label>
+            <br/>
+            <ul style="list-style-type:none;">
+                @foreach($propertyList as $property)
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="{{$property}}" name="{{$property}}" value="1" onChange="propertyInfoChange('{{$property}}')" <?php foreach($userAccess as $access){if($access->property == $property){ echo "checked";}} ?>>
+                        <label for="{{$property}}" style="width:500px">{{$property}}</label>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        <input type="hidden" name="propertyAccess" id="propertyAccess" value="{{$accessString}}"/>
+
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>
 
@@ -189,6 +204,25 @@
 </div>
 
 <script>
+
+    function propertyInfoChange(propertyName){
+        let checked = document.getElementById(propertyName).checked
+
+        if(checked == true){
+            $("#propertyAccess").val($("#propertyAccess").val()+""+propertyName+",")
+        }else{
+            let data = $("#propertyAccess").val().split(",")
+
+            let newString = "";
+            data.forEach(function(item){
+                if(item !== propertyName && item !== ""){
+                    newString += item+",";
+                }
+            })
+
+            $("#propertyAccess").val(newString);
+        }
+    }
     
     $("#deleteUser").on('click', function(){
         Swal.fire({

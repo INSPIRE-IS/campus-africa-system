@@ -7,8 +7,8 @@
         <br/><br/>
 
         <div class="form-field">
-            <label>Residence</label>
-            <select name="residence" id='residence'>
+            <label>Residence *</label>
+            <select name="residence" id='residence' class="required">
                 <option value="" selected disabled>Select One</option>
                 <option value="BRAAMLOFTS" <?php if(!empty($propertyData) && ($propertyData->residence == "BRAAMLOFTS" || $propertyData->residence == "Braamlofts")){echo "selected";}?>>Braamlofts</option>
                 <option value="80 JORISSEN" <?php if(!empty($propertyData) && ($propertyData->residence == "80 JORISSEN" || $propertyData->residence == "80 Jorrisen")){echo "selected";}?>>80 Jorissen</option>
@@ -22,7 +22,7 @@
         </div>
 
         <div class="form-field">
-            <label>Room Type</label>
+            <label>Room Type *</label>
             <select name="roomType" id='roomType' class="required">
                 <option value="" selected disabled>Select a Room Type</option>
                 <?php if(!empty($propertyData) && ($propertyData->residence == "BRAAMLOFTS" || $propertyData->residence == "Braamlofts")){?>
@@ -64,8 +64,8 @@
         </div>
 
         <div class="form-field">
-            <label>Floor</label>
-            <select name="floor" id='floor'>
+            <label>Floor *</label>
+            <select name="floor" id='floor' class="required">
                 <option value="" selected disabled>Select One</option>
                 <option value="BASEMENT" <?php if(!empty($propertyData) && ($propertyData->floor == "BASEMENT" || $propertyData->floor == "Basement")){echo "selected";}?>>Basement</option>
                 <option value="GROUND" <?php if(!empty($propertyData) && ($propertyData->floor == "GROUND" || $propertyData->floor == "Ground")){echo "selected";}?>>Ground</option>
@@ -90,8 +90,8 @@
         </div>
 
         <div class="form-field">
-            <label>Unit</label>
-            <input type="text" name="unit" id="unit" value="<?php if(!empty($propertyData)){echo $propertyData->unit;}?>">
+            <label>Unit *</label>
+            <input type="text" name="unit" id="unit" value="<?php if(!empty($propertyData)){echo $propertyData->unit;}?>" class="required">
         </div>
 
         <div class="form-field">
@@ -106,8 +106,8 @@
         </div>
 
         <div class="form-field">
-            <label>Bed</label>
-            <select name="bed" id='bed'>
+            <label>Bed *</label>
+            <select name="bed" id='bed' class="required">
                 <option value="" selected>Select One</option>
                 <option value="a" <?php if(!empty($propertyData) && $propertyData->bed == "a"){echo "selected";}?>>a</option>
                 <option value="b" <?php if(!empty($propertyData) && $propertyData->bed == "b"){echo "selected";}?>>b</option>
@@ -126,17 +126,17 @@
         </div>
 
         <div class="form-field">
-            <label>Inventory</label>
-            <select name="inventory" id='inventory'>                
+            <label>Inventory *</label>
+            <select name="inventory" id='inventory' class="required">                
                 <option value="1" <?php if(empty($propertyData) || $propertyData->inventory == "1"){echo "selected";}?>>Yes</option>
                 <option value="0" <?php if(!empty($propertyData) && ($propertyData->inventory == "0" || $propertyData->inventory == null)){echo "selected";}?>>No</option>
             </select>
         </div>
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <label>2022 Rate</label>
             <input type="text" name="room_rate" id="room_rate" value="<?php if(!empty($propertyData)){echo $propertyData->room_rate;}?>">
-        </div>
+        </div> -->
 
         <?php if (!empty($propertyData)) { ?>
             <div class="form-field">
@@ -212,50 +212,75 @@
     });
 
     $('#btn_submit_frm').on('click', function(e) {
-        let btn = $(this);
-        $(btn).val('Saving...');
 
-        Swal.fire({
-            text: "Will this change apply to bookings in the current Academic Year (<?php echo $this_year; ?>) or the next Academic Year (<?php echo ($this_year+1); ?>) going forward?",
-            icon: 'warning',
-            showCancelButton: true,
-            showDenyButton: true,
-            confirmButtonColor: '#3085d6',
-            denyButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Current Academic Year',
-            denyButtonText: 'Next Academic Year'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $("#submit_type").val('current');
-            } else if (result.isDenied) {
-                $("#submit_type").val('next');
-            } else {
-                $(btn).val('Update Bed');
-                return false;
+        var req = 1;
+
+        $('.required').each( function(){
+            if($(this).val() === "" || $(this).val() === null){
+                req = 0
+                console.log($(this)[0]["id"])
+
+                $(this).addClass("fieldError")
+                id = $(this)[0]["id"]
+                $("#"+id+"_error").removeClass("hidden")
             }
-
-            $.ajax({
-                type: "post",
-                url: "/save-property",
-                data: $('form').serialize(),
-
-                success: function (data) {          
-                    if (data == "done") {
-                        window.location = '/manage-properties';
-                    } else {
-                        Swal.fire(
-                            'Error',
-                            data,
-                            'error'
-                        );
-
-                        $(btn).val('Update Bed');
-                    }
-                },
-            });
-            
         })
+
+        if(req == 0){
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
+
+            return false;
+        }else{
+            //
+            let btn = $(this);
+            $(btn).val('Saving...');
+    
+            Swal.fire({
+                text: "Will this change apply to bookings in the current Academic Year (<?php echo $this_year; ?>) or the next Academic Year (<?php echo ($this_year+1); ?>) going forward?",
+                icon: 'warning',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonColor: '#3085d6',
+                denyButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Current Academic Year',
+                denyButtonText: 'Next Academic Year'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#submit_type").val('current');
+                } else if (result.isDenied) {
+                    $("#submit_type").val('next');
+                } else {
+                    $(btn).val('Update Bed');
+                    return false;
+                }
+    
+                $.ajax({
+                    type: "post",
+                    url: "/save-property",
+                    data: $('form').serialize(),
+    
+                    success: function (data) {          
+                        if (data == "done") {
+                            window.location = '/manage-properties';
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                data,
+                                'error'
+                            );
+    
+                            $(btn).val('Update Bed');
+                        }
+                    },
+                });
+                
+            })
+        }
 
         e.preventDefault();
     });

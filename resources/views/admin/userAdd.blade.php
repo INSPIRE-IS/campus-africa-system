@@ -75,7 +75,7 @@
 
         <div>
             <label>Access Roles</label>
-            <br/><br/><br/><br/>
+            <br/>
             <ul style="list-style-type:none">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="create_app" name="create_app" value="1">
@@ -179,10 +179,47 @@
             </ul>
         </div>
 
+        <div>
+            <br/><br/>
+            <label>Property Access</label>
+            <br/>
+            <ul style="list-style-type:none;">
+                @foreach($propertyList as $property)
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="{{$property}}" name="{{$property}}" value="1" onChange="propertyInfoChange('{{$property}}')">
+                        <label for="{{$property}}" style="width:500px">{{$property}}</label>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
     <br/>
+
+        <input type="hidden" name="propertyAccess" id="propertyAccess"/>
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
     </form>
 </div>
+
+<script>
+    function propertyInfoChange(propertyName){
+        let checked = document.getElementById(propertyName).checked
+
+        if(checked == true){
+            $("#propertyAccess").val($("#propertyAccess").val()+""+propertyName+",")
+        }else{
+            let data = $("#propertyAccess").val().split(",")
+
+            let newString = "";
+            data.forEach(function(item){
+                if(item !== propertyName && item !== ""){
+                    newString += item+",";
+                }
+            })
+
+            $("#propertyAccess").val(newString);
+        }
+    }
+</script>
 
 @endsection
