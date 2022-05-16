@@ -88,9 +88,9 @@
         </div> -->
 
         <div>
-            <label>Access Roles</label>
-            <br/><br/><br/><br/>
-            <ul style="list-style-type:none">
+            <label>Application Permissions</label>
+            <br/>
+            <ul style="list-style-type:none;">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="create_app" name="create_app" value="1">
                     <label for="create_app" style="width:500px">Create Applications</label>
@@ -103,10 +103,6 @@
                     <input type="checkbox" id="upload_docs" name="upload_docs" value="1">
                     <label for="upload_docs" style="width:500px">Upload Documents</label>
                 </li>
-                <!-- <li style="display:inline-flex">
-                    <input type="checkbox" id="approve_docs" name="approve_docs" value="1">
-                    <label for="approve_docs" style="width:500px">Approve Documents</label>
-                </li> -->
                 <li style="display:inline-flex">
                     <input type="checkbox" id="delete_booking" name="delete_booking" value="1">
                     <label for="delete_booking" style="width:500px">Delete Booking</label>
@@ -115,6 +111,49 @@
                     <input type="checkbox" id="delete_uploaded" name="delete_uploaded" value="1">
                     <label for="delete_uploaded" style="width:500px">Delete Approved Documents</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_change_date" name="role_change_date" value="1">
+                    <label for="role_change_date" style="width:500px">Change Lease Dates</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_change_bed" name="role_change_bed" value="1">
+                    <label for="role_change_bed" style="width:500px">Change Bed Allocation</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_cancel_booking" name="role_cancel_booking" value="1">
+                    <label for="role_cancel_booking" style="width:500px">Cancel & Restore Bookings</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_comment" name="role_comment" value="1">
+                    <label for="role_comment" style="width:500px">Make Comments</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_lease_regen" name="role_lease_regen" value="1">
+                    <label for="role_lease_regen" style="width:500px">Regen Lease</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_modify_approved" name="role_modify_approved" value="1">
+                    <label for="role_modify_approved" style="width:500px">Modify Approved Lease</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_non_funding" name="role_non_funding" value="1">
+                    <label for="role_non_funding" style="width:500px">Approve Non-Funding</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_funding" name="role_funding" value="1">
+                    <label for="role_funding" style="width:500px">Approve Funding</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1">
+                    <label for="role_app_lease" style="width:500px">Approve Applications and Leases</label>
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <label>Residence Permissions</label>
+            <br/>
+            <ul style="list-style-type:none;">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_braamlofts" name="role_braamlofts" value="1">
                     <label for="role_braamlofts" style="width:500px">Braamlofts</label>
@@ -143,14 +182,13 @@
                     <input type="checkbox" id="role_ymca" name="role_ymca" value="1">
                     <label for="role_ymca" style="width:500px">YMCA</label>
                 </li>
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_change_date" name="role_change_date" value="1">
-                    <label for="role_change_date" style="width:500px">Change Lease Dates</label>
-                </li>
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_change_bed" name="role_change_bed" value="1">
-                    <label for="role_change_bed" style="width:500px">Change Bed Allocation</label>
-                </li>
+            </ul>
+        </div>
+
+        <div>
+            <label>Configuration Permissions</label>
+            <br/>
+            <ul style="list-style-type:none;">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_manage_users" name="role_manage_users" value="1">
                     <label for="role_manage_users" style="width:500px">Manage Users</label>
@@ -160,51 +198,30 @@
                     <label for="role_nsfas_approval_upload" style="width:500px">NSFAS File Upload</label>
                 </li>
                 <li style="display:inline-flex">
-                    <input type="checkbox" id="role_cancel_booking" name="role_cancel_booking" value="1">
-                    <label for="role_cancel_booking" style="width:500px">Cancel & Restore Bookings</label>
-                </li>
-                <li style="display:inline-flex">
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1">
                     <label for="role_lookup" style="width:500px">Manage Lookups</label>
                 </li>
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_comment" name="role_comment" value="1">
-                    <label for="role_comment" style="width:500px">Make Comments</label>
-                </li>
+            </ul>
+        </div>
+
+        <!-- <div>
+            <label>Access Roles</label>
+            <br/><br/><br/><br/>
+            <ul style="list-style-type:none"> -->
+                <!-- <li style="display:inline-flex">
+                    <input type="checkbox" id="approve_docs" name="approve_docs" value="1">
+                    <label for="approve_docs" style="width:500px">Approve Documents</label>
+                </li> -->
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_cancel_lease" name="role_cancel_lease" value="1">
                     <label for="role_cancel_lease" style="width:500px">Change Bed on Approved Lease</label>
                 </li> -->
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_lease_regen" name="role_lease_regen" value="1">
-                    <label for="role_lease_regen" style="width:500px">Regen Lease</label>
-                </li>
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_modify_approved" name="role_modify_approved" value="1">
-                    <label for="role_modify_approved" style="width:500px">Modify Approved Lease</label>
-                </li>
-
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_non_funding" name="role_non_funding" value="1">
-                    <label for="role_non_funding" style="width:500px">Approve Non-Funding</label>
-                </li>
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_funding" name="role_funding" value="1">
-                    <label for="role_funding" style="width:500px">Approve Funding</label>
-                </li>
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1">
-                    <label for="role_app_lease" style="width:500px">Approve Applications and Leases</label>
-                </li>
-
-                
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1">
                     <label for="role_update_booking_fee" style="width:500px">Update All Student Booking Fees</label>
                 </li> -->
-
-            </ul>
-        </div>
+            <!-- </ul>
+        </div> -->
 
     <br/>
 
