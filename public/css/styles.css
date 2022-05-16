@@ -1682,6 +1682,14 @@ input:read-only {
   background-color: #e5b219;
 }
 
+@media only screen and (max-width: 1600px) {
+  #moveInSection{
+    position:absolute;
+    margin-left:2px;
+  }
+
+}
+
 @media only screen and (max-width: 1485px) {
   .cards .customWhiteCard .section {
     padding-bottom: 100px;

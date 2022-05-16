@@ -51,7 +51,14 @@
 
 
             <div class="column full center signature_container">
-                <div>Please sign here</div>
+                <div style="display:flex; width:70%">
+                    <div style="width:80%">Please sign here</div>
+                    <div style="width:20%; justify-content:right;">
+                        <button class="detailsChange" id="reset_signature" style="margin-top:-10px;" type="button">
+                            Reset Signature
+                        </button>
+                    </div>
+                </div>
                 <div class="signature"></div>
 
                 <input type="hidden" id="signature_string" name="signature_string">
@@ -59,15 +66,9 @@
             </div>
 
             <div class="column full center flex">
-                <button class="detailsChange" id="reset_signature" style="margin-left:0px;" type="button">
-                    Reset Signature
-                </button>
+                <button type="button" class="detailsChange" id="submitLease" style="margin-left:0px;">Submit Lease</button>
             </div>
         </form>
-        <div>
-            <br/><br/>
-            <button type="button" class="detailsChange" id="submitLease" style="width:100%">Submit Lease</button>
-        </div>
     </div>
 </div>
 

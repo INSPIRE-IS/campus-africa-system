@@ -959,6 +959,7 @@
                         
                         if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                             uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                            uploadbtn += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
                         }
                         
                         uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
@@ -1016,6 +1017,7 @@
 
                             if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                                 uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
+                                uploadbtn += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
                             }
                             
                             uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';

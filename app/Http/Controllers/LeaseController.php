@@ -12,6 +12,8 @@ use App\Models\Residence;
 use App\Models\Lookups;
 use PDF;
 use Auth;
+use Mail;
+use App\Models\MailerList;
 
 class LeaseController extends Controller
 {
@@ -106,5 +108,44 @@ class LeaseController extends Controller
 
         return 'Completed';
 
+    }
+
+    public function generateRandomLongString($length = 24) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    public function resendLease(Request $request){
+        // Create Lease Link
+        $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
+        $userForLease = User::where('id', $request->userId)->first();
+
+        $message_replace['booking_application'] = $userForLease->bookingRef;
+        $message_replace['name'] = $userForLease->userFirstName;
+
+        $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
+
+        $mailerMessage = $mailerForMessage->message;
+
+        $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+        $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
+        $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
+
+        $data['messageForMail'] = $newMessage;
+        $data['email'] = $userForLease->userEmail;
+        $data['name'] = $userForLease->userFirstName;
+
+        Mail::send('email.green_back', $data, function($message) use ($data) {
+            // $message->to($data['email'], $data['name'])->subject('Application Approved');
+            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa lease');
+            $message->from('noreply@campusafrica.co.za','Campus Africa');
+            // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
+        });
     }
 }

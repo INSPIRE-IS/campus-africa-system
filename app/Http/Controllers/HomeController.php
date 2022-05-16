@@ -636,6 +636,33 @@ class HomeController extends Controller
 
             if($userFile['fileId'] == "moveIn" && $action == "Approved"){
                 User::where('id', $userFile->userUid)->update(['overall_status' => "Approved"]);
+                
+                $userForLease = User::where('id', $userFile->userUid)->first();
+
+                $message_replace['booking_application'] = $userForLease->bookingRef;
+                $message_replace['name'] = $userForLease->userFirstName;
+
+                $mailerForMessage = MailerList::where("mailer_name", "Lease Approved")->first();
+
+                $mailerMessage = $mailerForMessage->message;
+
+                $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+
+                $fileForUser = UserFiles::where('userUid', $userFile->userUid)->where('fileId', 'moveIn')->first();
+
+                $data['messageForMail'] = $newMessage;
+                $data['email'] = $userForLease->userEmail;
+                $data['name'] = $userForLease->userFirstName;
+                $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
+
+                Mail::send('email.green_back', $data, function($message) use ($data) {
+                    // $message->to($data['email'], $data['name'])->subject('Application Approved');
+                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa Lease Approved');
+                    $message->from('noreply@campusafrica.co.za','Campus Africa');
+                    $message->attach($data['file']);
+                    // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
+                });
             }
 
             if($request->userName !== "" && !empty($request->userName)){

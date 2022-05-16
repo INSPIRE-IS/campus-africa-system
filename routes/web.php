@@ -126,6 +126,7 @@ Route::post('/get-booking-info', [HomeController::class, 'get_booking_info']);
 Route::get('/properties-import', [HomeController::class, 'properties_import']);
 Route::post('/import/data', [HomeController::class, 'import_data']);
 
+Route::post('/resendLease', [LeaseController::class, 'resendLease']);
 Route::post('/createLease/{studentId}', [PDFController::class, 'createPDF']);
 Route::get('/properties-info', [HomeController::class, 'properties_info']);
 Route::get('/residence/edit/{residenceId}', [HomeController::class, 'residence_edit']);
