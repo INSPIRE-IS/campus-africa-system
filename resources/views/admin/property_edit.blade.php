@@ -122,7 +122,7 @@
 
         <div class="form-field">
             <label>Bed Code</label>
-            <input type="text" name="bed_code" id="bed_code" value="<?php if(!empty($propertyData)){echo $propertyData->bed_code;}?>">
+            <input type="text" name="bed_code" id="bed_code" value="<?php if(!empty($propertyData)){echo $propertyData->bed_code;}?>" readonly>
         </div>
 
         <div class="form-field">
@@ -291,6 +291,16 @@
             });
         });
     <?php } ?>    
+
+    $("#unit").on('change', function(){
+        $("#bed_code").val('').val($("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+    })
+    $("#room").on('change', function(){
+        $("#bed_code").val('').val($("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+    })
+    $("#bed").on('change', function(){
+        $("#bed_code").val('').val($("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+    })
 </script>
 
 @endsection
