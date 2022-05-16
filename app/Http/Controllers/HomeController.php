@@ -1647,7 +1647,6 @@ class HomeController extends Controller
     public function app_filter(Request $request){
         
         $search_value = [];
-
         
         if ($request->firstLoad !== "1") {
 
@@ -1663,6 +1662,7 @@ class HomeController extends Controller
             Session::put('date', $request->date);
             Session::put('beds', $request->beds);
             Session::put('processingStatus', $request->processingStatus);
+            Session::put('show_cancelled', $request->show_cancelled);
 
         } else {
 
@@ -1678,6 +1678,7 @@ class HomeController extends Controller
             $request->date = Session::get('date');
             $request->beds = Session::get('beds');
             $request->processingStatus = Session::get('processingStatus');
+            $request->show_cancelled = Session::get('show_cancelled');
 
         }
 
@@ -1748,6 +1749,11 @@ class HomeController extends Controller
                 // array_push($search_value, $applicantSurname);
             }
             
+        }
+
+        if($request->show_cancelled && $request->show_cancelled == 'true'){
+            $cancelled = 'u.rob_60_cancelled = "1"';
+            array_push($search_value, $cancelled);
         }
 
 

@@ -292,7 +292,7 @@
         });
     <?php } ?>    
 
-    $("#unit").on('change', function(){
+    $("#unit").keyup(function(){
         $("#bed_code").val('').val($("#unit").val()+""+$("#room").val()+""+$("#bed").val());
     })
     $("#room").on('change', function(){

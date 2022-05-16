@@ -124,7 +124,15 @@
             </select>
         </div>
         <div class="searchField" style="height:80px;">
-            <br/><br/><br/>
+            <br/>
+            <ul style="list-style-type:none;">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="show_cancelled" name="show_cancelled" value="1" style="width:50px;
+                    height:25px; margin-top:3px;" <?php if(Session::get('show_cancelled') == 'true'){ echo "checked";} ?>>
+                    <label for="show_cancelled" style="width:500px">Show Cancelled</label>
+                </li>
+            </ul>
+            <!-- <br/><br/><br/> -->
             <!-- <label>Processing Status</label><br/>
             <select name="processingStatus" id='processingStatus'>
                 <option value="All" selected >All</option>

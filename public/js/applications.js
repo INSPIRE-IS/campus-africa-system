@@ -63,6 +63,7 @@ jQuery(document).ready(function ($) {
                 idPassport: $("#idPassport").val(),
                 bookingRef: $("#bookingRef").val(),
                 firstLoad: $("#firstLoad").val(),
+                show_cancelled: JSON.stringify(document.getElementById('show_cancelled').checked),
             },
 
             success: function (data) {
@@ -389,6 +390,7 @@ jQuery(document).ready(function ($) {
         $("#beds").val("");
         $("#processingStatus").val("");
         $("#status").val(null).trigger("change");
+        $("#show_cancelled").prop("checked", false);
         $("#searchButton").click();
     });
 });
