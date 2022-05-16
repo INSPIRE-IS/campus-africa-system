@@ -713,7 +713,7 @@
         if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
             console.log("1")
             if($("#address_approved").val() != 1){
-                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
                     $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
                 }
 
@@ -732,7 +732,7 @@
 
         if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?>" == 0){
             if($("#kin_approved").val() != 1){
-                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
                     $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
                 }
 
@@ -750,7 +750,7 @@
 
         if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
             if($("#email_data_approved").val() != 1){
-                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
+                if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
                     $(".app_details_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>')
                 }
 
@@ -904,7 +904,7 @@
                 if((data['rob_50_approve'] == 0 || data['rob_50_approve'] == 1) && data['rob_60_cancelled'] == 0){
                     $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
 
-                    if("<?php echo Auth::user()->role_approve_docs; ?>" == 1
+                    if("<?php echo Auth::user()->role_app_lease; ?>" == 1
                         && data['rob_10_fee'] == 2
                         && data['rob_15_id'] == 2
                         && data['rob_20_card'] == 2

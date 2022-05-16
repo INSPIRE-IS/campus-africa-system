@@ -995,6 +995,10 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
             "role_modify_approved" => $request->role_modify_approved,
+            "role_non_funding" => $request->role_non_funding,
+            "role_funding" => $request->role_funding,
+            "role_app_lease" => $request->role_app_lease,
+            "template" => $request->template,
         ]);
 
         if($oldUser->userEmail !== $request->email){
@@ -1605,6 +1609,10 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
             "role_modify_approved" => $request->role_modify_approved,
+            "role_non_funding" => $request->role_non_funding,
+            "role_funding" => $request->role_funding,
+            "role_app_lease" => $request->role_app_lease,
+            "template" => $request->template,
         ]);
 
         // if($request->email_details == "1"){

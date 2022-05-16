@@ -72,6 +72,20 @@
             </select> 
         </div> -->
 
+        <div class="form-field">
+            <label>Permissions Template</label>
+            <select name="template" id='template'>
+                <option value="0" selected>None</option>
+                <option value="1" <?php if($user->template == "1"){echo "selected";} ?>>Sales Team</option>
+                <option value="2" <?php if($user->template == "2"){echo "selected";} ?>>Building Manager</option>
+                <option value="3" <?php if($user->template == "3"){echo "selected";} ?>>HO Approver</option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <br/><br/>
+        </div>
+
         <div>
             <label>Access Roles</label>
             <br/><br/><br/><br/>
@@ -88,10 +102,10 @@
                     <input type="checkbox" id="upload_docs" name="upload_docs" value="1" <?php if($user->role_upload_docs == "1"){echo "checked";} ?>>
                     <label for="upload_docs" style="width:500px">Upload Documents</label>
                 </li>
-                <li style="display:inline-flex">
+                <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="approve_docs" name="approve_docs" value="1" <?php if($user->role_approve_docs == "1"){echo "checked";} ?>>
                     <label for="approve_docs" style="width:500px">Approve Documents</label>
-                </li>
+                </li> -->
                 <li style="display:inline-flex">
                     <input type="checkbox" id="delete_booking" name="delete_booking" value="1"  <?php if($user->role_delete_booking == "1"){echo "checked";} ?>>
                     <label for="delete_booking" style="width:500px">Delete Booking</label>
@@ -169,6 +183,19 @@
                     <label for="role_modify_approved" style="width:500px">Modify Approved Lease</label>
                 </li>
 
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_non_funding" name="role_non_funding" value="1" <?php if($user->role_non_funding == "1"){echo "checked";} ?>>
+                    <label for="role_non_funding" style="width:500px">Approve Non-Funding</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_funding" name="role_funding" value="1" <?php if($user->role_funding == "1"){echo "checked";} ?>>
+                    <label for="role_funding" style="width:500px">Approve Funding</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1" <?php if($user->role_app_lease == "1"){echo "checked";} ?>>
+                    <label for="role_app_lease" style="width:500px">Approve Applications and Leases</label>
+                </li>
+
                 
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_update_booking_fee" name="role_update_booking_fee" value="1" <?php if($user->role_update_booking_fee == "1"){echo "checked";} ?>>
@@ -216,6 +243,46 @@
                 });
             }
         });
+    })
+
+    $("#template").on('change', function(){
+        let templateName = $("#template").val();
+        console.log(templateName)
+
+        var checkboxes = document.querySelectorAll('input[type=checkbox]')
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            document.getElementById(checkboxes[i].id).checked = false;
+        }
+
+        if(templateName == "1"){
+            document.getElementById('create_app').checked = true;
+            document.getElementById('edit_app').checked = true;
+            document.getElementById('upload_docs').checked = true;
+            document.getElementById('role_comment').checked = true;
+        }
+
+        if(templateName == "2"){
+            document.getElementById('create_app').checked = true;
+            document.getElementById('edit_app').checked = true;
+            document.getElementById('upload_docs').checked = true;
+            document.getElementById('role_comment').checked = true;
+            document.getElementById('role_non_funding').checked = true;
+            document.getElementById('role_change_bed').checked = true;
+            document.getElementById('role_cancel_booking').checked = true;
+            document.getElementById('role_lease_regen').checked = true;
+        }
+
+        if(templateName == "3"){
+            document.getElementById('create_app').checked = true;
+            document.getElementById('edit_app').checked = true;
+            document.getElementById('upload_docs').checked = true;
+            document.getElementById('role_comment').checked = true;
+            document.getElementById('role_lease_regen').checked = true;
+            document.getElementById('role_non_funding').checked = true;
+            document.getElementById('role_funding').checked = true;
+            document.getElementById('role_app_lease').checked = true;
+        }
     })
 </script>
 
