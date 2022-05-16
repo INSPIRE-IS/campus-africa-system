@@ -1759,8 +1759,8 @@ class HomeController extends Controller
             
         }
 
-        if($request->show_cancelled && $request->show_cancelled == 'true'){
-            $cancelled = 'u.rob_60_cancelled = "1"';
+        if($request->show_cancelled !== 'true'){
+            $cancelled = 'u.rob_60_cancelled = "0"';
             array_push($search_value, $cancelled);
         }
 
