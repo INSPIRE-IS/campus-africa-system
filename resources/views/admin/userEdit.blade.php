@@ -136,15 +136,19 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_non_funding" name="role_non_funding" value="1" <?php if($user->role_non_funding == "1"){echo "checked";} ?>>
-                    <label for="role_non_funding" style="width:500px">Approve Non-Funding</label>
+                    <label for="role_non_funding" style="width:500px">Approve Non-Funding Documents</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_funding" name="role_funding" value="1" <?php if($user->role_funding == "1"){echo "checked";} ?>>
-                    <label for="role_funding" style="width:500px">Approve Funding</label>
+                    <label for="role_funding" style="width:500px">Approve Funding Documents</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1" <?php if($user->role_app_lease == "1"){echo "checked";} ?>>
-                    <label for="role_app_lease" style="width:500px">Approve Applications and Leases</label>
+                    <label for="role_app_lease" style="width:500px">Approve Applications & Leases</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1" <?php if($user->role_nsfas_approval_upload == "1"){echo "checked";} ?>>
+                    <label for="role_nsfas_approval_upload" style="width:500px">NSFAS File Upload</label>
                 </li>
             </ul>
         </div>
@@ -195,10 +199,6 @@
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_manage_users" name="role_manage_users" value="1" <?php if($user->role_manage_users == "1"){echo "checked";} ?>>
                     <label for="role_manage_users" style="width:500px">Manage Users</label>
-                </li>
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1" <?php if($user->role_nsfas_approval_upload == "1"){echo "checked";} ?>>
-                    <label for="role_nsfas_approval_upload" style="width:500px">NSFAS File Upload</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1" <?php if($user->role_lookup == "1"){echo "checked";} ?>>
