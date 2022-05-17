@@ -378,7 +378,7 @@
                                         <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
                                     @endif
 
-                                    @if($file["field"] === "moveIn" && $file["status"] !== "XApproved")
+                                    @if(($file["field"] === "moveIn" && $file["status"] !== "XApproved"))
                                         @if(Auth::user()->role_lease_regen == '1')
                                             <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
                                             <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>
@@ -992,29 +992,29 @@
 
     function cancelLease(bookingId, type){
         
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "The current Approved Lease will be rejected.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
+        // Swal.fire({
+        //     title: 'Are you sure?',
+        //     text: "The current Approved Lease will be rejected.",
+        //     icon: 'warning',
+        //     showCancelButton: true,
+        //     confirmButtonColor: '#3085d6',
+        //     cancelButtonColor: '#d33',
+        //     confirmButtonText: 'Yes!'
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
 
-                $.ajax({
-                    type: "post",
-                    url: "/cancel-lease",
-                    data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
-                    },
-                });
+        //         $.ajax({
+        //             type: "post",
+        //             url: "/cancel-lease",
+        //             data: {
+        //                 userId: "{{$user[0]['userInfo']['id']}}",
+        //             },
+        //         });
 
                 changeBooking(bookingId, type);
 
-            }
-        });
+        //     }
+        // });
     }
 
     $("#generateLease").on('click', function(){

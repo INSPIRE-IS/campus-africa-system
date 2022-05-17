@@ -2449,10 +2449,10 @@ class HomeController extends Controller
         $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
         $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
 
-        if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
-            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
-            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
-        }
+        // if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
+        //     User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+        //     UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+        // }
 
         if($request->floor == "Choose a Floor"){
             //Changing Only Property & Room Type
