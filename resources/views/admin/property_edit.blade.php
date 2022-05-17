@@ -10,13 +10,9 @@
             <label>Residence *</label>
             <select name="residence" id='residence' class="required">
                 <option value="" selected disabled>Select One</option>
-                <option value="BRAAMLOFTS" <?php if(!empty($propertyData) && ($propertyData->residence == "BRAAMLOFTS" || $propertyData->residence == "Braamlofts")){echo "selected";}?>>Braamlofts</option>
-                <option value="80 JORISSEN" <?php if(!empty($propertyData) && ($propertyData->residence == "80 JORISSEN" || $propertyData->residence == "80 Jorrisen")){echo "selected";}?>>80 Jorissen</option>
-                <option value="49 JORISSEN" <?php if(!empty($propertyData) && ($propertyData->residence == "49 JORISSEN" || $propertyData->residence == "49 Jorrisen")){echo "selected";}?>>49 Jorissen</option>
-                <option value="DUNVISTA MANSIONS" <?php if(!empty($propertyData) && ($propertyData->residence == "DUNVISTA MANSIONS" || $propertyData->residence == "Dunvista Mansions")){echo "selected";}?>>Dunvista Mansions</option>
-                <option value="WYNTON JOY" <?php if(!empty($propertyData) && ($propertyData->residence == "WYNTON JOY" || $propertyData->residence == "Wynton Joy")){echo "selected";}?>>Wynton Joy</option>
-                <option value="126 SIEMERT" <?php if(!empty($propertyData) && ($propertyData->residence == "126 SIEMERT" || $propertyData->residence == "126 Siemert")){echo "selected";}?>>126 Siemert</option>
-                <option value="YMCA" <?php if(!empty($propertyData) && $propertyData->residence == "YMCA"){echo "selected";}?>>YMCA</option>
+                @foreach($Residence as $residence)
+                    <option value="{{strtoupper($residence->residence)}}" <?php if(!empty($propertyData) && $propertyData->residence == strtoupper($residence->residence)){echo "selected";}?>>{{$residence->residence}}</option>
+                @endforeach
             </select>
             <input type="hidden" name="propertyId" id="propertyId" value="<?php if(!empty($propertyData)){echo $propertyData->id;}else{echo "0";}?>"/>
         </div>

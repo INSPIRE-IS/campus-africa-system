@@ -2912,7 +2912,9 @@ class HomeController extends Controller
                 $bookings = Booking::where('property_data_id', $propertyId)->where('year', $lookup->lookup_name)->with('users')->get();            
             }
 
-            return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year]);
+            $Residence = Residence::get();
+
+            return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year, "Residence" => $Residence]);
         }else{
             return "404 Error";
         }
