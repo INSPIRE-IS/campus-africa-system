@@ -721,7 +721,7 @@
                     $(".address_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>')
                 }
             }else{
-                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                if("<?php echo Auth::user()->role_non_funding; ?>" == 1){
                     $(".address_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>')
                 }
             }
@@ -740,7 +740,7 @@
                     $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
                 }
             }else{
-                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                if("<?php echo Auth::user()->role_non_funding; ?>" == 1){
                     $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
                 }
             }
@@ -758,7 +758,7 @@
                     $(".app_details_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>')
                 }
             }else{
-                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                if("<?php echo Auth::user()->role_non_funding; ?>" == 1){
                     $(".app_details_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Reject</button>')
                 }
             }
