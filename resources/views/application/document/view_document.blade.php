@@ -87,7 +87,7 @@
                 @if ($user->rob_60_cancelled == 0)
                     @if ($doc_approved == 2)
 
-                        @if($user->rob_50_approve != 2 || Auth::user()->role_modify_approved == 1)
+                        @if($user->rob_50_approve != 2 || Auth::user()->role_delete_uploaded == 1)
                             @if (($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
                                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                             @endif
