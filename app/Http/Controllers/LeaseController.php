@@ -121,12 +121,23 @@ class LeaseController extends Controller
     }
 
     public function resendLease(Request $request){
+
+        $prevLeaseToken = UserLeaseToken::where("userUid", $request->userId)->where("active", 1)->where("signed", 0)->get();
+
+        if(!empty($prevLeaseToken)){
+            foreach($prevLeaseToken as $token){
+                UserLeaseToken::where('id', $token->id)->update(["active" => 0]);
+            }
+        }
+
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
         $userForLease = User::where('id', $request->userId)->first();
 
         $message_replace['booking_application'] = $userForLease->bookingRef;
         $message_replace['name'] = $userForLease->userFirstName;
+        $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
+        $message_replace['close_lease_link']="</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
 
