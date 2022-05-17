@@ -301,6 +301,7 @@
             document.getElementById('upload_docs').checked = true;
             document.getElementById('role_comment').checked = true;
             document.getElementById('role_lease_regen').checked = true;
+            document.getElementById('role_change_date').checked = true;
             document.getElementById('role_non_funding').checked = true;
             document.getElementById('role_funding').checked = true;
             document.getElementById('role_app_lease').checked = true;
