@@ -107,7 +107,7 @@
                 <li>The Owner reserves the right, at its sole discretion, to assign an alternative room as accommodation within the complex, and to require the Student to relocate from any room to another room within the complex, provided that any alternative room provided to the Student for purposes of accommodation may not materially differ in standard or quality from the accommodation agreed to in this Temporary Lodging Agreement.</li>
                 <br/>
 
-                <li>e.	The Student will not impede the Owner (or any agent of the Owner) in their exercise of the Owner’s right of possession and control of the Accommodation. </li>
+                <li>The Student will not impede the Owner (or any agent of the Owner) in their exercise of the Owner’s right of possession and control of the Accommodation. </li>
                 <br/>
 
                 <li>The Student must give all reasonable assistance to any person authorised by the Owner to enter the Accommodation. Wherever possible, the Student will be told in advance of such visits. </li>
@@ -384,7 +384,7 @@
                         <br/>
                         <span style="font-weight:bold">Physical Address:</span> {{$residence->address}}
                         <br/>
-                        <span style="font-weight:bold">Unit No:</span> {{$propertyData->bed_code}}
+                        <span style="font-weight:bold">Unit No:</span> {{$propertyData->bed_code}} (or such other number that the student may be allocated in terms of clause 2d, which unit number shall be evidenced by reference to the owner's tenancy schedule report)
                         <br/>
                         <span style="font-weight:bold">Email:</span> {{$data->userEmail}}
                         <br/>
