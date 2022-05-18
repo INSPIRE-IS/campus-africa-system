@@ -9,6 +9,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LookupsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,3 +187,5 @@ Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswo
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
 
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
+
+Route::get('/online-application', [ApplicationController::class, 'step_1']);
