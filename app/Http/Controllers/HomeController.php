@@ -1327,8 +1327,6 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
         ]);
 
-        
-
         //Booking data        
         $booking_data = array(
             "userId" => $user->id, 
@@ -1372,158 +1370,29 @@ class HomeController extends Controller
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
+                    $slugString = str_replace("-", " ", $room->slug);
+                    $roomType = "";
+                    $roomName = "";
+
                     foreach($allResidences as $residence){
                         if(strtoupper($request->property) == strtoupper($residence->residence)){
-                            //strtolower
-                            // $roomTypeName = strtolower()
-                            foreach($allRoomTypes as $type){
-                                if($type->property_id == $residence->id && $type->name == $request->roomType){
-                                    
+                            $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                            $requiredName = $request->roomType;
 
-                                    foreach($jsonDataRooms as $roomData){
-                                        $roomTypeTargets = explode(" ", $type->name);
-                                        $slugString = str_replace("-", " ", $roomData->slug);
-
-                                        echo "<pre>";
-                                        echo $type->name."\r\n";
-                                        echo $roomTypeTargets[0]."\r\n";
-                                        echo $slugString."\r\n";
-                                        echo trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                                        echo "\r\n\r\n";
-
-                                        $roomSlugAltered = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)));
-    
-                                        $i = 0;
-                                        foreach($roomTypeTargets as $t){
-                                            if (strpos($slugString,$t) !== false) {
-                                                $i++;
-                                                echo "FOUND\r\n";
-                                            }
-                                        }
-                                        echo $i."\r\n";
-                                        if(count($roomTypeTargets) == $i){
-                                            $roomType = $type->name;
-                                            $roomName = $roomData->slug;
-                                        }
+                            foreach($jsonDataRooms as $roomInfo){
+                                if($residenceId == $roomInfo->acf->residence){
+                                    if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($request->roomType)){
+                                        $roomType = $request->roomType;
+                                        $roomName = $roomInfo->slug;
                                     }
-
-                                    // $roomNameCustomSlug = str_replace(" ", "-", strtolower($residence->residence)." ".strtolower($roomType));
                                 }
                             }
                         }
                     }
 
-                    echo $roomType."\r\n";
-
-                    // if($request->property == "YMCA"){
-                    //     if($room->slug == "ymca-3-sharing"){
-                    //         $roomType = "3 Sharing";
-                    //         $roomName = "ymca-3-sharing";
-                    //     }
-                    //     if($room->slug == "ymca-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "ymca-2-sharing";
-                    //     }
-                    //     if($room->slug == "ymca-single-room-large"){
-                    //         $roomType = "Single Large";
-                    //         $roomName = "ymca-single-room-large";
-                    //     }
-                    //     if($room->slug == "ymca-single-room-medium"){
-                    //         $roomType = "Single Medium";
-                    //         $roomName = "ymca-single-room-medium";
-                    //     }
-                    //     if($room->slug == "ymca-single-room-small"){
-                    //         $roomType = "Single Small";
-                    //         $roomName = "ymca-single-room-small";
-                    //     }
-                    // }
-
-                    // if($request->property == "126 Siemert"){
-                    //     if($room->slug == "126-siemert-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "126-siemert-single-room";
-                    //     }
-                    //     if($room->slug == "126-siemert-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "126-siemert-2-sharing";
-                    //     }
-                    // }
-
-                    // if($request->property == "Wynton Joy"){
-                    //     if($room->slug == "wynton-joy-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "wynton-joy-single-room";
-                    //     }
-                    //     if($room->slug == "wynton-joy-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "wynton-joy-2-sharing";
-                    //     }
-                    // }
-
-                    // if($request->property == "Dunvista Mansions"){
-                    //     if($room->slug == "dunvista-mansions-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "dunvista-mansions-single-room";
-                    //     }
-                    //     if($room->slug == "dunvista-mansions-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "dunvista-mansions-2-sharing";
-                    //     }
-                    // }
-
-                    // if($request->property == "49 Jorissen"){
-                    //     if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
-                    //         $roomType = "Single 2 bedroom";
-                    //         $roomName = "49-jorissen-single-room-2-bedroom-apartment";
-                    //     }
-                    //     if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
-                    //         $roomType = "Single 3 bedroom";
-                    //         $roomName = "49-jorissen-single-room-3-bedroom-apartment";
-                    //     }
-                    //     if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
-                    //         $roomType = "Single 4 bedroom";
-                    //         $roomName = "49-jorissen-single-room-4-bedroom-apartment";
-                    //     }
-                    //     if($room->slug == "49-jorissen-2-sharing-hotel"){
-                    //         $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
-                    //         $roomName = "49-jorissen-2-sharing-hotel";
-                    //     }
-                    // }
-
-                    // if($request->property == "80 Jorissen"){
-                    //     if($room->slug == "80-jorissen-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "80-jorissen-single-room";
-                    //     }
-                    //     if($room->slug == "80-jorissen-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "80-jorissen-2-sharing";
-                    //     }
-                    // }
-
-                    // if($request->property == "Braamlofts"){
-                    //     if($room->slug == "braamlofts-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "braamlofts-single-room";
-                    //     }
-                    //     if($room->slug == "braamlofts-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "braamlofts-2-sharing";
-                    //     }
-                    //     if($room->slug == "braamlofts-3-sharing"){
-                    //         $roomType = "3 Sharing";
-                    //         $roomName = "braamlofts-3-sharing";
-                    //     }
-                    // }
-
                     $appliesTo = $room->acf->booking_fee_applies_to;
 
-                    dd($room->slug, $roomName, $roomType, $request->roomType);
-
                     if($room->slug == $roomName && $roomType == $request->roomType){
-
-                        
-
 
                         if($room->acf->booking_fee_override !== ""){
                             $booking_data['room_rate'] = $room->acf->booking_fee_override;
@@ -2699,6 +2568,9 @@ class HomeController extends Controller
 
             $property = Residence::where('id', $property)->pluck('residence')->first();
             $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
+
+            $allResidences = Residence::get();
+            $allRoomTypes = RoomTypes::get();
     
             if($lookup && $lookup->lookup_name == "1"){
                 $booking_data['room_rate'] = "0";
@@ -2724,106 +2596,126 @@ class HomeController extends Controller
     
                 foreach($jsonDataRooms as $room){
                     if($residenceId == $room->acf->residence){
-                        if($property == "YMCA"){
-                            if($room->slug == "ymca-3-sharing"){
-                                $roomType = "3 Sharing";
-                                $roomName = "ymca-3-sharing";
-                            }
-                            if($room->slug == "ymca-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "ymca-2-sharing";
-                            }
-                            if($room->slug == "ymca-single-room-large"){
-                                $roomType = "Single Large";
-                                $roomName = "ymca-single-room-large";
-                            }
-                            if($room->slug == "ymca-single-room-medium"){
-                                $roomType = "Single Medium";
-                                $roomName = "ymca-single-room-medium";
-                            }
-                            if($room->slug == "ymca-single-room-small"){
-                                $roomType = "Single Small";
-                                $roomName = "ymca-single-room-small";
+
+                        $slugString = str_replace("-", " ", $room->slug);
+                        $roomType = "";
+                        $roomName = "";
+
+                        foreach($allResidences as $residence){
+                            if(strtoupper($property) == strtoupper($residence->residence)){
+                                $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                                $requiredName = $roomTypeNew;
+
+                                foreach($jsonDataRooms as $roomInfo){
+                                    if($residenceId == $roomInfo->acf->residence){
+                                        if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($roomTypeNew)){
+                                            $roomType = $roomTypeNew;
+                                            $roomName = $roomInfo->slug;
+                                        }
+                                    }
+                                }
                             }
                         }
+                        // if($property == "YMCA"){
+                        //     if($room->slug == "ymca-3-sharing"){
+                        //         $roomType = "3 Sharing";
+                        //         $roomName = "ymca-3-sharing";
+                        //     }
+                        //     if($room->slug == "ymca-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "ymca-2-sharing";
+                        //     }
+                        //     if($room->slug == "ymca-single-room-large"){
+                        //         $roomType = "Single Large";
+                        //         $roomName = "ymca-single-room-large";
+                        //     }
+                        //     if($room->slug == "ymca-single-room-medium"){
+                        //         $roomType = "Single Medium";
+                        //         $roomName = "ymca-single-room-medium";
+                        //     }
+                        //     if($room->slug == "ymca-single-room-small"){
+                        //         $roomType = "Single Small";
+                        //         $roomName = "ymca-single-room-small";
+                        //     }
+                        // }
     
-                        if($property == "126 Siemert"){
-                            if($room->slug == "126-siemert-single-room"){
-                                $roomType = "Single";
-                                $roomName = "126-siemert-single-room";
-                            }
-                            if($room->slug == "126-siemert-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "126-siemert-2-sharing";
-                            }
-                        }
+                        // if($property == "126 Siemert"){
+                        //     if($room->slug == "126-siemert-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "126-siemert-single-room";
+                        //     }
+                        //     if($room->slug == "126-siemert-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "126-siemert-2-sharing";
+                        //     }
+                        // }
     
-                        if($property == "Wynton Joy"){
-                            if($room->slug == "wynton-joy-single-room"){
-                                $roomType = "Single";
-                                $roomName = "wynton-joy-single-room";
-                            }
-                            if($room->slug == "wynton-joy-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "wynton-joy-2-sharing";
-                            }
-                        }
+                        // if($property == "Wynton Joy"){
+                        //     if($room->slug == "wynton-joy-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "wynton-joy-single-room";
+                        //     }
+                        //     if($room->slug == "wynton-joy-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "wynton-joy-2-sharing";
+                        //     }
+                        // }
     
-                        if($property == "Dunvista Mansions"){
-                            if($room->slug == "dunvista-mansions-single-room"){
-                                $roomType = "Single";
-                                $roomName = "dunvista-mansions-single-room";
-                            }
-                            if($room->slug == "dunvista-mansions-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "dunvista-mansions-2-sharing";
-                            }
-                        }
+                        // if($property == "Dunvista Mansions"){
+                        //     if($room->slug == "dunvista-mansions-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "dunvista-mansions-single-room";
+                        //     }
+                        //     if($room->slug == "dunvista-mansions-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "dunvista-mansions-2-sharing";
+                        //     }
+                        // }
     
-                        if($property == "49 Jorissen"){
-                            if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
-                                $roomType = "Single 2 bedroom";
-                                $roomName = "49-jorissen-single-room-2-bedroom-apartment";
-                            }
-                            if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
-                                $roomType = "Single 3 bedroom";
-                                $roomName = "49-jorissen-single-room-3-bedroom-apartment";
-                            }
-                            if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
-                                $roomType = "Single 4 bedroom";
-                                $roomName = "49-jorissen-single-room-4-bedroom-apartment";
-                            }
-                            if($room->slug == "49-jorissen-2-sharing-hotel"){
-                                $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
-                                $roomName = "49-jorissen-2-sharing-hotel";
-                            }
-                        }
+                        // if($property == "49 Jorissen"){
+                        //     if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
+                        //         $roomType = "Single 2 bedroom";
+                        //         $roomName = "49-jorissen-single-room-2-bedroom-apartment";
+                        //     }
+                        //     if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
+                        //         $roomType = "Single 3 bedroom";
+                        //         $roomName = "49-jorissen-single-room-3-bedroom-apartment";
+                        //     }
+                        //     if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
+                        //         $roomType = "Single 4 bedroom";
+                        //         $roomName = "49-jorissen-single-room-4-bedroom-apartment";
+                        //     }
+                        //     if($room->slug == "49-jorissen-2-sharing-hotel"){
+                        //         $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
+                        //         $roomName = "49-jorissen-2-sharing-hotel";
+                        //     }
+                        // }
     
-                        if($property == "80 Jorissen"){
-                            if($room->slug == "80-jorissen-single-room"){
-                                $roomType = "Single";
-                                $roomName = "80-jorissen-single-room";
-                            }
-                            if($room->slug == "80-jorissen-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "80-jorissen-2-sharing";
-                            }
-                        }
+                        // if($property == "80 Jorissen"){
+                        //     if($room->slug == "80-jorissen-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "80-jorissen-single-room";
+                        //     }
+                        //     if($room->slug == "80-jorissen-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "80-jorissen-2-sharing";
+                        //     }
+                        // }
     
-                        if($property == "Braamlofts"){
-                            if($room->slug == "braamlofts-single-room"){
-                                $roomType = "Single";
-                                $roomName = "braamlofts-single-room";
-                            }
-                            if($room->slug == "braamlofts-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "braamlofts-2-sharing";
-                            }
-                            if($room->slug == "braamlofts-3-sharing"){
-                                $roomType = "3 Sharing";
-                                $roomName = "braamlofts-3-sharing";
-                            }
-                        }
+                        // if($property == "Braamlofts"){
+                        //     if($room->slug == "braamlofts-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "braamlofts-single-room";
+                        //     }
+                        //     if($room->slug == "braamlofts-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "braamlofts-2-sharing";
+                        //     }
+                        //     if($room->slug == "braamlofts-3-sharing"){
+                        //         $roomType = "3 Sharing";
+                        //         $roomName = "braamlofts-3-sharing";
+                        //     }
+                        // }
     
                         $appliesTo = $room->acf->booking_fee_applies_to;
     
@@ -3433,6 +3325,7 @@ class HomeController extends Controller
             "address" => $request->address,
             "nsfas_booking_rate" => $request->nsfas_booking_rate,
             "bursary_booking_rate" => $request->bursary_booking_rate,
+            "building_prefix" => $request->building_prefix,
         ];
 
         if($request->nsfas_booking_rate == null){
@@ -4000,6 +3893,9 @@ class HomeController extends Controller
         $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
+        $allResidences = Residence::get();
+        $allRoomTypes = RoomTypes::get();
+
 
         if($lookup && $lookup->lookup_name == "1"){
             $booking_data['room_rate'] = "0";
@@ -4025,106 +3921,127 @@ class HomeController extends Controller
 
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
-                    if($booking->property == "YMCA"){
-                        if($room->slug == "ymca-3-sharing"){
-                            $roomType = "3 Sharing";
-                            $roomName = "ymca-3-sharing";
-                        }
-                        if($room->slug == "ymca-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "ymca-2-sharing";
-                        }
-                        if($room->slug == "ymca-single-room-large"){
-                            $roomType = "Single Large";
-                            $roomName = "ymca-single-room-large";
-                        }
-                        if($room->slug == "ymca-single-room-medium"){
-                            $roomType = "Single Medium";
-                            $roomName = "ymca-single-room-medium";
-                        }
-                        if($room->slug == "ymca-single-room-small"){
-                            $roomType = "Single Small";
-                            $roomName = "ymca-single-room-small";
+
+                    $slugString = str_replace("-", " ", $room->slug);
+                    $roomType = "";
+                    $roomName = "";
+
+                    foreach($allResidences as $residence){
+                        if(strtoupper($booking->property) == strtoupper($residence->residence)){
+                            $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                            $requiredName = $request->roomType;
+
+                            foreach($jsonDataRooms as $roomInfo){
+                                if($residenceId == $roomInfo->acf->residence){
+                                    if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($request->roomType)){
+                                        $roomType = $request->roomType;
+                                        $roomName = $roomInfo->slug;
+                                    }
+                                }
+                            }
                         }
                     }
 
-                    if($booking->property == "126 Siemert"){
-                        if($room->slug == "126-siemert-single-room"){
-                            $roomType = "Single";
-                            $roomName = "126-siemert-single-room";
-                        }
-                        if($room->slug == "126-siemert-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "126-siemert-2-sharing";
-                        }
-                    }
+                    // if($booking->property == "YMCA"){
+                    //     if($room->slug == "ymca-3-sharing"){
+                    //         $roomType = "3 Sharing";
+                    //         $roomName = "ymca-3-sharing";
+                    //     }
+                    //     if($room->slug == "ymca-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "ymca-2-sharing";
+                    //     }
+                    //     if($room->slug == "ymca-single-room-large"){
+                    //         $roomType = "Single Large";
+                    //         $roomName = "ymca-single-room-large";
+                    //     }
+                    //     if($room->slug == "ymca-single-room-medium"){
+                    //         $roomType = "Single Medium";
+                    //         $roomName = "ymca-single-room-medium";
+                    //     }
+                    //     if($room->slug == "ymca-single-room-small"){
+                    //         $roomType = "Single Small";
+                    //         $roomName = "ymca-single-room-small";
+                    //     }
+                    // }
 
-                    if($booking->property == "Wynton Joy"){
-                        if($room->slug == "wynton-joy-single-room"){
-                            $roomType = "Single";
-                            $roomName = "wynton-joy-single-room";
-                        }
-                        if($room->slug == "wynton-joy-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "wynton-joy-2-sharing";
-                        }
-                    }
+                    // if($booking->property == "126 Siemert"){
+                    //     if($room->slug == "126-siemert-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "126-siemert-single-room";
+                    //     }
+                    //     if($room->slug == "126-siemert-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "126-siemert-2-sharing";
+                    //     }
+                    // }
 
-                    if($booking->property == "Dunvista Mansions"){
-                        if($room->slug == "dunvista-mansions-single-room"){
-                            $roomType = "Single";
-                            $roomName = "dunvista-mansions-single-room";
-                        }
-                        if($room->slug == "dunvista-mansions-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "dunvista-mansions-2-sharing";
-                        }
-                    }
+                    // if($booking->property == "Wynton Joy"){
+                    //     if($room->slug == "wynton-joy-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "wynton-joy-single-room";
+                    //     }
+                    //     if($room->slug == "wynton-joy-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "wynton-joy-2-sharing";
+                    //     }
+                    // }
 
-                    if($booking->property == "49 Jorissen"){
-                        if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
-                            $roomType = "Single 2 bedroom";
-                            $roomName = "49-jorissen-single-room-2-bedroom-apartment";
-                        }
-                        if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
-                            $roomType = "Single 3 bedroom";
-                            $roomName = "49-jorissen-single-room-3-bedroom-apartment";
-                        }
-                        if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
-                            $roomType = "Single 4 bedroom";
-                            $roomName = "49-jorissen-single-room-4-bedroom-apartment";
-                        }
-                        if($room->slug == "49-jorissen-2-sharing-hotel"){
-                            $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
-                            $roomName = "49-jorissen-2-sharing-hotel";
-                        }
-                    }
+                    // if($booking->property == "Dunvista Mansions"){
+                    //     if($room->slug == "dunvista-mansions-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "dunvista-mansions-single-room";
+                    //     }
+                    //     if($room->slug == "dunvista-mansions-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "dunvista-mansions-2-sharing";
+                    //     }
+                    // }
 
-                    if($booking->property == "80 Jorissen"){
-                        if($room->slug == "80-jorissen-single-room"){
-                            $roomType = "Single";
-                            $roomName = "80-jorissen-single-room";
-                        }
-                        if($room->slug == "80-jorissen-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "80-jorissen-2-sharing";
-                        }
-                    }
+                    // if($booking->property == "49 Jorissen"){
+                    //     if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
+                    //         $roomType = "Single 2 bedroom";
+                    //         $roomName = "49-jorissen-single-room-2-bedroom-apartment";
+                    //     }
+                    //     if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
+                    //         $roomType = "Single 3 bedroom";
+                    //         $roomName = "49-jorissen-single-room-3-bedroom-apartment";
+                    //     }
+                    //     if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
+                    //         $roomType = "Single 4 bedroom";
+                    //         $roomName = "49-jorissen-single-room-4-bedroom-apartment";
+                    //     }
+                    //     if($room->slug == "49-jorissen-2-sharing-hotel"){
+                    //         $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
+                    //         $roomName = "49-jorissen-2-sharing-hotel";
+                    //     }
+                    // }
 
-                    if($booking->property == "Braamlofts"){
-                        if($room->slug == "braamlofts-single-room"){
-                            $roomType = "Single";
-                            $roomName = "braamlofts-single-room";
-                        }
-                        if($room->slug == "braamlofts-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "braamlofts-2-sharing";
-                        }
-                        if($room->slug == "braamlofts-3-sharing"){
-                            $roomType = "3 Sharing";
-                            $roomName = "braamlofts-3-sharing";
-                        }
-                    }
+                    // if($booking->property == "80 Jorissen"){
+                    //     if($room->slug == "80-jorissen-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "80-jorissen-single-room";
+                    //     }
+                    //     if($room->slug == "80-jorissen-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "80-jorissen-2-sharing";
+                    //     }
+                    // }
+
+                    // if($booking->property == "Braamlofts"){
+                    //     if($room->slug == "braamlofts-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "braamlofts-single-room";
+                    //     }
+                    //     if($room->slug == "braamlofts-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "braamlofts-2-sharing";
+                    //     }
+                    //     if($room->slug == "braamlofts-3-sharing"){
+                    //         $roomType = "3 Sharing";
+                    //         $roomName = "braamlofts-3-sharing";
+                    //     }
+                    // }
 
                     $appliesTo = $room->acf->booking_fee_applies_to;
 
@@ -4183,6 +4100,9 @@ class HomeController extends Controller
         $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
         $booking->roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
 
+        $allResidences = Residence::get();
+        $allRoomTypes = RoomTypes::get();
+
         $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
         $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
 
@@ -4215,106 +4135,127 @@ class HomeController extends Controller
 
                 foreach($jsonDataRooms as $room){
                     if($residenceId == $room->acf->residence){
-                        if($booking->property == "YMCA"){
-                            if($room->slug == "ymca-3-sharing"){
-                                $roomType = "3 Sharing";
-                                $roomName = "ymca-3-sharing";
-                            }
-                            if($room->slug == "ymca-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "ymca-2-sharing";
-                            }
-                            if($room->slug == "ymca-single-room-large"){
-                                $roomType = "Single Large";
-                                $roomName = "ymca-single-room-large";
-                            }
-                            if($room->slug == "ymca-single-room-medium"){
-                                $roomType = "Single Medium";
-                                $roomName = "ymca-single-room-medium";
-                            }
-                            if($room->slug == "ymca-single-room-small"){
-                                $roomType = "Single Small";
-                                $roomName = "ymca-single-room-small";
+
+                        $slugString = str_replace("-", " ", $room->slug);
+                        $roomType = "";
+                        $roomName = "";
+
+                        foreach($allResidences as $residence){
+                            if(strtoupper($booking->property) == strtoupper($residence->residence)){
+                                $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                                $requiredName = $booking->roomType;
+
+                                foreach($jsonDataRooms as $roomInfo){
+                                    if($residenceId == $roomInfo->acf->residence){
+                                        if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($booking->roomType)){
+                                            $roomType = $booking->roomType;
+                                            $roomName = $roomInfo->slug;
+                                        }
+                                    }
+                                }
                             }
                         }
 
-                        if($booking->property == "126 Siemert"){
-                            if($room->slug == "126-siemert-single-room"){
-                                $roomType = "Single";
-                                $roomName = "126-siemert-single-room";
-                            }
-                            if($room->slug == "126-siemert-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "126-siemert-2-sharing";
-                            }
-                        }
+                        // if($booking->property == "YMCA"){
+                        //     if($room->slug == "ymca-3-sharing"){
+                        //         $roomType = "3 Sharing";
+                        //         $roomName = "ymca-3-sharing";
+                        //     }
+                        //     if($room->slug == "ymca-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "ymca-2-sharing";
+                        //     }
+                        //     if($room->slug == "ymca-single-room-large"){
+                        //         $roomType = "Single Large";
+                        //         $roomName = "ymca-single-room-large";
+                        //     }
+                        //     if($room->slug == "ymca-single-room-medium"){
+                        //         $roomType = "Single Medium";
+                        //         $roomName = "ymca-single-room-medium";
+                        //     }
+                        //     if($room->slug == "ymca-single-room-small"){
+                        //         $roomType = "Single Small";
+                        //         $roomName = "ymca-single-room-small";
+                        //     }
+                        // }
 
-                        if($booking->property == "Wynton Joy"){
-                            if($room->slug == "wynton-joy-single-room"){
-                                $roomType = "Single";
-                                $roomName = "wynton-joy-single-room";
-                            }
-                            if($room->slug == "wynton-joy-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "wynton-joy-2-sharing";
-                            }
-                        }
+                        // if($booking->property == "126 Siemert"){
+                        //     if($room->slug == "126-siemert-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "126-siemert-single-room";
+                        //     }
+                        //     if($room->slug == "126-siemert-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "126-siemert-2-sharing";
+                        //     }
+                        // }
 
-                        if($booking->property == "Dunvista Mansions"){
-                            if($room->slug == "dunvista-mansions-single-room"){
-                                $roomType = "Single";
-                                $roomName = "dunvista-mansions-single-room";
-                            }
-                            if($room->slug == "dunvista-mansions-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "dunvista-mansions-2-sharing";
-                            }
-                        }
+                        // if($booking->property == "Wynton Joy"){
+                        //     if($room->slug == "wynton-joy-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "wynton-joy-single-room";
+                        //     }
+                        //     if($room->slug == "wynton-joy-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "wynton-joy-2-sharing";
+                        //     }
+                        // }
 
-                        if($booking->property == "49 Jorissen"){
-                            if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
-                                $roomType = "Single 2 bedroom";
-                                $roomName = "49-jorissen-single-room-2-bedroom-apartment";
-                            }
-                            if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
-                                $roomType = "Single 3 bedroom";
-                                $roomName = "49-jorissen-single-room-3-bedroom-apartment";
-                            }
-                            if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
-                                $roomType = "Single 4 bedroom";
-                                $roomName = "49-jorissen-single-room-4-bedroom-apartment";
-                            }
-                            if($room->slug == "49-jorissen-2-sharing-hotel"){
-                                $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
-                                $roomName = "49-jorissen-2-sharing-hotel";
-                            }
-                        }
+                        // if($booking->property == "Dunvista Mansions"){
+                        //     if($room->slug == "dunvista-mansions-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "dunvista-mansions-single-room";
+                        //     }
+                        //     if($room->slug == "dunvista-mansions-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "dunvista-mansions-2-sharing";
+                        //     }
+                        // }
 
-                        if($booking->property == "80 Jorissen"){
-                            if($room->slug == "80-jorissen-single-room"){
-                                $roomType = "Single";
-                                $roomName = "80-jorissen-single-room";
-                            }
-                            if($room->slug == "80-jorissen-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "80-jorissen-2-sharing";
-                            }
-                        }
+                        // if($booking->property == "49 Jorissen"){
+                        //     if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
+                        //         $roomType = "Single 2 bedroom";
+                        //         $roomName = "49-jorissen-single-room-2-bedroom-apartment";
+                        //     }
+                        //     if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
+                        //         $roomType = "Single 3 bedroom";
+                        //         $roomName = "49-jorissen-single-room-3-bedroom-apartment";
+                        //     }
+                        //     if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
+                        //         $roomType = "Single 4 bedroom";
+                        //         $roomName = "49-jorissen-single-room-4-bedroom-apartment";
+                        //     }
+                        //     if($room->slug == "49-jorissen-2-sharing-hotel"){
+                        //         $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
+                        //         $roomName = "49-jorissen-2-sharing-hotel";
+                        //     }
+                        // }
 
-                        if($booking->property == "Braamlofts"){
-                            if($room->slug == "braamlofts-single-room"){
-                                $roomType = "Single";
-                                $roomName = "braamlofts-single-room";
-                            }
-                            if($room->slug == "braamlofts-2-sharing"){
-                                $roomType = "2 Sharing";
-                                $roomName = "braamlofts-2-sharing";
-                            }
-                            if($room->slug == "braamlofts-3-sharing"){
-                                $roomType = "3 Sharing";
-                                $roomName = "braamlofts-3-sharing";
-                            }
-                        }
+                        // if($booking->property == "80 Jorissen"){
+                        //     if($room->slug == "80-jorissen-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "80-jorissen-single-room";
+                        //     }
+                        //     if($room->slug == "80-jorissen-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "80-jorissen-2-sharing";
+                        //     }
+                        // }
+
+                        // if($booking->property == "Braamlofts"){
+                        //     if($room->slug == "braamlofts-single-room"){
+                        //         $roomType = "Single";
+                        //         $roomName = "braamlofts-single-room";
+                        //     }
+                        //     if($room->slug == "braamlofts-2-sharing"){
+                        //         $roomType = "2 Sharing";
+                        //         $roomName = "braamlofts-2-sharing";
+                        //     }
+                        //     if($room->slug == "braamlofts-3-sharing"){
+                        //         $roomType = "3 Sharing";
+                        //         $roomName = "braamlofts-3-sharing";
+                        //     }
+                        // }
 
                         $appliesTo = $room->acf->booking_fee_applies_to;
 

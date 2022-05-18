@@ -1005,14 +1005,7 @@
 
                 $('#property').val(selProp);
 
-                // if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
-                //     $("#roomSection").removeClass('hidden');
-                // }else{
-                //     $("#roomSection").addClass('hidden');
-                // }
-
                 $("#property").change();
-                // $("#roomType").val('<?php //echo $booking->roomType;?>');
             }
         });
 

@@ -35,8 +35,10 @@
         </div>
 
         <div class="form-field">
-            <br/>
+            <label>Building Prefix</label>
+            <input type="text" name="building_prefix" id="building_prefix" value="<?php if(!empty($propertyData)){echo $propertyData->building_prefix;}?>">
         </div>
+
 
         <!-- <div class="form-field" style="width:33%">
             <label>Booking Fee (NSFAS)</label>

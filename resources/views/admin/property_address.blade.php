@@ -19,6 +19,7 @@
                 <th>Booking Fee (Cash)</th> -->
                 <th>Owner</th>
                 <th>Address</th>
+                <th>Building Prefix</th>
                 <th></th>
             </tr> 
         </thead>
@@ -32,6 +33,7 @@
                 <td>{{$residence->booking_rate}}</td> -->
                 <td>{{$residence->owner}}</td>
                 <td>{{$residence->address}}</td>
+                <td>{{$residence->building_prefix}}</td>
                 <td>
                     <a href="/residence/edit/{{$residence->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Edit</button></a>
                 </td>
