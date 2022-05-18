@@ -24,29 +24,11 @@
     <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">
         <label></label><br/>
-            <select name="property" id="property">
+            <select name="property" id="property" onChange="changeResidence()">
                 <option value="All" selected>All Residences</option>
-                @if(Auth::user()->role_braamlofts == 1)
-                    <option value="Braamlofts">Braamlofts</option>
-                @endif
-                @if(Auth::user()->role_80_jorissen == 1)
-                    <option value="80 Jorissen">80 Jorissen</option>
-                @endif
-                @if(Auth::user()->role_49_jorissen == 1)
-                    <option value="49 Jorissen">49 Jorissen</option>
-                @endif
-                @if(Auth::user()->role_dunvista_mansions == 1)
-                    <option value="Dunvista Mansions">Dunvista Mansions</option>
-                @endif
-                @if(Auth::user()->role_wynton_joy == 1)
-                    <option value="Wynton Joy">Wynton Joy</option>
-                @endif
-                @if(Auth::user()->role_126_siemert == 1)
-                    <option value="126 Siemert">126 Siemert</option>
-                @endif
-                @if(Auth::user()->role_ymca == 1)
-                    <option value="YMCA">YMCA</option>
-                @endif
+                @foreach($allowedResidences as $residence)
+                    <option value="{{$residence->id}}" <?php if(Session::get('property') == $residence->id){echo "selected";}?>>{{$residence->residence}}</option>
+                @endforeach
             </select>
         </div>
         <div class="searchField">
@@ -202,76 +184,36 @@
 
 <Script>
 
+function changeResidence(){
+        if($("#property").val() !== "All"){
+            $("#room_type").empty().append('<option value="" selected disabled>Loading</option>')
+
+            $.ajax({
+                type: "post",
+                url: "/get-room-types-id",
+                data: {residence: $("#property").val()},
+
+                success: function (data) {          
+                    $("#room_type").empty().append('<option value="" selected disabled>Select a Room Type</option>')
+                    data.forEach(function(index){
+                        let roomTypeSelected = '<?php echo Session::get("room_type"); ?>';
+                        let roomPropertySelected = '<?php echo Session::get("property"); ?>';
+                        let selected = "";
+
+                        if($("#property").val() == roomPropertySelected && roomTypeSelected == index.name){
+                            selected = "selected"
+                        }
+                        $("#room_type").append('<option value="'+index.id+'" '+selected+'>'+index.name+'</option>')
+                    })
+                },
+            });
+        }
+    };
+
 
 jQuery(document).ready( function($) {
     
-    
-
-    $("#property").on('change', function(){
-        let propValue = $("#property").val();
-
-        if(propValue == "Braamlofts"){
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
-                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
-                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'+
-                '<option value="3 Sharing" <?php if(Session::get('room_type') == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>'
-            )
-        }else if(propValue == "80 Jorissen"){
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
-                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
-                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
-            )
-        }else if(propValue == "49 Jorissen"){
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
-                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'+
-                '<option value="2 Sharing 2 Bedroom" <?php if(Session::get('room_type') == "2 Sharing 2 Bedroom"){ echo "selected";}?>>2 Sharing | 2 Bedroom</option>'+
-                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
-                '<option value="Single 2 bedroom" <?php if(Session::get('room_type') == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>'+
-                '<option value="Single 3 bedroom" <?php if(Session::get('room_type') == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>'+
-                '<option value="Single 4 bedroom" <?php if(Session::get('room_type') == "Single 4 bedroom"){ echo "selected";}?>>Single | 4 Bedroom</option>'
-            )
-        }else if(propValue == "Dunvista Mansions"){
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
-                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
-                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
-            )
-        }else if(propValue == "Wynton Joy"){
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
-                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
-                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
-            )
-        }else if(propValue == "126 Siemert"){
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
-                '<option value="Single" <?php if(Session::get('room_type') == "Single"){ echo "selected";}?>>Single</option>'+
-                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'
-            )
-        }else if(propValue == "YMCA"){
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'+
-                '<option value="2 Sharing" <?php if(Session::get('room_type') == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>'+
-                '<option value="2 Sharing 2 Bedroom" <?php if(Session::get('room_type') == "2 Sharing 2 Bedroom"){ echo "selected";}?>>2 Sharing | 2 Bedroom</option>'+
-                '<option value="2 Sharing 3 Bedroom" <?php if(Session::get('room_type') == "2 Sharing 3 Bedroom"){ echo "selected";}?>>2 Sharing | 3 Bedroom</option>'+
-                '<option value="3 Sharing" <?php if(Session::get('room_type') == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>'+
-                '<option value="Single Small" <?php if(Session::get('room_type') == "Single Small"){ echo "selected";}?>>Single | Small</option>'+
-                '<option value="Single Medium" <?php if(Session::get('room_type') == "Single Medium"){ echo "selected";}?>>Single | Medium</option>'+
-                '<option value="Single Large" <?php if(Session::get('room_type') == "Single Large"){ echo "selected";}?>>Single | Large</option>'+
-                '<option value="Single 3 Bedroom" <?php if(Session::get('room_type') == "Single 3 Bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>'
-            )
-        } else {
-            $("#room_type").empty().append(
-                '<option value="" <?php if(Session::get('room_type') == null){ echo "selected";}?>>Select One</option>'
-            );
-        }
-    });
-
-    $("#property").val("<?php echo Session::get('property');?>").trigger('change')
-    
+    changeResidence();
     $('#searchButton').click();
 
     

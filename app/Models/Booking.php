@@ -35,4 +35,12 @@ class Booking extends Model
     public function users(){
         return $this->hasOne("App\Models\User", "id", "userId");
     }
+
+    public function residence(){
+        return $this->hasOne("App\Models\Residence", "id", "property");
+    }
+
+    public function roomType(){
+        return $this->hasOne("App\Models\RoomTypes", "id", "roomType");
+    }
 }

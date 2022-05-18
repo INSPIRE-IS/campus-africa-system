@@ -10,6 +10,8 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\ActionList;
 use Auth;
+use App\Models\Residence;
+use App\Models\RoomTypes;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -374,5 +376,30 @@ class LookupsController extends Controller {
             }
         }
         
+    }
+
+    public function admin_updates_update_property_id(request $request){
+        $allProperties = Property::get();
+        $allResidence = Residence::get();
+        $allBookings = Booking::get();
+
+        foreach($allProperties as $property){
+            foreach($allResidence as $residence){
+                if(strtoupper($property->residence) == strtoupper($residence->residence)){
+                    $roomType = RoomTypes::where('property_id', $residence->id)->where('name', $property->room_type)->first();
+                    Property::where('id', $property->id)->update(['residence' => $residence->id, 'room_type' => $roomType->id]);
+                }
+            }
+        }
+
+        foreach($allBookings as $booking){
+            foreach($allResidence as $residence){
+                if(strtoupper($booking->property) == strtoupper($residence->residence)){
+                    $roomType = RoomTypes::where('property_id', $residence->id)->where('name', $booking->roomType)->first();
+                    Booking::where('id', $booking->id)->update(['property' => $residence->id, 'roomType' => $roomType->id]);
+                }
+            }
+        }
+
     }
 }

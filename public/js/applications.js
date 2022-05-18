@@ -315,9 +315,9 @@ jQuery(document).ready(function ($) {
                                 " " +
                                 arrayItem["userLastname"] +
                                 "</span> <br/> " +
-                                arrayItem["property"] +
+                                arrayItem["property_residence"] +
                                 " | " +
-                                arrayItem["roomType"],
+                                arrayItem["roomTypeName"],
                             '<span style="white-space: nowrap;">' + dateString + "</span>",
                             studentType,
                             rob_fee,

@@ -79,7 +79,7 @@ class PDFController extends Controller
         $data = User::where('id', $studentId)->first();
         $booking = Booking::where('userId', $studentId)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
-        $residence = Residence::where('residence', $propertyData->residence)->first();
+        $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
 
         // share data to view

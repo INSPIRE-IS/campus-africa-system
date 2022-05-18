@@ -505,7 +505,7 @@
                 </select>
             </div>
 
-            <div class="form-field hidden" id="roomSection">
+            <div class="form-field" id="roomSection">
                 <label>Room</label>
                 <select name="room" id='room'>
                     <!--  -->
@@ -992,42 +992,24 @@
             success: function (data) {
                 let properties = data[0];
 
-                let selProp = data[8].property;
+                console.log(data)
+
+                let selProp = data[2].property;
 
                 properties.sort();
                 $('#property').empty()
 
                 Object.keys(properties).forEach( function(key) {
-                    if(properties[key] == "BRAAMLOFTS" && "{{Auth::user()->role_braamlofts}}" == 1){
-                        $('#property').append('<option value="Braamlofts">Braamlofts</option>')
-                    }
-                    if(properties[key] == "80 JORISSEN" && "{{Auth::user()->role_80_jorissen}}" == 1){
-                        $('#property').append('<option value="80 Jorissen">80 Jorissen</option>')
-                    }
-                    if(properties[key] == "49 JORISSEN" && "{{Auth::user()->role_49_jorissen}}" == 1){
-                        $('#property').append('<option value="49 Jorissen">49 Jorissen</option>')
-                    }
-                    if(properties[key] == "DUNVISTA MANSIONS" && "{{Auth::user()->role_dunvista_mansions}}" == 1){
-                        $('#property').append('<option value="Dunvista Mansions">Dunvista Mansions</option>')
-                    }
-                    if(properties[key] == "WYNTON JOY" && "{{Auth::user()->role_wynton_joy}}" == 1){
-                        $('#property').append('<option value="Wynton Joy">Wynton Joy</option>')
-                    }
-                    if(properties[key] == "126 SIEMERT" && "{{Auth::user()->role_126_siemert}}" == 1){
-                        $('#property').append('<option value="126 Siemert">126 Siemert</option>')
-                    }
-                    if(properties[key] == "YMCA" && "{{Auth::user()->role_ymca}}" == 1){
-                        $('#property').append('<option value="YMCA">YMCA</option>')
-                    }
+                    $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
                 });
 
                 $('#property').val(selProp);
 
-                if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
-                    $("#roomSection").removeClass('hidden');
-                }else{
-                    $("#roomSection").addClass('hidden');
-                }
+                // if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
+                //     $("#roomSection").removeClass('hidden');
+                // }else{
+                //     $("#roomSection").addClass('hidden');
+                // }
 
                 $("#property").change();
                 // $("#roomType").val('<?php //echo $booking->roomType;?>');
@@ -1589,8 +1571,8 @@
                     var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
                 }
                 
-                let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].property+'</h4>'+
-                    '<h4 class="cardHeader" >'+data[0].roomType+'</h4>'+
+                let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].residence.residence+'</h4>'+
+                    '<h4 class="cardHeader" >'+data[0].room_type.name+'</h4>'+
                     '<h4 class="cardHeader" id="prop_room_row1" >'+metaInfo1+floor+unit+'</h4>'+
                     '<h4 class="cardHeader" id="prop_room_row2" >'+
                     bed_code+
@@ -1776,78 +1758,24 @@
         let propValue = $("#property").val();
 
         //here
+        $("#roomType").empty().append('<option value="">Loading</option>');
 
         $.ajax({
             type: "get",
             url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
             success: function (data) {
                 //
-                
-                if(propValue == "Braamlofts"){
-                    $("#roomSection").removeClass('hidden');
 
-                    let roomtypes = data[4];
-                    $("#roomType").empty().append('<option value="">Select One</option>');
-                    Object.keys(roomtypes).forEach( function(key) {
-                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
-                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
-                    });
+                console.log(data)
+                let roomData = data[3]
 
-                }else if(propValue == "80 Jorissen"){
-                    $("#roomSection").addClass('hidden');
-
-                    let roomtypes = data[3];
-                    $("#roomType").empty().append('<option value="">Select One</option>');
-                    Object.keys(roomtypes).forEach( function(key) {
-                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
-                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
-                    });
-                }else if(propValue == "49 Jorissen"){
-                    $("#roomSection").addClass('hidden');
-
-                    let roomtypes = data[2];
-                    $("#roomType").empty().append('<option value="">Select One</option>');
-                    Object.keys(roomtypes).forEach( function(key) {
-                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
-                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
-                    });
-                }else if(propValue == "Dunvista Mansions"){
-                    $("#roomSection").removeClass('hidden');
-
-                    let roomtypes = data[5];
-                    $("#roomType").empty().append('<option value="">Select One</option>');
-                    Object.keys(roomtypes).forEach( function(key) {
-                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
-                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
-                    });
-                }else if(propValue == "Wynton Joy"){
-                    $("#roomSection").removeClass('hidden');
-                    
-                    let roomtypes = data[6];
-                    $("#roomType").empty().append('<option value="">Select One</option>');
-                    Object.keys(roomtypes).forEach( function(key) {
-                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
-                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
-                    });
-                }else if(propValue == "126 Siemert"){
-                    $("#roomSection").removeClass('hidden');
-                    
-                    let roomtypes = data[1];
-                    $("#roomType").empty().append('<option value="">Select One</option>');
-                    Object.keys(roomtypes).forEach( function(key) {
-                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
-                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
-                    });
-                }else if(propValue == "YMCA"){
-                    $("#roomSection").addClass('hidden');
-                    
-                    let roomtypes = data[7];
-                    $("#roomType").empty().append('<option value="">Select One</option>');
-                    Object.keys(roomtypes).forEach( function(key) {
-                        var selected = "<?php echo $booking->roomType;?>" == roomtypes[key] ? "selected" : "";
-                        $("#roomType").append('<option value="'+roomtypes[key]+'" '+selected+'>'+roomtypes[key]+'</option>');
-                    });
-                }
+                $("#roomType").empty().append('<option value="">Select One</option>');
+                Object.keys(roomData).forEach( function(key) {
+                    if(propValue == roomData[key].residence){
+                        var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');
+                    }
+                });
 
                 $("#floor").empty();
                 $("#unit").empty();

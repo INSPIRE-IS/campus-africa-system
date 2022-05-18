@@ -94,6 +94,7 @@ Route::post('/save-lookup', [LookupsController::class, 'save_lookups']);
 Route::get('/admin-updates/landing', [LookupsController::class, 'admin_updates_landing']);
 Route::get('/admin-updates/fix-data', [LookupsController::class, 'admin_updates_fix_data']);
 Route::get('/admin-updates/update-properties', [LookupsController::class, 'admin_updates_update_properties']);
+Route::get('/admin-updates/update-property-id', [LookupsController::class, 'admin_updates_update_property_id']);
 
 
 
@@ -139,6 +140,8 @@ Route::post('/save-residence', [HomeController::class, 'save_residence']);
 Route::post('/action-data', [HomeController::class, 'action_data']);
 Route::post('/approve-app-data', [HomeController::class, 'approve_app_data']);
 
+Route::post('/get-room-types-id', [HomeController::class, 'get_room_types_id']);
+Route::post('/get-room-types', [HomeController::class, 'get_room_types']);
 Route::get('/room-types', [HomeController::class, 'room_types']);
 Route::get('/room-type/edit/{id}', [HomeController::class, 'room_type_edit']);
 Route::post('/save-room-type', [HomeController::class, 'save_room_type']);

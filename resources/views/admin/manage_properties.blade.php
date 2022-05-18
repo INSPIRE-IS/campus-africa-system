@@ -18,27 +18,9 @@
             <label>Property</label><br/>
             <select name="property" id="property">
                 <option value="All" selected>All Residences</option>
-                @if(Auth::user()->role_braamlofts == 1)
-                    <option value="BRAAMLOFTS">Braamlofts</option>
-                @endif
-                @if(Auth::user()->role_80_jorissen == 1)
-                    <option value="80 JORISSEN">80 Jorissen</option>
-                @endif
-                @if(Auth::user()->role_49_jorissen == 1)
-                    <option value="49 JORISSEN">49 Jorissen</option>
-                @endif
-                @if(Auth::user()->role_dunvista_mansions == 1)
-                    <option value="DUNVISTA MANSIONS">Dunvista Mansions</option>
-                @endif
-                @if(Auth::user()->role_wynton_joy == 1)
-                    <option value="WYNTON JOY">Wynton Joy</option>
-                @endif
-                @if(Auth::user()->role_126_siemert == 1)
-                    <option value="126 SIEMERT">126 Siemert</option>
-                @endif
-                @if(Auth::user()->role_ymca == 1)
-                    <option value="YMCA">YMCA</option>
-                @endif
+                @foreach($propertyList as $list)
+                    <option value="{{$list->id}}">{{$list->residence}}</option>
+                @endforeach
             </select>
         </div>
 

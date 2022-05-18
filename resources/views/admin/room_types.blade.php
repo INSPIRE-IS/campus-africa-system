@@ -23,7 +23,13 @@
 
         @foreach($room_types as $rt)
             <tr>
-                <td>{{$rt->property_id}}</td>
+                <td>
+                    @foreach($residences as $residence)
+                        @if($residence->id == $rt->property_id)
+                            {{$residence->residence}}
+                        @endif
+                    @endforeach
+                </td>
                 <td>{{$rt->name}}</td>
                 <td>
                     <a href="/room-type/edit/{{$rt->id}}">Edit</a>

@@ -101,7 +101,7 @@
                     <input type="checkbox" id="delete_uploaded" name="delete_uploaded" value="1">
                     <label for="delete_uploaded" style="width:500px">Delete Approved Documents</label>
                 </li>
-                <li style="display:inline-flex">
+                <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_braamlofts" name="role_braamlofts" value="1">
                     <label for="role_braamlofts" style="width:500px">Braamlofts</label>
                 </li>
@@ -128,7 +128,7 @@
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_ymca" name="role_ymca" value="1">
                     <label for="role_ymca" style="width:500px">YMCA</label>
-                </li>
+                </li> -->
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_change_date" name="role_change_date" value="1">
                     <label for="role_change_date" style="width:500px">Change Lease Dates</label>
@@ -186,8 +186,8 @@
             <ul style="list-style-type:none;">
                 @foreach($propertyList as $property)
                     <li style="display:inline-flex">
-                        <input type="checkbox" id="{{$property}}" name="{{$property}}" value="1" onChange="propertyInfoChange('{{$property}}')">
-                        <label for="{{$property}}" style="width:500px">{{$property}}</label>
+                        <input type="checkbox" id="{{$property->id}}" name="{{$property->id}}" value="1" onChange="propertyInfoChange('{{$property->id}}')">
+                        <label for="{{$property->id}}" style="width:500px">{{$property->residence}}</label>
                     </li>
                 @endforeach
             </ul>

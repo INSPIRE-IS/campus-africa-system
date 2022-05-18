@@ -328,7 +328,19 @@ class HomeController extends Controller
     public function applications(Request $request){
         
         if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3" ) {
-            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications"]);
+
+            $allowedResidences = [];
+            $allProp = Residence::get();
+            $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+            foreach($allProp as $prop){
+                foreach($permissionProp as $permission){
+                    if($permission->property == $prop->id){
+                        array_push($allowedResidences, $prop);
+                    }
+                }
+            }
+            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "allowedResidences" => $allowedResidences]);
         }
     }
 
@@ -490,8 +502,6 @@ class HomeController extends Controller
                 $i++;
             }
 
-            
-            
 
             return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved]);
         }
@@ -942,7 +952,7 @@ class HomeController extends Controller
         
         $user = User::where('id', $userId)->first();
 
-        $propertyList = Property::groupBy('residence')->pluck('residence');
+        $propertyList = Residence::get();
         
         $userAccess = PropertyPermission::where('userUid', $userId)->get();
         $accessString = "";
@@ -1220,8 +1230,20 @@ class HomeController extends Controller
     public function new_student(Request $request){
 
         $lookup = Lookups::get();
+
+        $allowed = [];
+        $allProp = Residence::get();
+        $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+        foreach($allProp as $prop){
+            foreach($permissionProp as $permission){
+                if($permission->property == $prop->id){
+                    array_push($allowed, $prop);
+                }
+            }
+        }
         
-        return view('admin.new_student', ["headerTitle" => "Add New Student", "lookups" => $lookup, "title" => "Add Student"]);
+        return view('admin.new_student', ["headerTitle" => "Add New Student", "lookups" => $lookup, "title" => "Add Student", "PropertyList" => $allowed]);
     }
 
     public function add_student(Request $request){
@@ -1317,6 +1339,12 @@ class HomeController extends Controller
 
         $lookup = Lookups::where('group_id', '7')->first();
 
+        $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
+        $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
+
+        $allResidences = Residence::get();
+        $allRoomTypes = RoomTypes::get();
+
 
         if($lookup && $lookup->lookup_name == "1"){
             $booking_data['room_rate'] = "0";
@@ -1344,110 +1372,157 @@ class HomeController extends Controller
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
-                    if($request->property == "YMCA"){
-                        if($room->slug == "ymca-3-sharing"){
-                            $roomType = "3 Sharing";
-                            $roomName = "ymca-3-sharing";
-                        }
-                        if($room->slug == "ymca-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "ymca-2-sharing";
-                        }
-                        if($room->slug == "ymca-single-room-large"){
-                            $roomType = "Single Large";
-                            $roomName = "ymca-single-room-large";
-                        }
-                        if($room->slug == "ymca-single-room-medium"){
-                            $roomType = "Single Medium";
-                            $roomName = "ymca-single-room-medium";
-                        }
-                        if($room->slug == "ymca-single-room-small"){
-                            $roomType = "Single Small";
-                            $roomName = "ymca-single-room-small";
+                    foreach($allResidences as $residence){
+                        if(strtoupper($request->property) == strtoupper($residence->residence)){
+                            //strtolower
+                            // $roomTypeName = strtolower()
+                            foreach($allRoomTypes as $type){
+                                if($type->property_id == $residence->id && $type->name == $request->roomType){
+                                    
+
+                                    foreach($jsonDataRooms as $roomData){
+                                        $roomTypeTargets = explode(" ", $type->name);
+                                        $slugString = str_replace("-", " ", $roomData->slug);
+
+                                        echo "<pre>";
+                                        echo $type->name."\r\n";
+                                        echo $roomTypeTargets[0]."\r\n";
+                                        echo $slugString."\r\n";
+                                        echo trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                                        echo "\r\n\r\n";
+
+                                        $roomSlugAltered = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)));
+    
+                                        $i = 0;
+                                        foreach($roomTypeTargets as $t){
+                                            if (strpos($slugString,$t) !== false) {
+                                                $i++;
+                                                echo "FOUND\r\n";
+                                            }
+                                        }
+                                        echo $i."\r\n";
+                                        if(count($roomTypeTargets) == $i){
+                                            $roomType = $type->name;
+                                            $roomName = $roomData->slug;
+                                        }
+                                    }
+
+                                    // $roomNameCustomSlug = str_replace(" ", "-", strtolower($residence->residence)." ".strtolower($roomType));
+                                }
+                            }
                         }
                     }
 
-                    if($request->property == "126 Siemert"){
-                        if($room->slug == "126-siemert-single-room"){
-                            $roomType = "Single";
-                            $roomName = "126-siemert-single-room";
-                        }
-                        if($room->slug == "126-siemert-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "126-siemert-2-sharing";
-                        }
-                    }
+                    echo $roomType."\r\n";
 
-                    if($request->property == "Wynton Joy"){
-                        if($room->slug == "wynton-joy-single-room"){
-                            $roomType = "Single";
-                            $roomName = "wynton-joy-single-room";
-                        }
-                        if($room->slug == "wynton-joy-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "wynton-joy-2-sharing";
-                        }
-                    }
+                    // if($request->property == "YMCA"){
+                    //     if($room->slug == "ymca-3-sharing"){
+                    //         $roomType = "3 Sharing";
+                    //         $roomName = "ymca-3-sharing";
+                    //     }
+                    //     if($room->slug == "ymca-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "ymca-2-sharing";
+                    //     }
+                    //     if($room->slug == "ymca-single-room-large"){
+                    //         $roomType = "Single Large";
+                    //         $roomName = "ymca-single-room-large";
+                    //     }
+                    //     if($room->slug == "ymca-single-room-medium"){
+                    //         $roomType = "Single Medium";
+                    //         $roomName = "ymca-single-room-medium";
+                    //     }
+                    //     if($room->slug == "ymca-single-room-small"){
+                    //         $roomType = "Single Small";
+                    //         $roomName = "ymca-single-room-small";
+                    //     }
+                    // }
 
-                    if($request->property == "Dunvista Mansions"){
-                        if($room->slug == "dunvista-mansions-single-room"){
-                            $roomType = "Single";
-                            $roomName = "dunvista-mansions-single-room";
-                        }
-                        if($room->slug == "dunvista-mansions-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "dunvista-mansions-2-sharing";
-                        }
-                    }
+                    // if($request->property == "126 Siemert"){
+                    //     if($room->slug == "126-siemert-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "126-siemert-single-room";
+                    //     }
+                    //     if($room->slug == "126-siemert-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "126-siemert-2-sharing";
+                    //     }
+                    // }
 
-                    if($request->property == "49 Jorissen"){
-                        if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
-                            $roomType = "Single 2 bedroom";
-                            $roomName = "49-jorissen-single-room-2-bedroom-apartment";
-                        }
-                        if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
-                            $roomType = "Single 3 bedroom";
-                            $roomName = "49-jorissen-single-room-3-bedroom-apartment";
-                        }
-                        if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
-                            $roomType = "Single 4 bedroom";
-                            $roomName = "49-jorissen-single-room-4-bedroom-apartment";
-                        }
-                        if($room->slug == "49-jorissen-2-sharing-hotel"){
-                            $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
-                            $roomName = "49-jorissen-2-sharing-hotel";
-                        }
-                    }
+                    // if($request->property == "Wynton Joy"){
+                    //     if($room->slug == "wynton-joy-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "wynton-joy-single-room";
+                    //     }
+                    //     if($room->slug == "wynton-joy-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "wynton-joy-2-sharing";
+                    //     }
+                    // }
 
-                    if($request->property == "80 Jorissen"){
-                        if($room->slug == "80-jorissen-single-room"){
-                            $roomType = "Single";
-                            $roomName = "80-jorissen-single-room";
-                        }
-                        if($room->slug == "80-jorissen-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "80-jorissen-2-sharing";
-                        }
-                    }
+                    // if($request->property == "Dunvista Mansions"){
+                    //     if($room->slug == "dunvista-mansions-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "dunvista-mansions-single-room";
+                    //     }
+                    //     if($room->slug == "dunvista-mansions-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "dunvista-mansions-2-sharing";
+                    //     }
+                    // }
 
-                    if($request->property == "Braamlofts"){
-                        if($room->slug == "braamlofts-single-room"){
-                            $roomType = "Single";
-                            $roomName = "braamlofts-single-room";
-                        }
-                        if($room->slug == "braamlofts-2-sharing"){
-                            $roomType = "2 Sharing";
-                            $roomName = "braamlofts-2-sharing";
-                        }
-                        if($room->slug == "braamlofts-3-sharing"){
-                            $roomType = "3 Sharing";
-                            $roomName = "braamlofts-3-sharing";
-                        }
-                    }
+                    // if($request->property == "49 Jorissen"){
+                    //     if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
+                    //         $roomType = "Single 2 bedroom";
+                    //         $roomName = "49-jorissen-single-room-2-bedroom-apartment";
+                    //     }
+                    //     if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
+                    //         $roomType = "Single 3 bedroom";
+                    //         $roomName = "49-jorissen-single-room-3-bedroom-apartment";
+                    //     }
+                    //     if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
+                    //         $roomType = "Single 4 bedroom";
+                    //         $roomName = "49-jorissen-single-room-4-bedroom-apartment";
+                    //     }
+                    //     if($room->slug == "49-jorissen-2-sharing-hotel"){
+                    //         $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
+                    //         $roomName = "49-jorissen-2-sharing-hotel";
+                    //     }
+                    // }
+
+                    // if($request->property == "80 Jorissen"){
+                    //     if($room->slug == "80-jorissen-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "80-jorissen-single-room";
+                    //     }
+                    //     if($room->slug == "80-jorissen-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "80-jorissen-2-sharing";
+                    //     }
+                    // }
+
+                    // if($request->property == "Braamlofts"){
+                    //     if($room->slug == "braamlofts-single-room"){
+                    //         $roomType = "Single";
+                    //         $roomName = "braamlofts-single-room";
+                    //     }
+                    //     if($room->slug == "braamlofts-2-sharing"){
+                    //         $roomType = "2 Sharing";
+                    //         $roomName = "braamlofts-2-sharing";
+                    //     }
+                    //     if($room->slug == "braamlofts-3-sharing"){
+                    //         $roomType = "3 Sharing";
+                    //         $roomName = "braamlofts-3-sharing";
+                    //     }
+                    // }
 
                     $appliesTo = $room->acf->booking_fee_applies_to;
 
+                    dd($room->slug, $roomName, $roomType, $request->roomType);
+
                     if($room->slug == $roomName && $roomType == $request->roomType){
+
+                        
 
 
                         if($room->acf->booking_fee_override !== ""){
@@ -1562,7 +1637,7 @@ class HomeController extends Controller
 
     public function new_admin(Request $request){
 
-        $propertyList = Property::groupBy('residence')->pluck('residence');
+        $propertyList = Residence::get();
 
         return view('admin.userAdd', ["headerTitle" => "Add New System User", "title" => "Add User", "propertyList" => $propertyList]);
     }
@@ -1856,16 +1931,30 @@ class HomeController extends Controller
                 -- (select GROUP_CONCAT(uf6.`status`) from user_files uf6 where uf6.userUid = u.id and uf6.fileId = "bankStatement") as bankStatement,
                 -- (select GROUP_CONCAT(uf7.`status`) from user_files uf7 where uf7.userUid = u.id and uf7.fileId = "moveIn") as moveIn,
                 -- (select GROUP_CONCAT(uf8.`status`) from user_files uf8 where uf8.userUid = u.id and uf8.fileId = "moveIn") as leaseStatus,
-                u.*, bookings_data.*
+                u.*, bookings_data.*, p.residence as property_residence, r.name as roomTypeName
             FROM
                 users u
                 LEFT OUTER JOIN bookings_data on u.id = bookings_data.userId
+                LEFT OUTER JOIN property p on p.id = bookings_data.property
+                LEFT OUTER JOIN room_types r on r.id = bookings_data.roomType
             WHERE u.userRole = 0 ' . implode($query);
 
         //Get all of our students
         $searched_students = DB::select($sql);
 
         $userData = [];
+
+        $allowed = [];
+        $allProp = Residence::get();
+        $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+        foreach($allProp as $prop){
+            foreach($permissionProp as $permission){
+                if($permission->property == $prop->id){
+                    array_push($allowed, $prop->id);
+                }
+            }
+        }
 
         foreach($searched_students as $student) {
 
@@ -2107,17 +2196,20 @@ class HomeController extends Controller
                 $student->counter = $counter;
 
                 //Filter data based on the users roles
-                if(
-                    (Auth::user()->role_braamlofts == "1" && $student->property == "Braamlofts") ||
-                    (Auth::user()->role_80_jorissen == "1" && $student->property == "80 Jorissen") ||
-                    (Auth::user()->role_49_jorissen == "1" && $student->property == "49 Jorissen") ||
-                    (Auth::user()->role_dunvista_mansions == "1" && $student->property == "Dunvista Mansions") ||
-                    (Auth::user()->role_wynton_joy == "1" && $student->property == "Wynton Joy") ||
-                    (Auth::user()->role_126_siemert == "1" && $student->property == "126 Siemert") ||
-                    (Auth::user()->role_ymca == "1" && $student->property == "YMCA")
-                ) {
-                    array_push($userData, (array) $student);
-                }
+                // if(
+                //     (Auth::user()->role_braamlofts == "1" && $student->property == "Braamlofts") ||
+                //     (Auth::user()->role_80_jorissen == "1" && $student->property == "80 Jorissen") ||
+                //     (Auth::user()->role_49_jorissen == "1" && $student->property == "49 Jorissen") ||
+                //     (Auth::user()->role_dunvista_mansions == "1" && $student->property == "Dunvista Mansions") ||
+                //     (Auth::user()->role_wynton_joy == "1" && $student->property == "Wynton Joy") ||
+                //     (Auth::user()->role_126_siemert == "1" && $student->property == "126 Siemert") ||
+                //     (Auth::user()->role_ymca == "1" && $student->property == "YMCA")
+                // ) {
+                    if(in_array($student->property, $allowed)){
+
+                        array_push($userData, (array) $student);
+                    }
+                // }
             }
 
         }   
@@ -2174,7 +2266,20 @@ class HomeController extends Controller
     }
 
     public function reports(Request $request){
-        return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports"]);
+
+        $allowed = [];
+        $allProp = Residence::get();
+        $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+        foreach($allProp as $prop){
+            foreach($permissionProp as $permission){
+                if($permission->property == $prop->id){
+                    array_push($allowed, $prop);
+                }
+            }
+        }
+
+        return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed]);
     }
 
     public function download_report(Request $request){
@@ -2431,7 +2536,7 @@ class HomeController extends Controller
 
     public function get_booking_details(Request $request){
         //
-        $booking = Booking::where('userId', $request->userId)->first();
+        $booking = Booking::with('residence')->with('roomType')->where('userId', $request->userId)->first();
         $user = User::with('files')->where('id', $request->userId)->first();
         $residence = Residence::where('residence', $booking->property)->first();
 
@@ -2536,8 +2641,14 @@ class HomeController extends Controller
             //Get current booking year
             $this_year = Lookups::where('group_id', '4')->first();
 
+            $newProperty = Residence::where('id', $property)->pluck('residence')->first();
+            $newRoom = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
+
             $oldData = Booking::where('userId', $bookingId)->first();
-            $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomTypeNew, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "bed_code|Bed Code"=> $request->bed_code];
+            $oldData->roomType = RoomTypes::where('id', $oldData->roomType)->pluck('name')->first();
+            $oldData->property = Residence::where('id', $oldData->property)->pluck('residence')->first();
+
+            $newData = ['property|Property' => $newProperty, 'roomType|Room Type' => $newRoom, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "bed_code|Bed Code"=> $request->bed_code];
     
             $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
     
@@ -2585,6 +2696,9 @@ class HomeController extends Controller
             $booking = Booking::where('userId', $bookingId)->first();
             $user = User::where('id', $bookingId)->first();
             $booking_data = [];
+
+            $property = Residence::where('id', $property)->pluck('residence')->first();
+            $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
     
             if($lookup && $lookup->lookup_name == "1"){
                 $booking_data['room_rate'] = "0";
@@ -2766,6 +2880,7 @@ class HomeController extends Controller
                 Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
     
                 $actionFileData['userUid'] = $bookingId;
+                $actionFileData['action'] = "Booking Fee is R0";
                 $actionFileData['actionUserUid'] = Auth::user()->id;
                 $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
                 $actionFileData['actionUserRole'] = Auth::user()->userRole;
@@ -2880,7 +2995,19 @@ class HomeController extends Controller
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
 
-            return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "title" => "Manage Properties", "this_year" => $this_year]);
+            $allowed = [];
+            $allProp = Residence::get();
+            $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+            foreach($allProp as $prop){
+                foreach($permissionProp as $permission){
+                    if($permission->property == $prop->id){
+                        array_push($allowed, $prop);
+                    }
+                }
+            }
+
+            return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "title" => "Manage Properties", "this_year" => $this_year, "propertyList" => $allowed]);
         }else{
             return "404 Error";
         }
@@ -3036,63 +3163,71 @@ class HomeController extends Controller
     }
 
     public function check_rooms($bookingId){
-        $propertyInfo = Property::whereNull('room_available')->where('room_type', '!=', 'Building Manager')->get();
+        $allRooms = RoomTypes::where('name', '!=', 'Building Manager')->pluck('id');
+        $allowedProps = PropertyPermission::where('userUid', Auth::user()->id)->pluck('property');
 
+        $propertyInfo = Property::whereNull('room_available')->whereIn('room_type', $allRooms)->whereIn('residence', $allowedProps)->groupBy('residence')->get();
+        $propertyInfoRooms = Property::with('roomType')->whereNull('room_available')->whereIn('room_type', $allRooms)->whereIn('residence', $allowedProps)->groupBy('room_type')->get();
         $property = [];
-        $roomTypes126Siemert = [];
-        $roomTypes49Jorissen = [];
-        $roomTypes80Jorissen = [];
-        $roomTypesBraamlofts = [];
-        $roomTypesDunvista = [];
-        $roomTypesWynton = [];
-        $roomTypesYMCA = [];
 
         foreach($propertyInfo as $pi){
-            
-            if(!in_array($pi->residence, $property)){
-                array_push($property, $pi->residence);
-            }
-
-            if($pi->residence == "126 SIEMERT"){
-                if(!in_array($pi->room_type, $roomTypes126Siemert)){
-                    array_push($roomTypes126Siemert, $pi->room_type);
-                }
-            }
-            if($pi->residence == "49 JORISSEN"){
-                if(!in_array($pi->room_type, $roomTypes49Jorissen)){
-                    array_push($roomTypes49Jorissen, $pi->room_type);
-                }
-            }
-            if($pi->residence == "80 JORISSEN"){
-                if(!in_array($pi->room_type, $roomTypes80Jorissen)){
-                    array_push($roomTypes80Jorissen, $pi->room_type);
-                }
-            }
-            if($pi->residence == "BRAAMLOFTS"){
-                if(!in_array($pi->room_type, $roomTypesBraamlofts)){
-                    array_push($roomTypesBraamlofts, $pi->room_type);
-                }
-            }
-            if($pi->residence == "DUNVISTA MANSIONS"){
-                if(!in_array($pi->room_type, $roomTypesDunvista)){
-                    array_push($roomTypesDunvista, $pi->room_type);
-                }
-            }
-            if($pi->residence == "WYNTON JOY"){
-                if(!in_array($pi->room_type, $roomTypesWynton)){
-                    array_push($roomTypesWynton, $pi->room_type);
-                }
-            }
-            if($pi->residence == "YMCA"){
-                if(!in_array($pi->room_type, $roomTypesYMCA)){
-                    array_push($roomTypesYMCA, $pi->room_type);
-                }
-            }
+            array_push($property, Residence::where('id', $pi->residence)->first());
         }
+
+        // $roomTypes126Siemert = [];
+        // $roomTypes49Jorissen = [];
+        // $roomTypes80Jorissen = [];
+        // $roomTypesBraamlofts = [];
+        // $roomTypesDunvista = [];
+        // $roomTypesWynton = [];
+        // $roomTypesYMCA = [];
+
+        // foreach($propertyInfo as $pi){
+            
+        //     if(!in_array($pi->residence, $property)){
+        //         array_push($property, $pi->residence);
+        //     }
+
+        //     if($pi->residence == "126 SIEMERT"){
+        //         if(!in_array($pi->room_type, $roomTypes126Siemert)){
+        //             array_push($roomTypes126Siemert, $pi->room_type);
+        //         }
+        //     }
+        //     if($pi->residence == "49 JORISSEN"){
+        //         if(!in_array($pi->room_type, $roomTypes49Jorissen)){
+        //             array_push($roomTypes49Jorissen, $pi->room_type);
+        //         }
+        //     }
+        //     if($pi->residence == "80 JORISSEN"){
+        //         if(!in_array($pi->room_type, $roomTypes80Jorissen)){
+        //             array_push($roomTypes80Jorissen, $pi->room_type);
+        //         }
+        //     }
+        //     if($pi->residence == "BRAAMLOFTS"){
+        //         if(!in_array($pi->room_type, $roomTypesBraamlofts)){
+        //             array_push($roomTypesBraamlofts, $pi->room_type);
+        //         }
+        //     }
+        //     if($pi->residence == "DUNVISTA MANSIONS"){
+        //         if(!in_array($pi->room_type, $roomTypesDunvista)){
+        //             array_push($roomTypesDunvista, $pi->room_type);
+        //         }
+        //     }
+        //     if($pi->residence == "WYNTON JOY"){
+        //         if(!in_array($pi->room_type, $roomTypesWynton)){
+        //             array_push($roomTypesWynton, $pi->room_type);
+        //         }
+        //     }
+        //     if($pi->residence == "YMCA"){
+        //         if(!in_array($pi->room_type, $roomTypesYMCA)){
+        //             array_push($roomTypesYMCA, $pi->room_type);
+        //         }
+        //     }
+        // }
 
         $booking = Booking::where('userId', $bookingId)->first();
 
-        return [$property, $roomTypes126Siemert, $roomTypes49Jorissen, $roomTypes80Jorissen, $roomTypesBraamlofts, $roomTypesDunvista, $roomTypesWynton, $roomTypesYMCA, $booking];
+        return [$property, $propertyInfo, $booking, $propertyInfoRooms];
     }
 
     public function get_booking_info(Request $request){
@@ -3491,12 +3626,33 @@ class HomeController extends Controller
         if(Auth::user()->role_lookup == 1){
 
             $room_types = RoomTypes::get();
+            $residences = Residence::get();
             
 
-            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types"]);
+            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types", "residences" => $residences]);
         }else{
             return "404 Error";
         }
+    }
+
+    public function get_room_types(Request $request){
+        $property = $request->residence;
+
+        $residence = Residence::where('residence', $property)->first();
+
+        $rooms = RoomTypes::where('property_id', $residence->id)->get();
+
+        return $rooms;
+    }
+
+    public function get_room_types_id(Request $request){
+        $property = $request->residence;
+
+        $residence = Residence::where('id', $property)->first();
+
+        $rooms = RoomTypes::where('property_id', $residence->id)->where('name', '!=', 'Building Manager')->get();
+
+        return $rooms;
     }
 
     public function room_type_edit(Request $request, $id){
@@ -3841,6 +3997,9 @@ class HomeController extends Controller
 
         $booking_data = [];
 
+        $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
+        $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
+
 
         if($lookup && $lookup->lookup_name == "1"){
             $booking_data['room_rate'] = "0";
@@ -4020,6 +4179,9 @@ class HomeController extends Controller
         $bookingList = Booking::whereNotNull('property')->whereNotNull('roomType')->get();
 
         $lookup = Lookups::where('group_id', '7')->first();
+
+        $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
+        $booking->roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
 
         $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
         $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
@@ -5188,7 +5350,7 @@ class HomeController extends Controller
         Session::put('manage_year', $request->columns[9]['search']['value']);
         
         if (!empty($request->columns[0]['search']['value']) && $request->columns[0]['search']['value'] != "All") {
-            $property = 'residence = "'.$request->columns[0]['search']['value'].'"';
+            $property = 'pd.residence = "'.$request->columns[0]['search']['value'].'"';
             array_push($search_value, $property);
         }    
         
@@ -5234,45 +5396,73 @@ class HomeController extends Controller
             $sLimit = " LIMIT " . intval($request->start) . ", " . intval($request->length);
         }
 
-        //Auth Location Checks
-        $auth_loc_check = $sep = "";
-        if (Auth::user()->role_braamlofts == "1") {
-            $auth_loc_check = "'BRAAMLOFTS'";
-            $sep = ",";
-        }
-        if (Auth::user()->role_80_jorissen == "1") {
-            $auth_loc_check .= $sep . "'80 JORISSEN'";
-            $sep = ",";            
-        }
-        if (Auth::user()->role_49_jorissen == "1") {
-            $auth_loc_check .= $sep . "'49 JORISSEN'";
-            $sep = ",";            
-        }
-        if (Auth::user()->role_dunvista_mansions == "1") {
-            $auth_loc_check .= $sep . "'DUNVISTA MANSIONS'";
-            $sep = ",";            
-        }
-        if (Auth::user()->role_wynton_joy == "1") {
-            $auth_loc_check .= $sep . "'WYNTON JOY'";
-            $sep = ",";            
-        }
-        if (Auth::user()->role_126_siemert == "1") {
-            $auth_loc_check .= $sep . "'126 SIEMERT'";
-            $sep = ",";            
-        }
-        if (Auth::user()->role_ymca == "1") {
-            $auth_loc_check .= $sep . "'YMCA'";
-            $sep = ",";            
+        $allowed = [];
+
+        $allProp = Residence::get();
+        $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+        foreach($allProp as $prop){
+            foreach($permissionProp as $permission){
+                if($permission->property == $prop->id){
+                    array_push($allowed, $prop);
+                }
+            }
         }
 
+        //Auth Location Checks
+
+        $auth_loc_check = "";
+
+        $i = 0;
+        foreach($allowed as $a){
+            if($i == 0){
+                $sep = "";
+            }else{
+                $sep = ",";
+            }
+            $auth_loc_check .= $sep ."'".$a->id."'";
+            $i++;
+        }
+        // $auth_loc_check = $sep = "";
+        // if (Auth::user()->role_braamlofts == "1") {
+        //     $auth_loc_check = "'BRAAMLOFTS'";
+        //     $sep = ",";
+        // }
+        // if (Auth::user()->role_80_jorissen == "1") {
+        //     $auth_loc_check .= $sep . "'80 JORISSEN'";
+        //     $sep = ",";            
+        // }
+        // if (Auth::user()->role_49_jorissen == "1") {
+        //     $auth_loc_check .= $sep . "'49 JORISSEN'";
+        //     $sep = ",";            
+        // }
+        // if (Auth::user()->role_dunvista_mansions == "1") {
+        //     $auth_loc_check .= $sep . "'DUNVISTA MANSIONS'";
+        //     $sep = ",";            
+        // }
+        // if (Auth::user()->role_wynton_joy == "1") {
+        //     $auth_loc_check .= $sep . "'WYNTON JOY'";
+        //     $sep = ",";            
+        // }
+        // if (Auth::user()->role_126_siemert == "1") {
+        //     $auth_loc_check .= $sep . "'126 SIEMERT'";
+        //     $sep = ",";            
+        // }
+        // if (Auth::user()->role_ymca == "1") {
+        //     $auth_loc_check .= $sep . "'YMCA'";
+        //     $sep = ",";            
+        // }
+
         //Default Query
-        $sql = 'SELECT id, residence, floor, unit, room, bed, bed_code, inventory, room_type, room_rate, year, year_end, room_available
-            FROM property_data
-            WHERE (`year` <= year_end or year_end = 0)
+        $sql = 'SELECT pd.id, p.residence, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, rt.name as room_type, pd.room_rate, pd.year, pd.year_end, pd.room_available
+            FROM property_data pd
+            LEFT OUTER JOIN property p ON p.id = pd.residence
+            LEFT OUTER JOIN room_types rt ON rt.id = pd.room_type
+            WHERE (`year` <= pd.year_end or pd.year_end = 0)
             ' . implode($query) . '
-            and residence in ('.$auth_loc_check.')
+            and pd.residence in ('.$auth_loc_check.')
             
-            order by residence, cast(floor as unsigned), cast(unit as unsigned), room, bed, year, year_end ASC
+            order by pd.residence, cast(pd.floor as unsigned), cast(pd.unit as unsigned), pd.room, pd.bed, pd.year, pd.year_end ASC
 
             ' . $sLimit;
 
@@ -5282,7 +5472,7 @@ class HomeController extends Controller
         // return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
 
         /* Total data set length */
-        $sQuery = "SELECT COUNT(id) as totcount FROM property_data where (`year` <= year_end or year_end = 0)" . implode($query) . "and residence in (".$auth_loc_check.")";
+        $sQuery = "SELECT COUNT(pd.id) as totcount FROM property_data pd where (`year` <= pd.year_end or pd.year_end = 0)" . implode($query) . "and pd.residence in (".$auth_loc_check.")";
         $rResultTotal = DB::select($sQuery);
         $aResultTotal = $rResultTotal[0]->totcount;
         $iTotal = $aResultTotal;

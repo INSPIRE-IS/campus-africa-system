@@ -8,7 +8,7 @@
 
         <div class="form-field">
             <label>Residence *</label>
-            <select name="residence" id='residence' class="required">
+            <select name="residence" id='residence' class="required" onChange="changeResidence()">
                 <option value="" selected disabled>Select One</option>
                 @foreach($Residence as $residence)
                     <option value="{{strtoupper($residence->residence)}}" <?php if(!empty($propertyData) && $propertyData->residence == strtoupper($residence->residence)){echo "selected";}?>>{{$residence->residence}}</option>
@@ -21,30 +21,6 @@
             <label>Room Type *</label>
             <select name="roomType" id='roomType' class="required">
                 <option value="" selected disabled>Select a Room Type</option>
-                <?php if(!empty($propertyData) && ($propertyData->residence == "BRAAMLOFTS" || $propertyData->residence == "Braamlofts")){?>
-                    <option value="Single" <?php if($propertyData->room_type == "Single"){ echo "selected";}?>>Single</option>
-                    <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="3 Sharing" <?php if($propertyData->room_type == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                <?php } ?>
-
-                <?php if(!empty($propertyData) && ($propertyData->residence == "80 JORISSEN" || $propertyData->residence == "80 Jorrisen") || !empty($propertyData) && ($propertyData->residence == "DUNVISTA MANSIONS" || $propertyData->residence == "Dunvista Mansions") || !empty($propertyData) && ($propertyData->residence == "WYNTON JOY" || $propertyData->residence == "Wynton Joy") || !empty($propertyData) && ($propertyData->residence == "126 SIEMERT" || $propertyData->residence == "126 Siemert")){?>
-                    <option value="Single" <?php if($propertyData->room_type == "Single"){ echo "selected";}?>>Single</option>
-                    <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                <?php } ?>
-
-                <?php if(!empty($propertyData) && ($propertyData->residence == "49 JORISSEN" || $propertyData->residence == "49 Jorrisen")){?>
-                    <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="Single 2 bedroom" <?php if($propertyData->room_type == "Single 2 bedroom"){ echo "selected";}?>>Single | 2 Bedroom</option>
-                    <option value="Single 3 bedroom" <?php if($propertyData->room_type == "Single 3 bedroom"){ echo "selected";}?>>Single | 3 Bedroom</option>
-                <?php } ?>
-
-                <?php if(!empty($propertyData) && $propertyData->residence == "YMCA"){?>
-                    <option value="2 Sharing" <?php if($propertyData->room_type == "2 Sharing"){ echo "selected";}?>>2 Sharing</option>
-                    <option value="3 Sharing" <?php if($propertyData->room_type == "3 Sharing"){ echo "selected";}?>>3 Sharing</option>
-                    <option value="Single small" <?php if($propertyData->room_type == "Single small"){ echo "selected";}?>>Single | small</option>
-                    <option value="Single medium" <?php if($propertyData->room_type == "Single medium"){ echo "selected";}?>>Single | Medium</option>
-                    <option value="Single large" <?php if($propertyData->room_type == "Single large"){ echo "selected";}?>>Single | Large</option>
-                <?php } ?>
             </select>
 
         </div>
@@ -187,25 +163,29 @@
         }
     });
 
-    $("#residence").on('change', function(){
-        let propValue = $("#residence").val();
+    document.addEventListener("DOMContentLoaded", function(){
+        changeResidence();
+    })
 
-        if(propValue == "BRAAMLOFTS"){
-            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
-        }else if(propValue == "80 JORISSEN"){
-            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "49 JORISSEN"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option>')
-        }else if(propValue == "DUNVISTA MANSIONS"){
-            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "WYNTON JOY"){
-            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "126 SIEMERT"){
-            $("#roomType").empty().append('<option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option><option value="Single small">Single | small</option><option value="Single medium">Single | Medium</option><option value="Single large">Single | Large</option>')
+    function changeResidence(){
+
+        if($("#residence").val() !== null){
+            $("#roomType").empty().append('<option value="" selected disabled>Loading</option>')
+
+            $.ajax({
+                type: "post",
+                url: "/get-room-types",
+                data: {residence: $("#residence").val()},
+    
+                success: function (data) {          
+                    $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
+                    data.forEach(function(index){
+                        $("#roomType").append('<option value="'+index.name+'">'+index.name+'</option>')
+                    })
+                },
+            });
         }
-    });
+    };
 
     $('#btn_submit_frm').on('click', function(e) {
 

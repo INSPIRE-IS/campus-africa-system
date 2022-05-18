@@ -9,6 +9,8 @@
             <button style="float: none;" type="button" id="updateDataNewRobots" class="detailsChange" >New Robots - Data Update</button>
 
             <button style="float: none;" type="button" id="updateProperties" class="detailsChange" >Properties Update</button>
+
+            <button style="float: none;" type="button" id="updatePropIds" class="detailsChange" >Properties ID Update</button>
         </div>
 
         
@@ -160,6 +162,36 @@
 
                     success: function (data) {
                         $("#updateProperties").empty().append('Properties Update');
+
+                        Swal.fire(
+                            'Success',
+                            'Data update complete',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
+
+    $("#updatePropIds").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#updatePropIds").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/admin-updates/update-property-id",
+
+                    success: function (data) {
+                        $("#updatePropIds").empty().append('Properties ID Update');
 
                         Swal.fire(
                             'Success',

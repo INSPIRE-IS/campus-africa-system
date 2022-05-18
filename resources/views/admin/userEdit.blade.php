@@ -184,8 +184,8 @@
             <ul style="list-style-type:none;">
                 @foreach($propertyList as $property)
                     <li style="display:inline-flex">
-                        <input type="checkbox" id="{{$property}}" name="{{$property}}" value="1" onChange="propertyInfoChange('{{$property}}')" <?php foreach($userAccess as $access){if($access->property == $property){ echo "checked";}} ?>>
-                        <label for="{{$property}}" style="width:500px">{{$property}}</label>
+                        <input type="checkbox" id="{{$property->id}}" name="{{$property->id}}" value="1" onChange="propertyInfoChange('{{$property->id}}')" <?php foreach($userAccess as $access){if($access->property == $property->id){ echo "checked";}} ?>>
+                        <label for="{{$property->id}}" style="width:500px">{{$property->residence}}</label>
                     </li>
                 @endforeach
             </ul>

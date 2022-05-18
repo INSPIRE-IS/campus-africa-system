@@ -28,4 +28,8 @@ class Property extends Model
         'year',
         'year_end'
     ];
+
+    public function roomType(){
+        return $this->hasOne("App\Models\RoomTypes", "id", "room_type");
+    }
 }
