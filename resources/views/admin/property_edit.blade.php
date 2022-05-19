@@ -68,7 +68,7 @@
 
         <div class="form-field">
             <label>Room</label>
-            <select name="room" id='room'>
+            <select name="room" id="room">
                 <option value="" selected>Select One</option>
                 <option value="A" <?php if(!empty($propertyData) && $propertyData->room == "A"){echo "selected";}?>>A</option>
                 <option value="B" <?php if(!empty($propertyData) && $propertyData->room == "B"){echo "selected";}?>>B</option>
@@ -78,8 +78,8 @@
         </div>
 
         <div class="form-field">
-            <label>Bed *</label>
-            <select name="bed" id='bed' class="required">
+            <label>Bed</label>
+            <select name="bed" id='bed'>
                 <option value="" selected>Select One</option>
                 <option value="a" <?php if(!empty($propertyData) && $propertyData->bed == "a"){echo "selected";}?>>a</option>
                 <option value="b" <?php if(!empty($propertyData) && $propertyData->bed == "b"){echo "selected";}?>>b</option>

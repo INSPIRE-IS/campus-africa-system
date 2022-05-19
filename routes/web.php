@@ -189,3 +189,4 @@ Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswo
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
 
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
+Route::post("/check-building-prefix", [HomeController::class, 'check_building_prefix']);

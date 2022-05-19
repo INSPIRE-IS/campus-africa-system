@@ -5426,6 +5426,21 @@ class HomeController extends Controller
 
         echo json_encode($output);
     }
+
+    public function check_building_prefix(Request $request){
+        $building = $request->building;
+        $allPrefixes = Residence::get();
+
+        $available = "true";
+        foreach($allPrefixes as $prefix){
+            if($prefix->building_prefix !== null && strtoupper($prefix->residence) !== strtoupper($request->residence) && strtoupper($prefix->building_prefix) == strtoupper($building)){
+                $available = "false";
+                break;
+            }
+        }
+
+        return $available;
+    }
     
 
     
