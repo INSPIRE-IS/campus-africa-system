@@ -2314,4 +2314,6 @@ input:read-only {
 .btn_save_inline.approve,
 .btn_approve_inline.approve {
   background-color: #1cb915;
+}.onlineForm .formHeading {
+  font-weight: 400;
 }/*# sourceMappingURL=styles.css.map */

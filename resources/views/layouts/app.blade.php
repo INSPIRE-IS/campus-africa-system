@@ -73,6 +73,9 @@
             </div>
         </div>
         <div class="footerClearfix"></div>
+        <div class="footerClearfix"></div>
+        <div class="footerClearfix"></div>
+        <div class="footerClearfix"></div>
         <div class="container">
             <br/>
             <p class="footerRights">Campus Africa - All Right Reserved</p>
