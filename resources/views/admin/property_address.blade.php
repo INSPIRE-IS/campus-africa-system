@@ -8,6 +8,8 @@
 
 <div class="container">
     <br/>
+    <a href="/manage-properties"><button type="button" class="detailsChange" >Manage Properties</button></a>
+    <a href="/room-types"><button type="button" class="detailsChange" >Room Types</button></a>
     <a href="/residence/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
     <br/>
     <table id="properties_table" class="display">

@@ -11,7 +11,7 @@
             <select name="residence" id='residence' class="required" onChange="changeResidence()">
                 <option value="" selected disabled>Select One</option>
                 @foreach($Residence as $residence)
-                    <option value="{{strtoupper($residence->residence)}}" <?php if(!empty($propertyData) && $propertyData->residence == strtoupper($residence->residence)){echo "selected";}?>>{{$residence->residence}}</option>
+                    <option value="{{strtoupper($residence->id)}}" <?php if(!empty($propertyData) && $propertyData->residence == $residence->id){echo "selected";}?>>{{$residence->residence}}</option>
                 @endforeach
             </select>
             <input type="hidden" name="propertyId" id="propertyId" value="<?php if(!empty($propertyData)){echo $propertyData->id;}else{echo "0";}?>"/>
@@ -174,13 +174,17 @@
 
             $.ajax({
                 type: "post",
-                url: "/get-room-types",
+                url: "/get-room-types-id",
                 data: {residence: $("#residence").val()},
     
                 success: function (data) {          
                     $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
                     data.forEach(function(index){
-                        $("#roomType").append('<option value="'+index.name+'">'+index.name+'</option>')
+                        let selected = "";
+                        if("{{$propertyData->room_type}}" == index.id){
+                            selected = "selected"
+                        }
+                        $("#roomType").append('<option value="'+index.id+'" '+selected+'>'+index.name+'</option>')
                     })
                 },
             });
