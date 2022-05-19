@@ -115,6 +115,9 @@ Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
+Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
+
+
 
 Route::post('/get-booking-details', [HomeController::class, 'get_booking_details']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
@@ -188,4 +191,11 @@ Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePas
 
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 
-Route::get('/online-application', [ApplicationController::class, 'step_1']);
+
+//User Online application
+Route::get('/online-application/{property}/{roomType}', [ApplicationController::class, 'step_1']);
+Route::get("/online-application-verify/{applicationToken}", [ApplicationController::class, 'step_verify']);
+Route::post("/veryfiy-user", [ApplicationController::class, 'veryfiy_user']);
+Route::get("/step-2/online-application/{applicationToken}", [ApplicationController::class, 'step_2']);
+Route::get("/step-2-spon/{applicationToken}", [ApplicationController::class, 'step_2_spon']);
+Route::get("/step-3/online-application/{applicationToken}", [ApplicationController::class, 'step_3']);

@@ -31,7 +31,7 @@
                 <h4 class="cardSubHeader">Are you new?</h4>
                 <p class="cardText">Before you can view and reserve a room at one of our awesome properties, you'll need to apply and submit all the necessary paperwork. Get started now!</p>
                 <?php /*<a href="/register"><button type="button" class="applyButton">apply now!</button></a>*/ ?>
-                <a href="/online-application"><button type="button" class="applyButton">apply now!</button></a>
+                <a href="/online-application/0/0"><button type="button" class="applyButton">apply now!</button></a>
             </div>
 
             <div class="whiteCard mainBlock" style="margin-left:11px;">
