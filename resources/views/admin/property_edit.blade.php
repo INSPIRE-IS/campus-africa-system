@@ -181,7 +181,7 @@
                     $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
                     data.forEach(function(index){
                         let selected = "";
-                        if("{{$propertyData->room_type}}" == index.id){
+                        if("<?php if($propertyData && $propertyData->room_type){echo $propertyData->room_type;}else{echo "";}?>" == index.id){
                             selected = "selected"
                         }
                         $("#roomType").append('<option value="'+index.id+'" '+selected+'>'+index.name+'</option>')
