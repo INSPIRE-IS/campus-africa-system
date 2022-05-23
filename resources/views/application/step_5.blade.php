@@ -40,10 +40,12 @@
                 <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
 
             </div>
-            <br/><br/>
+            @if(!$agent->isMobile())
+                <br/><br/>
+            @endif
             <h1 style="color:#9799AB; font-weight:400;">PRICED FROM</h1>
             <h1 class="booking" style="color:#fff;">R 3500 <small>pm</small></h1>
-            <h1 style="color:#fff; font-weight:400;">Please note you have 7 days for the deposit to be paid,<br/> otherwise your room reservation will be forfeited.  </h1>
+            <h1 id="infoAppOnline" style="color:#fff; font-weight:400;">Please note you have 7 days for the deposit to be paid,<br/> otherwise your room reservation will be forfeited.  </h1>
         </div>
     
     </div>
@@ -126,7 +128,7 @@
             </div>
 
             <div class="form-field">
-                <div class="cards flex flex-col">
+                <div class="cards flex flex-col" id="seconCards">
                     <div class="whiteCard halfCard">
                         <h4 class="cardSubHeaderGrey">Non Refundable Booking Fee</h4>
                         <h2 class="cardHeader" >R5000</h2>
@@ -168,6 +170,13 @@
     </form>
 
 </div>
+
+@if ($agent->isMobile())
+    <div class="footerClearfix"></div>
+    <div class="footerClearfix"></div>
+    <div class="footerClearfix"></div>
+    <div class="footerClearfix"></div>
+@endif
 
 <script>
 

@@ -34,7 +34,7 @@
                 <a href="/online-application/0/0"><button type="button" class="applyButton">apply now!</button></a>
             </div>
 
-            <div class="whiteCard mainBlock" style="margin-left:11px;">
+            <div class="whiteCard mainBlock" id="loginBlockMain" style="margin-left:11px;">
                 <h2 class="cardHeader" >Login</h2>
                 <h4 class="cardSubHeader">Already registered with Campus Africa? <br/> <span class="info">Come on in!</span></h4>
                 <form class="cardForm" method="POST" action="/login" >

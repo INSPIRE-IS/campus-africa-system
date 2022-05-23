@@ -2103,6 +2103,39 @@ input:read-only {
     #fullNavbar {
         height: 120px !important;
     }
+
+    .loginHeader {    
+        .booking {
+            line-height: 60px;
+        }
+    }
+
+    .cards {.whiteCard {.cardText{
+        font-size:19px;
+        line-height:21px;
+      }}}
+      
+      .applyButton{
+        margin-top:5px !important;
+      }
+
+      #loginBlockMain{
+        height:500px;
+      }
+
+      .flexFooter{
+          display:block !important;
+      }
+
+      .onlineTabs{
+          display:block !important;
+      }
+
+      
+
+      .navBar {.rightMenu {.contactButton{
+        width:150px;
+      }}}
     #documents_table {
         .await {
             padding: 5px;
@@ -2148,9 +2181,33 @@ input:read-only {
         width: 107%;
     }
 
-    #registerCards {
-        margin-left: -50px;
+    #newStudent{
+        #registerCards {
+        // margin-left: -50px;
+        width:100% !important;
+    }}
+
+    #infoAppOnline{
+        line-height:30px;
     }
+
+    .paymentSection{
+        margin-top:376px !important;
+        width:100% !important;
+    }
+    
+.cards .halfCard, .cards .redBottom{
+    width:125% !important;
+    margin-top:0px !important
+  }
+  #seconCards{
+    margin-top:300px;
+  }
+
+  .PaymentLabel, .previousStepBtn{
+      width:200px !important;
+  }
+
 
     .footer .footerBanner {
         height: 532px;

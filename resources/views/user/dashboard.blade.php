@@ -10,7 +10,8 @@
                 <div class="cardBody">
                     <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                     <h2 class="cardHeaderText">{{$booking->roomType}}</h2>
-                    <!-- <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4> -->
+                    <h4 class="cardSubHeaderGrey">@if($booking->floor !== null) {{$booking->floor}} Floor @endif @if($booking->unit !== null) , Unit {{$booking->unit}} @endif</h4>
+
                     <br/><br/><br/>
                     <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>
                     <a href="#"><button type="button" class="roomContactBtn">Want to cancel your booking? Contact Us</button></a>

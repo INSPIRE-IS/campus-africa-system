@@ -38,10 +38,10 @@
                 <a href="https://campusafrica.whitehart.co.za/residences/" target="_blank">Residences</a>
                 <a href="/room-booking">My Room</a>
                 <a href="/my-documents">My Documents</a>
-                <a href="/my-profile">My Profile</a>
+                <!-- <a href="/my-profile">My Profile</a> -->
 
                 @if (!$agent->isMobile())
-                    <a href="/my-profile"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
+                    <a href="#"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
                 @endif
                 
                 <a href="/logout">Log out</a>
@@ -90,7 +90,7 @@
     </div>
     <footer class="footer">
         <div class="footerBanner">
-            <div class="container" style="display:flex;">
+            <div class="container flex flexFooter">
                 <div class="col-3">
                     <h2 class="footerHeader">
                         Campus Africa

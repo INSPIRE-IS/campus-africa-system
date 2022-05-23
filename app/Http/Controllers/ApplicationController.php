@@ -11,6 +11,7 @@ use App\Models\ActionList;
 use App\Models\Booking;
 use Auth;
 use Illuminate\Support\Facades\Hash;
+use Jenssegers\Agent\Agent;
 
 class ApplicationController extends Controller
 {
@@ -18,8 +19,11 @@ class ApplicationController extends Controller
     public function step_1(Request $request, $property, $roomType){
 
         $lookups = Lookups::get();
+        $agent = new Agent();
 
-        return view('application.step_1', ["lookups" => $lookups, "property" => $property, "roomType" => $roomType]);
+        // dd($agent);
+
+        return view('application.step_1', ["lookups" => $lookups, "property" => $property, "roomType" => $roomType, "agent" => $agent]);
     }
 
     public function step_verify(Request $request){
@@ -78,17 +82,19 @@ class ApplicationController extends Controller
         //     ApplicationToken::where('applicationToken', $applicationToken)->update(['verified' => 1]);
         // }
 
+        $agent = new Agent();
+
         if($user->studentType == "Cash / Direct")
         {
-            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user]);
+            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
         }
         elseif($user->studentType == "Bursary")
         {
-            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user]);
+            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
         }
         else
         {
-            return view('application.step_3', ["lookups" => $lookups, "user" => $user]);
+            return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
         } 
     }
 
@@ -497,8 +503,9 @@ class ApplicationController extends Controller
         $user = User::where('id', Auth::user()->id)->first();
         $booking = Booking::where('userId', Auth::user()->id)->first();
         $proofPayment = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
+        $agent = new Agent();
 
-        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $booking, "proofPayment" => $proofPayment]);
+        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $booking, "proofPayment" => $proofPayment, "agent" => $agent]);
     }
 
     public function complete_online_app(Request $request){

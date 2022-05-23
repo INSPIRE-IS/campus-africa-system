@@ -281,6 +281,13 @@
 <div class="footerClearfix"></div>
 <div class="footerClearfix"></div>
 
+@if ($agent->isMobile())
+    <div class="footerClearfix"></div>
+    <div class="footerClearfix"></div>
+    <div class="footerClearfix"></div>
+@endif
+
+
 <script>
 
     $.ajaxSetup({
