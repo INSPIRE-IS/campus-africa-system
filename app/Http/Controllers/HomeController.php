@@ -55,34 +55,56 @@ class HomeController extends Controller
 
         if(Auth::user()->userRole == "0"){
 
-            $allApprovedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Approved')->get();
-            $allPendingFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Uploaded')->get();
-            $allRejectedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Rejected')->get();
+            
+            if(Auth::user()->email_verified != 1){
 
-            $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
-            $user = User::where('id', Auth::user()->id)->first();
+                return redirect('/verify-password');
 
-            $uploaded = [];
-            // $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
-            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+            }else if(Auth::user()->onboard_complete != '2'){
 
-            if($user->applicationStatus == "Approved Confirmed"){
-                array_push($all, "moveIn");
+                User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
+                return redirect('/step-2/online-application');
+
+            }else{
+
+    
+                $allFiles = [];
+                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+    
+                if(Auth::user()->rob_60_cancelled == "0" && Auth::user()->rob_50_approve == '2'){
+                    array_push($all, "moveIn");
+                }
+                if(Auth::user()->studentType == "Cash / Direct"){
+                    array_push($all, "bankStatement");
+                }
+                if(Auth::user()->studentType !== "Cash / Direct"){
+                    array_push($all, "bursaryApproval");
+                }
+    
+                foreach($all as $file){
+                    $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
+
+                    if($file_search && !empty($file_search)){
+                        $output = (object) array(
+                            "fileId" => $file_search->fileId,
+                            "status" => $file_search->status,
+                        );
+                        array_push($allFiles, $output);
+                    }else{
+                        $output = (object) array(
+                            "fileId" => $file,
+                            "status" => "None",
+                        );
+                        array_push($allFiles, $output);
+                    }
+                }
+    
+                $booking = Booking::where('userId', Auth::user()->id)->first();
+
+                return view('user.dashboard', ["headerTitle" => "Your Dashboard", "booking" => $booking, "allFiles" => $allFiles]);
+    
             }
-            if($user->studentType == "Cash / Direct"){
-                array_push($all, "bankStatement");
-            }
-            if($user->studentType !== "Cash / Direct"){
-                array_push($all, "bursaryApproval");
-            }
 
-            foreach($allFiles as $file){
-                array_push($uploaded, $file->fileId);
-            }
-
-            $outstanding = array_diff($all, $uploaded);
-
-            return view('user.dashboard', ["headerTitle" => "Your Dashboard", "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
         }else{
 
             return view('admin.dashboard', ["headerTitle" => "Admin Dashboard", "title" => "Dashboard"]);

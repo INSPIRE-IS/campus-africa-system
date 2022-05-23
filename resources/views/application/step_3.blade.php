@@ -28,34 +28,38 @@
 
 <div class="container form-card">
     <div class="onlineTabs">
-        1.Applicant Details<br/>
-        2.Sponsor/Burser Information<br/>
-        3.Next of Kin<br/>
-        4.Upload Documents<br/>
-        5.Pay Booking Fee<br/>
+    <div class="onlineTabs">
+        <div class="tab complete">1: Applicant Details</div>
+        <div class="tab complete">2: Sponsor/Burser Information</div>
+        <div class="tab active">3: Next of Kin</div>
+        <div class="tab">4: Upload Documents</div>
+        <div class="tab">5: Pay Booking Fee</div>
+    </div>
     </div>
     
     <form id="newStudent" class="form onlineForm" autocomplete="off">
         <br/>
-        <h1 class="formHeading">Applicant Details</h1>
+        <h1 class="formHeading">Next of Kin</h1>
         <br/>
 
-        <div class="form-field-big hidden" style="height:60px !important" id="parentSameInfo">
-                <li style="display:inline-flex">
-                    <input type="checkbox" id="app_parent_kin" name="app_parent_kin" value="1" style="width:50px !important;">
-                    <label for="app_parent_kin" style="width:400px">Same as Parent / Sponsor</label>
-                </li>
-            </div>
+            @if($user->studentType == "Cash / Direct")
+                <div class="form-field-big" style="height:60px !important" id="parentSameInfo">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="app_parent_kin" name="app_parent_kin" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'checked';} ?>>
+                        <label for="app_parent_kin" style="width:400px">Same as Parent / Sponsor</label>
+                    </li>
+                </div>
+            @endif
 
-            <div class="nameFields">
+            <div class="nameFields <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'hidden';} ?>">
 
                 <div class="form-field">
                     <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="kFirstName" id="kFirstName" class="required">
+                    <input type="text" name="kFirstName" id="kFirstName" class="required" value="<?php if(isset($user)){ echo $user->kinFirstName;} ?>">
                 </div>
                 <div class="form-field">
                     <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="kLastName" id="kLastName" class="required">
+                    <input type="text" name="kLastName" id="kLastName" class="required" value="<?php if(isset($user)){ echo $user->kinLastName;} ?>">
                 </div>
             </div>
 
@@ -63,19 +67,19 @@
                 <label>Title * <span id="kTitle_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                 <select name="kTitle" id='kTitle' class="required">
                 <option value="" disabled selected>Please select one</option>
-                    <option value="Mr" >Mr</option>
-                    <option value="Ms" >Ms</option>
-                    <option value="Mrs" >Mrs</option>
-                    <option value="Miss" >Miss</option>
+                    <option value="Mr" <?php if(isset($user) && $user->kinTitle == "Mr"){ echo "selected";} ?>>Mr</option>
+                    <option value="Ms" <?php if(isset($user) && $user->kinTitle == "Ms"){ echo "selected";} ?>>Ms</option>
+                    <option value="Mrs" <?php if(isset($user) && $user->kinTitle == "Mrs"){ echo "selected";} ?>>Mrs</option>
+                    <option value="Miss" <?php if(isset($user) && $user->kinTitle == "Miss"){ echo "selected";} ?>>Miss</option>
                 </select>
             </div>
 
             <div class="form-field">
                 <label>Relationship * <span id="kRelationship_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                <input type="text" name="kRelationship" id="kRelationship" class="required" >
+                <input type="text" name="kRelationship" id="kRelationship" class="required" value="<?php if(isset($user)){ echo $user->kinRelationship;} ?>">
             </div>
 
-            <div class="generalInfo">
+            <div class="generalInfo <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'hidden';} ?>">
 
                 {{-- <div class="form-field">
                     <label>Nationality * <span id="kNationality" class="hidden" style="color:red"><small>This field is required</small></span></label>
@@ -83,7 +87,7 @@
                         <option value="" selected disabled>Please select one</option>
                         @foreach($lookups as $lookup)
                             @if($lookup->group_id == "5")
-                                <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                                <option value="{{$lookup->lookup_name}}">{{$lookup->lookup_name}}</option>
                             @endif
                         @endforeach
                     </select>
@@ -101,51 +105,51 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-                    <input type="text" name="kCellNo" id='kCellNo' class="required">
+                    <input type="text" name="kCellNo" id='kCellNo' class="required" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
                 </div>
 
                 <div class="form-field">
                     <label>Email Address</label>
-                    <input type="email" name="kEmail" id="kEmail">
+                    <input type="email" name="kEmail" id="kEmail" value="<?php if(isset($user)){ echo $user->kinEmail;} ?>">
                 </div>
             </div>
 
         <div class="form-field">
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="kWorkNo" id="kWorkNo" >
+            <input type="text" name="kWorkNo" id="kWorkNo" value="<?php if(isset($user)){ echo $user->kinWorkNo;} ?>">
         </div>
 
         <div class="form-field">
             <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
-            <input type="text" name="kTeleNo" id='kTeleNo'>
+            <input type="text" name="kTeleNo" id='kTeleNo' value="<?php if(isset($user)){ echo $user->kinTelNo;} ?>">
         </div>
 
-        <div class="addressSection">
+        <div class="addressSection <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'hidden';} ?>">
 
             <div class="form-field-big" style="height:50px !important;">
                 <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             </div>
             <div class="form-field-big" style="height:60px !important">
                 <li style="display:inline-flex">
-                    <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;">
+                    <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_address == '1'){echo 'checked';} ?>>
                     <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
                 </li>
             </div>
-            <div class="kinAddress">
+            <div class="kinAddress <?php if(isset($user) && $user->app_address == '1'){echo 'hidden';} ?>">
                 <div class="form-field-big" style="height:60px !important">
-                    <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required">
+                    <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->kinAddressStr;} ?>">
                 </div>
                 <div class="form-field-big" style="height:60px !important">
                 <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required">
+                    <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->kinAddressSuburb;} ?>">
                 </div>
                 <div class="form-field" style="height:60px !important">
                 <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" >
+                    <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" value="<?php if(isset($user)){ echo $user->kinAddressCity;} ?>">
                 </div>
                 <div class="form-field" style="height:60px !important">
                 <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                    <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required">
+                    <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->kinAddressPost;} ?>">
                 </div>
             </div>
         </div>
@@ -157,42 +161,16 @@
 
 </div>
 
+<div class="footerClearfix"></div>
+<div class="footerClearfix"></div>
+
 <script>
 
-    $.ajaxSetup({
+$.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
-    var d = new Date()
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    yearBack =(d.getFullYear() - 100);
-
-    document.getElementById("dob").setAttribute("min", yearBack+"-"+month+"-"+day);
-
-    $("#property").val("{{$property}}").trigger("change")
-
-    $("#property").on('change', function(){
-        let propValue = $("#property").val();
-
-        if(propValue == "Braamlofts"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
-        }else if(propValue == "80 Jorissen"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "49 Jorissen"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="Single">Single</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option><option value="Single 4 bedroom">Single | 4 Bedroom</option>')
-        }else if(propValue == "Dunvista Mansions"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "Wynton Joy"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "126 Siemert"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "YMCA"){
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single | 3 Bedroom</option>')
-        }
-    })
 
     $("input").blur(function(){
         let fieldId = $(this)[0]["id"]
@@ -224,20 +202,42 @@
         }
     });
 
-    $("#cell_no").on('keyup blur', function(){
-        cell = $("#cell_no").val()
-        ValidCell(cell, "cell_no", "cell_no_error");
+    $("#kTeleNo").on('keyup blur', function(){
+        cell = $("#kTeleNo").val()
+        if(cell !== ""){
+            ValidCell(cell, "kTeleNo", "kTeleNo_error")
+        }else{
+            $("#kTeleNo_error").addClass('hidden')
+            $("#kTeleNo").removeClass('fieldError')
+        }
     })
 
-    $("#userAddressPostal").on('keyup blur', function(){
-        postal = $("#userAddressPostal").val()
+    $("#kCellNo").on('keyup blur', function(){
+        cell = $("#kCellNo").val();
+        
+        ValidCell(cell, "kCellNo", "kCellNo_error");
+    })
+
+    $("#kWorkNo").on('keyup blur', function(){
+        cell = $("#kWorkNo").val()
+        if(cell !== ""){
+            ValidCell(cell, "kWorkNo", "kWorkNo_error")
+        }else{
+            $("#kWorkNo_error").addClass('hidden')
+            $("#kWorkNo").removeClass('fieldError')
+        }
+    })
+
+
+    $("#kAddressPostal").on('keyup blur', function(){
+        postal = $("#kAddressPostal").val()
 
         if(/\b\d{4}\b/g.test(postal)){
-            $("#userAddressPostal").removeClass("fieldError")
-            $("#userAddressPostal_error").addClass('hidden')
+            $("#kAddressPostal").removeClass("fieldError")
+            $("#kAddressPostal_error").addClass('hidden')
         }else{
-            $("#userAddressPostal").addClass("fieldError")
-            $("#userAddressPostal_error").removeClass('hidden')
+            $("#kAddressPostal").addClass("fieldError")
+            $("#kAddressPostal_error").removeClass('hidden')
         } 
     })
 
@@ -290,52 +290,80 @@
         }
     }
 
-    $("#idNumber").on('keyup blur', function(){
-        let idNumber = $("#idNumber").val();
-        if(idNumber.length == 13){
-            ValidID(idNumber, "idNumber", "idNumber_error")
+    $("#kEmail").on('keyup blur', function(){
+        if(isEmail($("#kEmail").val())){
+            $("#kEmail").removeClass("fieldError")
+            $("#kEmail_error").addClass('hidden')
         }else{
-            $("#idNumber").addClass("fieldError")
-            $("#idNumber_error").removeClass('hidden')
-        }  
-
-        cecheckIDEmail();
-    })
-
-    $("#dob").on('keyup blur', function(){
-        let dob = $("#dob").val();
-
-        var d = new Date()
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-        yearBack =(d.getFullYear() - 100);
-
-        if(dob < yearBack+"-01-01" || dob > year+"-"+month+"-"+day){
-            $("#dob").addClass("fieldError")
-            $("#dob_error").removeClass('hidden')
-        }else{
-            $("#dob").removeClass("fieldError")
-            $("#dob_error").addClass('hidden')
+            if ($("#kEmail").val() !== "") {
+                $("#kEmail").addClass("fieldError")
+                $("#kEmail_error").removeClass('hidden')
+            } else {
+                $("#kEmail").removeClass("fieldError")
+                $("#kEmail_error").addClass('hidden')
+            }
         }
     })
+
+    $("#app_parent_kin").on('change', function(){
+
+        if(document.getElementById('app_parent_kin').checked == true){
+
+            $(".nameFields").addClass('hidden')
+            $(".generalInfo").addClass('hidden')
+            $(".addressSection").addClass('hidden')
+
+            $("#kFirstName").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kLastName").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kCellNo").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kEmail").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kAddress1").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kAddress2").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kAddressCity").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kAddressPostal").addClass("hidden").removeClass("required").removeClass("fieldError");
+            
+        }else{
+
+            $(".nameFields").removeClass('hidden')
+            $(".generalInfo").removeClass('hidden')
+            $(".addressSection").removeClass('hidden')
+            
+            $("#kFirstName").removeClass("hidden").addClass("required");
+            $("#kLastName").removeClass("hidden").addClass("required");
+            $("#kCellNo").removeClass("hidden").addClass("required");
+            $("#kEmail").removeClass("hidden").addClass("required");
+            $("#kAddress1").removeClass("hidden").addClass("required");
+            $("#kAddress2").removeClass("hidden").addClass("required");
+            $("#kAddressCity").removeClass("hidden").addClass("required");
+            $("#kAddressPostal").removeClass("hidden").addClass("required");
+            
+        }
+
+    })
+
+    $("#app_address").on('change', function(){
+
+        if(document.getElementById('app_address').checked == true){
+            $(".kinAddress").addClass("hidden");
+            $("#kAddress1").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kAddress2").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kAddressCity").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#kAddressPostal").addClass("hidden").removeClass("required").removeClass("fieldError");
+            
+        }else{
+            $(".kinAddress").removeClass('hidden')
+            $("#kAddress1").removeClass("hidden").addClass("required");
+            $("#kAddress2").removeClass("hidden").addClass("required");
+            $("#kAddressCity").removeClass("hidden").addClass("required");
+            $("#kAddressPostal").removeClass("hidden").addClass("required");
+        }
+    })
+
 
     function isEmail(email) {
         var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         return regex.test(email);
     }
-
-    $("#email").on('keyup blur', function(){
-        if(isEmail($("#email").val())){
-            $("#email").removeClass("fieldError")
-            $("#email_error").addClass('hidden')
-        }else{
-            $("#email").addClass("fieldError")
-            $("#email_error").removeClass('hidden')
-        }
-
-        cecheckIDEmail();
-    })
 
     function cecheckIDEmail(){
         $.ajax({
@@ -376,26 +404,6 @@
             },
         });
     }
-
-    $("#nationality").on('change', function(){
-        if($("#nationality").val() == "South Africa"){
-            $("#passportField").addClass('hidden')
-            $("#idField").removeClass('hidden')
-
-            $("#passportNo").removeClass("required")
-            $("#idNumber").addClass("required")
-            $("#passportNo").removeClass("fieldError")
-        }else{
-            $("#idField").addClass('hidden')
-            $("#passportField").removeClass('hidden')
-
-            $("#passportNo").addClass("required")
-            $("#idNumber").removeClass("required")
-            $("#idNumber").removeClass("fieldError")
-        }
-    })
-
-
     $("#submitForm").on('click', function() {
 
         //Check if any hidden fields are required, remove required check
@@ -450,35 +458,30 @@
 
             }else{
 
-                $("#submitForm").empty().append("LOading")
+                $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 $.ajax({
                         type: "post",
-                        url: "/registration_step_one",
+                        url: "/step-3-kin",
                         data: {
-                            firstName: $("#firstName").val(), 
-                            lastName: $("#lastName").val(), 
-                            title: $("#title").val(), 
-                            dob: $("#dob").val(), 
-                            cell_no: $("#cell_no").val(), 
-                            email: $("#email").val(), 
-                            idNumber: $("#idNumber").val(), 
-                            nationality: $("#nationality").val(),
-                            passportNo: $("#passportNo").val(), 
-                            institStudy: $("#institStudy").val(), 
-                            studNumber: $("#studNumber").val(), 
-                            faculty: $("#faculty").val(), 
-                            year: $("#year").val(),
-                            userAddress1: $("#userAddress1").val(),
-                            userAddress2: $("#userAddress2").val(),
-                            userAddressCity: $("#userAddressCity").val(),
-                            userAddressPostal: $("#userAddressPostal").val(),
-                            studentType: $("#studentType").val(),
-                            yearOfStudy: $("#yearOfStudy").val(),
+                            app_parent_kin: $("#app_parent_kin").val(),
+                            kFirstName: $("#kFirstName").val(), 
+                            kLastName: $("#kLastName").val(), 
+                            kTitle: $("#kTitle").val(), 
+                            kRelationship: $("#kRelationship").val(), 
+                            kCellNo: $("#kCellNo").val(), 
+                            kEmail: $("#kEmail").val(), 
+                            kWorkNo: $("#kWorkNo").val(), 
+                            kTeleNo: $("#kTeleNo").val(),
+                            app_address: $("#app_address").val(),
+                            kAddress1: $("#kAddress1").val(), 
+                            kAddress2: $("#kAddress2").val(), 
+                            kAddressCity: $("#kAddressCity").val(), 
+                            kAddressPostal: $("#kAddressPostal").val(), 
                         },
 
                         success: function (data) {
-                            window.location.replace('/online-application-verify/'+data)                            
+                            window.location.replace(data)                            
                         },
                     });
             }

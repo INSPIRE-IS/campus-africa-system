@@ -28,11 +28,13 @@
 
 <div class="container form-card">
     <div class="onlineTabs">
-        1.Applicant Details<br/>
-        2.Sponsor<br/>
-        3.Next of Kin<br/>
-        4.Upload Documents<br/>
-        5.Pay Booking Fee<br/>
+    <div class="onlineTabs">
+        <div class="tab complete">1: Applicant Details</div>
+        <div class="tab active">2: Sponsor Information</div>
+        <div class="tab">3: Next of Kin</div>
+        <div class="tab">4: Upload Documents</div>
+        <div class="tab">5: Pay Booking Fee</div>
+    </div>
     </div>
     
     <form id="newStudent" class="form onlineForm" autocomplete="off">
@@ -43,22 +45,22 @@
 
                 <div class="form-field">
                     <label>First Name * <span id="pFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="pFirstName" id="pFirstName" class="required">
+                    <input type="text" name="pFirstName" id="pFirstName" class="required" value="<?php if(isset($user)){ echo $user->sponFirstName;} ?>">
                 </div>
 
                 <div class="form-field">
                     <label>Last Name * <span id="pLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="pLastName" id="pLastName" class="required">
+                    <input type="text" name="pLastName" id="pLastName" class="required" value="<?php if(isset($user)){ echo $user->sponLastName;} ?>">
                 </div>
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="pCell_no" id="pCell_no" class="required">
+                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
                 </div>
 
                 <div class="form-field">
                     <label>Email Address * <span id="pEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-                    <input type="email" name="pEmail" id='pEmail' class="required">
+                    <input type="email" name="pEmail" id='pEmail' class="required" value="<?php if(isset($user)){ echo $user->sponEmail;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -67,7 +69,7 @@
                         <option value="" selected disabled>Please select one</option>
                         @foreach($lookups as $lookup)
                             @if($lookup->group_id == "5")
-                                <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                                <option value="{{$lookup->lookup_name}}" <?php if(isset($user) && $user->pNationality == $lookup->lookup_name){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
                             @endif
                         @endforeach
                     </select>
@@ -75,12 +77,12 @@
 
                 <div class="form-field" id="pIdField">
                     <label>I.D Number * <span id="pIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-                    <input type="text" name="pIdNumber" id="pIdNumber" class="required">
+                    <input type="text" name="pIdNumber" id="pIdNumber" class="required" value="<?php if(isset($user)){ echo $user->sponId;} ?>">
                 </div>
 
                 <div class="form-field hidden" id="pPassportField">
                     <label>Passport Number * <span id="pPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="pPassportNo" id="pPassportNo" class="required">
+                    <input type="text" name="pPassportNo" id="pPassportNo" class="required" value="<?php if(isset($user)){ echo $user->pPassportNo;} ?>">
                 </div>
 
                 
@@ -94,26 +96,26 @@
                 </div>
                 <div class="form-field-big" style="height:60px !important">
                     <li style="display:inline-flex">
-                        <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;">
+                        <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_address_p == '1'){echo 'checked';}?>>
                         <label for="app_address_p" style="width:400px">Same as Applicant's Home Address</label>
                     </li>
                 </div>
 
-                <div class="pAddress">
+                <div class="pAddress <?php if(isset($user) && $user->app_address_p == '1'){echo 'hidden';}?>" >
                     <div class="form-field-big" style="height:60px !important">
-                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required">
+                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->pAddress1;} ?>">
                     </div>
                     <div class="form-field-big" style="height:60px !important">
                     <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" class="required">
+                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->pAddress2;} ?>">
                     </div>
                     <div class="form-field" style="height:60px !important">
                     <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  class="required">
+                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  class="required" value="<?php if(isset($user)){ echo $user->pAddressCity;} ?>">
                     </div>
                     <div class="form-field" style="height:60px !important">
                     <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" class="required">
+                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->pAddressPostal;} ?>">
                     </div>
                 </div>
 
@@ -123,6 +125,9 @@
     </form>
 
 </div>
+
+<div class="footerClearfix"></div>
+<div class="footerClearfix"></div>
 
 <script>
 
@@ -277,17 +282,17 @@
 
         if(document.getElementById('app_address_p').checked == true){
             $(".pAddress").addClass("hidden");
-            $(".pAddress1").addClass("hidden");
-            $(".pAddress2").addClass("hidden");
-            $(".pAddressCity").addClass("hidden");
-            $(".pAddressPostal").addClass("hidden");
-            $("#pAddress1_error").addClass("hidden");
+            $("#pAddress1").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#pAddress2").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#pAddressCity").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#pAddressPostal").addClass("hidden").removeClass("required").removeClass("fieldError");
+            $("#pAddress1_error").addClass("hidden").removeClass("required").removeClass("fieldError");
         }else{
             $(".pAddress").removeClass('hidden')
-            $(".pAddress1").removeClass("hidden");
-            $(".pAddress2").removeClass("hidden");
-            $(".pAddressCity").removeClass("hidden");
-            $(".pAddressPostal").removeClass("hidden");
+            $("#pAddress1").removeClass("hidden").addClass("required");
+            $("#pAddress2").removeClass("hidden").addClass("required");
+            $("#pAddressCity").removeClass("hidden").addClass("required");
+            $("#pAddressPostal").removeClass("hidden").addClass("required");
         }
     })
 
@@ -389,11 +394,11 @@
 
             }else{
 
-                $("#submitForm").empty().append("LOading")
+                $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 $.ajax({
                         type: "post",
-                        url: "/step-2-spon/{{$applicationToken}}",
+                        url: "/step-2-spon",
                         data: {
                             pFirstName: $("#pFirstName").val(), 
                             pLastName: $("#pLastName").val(), 

@@ -28,11 +28,11 @@
 
 <div class="container form-card">
     <div class="onlineTabs">
-        1.Applicant Details<br/>
-        2.Sponsor/Burser Information<br/>
-        3.Next of Kin<br/>
-        4.Upload Documents<br/>
-        5.Pay Booking Fee<br/>
+        <div class="tab active">1: Applicant Details</div>
+        <div class="tab">2: Sponsor/Burser Information</div>
+        <div class="tab">3: Next of Kin</div>
+        <div class="tab">4: Upload Documents</div>
+        <div class="tab">5: Pay Booking Fee</div>
     </div>
     
     <form id="newStudent" class="form onlineForm" autocomplete="off">
@@ -277,6 +277,9 @@
     </form>
 
 </div>
+<div class="footerClearfix"></div>
+<div class="footerClearfix"></div>
+<div class="footerClearfix"></div>
 
 <script>
 
@@ -476,6 +479,13 @@
                         if(data[1] == false){
                             $("#email_InUse").removeClass('hidden')
                             $("#email").addClass('fieldError')
+
+                            Swal.fire(
+                                'Email In Use',
+                                'This Email address is already registerd. Please Login to Continue',
+                                'error'
+                            )
+
                         }else{
                             $("#email_InUse").addClass('hidden')
                             $("#email").removeClass('fieldError')
@@ -571,7 +581,7 @@
 
             }else{
 
-                $("#submitForm").empty().append("LOading")
+                $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 $.ajax({
                         type: "post",
@@ -596,10 +606,12 @@
                             userAddressPostal: $("#userAddressPostal").val(),
                             studentType: $("#studentType").val(),
                             yearOfStudy: $("#yearOfStudy").val(),
+                            property: $("#property").val(),
+                            roomType: $("#roomType").val(),
                         },
 
                         success: function (data) {
-                            window.location.replace('/online-application-verify/'+data)                            
+                            window.location.replace('/online-application-verify')   
                         },
                     });
             }

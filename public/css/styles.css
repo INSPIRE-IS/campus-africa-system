@@ -21,6 +21,23 @@ body {
   margin-top: -10px;
 }
 
+.ImgGradient{
+  background-image: linear-gradient(to left, rgba(245, 246, 252, 0.2), rgba(0, 0, 0, 1)), url("/images/rooms/Braamlofts_single_1_6.png");
+  background-repeat: no-repeat;
+  height: 740px;
+  width: 90%;
+  border-bottom-right-radius: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
+  background-size: 100% 100%;
+}
+
+.ImgGradient .loginHeaderImg .bookingHead2{
+      color:#fff;
+      font-size:40px;
+      text-align:left;
+  }
+
 .container {
   width: 75%;
   margin: auto;
@@ -631,6 +648,7 @@ body {
 
 .greenBack {
   background-color: #50b63a;
+  border-radius:10px !important;
 }
 
 .tox .tox-edit-area__iframe {
@@ -1024,7 +1042,7 @@ body {
   height: 180px;
   border-radius: 10px;
   background-color: #e74f26;
-  margin-left: -108px;
+  margin-left: -60px;
   display: flex;
   padding: 50px;
   margin-bottom: 60px;
@@ -2316,4 +2334,37 @@ input:read-only {
   background-color: #1cb915;
 }.onlineForm .formHeading {
   font-weight: 400;
+}
+.onlineTabs{
+  display:flex;
+}
+.onlineTabs .tab{
+  border: 1px solid #ccc; 
+        padding:7px 20px;
+        margin:15px;
+        border-radius:5px;
+}
+.onlineTabs .active{
+  border: 1px solid #E74F26; 
+  background-color: #E74F26;
+  color:#fff;
+  padding:7px 20px;
+  margin:15px;
+  border-radius:5px;
+}
+
+.onlineTabs .complete{
+  border: 1px solid #6ABC0B;
+  border-radius:5px;
+  color:#6ABC0B;
+}
+.previousStepBtn{
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor:pointer;
+  width:360px;
 }/*# sourceMappingURL=styles.css.map */

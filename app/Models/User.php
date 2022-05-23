@@ -127,6 +127,8 @@ class User extends Authenticatable
         'rob_45_other',
         'role_lease_regen',
         'role_modify_approved',
+        'onboard_complete',
+        'email_verified',
     ];
 
     public function files(){

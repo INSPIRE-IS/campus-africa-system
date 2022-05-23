@@ -41,12 +41,13 @@
                     @csrf
                     <label>Username</label>
                     <input type="text" name="email" id="email">
+                    <span class="invalid-feedback hidden" role="alert" id="emailPasswordLess"><strong style="color:red">Email is a required field</strong></span>
                     @error('email')
                         <span class="invalid-feedback" role="alert">
                             <strong style="color:red">{{ $message }}</strong>
                         </span>
                     @enderror
-                    <br/>
+                    <!-- <br/> -->
                     <label>Password</label>
                     <input type="password" name="password" id="password">
                     @error('password')
@@ -55,8 +56,12 @@
                         </span>
                     @enderror
                     <button type="submit" class="submitButton" value="Login">Login</button>
-                    <p class="small">Forgotten your password? <a href="/password/reset" style="color:inherit">Click here</a></p>
+                    
                 </form>
+                <div class="cardForm" >
+                    <button type="button" id="loginPasswordless" class="submitButton" value="magic-link">Passwordless Login</button>
+                    <p class="small">Forgotten your password? <a href="/password/reset" style="color:inherit">Click here</a></p>
+                </div>
             </div>
         </div>
         
@@ -66,6 +71,52 @@
 
 
 <div class="clearSpaceLoginPage"></div>
+
+<script>
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $("#loginPasswordless").on('click', function(){
+
+        // console.log($("#email").val() !== "")
+
+        if($("#email").val() !== "" && $("#email").val() !== null){
+            $("#loginPasswordless").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+            $("#emailPasswordLess").addClass('hidden')
+            $.ajax({
+                type: "post",
+                url: "/passwordless-login",
+                data: {
+                    email: $("#email").val(), 
+                },
+    
+                success: function (data) {
+                    $("#loginPasswordless").empty().append('Passwordless login');
+
+                    if(data == "true"){
+                        Swal.fire(
+                            'Email Sent',
+                            'Please click on the link sent in your email!',
+                            'success'
+                        )                      
+                    }else{
+                        Swal.fire(
+                            'Email Not Found',
+                            'Email not found in our system. Please try again!',
+                            'error'
+                        ) 
+                    }
+                },
+            });
+        }else{
+            $("#emailPasswordLess").removeClass('hidden')
+        }
+    })
+</script>
 
 <!-- <div class="container">
     <div class="row justify-content-center">

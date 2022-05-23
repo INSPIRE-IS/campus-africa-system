@@ -18,6 +18,7 @@ use App\Models\MailerList;
 use Mail;
 use App\Models\ApplicationToken;
 use App\Models\ImportNSFASStudentAuditLog;
+use Grosv\LaravelPasswordlessLogin\LoginUrl;
 
 class RegisterController extends Controller
 {
@@ -105,16 +106,6 @@ class RegisterController extends Controller
         return $randomString;
     }
 
-    public function generateRandomShortString($length = 5){
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
-    }
-
     protected function registration_step_one(Request $request){
 
         $user = User::create([
@@ -140,6 +131,8 @@ class RegisterController extends Controller
             'userAddressPostal' => $request->userAddressPostal,
             'studentType' => $request->studentType,
             'yearOfStudy' => $request->yearOfStudy,
+            'rob_55_lease' => 3,
+            'rob_45_other' => 3,
         ]);
 
         ActionList::create([
@@ -180,15 +173,16 @@ class RegisterController extends Controller
             }
         }
 
-        $userToken = ApplicationToken::create(["userUid" => $user->id, "applicationToken" => $this->generateRandomLongString(), 'security_token' => $this->generateRandomShortString()]);
+        // $userToken = ApplicationToken::create(["userUid" => $user->id, "applicationToken" => $this->generateRandomLongString()]);
 
-        
+        $generator = new LoginUrl($user);
+        $generator->setRedirectUrl('/verify-password');
+        $url = $generator->generate();
 
         $message_replace['bookingRef'] = $booking->id;
         $message_replace['name'] = $request->firstName;
-        $message_replace['application_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/online-application/step-2/".$userToken->applicationToken."' target='_blank'>";
+        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
         $message_replace['close_application_link']="</a>";
-        $message_replace['security_code'] = $userToken->security_token;
 
         $mailerForMessage = MailerList::where("mailer_name", "Application Thank You")->first();
         $mailerMessage = $mailerForMessage->message;
@@ -197,19 +191,19 @@ class RegisterController extends Controller
         $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
         $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
         $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
-        $newMessage = str_replace("[security_code]", $message_replace['security_code'], $newMessage);
 
         $data['name'] = $request->firstName;
         $data['email'] = $request->email;
         $data['messageForMail'] = $newMessage;
 
         Mail::send('email.yellow_back', $data, function($message) use ($data) {
-            $message->to($data['email'], $data['name'])->subject
-                ('Campus Africa User Application');
+            // $message->to($data['email'], $data['name'])->subject
+            //     ('Campus Africa User Application');
+            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa User Application');
             $message->from('noreply@campusafrica.co.za','Campus Africa');
         });
 
-        return $userToken->applicationToken;
+        return "done";
     }
 
     protected function registration_step_one_update(Request $request){

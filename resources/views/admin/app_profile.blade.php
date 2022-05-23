@@ -169,7 +169,7 @@
                                     <p>{{$action->actionUserDisplayName}}</p>
                                 @endif
                                 
-                                @if($action->actionUserRole !== "0" )
+                                @if($action->actionUserRole !== 0 )
 
                                     @if(!empty($action->users))
                                         @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
