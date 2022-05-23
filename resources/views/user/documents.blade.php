@@ -31,114 +31,74 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($outstanding as $file)
+            @foreach($allFiles as $file)
                 <tr>
                     <td>
-                        @if($file == 'copyID')
+                        @if($file->fileId == 'copyID')
                           I.D COPY
-                        @elseif($file == 'studentCard')
+                        @elseif($file->fileId == 'studentCard')
                           STUDENT CARD
-                        @elseif($file == 'bankStatement')
+                        @elseif($file->fileId == 'bankStatement')
                           BANK STATEMENT
-                        @elseif($file == 'proofRegistration')
+                        @elseif($file->fileId == 'proofRegistration')
                           REGISTRATION
-                        @elseif($file == 'proof_of_payment')
+                        @elseif($file->fileId == 'proof_of_payment')
                           BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
-                    <td>
-                      <label for="{{$file}}" id="{{$file}}Section" class="outstandingUpload">
-                          <span class="text">Upload</span>
-                          <i class="fas fa-file-upload" ></i>
-                      </label>
-                      </h3>
-                      <input type="file" id="{{$file}}" hidden/>
-                    </td>
-                </tr>
-            @endforeach
-
-            @foreach($rejectedFiles as $file)
-                <tr>
-                    <td>
-                        @if($file['fileId'] == 'copyID')
-                          I.D COPY
-                        @elseif($file['fileId'] == 'studentCard')
-                          STUDENT CARD
-                        @elseif($file['fileId'] == 'bankStatement')
-                          BANK STATEMENT
-                        @elseif($file['fileId'] == 'proofRegistration')
-                          REGISTRATION
-                        @elseif($file['fileId'] == 'proof_of_payment')
-                          BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file['fileId'] == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
-                    <td>
-                      <label for="{{$file['fileId']}}" id="{{$file['fileId']}}Section" class="outstandingUpload">
-                          <span class="text">Upload</span>
-                          @if (!$agent->isMobile())
-                            <i class="fas fa-file-upload" ></i>
+                        @elseif($file->fileId == 'bursaryApproval')
+                          @if(Auth::user()->studentType == "NSFAS")
+                            NSFAS APPROVAL
+                          @else
+                            BURSARY APPROVAL
                           @endif
-                          
-                      </label>
-                      </h3>
-                      <input type="file" id="{{$file['fileId']}}" hidden/>
+                        @elseif($file->fileId == 'moveIn')
+                          LEASE
+                          @else
+                            <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file->fileId))); ?>
+                        @endif
                     </td>
+                    
+                        @if($file->status == 'None')
+                            <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
+                            <td>
+                                <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
+                                    <span class="text">Upload</span>
+                                    @if (!$agent->isMobile())
+                                        <i class="fas fa-file-upload" ></i>
+                                    @endif
+                                    
+                                </label>
+                                </h3>
+                                <input type="file" id="{{$file->fileId}}" hidden/>
+                                </td>
+                        @elseif($file->status == 'Rejected')
+                            <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
+                            <td>
+                                <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
+                                    <span class="text">Upload</span>
+                                    @if (!$agent->isMobile())
+                                        <i class="fas fa-file-upload" ></i>
+                                    @endif
+                                    
+                                </label>
+                                </h3>
+                                <input type="file" id="{{$file->fileId}}" hidden/>
+                                </td>
+                        @elseif($file->status == 'Uploaded')
+                            <td><span class="flex"><div class="pendingRobot"></div> &nbsp;&nbsp; Pending Approval</span></td>
+                            <td>
+                                <a href="/storage/{{$file->fileUrl}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
+                                </td>
+                        @elseif($file->status == 'Approved')
+                            <td><span class="flex"><div class="approvedRobot"></div> &nbsp;&nbsp; Approved</span></td>
+                            <td>
+                                <a href="/storage/{{$file->fileUrl}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
+                                </td>
+                        @endif
+                    
                 </tr>
             @endforeach
 
-            @foreach($pendingFiles as $file)
-                <tr>
-                    <td>
-                        @if($file['fileId'] == 'copyID')
-                          I.D COPY
-                        @elseif($file['fileId'] == 'studentCard')
-                          STUDENT CARD
-                        @elseif($file['fileId'] == 'bankStatement')
-                          BANK STATEMENT
-                        @elseif($file['fileId'] == 'proofRegistration')
-                          REGISTRATION
-                        @elseif($file['fileId'] == 'proof_of_payment')
-                          BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file['fileId'] == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="pendingRobot"></div> &nbsp;&nbsp; Pending Approval</span></td>
-                    <td>
-                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
-                    </td>
-                </tr>
-            @endforeach
-
-            @foreach($approvedFiles as $file)
-                <tr>
-                    <td>
-                        @if($file['fileId'] == 'copyID')
-                          I.D COPY
-                        @elseif($file['fileId'] == 'studentCard')
-                          STUDENT CARD
-                        @elseif($file['fileId'] == 'bankStatement')
-                          BANK STATEMENT
-                        @elseif($file['fileId'] == 'proofRegistration')
-                          REGISTRATION
-                        @elseif($file['fileId'] == 'proof_of_payment')
-                          BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file['fileId'] == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="approvedRobot"></div> &nbsp;&nbsp; Approved</span></td>
-                    <td>
-                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
-                    </td>
-                </tr>
-            @endforeach
+           
         </tbody>
     </table>
     <br/>

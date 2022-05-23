@@ -80,6 +80,14 @@ class HomeController extends Controller
                 if(Auth::user()->studentType !== "Cash / Direct"){
                     array_push($all, "bursaryApproval");
                 }
+
+                $allSearchable = UserFiles::where("userUid", Auth::user()->id)->get();
+
+                foreach($allSearchable as $search){
+                    if(!in_array($search->fileId, $all)){
+                        array_push($all, $search->fileId);
+                    }
+                }
     
                 foreach($all as $file){
                     $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
@@ -87,13 +95,15 @@ class HomeController extends Controller
                     if($file_search && !empty($file_search)){
                         $output = (object) array(
                             "fileId" => $file_search->fileId,
-                            "status" => $file_search->status,
+                            "status" => $file_search->status !== null ? $file_search->status : "None",
+                            "fileUrl" => $file_search->fileUrl,
                         );
                         array_push($allFiles, $output);
                     }else{
                         $output = (object) array(
                             "fileId" => $file,
                             "status" => "None",
+                            "fileUrl" => "",
                         );
                         array_push($allFiles, $output);
                     }
@@ -116,8 +126,10 @@ class HomeController extends Controller
 
         $proof_of_payment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
         $lease = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'moveIn')->first();
+        $booking = Booking::where('userId', Auth::user()->id)->first();
+        $lookup = Lookups::get();
 
-        return view('user.room_booking', ["headerTitle" => "Room Booking", "proof_of_payment" => $proof_of_payment, "lease" => $lease]);
+        return view('user.room_booking', ["headerTitle" => "Room Booking", "proof_of_payment" => $proof_of_payment, "lease" => $lease, "lookups" => $lookup, "booking" => $booking]);
 
     }
 
@@ -820,35 +832,49 @@ class HomeController extends Controller
     }
 
     public function documents(Request $request){
-            $allApprovedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Approved')->get();
-            $allPendingFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Uploaded')->get();
-            $allRejectedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Rejected')->get();
-
-            $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
-
-            $uploaded = [];
-            // $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
-            $user = User::where('id', Auth::user()->id)->first();
-
+            
+            $allFiles = [];
             $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
 
-            if($user->applicationStatus == "Approved Confirmed"){
+            if(Auth::user()->rob_60_cancelled == "0" && Auth::user()->rob_50_approve == '2'){
                 array_push($all, "moveIn");
             }
-            if($user->studentType == "Cash / Direct"){
+            if(Auth::user()->studentType == "Cash / Direct"){
                 array_push($all, "bankStatement");
             }
-            if($user->studentType !== "Cash / Direct"){
+            if(Auth::user()->studentType !== "Cash / Direct"){
                 array_push($all, "bursaryApproval");
             }
 
-            foreach($allFiles as $file){
-                array_push($uploaded, $file->fileId);
+            $allSearchable = UserFiles::where("userUid", Auth::user()->id)->get();
+
+            foreach($allSearchable as $search){
+                if(!in_array($search->fileId, $all)){
+                    array_push($all, $search->fileId);
+                }
             }
 
-            $outstanding = array_diff($all, $uploaded);
+            foreach($all as $file){
+                $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
 
-            return view('user.documents', ["headerTitle" => "My Documents", "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
+                if($file_search && !empty($file_search)){
+                    $output = (object) array(
+                        "fileId" => $file_search->fileId,
+                        "status" => $file_search->status !== null ? $file_search->status : "None",
+                        "fileUrl" => $file_search->fileUrl,
+                    );
+                    array_push($allFiles, $output);
+                }else{
+                    $output = (object) array(
+                        "fileId" => $file,
+                        "status" => "None",
+                        "fileUrl" => "",
+                    );
+                    array_push($allFiles, $output);
+                }
+            }
+
+            return view('user.documents', ["headerTitle" => "My Documents", "allFiles" => $allFiles]);
     }
 
     public function leases(Request $request){

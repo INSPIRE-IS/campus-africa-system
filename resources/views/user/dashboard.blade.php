@@ -10,7 +10,20 @@
                 <div class="cardBody">
                     <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
                     <h2 class="cardHeaderText">{{$booking->roomType}}</h2>
-                    <h4 class="cardSubHeaderGrey">@if($booking->floor !== null) {{$booking->floor}} Floor @endif @if($booking->unit !== null) , Unit {{$booking->unit}} @endif</h4>
+                    <h4 class="cardSubHeaderGrey">
+                      @if($booking->floor !== null) 
+                        {{$booking->floor}} Floor 
+                      @endif 
+                      
+                      @if($booking->unit !== null) 
+                        , Unit {{$booking->unit}}
+                      @endif
+
+                      @if($booking->bed_code !== null) 
+                        , Bed Code: {{$booking->bed_code}}
+                      @endif
+                      
+                      </h4>
 
                     <br/><br/><br/>
                     <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>
@@ -140,7 +153,7 @@
 
             @foreach ($allFiles as $file)
 
-                @if($file->fileId == 'proof_of_payment' || $file->fileId == 'moveIn' || $file->fileId == 'copyID' )
+                @if($file->fileId !== 'bankStatement' && $file->fileId !== 'studentCard' && $file->fileId !== 'proofRegistration' && $file->fileId !== 'bursaryApproval')
 
                 <div class="appAwait" id="idCopySection">
                         <h3 class="uploadName">
@@ -159,6 +172,8 @@
                             BOOKING FEE PROOF OF PAYMENT
                           @elseif($file->fileId == 'moveIn')
                             LEASE
+                          @else
+                            <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file->fileId))); ?>
                           @endif
                             
 
