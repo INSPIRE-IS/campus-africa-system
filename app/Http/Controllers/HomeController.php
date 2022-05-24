@@ -88,6 +88,9 @@ class HomeController extends Controller
                         array_push($all, $search->fileId);
                     }
                 }
+
+                $appHeader = 0;
+                $bookHeader = 0;
     
                 foreach($all as $file){
                     $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
@@ -107,11 +110,39 @@ class HomeController extends Controller
                         );
                         array_push($allFiles, $output);
                     }
+
+                    if($file == 'bankStatement' || $file == 'studentCard' || $file == 'proofRegistration' || $file == 'bursaryApproval'){
+                        if($output->status == "Uploaded"){
+                            if($appHeader < 1){
+                                $appHeader = 1;
+                            }
+                        }
+
+                        if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                            if($appHeader < 2){
+                                $appHeader = 2;
+                            }
+                        }
+                    }
+
+                    if($file !== 'bankStatement' && $file !== 'studentCard' && $file !== 'proofRegistration' && $file !== 'bursaryApproval'){
+                        if($output->status == "Uploaded"){
+                            if($bookHeader < 1){
+                                $bookHeader = 1;
+                            }
+                        }
+
+                        if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                            if($bookHeader < 2){
+                                $bookHeader = 2;
+                            }
+                        }
+                    }
                 }
     
                 $booking = Booking::where('userId', Auth::user()->id)->first();
 
-                return view('user.dashboard', ["headerTitle" => "Your Dashboard", "booking" => $booking, "allFiles" => $allFiles]);
+                return view('user.dashboard', ["headerTitle" => "Your Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader]);
     
             }
 

@@ -30,10 +30,16 @@
     <div class="onlineTabs">
     <div class="onlineTabs">
         <div class="tab complete">1: Applicant Details</div>
-        <div class="tab complete">2: Sponsor/Burser Information</div>
-        <div class="tab complete">3: Next of Kin</div>
-        <div class="tab active">4: Upload Documents</div>
-        <div class="tab">5: Pay Booking Fee</div>
+        @if(Auth::user()->studentType !== "NSFAS") 
+            <div class="tab complete">2: @if(Auth::user()->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
+            <div class="tab complete">3: Next of Kin</div>
+            <div class="tab active">4: Upload Documents</div>
+            <div class="tab">5: Pay Booking Fee</div>
+        @else
+            <div class="tab complete">2: Next of Kin</div>
+            <div class="tab active">3: Upload Documents</div>
+            <div class="tab">4: Pay Booking Fee</div>
+        @endif
     </div>
     </div>
     

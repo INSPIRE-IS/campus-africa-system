@@ -55,10 +55,16 @@
     <div class="onlineTabs">
     <div class="onlineTabs">
         <div class="tab complete">1: Applicant Details</div>
-        <div class="tab complete">2: Burser Information</div>
-        <div class="tab complete">3: Next of Kin</div>
-        <div class="tab complete">4: Upload Documents</div>
-        <div class="tab active">5: Pay Booking Fee</div>
+        @if(Auth::user()->studentType !== "NSFAS") 
+            <div class="tab complete">2: @if(Auth::user()->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
+            <div class="tab complete">3: Next of Kin</div>
+            <div class="tab complete">4: Upload Documents</div>
+            <div class="tab active">5: Pay Booking Fee</div>
+        @else
+            <div class="tab complete">2: Next of Kin</div>
+            <div class="tab complete">3: Upload Documents</div>
+            <div class="tab active">4: Pay Booking Fee</div>
+        @endif
     </div>
     </div>
     
@@ -108,12 +114,13 @@
 
             <div class="form-field">
                 <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
-                <select name="paymentType" >
+                <select name="paymentType" id="paymentType">
                     <option value="Credit card">Credit card</option>
+                    <option value="EFT">EFT</option>
                 </select>
             </div>
 
-            <div class="form-field">
+            <div class="form-field" id="cCard">
                 <label>Cardholder Name* <small id="cardholderName_error" class="hidden" style="color:red;">This is a required field</small></label>
                 <input type="text" id="cardholderName" class="required">
 
@@ -125,6 +132,19 @@
 
                 <label>CVV* <small id="cvv_error" class="hidden" style="color:red;">This is a required field</small></label>
                 <input type="text" id="cvv" style="width:50%" class="required">
+            </div>
+
+            <div class="form-field hidden" id="eftCard">
+                <p>Bank details here<br/>
+                    Bank details here<br/>
+                    Bank details here<br/>
+                    Bank details here<br/>
+                    Bank details here<br/>
+                </p>
+                <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
+                <input type="file" id="proof_of_payment" hidden/>
+                <br/><br/>
+                <a href="/complete/online-application"><button type="button" id="homeStep" class="previousStepBtn hidden"> Back to home page</button></a>
             </div>
 
             <div class="form-field">
@@ -147,24 +167,28 @@
 
         </div>
 
-        <div class="paymentTwo <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo 'hidden';} ?>" style="margin-top:100px;">
+        <!-- <div class="paymentTwo" style="margin-top:100px;">
             <h1 class="header">Payment Submitted!</h1>
             <br/>
             <p class="cardSubHeaderGrey">Thank you for your payment. In order to speed up the process, please upload a proof of payment document below or via your online profile as soon as possible. Your room will only be reserved for 24 hours without payment.</p>
             <br/><br/>
 
-            <label for="proof_of_payment" class="PaymentLabel <?php if($proofPayment && $proofPayment->status == "Uploaded"){echo 'greenPayment';}?>"> <?php if($proofPayment && $proofPayment->status != "Uploaded"){echo 'UPLOAD PROOF OF PAYMENT';}else{echo 'UPLOADED';}?></label>
+            <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
             <input type="file" id="proof_of_payment" hidden/>
 
             <br/><br/><br/>
-            <a href="/complete/online-application"><button type="button" id="homeStep" class="previousStepBtn <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo 'hidden';}?>"> Back to home page</button></a>
+            <a href="/complete/online-application"><button type="button" id="homeStep" class="previousStepBtn"> Back to home page</button></a>
             <br/><br/>
             <button type="button" id="previousStep" class="previousStepBtn"> Back to previous step</button>
             <div class="footerClearfix"></div>
-        </div>
+        </div> -->
 
 
+        <a href="/complete/online-application">
         <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">PAY R '.number_format($booking->room_rate,2,"."," ").' BOOKING FEE</button>';} ?>
+        </a>
+
+        
         
 
     </form>
@@ -179,6 +203,26 @@
 @endif
 
 <script>
+
+    $("#paymentType").on('change', function(){
+        if($("#paymentType").val() == "EFT"){
+            $("#cCard").addClass('hidden');
+            $("#eftCard").removeClass('hidden')
+            $("#cardholderName").removeClass('required')
+            $("#cardNumber").removeClass('required')
+            $("#expDate").removeClass('required')
+            $("#cvv").removeClass('required')
+            $("#submitFormPay").addClass('hidden')
+        }else{
+            $("#cCard").removeClass('hidden');
+            $("#eftCard").addClass('hidden')
+            $("#cardholderName").addClass('required')
+            $("#cardNumber").addClass('required')
+            $("#expDate").addClass('required')
+            $("#cvv").addClass('required')
+            $("#submitFormPay").removeClass('hidden')
+        }
+    })
 
     $.ajaxSetup({
         headers: {
@@ -201,78 +245,78 @@
 
     });
 
-    $("#submitFormPay").on('click', function(){
+    // $("#submitFormPay").on('click', function(){
         
-        $('.hidden .fieldError').removeClass('fieldError').val('');
+    //     $('.hidden .fieldError').removeClass('fieldError').val('');
 
-        var req = 1;
+    //     var req = 1;
 
-        if($("#cardholderName").val() === "" || $("#cardholderName").val() === null){
-            $("#cardholderName_error").removeClass('hidden')
-            $("#cardholderName").addClass('fieldError')
-            req = 0;
-        }
+    //     if($("#cardholderName").val() === "" || $("#cardholderName").val() === null){
+    //         $("#cardholderName_error").removeClass('hidden')
+    //         $("#cardholderName").addClass('fieldError')
+    //         req = 0;
+    //     }
 
-        if($("#cardNumber").val() === "" || $("#cardNumber").val() === null){
-            $("#cardNumber_error").removeClass('hidden')
-            $("#cardNumber").addClass('fieldError')
-            req = 0;
-        }
+    //     if($("#cardNumber").val() === "" || $("#cardNumber").val() === null){
+    //         $("#cardNumber_error").removeClass('hidden')
+    //         $("#cardNumber").addClass('fieldError')
+    //         req = 0;
+    //     }
 
-        if($("#expDate").val() === "" || $("#expDate").val() === null){
-            $("#expDate_error").removeClass('hidden')
-            $("#expDate").addClass('fieldError')
-            req = 0;
-        }
+    //     if($("#expDate").val() === "" || $("#expDate").val() === null){
+    //         $("#expDate_error").removeClass('hidden')
+    //         $("#expDate").addClass('fieldError')
+    //         req = 0;
+    //     }
 
-        if($("#cvv").val() === "" || $("#cvv").val() === null){
-            $("#cvv_error").removeClass('hidden')
-            $("#cvv").addClass('fieldError')
-            req = 0;
-        }
+    //     if($("#cvv").val() === "" || $("#cvv").val() === null){
+    //         $("#cvv_error").removeClass('hidden')
+    //         $("#cvv").addClass('fieldError')
+    //         req = 0;
+    //     }
 
-        if($("#cardholderName").val() === "" || $("#cardNumber").hasClass('fieldError') === true || $("#expDate").hasClass('fieldError') === true || $("#cvv").hasClass('fieldError') === true){
-            req = 0;
-        }
+    //     if($("#cardholderName").val() === "" || $("#cardNumber").hasClass('fieldError') === true || $("#expDate").hasClass('fieldError') === true || $("#cvv").hasClass('fieldError') === true){
+    //         req = 0;
+    //     }
 
-        if($("#cardholderName").hasClass('fieldError') === true || $("#cardNumber").hasClass('fieldError') === true || $("#expDate").hasClass('fieldError') === true || $("#cvv").hasClass('fieldError') === true){
-            req = 0;
-        }
-
-
-        if(req == 0){
-            Swal.fire(
-                'Blank Fields',
-                'Please fill in all Required Fields!',
-                'error'
-            )
-
-        }else{
+    //     if($("#cardholderName").hasClass('fieldError') === true || $("#cardNumber").hasClass('fieldError') === true || $("#expDate").hasClass('fieldError') === true || $("#cvv").hasClass('fieldError') === true){
+    //         req = 0;
+    //     }
 
 
-            $("#submitFormPay").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    //     if(req == 0){
+    //         Swal.fire(
+    //             'Blank Fields',
+    //             'Please fill in all Required Fields!',
+    //             'error'
+    //         )
 
-            $(".paymentSection").addClass('hidden')
-            $("#submitFormPay").addClass('hidden')
-            $(".paymentTwo").removeClass('hidden')
+    //     }else{
 
-            // $.ajax({
-            //     type: "post",
-            //     url: "/",
-            //     data: {
-            //         cardholderName: $("#cardholderName").val(), 
-            //         cardNumber: $("#cardNumber").val(), 
-            //         expDate: $("#expDate").val(), 
-            //         cvv: $("#cvv").val(),  
-            //     },
-            //     success: function (data) {
-            //         window.location.replace(data)                            
-            //     },
-            // });
+
+    //         $("#submitFormPay").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+    //         $(".paymentSection").addClass('hidden')
+    //         $("#submitFormPay").addClass('hidden')
+    //         $(".paymentTwo").removeClass('hidden')
+
+    //         // $.ajax({
+    //         //     type: "post",
+    //         //     url: "/",
+    //         //     data: {
+    //         //         cardholderName: $("#cardholderName").val(), 
+    //         //         cardNumber: $("#cardNumber").val(), 
+    //         //         expDate: $("#expDate").val(), 
+    //         //         cvv: $("#cvv").val(),  
+    //         //     },
+    //         //     success: function (data) {
+    //         //         window.location.replace(data)                            
+    //         //     },
+    //         // });
             
-        }
+    //     }
 
-    });
+    // });
 
 
     $("#proof_of_payment").on('change', function(){

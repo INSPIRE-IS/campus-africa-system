@@ -36,10 +36,10 @@
 
         <div class="whiteYellowCard smallerCard"> 
             
-            <h2 class="cardHeader redCardHeader">Application
-                <div class="small"><span class="text">Awaiting Documents </span>
+            <h2 class="cardHeader  <?php if($appHeader == 0){ echo 'greenCardHeader';}elseif($appHeader == 1){ echo 'yellowCardHeader';}else{ echo 'redCardHeader';}?>">Application
+                <div class="small"><span class="text"><?php if($appHeader == 0){ echo 'Confirmed';}elseif($appHeader == 1){ echo 'Pending Approval';}else{ echo 'Awaiting Documents';}?> </span>
                     <div class="circle">
-                        <i class="fas fa-file-alt"></i>
+                    <?php if($appHeader == 0){ echo '<i class="fas fa-check"></i>';}else{ echo '<i class="fas fa-file-alt"></i>';}?>
                     </div>
                 </div>
             </h2>
@@ -141,10 +141,10 @@
         </div>
         <div class="whiteYellowCard smallerCard">
             
-            <h2 class="cardHeader greenCardHeader">Booking
-                <div class="small"><span class="text">Confirmed </span>
+            <h2 class="cardHeader <?php if($bookHeader == 0){ echo 'greenCardHeader';}elseif($bookHeader == 1){ echo 'yellowCardHeader';}else{ echo 'redCardHeader';}?>">Booking
+                <div class="small"><span class="text"><?php if($bookHeader == 0){ echo 'Confirmed';}elseif($bookHeader == 1){ echo 'Pending Approval';}else{ echo 'Awaiting Documents';}?> </span>
                     <div class="circle">
-                        <i class="fas fa-check"></i>
+                    <?php if($bookHeader == 0){ echo '<i class="fas fa-check"></i>';}else{ echo '<i class="fas fa-file-alt"></i>';}?>
                     </div>
                 </div>
             </h2>

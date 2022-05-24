@@ -913,6 +913,11 @@ body {
   background-color: #e74f26 !important;
   background-image: none;
 }
+.whiteYellowCard .yellowCardHeader{
+  color: #fff;
+  background-color: #eece5b !important;
+  background-image: none;
+}
 .whiteYellowCard .greenCardHeader {
   color: #fff;
   background-color: #50b63a !important;
@@ -1903,6 +1908,14 @@ input:read-only {
 @media only screen and (max-width: 850px) {
   #fullNavbar {
     height: 120px !important;
+  }
+
+  .onlineTabs .tab{
+      display:none
+  }
+
+  .onlineTabs .active{
+    display:block
   }
 
   .loginHeader .booking {
