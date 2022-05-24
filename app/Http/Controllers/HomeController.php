@@ -2889,14 +2889,14 @@ class HomeController extends Controller
 
             $allowed = [];
             $allProp = Residence::get();
-            $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+            // $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
             foreach($allProp as $prop){
-                foreach($permissionProp as $permission){
-                    if($permission->property == $prop->id){
+                // foreach($permissionProp as $permission){
+                    // if($permission->property == $prop->id){
                         array_push($allowed, $prop);
-                    }
-                }
+                    // }
+                // }
             }
 
             return view('admin.manage_properties', ["headerTitle" => "Manage Properties", "title" => "Manage Properties", "this_year" => $this_year, "propertyList" => $allowed]);
@@ -5340,14 +5340,14 @@ class HomeController extends Controller
         $allowed = [];
 
         $allProp = Residence::get();
-        $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+        // $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
-            foreach($permissionProp as $permission){
-                if($permission->property == $prop->id){
+            // foreach($permissionProp as $permission){
+                // if($permission->property == $prop->id){
                     array_push($allowed, $prop);
-                }
-            }
+                // }
+            // }
         }
 
         //Auth Location Checks
