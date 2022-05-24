@@ -3308,7 +3308,9 @@ class HomeController extends Controller
                 $propertyData = Residence::where('id', $residenceId)->first();
             }
 
-            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData]);
+            $allProperties = Residence::get();
+
+            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData, "allProperties" => $allProperties]);
         }else{
             return "404 Error";
         }

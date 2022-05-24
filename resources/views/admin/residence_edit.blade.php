@@ -36,7 +36,7 @@
 
         <div class="form-field">
             <label>Building Prefix <span id="building_prefix_error" class="hidden" style="color:red"><small>Building Prefix already in use</small></span></label>
-            <input type="text" name="building_prefix" id="building_prefix" value="<?php if(!empty($propertyData)){echo $propertyData->building_prefix;}?>" onKeyUp="updatePrefix()">
+            <input type="text" name="building_prefix" id="building_prefix" value="<?php if(!empty($propertyData)){echo $propertyData->building_prefix;}?>" onKeyUp="updatePrefix()" maxLength="2">
         </div>
 
 
@@ -62,7 +62,7 @@
 
 <script>
 
-    function updatePrefix(){)
+    function updatePrefix(){
         $.ajax({
             type: "post",
             url: "/check-building-prefix",
