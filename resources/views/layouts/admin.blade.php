@@ -197,6 +197,7 @@
 
                         success: function (data) {
                             // window.location.reload();
+                            checkUserStatus();
                             $.ajax({
                                 type: "post",
                                 url: "/createLease/{{$user[0]['userInfo']['id']}}",

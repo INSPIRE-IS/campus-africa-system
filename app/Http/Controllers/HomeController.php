@@ -1015,6 +1015,10 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
             "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 : 1,
+            "role_non_funding" => $request->role_non_funding,
+            "role_funding" => $request->role_funding,
+            "role_app_lease" => $request->role_app_lease,
+            "template" => $request->template,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -1579,7 +1583,11 @@ class HomeController extends Controller
             "user_role_name" => $request->user_role_name,
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
-            "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 : 1,
+            "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 :1,
+            "role_non_funding" => $request->role_non_funding,
+            "role_funding" => $request->role_funding,
+            "role_app_lease" => $request->role_app_lease,
+            "template" => $request->template,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -1734,8 +1742,8 @@ class HomeController extends Controller
             
         }
 
-        if($request->show_cancelled && $request->show_cancelled == 'true'){
-            $cancelled = 'u.rob_60_cancelled = "1"';
+        if($request->show_cancelled !== 'true'){
+            $cancelled = 'u.rob_60_cancelled = "0"';
             array_push($search_value, $cancelled);
         }
 
