@@ -30,6 +30,7 @@ class Booking extends Model
         'waive_reason',
         'lease_unique',
         'year',
+        'booking_code',
     ];
 
     public function users(){

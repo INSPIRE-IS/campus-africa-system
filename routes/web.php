@@ -95,6 +95,7 @@ Route::get('/admin-updates/landing', [LookupsController::class, 'admin_updates_l
 Route::get('/admin-updates/fix-data', [LookupsController::class, 'admin_updates_fix_data']);
 Route::get('/admin-updates/update-properties', [LookupsController::class, 'admin_updates_update_properties']);
 Route::get('/admin-updates/update-property-id', [LookupsController::class, 'admin_updates_update_property_id']);
+Route::get('/admin-updates/update-booking-code', [LookupsController::class, 'admin_updates_update_booking_code']);
 
 
 

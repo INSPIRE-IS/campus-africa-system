@@ -1341,6 +1341,8 @@ class HomeController extends Controller
 
         $lookup = Lookups::where('group_id', '7')->first();
 
+        $oldPropReq = $request->property;
+
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
@@ -1439,6 +1441,16 @@ class HomeController extends Controller
         $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
 
         $booking = Booking::create($booking_data);
+
+        $bookingYear = substr($request->year, -2);
+        $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
+        $id_booking = $booking->id;
+        $placeholder = "";
+        for($i = 0; $i < 5 - strlen($id_booking); $i++){
+            $placeholder .= "0";
+        }
+        $bookingID = $placeholder.$id_booking;
+        Booking::where('id', $booking->id)->update(['booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
 
         //Link booking to User
         User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
@@ -2507,8 +2519,19 @@ class HomeController extends Controller
                     ]);
                 }
             }
+
+            $bookingYear = substr($oldData->year, -2);
+            $bookingPrefix = Residence::where('id', $property)->pluck('building_prefix')->first();
+            $id_booking = $booking->id;
+            $placeholder = "";
+
+            for($i = 0; $i < 5 - strlen($id_booking); $i++){
+                $placeholder .= "0";
+            }
+
+            $bookingID = $placeholder.$id_booking;
     
-            Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew]);
+            Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
 
             //Update the User robot
             User::where('id', $bookingId)->update(['rob_40_bed' => 0]);
@@ -2562,8 +2585,19 @@ class HomeController extends Controller
                     ]);
                 }
             }
+
+            $bookingYear = substr($oldData->year, -2);
+            $bookingPrefix = Residence::where('id', $property)->pluck('building_prefix')->first();
+            $id_booking = $oldData->id;
+            $placeholder = "";
+
+            for($i = 0; $i < 5 - strlen($id_booking); $i++){
+                $placeholder .= "0";
+            }
+
+            $bookingID = $placeholder.$id_booking;
     
-            Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id]);
+            Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
 
             //Update the User robot
             User::where('id', $bookingId)->update(['rob_40_bed' => 2]);

@@ -309,7 +309,7 @@ jQuery(document).ready(function ($) {
 
                     var trDOM = datatable.row
                         .add([
-                            "#" + arrayItem["bookingRef"],
+                            "#" + arrayItem["booking_code"],
                             '<span class="bold">' +
                                 arrayItem["userFirstName"] +
                                 " " +

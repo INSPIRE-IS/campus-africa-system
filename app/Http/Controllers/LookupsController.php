@@ -402,4 +402,34 @@ class LookupsController extends Controller {
         }
 
     }
+
+    public function admin_updates_update_booking_code(Request $request){
+        
+        $allBookings = Booking::get();
+        $residence = Residence::get();
+
+        foreach($allBookings as $booking){
+            
+            $bookingYear = substr($booking->year, -2);
+            $bookingPrefix = "";
+
+            foreach($residence as $res){
+                if($res->id == $booking->property){
+                    $bookingPrefix = $res->building_prefix;
+                }
+            }
+
+            $id_booking = $booking->id;
+            $placeholder = "";
+
+            for($i = 0; $i < 5 - strlen($id_booking); $i++){
+                $placeholder .= "0";
+            }
+
+            $bookingID = $placeholder.$id_booking;
+
+            Booking::where('id', $booking->id)->update(['booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
+
+        }
+    }
 }
