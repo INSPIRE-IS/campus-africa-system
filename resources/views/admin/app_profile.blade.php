@@ -4,7 +4,7 @@
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="greyAppSection">
+<div class="greyAppSection  @if($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
     <div class="container">
         <div class="col-3" id="col1">
         <div class="flex">
@@ -86,8 +86,10 @@
                 </p>
 
                 <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
-                    {{$user[0]['userInfo']['userEmail']}}<br/>
-                    {{$user[0]['userInfo']['userCell']}}<br/>
+                    <p class="InfoList">
+                        {{$user[0]['userInfo']['userEmail']}}<br/>
+                        {{$user[0]['userInfo']['userCell']}}<br/>
+                    </p>
 
                     <div class="app_details_btn"></div>
                     
@@ -534,7 +536,7 @@
 
 <div id="myModalEditLease" class="modal">
 
-    <div class="modal-content " style="height: 304px;">
+    <div class="modal-content " id="leaseEditModal" style="height: 304px;">
         <span class="closeLease" style="float:right; font-size:25px; cursor:pointer">&times;</span>
         <div class="form-card">
             <h2>Change this Lease</h2>
@@ -693,7 +695,7 @@
                 }else{
 
                     Object.keys(data).forEach( function(key) {
-                        $(".comments_block").append('<div class="infoBlock"><div class="responsible" style="width:100%">'+(data[key].created_at).slice(8, 10)+'/'+(data[key].created_at).slice(5, 7)+'/'+(data[key].created_at).slice(0, 4)+' '+(data[key].created_at).slice(11, 16)+' | '+data[key].users.email+' | '+data[key].users.user_role_name+'</p></div><div class="information"><p>'+data[key].comment+'</p></div></div>')
+                        $(".comments_block").append('<div class="infoBlock"><div class="responsible" style="width:100%">'+(data[key].created_at).slice(8, 10)+'/'+(data[key].created_at).slice(5, 7)+'/'+(data[key].created_at).slice(0, 4)+' '+(data[key].created_at).slice(11, 16)+' | <span class="commentMail">'+data[key].users.email+'</span> <span class="commentName"> | '+data[key].users.user_role_name+'</span></p></div><div class="information"><p>'+data[key].comment+'</p></div></div>')
                     });
                 }
 

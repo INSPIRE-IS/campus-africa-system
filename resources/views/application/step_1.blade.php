@@ -102,11 +102,11 @@
 
         <div class="form-field-big">
             <label>Physical Address * <span id="userAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="width:98% !important" class="required">
+            <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="@if (!$agent->isMobile()) width:98% !important @endif" class="required">
         </div>
         <div class="form-field-big" style="height:77px !important">
         <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="Suburb" name="userAddress2" id="userAddress2" style="width:98% !important" class="required">
+            <input type="text" placeholder="Suburb" name="userAddress2" id="userAddress2" style="@if (!$agent->isMobile()) width:98% !important @endif" class="required">
         </div>
         <div class="form-field" style="margin-top:-15px; height:60px !important">
         <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
@@ -282,7 +282,6 @@
 <div class="footerClearfix"></div>
 
 @if ($agent->isMobile())
-    <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>
 @endif

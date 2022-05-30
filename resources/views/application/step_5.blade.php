@@ -27,16 +27,16 @@
             <br/>
             <div style="display:flex;">
 
-                <img src="/images/rooms/bed_1.png"/> 
+                <img src="/images/rooms/bed_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
                 <p style="color:#fff; padding: 17px 10px 0px 10px;"><strong>01</strong></p>
 
-                <img src="/images/rooms/bath_1.png"/> 
+                <img src="/images/rooms/bath_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
                 <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
 
-                <img src="/images/rooms/food_1.png"/> 
+                <img src="/images/rooms/food_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
                 <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
 
-                <img src="/images/rooms/chair_1.png"/> 
+                <img src="/images/rooms/chair_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
                 <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
 
             </div>

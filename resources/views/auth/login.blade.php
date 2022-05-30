@@ -25,7 +25,7 @@
             </p>
         </div>
 
-        <div class="cards">
+        <div class="cards " id="logincards">
             <div class="whiteCard mainBlock loginBlock">
                 <h2 class="cardHeader">Apply</h2>
                 <h4 class="cardSubHeader">Are you new?</h4>

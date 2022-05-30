@@ -1926,8 +1926,16 @@ input:read-only {
     width:110% !important;
 }
 
-  .footer{
+  /* .footer{
     margin-top:750px;
+  } */
+
+  #logincards{
+    height:1000px;
+  }
+
+  .redBannerNotice{
+    margin-left:5px !important
   }
 
   .onlineTabs .active{
@@ -1952,12 +1960,83 @@ input:read-only {
     }
 
     .greyAppSection{
-      height:500px;
+      height:500px !important;
+    }
+
+    .commentMail::before, .commentName::before{
+      content: "\a";
+      white-space: pre;
+    }
+
+    .cards .customWhiteCard .commentItemList{
+      margin-left:-25px !important;
+      width:135% !important;
+    }
+
+    .cards #documentsCard{
+      margin-top:975px !important
+    }
+
+    #userAddress1, #userAddress2{
+      width:95% !important
+    }
+    .form-card .form-field{
+      width:100% !important;
+    }
+
+    .panes{
+      display: block !important;
+    }
+
+    .left_pane{
+      width:100% !important;
+    }
+
+    #editModalHeight{
+      height:615px !important;
+    }
+    #leaseEditModal{
+      height:485px !important;
+    }
+    .edit_info_inline .form-field span{
+      width:50% !important;
+  }
+
+    #documentsSectionDisplay{
+      margin-top:85px !important;
+    }
+
+    .cards .customWhiteCard .section .banner{
+      margin-left:60px;
+      margin-top:-31px !important;
+    }
+
+    .greyAppCash{
+      height:755px !important
+    }
+
+    #downloadAllDocs, #waiveThisBookingFee, #addOtherDocument{
+      width:100%;
+      margin-top:5px !important;
+    }
+
+    #addOtherDocument{
+      margin-bottom:30px !important;
     }
 
     .cards .customWhiteCard .InfoList{
       font-size:16px;
       line-height:19px;
+    }
+    .cards .customWhiteCard .appHeader{
+      font-size:24px;
+    }
+    #applicationCard, #actionListCard{
+      margin-left:0px
+    }
+    .cards .customWhiteCard .infoBlock .responsible .admin, .cards .customWhiteCard .infoBlock .responsible .applicant{
+      margin-top:0px !important;
+      width:100%;
     }
 
     .greyAppSection .container{
@@ -2011,9 +2090,9 @@ input:read-only {
     height: 310px;
   }
 
-  #documentsCard {
+  /* #documentsCard {
     margin-top: 1211px !important;
-  }
+  } */
 
   .redBannerNotice {
     height: 300px;
@@ -2026,8 +2105,9 @@ input:read-only {
   }
 
   #infoAppOnline{
-    line-height:30px;
-}
+    line-height:22px;
+    font-size:20px;
+  }
 
 .paymentSection{
   margin-top:376px !important;
@@ -2035,8 +2115,16 @@ input:read-only {
 }
 
 .cards .halfCard, .cards .redBottom{
-  width:125% !important;
+  width:100% !important;
   margin-top:0px !important
+}
+
+.cards .redBottom{
+  margin-top:-50px !important;
+}
+
+.cards .whiteCard .cardSubHeaderGrey{
+  font-size:19px;
 }
 #seconCards{
   margin-top:300px;
@@ -2046,8 +2134,14 @@ input:read-only {
   width:200px !important;
 }
 
-  .whiteYellowCard .uploadSection #bookingFeeUploadTab{
+  .whiteYellowCard .uploadSection #bookingFeeUploadTab, .whiteYellowCard .uploadSection .uploadName{
     font-size:12px !important;
+    line-height:14px !important;
+  }
+
+  .ImgGradient{
+    width:100%;
+    height:580px;
   }
 
   .redBannerNotice{
@@ -2055,9 +2149,6 @@ input:read-only {
     height:412px !important;
   }
 
-  .whiteYellowCard .uploadSection #bookingFeeUploadTab{
-    line-height:16px !important;
-  }
 
   .footer .footerBanner {
     height: 532px;
@@ -2331,7 +2422,7 @@ input:read-only {
   }
 
   .form-card .form-field {
-    width: 90% !important;
+    width: 100% !important;
   }
 
   .loginHeader .booking {
