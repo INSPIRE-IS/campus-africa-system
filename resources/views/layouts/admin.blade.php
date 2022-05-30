@@ -94,15 +94,17 @@
             <div class="loginHeader">
                 @if (isset($appProfile) && $appProfile === "true")
                     <h1 class="bookingSub">
-                        Application Profile 
+                        Application 
+                        @if(isset($booking))
+                            <strong>#{{$booking->booking_code}}</strong>
+                        @endif
+
                         <span class="appStatusText"></span>
                     </h1>
                 @endif
                 <h1 class="booking_app">{{$headerTitle}}</h1>
 
-                @if(isset($booking))
-                    <h1 class="booking_app">#{{$booking->booking_code}}</h1>
-                @endif
+                
 
                 <div class="buttonSidePanel" style="margin-top:-50px;">
                     @if (isset($appProfile) && $appProfile === "true")
