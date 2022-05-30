@@ -2148,6 +2148,19 @@ input:read-only {
         flex-direction: column;
       }
 
+      .greyAppSection{
+        height:500px;
+      }
+
+      .cards .customWhiteCard .InfoList{
+        font-size:16px;
+        line-height:19px;
+      }
+
+      .greyAppSection .container{
+        flex-direction: column;
+      }
+
       .onlineTabs{
           display:block !important;
       }

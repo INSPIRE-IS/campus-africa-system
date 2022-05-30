@@ -1951,6 +1951,19 @@ input:read-only {
       height:500px;
     }
 
+    .greyAppSection{
+      height:500px;
+    }
+
+    .cards .customWhiteCard .InfoList{
+      font-size:16px;
+      line-height:19px;
+    }
+
+    .greyAppSection .container{
+      flex-direction: column;
+    }
+
     .flex{
       flex-direction: column;
   }
