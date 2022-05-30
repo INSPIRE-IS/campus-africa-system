@@ -1559,6 +1559,8 @@ class HomeController extends Controller
             $regen = "1";
         }
 
+        //
+
         $newUser = User::create([
             "name" => $request->firstName,
             "userFirstName" => $request->firstName,
