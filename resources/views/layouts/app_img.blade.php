@@ -41,7 +41,7 @@
     </div>
     <footer class="footer">
         <div class="footerBanner">
-            <div class="container flex flexFooter">
+            <div class="container flex">
                 <div class="col-3">
                     <h2 class="footerHeader">
                         Campus Africa

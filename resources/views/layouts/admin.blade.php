@@ -133,7 +133,7 @@
                     </p>
                 </div>
     
-                <div class="col-3" style="padding-left:6%; width:19%; float:left">
+                <div class="col-3" style="padding-left:6%; width:19%;">
                     <p class="linkHeader">Home</p>
                     <p class="link"><a href="https://campusafrica.whitehart.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
                     <!-- Campus Africa Life<br/> -->
@@ -352,6 +352,19 @@
         }        
     </script>
     @endif
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+                document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+            } else {
+                x.className = "topnav";
+                document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+            }
+        }        
+    </script>
 
     @if (App::environment('development'))
         <script>

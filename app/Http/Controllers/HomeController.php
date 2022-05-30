@@ -23,6 +23,7 @@ use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
 use Session;
 use App\Models\UserResetToken;
+use Jenssegers\Agent\Agent;
 
 class HomeController extends Controller
 {
@@ -392,7 +393,8 @@ class HomeController extends Controller
     public function applications(Request $request){
         
         if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3" ) {
-            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications"]);
+            $agent = new Agent();
+            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "agent" => $agent]);
         }
     }
 
