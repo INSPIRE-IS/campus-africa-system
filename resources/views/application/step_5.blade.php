@@ -28,23 +28,34 @@
             <div style="display:flex;">
 
                 <img src="/images/rooms/bed_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
-                <p style="color:#fff; padding: 17px 10px 0px 10px;"><strong>01</strong></p>
+                <p style="color:#fff; padding: 17px 10px 0px 10px;"><strong>0{{$beds}}</strong></p>
 
-                <img src="/images/rooms/bath_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
-                <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
+                @if($bath == 'true')
+                    <img src="/images/rooms/bath_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
+                @endif
 
-                <img src="/images/rooms/food_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
-                <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
+                @if($kitchen == 'true')
+                    <img src="/images/rooms/food_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
+                @endif
 
-                <img src="/images/rooms/chair_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
-                <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
+                @if($chair == 'true')
+                    <img src="/images/rooms/chair_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
+                @endif
+
+                @if($wifi == 'true')
+                    <img src="/images/rooms/wifi_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
+                @endif
 
             </div>
             @if(!$agent->isMobile())
                 <br/><br/>
             @endif
             <h1 style="color:#9799AB; font-weight:400;">PRICED FROM</h1>
-            <h1 class="booking" style="color:#fff;">R 3500 <small>pm</small></h1>
+            <h1 class="booking" style="color:#fff;">R {{$priced_from}} <small>pm</small></h1>
             <h1 id="infoAppOnline" style="color:#fff; font-weight:400;">Please note you have 7 days for the deposit to be paid,<br/> otherwise your room reservation will be forfeited.  </h1>
         </div>
     
@@ -77,7 +88,7 @@
                     <!-- <button type="button" class="editButton" onClick="PrevStep('back2')">EDIT</button> -->
                 </div>
             
-                <p class="cardList">
+                <p class="cardList" id="personalCardItems">
                     <span id="dispFirstName">{{$user->userFirstName}}</span> <span id="dispLastName">{{$user->userLastName}}</span><br/>
                     <span id="dispDob">{{$user->userDob}}</span><br/>
                     <span id="dispCell">{{$user->userCell}}</span><br/>

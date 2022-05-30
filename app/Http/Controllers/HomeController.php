@@ -1388,7 +1388,6 @@ class HomeController extends Controller
             }
 
             $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
-            // dd($jsonDataRooms);
 
             $roomType = "";
             $roomName = "";

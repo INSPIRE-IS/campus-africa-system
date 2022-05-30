@@ -2113,7 +2113,10 @@ input:read-only {
   margin-top:376px !important;
   width:100% !important;
 }
-
+ #personalCardItems{
+   font-size:16px !important;
+   line-height:20px !important;
+ }
 .cards .halfCard, .cards .redBottom{
   width:100% !important;
   margin-top:0px !important
