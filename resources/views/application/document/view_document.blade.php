@@ -145,6 +145,7 @@
                     <br /><span style='font-weight:bold'>Name:</span> {{$user->userFirstName}} {{$user->userLastname}}
                     <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
                     <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}}
+                    <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
                 @endif
 
                 @if($file->fileId == "copyID")

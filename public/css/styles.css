@@ -1887,6 +1887,12 @@ input:read-only {
     height: 120px !important;
   }
 
+  .flexMobile{
+    display:block;
+}
+.footerRights{
+  margin-top:450px !important;
+}
   #documents_table .await {
     padding: 5px;
   }

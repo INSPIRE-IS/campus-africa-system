@@ -100,6 +100,10 @@
                 @endif
                 <h1 class="booking_app">{{$headerTitle}}</h1>
 
+                @if(isset($booking))
+                    <h1 class="booking_app">#{{$booking->booking_code}}</h1>
+                @endif
+
                 <div class="buttonSidePanel" style="margin-top:-50px;">
                     @if (isset($appProfile) && $appProfile === "true")
                     <div class="appSection"></div>
