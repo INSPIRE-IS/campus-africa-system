@@ -1015,9 +1015,9 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
             "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 : 1,
-            "role_non_funding" => $request->role_non_funding,
-            "role_funding" => $request->role_funding,
-            "role_app_lease" => $request->role_app_lease,
+            "role_non_funding" => $request->role_non_funding !== '1' ? 0 : 1,
+            "role_funding" => $request->role_funding !== '1' ? 0 : 1,
+            "role_app_lease" => $request->role_app_lease !== '1' ? 0 : 1,
             "template" => $request->template,
         ]);
 
@@ -1596,9 +1596,9 @@ class HomeController extends Controller
             "role_cancel_lease" => $request->role_cancel_lease,
             "role_lease_regen" => $regen,
             "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 :1,
-            "role_non_funding" => $request->role_non_funding,
-            "role_funding" => $request->role_funding,
-            "role_app_lease" => $request->role_app_lease,
+            "role_non_funding" => $request->role_non_funding !== '1' ? 0 : 1,
+            "role_funding" => $request->role_funding !== '1' ? 0 : 1,
+            "role_app_lease" => $request->role_app_lease !== '1' ? 0 : 1,
             "template" => $request->template,
         ]);
 
