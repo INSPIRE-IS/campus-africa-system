@@ -41,13 +41,16 @@
         <br/>
 
         <div class="form-field">
-            <!-- <label>Security Code * <span id="security_code_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="security_code" id="security_code" class="required"> -->
             <p>Please check you email for further instructions</p>
+            <br/><br/>
+            <label>Security Code * <span id="security_code_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+            <input type="text" name="security_code" id="security_code" class="required">
+            <br/><br/>
+            <button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26">Proceed to next step</button>
+            <br/><br/>
         </div>
 
 
-        <!-- <button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26">Proceed to next step</button> -->
 
 
     </form>
@@ -56,83 +59,82 @@
 
 <script>
 
-    // $.ajaxSetup({
-    //     headers: {
-    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //     }
-    // });
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
-    // $("#submitForm").on('click', function() {
+    $("#submitForm").on('click', function() {
 
-    //     //Check if any hidden fields are required, remove required check
-
-    //     var req = 1;
+        var req = 1;
 
 
-    //     $('.required').each( function(){
-    //         if($(this).val() === "" || $(this).val() === null){
-    //             req = 0
+        $('.required').each( function(){
+            if($(this).val() === "" || $(this).val() === null){
+                req = 0
 
-    //             $(this).addClass("fieldError")
-    //             id = $(this)[0]["id"]
-    //             $("#"+id+"_error").removeClass("hidden")
-    //         }
-    //     })
+                $(this).addClass("fieldError")
+                id = $(this)[0]["id"]
+                $("#"+id+"_error").removeClass("hidden")
+            }
+        })
 
-    //     if ($('.fieldDuplicate').length > 0) {
-    //         req = 0;
-    //     }
+        if ($('.fieldDuplicate').length > 0) {
+            req = 0;
+        }
 
-    //     if ($('.fieldError').length > 0) {
-    //         req = 0;
-    //     }
+        if ($('.fieldError').length > 0) {
+            req = 0;
+        }
 
-    //     if(req == 0){
-    //         Swal.fire(
-    //             'Blank Fields',
-    //             'Please fill in all Required Fields!',
-    //             'error'
-    //         )
+        if(req == 0){
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
 
-    //     }else{
-    //         let total = 1
-    //         $('.fieldError').each( function(){
-    //             if($(this).val() === ""){
-    //                 total = 0
+        }else{
+            let total = 1
+            $('.fieldError').each( function(){
+                if($(this).val() === ""){
+                    total = 0
 
-    //                 $(this).addClass("fieldError")
-    //                 id = $(this)[0]["id"]
-    //                 $("#"+id+"_error").removeClass("hidden")
-    //             }
-    //         })
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
+                }
+            })
 
-    //         if(total == 0){
-    //             Swal.fire(
-    //                 'Blank Fields',
-    //                 'Please fill in all Required Fields!',
-    //                 'error'
-    //             )
+            if(total == 0){
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
 
-    //         }else{
+            }else{
 
-    //             $("#submitForm").empty().append("LOading")
+                $("#submitForm").empty().append("LOading")
 
-    //             $.ajax({
-    //                     type: "post",
-    //                     url: "/veryfiy-user",
-    //                     data: {
-    //                         security_code: $("#security_code").val(), 
-    //                     },
+                $.ajax({
+                        type: "post",
+                        url: "/veryfiy-user",
+                        data: {
+                            security_code: $("#security_code").val(), 
+                            applicationToken: "{{$applicationToken}}",
+                        },
 
-    //                     success: function (data) {
-    //                         window.location.replace(data[1])
+                        success: function (data) {
+                            window.location.replace(data[1])
                             
-    //                     },
-    //                 });
-    //         }
-    //     }
+                        },
+                    });
+            }
+        }
 
-    // });
+    });
 
 </script>
 

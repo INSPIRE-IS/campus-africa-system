@@ -32,6 +32,21 @@
     
 </head>
 <body>
+    @if(Auth::check())
+        <div id="fullNavbar">
+            <div class="topnav" id="myTopnav" style='margin-left:50%'>
+
+                @if (!$agent->isMobile())
+                    <a href="#"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
+                @endif
+                
+                <a href="/logout">Log out</a>
+                <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+    @endif
     <div id="app">
         <!--  -->
 
@@ -82,6 +97,19 @@
             <p class="footerRights">Campus Africa - All Right Reserved</p>
         </div>
     </footer>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+                document.getElementById('fullNavbar').setAttribute("style","height:270px !important");
+            } else {
+                x.className = "topnav";
+                document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+            }
+        }
+    </script>
 
     @if (App::environment('development'))
         <script>

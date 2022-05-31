@@ -106,6 +106,16 @@ class RegisterController extends Controller
         return $randomString;
     }
 
+    public function generateRandomShortString($length = 5) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
     protected function registration_step_one(Request $request){
 
         $user = User::create([
@@ -117,7 +127,7 @@ class RegisterController extends Controller
             'userCell' => $request->cell_no,
             'userEmail' => $request->email,
             'email' => $request->email,
-            'password' => Hash::make("!Placeholder#"),
+            'password' => Hash::make($request->password),
             'userId' => $request->idNumber,
             'userNationality' => $request->nationality,
             'userPassport' => $request->passportNo,
@@ -173,7 +183,7 @@ class RegisterController extends Controller
             }
         }
 
-        // $userToken = ApplicationToken::create(["userUid" => $user->id, "applicationToken" => $this->generateRandomLongString()]);
+        $userToken = ApplicationToken::create(["userUid" => $user->id, "applicationToken" => $this->generateRandomLongString(), 'verified' => 0, 'security_token' => $this->generateRandomShortString()]);
 
         $generator = new LoginUrl($user);
         $generator->setRedirectUrl('/verify-password');
@@ -181,6 +191,7 @@ class RegisterController extends Controller
 
         $message_replace['bookingRef'] = $booking->id;
         $message_replace['name'] = $request->firstName;
+        $message_replace['security_token'] = $userToken->security_token;
         $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
         $message_replace['close_application_link']="</a>";
 
@@ -189,6 +200,7 @@ class RegisterController extends Controller
 
         $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
         $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        $newMessage = str_replace("[security_code]", $message_replace['security_token'], $newMessage);
         $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
         $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
 
@@ -203,7 +215,7 @@ class RegisterController extends Controller
             $message->from('noreply@campusafrica.co.za','Campus Africa');
         });
 
-        return "done";
+        return $userToken->applicationToken;
     }
 
     protected function registration_step_one_update(Request $request){

@@ -2126,6 +2126,15 @@ input:read-only {
   #newStudentPayment{
     height:1300px;
   }
+  #paymentDetailsSection{
+    height:660px;
+  }
+  .smallPayment{
+    height:670px !important;
+  }
+  #appVerifyNotify{
+    height:400px;
+  }
 
 @media only screen and (max-width: 850px) {
     #fullNavbar {
@@ -2137,6 +2146,18 @@ input:read-only {
             line-height: 60px;
         }
     }
+    .smallPayment{
+        height:1154px !important;
+      }
+    #seconCards{
+        margin-top:0px;
+    }
+    #eftCard{
+        height:210px !important
+      }
+    #paymentDetailsSection{
+        height:1350px;
+      }
 
     #bannerImgIcon{
         height:40px;

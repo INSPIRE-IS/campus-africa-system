@@ -1928,14 +1928,35 @@ input:read-only {
 #newStudentPayment{
   height:1300px;
 }
+#paymentDetailsSection{
+  height:660px;
+}
+.smallPayment{
+  height:670px !important;
+}
+#appVerifyNotify{
+  height:400px;
+}
 
 @media only screen and (max-width: 850px) {
   #fullNavbar {
     height: 120px !important;
   }
 
+  #eftCard{
+    height:210px !important
+  }
+
+  .smallPayment{
+    height:1154px !important;
+  }
+
   .onlineTabs .tab{
       display:none
+  }
+
+  #paymentDetailsSection{
+    height:1350px;
   }
 
   .clearSpaceLoginPageFirst{

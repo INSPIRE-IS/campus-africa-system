@@ -77,7 +77,7 @@
     </div>
     </div>
     
-    <form id="newStudentPayment" class="form onlineForm" autocomplete="off">
+    <form id="newStudentPayment" class="form onlineForm @if($room_rate == '0') smallPayment @endif" autocomplete="off">
         <br/>
         <div class="cards">
             <div class="whiteCard" id="registerPaymentCards">
@@ -114,67 +114,80 @@
 
         <div class="clearSpaceLogin"></div>
 
-        <div class="paymentSection <?php if($proofPayment && $proofPayment->status == "Uploaded"){echo 'hidden';} ?>" style="margin-top:100px;">
-            <br/><br/>
+        @if($room_rate == '0')
+        <br/><br/>
+        <br/><br/>
+        <h2>No Booking Fee to be Paid</h2>
+        <a href="/complete/online-application">
+            <button type="button" class="detailsChange" style="text-transform:uppercase; background-color:#e74f26">Continue</button>
+        </a>
+        @endif
 
-            <div class="form-field">
-                <h1 class="header" id="paymentHeader">Payment Information</h1>
-            </div>
+        @if($room_rate != '0')
 
-            <div class="form-field">
-                <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
-                <select name="paymentType" id="paymentType">
-                    <option value="Credit card">Credit card</option>
-                    <option value="EFT">EFT</option>
-                </select>
-            </div>
-
-            <div class="form-field" id="cCard">
-                <label>Cardholder Name* <small id="cardholderName_error" class="hidden" style="color:red;">This is a required field</small></label>
-                <input type="text" id="cardholderName" class="required">
-
-                <label>Card Number* <small id="cardNumber_error" class="hidden" style="color:red;">This is a required field</small></label>
-                <input type="text" id="cardNumber" class="required">
-
-                <label>Exp. Date* <small id="expDate_error" class="hidden" style="color:red;">This is a required field</small></label>
-                <input type="date" id="expDate" class="required">
-
-                <label>CVV* <small id="cvv_error" class="hidden" style="color:red;">This is a required field</small></label>
-                <input type="text" id="cvv" style="width:50%" class="required">
-            </div>
-
-            <div class="form-field hidden" id="eftCard">
-                <p>Bank details here<br/>
-                    Bank details here<br/>
-                    Bank details here<br/>
-                    Bank details here<br/>
-                    Bank details here<br/>
-                </p>
-                <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
-                <input type="file" id="proof_of_payment" hidden/>
+            <div class="paymentSection <?php if($proofPayment && $proofPayment->status == "Uploaded"){echo 'hidden';} ?>" id="paymentDetailsSection" style="margin-top:100px;">
                 <br/><br/>
-                <a href="/complete/online-application"><button type="button" id="homeStep" class="previousStepBtn hidden"> Back to home page</button></a>
-            </div>
 
-            <div class="form-field">
-                <div class="cards flex flex-col" id="seconCards">
-                    <div class="whiteCard halfCard">
-                        <h4 class="cardSubHeaderGrey">Non Refundable Booking Fee</h4>
-                        <h2 class="cardHeader" >R5000</h2>
-                        <h4 class="cardSubHeaderGrey">Your application fee is deducted from the total of the room fee required to make this booking.</h4>
-                        
-                    </div>
-                    <div class="redBottom flex">
-                            <i class="fas fa-clock"></i>
-                            <p>Please note that your booking will only be reserved for 24hrs without payment</p>
-                        </div>
+                <div class="form-field">
+                    <h1 class="header" id="paymentHeader">Payment Information</h1>
                 </div>
+
+                <div class="form-field">
+                    <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <select name="paymentType" id="paymentType">
+                        <option value="Credit card">Credit card</option>
+                        <option value="EFT">EFT</option>
+                    </select>
+                </div>
+
+                <div class="form-field" id="cCard">
+                    <label>Cardholder Name* <small id="cardholderName_error" class="hidden" style="color:red;">This is a required field</small></label>
+                    <input type="text" id="cardholderName" class="required">
+
+                    <label>Card Number* <small id="cardNumber_error" class="hidden" style="color:red;">This is a required field</small></label>
+                    <input type="text" id="cardNumber" class="required">
+
+                    <label>Exp. Date* <small id="expDate_error" class="hidden" style="color:red;">This is a required field</small></label>
+                    <input type="date" id="expDate" class="required">
+
+                    <label>CVV* <small id="cvv_error" class="hidden" style="color:red;">This is a required field</small></label>
+                    <input type="text" id="cvv" style="width:50%" class="required">
+                </div>
+
+                <div class="form-field hidden" id="eftCard">
+                    <p>Bank details here<br/>
+                        Bank details here<br/>
+                        Bank details here<br/>
+                        Bank details here<br/>
+                        Bank details here<br/>
+                    </p>
+                    <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
+                    <input type="file" id="proof_of_payment" hidden/>
+                    <br/><br/>
+                    <a href="/complete/online-application"><button type="button" id="homeStep" class="previousStepBtn hidden"> Back to home page</button></a>
+                </div>
+
+                <div class="form-field">
+                    <div class="cards flex flex-col" id="seconCards">
+                        <div class="whiteCard halfCard">
+                            <h4 class="cardSubHeaderGrey">Non Refundable Booking Fee</h4>
+                            <h2 class="cardHeader" >R {{$room_rate}}</h2>
+                            <h4 class="cardSubHeaderGrey">Your application fee is deducted from the total of the room fee required to make this booking.</h4>
+                            
+                        </div>
+                        <div class="redBottom flex">
+                                <i class="fas fa-clock"></i>
+                                <p>Please note that your booking will only be reserved for 24hrs without payment</p>
+                            </div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="clearSpaceLogin"></div>
-            <div class="footerClearfix"></div>
-
-        </div>
+            <a href="/complete/online-application">
+                <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">PAY R '.number_format($booking->room_rate,2,"."," ").' BOOKING FEE</button>';} ?>
+                </a>
+        @endif
 
         <!-- <div class="paymentTwo" style="margin-top:100px;">
             <h1 class="header">Payment Submitted!</h1>
@@ -193,9 +206,7 @@
         </div> -->
 
 
-        <a href="/complete/online-application">
-        <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">PAY R '.number_format($booking->room_rate,2,"."," ").' BOOKING FEE</button>';} ?>
-        </a>
+        
 
         
         
@@ -344,7 +355,8 @@
                     $("#proofRegistrationSuccess").removeClass('hidden')
                     $(".PaymentLabel").addClass('greenPayment')
 
-                    $("#homeStep").removeClass('hidden')
+                    // $("#homeStep").removeClass('hidden')
+                    window.location.replace('/complete/online-application')
                 }
             },
         });

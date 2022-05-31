@@ -12,6 +12,7 @@ use App\Models\Booking;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 use Jenssegers\Agent\Agent;
+use Grosv\LaravelPasswordlessLogin\LoginUrl;
 
 class ApplicationController extends Controller
 {
@@ -26,25 +27,30 @@ class ApplicationController extends Controller
         return view('application.step_1', ["lookups" => $lookups, "property" => $property, "roomType" => $roomType, "agent" => $agent]);
     }
 
-    public function step_verify(Request $request){
+    public function step_verify(Request $request, $applicationToken){
 
-        return view('application.verify_user');
+        return view('application.verify_user', ["applicationToken" => $applicationToken]);
     }
 
-    // public function veryfiy_user(Request $request){
-    //     $lookups = Lookups::get();
+    public function veryfiy_user(Request $request){
+        $lookups = Lookups::get();
 
-    //     $application = ApplicationToken::where('applicationToken', $request->applicationToken)->first();
+        $application = ApplicationToken::where('applicationToken', $request->applicationToken)->first();
 
-    //     if($request->security_code == $application->security_token){
-    //         ApplicationToken::where('applicationToken', $request->applicationToken)->update(['verified' => 1]);
-    //         $user = User::where('id', $application->userUid)->first();
+        if($request->security_code == $application->security_token){
+            ApplicationToken::where('applicationToken', $request->applicationToken)->update(['verified' => 1]);
+            User::where('id', $application->userUid)->update(['email_verified' => 1]);
+            $user = User::where('id', $application->userUid)->first();
+
+            $generator = new LoginUrl($user);
+            $generator->setRedirectUrl('/verify-password');
+            $url = $generator->generate();
             
-    //         return ["success", "/step-2/online-application/".$request->applicationToken];
-    //     }else{
-    //         return ["failed"];
-    //     }
-    // }
+            return ["success", $url];
+        }else{
+            return ["failed"];
+        }
+    }
 
     public function email_check_idNo(Request $request){
         $email = $request->email;
@@ -507,6 +513,14 @@ class ApplicationController extends Controller
         $agent = new Agent();
 
         $bookingRoomtype = $booking->roomType;
+        $lookup = Lookups::where('group_id', '7')->first();
+        $room_rate = 0;
+        $actionFileData['action'] = "";
+
+        if($lookup && $lookup->lookup_name == "1"){
+            $room_rate = 0;
+            $actionFileData['action'] = "Booking Fee Waived";
+        }
 
         $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
             $residenceId = "";
@@ -514,9 +528,12 @@ class ApplicationController extends Controller
             foreach($jsonDataResidence as $residence){
                 if($residence->title->rendered == $booking->property){
                     //get room booking fee from residence (WP)
-                    // $booking_data['room_rate'] = $residence->acf->booking_fee;
+                    if($actionFileData['action'] == ""){
+                        $room_rate = $residence->acf->booking_fee;
+                    }
                     //get residence ID (WP)
                     $residenceId = $residence->id;
+                   
                 }
             }
             
@@ -549,6 +566,33 @@ class ApplicationController extends Controller
                         }
                         if($attr == "468"){
                             $bath = "true";
+                        }
+                    }
+
+                    $appliesTo = $room->acf->booking_fee_applies_to;
+
+                    if($room->acf->booking_fee_override !== ""){
+                        $room_rate = $room->acf->booking_fee_override;
+                    }
+
+                    if($user->studentType == "NSFAS"){
+                        if(!in_array("NSFAS Students", $appliesTo)){
+                            $room_rate = "0";
+                            $actionFileData['action'] = "Booking Fee is R0";
+                        }
+                    }
+
+                    if($user->studentType == "Bursary"){
+                        if(!in_array("Bursary Students", $appliesTo)){
+                            $room_rate = "0";
+                            $actionFileData['action'] = "Booking Fee is R0";
+                        }
+                    }
+
+                    if($user->studentType == "Cash / Direct"){
+                        if(!in_array("Cash Students", $appliesTo)){
+                            $room_rate = "0";
+                            $actionFileData['action'] = "Booking Fee is R0";
                         }
                     }
 
@@ -717,11 +761,40 @@ class ApplicationController extends Controller
                             break;
                         }
                     }
+
+                    
                 }
             }
 
+            if($room_rate == "0"){
+    
+                $uploaded = UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->first();
+    
+                if(!$uploaded){
+                    UserFiles::create([
+                        'userUid' => $user->id,
+                        'fileId' => 'proof_of_payment',
+                        'status' => 'Approved'
+                    ]);
+                }else{
+                    UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->update([
+                        'status' => 'Approved'
+                    ]);
+                }
+    
+                Booking::where('userId', $user->id)->update(['room_rate' => $room_rate]);
+    
+                $actionFileData['userUid'] = $user->id;
+                $actionFileData['action'] = $actionFileData['action'];
+                $actionFileData['actionUserUid'] = Auth::user()->id;
+                $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+                $actionFileData['actionUserRole'] = Auth::user()->userRole;
+            
+                ActionList::create($actionFileData);
+            }
 
-        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $booking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds]);
+
+        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $booking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate]);
     }
 
     public function complete_online_app(Request $request){
@@ -736,10 +809,14 @@ class ApplicationController extends Controller
     }
 
     public function verify_password(Request $request){
-        $lookups = Lookups::get();
-        $user = User::where('id', Auth::user()->id)->first();
+        // $lookups = Lookups::get();
+        // $user = User::where('id', Auth::user()->id)->first();
 
-        return view('application.password', ["lookups" => $lookups, "user" => $user]);
+        // return view('application.password', ["lookups" => $lookups, "user" => $user]);
+
+        User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
+
+        return redirect('/step-2/online-application');
     }
 
     public function confirm_password(Request $request){

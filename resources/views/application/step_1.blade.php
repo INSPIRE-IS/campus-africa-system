@@ -112,7 +112,7 @@
         <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
             <input type="text" placeholder="City" name="userAddressCity" id='userAddressCity' class="required" >
         </div>
-        <div class="form-field" style="margin-top:-15px; height:60px !important">
+        <div class="form-field" style="margin-top:-5px; height:60px !important">
         <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
             <input type="text" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal" class="required">
         </div>
@@ -271,6 +271,15 @@
             </select>
         </div>
 
+        <div class="form-field">
+            <label>Password * <span id="password_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+            <input type="password" name="password" id="password" class="required">
+        </div>
+        <div class="form-field">
+            <label>Confirm Password * <span id="confirm_password_error" class="hidden" style="color:red"><small>This field is required</small></span> <span id="confirm_password_match_error" class="hidden" style="color:red"><small>Passwords don't match</small></span></label>
+            <input type="password" name="confirm_password" id="confirm_password" class="required" onKeyUp="match()">
+        </div>
+
         <button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26">Proceed to next step</button>
 
 
@@ -289,6 +298,19 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function match(){
+        let password = $("#password").val()
+        let confirmed = $("#confirm_password").val();
+
+        if(password !== confirmed){
+            $("#confirm_password_match_error").removeClass('hidden');
+            $("#confirm_password").addClass('fieldError')
+        }else{
+            $("#confirm_password_match_error").addClass('hidden')
+            $("#confirm_password").removeClass('fieldError')
+        }
+    }
 
     var d = new Date()
     month = '' + (d.getMonth() + 1),
@@ -612,7 +634,7 @@
                         },
 
                         success: function (data) {
-                            window.location.replace('/online-application-verify')   
+                            window.location.replace('/online-application-verify/'+data)   
                         },
                     });
             }

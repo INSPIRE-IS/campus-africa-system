@@ -194,8 +194,8 @@ Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 
 //User Online application
 Route::get('/online-application/{property}/{roomType}', [ApplicationController::class, 'step_1']);
-Route::get("/online-application-verify", [ApplicationController::class, 'step_verify']);
-// Route::post("/veryfiy-user", [ApplicationController::class, 'veryfiy_user']);
+Route::get("/online-application-verify/{applicationToken}", [ApplicationController::class, 'step_verify']);
+Route::post("/veryfiy-user", [ApplicationController::class, 'veryfiy_user']);
 Route::get("/step-2/online-application", [ApplicationController::class, 'step_2']);
 Route::post("/step-2-spon", [ApplicationController::class, 'step_2_spon']);
 Route::post("/step-2-bur", [ApplicationController::class, 'step_2_bur']);
