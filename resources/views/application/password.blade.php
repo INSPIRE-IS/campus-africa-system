@@ -47,7 +47,7 @@
             <input type="password" name="password" id="password" class="required">
         </div>
         <div class="form-field">
-            <label>Confirm Password * <span id="confirm_password_error" class="hidden" style="color:red"><small>This field is required</small></span> <span id="confirm_password_match_error" class="hidden" style="color:red"><small>Passwords don't match'</small></span></label>
+            <label>Confirm Password * <span id="confirm_password_error" class="hidden" style="color:red"><small>This field is required</small></span> <span id="confirm_password_match_error" class="hidden" style="color:red"><small>Passwords don't match</small></span></label>
             <input type="password" name="confirm_password" id="confirm_password" class="required" onKeyUp="match()">
         </div>
 
@@ -101,7 +101,7 @@
         let password = $("#password").val()
         let confirmed = $("#confirm_password").val();
 
-        if(password !== null && confirmed !== null && $("#password").hasClass('fieldError') == false && $("#confirm_password").hasClass('fieldError') == false){
+        if(password !== null && password !== "" && confirmed !== null && confirmed !== "" && $("#password").hasClass('fieldError') == false && $("#confirm_password").hasClass('fieldError') == false){
             $.ajax({
             type: "post",
             url: "/confirm-password",
@@ -115,11 +115,28 @@
             });
         }else{
             $("#submitForm").empty().append('Save Password');
+            if($("#password").val() == ""){
+                $("#password").addClass('fieldError')
+                $("#password_error").removeClass('hidden')
+            }else{
+                $("#password").removeClass('fieldError')
+                $("#password_error").addClass('hidden')
+            }
+            if($("#confirm_password").val() == ""){
+                $("#confirm_password").addClass('fieldError')
+                $("#confirm_password_error").removeClass('hidden')
+            }else{
+                $("#confirm_password").removeClass('fieldError')
+                $("#confirm_password_error").addClass('hidden')
+            }
+            match();
             Swal.fire(
                 'Blank Fields',
                 'Please fill in all Required Fields!',
                 'error'
             )
+
+            
         }
     })
 
