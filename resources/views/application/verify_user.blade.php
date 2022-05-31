@@ -35,7 +35,7 @@
         <div class="tab">5: Pay Booking Fee</div>
     </div>
     
-    <form id="newStudent" class="form onlineForm" autocomplete="off">
+    <form id="appVerifyNotify" class="form onlineForm" autocomplete="off">
         <br/>
         <h1 class="formHeading">Verify your account</h1>
         <br/>

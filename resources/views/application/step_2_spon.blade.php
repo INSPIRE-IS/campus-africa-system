@@ -37,7 +37,7 @@
     </div>
     </div>
     
-    <form id="newStudent" class="form onlineForm" autocomplete="off">
+    <form id="newStudentSpon" class="form onlineForm" autocomplete="off">
         <br/>
         <h1 class="formHeading">Sponsor Information</h1>
         <h2 style="text-transform:uppercase; font-weight:400">Parent / Gaurdians Details</h2>
@@ -97,7 +97,7 @@
                 <div class="form-field-big" style="height:60px !important">
                     <li style="display:inline-flex">
                         <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_address_p == '1'){echo 'checked';}?>>
-                        <label for="app_address_p" style="@if(!$agent->isMobile()) width:400px @endif">Same as Applicant's @if($agent->isMobile()) <br/> @endif Home Address</label>
+                        <label for="app_address_p" id="labelAddrP" style="width:400px">Same as Applicant's Home Address</label>
                     </li>
                 </div>
 
@@ -126,12 +126,6 @@
 
 </div>
 
-<div class="footerClearfix"></div>
-<div class="footerClearfix"></div>
-
-@if($agent->isMobile())
-<div class="footerClearfix"></div>
-@endif
 
 <script>
 

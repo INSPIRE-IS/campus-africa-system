@@ -43,7 +43,7 @@
     </div>
     </div>
     
-    <form id="newStudent" class="form onlineForm" autocomplete="off">
+    <form id="newStudentDocs" class="form onlineForm" autocomplete="off">
         <br/>
         <br/>
 

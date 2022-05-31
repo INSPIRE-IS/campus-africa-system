@@ -43,7 +43,7 @@
     </div>
     </div>
     
-    <form id="newStudent" class="form onlineForm" autocomplete="off">
+    <form id="newStudentKin" class="form onlineForm" autocomplete="off">
         <br/>
         <h1 class="formHeading">Next of Kin</h1>
         <br/>
@@ -52,7 +52,7 @@
                 <div class="form-field-big" style="height:60px !important" id="parentSameInfo">
                     <li style="display:inline-flex">
                         <input type="checkbox" id="app_parent_kin" name="app_parent_kin" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'checked';} ?>>
-                        <label for="app_parent_kin" style="@if(!$agent->isMobile()) width:400px @endif">Same as Parent / Sponsor</label>
+                        <label for="app_parent_kin" id="labelAddrP" style="width:400px">Same as Parent / Sponsor</label>
                     </li>
                 </div>
             @endif
@@ -138,7 +138,7 @@
             <div class="form-field-big" style="height:60px !important">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_address == '1'){echo 'checked';} ?>>
-                    <label for="app_address" style="@if(!$agent->isMobile()) width:400px @endif">Same as Applicant's @if($agent->isMobile()) <br/> @endif Home Address</label>
+                    <label for="app_address" id="labelAddrP" style="width:400px">Same as Applicant's Home Address</label>
                 </li>
             </div>
             <div class="kinAddress <?php if(isset($user) && $user->app_address == '1'){echo 'hidden';} ?>">
@@ -167,13 +167,6 @@
 
 </div>
 
-<div class="footerClearfix"></div>
-<div class="footerClearfix"></div>
-
-@if($agent->isMobile())
-<div class="footerClearfix"></div>
-<div class="footerClearfix"></div>
-@endif
 
 <script>
 

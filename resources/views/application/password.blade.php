@@ -35,7 +35,7 @@
         <div class="tab">5: Pay Booking Fee</div>
     </div>
     
-    <form id="newStudent" class="form onlineForm" autocomplete="off">
+    <form id="newStudentPassword" class="form onlineForm" autocomplete="off">
         <br/>
         <h1 class="formHeading">Hello {{$user->userFirstName}}</h1>
         <br/>

@@ -137,7 +137,7 @@
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
-                document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+                document.getElementById('fullNavbar').setAttribute("style","height:270px !important");
             } else {
                 x.className = "topnav";
                 document.getElementById('fullNavbar').setAttribute("style","height:85px !important");

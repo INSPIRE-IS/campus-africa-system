@@ -37,7 +37,7 @@
     </div>
     </div>
     
-    <form id="newStudent" class="form onlineForm" autocomplete="off">
+    <form id="newStudentBur" class="form onlineForm" autocomplete="off">
         <br/>
         <h1 class="formHeading">Bursar Information</h1>
         <br/>
@@ -136,12 +136,6 @@
 
 </div>
 
-<div class="footerClearfix"></div>
-<div class="footerClearfix"></div>
-
-@if($agent->isMobile())
-<div class="footerClearfix"></div>
-@endif
 
 <script>
 

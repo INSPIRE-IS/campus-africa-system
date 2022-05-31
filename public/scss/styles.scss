@@ -636,6 +636,9 @@ body {
 .clearSpaceLoginPage {
     height: 195px;
 }
+.clearSpaceLoginPageFirst{
+    height: 195px;
+  }
 
 .col-3 {
     width: 25%;
@@ -2105,6 +2108,25 @@ input:read-only {
     }
 }
 
+#newStudent{
+    height:1100px;
+  }
+  #newStudentBur{
+    height:785px;
+  }
+  #newStudentSpon{
+    height:800px;
+  }
+  #newStudentKin{
+    height:900px;
+  }
+  #newStudentDocs{
+    height:1000px;
+  }
+  #newStudentPayment{
+    height:1300px;
+  }
+
 @media only screen and (max-width: 850px) {
     #fullNavbar {
         height: 120px !important;
@@ -2115,6 +2137,37 @@ input:read-only {
             line-height: 60px;
         }
     }
+
+    #bannerImgIcon{
+        height:40px;
+        width:40px;
+    }
+    #paymentHeader{
+        line-height:40px;
+      }
+      #newStudentPayment{
+        height:2200px;
+      }
+
+    #newStudentBur{
+        height:1222px;
+      }
+      #newStudentSpon{
+        height:1110px;
+      }
+      #newStudentKin{
+        height:1260px;
+      }
+      #newStudentDocs{
+        height:2000px;
+      }
+      #labelAddrP{
+        width:200px !important;
+      }
+
+    .clearSpaceLoginPageFirst{
+        height: 850px;
+      }
 
     .yellowGradient, .yellowGradientSmall, .greyAppSection {
         width:98%;
@@ -2305,10 +2358,11 @@ input:read-only {
     //     margin-top: 1211px !important;
     // }
 
-    .redBannerNotice {
-        height: 300px;
-        width: 107%;
-    }
+
+    .redBannerNotice{
+        width:100% !important;
+        height:630px !important;
+      }
 
     #newStudent{
         #registerCards {
@@ -2340,6 +2394,9 @@ input:read-only {
   #personalCardItems{
     font-size:16px !important;
     line-height:20px !important;
+  }
+  #newStudent{
+    height:1900px;
   }
   #seconCards{
     margin-top:300px;

@@ -27,33 +27,31 @@
             <br/>
             <div style="display:flex;">
 
-                <img src="/images/rooms/bed_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                <img src="/images/rooms/bed_1.png" id="bannerImgIcon" id="bannerImgIcon"/> 
                 <p style="color:#fff; padding: 17px 10px 0px 10px;"><strong>0{{$beds}}</strong></p>
 
                 @if($bath == 'true')
-                    <img src="/images/rooms/bath_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <img src="/images/rooms/bath_1.png" id="bannerImgIcon"/> 
                     <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
                 @endif
 
                 @if($kitchen == 'true')
-                    <img src="/images/rooms/food_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <img src="/images/rooms/food_1.png" id="bannerImgIcon"/> 
                     <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
                 @endif
 
                 @if($chair == 'true')
-                    <img src="/images/rooms/chair_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <img src="/images/rooms/chair_1.png" id="bannerImgIcon"/> 
                     <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
                 @endif
 
                 @if($wifi == 'true')
-                    <img src="/images/rooms/wifi_1.png" style="@if($agent->isMobile()) width:40px; height:40px; @endif"/> 
+                    <img src="/images/rooms/wifi_1.png" id="bannerImgIcon"/> 
                     <i class="fas fa-check" style="color:#fff;padding: 17px 10px 0px 10px;"></i>
                 @endif
 
             </div>
-            @if(!$agent->isMobile())
-                <br/><br/>
-            @endif
+            
             <h1 style="color:#9799AB; font-weight:400;">PRICED FROM</h1>
             <h1 class="booking" style="color:#fff;">R {{$priced_from}} <small>pm</small></h1>
             <h1 id="infoAppOnline" style="color:#fff; font-weight:400;">Please note you have 7 days for the deposit to be paid,<br/> otherwise your room reservation will be forfeited.  </h1>
@@ -79,7 +77,7 @@
     </div>
     </div>
     
-    <form id="newStudent" class="form onlineForm" autocomplete="off">
+    <form id="newStudentPayment" class="form onlineForm" autocomplete="off">
         <br/>
         <div class="cards">
             <div class="whiteCard" id="registerPaymentCards">
@@ -120,7 +118,7 @@
             <br/><br/>
 
             <div class="form-field">
-                <h1 class="header" >Payment Information</h1>
+                <h1 class="header" id="paymentHeader">Payment Information</h1>
             </div>
 
             <div class="form-field">
@@ -206,12 +204,6 @@
 
 </div>
 
-@if ($agent->isMobile())
-    <div class="footerClearfix"></div>
-    <div class="footerClearfix"></div>
-    <div class="footerClearfix"></div>
-    <div class="footerClearfix"></div>
-@endif
 
 <script>
 
