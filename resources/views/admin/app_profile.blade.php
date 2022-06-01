@@ -87,7 +87,7 @@
 
                 <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
                     <p class="InfoList">
-                        {{$user[0]['userInfo']['userEmail']}}<br/>
+                        {{$user[0]['userInfo']['userEmail']}}  @if($user[0]['userInfo']['email_verified'] == '1') <i class="fas fa-check" style="color:green"></i> @endif<br/>
                         {{$user[0]['userInfo']['userCell']}}<br/>
                     </p>
 

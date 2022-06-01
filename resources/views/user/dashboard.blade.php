@@ -127,7 +127,10 @@
             <div class="cardBody">
             
                 <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
-                <h2 class="cardHeaderBlck" ><?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?></h2>
+                <h2 class="cardHeaderBlck" >
+                  <?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?> 
+                  <br/> 
+                  <a href="/change-student-type"><button type="button" class="detailsChange" style="margin-top:-40px;">Change Student Type</button></a></h2>
                 <br/>
                 <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
                 <h2 class="cardHeaderBlck" >#{{$booking->id}}</h2>

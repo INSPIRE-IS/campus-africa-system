@@ -96,49 +96,53 @@ class HomeController extends Controller
                 foreach($all as $file){
                     $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
 
-                    if($file_search && !empty($file_search)){
-                        $output = (object) array(
-                            "fileId" => $file_search->fileId,
-                            "status" => $file_search->status !== null ? $file_search->status : "None",
-                            "fileUrl" => $file_search->fileUrl,
-                        );
-                        array_push($allFiles, $output);
-                    }else{
-                        $output = (object) array(
-                            "fileId" => $file,
-                            "status" => "None",
-                            "fileUrl" => "",
-                        );
-                        array_push($allFiles, $output);
+                    if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+
+                        if($file_search && !empty($file_search)){
+                            $output = (object) array(
+                                "fileId" => $file_search->fileId,
+                                "status" => $file_search->status !== null ? $file_search->status : "None",
+                                "fileUrl" => $file_search->fileUrl,
+                            );
+                            array_push($allFiles, $output);
+                        }else{
+                            $output = (object) array(
+                                "fileId" => $file,
+                                "status" => "None",
+                                "fileUrl" => "",
+                            );
+                            array_push($allFiles, $output);
+                        }
+    
+                        if($file == 'bankStatement' || $file == 'studentCard' || $file == 'proofRegistration' || $file == 'bursaryApproval'){
+                            if($output->status == "Uploaded"){
+                                if($appHeader < 1){
+                                    $appHeader = 1;
+                                }
+                            }
+    
+                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                if($appHeader < 2){
+                                    $appHeader = 2;
+                                }
+                            }
+                        }
+    
+                        if($file !== 'bankStatement' && $file !== 'studentCard' && $file !== 'proofRegistration' && $file !== 'bursaryApproval'){
+                            if($output->status == "Uploaded"){
+                                if($bookHeader < 1){
+                                    $bookHeader = 1;
+                                }
+                            }
+    
+                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                if($bookHeader < 2){
+                                    $bookHeader = 2;
+                                }
+                            }
+                        }
                     }
 
-                    if($file == 'bankStatement' || $file == 'studentCard' || $file == 'proofRegistration' || $file == 'bursaryApproval'){
-                        if($output->status == "Uploaded"){
-                            if($appHeader < 1){
-                                $appHeader = 1;
-                            }
-                        }
-
-                        if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                            if($appHeader < 2){
-                                $appHeader = 2;
-                            }
-                        }
-                    }
-
-                    if($file !== 'bankStatement' && $file !== 'studentCard' && $file !== 'proofRegistration' && $file !== 'bursaryApproval'){
-                        if($output->status == "Uploaded"){
-                            if($bookHeader < 1){
-                                $bookHeader = 1;
-                            }
-                        }
-
-                        if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                            if($bookHeader < 2){
-                                $bookHeader = 2;
-                            }
-                        }
-                    }
                 }
     
                 $booking = Booking::where('userId', Auth::user()->id)->first();

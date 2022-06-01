@@ -822,4 +822,67 @@ class ApplicationController extends Controller
     public function confirm_password(Request $request){
         User::where('id', Auth::user()->id)->update(['password' => Hash::make($request->confirm_password), 'email_verified' => 1]);
     }
+
+    public function change_student_type(Request $request){
+        $lookups = Lookups::get();
+        $user = User::where('id', Auth::user()->id)->first();
+
+        return view('user.changeType', ["headerTitle" => "Change Student Type", "lookups" => $lookups, "user" => $user]);
+    }
+
+    public function update_student_details(Request $request){
+        
+        $user = User::where('id', Auth::user()->id)->first();
+
+        if($request->studentType !== $user->studentType){
+            if($user->studentType == "Cash / Direct"){
+                $file = UserFiles::where('fileId', 'bankStatement')->where('userUid', $user->id)->first();
+                if(!empty($file)){
+                    UserFiles::where('id', $file->id)->update(['status' => 'Rejected']);
+                }
+            }else{
+                $file = UserFiles::where('fileId', 'bursaryApproval')->where('userUid', $user->id)->first();
+                if(!empty($file)){
+                    UserFiles::where('id', $file->id)->update(['status' => 'Rejected']);
+                }
+            }
+        }
+
+        if($request->app_address_p == 1){
+            $request->pAddress1 = $user->userAddress1;
+            $request->pAddress2 = $user->userAddress2;
+            $request->pAddressCity = $user->userAddressCity;
+            $request->pAddressPostal = $user->userAddressPostal;
+        }
+
+        User::where('id', $user->id)->update([
+            'studentType' => $request->studentType,
+            'sponFirstName' => $request->pFirstName,
+            'sponLastName' => $request->pLastName,
+            'sponCell' => $request->pCell_no,
+            'sponEmail' => $request->pEmail,
+            'pNationality' => $request->pNationality,
+            'sponId' => $request->pIdNumber,
+            'pPassportNo' => $request->pPassportNo,
+            'pAddress1' => $request->pAddress1,
+            'pAddress2' => $request->pAddress2,
+            'pAddressCity' => $request->pAddressCity,
+            'pAddressPostal' => $request->pAddressPostal,
+            'app_address_p' => $request->app_address_p,
+            'burCompanyName' => $request->bCompanyName,
+            'burRegNo' => $request->bRegistrationNo,
+            'burContactPerson' => $request->bContactPerson,
+            'burContactNo' => $request->bContactNumber,
+            'burEmail' => $request->bEmail,
+            'bAddress1' => $request->bAddress1,
+            'bAddress2' => $request->bAddress2,
+            'bAddressCity' => $request->bAddressCity,
+            'bAddressPostal' => $request->bAddressPostal,
+            'bPayment' => $request->bPayment,
+            'bint' => $request->bint,
+            'bIntName' => $request->bIntName,
+        ]);
+
+        
+    }
 }

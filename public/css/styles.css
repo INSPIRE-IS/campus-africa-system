@@ -1938,9 +1938,17 @@ input:read-only {
   height:400px;
 }
 
+#changeStudType{
+  height:950px;
+}
+
 @media only screen and (max-width: 850px) {
   #fullNavbar {
     height: 120px !important;
+  }
+
+  #changeStudType{
+    height:1600px;
   }
 
   #eftCard{
