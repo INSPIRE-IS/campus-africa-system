@@ -582,22 +582,22 @@
             <h2>Sponsor Information</h2>
             <div class="form-field">
                     <label>First Name * <span id="pFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="pFirstName" id="pFirstName" class="required">
+                    <input type="text" name="pFirstName" id="pFirstName" class="required" value="{{$user[0]['userInfo']['sponFirstName']}}">
                 </div>
 
                 <div class="form-field">
                     <label>Last Name * <span id="pLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="pLastName" id="pLastName" class="required">
+                    <input type="text" name="pLastName" id="pLastName" class="required" value="{{$user[0]['userInfo']['sponLastName']}}">
                 </div>
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="pCell_no" id="pCell_no" class="required">
+                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="{{$user[0]['userInfo']['sponCell']}}">
                 </div>
 
                 <div class="form-field">
                     <label>Email Address * <span id="pEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-                    <input type="email" name="pEmail" id='pEmail' class="required">
+                    <input type="email" name="pEmail" id='pEmail' class="required" value="{{$user[0]['userInfo']['sponEmail']}}">
                 </div>
 
                 <div class="form-field">
@@ -606,7 +606,7 @@
                         <option value="" selected disabled>Please select one</option>
                         @foreach($lookups as $lookup)
                             @if($lookup->group_id == "5")
-                                <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                                <option value="{{$lookup->lookup_name}}" <?php if($user[0]['userInfo']['pNationality'] == $lookup->lookup_name){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
                             @endif
                         @endforeach
                     </select>
@@ -614,12 +614,12 @@
 
                 <div class="form-field" id="pIdField">
                     <label>I.D Number * <span id="pIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-                    <input type="text" name="pIdNumber" id="pIdNumber" >
+                    <input type="text" name="pIdNumber" id="pIdNumber" value="{{$user[0]['userInfo']['sponId']}}">
                 </div>
 
                 <div class="form-field hidden" id="pPassportField">
                     <label>Passport Number * <span id="pPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="pPassportNo" id="pPassportNo" >
+                    <input type="text" name="pPassportNo" id="pPassportNo" value="{{$user[0]['userInfo']['pPassportNo']}}">
                 </div>
 
                 
@@ -633,26 +633,26 @@
                 </div>
                 <div class="form-field-big" style="height:60px !important">
                     <li style="display:inline-flex">
-                        <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;">
+                        <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;" <?php if($user[0]['userInfo']['app_address_p'] == '1'){echo "checked";}?>>
                         <label for="app_address_p" style="width:400px">Same as Applicant's Home Address</label>
                     </li>
                 </div>
 
-                <div class="pAddress">
+                <div class="pAddress <?php if($user[0]['userInfo']['app_address_p'] == '1'){echo "hidden";}?>">
                     <div class="form-field-big" style="height:60px !important">
-                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required">
+                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required" value="{{$user[0]['userInfo']['pAddress1']}}">
                     </div>
                     <div class="form-field-big" style="height:60px !important">
                     <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" >
+                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" value="{{$user[0]['userInfo']['pAddress2']}}">
                     </div>
                     <div class="form-field" style="height:60px !important">
                     <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  >
+                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  value="{{$user[0]['userInfo']['pAddressCity']}}">
                     </div>
                     <div class="form-field" style="height:60px !important">
                     <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" >
+                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user[0]['userInfo']['pAddressPostal']}}">
                     </div>
                 </div>
             <div class="form-field-big" id="changeLeaseDatesOnly">
@@ -669,27 +669,27 @@
             <h2>Bursar Information</h2>
             <div class="form-field">
                     <label>Company Name * <span id="bCompanyName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="bCompanyName" id='bCompanyName' class="required">
+                    <input type="text" name="bCompanyName" id='bCompanyName' class="required" value="{{$user[0]['userInfo']['burCompanyName']}}">
                 </div>
 
                 <div class="form-field">
                     <label>Registration Number * <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" class="required">
+                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" class="required" value="{{$user[0]['userInfo']['burRegNo']}}">
                 </div>
 
                 <div class="form-field">
                     <label>Contact Person * <span id="bContactperson_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="bContactPerson" id="bContactPerson" class="required">
+                    <input type="text" name="bContactPerson" id="bContactPerson" class="required" value="{{$user[0]['userInfo']['burContactPerson']}}">
                 </div>
 
                 <div class="form-field">
                     <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="bContactNumber" id="bContactNumber" class="required">
+                    <input type="text" name="bContactNumber" id="bContactNumber" class="required" value="{{$user[0]['userInfo']['burContactNo']}}">
                 </div>
 
                 <div class="form-field">
                     <label>Email Address * <span id="bEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
-                    <input type="email" name="bEmail" id="bEmail" class="required">
+                    <input type="email" name="bEmail" id="bEmail" class="required" value="{{$user[0]['userInfo']['burEmail']}}">
                 </div>
 
                 <div class="form-field">
@@ -698,28 +698,28 @@
 
                 <div class="form-field-big">
                     <label>Physical Address * <span id="bAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" placeholder="Street No" name="bAddress1" id="bAddress1" style="width:98% !important" class="required">
+                    <input type="text" placeholder="Street No" name="bAddress1" id="bAddress1" style="width:98% !important" class="required" value="{{$user[0]['userInfo']['bAddress1']}}">
                 </div>
                 <div class="form-field-big" style="height:60px !important">
                 <span id="bAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="Suburb" name="bAddress2" id="bAddress2" style="width:98% !important" class="required">
+                    <input type="text" placeholder="Suburb" name="bAddress2" id="bAddress2" style="width:98% !important" class="required" value="{{$user[0]['userInfo']['bAddress2']}}">
                 </div>
                 <div class="form-field" style="height:60px !important">
                 <span id="bAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="City" name="bAddressCity" id='bAddressCity'  class="required">
+                    <input type="text" placeholder="City" name="bAddressCity" id='bAddressCity'  class="required" value="{{$user[0]['userInfo']['bAddressCity']}}">
                 </div>
                 <div class="form-field" style="height:60px !important">
                 <span id="bAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                    <input type="text" placeholder="Postal Code" name="bAddressPostal" id="bAddressPostal" class="required">
+                    <input type="text" placeholder="Postal Code" name="bAddressPostal" id="bAddressPostal" class="required" value="{{$user[0]['userInfo']['bAddressPostal']}}">
                 </div>
 
                 <div class="form-field">
                     <label>How Is the Bursary Paid * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <select name="bPayment" id='bPayment' class="required">
                     <option value="" disabled selected>Please select one</option>
-                        <option value="Directly to the RESIDENCE" >Directly to the RESIDENCE</option>
-                        <option value="Directly to the STUDENT" >Directly to the STUDENT</option>
-                        <option value="Via an INTERMEDIARY" >Via an INTERMEDIARY</option>
+                        <option value="Directly to the RESIDENCE" <?php if($user[0]['userInfo']['bPayment'] == "Directly to the RESIDENCE"){echo 'selected';} ?>>Directly to the RESIDENCE</option>
+                        <option value="Directly to the STUDENT" <?php if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT"){echo 'selected';} ?>>Directly to the STUDENT</option>
+                        <option value="Via an INTERMEDIARY" <?php if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY"){echo 'selected';} ?>>Via an INTERMEDIARY</option>
                     </select>
                 </div>
 
@@ -727,24 +727,24 @@
                     <br/>
                 </div>
 
-                <div id="viaInt" class="hidden">
+                <div id="viaInt" class="<?php if($user[0]['userInfo']['bPayment'] != "Via an INTERMEDIARY"){echo 'hidden';} ?>">
 
                     <div class="form-field">
                         <label>Intermediary * <span id="bint_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                         <select name="bint" id='bint'>
                         <option value="" disabled selected>Please select one</option>
-                            <option value="Fundi" >Fundi</option>
-                            <option value="Intellicard" >Intellicard</option>
-                            <option value="Other" >Other</option>
+                            <option value="Fundi" <?php if($user[0]['userInfo']['bint'] == "Fundi"){echo 'selected';} ?>>Fundi</option>
+                            <option value="Intellicard" <?php if($user[0]['userInfo']['bint'] == "Intellicard"){echo 'selected';} ?>>Intellicard</option>
+                            <option value="Other" <?php if($user[0]['userInfo']['bint'] == "Other"){echo 'selected';} ?>>Other</option>
                         </select>
                     </div>
                 </div>
 
-                <div id="spesificInt" class="hidden">
+                <div id="spesificInt" class="<?php if($user[0]['userInfo']['bint'] != "Other"){echo 'hidden';} ?>">
 
                     <div class="form-field">
                         <label>Specify Intermediary Name * <span id="bIntName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                        <input type="text" name="bIntName" id="bIntName">
+                        <input type="text" name="bIntName" id="bIntName" value="{{$user[0]['userInfo']['bIntName']}}">
                     </div>
 
                     <div class="form-field">
@@ -3302,10 +3302,35 @@
         $('.hidden .fieldError').removeClass('fieldError').val('');
         $("#sponsorSubmit").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error")
+
+        if(isEmail($("#pEmail").val())){
+            $("#pEmail").removeClass("fieldError")
+            $("#pEmail_error").addClass('hidden')
+        }else{
+            $("#pEmail").addClass("fieldError")
+            $("#pEmail_error").removeClass('hidden')
+        }
+
 
         var req = 1;
 
-        if($("#app_address_p").val() !== '1'){
+        console.log($("#app_address_p").val())
+
+        if(document.getElementById("app_address_p").checked !== true){
+            postal = $("#pAddressPostal").val()
+
+            if(/\b\d{4}\b/g.test(postal)){
+                $("#pAddressPostal").removeClass("fieldError")
+                $("#pAddressPostal_error").addClass('hidden')
+                console.log("1")
+            }else{
+                $("#pAddressPostal").addClass("fieldError")
+                $("#pAddressPostal_error").removeClass('hidden')
+                console.log('2')
+            }
+
             var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality", "pAddress1", "pAddress2", "pAddressCity", "pAddressPostal"];
         }else{
             var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality"];
@@ -3376,7 +3401,7 @@
                         pNationality: $("#pNationality").val(),
                         pPassportNo: $("#pPassportNo").val(),
                         pIdNumber: $("#pIdNumber").val(),
-                        app_address_p: $("#app_address_p").val(),
+                        app_address_p: document.getElementById("app_address_p").checked !== true ? '0' : '1',
                         pAddress1: $("#pAddress1").val(),
                         pAddress2: $("#pAddress2").val(),
                         pAddressCity: $("#pAddressCity").val(),
@@ -3396,6 +3421,27 @@
         //Check if any hidden fields are required, remove required check
         $('.hidden .fieldError').removeClass('fieldError').val('');
         $("#saveBursarDetails").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+
+        if(isEmail($("#bEmail").val())){
+            $("#bEmail").removeClass("fieldError")
+            $("#bEmail_error").addClass('hidden')
+        }else{
+            $("#bEmail").addClass("fieldError")
+            $("#bEmail_error").removeClass('hidden')
+        }
+
+        postal = $("#bAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#bAddressPostal").removeClass("fieldError")
+            $("#bAddressPostal_error").addClass('hidden')
+        }else{
+            $("#bAddressPostal").addClass("fieldError")
+            $("#bAddressPostal_error").removeClass('hidden')
+        }
 
 
         var req = 1;
@@ -3466,6 +3512,8 @@
                         bCompanyName: $("#bCompanyName").val(),
                         bRegistrationNo: $("#bRegistrationNo").val(),
                         bContactPerson: $("#bContactPerson").val(),
+                        bContactNumber: $("#bContactNumber").val(),
+                        bEmail: $("#bEmail").val(),
                         bAddress1: $("#bAddress1").val(),
                         bAddress2: $("#bAddress2").val(),
                         bAddressCity: $("#bAddressCity").val(),
