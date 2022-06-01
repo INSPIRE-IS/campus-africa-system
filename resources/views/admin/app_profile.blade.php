@@ -39,20 +39,32 @@
             </div>
 
         </div>
-        <div class="col-3" id="col3">
-            @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
+        
+        @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
+            <div class="col-3" id="col3">
                 <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
                 <div class="form">
                     <div class="sponInfoSection"></div>
                 </div>
-            @endif
+            </div>
+        @endif
 
-            @if($user[0]['userInfo']['studentType'] == "Bursary")
+        @if($user[0]['userInfo']['studentType'] == "Bursary")
+            <div class="col-3" id="col3">
                 <div class="flex"><span id="approvedBur" class="<?php if($user[0]['userInfo']['burser_approved'] != '1'){ echo "hidden";} ?>">&#128994;</span><span id="rejectedBur" class="<?php if($user[0]['userInfo']['burser_approved'] == '1'){ echo "hidden";} ?>">&#128308;</span><p class="listHeader">Bursar</p></div>
                 <div class="form">
                     <div class="burInfoSection"></div>
                 </div>
-            @endif
+            </div>
+        @endif
+        
+
+        <div class="col-3" id="col3">
+            <div class="form" id="inline_edit_student_type">
+                <p class="listHeader">Student Type</p>
+                <span id="studentUserType" class="{{$user[0]['userInfo']['studentType']}}"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif </span><br/>
+                <div class="studentType_btn"></div>
+            </div>
         </div>
         
     </div>
@@ -533,14 +545,11 @@
 </div>
 
 <div id="myModalEditLease" class="modal">
-
     <div class="modal-content " style="height: 304px;">
         <span class="closeLease" style="float:right; font-size:25px; cursor:pointer">&times;</span>
         <div class="form-card">
             <h2>Change this Lease</h2>
-
             <input type="hidden" id="bookingId2"/>
-
             <div id="LeaseInfo">
                 <div class="form-field">
                     <label>Lease From Date * <span id="lease_from_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
@@ -559,15 +568,194 @@
                     <input type="time" id="lease_to_time" name="lease_to_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}?>>
                 </div>
             </div>
-
             <div class="form-field-big" id="changeLeaseDatesOnly">
                 <button type="button" id="changeLeaseDates" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change Lease Dates</button>
             </div>
         </div>
-
-
     </div>
+</div>
 
+<div id="myModalSposorInformation" class="modal">
+    <div class="modal-content " style="height: 690px;">
+        <span class="closeSponsorinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <div class="form-card">
+            <h2>Sponsor Information</h2>
+            <div class="form-field">
+                    <label>First Name * <span id="pFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="pFirstName" id="pFirstName" class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Last Name * <span id="pLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="pLastName" id="pLastName" class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <input type="text" name="pCell_no" id="pCell_no" class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Email Address * <span id="pEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <input type="email" name="pEmail" id='pEmail' class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Nationality * <span id="pNationality_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <select name="pNationality" id='pNationality' class="required">
+                        <option value="" selected disabled>Please select one</option>
+                        @foreach($lookups as $lookup)
+                            @if($lookup->group_id == "5")
+                                <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-field" id="pIdField">
+                    <label>I.D Number * <span id="pIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                    <input type="text" name="pIdNumber" id="pIdNumber" >
+                </div>
+
+                <div class="form-field hidden" id="pPassportField">
+                    <label>Passport Number * <span id="pPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="pPassportNo" id="pPassportNo" >
+                </div>
+
+                
+
+                <!-- <div class="form-field-big">
+                    <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                </div> -->
+                <div class="form-field-big" style="height:50px !important">
+                    <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;">
+                        <label for="app_address_p" style="width:400px">Same as Applicant's Home Address</label>
+                    </li>
+                </div>
+
+                <div class="pAddress">
+                    <div class="form-field-big" style="height:60px !important">
+                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required">
+                    </div>
+                    <div class="form-field-big" style="height:60px !important">
+                    <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" >
+                    </div>
+                    <div class="form-field" style="height:60px !important">
+                    <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  >
+                    </div>
+                    <div class="form-field" style="height:60px !important">
+                    <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" >
+                    </div>
+                </div>
+            <div class="form-field-big" id="changeLeaseDatesOnly">
+                <button type="button" id="sponsorSubmit" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Save Sponsor / Parent Information</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="myModalBursarInformation" class="modal">
+    <div class="modal-content " style="height: 765px;">
+        <span class="closeBursarinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <div class="form-card">
+            <h2>Bursar Information</h2>
+            <div class="form-field">
+                    <label>Company Name * <span id="bCompanyName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bCompanyName" id='bCompanyName' class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Registration Number * <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Contact Person * <span id="bContactperson_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bContactPerson" id="bContactPerson" class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <input type="text" name="bContactNumber" id="bContactNumber" class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>Email Address * <span id="bEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <input type="email" name="bEmail" id="bEmail" class="required">
+                </div>
+
+                <div class="form-field">
+                    <br/>
+                </div>
+
+                <div class="form-field-big">
+                    <label>Physical Address * <span id="bAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" placeholder="Street No" name="bAddress1" id="bAddress1" style="width:98% !important" class="required">
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                <span id="bAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="Suburb" name="bAddress2" id="bAddress2" style="width:98% !important" class="required">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="City" name="bAddressCity" id='bAddressCity'  class="required">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="bAddressPostal" id="bAddressPostal" class="required">
+                </div>
+
+                <div class="form-field">
+                    <label>How Is the Bursary Paid * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <select name="bPayment" id='bPayment' class="required">
+                    <option value="" disabled selected>Please select one</option>
+                        <option value="Directly to the RESIDENCE" >Directly to the RESIDENCE</option>
+                        <option value="Directly to the STUDENT" >Directly to the STUDENT</option>
+                        <option value="Via an INTERMEDIARY" >Via an INTERMEDIARY</option>
+                    </select>
+                </div>
+
+                <div class="form-field" id="placeholder">
+                    <br/>
+                </div>
+
+                <div id="viaInt" class="hidden">
+
+                    <div class="form-field">
+                        <label>Intermediary * <span id="bint_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <select name="bint" id='bint'>
+                        <option value="" disabled selected>Please select one</option>
+                            <option value="Fundi" >Fundi</option>
+                            <option value="Intellicard" >Intellicard</option>
+                            <option value="Other" >Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="spesificInt" class="hidden">
+
+                    <div class="form-field">
+                        <label>Specify Intermediary Name * <span id="bIntName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <input type="text" name="bIntName" id="bIntName">
+                    </div>
+
+                    <div class="form-field">
+                        <br/>
+                    </div>
+                </div>
+            <div class="form-field-big" id="changeLeaseDatesOnly">
+                <button type="button" id="saveBursarDetails" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Save Bursar Information</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="clearSpaceLogin"></div>
@@ -819,10 +1007,12 @@
             success: function (data) {
 
                 $(".address_btn").empty()
+
+                
+                $(".studentType_btn").empty().append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_student_type" edittype="form">Edit</button>')
         
 
                 if(data.rob_50_approve != 2 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
-                    console.log("1")
                     if($("#address_approved").val() != 1){
                         if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
                             $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
@@ -1538,10 +1728,27 @@
     }
 
     var modalLease = document.getElementById("myModalEditLease");
+    var modalBursarInfo = document.getElementById("myModalBursarInformation");
+    var modalSponInfo = document.getElementById("myModalSposorInformation");
     var spanLease = document.getElementsByClassName("closeLease")[0];
+    var spanBurInfo = document.getElementsByClassName("closeBursarinfo")[0];
+    var spanSponInfo = document.getElementsByClassName("closeSponsorinfo")[0];
+
+    
+
+    
+
+    
     
     spanLease.onclick = function() {
         modalLease.style.display = "none";
+    }
+
+    spanBurInfo.onclick = function() {
+        modalBursarInfo.style.display = "none";
+    }
+    spanSponInfo.onclick = function() {
+        modalSponInfo.style.display = "none";
     }
 
     bookingTypeDetails();
@@ -1629,6 +1836,162 @@
             },
         });
     }
+
+    $("input").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        // var required = document.getElementById(fieldId).required
+        var required = $("#"+fieldId).hasClass('required')
+
+        if($("#"+fieldId).val() == "" && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
+        }else{
+            $("#"+$(this)[0]["id"]).removeClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        }
+
+    });
+
+    $("select").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        // var required = document.getElementById(fieldId).required
+        var required = $("#"+fieldId).hasClass('required')
+
+        if($("#"+fieldId).val() == null && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
+        }else{
+            $("#"+$(this)[0]["id"]).removeClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        }
+    });
+
+    $("#bPayment").on('change', function(){
+        
+        if($("#bPayment").val() == "Via an INTERMEDIARY"){
+            $("#viaInt").removeClass("hidden")
+            $("#bint").addClass("required")
+            $("#placeholder").addClass("hidden")
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
+        }else{
+            $("#viaInt").addClass("hidden")
+            $("#bint").removeClass("required")
+            $("#bint").removeClass("fieldError")
+            $("#placeholder").removeClass("hidden")
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
+            $("#bIntName").removeClass("fieldError")
+        }
+    })
+
+    $("#bint").on('change', function(){
+        
+        if($("#bint").val() == "Other"){
+            $("#spesificInt").removeClass("hidden")
+            $("#bIntName").addClass("required")
+        }else{
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
+        }
+    })
+    $("#pIdNumber").on('keyup blur', function(){
+        let idNumber = $("#pIdNumber").val();
+
+        if(idNumber.length == 13){
+            ValidID(idNumber, "pIdNumber", "pIdNumber_error")
+        }else{
+            $("#pIdNumber").addClass("fieldError")
+            $("#pIdNumber_error").removeClass('hidden')
+        }
+
+    })
+    function ValidCell(cell, fieldId, fieldError){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+            $("#"+fieldId).removeClass("fieldError")
+            $("#"+fieldError).addClass('hidden')
+        }else{
+            $("#"+fieldId).addClass("fieldError")
+            $("#"+fieldError).removeClass('hidden')
+        }
+    }
+    $("#pCell_no").on('keyup blur', function(){
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error")
+    })
+
+    $("#bContactNumber").on('keyup blur', function(){
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+    })
+    $("#bAddressPostal").on('keyup blur', function(){
+        postal = $("#bAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#bAddressPostal").removeClass("fieldError")
+            $("#bAddressPostal_error").addClass('hidden')
+        }else{
+            $("#bAddressPostal").addClass("fieldError")
+            $("#bAddressPostal_error").removeClass('hidden')
+        }
+        
+    })
+
+    $("#pAddressPostal").on('keyup blur', function(){
+        postal = $("#pAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#pAddressPostal").removeClass("fieldError")
+            $("#pAddressPostal_error").addClass('hidden')
+        }else{
+            $("#pAddressPostal").addClass("fieldError")
+            $("#pAddressPostal_error").removeClass('hidden')
+        }
+        
+    })
+    function isEmail(email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
+    }
+    $("#pEmail").on('keyup blur', function(){
+        if(isEmail($("#pEmail").val())){
+            $("#pEmail").removeClass("fieldError")
+            $("#pEmail_error").addClass('hidden')
+        }else{
+            $("#pEmail").addClass("fieldError")
+            $("#pEmail_error").removeClass('hidden')
+        }
+    })
+
+    $("#bEmail").on('keyup blur', function(){
+        if(isEmail($("#bEmail").val())){
+            $("#bEmail").removeClass("fieldError")
+            $("#bEmail_error").addClass('hidden')
+        }else{
+            $("#bEmail").addClass("fieldError")
+            $("#bEmail_error").removeClass('hidden')
+        }
+    })
+    $("#pNationality").on('change', function(){
+        console.log($("#pNationality").val())
+        if($("#pNationality").val() == "South Africa"){
+            $("#pPassportField").addClass('hidden')
+            $("#pIdField").removeClass('hidden')
+
+            $("#pPassportNo").removeClass("required")
+            $("#pIdNumber").addClass("required")
+            $("#pPassportNo").removeClass("fieldError")
+        }else{
+            $("#pIdField").addClass('hidden')
+            $("#pPassportField").removeClass('hidden')
+
+            $("#pPassportNo").addClass("required")
+            $("#pIdNumber").removeClass("required")
+            $("#pIdNumber").removeClass("fieldError")
+        }
+    })
 
     $("#changeBookingType").on('click', function(){
 
@@ -2759,6 +3122,16 @@
 
                 let btn = $(this);
 
+                if(formId == 'inline_edit_student_type'){
+                    if($("#studentType").val() == "Cash / Direct"){
+                        var modal = document.getElementById("myModalSposorInformation");
+                        modal.style.display = "block";
+                    }else if($("#studentType").val() == "Bursary"){
+                        var modal = document.getElementById("myModalBursarInformation");
+                        modal.style.display = "block";
+                    }
+                }
+
                 $.ajax({
                     type: "post",
                     url: "/save-inline-data",
@@ -2914,6 +3287,203 @@
             }
         })
     }
+
+    $("#app_address_p").on('change', function(){
+
+    if(document.getElementById('app_address_p').checked == true){
+        $(".pAddress").addClass("hidden");
+    }else{
+        $(".pAddress").removeClass('hidden')
+    }
+    })
+
+    $("#sponsorSubmit").on('click', function(){
+        //Check if any hidden fields are required, remove required check
+        $('.hidden .fieldError').removeClass('fieldError').val('');
+        $("#sponsorSubmit").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+
+        var req = 1;
+
+        if($("#app_address_p").val() !== '1'){
+            var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality", "pAddress1", "pAddress2", "pAddressCity", "pAddressPostal"];
+        }else{
+            var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality"];
+        }
+
+        if($("#pNationality").val() == "South Africa"){
+            sponArr.push("pIdNumber")
+        }else{
+            sponArr.push("pPassportNo")
+        }
+
+        sponArr.forEach( function(value){
+            if($("#"+value).val() === "" || $("#"+value).val() === null){
+
+                $("#"+value).addClass("fieldError")
+                $("#"+value+"_error").removeClass("hidden")
+            }
+        })
+
+        if ($('.fieldDuplicate').length > 0) {
+            req = 0;
+        }
+
+        if ($('.fieldError').length > 0) {
+            req = 0;
+        }
+
+        if(req == 0){
+            $("#sponsorSubmit").empty().append('Save Sponsor / Parent Information')
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
+
+            return false;
+        }else{
+            let total = 1
+            $('.fieldError').each( function(){
+                if($(this).val() === ""){
+                    total = 0
+
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
+                }
+            })
+
+            if(total == 0){
+                $("#sponsorSubmit").empty().append('Save Sponsor / Parent Information')
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
+
+                return false;
+            }else{
+                $.ajax({
+                    type: "post",
+                    url: "/update-sponsor-details",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        pFirstName: $("#pFirstName").val(),
+                        pLastName: $("#pLastName").val(),
+                        pCell_no: $("#pCell_no").val(),
+                        pEmail: $("#pEmail").val(),
+                        pNationality: $("#pNationality").val(),
+                        pPassportNo: $("#pPassportNo").val(),
+                        pIdNumber: $("#pIdNumber").val(),
+                        app_address_p: $("#app_address_p").val(),
+                        pAddress1: $("#pAddress1").val(),
+                        pAddress2: $("#pAddress2").val(),
+                        pAddressCity: $("#pAddressCity").val(),
+                        pAddressPostal: $("#pAddressPostal").val(),
+                    },
+
+                    success: function (data) {
+
+                        window.location.reload();
+                    },
+                });
+            }
+        }
+    })
+
+    $("#saveBursarDetails").on('click', function(){
+        //Check if any hidden fields are required, remove required check
+        $('.hidden .fieldError').removeClass('fieldError').val('');
+        $("#saveBursarDetails").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+
+        var req = 1;
+
+        var burArr = ["bCompanyName", "bRegistrationNo", "bContactPerson", "bContactNumber", "bEmail", "bAddress1", "bAddress2", "bAddressCity", "bAddressPostal", "bPayment"];
+
+
+        if($("#bPayment").val() == "Via an INTERMEDIARY"){
+            burArr.push("bint")
+        }
+
+        if($("#bint").val() == "Other"){
+            burArr.push("bIntName")
+        }
+
+        burArr.forEach( function(value){
+            if($("#"+value).val() === "" || $("#"+value).val() === null){
+
+                $("#"+value).addClass("fieldError")
+                $("#"+value+"_error").removeClass("hidden")
+            }
+        })
+
+        if ($('.fieldDuplicate').length > 0) {
+            req = 0;
+        }
+
+        if ($('.fieldError').length > 0) {
+            req = 0;
+        }
+
+        if(req == 0){
+            $("#saveBursarDetails").empty().append('Save Bursar Information')
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
+
+            return false;
+        }else{
+            let total = 1
+            $('.fieldError').each( function(){
+                if($(this).val() === ""){
+                    total = 0
+
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
+                }
+            })
+
+            if(total == 0){
+                $("#saveBursarDetails").empty().append('Save Bursar Information')
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
+
+                return false;
+            }else{
+                $.ajax({
+                    type: "post",
+                    url: "/update-bursar-details",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        bCompanyName: $("#bCompanyName").val(),
+                        bRegistrationNo: $("#bRegistrationNo").val(),
+                        bContactPerson: $("#bContactPerson").val(),
+                        bAddress1: $("#bAddress1").val(),
+                        bAddress2: $("#bAddress2").val(),
+                        bAddressCity: $("#bAddressCity").val(),
+                        bAddressPostal: $("#bAddressPostal").val(),
+                        bPayment: $("#bPayment").val(),
+                        bint: $("#bint").val(),
+                        bIntName: $("#bIntName").val(),
+
+                    },
+
+                    success: function (data) {
+
+                        window.location.reload();
+                    },
+                });
+            }
+        }
+    })
 
 </script>
 

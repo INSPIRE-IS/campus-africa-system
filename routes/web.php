@@ -175,6 +175,9 @@ Route::post('/set-page-session-order', [HomeController::class, 'set_page_session
 
 Route::post('/cancel-lease', [HomeController::class, 'cancel_lease']);
 
+Route::post("/update-sponsor-details", [HomeController::class, 'update_sponsor_details']);
+Route::post("/update-bursar-details", [HomeController::class, 'update_bursar_details']);
+
 
 //Documents
 Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);

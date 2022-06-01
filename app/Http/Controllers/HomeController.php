@@ -5079,6 +5079,43 @@ class HomeController extends Controller
                 <div class="app_details_btn"></div>
                 <?php
             }
+        }else if($request->formId == "inline_edit_student_type"){
+            if ($request->type == "form") {
+                ?>
+                <form class="edit_info_inline">
+                    <span style='font-weight:bold'>Student Type</span>
+                    <div class="form-field">    
+                        <br/>
+                        <label> <span id="studentType_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                            <select name="studentType" id='studentType' class="required">
+                                <option value="" selected disabled>Select a Student Type</option>
+                                <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                                <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                                <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                            </select>
+                    </div> 
+                    
+                    <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
+                    <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+
+                    <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
+                    <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
+                </form>
+                <?php
+            } else {
+                echo '<p class="listHeader">Student Type</p>';
+
+                if($user->studentType == "Cash / Direct"){
+                    echo '<span id="studentUserType" class="Cash / Direct">Cash</span><br/>';
+                }else{
+                    echo '<span id="studentUserType" class="'.$user->studentType.'">'.$user->studentType.'</span><br/>';
+                }
+
+                ?>
+
+                <div class="studentType_btn"></div>
+                <?php
+            }
         }
     }
 
@@ -5100,6 +5137,14 @@ class HomeController extends Controller
                 'userAddressPostal' => $request->userAddressPostal
             ];
 
+        }elseif($request->task == 'inline_edit_student_type'){
+            $newData = [
+                'studentType|Student Type' => $request->studentType,
+            ];
+
+            $updateData = [
+                'studentType' => $request->studentType,
+            ];
         } elseif ($request->task == "inline_edit_kin") {
             $newData = [
                 'kinTitle|Title' => $request->kinTitle,
@@ -5486,6 +5531,90 @@ class HomeController extends Controller
         }
 
         return $available;
+    }
+
+    public function update_sponsor_details(Request $request){
+
+        $userCurr = User::where('id', $request->userId)->first();
+
+        if($request->app_address_p == '1'){
+            $request->pAddress1 = $userCurr->userAddress1;
+            $request->pAddress2 = $userCurr->userAddress2;
+            $request->pAddressCity = $userCurr->userAddressCity;
+            $request->pAddressPostal = $userCurr->userAddressPostal;
+        }
+        
+        $updateUserArr = [
+            'Sponsor First Name|sponFirstName' => $request->pFirstName,
+            'Sponsor Last Name|sponLastName' => $request->pLastName,
+            'Sponser Cell|sponCell' => $request->pCell_no,
+            'Sponsor Email|sponEmail' => $request->pEmail,
+            'Sponsor ID Number|sponId' => $request->pIdNumber,
+            'Sponsor Nationality|pNationality' => $request->pNationality,
+            'Sponsor Passport Number|pPassportNo' => $request->pPassportNo,
+            'Sponsor Street No|pAddress1' => $request->pAddress1,
+            'Sponsor Suburb|pAddress2' => $request->pAddress2,
+            'Sponsor City|pAddressCity' => $request->pAddressCity,
+            'Sponsor Postal Code|pAddressPostal' => $request->pAddressPostal,
+            'Sponsor Address same as Applicant Home Address|app_address_p' => $request->app_address_p,
+        ];
+        
+
+        foreach($updateUserArr as $key => $value){
+            $actionName = explode("|", $key)[0];
+            $keyNameName = explode("|", $key)[1];
+
+            if($userCurr->$keyNameName !== $value){
+                ActionList::create([
+                    "userUid" => $request->userId,
+                    "action" => "Updated ".$actionName." from ".$userCurr->$keyNameName." to ".$value,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+
+                User::where('id', $request->userId)->update([$keyNameName => $value]);
+            }
+        }
+
+
+    }
+
+    public function update_bursar_details(Request $request){
+        $userCurr = User::where('id', $request->userId)->first();
+        
+        $updateUserArr = [
+            'Bursar Company Name|burCompanyName' => $request->bCompanyName,
+            'Bursar Registration Number|burRegNo' => $request->bRegistrationNo,
+            'Bursar Contact Person|burContactPerson' => $request->bContactPerson,
+            'Bursar Contact number|burContactNo' => $request->bContactNumber,
+            'Bursar Email|burEmail' => $request->bEmail,
+            'Bursar Street Number|bAddress1' => $request->bAddress1,
+            'Bursar Suburb|bAddress2' => $request->bAddress2,
+            'Bursar City|bAddressCity' => $request->bAddressCity,
+            'Bursar postal Address|bAddressPostal' => $request->bAddressPostal,
+            'Bursar Payment|bPayment' => $request->bPayment,
+            'Bursar Intermediary|bint' => $request->bint,
+            'Bursar Intermediary Name|bIntName' => $request->bIntName,
+        ];
+        
+
+        foreach($updateUserArr as $key => $value){
+            $actionName = explode("|", $key)[0];
+            $keyNameName = explode("|", $key)[1];
+
+            if($userCurr->$keyNameName !== $value){
+                ActionList::create([
+                    "userUid" => $request->userId,
+                    "action" => "Updated ".$actionName." from ".$userCurr->$keyNameName." to ".$value,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+
+                User::where('id', $request->userId)->update([$keyNameName => $value]);
+            }
+        }
     }
     
 
