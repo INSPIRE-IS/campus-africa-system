@@ -50,6 +50,8 @@ Route::post('/approve-inline-data', [HomeController::class, 'approve_inline_data
 
 Route::post('/action/file', [HomeController::class, 'action_file']);
 
+// Route::get("/check_booking/{id}", [HomeController::class, 'check_booking']);
+
 Route::get('/action-list/{userId}/{filter}', [HomeController::class, 'action_list']);
 Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document_list']);
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
@@ -69,12 +71,16 @@ Route::get('/invoices', [HomeController::class, 'invoices']);
 Route::post('/activate_mailer', [HomeController::class, 'activate_mailer']);
 Route::post('/inactivate_mailer', [HomeController::class, 'inactivate_mailer']);
 
-Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
-Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
-Route::post("/saveMailAav", [HomeController::class, 'saveMailAav']);
-Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
-Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
-Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
+Route::post("/saveMail", [HomeController::class, 'saveMail']);
+Route::get("/get-mail-list", [HomeController::class, 'get_mail_list']);
+Route::get('/verify-email-account', [ApplicationController::class, 'verify_email_account']);
+
+// Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
+// Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
+// Route::post("/saveMailAav", [HomeController::class, 'saveMailAav']);
+// Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
+// Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
+// Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
 
 Route::get("/users", [HomeController::class, 'users'])->name('users');
 Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);

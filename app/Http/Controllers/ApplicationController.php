@@ -885,4 +885,11 @@ class ApplicationController extends Controller
 
         
     }
+
+    public function verify_email_account(Request $request){
+
+        User::where('id', Auth::user()->id)->update(['onboard_complete' => 2, 'email_verified' => 1]);
+
+        return redirect('/dashboard');
+    }
 }
