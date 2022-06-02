@@ -151,6 +151,11 @@
                     <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1">
                     <label for="role_nsfas_approval_upload" style="width:500px">NSFAS File Upload</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_change_student_type" name="role_change_student_type" value="1">
+                    <label for="role_change_student_type" style="width:500px">Change Student Type</label>
+                </li>
+                
             </ul>
         </div>
 

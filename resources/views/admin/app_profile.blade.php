@@ -59,13 +59,15 @@
         @endif
         
 
-        <div class="col-3" id="col3">
-            <div class="form" id="inline_edit_student_type">
-                <p class="listHeader">Student Type</p>
-                <span id="studentUserType" class="{{$user[0]['userInfo']['studentType']}}"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif </span><br/>
-                <div class="studentType_btn"></div>
+        @if($user[0]['userInfo']['rob_55_lease'] != "2" && Auth::user()->role_change_student_type == '1')
+            <div class="col-3" id="col3">
+                <div class="form" id="inline_edit_student_type">
+                    <p class="listHeader">Student Type</p>
+                    <span id="studentUserType" class="{{$user[0]['userInfo']['studentType']}}"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif </span><br/>
+                    <div class="studentType_btn"></div>
+                </div>
             </div>
-        </div>
+        @endif
         
     </div>
 </div>
@@ -663,7 +665,7 @@
 </div>
 
 <div id="myModalBursarInformation" class="modal">
-    <div class="modal-content " style="height: 765px;">
+    <div class="modal-content " style="height: 860px;">
         <span class="closeBursarinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span>
         <div class="form-card">
             <h2>Bursar Information</h2>
@@ -992,7 +994,13 @@
                     var IDspon = data['pPassportNo']
                 }
 
-                $(".burPaymentDetails").empty().append(studentType+"<br/>"+bPayment+" "+bint)
+                if(studentType == "Bursary"){
+                    $(".burPaymentDetails").empty().append(studentType+"<br/>"+bPayment+" "+bint)
+                }else{
+                    $(".burPaymentDetails").empty().append(studentType)
+                }
+
+                
 
                 $(".sponInfoSection").empty().append(data['sponFirstName']+" "+data['sponLastName']+"<br/>"+data['sponCell']+"<br/>"+data['sponEmail']+"<br/>"+data['pNationality']+"<br/>"+IDspon+"<br/>"+data['pAddress1']+", "+data['pAddress2']+"<br/>"+data['pAddressCity']+", "+data['pAddressPostal'])
             }
@@ -3122,13 +3130,17 @@
 
                 let btn = $(this);
 
+                let infoData = "NSFAS";
+
                 if(formId == 'inline_edit_student_type'){
                     if($("#studentType").val() == "Cash / Direct"){
                         var modal = document.getElementById("myModalSposorInformation");
                         modal.style.display = "block";
+                        infoData = "CASH";
                     }else if($("#studentType").val() == "Bursary"){
                         var modal = document.getElementById("myModalBursarInformation");
                         modal.style.display = "block";
+                        infoData = "BURSARY"
                     }
                 }
 
@@ -3140,6 +3152,10 @@
                     success: function (data) {
 
                         $(btn).next().click();
+
+                        if(infoData == "NSFAS"){
+                            window.location.reload();
+                        }
         
                     },
                 });

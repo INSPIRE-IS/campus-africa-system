@@ -1019,6 +1019,7 @@ class HomeController extends Controller
             "role_funding" => $request->role_funding !== '1' ? 0 : 1,
             "role_app_lease" => $request->role_app_lease !== '1' ? 0 : 1,
             "template" => $request->template,
+            "role_change_student_type" => $request->role_change_student_type,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -1602,6 +1603,7 @@ class HomeController extends Controller
             "role_funding" => $request->role_funding !== '1' ? 0 : 1,
             "role_app_lease" => $request->role_app_lease !== '1' ? 0 : 1,
             "template" => $request->template,
+            "role_change_student_type" => $request->role_change_student_type,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -5144,7 +5146,26 @@ class HomeController extends Controller
 
             $updateData = [
                 'studentType' => $request->studentType,
+                'rob_30_funds' => 0,
+                'rob_50_approve' => 0,
+                'rob_55_lease' => 3,
+                'burser_approved' => null,
+                'parent_approved' => null,
             ];
+
+            $lease = UserFiles::where('userUid', $request->userUid)->where('fileId', 'moveIn')->first();
+            $bursary = UserFiles::where('userUid', $request->userUid)->where('fileId', 'bursaryApproval')->first();
+            $bankStatement = UserFiles::where('userUid', $request->userUid)->where('fileId', 'bankStatement')->first();
+
+            if(!empty($lease)){
+                UserFiles::where('userUid', $request->userUid)->where('fileId', 'moveIn')->delete();
+            }
+            if(!empty($bursary)){
+                UserFiles::where('userUid', $request->userUid)->where('fileId', 'bursaryApproval')->update(['status' => 'Rejected']);
+            }
+            if(!empty($bankStatement)){
+                UserFiles::where('userUid', $request->userUid)->where('fileId', 'bankStatement')->update(['status' => 'Rejected']);
+            }
         } elseif ($request->task == "inline_edit_kin") {
             $newData = [
                 'kinTitle|Title' => $request->kinTitle,
