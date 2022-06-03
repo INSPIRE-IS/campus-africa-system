@@ -19,7 +19,7 @@ class BookingReportController extends Controller
         $lookupYear = Lookups::where('group_id', '4')->first();
         $propertyData = Property::get();
         $allBookings = Booking::where('year', $lookupYear->lookup_name)->get();
-        $allRoomTypes = RoomTypes::get();
+        $allRoomTypes = RoomTypes::where('name', '!=', 'Building Manager')->get();
 
         $summaryData = [];
 
@@ -69,8 +69,10 @@ class BookingReportController extends Controller
                             if(!empty($user)){
                                 if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
                                     $roomSummary['room_allocated']++;
+                                    $propSummary['beds_allocated']++;
                                 }else if($user->rob_10_fee == '2' && $user->rob_40_bed == '1'){
                                     $roomSummary['room_waitlisted']++;
+                                    $propSummary['beds_waitlisted']++;
                                 }
                             }
                         }
@@ -87,19 +89,19 @@ class BookingReportController extends Controller
                 } 
             }
 
-            foreach($allBookings as $booking){
-                if($booking->property == $res->id){
-                    $user = User::where('id', $booking->userId)->first();
+            // foreach($allBookings as $booking){
+            //     if($booking->property == $res->id){
+            //         $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
 
-                    if(!empty($user)){
-                        if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
-                            $propSummary['beds_allocated']++;
-                        }else if($user->rob_10_fee == '2' && $user->rob_40_bed == '1'){
-                            $propSummary['beds_waitlisted']++;
-                        }
-                    }
-                }
-            }
+            //         if(!empty($user)){
+            //             if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
+            //                 $propSummary['beds_allocated']++;
+            //             }else if($user->rob_10_fee == '2' && $user->rob_40_bed == '1'){
+            //                 $propSummary['beds_waitlisted']++;
+            //             }
+            //         }
+            //     }
+            // }
 
             $propSummary['total_bookings'] = $propSummary['beds_allocated'] + $propSummary['beds_waitlisted'];
             
