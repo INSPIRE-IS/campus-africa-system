@@ -607,7 +607,7 @@
                 $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 Swal.fire({
-                    // title: 'Please consent to the ',
+                    title: 'Please accept the POPI Act to continue',
                     text: "Consolidated Urban Management Corporation (Pty) Ltd and it's associated companies, which include the Campus Africa & 49 Jorissen brands, is compliant with the Protection of Personal Information Act (POPIA), also known as the POPI Act, which is mandatory for all organisations in South Africa. POPI makes it illegal for us to collect, use or store the personal information of customers and businesses unless it is done in accordance with the laws and regulations prescribed in the POPI Act.",
                     icon: 'warning',
                     showCancelButton: true,
