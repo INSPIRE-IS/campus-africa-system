@@ -9,6 +9,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LookupsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\BookingReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -194,3 +195,6 @@ Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePas
 
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::post("/check-building-prefix", [HomeController::class, 'check_building_prefix']);
+
+Route::get('/booking-summary', [BookingReportController::class, 'booking_summary']);
+Route::post('/update/room-activation', [BookingReportController::class, 'room_activation']);

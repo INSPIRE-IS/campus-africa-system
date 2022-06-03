@@ -214,6 +214,16 @@
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1">
                     <label for="role_lookup" style="width:500px">Manage Lookups</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_view_booking_summary" name="role_view_booking_summary" value="1">
+                    <label for="role_view_booking_summary" style="width:500px">View Booking Summary</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_toggle_online_booking" name="role_toggle_online_booking" value="1">
+                    <label for="role_toggle_online_booking" style="width:500px">Toggle Online Booking</label>
+                </li>
+                
+                
             </ul>
         </div>
 

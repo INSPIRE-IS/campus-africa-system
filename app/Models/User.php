@@ -131,7 +131,9 @@ class User extends Authenticatable
         'role_funding',
         'role_app_lease',
         'template',
-        'role_change_student_type'
+        'role_change_student_type',
+        'role_view_booking_summary',
+        'role_toggle_online_booking',
     ];
 
     public function files(){

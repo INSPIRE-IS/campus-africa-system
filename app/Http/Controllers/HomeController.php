@@ -1020,6 +1020,8 @@ class HomeController extends Controller
             "role_app_lease" => $request->role_app_lease !== '1' ? 0 : 1,
             "template" => $request->template,
             "role_change_student_type" => $request->role_change_student_type,
+            "role_view_booking_summary" => $request->role_view_booking_summary,
+            "role_toggle_online_booking" => $request->role_toggle_online_booking,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -1604,6 +1606,8 @@ class HomeController extends Controller
             "role_app_lease" => $request->role_app_lease !== '1' ? 0 : 1,
             "template" => $request->template,
             "role_change_student_type" => $request->role_change_student_type,
+            "role_view_booking_summary" => $request->role_view_booking_summary,
+            "role_toggle_online_booking" => $request->role_toggle_online_booking,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
