@@ -1703,6 +1703,10 @@ input:read-only {
   background-color: #e5b219;
 }
 
+#togglePassword, #togglePasswordConfirm{
+  cursor:pointer;
+}
+
 @media only screen and (max-width: 1485px) {
   .cards .customWhiteCard .section {
     padding-bottom: 100px;

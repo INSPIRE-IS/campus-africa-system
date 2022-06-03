@@ -55,7 +55,7 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
+                    <input type="number" name="pCell_no" id="pCell_no" class="required" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -115,7 +115,7 @@
                     </div>
                     <div class="form-field" style="height:60px !important">
                     <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->pAddressPostal;} ?>">
+                        <input type="number" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->pAddressPostal;} ?>">
                     </div>
                 </div>
 

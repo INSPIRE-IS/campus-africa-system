@@ -111,7 +111,7 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-                    <input type="text" name="kCellNo" id='kCellNo' class="required" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
+                    <input type="number" name="kCellNo" id='kCellNo' class="required" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -122,12 +122,12 @@
 
         <div class="form-field">
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="kWorkNo" id="kWorkNo" value="<?php if(isset($user)){ echo $user->kinWorkNo;} ?>">
+            <input type="number" name="kWorkNo" id="kWorkNo" value="<?php if(isset($user)){ echo $user->kinWorkNo;} ?>">
         </div>
 
         <div class="form-field">
             <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
-            <input type="text" name="kTeleNo" id='kTeleNo' value="<?php if(isset($user)){ echo $user->kinTelNo;} ?>">
+            <input type="number" name="kTeleNo" id='kTeleNo' value="<?php if(isset($user)){ echo $user->kinTelNo;} ?>">
         </div>
 
         <div class="addressSection <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'hidden';} ?>">
@@ -155,7 +155,7 @@
                 </div>
                 <div class="form-field" style="height:60px !important">
                 <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                    <input type="text" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->kinAddressPost;} ?>">
+                    <input type="number" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->kinAddressPost;} ?>">
                 </div>
             </div>
         </div>

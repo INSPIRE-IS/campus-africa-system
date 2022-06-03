@@ -68,7 +68,7 @@
 
         <div class="form-field">
             <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="cell_no_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-            <input type="text" name="cell_no" id="cell_no" class="required">
+            <input type="number" name="cell_no" id="cell_no" class="required">
         </div>
 
         <div class="form-field">
@@ -114,7 +114,7 @@
         </div>
         <div class="form-field" style="margin-top:-5px; height:60px !important">
         <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-            <input type="text" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal" class="required">
+            <input type="number" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal" class="required">
         </div>
 
         <div class="form-field">
@@ -274,10 +274,12 @@
         <div class="form-field">
             <label>Password * <span id="password_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="password" name="password" id="password" class="required">
+            <i class="far fa-eye" id="togglePassword" style="margin-left:-35px;"></i>
         </div>
         <div class="form-field">
             <label>Confirm Password * <span id="confirm_password_error" class="hidden" style="color:red"><small>This field is required</small></span> <span id="confirm_password_match_error" class="hidden" style="color:red"><small>Passwords don't match</small></span></label>
             <input type="password" name="confirm_password" id="confirm_password" class="required" onKeyUp="match()">
+            <i class="far fa-eye" id="togglePasswordConfirm" style="margin-left:-35px;"></i>
         </div>
 
         <button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26">Proceed to next step</button>
@@ -505,7 +507,7 @@
 
                             Swal.fire(
                                 'Email In Use',
-                                'This Email address is already registerd. Please Login to Continue',
+                                'This Email address is already registered. Please Login to Continue',
                                 'error'
                             )
 
@@ -546,6 +548,24 @@
             $("#passportNo").addClass("required")
             $("#idNumber").removeClass("required")
             $("#idNumber").removeClass("fieldError")
+        }
+    })
+
+    $("#togglePassword").on('click', function(){
+        var x = document.getElementById("password");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    })
+
+    $("#togglePasswordConfirm").on('click', function(){
+        var x = document.getElementById("confirm_password");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
         }
     })
 

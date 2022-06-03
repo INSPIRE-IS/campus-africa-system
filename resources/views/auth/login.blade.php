@@ -39,7 +39,7 @@
                 <h4 class="cardSubHeader">Already registered with Campus Africa? <br/> <span class="info">Come on in!</span></h4>
                 <form class="cardForm" method="POST" action="/login" >
                     @csrf
-                    <label>Email</label>
+                    <label style="color:#464749; font-size:21px; font-family: source-sans-pro, sans-serif;">Email</label>
                     <input type="text" name="email" id="email">
                     <span class="invalid-feedback hidden" role="alert" id="emailPasswordLess"><strong style="color:red">Email is a required field</strong></span>
                     @error('email')
@@ -48,7 +48,7 @@
                         </span>
                     @enderror
                     <!-- <br/> -->
-                    <label>Password</label>
+                    <label style="color:#464749; font-size:21px; font-family: source-sans-pro, sans-serif;">Password</label>
                     <input type="password" name="password" id="password">
                     @error('password')
                         <span class="invalid-feedback" role="alert">
