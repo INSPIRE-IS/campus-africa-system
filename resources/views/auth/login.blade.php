@@ -104,6 +104,12 @@
                             'Please click on the link sent in your email!',
                             'success'
                         )                      
+                    }else if(data == "admin"){
+                        Swal.fire(
+                            'Not a student',
+                            'This functionality is only available to students!',
+                            'error'
+                        ) 
                     }else{
                         Swal.fire(
                             'Email Not Found',
