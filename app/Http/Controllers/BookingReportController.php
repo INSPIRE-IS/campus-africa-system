@@ -18,7 +18,7 @@ class BookingReportController extends Controller
         $residences = Residence::get();
         $lookupYear = Lookups::where('group_id', '4')->first();
         $propertyData = Property::get();
-        $allBookings = Booking::get();
+        $allBookings = Booking::where('year', $lookupYear->lookup_name)->get();
         $allRoomTypes = RoomTypes::get();
 
         $summaryData = [];
@@ -33,8 +33,11 @@ class BookingReportController extends Controller
 
             foreach($propertyData as $prop){
                 if($prop->residence == $res->id){
-                    if(($prop->year == $lookupYear->lookup_name || ($prop->year < $lookupYear->lookup_name && $prop->year_end == '0')) && $prop->inventory == '1'){
-                        $propSummary['total_beds']++;
+
+                    if(($prop->year == $lookupYear->lookup_name || $prop->year < $lookupYear->lookup_name) && $prop->inventory == '1'){
+                        if($prop->year_end == '0' || $prop->year_end == $lookupYear->lookup_name){
+                            $propSummary['total_beds']++;
+                        }
                     }
                 }
             }
@@ -51,15 +54,17 @@ class BookingReportController extends Controller
 
                     foreach($propertyData as $prop){
                         if($prop->residence == $res->id && $room->id == $prop->room_type){
-                            if(($prop->year == $lookupYear->lookup_name || ($prop->year < $lookupYear->lookup_name && $prop->year_end == '0')) && $prop->inventory == '1'){
-                                $roomSummary['room_beds']++;
+                            if(($prop->year == $lookupYear->lookup_name || $prop->year < $lookupYear->lookup_name) && $prop->inventory == '1'){
+                                if($prop->year_end == '0' || $prop->year_end == $lookupYear->lookup_name){
+                                    $roomSummary['room_beds']++;
+                                }
                             }
                         }
                     }
 
                     foreach($allBookings as $booking){
                         if($booking->property == $res->id && $booking->roomType == $room->id){
-                            $user = User::where('id', $booking->userId)->first();
+                            $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
         
                             if(!empty($user)){
                                 if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
@@ -97,7 +102,13 @@ class BookingReportController extends Controller
             }
 
             $propSummary['total_bookings'] = $propSummary['beds_allocated'] + $propSummary['beds_waitlisted'];
-            $propSummary['booking_percent'] = round($propSummary['total_bookings'] / $propSummary['total_beds'] * 100);
+            
+
+            if($propSummary['total_bookings'] == 0 || $propSummary['total_beds'] == 0){
+                $propSummary['booking_percent'] = 0;
+            }else{
+                $propSummary['booking_percent'] = round($propSummary['total_bookings'] / $propSummary['total_beds'] * 100);
+            }
 
             array_push($summaryData, $propSummary);
 
