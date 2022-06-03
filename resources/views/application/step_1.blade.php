@@ -606,37 +606,53 @@
 
                 $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-                $.ajax({
-                        type: "post",
-                        url: "/registration_step_one",
-                        data: {
-                            firstName: $("#firstName").val(), 
-                            lastName: $("#lastName").val(), 
-                            title: $("#title").val(), 
-                            dob: $("#dob").val(), 
-                            cell_no: $("#cell_no").val(), 
-                            email: $("#email").val(), 
-                            idNumber: $("#idNumber").val(), 
-                            nationality: $("#nationality").val(),
-                            passportNo: $("#passportNo").val(), 
-                            institStudy: $("#institStudy").val(), 
-                            studNumber: $("#studNumber").val(), 
-                            faculty: $("#faculty").val(), 
-                            year: $("#year").val(),
-                            userAddress1: $("#userAddress1").val(),
-                            userAddress2: $("#userAddress2").val(),
-                            userAddressCity: $("#userAddressCity").val(),
-                            userAddressPostal: $("#userAddressPostal").val(),
-                            studentType: $("#studentType").val(),
-                            yearOfStudy: $("#yearOfStudy").val(),
-                            property: $("#property").val(),
-                            roomType: $("#roomType").val(),
-                        },
+                Swal.fire({
+                    // title: 'Please consent to the ',
+                    text: "Consolidated Urban Management Corporation (Pty) Ltd and it's associated companies, which include the Campus Africa & 49 Jorissen brands, is compliant with the Protection of Personal Information Act (POPIA), also known as the POPI Act, which is mandatory for all organisations in South Africa. POPI makes it illegal for us to collect, use or store the personal information of customers and businesses unless it is done in accordance with the laws and regulations prescribed in the POPI Act.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Accept'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "post",
+                            url: "/registration_step_one",
+                            data: {
+                                firstName: $("#firstName").val(), 
+                                lastName: $("#lastName").val(), 
+                                title: $("#title").val(), 
+                                dob: $("#dob").val(), 
+                                cell_no: $("#cell_no").val(), 
+                                email: $("#email").val(), 
+                                idNumber: $("#idNumber").val(), 
+                                nationality: $("#nationality").val(),
+                                passportNo: $("#passportNo").val(), 
+                                institStudy: $("#institStudy").val(), 
+                                studNumber: $("#studNumber").val(), 
+                                faculty: $("#faculty").val(), 
+                                year: $("#year").val(),
+                                userAddress1: $("#userAddress1").val(),
+                                userAddress2: $("#userAddress2").val(),
+                                userAddressCity: $("#userAddressCity").val(),
+                                userAddressPostal: $("#userAddressPostal").val(),
+                                studentType: $("#studentType").val(),
+                                yearOfStudy: $("#yearOfStudy").val(),
+                                property: $("#property").val(),
+                                roomType: $("#roomType").val(),
+                            },
 
-                        success: function (data) {
-                            window.location.replace('/online-application-verify/'+data)   
-                        },
-                    });
+                            success: function (data) {
+                                window.location.replace('/online-application-verify/'+data)   
+                            },
+                        });
+                    }else{
+                        $("#submitForm").empty().append('Proceed to next step');
+                    }
+                });
+
+                
             }
         }
 
