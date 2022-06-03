@@ -33,7 +33,7 @@ class BookingReportController extends Controller
 
             foreach($propertyData as $prop){
                 if($prop->residence == $res->id){
-                    if(($prop->year == $lookupYear->lookup_name || ($prop->year < $lookupYear->lookup_name && $year_end == '0')) && $prop->inventory == '1'){
+                    if(($prop->year == $lookupYear->lookup_name || ($prop->year < $lookupYear->lookup_name && $prop->year_end == '0')) && $prop->inventory == '1'){
                         $propSummary['total_beds']++;
                     }
                 }
@@ -51,7 +51,7 @@ class BookingReportController extends Controller
 
                     foreach($propertyData as $prop){
                         if($prop->residence == $res->id && $room->id == $prop->room_type){
-                            if(($prop->year == $lookupYear->lookup_name || ($prop->year < $lookupYear->lookup_name && $year_end == '0')) && $prop->inventory == '1'){
+                            if(($prop->year == $lookupYear->lookup_name || ($prop->year < $lookupYear->lookup_name && $prop->year_end == '0')) && $prop->inventory == '1'){
                                 $roomSummary['room_beds']++;
                             }
                         }
