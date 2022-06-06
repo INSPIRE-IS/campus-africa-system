@@ -34,199 +34,47 @@
             
         </div>
 
-        <div class="whiteYellowCard smallerCard"> 
-            
-            <h2 class="cardHeader  <?php if($appHeader == 0){ echo 'greenCardHeader';}elseif($appHeader == 1){ echo 'yellowCardHeader';}else{ echo 'redCardHeader';}?>">Application
-                <div class="small"><span class="text"><?php if($appHeader == 0){ echo 'Confirmed';}elseif($appHeader == 1){ echo 'Pending Approval';}else{ echo 'Awaiting Documents';}?> </span>
-                    <div class="circle">
-                    <?php if($appHeader == 0){ echo '<i class="fas fa-check"></i>';}else{ echo '<i class="fas fa-file-alt"></i>';}?>
-                    </div>
-                </div>
-            </h2>
-                
-            <div class="cardBody">
+        @if($bookHeader != '0')
+          @include('user.documents.bookingDocs')
+        @else
+          @include('user.documents.applicationDocs')
+        @endif
 
-            @foreach ($allFiles as $file)
-
-            
-
-                @if($file->fileId == 'bankStatement' || $file->fileId == 'studentCard' || $file->fileId == 'proofRegistration' || $file->fileId == 'bursaryApproval')
-
-                <div class="appAwait">
-                  <h3 class="uploadName">
-
-                    @if($file->fileId == 'copyID')
-                    COPY OF ID DOCUMENT
-                      @elseif($file->fileId == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file->fileId == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file->fileId == 'proofRegistration')
-                      PROOF OF REGISTRATION
-                      @elseif($file->fileId == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file->fileId == 'bursaryApproval')
-                        @if(Auth::user()->studentType == "NSFAS")
-                          NSFAS APPROVAL
-                        @else
-                          BURSARY APPROVAL
-                        @endif
-                      @elseif($file->fileId == 'moveIn')
-                        LEASE
-                    @endif
-
-                    @if($file->status == "Rejected")
-
-                        <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                          <span class="text">Outstanding</span>
-                          <i class="fas fa-file-upload" ></i>
-                          <i class="fas fa-exclamation-circle"></i>
-                      </label>
-                      </h3>
-                      <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
-
-                      <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
-                      
-                    @elseif($file->status == "None")
-                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                          <span class="text">Outstanding</span>
-                          <i class="fas fa-file-upload" ></i>
-                          <i class="fas fa-exclamation-circle"></i>
-                      </label>
-                      </h3>
-                      <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
-                    @elseif($file->status == "Uploaded")
-                      <label id="registrationPending" class="pending">
-                          <span class="text">Pending Approval</span>
-                          <i class="fad fa-minus-circle"></i>
-                      </label>
-                    @elseif($file->status == "Approved")
-                      <label class="approved">
-                            <span class="text">Approved</span>
-                            <i class="fas fa-check-circle"></i>
-                        </label>
-                    @endif
-
-                    </div>
-
-                @endif
-
-                
-                
-            @endforeach 
-
-
-        </div>
+        
     </div>
 
-    <div class="cards">
+    <div class="cards" id="bookingCardDash">
+
         <div class="whiteYellowCard smallerCard" style="margin-right:6%">
             <h2 class="cardHeader greyCardHeader" style="line-height:65px;">Booking Summary</h2>
-
-
             <div class="cardBody">
-            
-                <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
-                <h2 class="cardHeaderBlck" >
-                  <?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?> 
-                  @if(Auth::user()->rob_55_lease != '2')
-                    <br/> 
-                    <a href="/change-student-type"><button type="button" class="detailsChange" style="margin-top:-40px;">Change Student Type</button></a></h2>
-                  @endif
-                <br/>
-                <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
-                <h2 class="cardHeaderBlck" >#{{$booking->id}}</h2>
-                <br/>
-                <h4 class="cardSubHeaderGreyTxt">Year of Study</h4>
-                <h2 class="cardHeaderBlck" >{{$booking->year}}</h2>
-            </div>
-            
-            
-            
-        </div>
-        <div class="whiteYellowCard smallerCard">
-            
-            <h2 class="cardHeader <?php if($bookHeader == 0){ echo 'greenCardHeader';}elseif($bookHeader == 1){ echo 'yellowCardHeader';}else{ echo 'redCardHeader';}?>">Booking
-                <div class="small"><span class="text"><?php if($bookHeader == 0){ echo 'Confirmed';}elseif($bookHeader == 1){ echo 'Pending Approval';}else{ echo 'Awaiting Documents';}?> </span>
-                    <div class="circle">
-                    <?php if($bookHeader == 0){ echo '<i class="fas fa-check"></i>';}else{ echo '<i class="fas fa-file-alt"></i>';}?>
-                    </div>
-                </div>
-            </h2>
-                
-            <div class="cardBody">
-
-            @foreach ($allFiles as $file)
-
-                @if($file->fileId !== 'bankStatement' && $file->fileId !== 'studentCard' && $file->fileId !== 'proofRegistration' && $file->fileId !== 'bursaryApproval')
-
-                <div class="appAwait" id="idCopySection">
-                        <h3 class="uploadName">
-
-                        
-
-                          @if($file->fileId == 'copyID')
-                            I.D COPY
-                          @elseif($file->fileId == 'studentCard')
-                            STUDENT CARD
-                          @elseif($file->fileId == 'bankStatement')
-                            BANK STATEMENT
-                          @elseif($file->fileId == 'proofRegistration')
-                            REGISTRATION
-                          @elseif($file->fileId == 'proof_of_payment')
-                            BOOKING FEE PROOF OF PAYMENT
-                          @elseif($file->fileId == 'moveIn')
-                            LEASE
-                          @else
-                            <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file->fileId))); ?>
-                          @endif
-                            
-
-                          @if($file->status == "Rejected")
-
-                          <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                            <span class="text">Outstanding</span>
-                            <i class="fas fa-file-upload" ></i>
-                            <i class="fas fa-exclamation-circle"></i>
-                          </label>
-                          </h3>
-                          <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
-
-                          <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
-
-                          @elseif($file->status == "None")
-                          <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                            <span class="text">Outstanding</span>
-                            <i class="fas fa-file-upload" ></i>
-                            <i class="fas fa-exclamation-circle"></i>
-                          </label>
-                          </h3>
-                          <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
-                          @elseif($file->status == "Uploaded")
-                          <label id="registrationPending" class="pending">
-                            <span class="text">Pending Approval</span>
-                            <i class="fad fa-minus-circle"></i>
-                          </label>
-                          @elseif($file->status == "Approved")
-                          <label class="approved">
-                              <span class="text">Approved</span>
-                              <i class="fas fa-check-circle"></i>
-                          </label>
-                          @endif
-                        </h3>
-                    </div>
+              <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
+              <h2 class="cardHeaderBlck" >
+                <?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?> 
+                @if(Auth::user()->rob_55_lease != '2')
+                  <br/> 
+                  <a href="/change-student-type"><button type="button" class="detailsChange" id="studentChangeType" style="margin-top:-40px;">Change Student Type</button></a></h2>
                 @endif
-
-            @endforeach
-
-            </div>
+              <br/>
+              <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
+              <h2 class="cardHeaderBlck" >#{{$booking->id}}</h2>
+              <br/>
+              <h4 class="cardSubHeaderGreyTxt">Year of Study</h4>
+              <h2 class="cardHeaderBlck" >{{$booking->year}}</h2>
+            </div> 
         </div>
+
+        @if($bookHeader == '0')
+          @include('user.documents.bookingDocs')
+        @else
+          @include('user.documents.applicationDocs')
+        @endif
     </div>
 </div>
 
+<!-- <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
-<div class="clearSpaceLogin"></div>
-<div class="clearSpaceLogin"></div>
+<div class="clearSpaceLogin"></div> -->
 
 <div class="container">
     <div class="otherProperties">

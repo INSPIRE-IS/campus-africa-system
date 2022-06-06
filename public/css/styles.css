@@ -1969,6 +1969,16 @@ input:read-only {
     height: 120px !important;
   }
 
+  #bookingCardDash{
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  #studentChangeType{
+    float:none; 
+    margin-left:0px;
+  }
+
   #changeStudType{
     height:1600px;
   }

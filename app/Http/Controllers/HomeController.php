@@ -104,6 +104,7 @@ class HomeController extends Controller
                                 "fileId" => $file_search->fileId,
                                 "status" => $file_search->status !== null ? $file_search->status : "None",
                                 "fileUrl" => $file_search->fileUrl,
+                                "important" => $file_search->status == "Approved" ? 1 : $file_search->status == "Uploaded" ? 2 : 3,
                             );
                             array_push($allFiles, $output);
                         }else{
@@ -111,6 +112,7 @@ class HomeController extends Controller
                                 "fileId" => $file,
                                 "status" => "None",
                                 "fileUrl" => "",
+                                "important" => 3,
                             );
                             array_push($allFiles, $output);
                         }
@@ -147,6 +149,10 @@ class HomeController extends Controller
                 }
     
                 $booking = Booking::where('userId', Auth::user()->id)->first();
+
+                usort($allFiles, function($a, $b) {
+                    return $b->important - $a->important;
+                });
 
                 return view('user.dashboard', ["headerTitle" => "Your Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader]);
     
