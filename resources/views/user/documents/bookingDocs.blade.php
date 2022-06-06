@@ -1,4 +1,4 @@
-<div class="whiteYellowCard smallerCard">
+<div class="whiteYellowCard smallerCard" id="smallerBooking">
             
             <h2 class="cardHeader <?php if($bookHeader == 0){ echo 'greenCardHeader';}elseif($bookHeader == 1){ echo 'yellowCardHeader';}else{ echo 'redCardHeader';}?>">Booking
                 <div class="small"><span class="text"><?php if($bookHeader == 0){ echo 'Confirmed';}elseif($bookHeader == 1){ echo 'Pending Approval';}else{ echo 'Awaiting Documents';}?> </span>

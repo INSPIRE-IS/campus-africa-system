@@ -1974,6 +1974,13 @@ input:read-only {
     flex-direction: column-reverse;
   }
 
+  #smallerBooking{
+    height:380px !important;
+  }
+  #smallerApplication{
+    height:465px !important
+  }
+
   #studentChangeType{
     float:none; 
     margin-left:0px;

@@ -1,4 +1,4 @@
-<div class="whiteYellowCard smallerCard"> 
+<div class="whiteYellowCard smallerCard" id="smallerApplication"> 
             
             <h2 class="cardHeader  <?php if($appHeader == 0){ echo 'greenCardHeader';}elseif($appHeader == 1){ echo 'yellowCardHeader';}else{ echo 'redCardHeader';}?>">Application
                 <div class="small"><span class="text"><?php if($appHeader == 0){ echo 'Confirmed';}elseif($appHeader == 1){ echo 'Pending Approval';}else{ echo 'Awaiting Documents';}?> </span>
