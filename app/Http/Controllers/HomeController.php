@@ -5115,7 +5115,12 @@ class HomeController extends Controller
                 </form>
                 <?php
             } else {
-                echo $user->userEmail . "<br/>";
+                if($user->email_verified == '1'){
+                    echo $user->userEmail . "<i class='fas fa-check' style='color:green'></i><br/>"; 
+                }else{
+                    echo $user->userEmail . " &#10060;<br/>";
+                }
+                
                 echo $user->userCell . "<br/>";
 
                 ?>
@@ -5189,6 +5194,41 @@ class HomeController extends Controller
                 'userEmail' => $request->userEmail,
                 'userCell' => $request->userCell,
             ];
+
+            $userBefore = User::where('id', $request->userUid)->first();
+            if($request->userEmail !== $userBefore->userEmail){
+                User::where('id', $request->userUid)->update(["email_verified" => 0]);
+
+                $booking = Booking::where('userId', $request->userUid)->first();
+
+                $generator = new LoginUrl($userBefore);
+                $generator->setRedirectUrl('/verify-email-account');
+                $url = $generator->generate();
+
+                $message_replace['bookingRef'] = $booking->id;
+                $message_replace['name'] = $userBefore->userFirstName;
+                $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+                $message_replace['close_application_link']="</a>";
+
+                $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+                $mailerMessage = $mailerForMessage->message;
+
+                $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+
+                $data['name'] = $userBefore->userFirstName;
+                $data['email'] = $request->userEmail;
+                $data['messageForMail'] = $newMessage;
+
+                Mail::send('email.yellow_back', $data, function($message) use ($data) {
+                    // $message->to($data['email'], $data['name'])->subject
+                    //     ('Campus Africa User Application');
+                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa User Application');
+                    $message->from('noreply@campusafrica.co.za','Campus Africa');
+                });
+            }
         }
 
         if (isset($newData)) {
