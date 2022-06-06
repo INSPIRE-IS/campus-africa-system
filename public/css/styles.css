@@ -54,6 +54,15 @@ body {
 .greenBorder {
   border: 2px solid #6abc0b !important;
 }
+.yellowBorder{
+  border: 2px solid #f0e020 !important;
+}
+.redBorder{
+  border: 2px solid red !important;
+}
+#yellowClock{
+  color:#f0e020 !important;
+}
 
 .footer {
   width: 100%;
@@ -968,6 +977,20 @@ body {
   display: inline-block;
   background-color: #6abc0b;
   color: white;
+  cursor: pointer;
+  width: 99px;
+  height: 25px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 25px;
+  text-align: center;
+  margin-right: 18px;
+}
+.whiteYellowCard .uploadSection .toUploadLabel {
+  display: inline-block;
+  background-color: #f0e020;
+  color: black;
   cursor: pointer;
   width: 99px;
   height: 25px;

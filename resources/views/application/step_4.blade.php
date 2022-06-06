@@ -53,14 +53,16 @@
                     <h2 class="cardHeader">Booking<br/>Documents</h2>
 
                     <div class="cardBody">
-                        <label for="copyID" id="copyIDUpload" class="<?php if($IdCopy && $IdCopy->status == "Uploaded"){echo 'greenBorder';}?>" style="cursor:pointer">
+                        <label for="copyID" id="copyIDUpload" class="<?php if($IdCopy && $IdCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($IdCopy && $IdCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>" style="cursor:pointer">
                             <div class="uploadSection" id="copyIdCard">
                                 <h3 class="uploadName">I.D COPY</h3>
-                                <div class="uploadFileSection" >
+                                <div class="uploadFileSection" id="copyIDUploadSection">
                                 
                                 <div id="copyIDSection">
                                     <?php 
                                         if($IdCopy && $IdCopy->status == "Uploaded"){
+                                            echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                        }elseif($IdCopy && $IdCopy->status == "Approved"){
                                             echo ' <i class="fas fa-file successful"></i>';
                                         }else{
                                             echo '<i class="fas fa-file-upload" ></i>';
@@ -70,7 +72,9 @@
                                 
                                 <?php 
                                     if($IdCopy && $IdCopy->status == "Uploaded"){
-                                        echo '<label id="copyIdSucess" style="cursor: pointer" class="successLabel">UPLOADED</label>';
+                                        echo '<label id="copyIdSucess" class="toUploadLabel">UPLOADED</label>';
+                                    }elseif($IdCopy && $IdCopy->status == "Approved"){
+                                        echo '<label id="copyIdSucess" class="successLabel">Approved</label>';
                                     }else{ 
                                         echo ' <input type="file" id="copyID" onChange="UploadDocument(\'copyID\')" hidden/>';
                                     }
@@ -96,17 +100,19 @@
                 </div>
 
                 <div class="whiteYellowCard">
-                    <h2 class="cardHeader" style="height:130px;">Application</h2>
+                    <h2 class="cardHeader" style="height:130px;">Application<br/>Documents</h2>
                     
                     <div class="cardBody">
-                        <label for="studentCard" id="studentCardUpload" style="cursor:pointer" class="<?php if($StudentCopy && $StudentCopy->status == "Uploaded"){echo 'greenBorder';}?>">
+                        <label for="studentCard" id="studentCardUpload" style="cursor:pointer" class="<?php if($StudentCopy && $StudentCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($StudentCopy && $StudentCopy->status == "Approved"){echo 'greenBorder';}else{ echo 'redBorder';}?>">
                             <div class="uploadSection" id="copyStudentCard">
                                 <h3 class="uploadName">COPY OF STUDENT CARD</h3>
-                                <div class="uploadFileSection" >
+                                <div class="uploadFileSection" id="studentCardUploadSection">
                                     
                                     <div id="studentCardSection">
                                         <?php 
                                             if($StudentCopy && $StudentCopy->status == "Uploaded"){
+                                                echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                            }elseif($StudentCopy && $StudentCopy->status == "Approved"){
                                                 echo ' <i class="fas fa-file successful"></i>';
                                             }else{
                                                 echo '<i class="fas fa-file-upload" ></i>';
@@ -116,7 +122,9 @@
 
                                     <?php 
                                     if($StudentCopy && $StudentCopy->status == "Uploaded"){
-                                        echo '<label id="copyStudCardSucess" style="cursor: pointer" class="successLabel">UPLOADED</label>';
+                                        echo '<label id="copyStudCardSucess" class="toUploadLabel">UPLOADED</label>';
+                                    }elseif($StudentCopy && $StudentCopy->status == "Approved"){
+                                        echo '<label id="copyStudCardSucess" class="successLabel">Approved</label>';
                                     }else{ 
                                         echo ' <input type="file" id="studentCard" onChange="UploadDocument(\'studentCard\')" hidden/>';
                                     }
@@ -132,14 +140,16 @@
                         <br/>
                         
                         @if($user->studentType == "Cash / Direct")
-                            <label for="bankStatement" id="bankStatementUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'greenBorder';}?>">
+                            <label for="bankStatement" id="bankStatementUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
                                 <div class="uploadSection" id="copyBankStatement">
                                     <h3 class="uploadName">3 MONTHS BANK STATEMENTS</h3>
-                                    <div class="uploadFileSection" >
+                                    <div class="uploadFileSection" id="bankStatementUploadSection">
                                         
                                         <div id="bankStatementSection">
                                             <?php 
                                                 if($BankCopy && $BankCopy->status == "Uploaded"){
+                                                    echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                                }elseif($BankCopy && $BankCopy->status == "Approved"){
                                                     echo ' <i class="fas fa-file successful"></i>';
                                                 }else{
                                                     echo '<i class="fas fa-file-upload" ></i>';
@@ -149,7 +159,9 @@
 
                                         <?php 
                                             if($BankCopy && $BankCopy->status == "Uploaded"){
-                                                echo '<label id="bankStatementSuccess" style="cursor: pointer" class="successLabel">UPLOADED</label>';
+                                                echo '<label id="bankStatementSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($BankCopy && $BankCopy->status == "Approved"){
+                                                echo '<label id="bankStatementSuccess" class="successLabel">Approved</label>';
                                             }else{ 
                                                 echo '<input type="file" id="bankStatement" onChange="UploadDocument(\'bankStatement\')" hidden/>';
                                             }
@@ -161,14 +173,16 @@
                                 </div>
                             </label>
                         @else
-                            <label for="bursaryApproval" id="bursaryApprovalUpload" style="cursor:pointer" class="<?php if($BursaryCopy && $BursaryCopy->status == "Uploaded"){echo 'greenBorder';}?>">
+                            <label for="bursaryApproval" id="bursaryApprovalUpload" style="cursor:pointer" class="<?php if($BursaryCopy && $BursaryCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BursaryCopy && $BursaryCopy->status == "Approved"){echo 'greenBorder';}else{ echo 'redBorder';}?>">
                                 <div class="uploadSection" id="copybursaryApproval">
                                     <h3 class="uploadName">@if($user->studentType == "NSFAS") NSFAS @else BURSARY @endif APPROVAL</h3>
-                                    <div class="uploadFileSection" id="bursaryApprovalSection">
+                                    <div class="uploadFileSection" id="bursaryApprovalUploadSection">
                                         
                                         <div id="bursaryApprovalSection">
                                             <?php 
                                                 if($BursaryCopy && $BursaryCopy->status == "Uploaded"){
+                                                    echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                                }elseif($BursaryCopy && $BursaryCopy->status == "Approved"){
                                                     echo ' <i class="fas fa-file successful"></i>';
                                                 }else{
                                                     echo '<i class="fas fa-file-upload" ></i>';
@@ -178,7 +192,9 @@
 
                                         <?php 
                                             if($BursaryCopy && $BursaryCopy->status == "Uploaded"){
-                                                echo ' <label id="bursaryApprovalSuccess" style="cursor: pointer" class="successLabel">UPLOADED</label>';
+                                                echo ' <label id="bursaryApprovalSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($BursaryCopy && $BursaryCopy->status == "Approved"){
+                                                echo '<label id="bursaryApprovalSuccess" class="successLabel">Approved</label>';
                                             }else{ 
                                                 echo '<input type="file" id="bursaryApproval" onChange="UploadDocument(\'bursaryApproval\')" hidden/>';
                                             }
@@ -194,14 +210,16 @@
 
                         <br/>
                         
-                        <label for="proofRegistration" id="proofRegistrationUpload" style="cursor:pointer" class="<?php if($RegistrationCopy && $RegistrationCopy->status == "Uploaded"){echo 'greenBorder';}?>">
+                        <label for="proofRegistration" id="proofRegistrationUpload" style="cursor:pointer" class="<?php if($RegistrationCopy && $RegistrationCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($RegistrationCopy && $RegistrationCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
                             <div class="uploadSection" id="copyProofRegistration">
                                 <h3 class="uploadName">PROOF OF REGISTRATION</h3>
-                                <div class="uploadFileSection" id="proofRegistrationSection">
+                                <div class="uploadFileSection" id="proofRegistrationUploadSection">
                                     
                                         <div id="proofRegistrationSection">
                                             <?php 
                                                 if($RegistrationCopy && $RegistrationCopy->status == "Uploaded"){
+                                                    echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                                }elseif($RegistrationCopy && $RegistrationCopy->status == "Approved"){
                                                     echo ' <i class="fas fa-file successful"></i>';
                                                 }else{
                                                     echo '<i class="fas fa-file-upload" ></i>';
@@ -211,7 +229,9 @@
 
                                         <?php 
                                             if($RegistrationCopy && $RegistrationCopy->status == "Uploaded"){
-                                                echo '<label id="proofRegistrationSuccess" style="cursor: pointer" class="successLabel">UPLOADED</label>';
+                                                echo '<label id="proofRegistrationSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($RegistrationCopy && $RegistrationCopy->status == "Approved"){
+                                                echo '<label id="proofRegistrationSuccess" class="successLabel">Approved</label>';
                                             }else{ 
                                                 echo '<input type="file" id="proofRegistration" onChange="UploadDocument(\'proofRegistration\')" hidden/>';
                                             }
@@ -272,9 +292,13 @@
             success: function (data) {
                 if (data[0]> 0) {
                     
-                    $("#"+field+"Section").empty().append('<i class="fas fa-file successful"></i>')
-                    $("#"+field+"Sucess").removeClass('hidden')
-                    $("#"+field+"Upload").addClass('greenBorder')
+                    // $("#"+field+"Section").empty().append('<i class="fas fa-file successful"></i>')
+                    $("#"+field+"Section").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    // $("#"+field+"Sucess").removeClass('hidden')
+                    $("#"+field+"UploadSection").append('<label id="'+field+'Section" class="toUploadLabel">UPLOADED</label>')
+                    // $("#"+field+"Upload").addClass('greenBorder')
+                    $("#"+field+"Upload").addClass('yellowBorder')
+                    $("#"+field+"Upload").removeClass('redBorder')
                     
 
                 } else {
