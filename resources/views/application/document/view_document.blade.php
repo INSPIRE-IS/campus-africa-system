@@ -951,7 +951,7 @@
 
                     // $("#btn_clear_bed").addClass('hidden')
                     $("#btn_clear_bed").data('lease', 'true');
-                    $("#inline_edit_student_type").addClass('hidden')
+                    $(".studentType_btn").addClass('hidden')
 
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');

@@ -59,13 +59,15 @@
                 @endif
                 <a href="/reports">Reports</a>
 
+                @if(Auth::user()->role_view_booking_summary == '1')
+                    <a href="/booking-summary">Booking Summary</a>
+                @endif
+
                 @if(Auth::user()->role_manage_users == "1")
                     <a href="/users">Users</a>
                 @endif
 
-                @if(Auth::user()->role_view_booking_summary == '1')
-                    <a href="/booking-summary">Booking Summary</a>
-                @endif
+                
                 
                 <a href="/logout">Hi {{Auth::user()->userFirstName}}, Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">

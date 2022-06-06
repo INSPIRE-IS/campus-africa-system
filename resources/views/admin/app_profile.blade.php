@@ -59,15 +59,18 @@
         @endif
         
 
-        @if($user[0]['userInfo']['rob_55_lease'] != "2" && Auth::user()->role_change_student_type == '1')
+       
             <div class="col-3" id="col3">
                 <div class="form" id="inline_edit_student_type">
                     <p class="listHeader">Student Type</p>
                     <span id="studentUserType" class="{{$user[0]['userInfo']['studentType']}}"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif </span><br/>
-                    <div class="studentType_btn"></div>
+
+                    @if($user[0]['userInfo']['rob_55_lease'] != "2" && Auth::user()->role_change_student_type == '1')
+                        <div class="studentType_btn"></div>
+                    @endif
                 </div>
             </div>
-        @endif
+        
         
     </div>
 </div>
@@ -579,7 +582,7 @@
 
 <div id="myModalSposorInformation" class="modal">
     <div class="modal-content " style="height: 690px;">
-        <span class="closeSponsorinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <!-- <span class="closeSponsorinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span> -->
         <div class="form-card">
             <h2>Sponsor Information</h2>
             <div class="form-field">
@@ -666,7 +669,7 @@
 
 <div id="myModalBursarInformation" class="modal">
     <div class="modal-content " style="height: 860px;">
-        <span class="closeBursarinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <!-- <span class="closeBursarinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span> -->
         <div class="form-card">
             <h2>Bursar Information</h2>
             <div class="form-field">
@@ -1739,8 +1742,8 @@
     var modalBursarInfo = document.getElementById("myModalBursarInformation");
     var modalSponInfo = document.getElementById("myModalSposorInformation");
     var spanLease = document.getElementsByClassName("closeLease")[0];
-    var spanBurInfo = document.getElementsByClassName("closeBursarinfo")[0];
-    var spanSponInfo = document.getElementsByClassName("closeSponsorinfo")[0];
+    // var spanBurInfo = document.getElementsByClassName("closeBursarinfo")[0];
+    // var spanSponInfo = document.getElementsByClassName("closeSponsorinfo")[0];
 
     
 
@@ -1752,12 +1755,12 @@
         modalLease.style.display = "none";
     }
 
-    spanBurInfo.onclick = function() {
-        modalBursarInfo.style.display = "none";
-    }
-    spanSponInfo.onclick = function() {
-        modalSponInfo.style.display = "none";
-    }
+    // spanBurInfo.onclick = function() {
+    //     modalBursarInfo.style.display = "none";
+    // }
+    // spanSponInfo.onclick = function() {
+    //     modalSponInfo.style.display = "none";
+    // }
 
     bookingTypeDetails();
 
