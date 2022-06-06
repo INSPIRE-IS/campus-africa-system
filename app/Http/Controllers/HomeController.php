@@ -100,11 +100,20 @@ class HomeController extends Controller
                     if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
 
                         if($file_search && !empty($file_search)){
+                            $important = 0;
+
+                            if($file_search->status == "Approved"){
+                                $important = 1;
+                            }else if($file_search->status == "Uploaded"){
+                                $important = 2;
+                            }else{
+                                $important = 3;
+                            }
                             $output = (object) array(
                                 "fileId" => $file_search->fileId,
                                 "status" => $file_search->status !== null ? $file_search->status : "None",
                                 "fileUrl" => $file_search->fileUrl,
-                                "important" => $file_search->status == "Approved" ? 1 : $file_search->status == "Uploaded" ? 2 : 3,
+                                "important" => $important,
                             );
                             array_push($allFiles, $output);
                         }else{
