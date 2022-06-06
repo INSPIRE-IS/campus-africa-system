@@ -154,4 +154,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getLoginRouteExpiresInAttribute(): int
+    {
+        return config('laravel-passwordless-login.login_route_expires');
+    }
 }
