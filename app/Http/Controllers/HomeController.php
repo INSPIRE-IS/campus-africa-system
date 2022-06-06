@@ -749,11 +749,12 @@ class HomeController extends Controller
                 $data['name'] = $user->userFirstName;
                 $data['email'] = $user->email;
                 $data['messageForMail'] = $newMessage;
+                $data['subject'] = $mailerForMessage->subject;
 
                 Mail::send('email.green_back', $data, function($message) use ($data) {
                     // $message->to($data['email'], $data['name'])->subject
                     //     ('Campus Africa User Application');
-                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa User Application');
+                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject($data['subject']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                 });
 
@@ -1105,7 +1106,7 @@ class HomeController extends Controller
     }
 
     public function saveMail(Request $request){
-        MailerList::where('id', $request->mailerID)->update(['message' => $request->text]);
+        MailerList::where('id', $request->mailerID)->update(['message' => $request->text, 'subject' => $request->mailSubject]);
         return 'true';
     }
 
@@ -1765,11 +1766,12 @@ class HomeController extends Controller
         $data['name'] = $user->userFirstName;
         $data['email'] = $user->email;
         $data['messageForMail'] = $newMessage;
+        $data['subject'] = $mailerForMessage->subject;
 
         Mail::send('email.yellow_back', $data, function($message) use ($data) {
             // $message->to($data['email'], $data['name'])->subject
             //     ('Campus Africa User Application');
-            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa User Application');
+            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject($data['subject']);
             $message->from('noreply@campusafrica.co.za','Campus Africa');
         });
 
@@ -5244,11 +5246,12 @@ class HomeController extends Controller
                 $data['name'] = $userBefore->userFirstName;
                 $data['email'] = $request->userEmail;
                 $data['messageForMail'] = $newMessage;
+                $data['subject'] = $mailerForMessage->subject;
 
                 Mail::send('email.yellow_back', $data, function($message) use ($data) {
                     // $message->to($data['email'], $data['name'])->subject
                     //     ('Campus Africa User Application');
-                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa User Application');
+                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject($data['subject']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                 });
             }

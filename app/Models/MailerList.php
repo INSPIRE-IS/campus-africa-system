@@ -16,5 +16,6 @@ class MailerList extends Model
         'message',
         'status',
         'color',
+        'subject',
     ];
 }

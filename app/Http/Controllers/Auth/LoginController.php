@@ -75,11 +75,12 @@ class LoginController extends Controller
                 $data['name'] = $user->userFirstName;
                 $data['email'] = $user->email;
                 $data['messageForMail'] = $newMessage;
+                $data['subject'] = $mailerForMessage->subject;
         
                 Mail::send('email.yellow_back', $data, function($message) use ($data) {
                     // $message->to($data['email'], $data['name'])->subject
                     //     ('Campus Africa User Application');
-                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa Login');
+                    $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject($data['subject']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                 });
     

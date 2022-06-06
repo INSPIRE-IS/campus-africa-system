@@ -43,8 +43,11 @@
         <h2 id="modalHeader"></h2>
         <input type="hidden" id="editMailerId" value="" />
         <br/>
-        <button type="button" class="saveTxtMail" onClick="saveMail(event)">Save Text</button>
+        <button type="button" class="saveTxtMail" onClick="saveMail(event)">Save</button>
         <br/><br/>
+        <label>Subject: </label>
+        <input type="text" id="mailSubject" value=""/>
+        <br/>
         <br/>
         <div class="mailSection" style="border: 1px solid #000">
         <table width="100%">
@@ -142,6 +145,7 @@
                             $("#mailTextSectionModal").removeClass('greenBack')
                         }
                         tinymce.get("mytextareaMail").setContent(item.message);
+                        $("#mailSubject").val('').val(item.subject)
                     }
                 })
 
@@ -179,11 +183,12 @@
             data: {
                 text: tinymce.get("mytextareaMail").getContent(), 
                 mailerID: $("#editMailerId").val(), 
+                mailSubject: $("#mailSubject").val(),
             },
 
             success: function (data) {
                 console.log(data)
-                $(".saveTxtMail").empty().append("Save Text")
+                $(".saveTxtMail").empty().append("Save")
             },
         });
     } 

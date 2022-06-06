@@ -209,11 +209,12 @@ class RegisterController extends Controller
         $data['name'] = $request->firstName;
         $data['email'] = $request->email;
         $data['messageForMail'] = $newMessage;
+        $data['subject'] = $mailerForMessage->subject;
 
         Mail::send('email.yellow_back', $data, function($message) use ($data) {
             // $message->to($data['email'], $data['name'])->subject
             //     ('Campus Africa User Application');
-            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Campus Africa User Application');
+            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject($data['subject']);
             $message->from('noreply@campusafrica.co.za','Campus Africa');
         });
 
