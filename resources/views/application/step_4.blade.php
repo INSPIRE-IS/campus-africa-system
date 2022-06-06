@@ -48,7 +48,7 @@
         <br/>
 
         <div>
-            <div class="cards" id="registerCards">
+            <div class="cards onlineAppDocs" id="registerCards">
                 <div class="whiteYellowCard" style="margin-right:30px">
                     <h2 class="cardHeader">Booking<br/>Documents</h2>
 

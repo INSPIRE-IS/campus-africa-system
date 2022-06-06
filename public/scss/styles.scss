@@ -2169,6 +2169,12 @@ input:read-only {
         flex-direction: column-reverse;
       }
 
+    #newStudentDocs {
+        .onlineAppDocs{
+            width:103% !important
+        }
+    }
+
       #smallerBooking{
         height:380px !important;
       }
