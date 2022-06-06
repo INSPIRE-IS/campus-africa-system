@@ -1972,6 +1972,7 @@ input:read-only {
   #bookingCardDash{
     display: flex;
     flex-direction: column-reverse;
+    padding-top:0px !important
   }
 
   #newStudentDocs .onlineAppDocs{
