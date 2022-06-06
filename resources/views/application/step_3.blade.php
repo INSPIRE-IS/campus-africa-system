@@ -61,11 +61,11 @@
 
                 <div class="form-field">
                     <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="kFirstName" id="kFirstName" class="required" value="<?php if(isset($user)){ echo $user->kinFirstName;} ?>">
+                    <input type="text" name="kFirstName" id="kFirstName" class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinFirstName;} ?>">
                 </div>
                 <div class="form-field">
                     <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="kLastName" id="kLastName" class="required" value="<?php if(isset($user)){ echo $user->kinLastName;} ?>">
+                    <input type="text" name="kLastName" id="kLastName" class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinLastName;} ?>">
                 </div>
             </div>
 
@@ -101,7 +101,7 @@
 
                 <div class="form-field" id="kinIdField">
                     <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-                    <input type="text" name="kIdNumber" id="kIdNumber" class="required">
+                    <input type="text" name="kIdNumber" id="kIdNumber" class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>">
                 </div> 
 
                 <div class="form-field hidden" id="kinPassportField">
@@ -111,7 +111,7 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-                    <input type="number" name="kCellNo" id='kCellNo' class="required" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
+                    <input type="number" name="kCellNo" id='kCellNo' class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -143,19 +143,19 @@
             </div>
             <div class="kinAddress <?php if(isset($user) && $user->app_address == '1'){echo 'hidden';} ?>">
                 <div class="form-field-big" style="height:60px !important">
-                    <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->kinAddressStr;} ?>">
+                    <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" class="<?php if(!isset($user) || (isset($user) && $user->app_address != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinAddressStr;} ?>">
                 </div>
                 <div class="form-field-big" style="height:60px !important">
                 <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->kinAddressSuburb;} ?>">
+                    <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2" style="width:98% !important" class="<?php if(!isset($user) || (isset($user) && $user->app_address != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinAddressSuburb;} ?>">
                 </div>
                 <div class="form-field" style="height:60px !important">
                 <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                    <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="required" value="<?php if(isset($user)){ echo $user->kinAddressCity;} ?>">
+                    <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity' class="<?php if(!isset($user) || (isset($user) && $user->app_address != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinAddressCity;} ?>">
                 </div>
                 <div class="form-field" style="height:60px !important">
                 <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                    <input type="number" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->kinAddressPost;} ?>">
+                    <input type="number" placeholder="Postal Code" name="kAddressPostal" id="kAddressPostal" class="<?php if(!isset($user) || (isset($user) && $user->app_address != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinAddressPost;} ?>">
                 </div>
             </div>
         </div>

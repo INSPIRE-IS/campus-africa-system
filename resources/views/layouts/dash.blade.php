@@ -40,11 +40,8 @@
                 <a href="/my-documents">My Documents</a>
                 <!-- <a href="/my-profile">My Profile</a> -->
 
-                @if (!$agent->isMobile())
-                    <a href="/dashboard"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
-                @endif
+                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> @endif Log out</a>
                 
-                <a href="/logout">Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>
                 </a>

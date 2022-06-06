@@ -35,12 +35,9 @@
     @if(Auth::check())
         <div id="fullNavbar">
             <div class="topnav" id="myTopnav" style='margin-left:50%'>
-
-                @if (!$agent->isMobile())
-                    <a href="#"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
-                @endif
                 
-                <a href="/logout">Log out</a>
+                
+                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> @endif Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>
                 </a>
