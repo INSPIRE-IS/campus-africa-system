@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title><?php echo $headerTitle;?> | Campus Africa</title>
     <link rel="icon" href="/images/logo/Campus_Africa_Logo.png">
 
     <!-- Scripts -->
@@ -41,7 +41,7 @@
                 <!-- <a href="/my-profile">My Profile</a> -->
 
                 @if (!$agent->isMobile())
-                    <a href="#"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
+                    <a href="/dashboard"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
                 @endif
                 
                 <a href="/logout">Log out</a>

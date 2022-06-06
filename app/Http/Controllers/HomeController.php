@@ -163,7 +163,7 @@ class HomeController extends Controller
                     return $b->important - $a->important;
                 });
 
-                return view('user.dashboard', ["headerTitle" => "Your Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader]);
+                return view('user.dashboard', ["headerTitle" => "Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader]);
     
             }
 
@@ -1022,10 +1022,18 @@ class HomeController extends Controller
                 $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
 
                 if($file_search && !empty($file_search)){
+                    if($file_search->status == "Approved"){
+                        $important = 1;
+                    }else if($file_search->status == "Uploaded"){
+                        $important = 2;
+                    }else{
+                        $important = 3;
+                    }
                     $output = (object) array(
                         "fileId" => $file_search->fileId,
                         "status" => $file_search->status !== null ? $file_search->status : "None",
                         "fileUrl" => $file_search->fileUrl,
+                        "important" => $important,
                     );
                     array_push($allFiles, $output);
                 }else{
@@ -1033,10 +1041,15 @@ class HomeController extends Controller
                         "fileId" => $file,
                         "status" => "None",
                         "fileUrl" => "",
+                        "important" => 3
                     );
                     array_push($allFiles, $output);
                 }
             }
+
+            usort($allFiles, function($a, $b) {
+                return $b->important - $a->important;
+            });
 
             return view('user.documents', ["headerTitle" => "My Documents", "allFiles" => $allFiles]);
     }

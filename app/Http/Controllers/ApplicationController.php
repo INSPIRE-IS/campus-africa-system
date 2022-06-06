@@ -776,9 +776,17 @@ class ApplicationController extends Controller
                         'fileId' => 'proof_of_payment',
                         'status' => 'Approved'
                     ]);
+
+                    User::where('id', $user->id)->update([
+                        'rob_10_fee' => 2
+                    ]);
                 }else{
                     UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->update([
                         'status' => 'Approved'
+                    ]);
+
+                    User::where('id', $user->id)->update([
+                        'rob_10_fee' => 2
                     ]);
                 }
     
