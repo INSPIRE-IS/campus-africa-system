@@ -83,7 +83,7 @@
                 <div class="form-field-big" style="height:60px !important">
                     <li style="display:inline-flex">
                         <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_address_p == '1'){echo 'checked';}?>>
-                        <label for="app_address_p" id="labelAddrP" style="width:400px">Same as Applicant's Home Address</label>
+                        <label for="app_address_p" id="labelAddrP" style="width:400px">Same as My Home Address</label>
                     </li>
                 </div>
 

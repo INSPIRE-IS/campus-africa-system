@@ -799,10 +799,14 @@ class ApplicationController extends Controller
                 $actionFileData['actionUserRole'] = Auth::user()->userRole;
             
                 ActionList::create($actionFileData);
+            }else{
+               Booking::where('userId', $user->id)->update(['room_rate' => $room_rate]);
             }
 
+            $newBooking = Booking::where('userId', $user->id)->first();
 
-        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $booking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate]);
+
+        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate]);
     }
 
     public function complete_online_app(Request $request){

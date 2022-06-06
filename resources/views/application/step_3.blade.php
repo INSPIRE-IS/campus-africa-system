@@ -138,7 +138,9 @@
             <div class="form-field-big" style="height:60px !important">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="app_address" name="app_address" value="1" style="width:50px !important;" <?php if(isset($user) && $user->app_address == '1'){echo 'checked';} ?>>
-                    <label for="app_address" id="labelAddrP" style="width:400px">Same as Applicant's Home Address</label>
+                    <?php if(isset($user) && $user->studentType == 'Cash / Direct'){echo '<label for="app_address" id="labelAddrP" style="width:400px">Same as My Home Address</label>';}else{echo '<label for="app_address" id="labelAddrP" style="width:400px">Same as Applicant\'s Home Address</label>';} ?>
+                    
+                    
                 </li>
             </div>
             <div class="kinAddress <?php if(isset($user) && $user->app_address == '1'){echo 'hidden';} ?>">

@@ -5214,6 +5214,7 @@ class HomeController extends Controller
 
             $updateData = [
                 'userEmail' => $request->userEmail,
+                'email' => $request->userEmail,
                 'userCell' => $request->userCell,
             ];
 

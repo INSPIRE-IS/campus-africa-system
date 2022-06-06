@@ -47,7 +47,7 @@ class LoginController extends Controller
 
     public function passwordlessLogin(Request $request){
         
-        $user = User::where('email', $request->email)->where('rob_60_cancelled', '0')->first();
+        $user = User::where('userEmail', $request->email)->where('rob_60_cancelled', '0')->first();
 
         if($user && !empty($user)){
 
