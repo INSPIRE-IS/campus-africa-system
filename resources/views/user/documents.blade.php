@@ -91,8 +91,10 @@
                         @elseif($file->status == 'Approved')
                             <td><span class="flex"><div class="approvedRobot"></div> &nbsp;&nbsp; Approved</span></td>
                             <td>
+                              @if($file->fileUrl !== null && $file->fileUrl !== "")
                                 <a href="/storage/{{$file->fileUrl}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
-                                </td>
+                              @endif
+                            </td>
                         @endif
                     
                 </tr>
@@ -114,7 +116,7 @@ $.ajaxSetup({
 
   $(document).ready( function () {
         $('#documents_table').DataTable({
-          "order": [[ 2, "asc" ]]
+          "order": []
         });
     } );
 
