@@ -40,7 +40,7 @@
         </p>
         <br/>
         <p>
-            <b><u>Pro-tip:</u></b> the sooner all your documents are uploaded, the sooner we can give you an
+            <b><u>Pro-tip!</u></b> the sooner all your documents are uploaded, the sooner we can give you an
             answer & the better your chances of securing the room you want 💪
         </p>
 
