@@ -34,13 +34,13 @@
 <body>
     @if(Auth::check())
         <div id="fullNavbar">
-            <div class="topnav" id="myTopnav" style='margin-left:50%'>
+            <div class="topnav" id="myTopnav" style='margin-left:50%;'>
                 
                 
-                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> @endif Log out</a>
-                <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <a href="/logout">  <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> Log out</a>
+                <!-- <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>
-                </a>
+                </a> -->
             </div>
         </div>
     @endif
