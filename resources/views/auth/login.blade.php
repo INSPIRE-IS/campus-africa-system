@@ -26,7 +26,7 @@
         </div>
 
         <div class="cards " id="logincards">
-            <div class="whiteCard mainBlock loginBlock">
+            <div class="whiteCard mainBlock loginBlock" id="loginBlockApply">
                 <h2 class="cardHeader">Apply</h2>
                 <h4 class="cardSubHeader">Are you new?</h4>
                 <p class="cardText">Before you can view and reserve a room at one of our awesome properties, you'll need to apply and submit all the necessary paperwork. Get started now!</p>

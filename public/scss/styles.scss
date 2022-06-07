@@ -2176,6 +2176,10 @@ input:read-only {
         }
     }
 
+    #loginBlockApply{
+        height:370px;
+      }
+
     #cardOnlineAppBooking{
         height:400px;
         margin-top:-50px;
@@ -2248,7 +2252,7 @@ input:read-only {
       }
 
     .clearSpaceLoginPageFirst{
-        height: 850px;
+        height: 730px;
       }
 
     .yellowGradient, .yellowGradientSmall, .greyAppSection {
@@ -2265,6 +2269,7 @@ input:read-only {
     // .footer{
     //     margin-top:750px;
     //   }
+
 
     #logincards{
         height:1000px;
@@ -2294,7 +2299,9 @@ input:read-only {
       }
 
       #loginBlockMain{
-        height:500px;
+        height:450px;
+        margin-bottom:0px;
+        margin-top:-10px;
       }
 
       .flex{
@@ -2502,6 +2509,17 @@ input:read-only {
         margin-left: 7px !important;
     }
 }
+
+@media only screen and (max-width: 800px) {
+    #loginBlockApply{
+        height:320px !important;
+    }
+  }
+  @media only screen and (max-width: 380px) {
+    .cards #loginBlockApply{
+        height:370px !important;
+    }
+  }
 
 @media only screen and (max-width: 660px) {
     .col-3 {
