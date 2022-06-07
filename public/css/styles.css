@@ -1105,7 +1105,7 @@ body {
 
 .halfCard {
   width: 77% !important;
-  height: 250px !important;
+  height: 155px !important;
   border-bottom-right-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
@@ -1964,9 +1964,29 @@ input:read-only {
   height:950px;
 }
 
+.roomImgApp{
+  width:100%; 
+  margin-left:10px; 
+  border-radius:10px;
+}
+
 @media only screen and (max-width: 850px) {
   #fullNavbar {
     height: 120px !important;
+  }
+
+  .roomImgApp{
+    margin-left:0px; 
+  }
+  #seconCards .halfCard{
+    height:170px !important;
+  }
+
+  .paymentAppOnline{
+    margin-top:-30px !important;
+  }
+  .roomCardAppOnline{
+    margin-top:-15px !important;
   }
 
   #bookingCardDash{
@@ -2021,7 +2041,8 @@ input:read-only {
   }
 
   #paymentDetailsSection{
-    height:1350px;
+    /* height:1350px; */
+    height:1140px;
   }
 
   .clearSpaceLoginPageFirst{
@@ -2045,7 +2066,8 @@ input:read-only {
     width:40px;
   }
   #newStudentPayment{
-    height:2200px;
+    /* height:2200px; */
+    height:2040px;
   }
 #paymentHeader{
   line-height:40px;
@@ -2268,7 +2290,8 @@ input:read-only {
   font-size:19px;
 }
 #seconCards{
-  margin-top:300px;
+  /* margin-top:300px; */
+  margin-top:193px;
 }
 
 .PaymentLabel, .previousStepBtn{

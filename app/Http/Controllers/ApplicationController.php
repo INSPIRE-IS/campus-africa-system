@@ -13,6 +13,7 @@ use Auth;
 use Illuminate\Support\Facades\Hash;
 use Jenssegers\Agent\Agent;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
+use App\Models\RoomTypes;
 
 class ApplicationController extends Controller
 {
@@ -517,6 +518,8 @@ class ApplicationController extends Controller
         $room_rate = 0;
         $actionFileData['action'] = "";
 
+        $roomTypeInfo = RoomTypes::where('property_id', $booking->property)->where('name', $bookingRoomtype)->first();
+
         if($lookup && $lookup->lookup_name == "1"){
             $room_rate = 0;
             $actionFileData['action'] = "Booking Fee Waived";
@@ -805,8 +808,10 @@ class ApplicationController extends Controller
 
             $newBooking = Booking::where('userId', $user->id)->first();
 
+            // dd($user->yearOfStudy);
 
-        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate]);
+
+        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate, "roomTypeInfo" => $roomTypeInfo]);
     }
 
     public function complete_online_app(Request $request){

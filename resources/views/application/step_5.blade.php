@@ -54,7 +54,7 @@
             
             <h1 style="color:#9799AB; font-weight:400;">PRICED FROM</h1>
             <h1 class="booking" style="color:#fff;">R {{$priced_from}} <small>pm</small></h1>
-            <h1 id="infoAppOnline" style="color:#fff; font-weight:400;">Please note you have 7 days for the deposit to be paid,<br/> otherwise your room reservation will be forfeited.  </h1>
+            <!-- <h1 id="infoAppOnline" style="color:#fff; font-weight:400;">Please note you have 7 days for the deposit to be paid,<br/> otherwise your room reservation will be forfeited.  </h1> -->
         </div>
     
     </div>
@@ -80,35 +80,49 @@
     <form id="newStudentPayment" class="form onlineForm @if($room_rate == '0') smallPayment @endif" autocomplete="off">
         <br/>
         <div class="cards">
-            <div class="whiteCard" id="registerPaymentCards">
+            <div class="whiteCard paymentAppOnline" id="registerPaymentCards">
 
                 <div class="flex flex-rev">
                     <!-- <button type="button" class="editButton" onClick="PrevStep('back2')">EDIT</button> -->
                 </div>
             
                 <p class="cardList" id="personalCardItems">
+                    <h2 class="appHeader">Your Details</h2>
                     <span id="dispFirstName">{{$user->userFirstName}}</span> <span id="dispLastName">{{$user->userLastName}}</span><br/>
                     <span id="dispDob">{{$user->userDob}}</span><br/>
-                    <span id="dispCell">{{$user->userCell}}</span><br/>
-                    <span id="dispEmail">{{$user->userEmail}}</span><br/>
                     <span id="dispNationality">{{$user->userNationality}}</span><br/>
                     <span id="dispPassport">
                         @if($user->userId){{$user->userId}}@endif
                         @if($user->userPassport){{$user->userPassport}}@endif
                     </span><br/>
-                    <span id="dispInstit">
+                    <br/>
+                    <hr/>
+                    <br/>
+                    <span id="dispEmail">{{$user->studentType}}</span><br/>
                     @foreach($lookups as $lookup) @if($lookup->id == $user->institutionStudy) {{$lookup->lookup_name}} @endif @endforeach<br/>
-                    
-                    @foreach($lookups as $lookup) @if($lookup->id == $user->faculty) {{$lookup->lookup_name}} @endif @endforeach
-                    </span><br/>
                     <span id="dispStudNo">{{$user->studentNo}}</span><br/>
-                    <span id="dispFaculty">{{$user->yearOfStudy}}</span><br/>
-                    
+                    @foreach($lookups as $lookup) @if($lookup->id == $user->faculty) {{$lookup->lookup_name}} @endif @endforeach<br/>
+                    <span id="dispYear">{{$user->yearOfStudy}}</span><br/>
+                    <br/>
+                    <hr/>
+                    <br/>
+                    <span id="dispEmail">{{$user->userEmail}}</span><br/>
+                    <span id="dispCell">{{$user->userCell}}</span><br/>
+                </p>
             </div>
 
-            <div class="whiteCard" id="registerPaymentCards" style="margin-left:11px;">
-                <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
-                <h2 class="cardHeader" >{{$booking->roomType}}</h2>
+            <div class="whiteCard roomCardAppOnline" id="registerPaymentCards" style="margin-left:11px;">
+                <div class="flex">
+                    <div>
+                        <h4 class="cardSubHeaderGrey">{{$booking->property}}</h4>
+                        <h2 class="cardHeader" >{{$booking->roomType}}</h2>
+                        <h4 class="cardSubHeaderGrey">Booking Fee</h4>
+                        <h2 class="cardHeader" >R {{$room_rate}}</h2>
+                    </div>
+                    <div>
+                        <img src="{{$roomTypeInfo->img_url}}" class="roomImgApp">
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -172,7 +186,7 @@
                         <div class="whiteCard halfCard">
                             <h4 class="cardSubHeaderGrey">Non Refundable Booking Fee</h4>
                             <h2 class="cardHeader" >R {{$room_rate}}</h2>
-                            <h4 class="cardSubHeaderGrey">Your application fee is deducted from the total of the room fee required to make this booking.</h4>
+                            <!-- <h4 class="cardSubHeaderGrey">Your application fee is deducted from the total of the room fee required to make this booking.</h4> -->
                             
                         </div>
                         <div class="redBottom flex">
