@@ -49,7 +49,7 @@
 
         <div>
             <div class="cards onlineAppDocs" id="registerCards">
-                <div class="whiteYellowCard" style="margin-right:30px">
+                <div class="whiteYellowCard" id="cardOnlineAppBooking" style="margin-right:30px">
                     <h2 class="cardHeader">Booking<br/>Documents</h2>
 
                     <div class="cardBody">
@@ -99,7 +99,7 @@
                     
                 </div>
 
-                <div class="whiteYellowCard">
+                <div class="whiteYellowCard" id="onlineAppAppDocs">
                     <h2 class="cardHeader" style="height:130px;">Application<br/>Documents</h2>
                     
                     <div class="cardBody">

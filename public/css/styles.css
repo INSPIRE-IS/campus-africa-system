@@ -1979,6 +1979,15 @@ input:read-only {
     width:103% !important
   }
 
+  #cardOnlineAppBooking{
+    height:400px;
+    margin-top:-50px;
+    margin-bottom: 40px;
+  }
+  #onlineAppAppDocs{
+    margin-bottom:13px;
+  }
+
   #smallerBooking{
     height:380px !important;
   }
@@ -2024,7 +2033,8 @@ input:read-only {
     height:1260px;
   }
   #newStudentDocs{
-    height:2000px;
+    /* height:2000px; */
+    height:1540px;
   }
   #bannerImgIcon{
     height:40px;
@@ -2271,7 +2281,7 @@ input:read-only {
 
   .redBannerNotice{
     width:100% !important;
-    height:630px !important;
+    height:430px !important;
   }
 
 
