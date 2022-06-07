@@ -5261,6 +5261,7 @@ class HomeController extends Controller
             ];
 
             $userBefore = User::where('id', $request->userUid)->first();
+
             if($request->userEmail !== $userBefore->userEmail){
                 User::where('id', $request->userUid)->update(["email_verified" => 0]);
 
@@ -5289,7 +5290,7 @@ class HomeController extends Controller
                 $data['subject'] = $mailerForMessage->subject;
 
                 if(explode("@", $data['email'])[1] == "conurban.co.za"){
-                    $data['email'] = $user->userEmail;
+                    $data['email'] = $request->userEmail;
                 }else{
                     $data['email'] = "conurbandigital@gmail.com";
                 }
