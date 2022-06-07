@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="form-field">
-                    <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid phone number</small></span></label>
                     <input type="text" name="pCell_no" id="pCell_no"  value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
                 </div>
 
@@ -128,7 +128,7 @@
             </div>
 
             <div class="form-field">
-                <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid phone number</small></span></label>
                 <input type="text" name="bContactNumber" id="bContactNumber"   value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
             </div>
 
