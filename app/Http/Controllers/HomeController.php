@@ -65,7 +65,28 @@ class HomeController extends Controller
             }else if(Auth::user()->onboard_complete != '2'){
 
                 User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
-                return redirect('/step-2/online-application');
+
+                $currUser = User::where('id', Auth::user()->id)->first();
+
+                if($currUser->studentType == "NSFAS"){
+                    $varToCheck = 'kinFirstName';
+                }elseif($currUser->studentType == "Bursary"){
+                    $varToCheck = 'burCompanyName';
+                }else{
+                    $varToCheck = 'sponFirstName';
+                }
+
+                if($currUser->$varToCheck == null){
+                    return redirect('/step-2/online-application');
+                }else{
+                    $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
+
+                    if(!empty($userFileProofOfPayment)){
+                        return redirect('/complete/online-application');
+                    }else{
+                        return redirect('/step-4/online-application');
+                    }
+                }
 
             }else{
 
