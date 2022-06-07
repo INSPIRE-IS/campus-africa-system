@@ -30,14 +30,26 @@
 
 <br/>
 
-        <h1 style="font-weight:500">Thank you for your application</h1>
+        <h1 style="font-weight:500">Thank you for your application!</h1>
 
         <br/>
         <h3>Your application reference is #{{$booking->id}}</h3>
         <br/>
-        <p>You will receive an email from us as soon as your application has been processed, and upon a <br/>successful application, you will be issued a unique username and password for your Campus <br/>Africa profile via email.</p>
+        <p>We will keep you updated by email on the progress of your application & any documents
+	        you have uploaded.
+        </p>
+        <br/>
+        <p>
+            <b><u>Pro-tip:</u></b> the sooner all your documents are uploaded, the sooner we can give you an
+            answer & the better your chances of securing the room you want 💪
+        </p>
 
-        <a href="/dashboard"><button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26; float:left; margin-left:0px;">Complete</button></a>
+        <br/>
+        <p>In the meantime, you can login to your account anytime to view the status of your
+	        application & upload any outstanding documents using the email you signed up with.
+        </p>
+
+        <a href="/dashboard"><button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26; float:left; margin-left:0px;">Continue to Dashboard</button></a>
     
 
 
