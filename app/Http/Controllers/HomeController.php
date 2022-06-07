@@ -79,12 +79,17 @@ class HomeController extends Controller
                 if($currUser->$varToCheck == null){
                     return redirect('/step-2/online-application');
                 }else{
-                    $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
 
-                    if(!empty($userFileProofOfPayment)){
-                        return redirect('/complete/online-application');
+                    if(($currUser->studentType == "Bursary" || $currUser->studentType == "Cash / Direct") && $currUser->kinFirstName == null){
+                        return redirect('/step-3/online-application');
                     }else{
-                        return redirect('/step-4/online-application');
+                        $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
+    
+                        if(!empty($userFileProofOfPayment)){
+                            return redirect('/complete/online-application');
+                        }else{
+                            return redirect('/step-4/online-application');
+                        }
                     }
                 }
 
