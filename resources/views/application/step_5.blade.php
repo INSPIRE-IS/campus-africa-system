@@ -88,7 +88,7 @@
             
                 <p class="cardList" id="personalCardItems">
                     <h2 class="appHeader">Your Details</h2>
-                    <span id="dispFirstName">{{$user->userFirstName}}</span> <span id="dispLastName">{{$user->userLastName}}</span><br/>
+                    <span id="dispFirstName">{{$user->userFirstName}} {{$user->userLastname}}</span><br/>
                     <span id="dispDob">{{$user->userDob}}</span><br/>
                     <span id="dispNationality">{{$user->userNationality}}</span><br/>
                     <span id="dispPassport">
@@ -199,7 +199,7 @@
             </div>
 
             <a href="/complete/online-application">
-                <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">PAY R '.number_format($booking->room_rate,2,"."," ").' BOOKING FEE</button>';} ?>
+                <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">PAY R '.$booking->room_rate.' BOOKING FEE</button>';} ?>
                 </a>
         @endif
 
