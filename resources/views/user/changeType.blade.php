@@ -6,7 +6,7 @@
 <div class="container form-card">
     
     
-    <form id="changeStudType" class="form onlineForm" autocomplete="off">
+    <form id="changeStudType" class="form onlineForm <?php if(Auth::user()->studentType == "NSFAS"){echo "nsfasSize";}elseif(Auth::user()->studentType == "Bursary"){echo "bursarySize";}else{echo "cashSize";} ?>" autocomplete="off">
         <br/>
         <h1 class="formHeading">Complete the relevant information</h1>
         <br/>
@@ -21,12 +21,17 @@
             </select>
         </div>
 
-        <div class="form-field">
-            <br/><br/>
-        </div>
+        @if(!$agent->isMobile())
+            <div class="form-field">
+                <br/><br/>
+            </div>
+        @endif
 
         <hr/>
-        <br/><br/>
+        <br/>
+        @if(!$agent->isMobile())
+            <br/>
+        @endif
 
         <div id="changeSponsorDetails" class="<?php if(Auth::user()->studentType !== "Cash / Direct"){echo "hidden";} ?>">
                 <div class="form-field">
@@ -132,9 +137,13 @@
                 <input type="email" name="bEmail" id="bEmail"   value="<?php if(isset($user)){ echo $user->burEmail;} ?>">
             </div>
 
-            <div class="form-field">
-                <br/>
-            </div>
+            @if(!$agent->isMobile())
+
+                <div class="form-field">
+                    <br/>
+                </div>
+
+            @endif
 
             <div class="form-field-big">
                 <label>Physical Address * <span id="bAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
@@ -165,9 +174,11 @@
                 </select>
             </div>
 
-            <div class="form-field" id="placeholder">
-                <br/>
-            </div>
+            @if(!$agent->isMobile())
+                <div class="form-field" id="placeholder">
+                    <br/>
+                </div>
+            @endif
 
             <div id="viaInt" class="<?php if(isset($user) && $user->bPayment != "Via an INTERMEDIARY"){echo 'hidden';} ?>">
 
@@ -189,9 +200,11 @@
                     <input type="text" name="bIntName" id="bIntName" value="<?php if(isset($user)){ echo $user->bIntName;} ?>">
                 </div>
 
-                <div class="form-field">
-                    <br/>
-                </div>
+                @if(!$agent->isMobile())
+                    <div class="form-field">
+                        <br/>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -207,6 +220,11 @@
         if($("#studentType").val() == "Cash / Direct"){
             $("#changeSponsorDetails").removeClass('hidden');
             $("#changeBursarDetails").addClass('hidden');
+
+            $("#changeStudType").removeClass('bursarySize')
+            $("#changeStudType").removeClass('nsfasSize')
+            $("#changeStudType").addClass('cashSize')
+            
 
             $('.required').each( function(){
                 id = $(this)[0]["id"]
@@ -232,6 +250,10 @@
             $("#changeSponsorDetails").addClass('hidden');
             $("#changeBursarDetails").removeClass('hidden');
 
+            $("#changeStudType").removeClass('cashSize')
+            $("#changeStudType").removeClass('nsfasSize')
+            $("#changeStudType").addClass('bursarySize')
+
             $('.required').each( function(){
                 id = $(this)[0]["id"]
                 $("#"+id).removeClass("required")
@@ -250,6 +272,10 @@
         }else if($("#studentType").val() == "NSFAS"){
             $("#changeSponsorDetails").addClass('hidden');
             $("#changeBursarDetails").addClass('hidden');
+
+            $("#changeStudType").removeClass('cashSize')
+            $("#changeStudType").removeClass('bursarySize')
+            $("#changeStudType").addClass('nsfasSize')
 
             $('.required').each( function(){
                 id = $(this)[0]["id"]

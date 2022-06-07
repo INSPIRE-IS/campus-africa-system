@@ -1984,6 +1984,16 @@ input:read-only {
     height:170px !important;
   }
 
+  .nsfasSize{
+    height:360px !important;
+  }
+  .bursarySize{
+    height:1330px !important
+  }
+  .cashSize{
+    height:1250px !important
+  }
+
   .paymentAppOnline{
     margin-top:-30px !important;
   }

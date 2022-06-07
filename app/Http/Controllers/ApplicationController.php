@@ -23,8 +23,6 @@ class ApplicationController extends Controller
         $lookups = Lookups::get();
         $agent = new Agent();
 
-        // dd($agent);
-
         return view('application.step_1', ["lookups" => $lookups, "property" => $property, "roomType" => $roomType, "agent" => $agent]);
     }
 
@@ -843,8 +841,9 @@ class ApplicationController extends Controller
     public function change_student_type(Request $request){
         $lookups = Lookups::get();
         $user = User::where('id', Auth::user()->id)->first();
+        $agent = new Agent();
 
-        return view('user.changeType', ["headerTitle" => "Change Student Type", "lookups" => $lookups, "user" => $user]);
+        return view('user.changeType', ["headerTitle" => "Change Student Type", "lookups" => $lookups, "user" => $user, "agent" => $agent]);
     }
 
     public function update_student_details(Request $request){
