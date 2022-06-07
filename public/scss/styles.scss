@@ -2160,9 +2160,10 @@ input:read-only {
   }
 
   .roomImgApp{
-    width:100%; 
+    max-width:100%; 
     margin-left:10px; 
     border-radius:10px;
+    max-height:250px;
   }
 
 @media only screen and (max-width: 850px) {
@@ -2171,6 +2172,7 @@ input:read-only {
     }
     .roomImgApp{
         margin-left:0px; 
+        max-height:185px;
       }
       .paymentAppOnline{
         margin-top:-30px !important;
