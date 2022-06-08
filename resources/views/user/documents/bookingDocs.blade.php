@@ -12,7 +12,7 @@
 
             @foreach ($allFiles as $file)
 
-                @if($file->fileId !== 'bankStatement' && $file->fileId !== 'studentCard' && $file->fileId !== 'proofRegistration' && $file->fileId !== 'bursaryApproval')
+                @if($file->fileId !== 'bankStatement' && $file->fileId !== 'studentCard' && $file->fileId !== 'proofRegistration' && $file->fileId !== 'bursaryApproval' && $file->fileId !== 'moveIn')
 
                 <div class="appAwait" id="idCopySection">
                         <h3 class="uploadName">

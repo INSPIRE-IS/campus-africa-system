@@ -165,8 +165,26 @@ class HomeController extends Controller
                                 }
                             }
                         }
+
+                        if($appHeader == 0 && Auth::user()->rob_50_approve == 1){
+                            $appHeader = 1;
+                        }
+
+                        if(Auth::user()->rob_50_approve == 2 && $file == 'moveIn'){
+                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                $appHeader = 2;
+                            }
+
+                            if($output->status == "Uploaded"){
+                                $appHeader = 1;
+                            }
+
+                            if($output->status == "Approved"){
+                                $appHeader = 0;
+                            }
+                        }
     
-                        if($file !== 'bankStatement' && $file !== 'studentCard' && $file !== 'proofRegistration' && $file !== 'bursaryApproval'){
+                        if($file !== 'bankStatement' && $file !== 'studentCard' && $file !== 'proofRegistration' && $file !== 'bursaryApproval' && $file !== 'moveIn'){
                             if($output->status == "Uploaded"){
                                 if($bookHeader < 1){
                                     $bookHeader = 1;

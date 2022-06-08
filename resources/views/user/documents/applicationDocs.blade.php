@@ -14,7 +14,7 @@
 
             
 
-                @if($file->fileId == 'bankStatement' || $file->fileId == 'studentCard' || $file->fileId == 'proofRegistration' || $file->fileId == 'bursaryApproval')
+                @if($file->fileId == 'bankStatement' || $file->fileId == 'studentCard' || $file->fileId == 'proofRegistration' || $file->fileId == 'bursaryApproval' || $file->fileId == 'moveIn')
 
                 <div class="appAwait">
                   <h3 class="uploadName">
