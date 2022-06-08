@@ -908,4 +908,10 @@ class ApplicationController extends Controller
 
         return redirect('/dashboard');
     }
+
+    public function verify_new_email_account(Request $request){
+        User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
+
+        return redirect('/dashboard');
+    }
 }

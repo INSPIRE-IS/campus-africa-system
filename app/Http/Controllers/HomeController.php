@@ -5286,7 +5286,7 @@ class HomeController extends Controller
                 $booking = Booking::where('userId', $request->userUid)->first();
 
                 $generator = new LoginUrl($userBefore);
-                $generator->setRedirectUrl('/verify-email-account');
+                $generator->setRedirectUrl('/verify-new-email-account');
                 $url = $generator->generate();
 
                 $message_replace['bookingRef'] = $booking->id;

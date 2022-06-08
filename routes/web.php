@@ -74,6 +74,7 @@ Route::post('/inactivate_mailer', [HomeController::class, 'inactivate_mailer']);
 Route::post("/saveMail", [HomeController::class, 'saveMail']);
 Route::get("/get-mail-list", [HomeController::class, 'get_mail_list']);
 Route::get('/verify-email-account', [ApplicationController::class, 'verify_email_account']);
+Route::get('/verify-new-email-account', [ApplicationController::class, 'verify_new_email_account']);
 
 // Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
 // Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
