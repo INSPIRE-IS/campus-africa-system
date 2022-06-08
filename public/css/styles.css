@@ -964,14 +964,14 @@ body {
   background-color: #9a9a9a;
   color: white;
   cursor: pointer;
-  width: 99px;
+  width: 130px;
   height: 25px;
   border-radius: 5px;
   font-size: 11px;
   font-weight: 400;
   line-height: 25px;
   text-align: center;
-  margin-right: 18px;
+  /* margin-right: 18px; */
 }
 .whiteYellowCard .uploadSection .successLabel {
   display: inline-block;

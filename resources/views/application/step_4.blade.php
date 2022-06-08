@@ -89,8 +89,8 @@
                         <div class="uploadSection">
                             <h3 class="uploadName" id="bookingFeeUploadTab" style="color:#9a9a9a">BOOKING FEE PROOF OF PAYMENT</h3>
                             <div class="uploadFileSection">
-                                <i class="fas fa-file-upload" style="color:rgba(231, 79, 38, 0.5);"></i>
-                                <label for="bookingFee" style="cursor: context-menu" class="uploadLabel">NEXT STEP</label>
+                                <!-- <i class="fas fa-file-upload" style="color:rgba(231, 79, 38, 0.5);"></i> -->
+                                <label for="bookingFee" style="cursor: context-menu" class="uploadLabel">SEE NEXT STEP ➜</label>
                                 
                             </div>
                         </div>
