@@ -166,7 +166,7 @@ class HomeController extends Controller
                             }
                         }
 
-                        if($appHeader == 0 && Auth::user()->rob_50_approve == 1){
+                        if($appHeader == 0 && (Auth::user()->rob_50_approve == 1 || Auth::user()->rob_50_approve == 0)){
                             $appHeader = 1;
                         }
 
