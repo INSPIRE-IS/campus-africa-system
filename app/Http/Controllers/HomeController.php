@@ -152,7 +152,7 @@ class HomeController extends Controller
                             array_push($allFiles, $output);
                         }
     
-                        if($file == 'bankStatement' || $file == 'studentCard' || $file == 'proofRegistration' || $file == 'bursaryApproval'){
+                        if($file !== 'copyID' && $file !== 'proof_of_payment'){
                             if($output->status == "Uploaded"){
                                 if($appHeader < 1){
                                     $appHeader = 1;
@@ -184,7 +184,7 @@ class HomeController extends Controller
                             }
                         }
     
-                        if($file !== 'bankStatement' && $file !== 'studentCard' && $file !== 'proofRegistration' && $file !== 'bursaryApproval' && $file !== 'moveIn'){
+                        if($file == 'copyID' || $file == 'proof_of_payment'){
                             if($output->status == "Uploaded"){
                                 if($bookHeader < 1){
                                     $bookHeader = 1;

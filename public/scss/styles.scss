@@ -2166,10 +2166,38 @@ input:read-only {
     max-height:250px;
   }
 
+  #studentAddOther{
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #464749;
+    padding: 10px;
+    margin: 5px;
+    width: 100%;
+    margin-top:30px;
+    cursor: pointer;
+  }
+
+  #studentAppBody{
+    max-height:420px;
+    overflow:auto
+  }
+  
+
 @media only screen and (max-width: 850px) {
     #fullNavbar {
         height: 120px !important;
     }
+    #studentAddOther{
+        margin-top:20px;
+    }
+    #studentAppBody{
+        max-height:330px;
+      }
     .roomImgApp{
         margin-left:0px; 
         max-height:185px;

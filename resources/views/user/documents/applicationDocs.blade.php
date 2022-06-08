@@ -1,3 +1,4 @@
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="whiteYellowCard smallerCard" id="smallerApplication"> 
             
             <h2 class="cardHeader  <?php if($appHeader == 0){ echo 'greenCardHeader';}elseif($appHeader == 1){ echo 'yellowCardHeader';}else{ echo 'redCardHeader';}?>">Application
@@ -8,13 +9,13 @@
                 </div>
             </h2>
                 
-            <div class="cardBody">
+            <div class="cardBody" id="studentAppBody">
 
             @foreach ($allFiles as $file)
 
             
 
-                @if($file->fileId == 'bankStatement' || $file->fileId == 'studentCard' || $file->fileId == 'proofRegistration' || $file->fileId == 'bursaryApproval' || $file->fileId == 'moveIn')
+                @if($file->fileId !== 'copyID' && $file->fileId !== 'proof_of_payment')
 
                 <div class="appAwait">
                   <h3 class="uploadName">
@@ -37,7 +38,9 @@
                         @endif
                       @elseif($file->fileId == 'moveIn')
                         LEASE
-                    @endif
+                      @else
+                        <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file->fileId))); ?>
+                      @endif
 
                     @if($file->status == "Rejected")
 
@@ -79,5 +82,38 @@
                 
             @endforeach 
 
+            <button type="button" id="studentAddOther" onClick="addOtherDoc()">Upload other document</button>
+
 
         </div>
+
+<script>
+    function addOtherDoc(){
+        swal.fire({
+            title: 'Please name this document',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/add-other-document",
+                    data: {
+                        userId: "{{Auth::user()->id}}",
+                        docName: result.value
+                    },
+
+                    success: function (data) {
+
+                        window.location.reload();
+                    },
+                });
+            }
+        })
+    }
+</script>
