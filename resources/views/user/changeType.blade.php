@@ -34,6 +34,9 @@
         @endif
 
         <div id="changeSponsorDetails" class="<?php if(Auth::user()->studentType !== "Cash / Direct"){echo "hidden";} ?>">
+        <h1 class="formHeading">Sponsor Information</h1>
+        <h2 style="text-transform:uppercase; font-weight:400">Parent / Gaurdians Details</h2>
+        <br/>
                 <div class="form-field">
                     <label>First Name * <span id="pFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <input type="text" name="pFirstName" id="pFirstName"  value="<?php if(isset($user)){ echo $user->sponFirstName;} ?>">
@@ -112,6 +115,9 @@
         </div>
 
         <div id="changeBursarDetails" class="<?php if(Auth::user()->studentType !== "Bursary"){echo "hidden";} ?>">
+
+        <h1 class="formHeading">Bursar Information</h1>
+        <br/>
             <div class="form-field">
                 <label>Company Name * <span id="bCompanyName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                 <input type="text" name="bCompanyName" id='bCompanyName'  value="<?php if(isset($user)){ echo $user->burCompanyName;} ?>">
