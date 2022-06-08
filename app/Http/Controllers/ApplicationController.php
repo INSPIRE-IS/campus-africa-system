@@ -914,4 +914,9 @@ class ApplicationController extends Controller
 
         return redirect('/dashboard');
     }
+
+    public function loginAsStudent($userid){
+        Auth::loginUsingId($userid, true);
+        return redirect('/dashboard');
+    }
 }
