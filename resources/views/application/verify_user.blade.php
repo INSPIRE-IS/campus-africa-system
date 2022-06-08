@@ -37,11 +37,11 @@
     
     <form id="appVerifyNotify" class="form onlineForm" autocomplete="off">
         <br/>
-        <h1 class="formHeading">Verify your account</h1>
+        <h1 class="formHeading">Verify your Email</h1>
         <br/>
 
         <div class="form-field">
-            <p>Please check you email for further instructions</p>
+            <p>Please check your email & click the link or enter the Security Code below:</p>
             <br/><br/>
             <label>Security Code * <span id="security_code_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" name="security_code" id="security_code" class="required">
