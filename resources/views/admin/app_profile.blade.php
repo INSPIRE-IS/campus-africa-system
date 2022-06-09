@@ -4,7 +4,7 @@
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="greyAppSection">
+<div class="greyAppSection  @if($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
     <div class="container">
         <div class="col-3" id="col1">
         <div class="flex">
@@ -39,21 +39,38 @@
             </div>
 
         </div>
-        <div class="col-3" id="col3">
-            @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
+        
+        @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
+            <div class="col-3" id="col3">
                 <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
                 <div class="form">
                     <div class="sponInfoSection"></div>
                 </div>
-            @endif
+            </div>
+        @endif
 
-            @if($user[0]['userInfo']['studentType'] == "Bursary")
-                <div class="flex"><span id="approvedBur" class="hidden">&#128994;</span><span id="rejectedBur">&#128308;</span><p class="listHeader">Bursar</p></div>
+        @if($user[0]['userInfo']['studentType'] == "Bursary")
+            <div class="col-3" id="col3">
+                <div class="flex"><span id="approvedBur" class="<?php if($user[0]['userInfo']['burser_approved'] != '1'){ echo "hidden";} ?>">&#128994;</span><span id="rejectedBur" class="<?php if($user[0]['userInfo']['burser_approved'] == '1'){ echo "hidden";} ?>">&#128308;</span><p class="listHeader">Bursar</p></div>
                 <div class="form">
                     <div class="burInfoSection"></div>
                 </div>
-            @endif
-        </div>
+            </div>
+        @endif
+        
+
+       
+            <div class="col-3" id="col3">
+                <div class="form" id="inline_edit_student_type">
+                    <p class="listHeader">Student Type</p>
+                    <span id="studentUserType" class="{{$user[0]['userInfo']['studentType']}}"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif </span><br/>
+
+                    @if($user[0]['userInfo']['rob_55_lease'] != "2" && Auth::user()->role_change_student_type == '1')
+                        <div class="studentType_btn"></div>
+                    @endif
+                </div>
+            </div>
+        
         
     </div>
 </div>
@@ -86,8 +103,10 @@
                 </p>
 
                 <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
-                    {{$user[0]['userInfo']['userEmail']}}<br/>
-                    {{$user[0]['userInfo']['userCell']}}<br/>
+                    <p class="InfoList">
+                        {{$user[0]['userInfo']['userEmail']}}  @if($user[0]['userInfo']['email_verified'] == '1') <i class="fas fa-check" style="color:green"></i> @else &#10060; @endif<br/>
+                        {{$user[0]['userInfo']['userCell']}}<br/>
+                    </p>
 
                     <div class="app_details_btn"></div>
                     
@@ -103,34 +122,46 @@
 
                 <div class="app_summary_details"></div>
                 
-                <div class="buttons">
-                    @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        @if(Auth::user()->role_change_bed == "1")
-                            <button type="button" class="appBooking" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                <div class="buttons" id="buttonTop">
+
+                        @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_change_bed == "1")
+                                @if ($user[0]['userInfo']['rob_50_approve'] > 0)
+                                    <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                @else
+                                    <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                @endif                                
+                            @endif
+
+                            @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                <button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                            @endif
                         @endif
 
-                        @if(Auth::user()->role_change_date == "1")
-                            <button type="button" class="appBooking" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                        @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_modify_approved == 1)
+                                <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                            @endif
                         @endif
-                    @endif
-
-                    @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        @if(Auth::user()->role_cancel_lease == "1")
-                            <button type="button" class="appBooking" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
-                        @endif
-                    @endif
-                    
                 </div>
-                <div class="buttons">
-                    @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
-                        @if(Auth::user()->role_delete_booking == 1)
-                            <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
-                        @endif
+                <div class="buttons" id="buttonBottom">
+                        @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            @if(Auth::user()->role_delete_booking == 1)
+                                <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
+                            @endif
 
-                        @if(Auth::user()->role_cancel_booking == 1)
-                            <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                            @if(Auth::user()->role_cancel_booking == 1)
+                                @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                    <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                                @endif
+                            @endif
+                        @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
+                            @if(Auth::user()->role_cancel_booking == 1)
+                                @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
+                                    <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                                @endif
+                            @endif
                         @endif
-                    @endif
                 </div>
             </div>
 
@@ -151,13 +182,24 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
-                                @if($action->actionUserRole !== "0" )
-                                    @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
-                                        <button type="button" class="admin">Admin</button>
+                                @if(!empty($action->users))
+                                    <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                @else
+                                    <p>{{$action->actionUserDisplayName}}</p>
+                                @endif
+                                
+                                @if($action->actionUserRole !== 0 )
+
+                                    @if(!empty($action->users))
+                                        @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
+                                            <button type="button" class="admin">Admin</button>
+                                        @else
+                                        <button type="button" class="admin">{{$action->users->user_role_name}}</button>
+                                        @endif
                                     @else
-                                    <button type="button" class="admin">{{$action->users->user_role_name}}</button>
+                                        <button type="button" class="admin">Admin</button>
                                     @endif
+                                    
                                 @else
                                     <button type="button" class="applicant">Applicant</button>
                                 @endif
@@ -224,8 +266,10 @@
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
                     <div class="waitve_btn"></div>
-                    @if(Auth::user()->role_upload_docs == 1)
-                        <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
+                    @if((Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_50_approve'] == 2) || $user[0]['userInfo']['rob_50_approve'] == 0)
+                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                            <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
+                        @endif
                     @endif
                 </div>
 
@@ -392,7 +436,7 @@
                                         >View Document</button>
                                     @else
                                         
-                                        @if(Auth::user()->role_upload_docs == 1)
+                                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                                     
                                             <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
                                                 <span class="text">Upload</span>
@@ -421,7 +465,7 @@
 
             <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                 <h2 class="appHeader">Comments</h2>
-                @if(Auth::user()->role_comment == "1")
+                @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
                     <br/>
                     <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
@@ -457,27 +501,6 @@
 
                 <select name="property" id='property' class="required">
                     <option value="" selected disabled>Select a Residence</option>
-                    @if(Auth::user()->role_braamlofts == 1)
-                        <option value="Braamlofts" <?php if($booking->property == "Braamlofts"){echo "selected";}?>>Braamlofts</option>
-                    @endif
-                    @if(Auth::user()->role_80_jorissen == 1)
-                        <option value="80 Jorissen" <?php if($booking->property == "80 Jorissen"){echo "selected";}?>>80 Jorissen</option>
-                    @endif
-                    @if(Auth::user()->role_49_jorissen == 1)
-                        <option value="49 Jorissen" <?php if($booking->property == "49 Jorissen"){echo "selected";}?>>49 Jorissen</option>
-                    @endif
-                    @if(Auth::user()->role_dunvista_mansions == 1)
-                        <option value="Dunvista Mansions" <?php if($booking->property == "Dunvista Mansions"){echo "selected";}?>>Dunvista Mansions</option>
-                    @endif
-                    @if(Auth::user()->role_wynton_joy == 1)
-                        <option value="Wynton Joy" <?php if($booking->property == "Wynton Joy"){echo "selected";}?>>Wynton Joy</option>
-                    @endif
-                    @if(Auth::user()->role_126_siemert == 1)
-                        <option value="126 Siemert" <?php if($booking->property == "126 Siemert"){echo "selected";}?>>126 Siemert</option>
-                    @endif
-                    @if(Auth::user()->role_ymca == 1)
-                        <option value="YMCA" <?php if($booking->property == "YMCA"){echo "selected";}?>>YMCA</option>
-                    @endif
                 </select>
             </div>
 
@@ -502,7 +525,7 @@
                 </select>
             </div>
 
-            <div class="form-field hidden" id="roomSection">
+            <div class="form-field" id="roomSection">
                 <label>Room</label>
                 <select name="room" id='room'>
                     <!--  -->
@@ -531,13 +554,11 @@
 
 <div id="myModalEditLease" class="modal">
 
-    <div class="modal-content " style="height: 304px;">
+    <div class="modal-content " id="leaseEditModal" style="height: 304px;">
         <span class="closeLease" style="float:right; font-size:25px; cursor:pointer">&times;</span>
         <div class="form-card">
             <h2>Change this Lease</h2>
-
             <input type="hidden" id="bookingId2"/>
-
             <div id="LeaseInfo">
                 <div class="form-field">
                     <label>Lease From Date * <span id="lease_from_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
@@ -556,15 +577,194 @@
                     <input type="time" id="lease_to_time" name="lease_to_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}?>>
                 </div>
             </div>
-
             <div class="form-field-big" id="changeLeaseDatesOnly">
                 <button type="button" id="changeLeaseDates" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change Lease Dates</button>
             </div>
         </div>
-
-
     </div>
+</div>
 
+<div id="myModalSposorInformation" class="modal">
+    <div class="modal-content " style="height: 690px;">
+        <!-- <span class="closeSponsorinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span> -->
+        <div class="form-card">
+            <h2>Sponsor Information</h2>
+            <div class="form-field">
+                    <label>First Name * <span id="pFirstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="pFirstName" id="pFirstName" class="required" value="{{$user[0]['userInfo']['sponFirstName']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Last Name * <span id="pLastName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="pLastName" id="pLastName" class="required" value="{{$user[0]['userInfo']['sponLastName']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="{{$user[0]['userInfo']['sponCell']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Email Address * <span id="pEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <input type="email" name="pEmail" id='pEmail' class="required" value="{{$user[0]['userInfo']['sponEmail']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Nationality * <span id="pNationality_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <select name="pNationality" id='pNationality' class="required">
+                        <option value="" selected disabled>Please select one</option>
+                        @foreach($lookups as $lookup)
+                            @if($lookup->group_id == "5")
+                                <option value="{{$lookup->lookup_name}}" <?php if($user[0]['userInfo']['pNationality'] == $lookup->lookup_name){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-field" id="pIdField">
+                    <label>I.D Number * <span id="pIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
+                    <input type="text" name="pIdNumber" id="pIdNumber" value="{{$user[0]['userInfo']['sponId']}}">
+                </div>
+
+                <div class="form-field hidden" id="pPassportField">
+                    <label>Passport Number * <span id="pPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="pPassportNo" id="pPassportNo" value="{{$user[0]['userInfo']['pPassportNo']}}">
+                </div>
+
+                
+
+                <!-- <div class="form-field-big">
+                    <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                </div> -->
+                <div class="form-field-big" style="height:50px !important">
+                    <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="app_address_p" name="app_address_p" value="1" style="width:50px !important;" <?php if($user[0]['userInfo']['app_address_p'] == '1'){echo "checked";}?>>
+                        <label for="app_address_p" style="width:400px">Same as Applicant's Home Address</label>
+                    </li>
+                </div>
+
+                <div class="pAddress <?php if($user[0]['userInfo']['app_address_p'] == '1'){echo "hidden";}?>">
+                    <div class="form-field-big" style="height:60px !important">
+                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required" value="{{$user[0]['userInfo']['pAddress1']}}">
+                    </div>
+                    <div class="form-field-big" style="height:60px !important">
+                    <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" value="{{$user[0]['userInfo']['pAddress2']}}">
+                    </div>
+                    <div class="form-field" style="height:60px !important">
+                    <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  value="{{$user[0]['userInfo']['pAddressCity']}}">
+                    </div>
+                    <div class="form-field" style="height:60px !important">
+                    <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                        <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" value="{{$user[0]['userInfo']['pAddressPostal']}}">
+                    </div>
+                </div>
+            <div class="form-field-big" id="changeLeaseDatesOnly">
+                <button type="button" id="sponsorSubmit" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Save Sponsor / Parent Information</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="myModalBursarInformation" class="modal">
+    <div class="modal-content " style="height: 860px;">
+        <!-- <span class="closeBursarinfo" style="float:right; font-size:25px; cursor:pointer">&times;</span> -->
+        <div class="form-card">
+            <h2>Bursar Information</h2>
+            <div class="form-field">
+                    <label>Company Name * <span id="bCompanyName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bCompanyName" id='bCompanyName' class="required" value="{{$user[0]['userInfo']['burCompanyName']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Registration Number * <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" class="required" value="{{$user[0]['userInfo']['burRegNo']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Contact Person * <span id="bContactperson_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bContactPerson" id="bContactPerson" class="required" value="{{$user[0]['userInfo']['burContactPerson']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
+                    <input type="text" name="bContactNumber" id="bContactNumber" class="required" value="{{$user[0]['userInfo']['burContactNo']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>Email Address * <span id="bEmail_error" class="hidden" style="color:red"><small>Not a valid email</small></span></label>
+                    <input type="email" name="bEmail" id="bEmail" class="required" value="{{$user[0]['userInfo']['burEmail']}}">
+                </div>
+
+                <div class="form-field">
+                    <br/>
+                </div>
+
+                <div class="form-field-big">
+                    <label>Physical Address * <span id="bAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" placeholder="Street No" name="bAddress1" id="bAddress1" style="width:98% !important" class="required" value="{{$user[0]['userInfo']['bAddress1']}}">
+                </div>
+                <div class="form-field-big" style="height:60px !important">
+                <span id="bAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="Suburb" name="bAddress2" id="bAddress2" style="width:98% !important" class="required" value="{{$user[0]['userInfo']['bAddress2']}}">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <input type="text" placeholder="City" name="bAddressCity" id='bAddressCity'  class="required" value="{{$user[0]['userInfo']['bAddressCity']}}">
+                </div>
+                <div class="form-field" style="height:60px !important">
+                <span id="bAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+                    <input type="text" placeholder="Postal Code" name="bAddressPostal" id="bAddressPostal" class="required" value="{{$user[0]['userInfo']['bAddressPostal']}}">
+                </div>
+
+                <div class="form-field">
+                    <label>How Is the Bursary Paid * <span id="bPayment_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <select name="bPayment" id='bPayment' class="required">
+                    <option value="" disabled selected>Please select one</option>
+                        <option value="Directly to the RESIDENCE" <?php if($user[0]['userInfo']['bPayment'] == "Directly to the RESIDENCE"){echo 'selected';} ?>>Directly to the RESIDENCE</option>
+                        <option value="Directly to the STUDENT" <?php if($user[0]['userInfo']['bPayment'] == "Directly to the STUDENT"){echo 'selected';} ?>>Directly to the STUDENT</option>
+                        <option value="Via an INTERMEDIARY" <?php if($user[0]['userInfo']['bPayment'] == "Via an INTERMEDIARY"){echo 'selected';} ?>>Via an INTERMEDIARY</option>
+                    </select>
+                </div>
+
+                <div class="form-field" id="placeholder">
+                    <br/>
+                </div>
+
+                <div id="viaInt" class="<?php if($user[0]['userInfo']['bPayment'] != "Via an INTERMEDIARY"){echo 'hidden';} ?>">
+
+                    <div class="form-field">
+                        <label>Intermediary * <span id="bint_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <select name="bint" id='bint'>
+                        <option value="" disabled selected>Please select one</option>
+                            <option value="Fundi" <?php if($user[0]['userInfo']['bint'] == "Fundi"){echo 'selected';} ?>>Fundi</option>
+                            <option value="Intellicard" <?php if($user[0]['userInfo']['bint'] == "Intellicard"){echo 'selected';} ?>>Intellicard</option>
+                            <option value="Other" <?php if($user[0]['userInfo']['bint'] == "Other"){echo 'selected';} ?>>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="spesificInt" class="<?php if($user[0]['userInfo']['bint'] != "Other"){echo 'hidden';} ?>">
+
+                    <div class="form-field">
+                        <label>Specify Intermediary Name * <span id="bIntName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                        <input type="text" name="bIntName" id="bIntName" value="{{$user[0]['userInfo']['bIntName']}}">
+                    </div>
+
+                    <div class="form-field">
+                        <br/>
+                    </div>
+                </div>
+            <div class="form-field-big" id="changeLeaseDatesOnly">
+                <button type="button" id="saveBursarDetails" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Save Bursar Information</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="clearSpaceLogin"></div>
@@ -588,6 +788,8 @@
 
 <input type="hidden" id="booking_fee_paid" value="{{$booking_paid}}" />
 <input type="hidden" id="booking_fee_waived" value="{{$booking_waived}}" />
+
+<input type="hidden" id="change_bed_type" value="" />
 
 
 
@@ -688,7 +890,7 @@
                 }else{
 
                     Object.keys(data).forEach( function(key) {
-                        $(".comments_block").append('<div class="infoBlock"><div class="responsible" style="width:100%">'+(data[key].created_at).slice(8, 10)+'/'+(data[key].created_at).slice(5, 7)+'/'+(data[key].created_at).slice(0, 4)+' '+(data[key].created_at).slice(11, 16)+' | '+data[key].users.email+' | '+data[key].users.user_role_name+'</p></div><div class="information"><p>'+data[key].comment+'</p></div></div>')
+                        $(".comments_block").append('<div class="infoBlock"><div class="responsible" style="width:100%">'+(data[key].created_at).slice(8, 10)+'/'+(data[key].created_at).slice(5, 7)+'/'+(data[key].created_at).slice(0, 4)+' '+(data[key].created_at).slice(11, 16)+' | <span class="commentMail">'+data[key].users.email+'</span> <span class="commentName"> | '+data[key].users.user_role_name+'</span></p></div><div class="information"><p>'+data[key].comment+'</p></div></div>')
                     });
                 }
 
@@ -702,68 +904,15 @@
     // MainAppSection
     function checkUserStatus(){
 
-        $(".address_btn").empty()
-
-        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
-            if($("#address_approved").val() != 1){
-                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
-                    $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
-                }
-
-                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
-                    $(".address_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>')
-                }
-            }else{
-                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
-                    $(".address_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>')
-                }
-            }
-
-        }
-
-        $(".kin_btn").empty()
-
-        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?>" == 0){
-            if($("#kin_approved").val() != 1){
-                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
-                    $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
-                }
-
-                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
-                    $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
-                }
-            }else{
-                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
-                    $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
-                }
-            }
-        }
-
-        $(".app_details_btn").empty()
-
-        if("<?php echo $user[0]['userInfo']['rob_50_approve']; ?>" == 0 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
-            if($("#email_data_approved").val() != 1){
-                if("<?php echo Auth::user()->role_approve_docs; ?>" == "1"){
-                    $(".app_details_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>')
-                }
-
-                if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
-                    $(".app_details_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>')
-                }
-            }else{
-                if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
-                    $(".app_details_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Reject</button>')
-                }
-            }
-        }
-
         $(".waitve_btn").empty();
 
         if($("#booking_fee_paid").val() == 'false'){
-            if($("#booking_fee_waived").val() == 'false'){
-                $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
-            }else{
-                $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+            if(("{{Auth::user()->role_modify_approved}}" == 1 && "{{$user[0]['userInfo']['rob_50_approve']}}" == 2) || ("{{$user[0]['userInfo']['rob_60_cancelled']}}" == 0 &&  "{{$user[0]['userInfo']['rob_50_approve']}}" != 2)){
+                if($("#booking_fee_waived").val() == 'false'){
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
+                }else{
+                    $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
+                }
             }
         }
 
@@ -852,7 +1001,13 @@
                     var IDspon = data['pPassportNo']
                 }
 
-                $(".burPaymentDetails").empty().append(studentType+"<br/>"+bPayment+" "+bint)
+                if(studentType == "Bursary"){
+                    $(".burPaymentDetails").empty().append(studentType+"<br/>"+bPayment+" "+bint)
+                }else{
+                    $(".burPaymentDetails").empty().append(studentType)
+                }
+
+                
 
                 $(".sponInfoSection").empty().append(data['sponFirstName']+" "+data['sponLastName']+"<br/>"+data['sponCell']+"<br/>"+data['sponEmail']+"<br/>"+data['pNationality']+"<br/>"+IDspon+"<br/>"+data['pAddress1']+", "+data['pAddress2']+"<br/>"+data['pAddressCity']+", "+data['pAddressPostal'])
             }
@@ -866,7 +1021,110 @@
 
             success: function (data) {
 
-                // console.log(data)
+                $(".address_btn").empty()
+
+                
+                $(".studentType_btn").empty().append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_student_type" edittype="form">Edit</button>')
+        
+
+                if(data.rob_50_approve != 2 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+                    if($("#address_approved").val() != 1){
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
+                            $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
+                        }
+
+                        if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                            $(".address_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>')
+                        }
+                    }else{
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == 1){
+                            $(".address_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>')
+                        }
+                    }
+
+                }else if(data.rob_50_approve == 2){
+
+                    if($("#address_approved").val() != 1){
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
+
+                            if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
+                                $(".address_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Approve</button>')
+                            }
+
+                            if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                                $(".address_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_address" edittype="form">Edit</button>')
+                            }
+                        }
+                    }else{
+                        if("<?php echo Auth::user()->role_delete_uploaded; ?>" == '1'){
+                            $(".address_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_address" approvefield="address_approved" style="height:40px;">Reject</button>')
+                        }
+                    }
+                }
+
+                $(".kin_btn").empty()
+
+                if(data.rob_50_approve != 2 && "<?php echo $user[0]['userInfo']['rob_60_cancelled'] ;?>" == 0){
+                    if($("#kin_approved").val() != 1){
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
+                            $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
+                        }
+
+                        if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                            $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
+                        }
+                    }else{
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == 1){
+                            $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
+                        }
+                    }
+                }else if(data.rob_50_approve == 2){
+                    if($("#kin_approved").val() != 1){
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
+                            $(".kin_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Approve</button>')
+                        }
+
+                        if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                            $(".kin_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_edit_kin" edittype="form">Edit</button>')
+                        }
+                    }else{
+                        if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                            $(".kin_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_edit_kin" approvefield="kin_approved" style="height:40px;">Reject</button>')
+                        }
+                    }
+                }
+
+                $(".app_details_btn").empty()
+
+                if(data.rob_50_approve != 2 && "<?php echo $user[0]['userInfo']['rob_60_cancelled']; ?>" == 0){
+                    if($("#email_data_approved").val() != 1){
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
+                            $(".app_details_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>')
+                        }
+
+                        if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                            $(".app_details_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>')
+                        }
+                    }else{
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == 1){
+                            $(".app_details_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Reject</button>')
+                        }
+                    }
+                }else if(data.rob_50_approve == 2){
+                    if($("#email_data_approved").val() != 1){
+                        if("<?php echo Auth::user()->role_non_funding; ?>" == "1"){
+                            $(".app_details_btn").append('<button type="button" class="approve button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Approve</button>')
+                        }
+
+                        if("<?php echo Auth::user()->role_edit_app; ?>" == "1"){
+                            $(".app_details_btn").append('<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>')
+                        }
+                    }else{
+                        if("<?php echo Auth::user()->role_delete_uploaded; ?>" == 1){
+                            $(".app_details_btn").append('<button type="button" class="rejected button btn_approve_inline" formid="inline_app_details" approvefield="email_data_approved" style="height:40px;">Reject</button>')
+                        }
+                    }
+                }
 
                 if(data['parent_approved'] == 1){
                     $("#rejectedSpon").addClass('hidden')
@@ -895,7 +1153,7 @@
                 if((data['rob_50_approve'] == 0 || data['rob_50_approve'] == 1) && data['rob_60_cancelled'] == 0){
                     $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
 
-                    if("<?php echo Auth::user()->role_approve_docs; ?>" == 1
+                    if("<?php echo Auth::user()->role_app_lease; ?>" == 1
                         && data['rob_10_fee'] == 2
                         && data['rob_15_id'] == 2
                         && data['rob_20_card'] == 2
@@ -965,18 +1223,40 @@
 
     function changeBooking(bookingId, type){
 
+        console.log(bookingId)
+        console.log(type)
+
+        if (type === "generate" && $('#moveInStatus').length) {
+            console.log('regen lease');
+            $("#change_bed_type").val('cancel')
+        }
+
         $("#bookingId").val(bookingId)
         var modal = document.getElementById("myModalEditApp");
         modal.style.display = "block";
 
-        if($("#property").val() == "Dunvista Mansions" || $("#property").val() == "Braamlofts" || $("#property").val() == "Braamlofts" || $("#property").val() == "Wynton Joy" || $("#property").val() == "126 Siemert"){
-            $("#roomSection").removeClass('hidden');
-        }else{
-            $("#roomSection").addClass('hidden');
-        }
+        $.ajax({
+            type: "get",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                let properties = data[0];
 
-        $("#property").change();
-        $("#roomType").val('<?php echo $booking->roomType;?>');
+                console.log(data)
+
+                let selProp = data[2].property;
+
+                properties.sort();
+                $('#property').empty()
+
+                Object.keys(properties).forEach( function(key) {
+                    $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                });
+
+                $('#property').val(selProp);
+
+                $("#property").change();
+            }
+        });
 
         callRoomDetails('floor','', '', '', '', '', 'open')
         
@@ -990,7 +1270,13 @@
         
     }
 
-    function cancelLease(bookingId, type){
+    function cancelLease(bookingId, type) {
+
+        @if ($user[0]['userInfo']['rob_55_lease'] == 2)
+            let msg = "The current Approved Lease will be rejected.";
+        @else
+            let msg = "The current Lease will be regenerated.";
+        @endif
         
         // Swal.fire({
         //     title: 'Are you sure?',
@@ -1011,6 +1297,7 @@
         //             },
         //         });
 
+                $("#change_bed_type").val('cancel')
                 changeBooking(bookingId, type);
 
         //     }
@@ -1099,8 +1386,6 @@
     })
 
     function callRoomDetails(callId){
-
-        
 
         if (callId == "floor") {
             if ($("#property").val() !== "" && $("#roomType").val() !== "") {
@@ -1458,11 +1743,28 @@
     }
 
     var modalLease = document.getElementById("myModalEditLease");
+    var modalBursarInfo = document.getElementById("myModalBursarInformation");
+    var modalSponInfo = document.getElementById("myModalSposorInformation");
     var spanLease = document.getElementsByClassName("closeLease")[0];
+    // var spanBurInfo = document.getElementsByClassName("closeBursarinfo")[0];
+    // var spanSponInfo = document.getElementsByClassName("closeSponsorinfo")[0];
+
+    
+
+    
+
+    
     
     spanLease.onclick = function() {
         modalLease.style.display = "none";
     }
+
+    // spanBurInfo.onclick = function() {
+    //     modalBursarInfo.style.display = "none";
+    // }
+    // spanSponInfo.onclick = function() {
+    //     modalSponInfo.style.display = "none";
+    // }
 
     bookingTypeDetails();
 
@@ -1491,13 +1793,15 @@
 
                 var bed_code = "";
                 var unallocated_bed = "";
-                if(data[0]?.bed_code !== "" && data[0].bed_code !== null){
+                if(data[0].bed_code !== "" && data[0].bed_code !== null){
                     bed_code = "Bed Code: "+data[0].bed_code;
 
-                    if("<?php echo Auth::user()->role_change_bed; ?>" == "1"){
-                        if(data[2] == 'false'){
-                            var unallocated_bed = '<button class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
-                        }
+                    if("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2){
+                        // if(data[2] == 'false'){                            
+                            var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
+                        // }
+
+                        // console.log(data);
                     }
                 }
 
@@ -1526,8 +1830,8 @@
                     var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
                 }
                 
-                let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].property+'</h4>'+
-                    '<h4 class="cardHeader" >'+data[0].roomType+'</h4>'+
+                let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].residence.residence+'</h4>'+
+                    '<h4 class="cardHeader" >'+data[0].room_type.name+'</h4>'+
                     '<h4 class="cardHeader" id="prop_room_row1" >'+metaInfo1+floor+unit+'</h4>'+
                     '<h4 class="cardHeader" id="prop_room_row2" >'+
                     bed_code+
@@ -1547,6 +1851,162 @@
             },
         });
     }
+
+    $("input").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        // var required = document.getElementById(fieldId).required
+        var required = $("#"+fieldId).hasClass('required')
+
+        if($("#"+fieldId).val() == "" && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
+        }else{
+            $("#"+$(this)[0]["id"]).removeClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        }
+
+    });
+
+    $("select").blur(function(){
+        let fieldId = $(this)[0]["id"]
+
+        // var required = document.getElementById(fieldId).required
+        var required = $("#"+fieldId).hasClass('required')
+
+        if($("#"+fieldId).val() == null && required == true){
+            $("#"+$(this)[0]["id"]).addClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
+        }else{
+            $("#"+$(this)[0]["id"]).removeClass('fieldError')
+            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        }
+    });
+
+    $("#bPayment").on('change', function(){
+        
+        if($("#bPayment").val() == "Via an INTERMEDIARY"){
+            $("#viaInt").removeClass("hidden")
+            $("#bint").addClass("required")
+            $("#placeholder").addClass("hidden")
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
+        }else{
+            $("#viaInt").addClass("hidden")
+            $("#bint").removeClass("required")
+            $("#bint").removeClass("fieldError")
+            $("#placeholder").removeClass("hidden")
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
+            $("#bIntName").removeClass("fieldError")
+        }
+    })
+
+    $("#bint").on('change', function(){
+        
+        if($("#bint").val() == "Other"){
+            $("#spesificInt").removeClass("hidden")
+            $("#bIntName").addClass("required")
+        }else{
+            $("#spesificInt").addClass("hidden")
+            $("#bIntName").removeClass("required")
+        }
+    })
+    $("#pIdNumber").on('keyup blur', function(){
+        let idNumber = $("#pIdNumber").val();
+
+        if(idNumber.length == 13){
+            ValidID(idNumber, "pIdNumber", "pIdNumber_error")
+        }else{
+            $("#pIdNumber").addClass("fieldError")
+            $("#pIdNumber_error").removeClass('hidden')
+        }
+
+    })
+    function ValidCell(cell, fieldId, fieldError){
+        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+            $("#"+fieldId).removeClass("fieldError")
+            $("#"+fieldError).addClass('hidden')
+        }else{
+            $("#"+fieldId).addClass("fieldError")
+            $("#"+fieldError).removeClass('hidden')
+        }
+    }
+    $("#pCell_no").on('keyup blur', function(){
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error")
+    })
+
+    $("#bContactNumber").on('keyup blur', function(){
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+    })
+    $("#bAddressPostal").on('keyup blur', function(){
+        postal = $("#bAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#bAddressPostal").removeClass("fieldError")
+            $("#bAddressPostal_error").addClass('hidden')
+        }else{
+            $("#bAddressPostal").addClass("fieldError")
+            $("#bAddressPostal_error").removeClass('hidden')
+        }
+        
+    })
+
+    $("#pAddressPostal").on('keyup blur', function(){
+        postal = $("#pAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#pAddressPostal").removeClass("fieldError")
+            $("#pAddressPostal_error").addClass('hidden')
+        }else{
+            $("#pAddressPostal").addClass("fieldError")
+            $("#pAddressPostal_error").removeClass('hidden')
+        }
+        
+    })
+    function isEmail(email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
+    }
+    $("#pEmail").on('keyup blur', function(){
+        if(isEmail($("#pEmail").val())){
+            $("#pEmail").removeClass("fieldError")
+            $("#pEmail_error").addClass('hidden')
+        }else{
+            $("#pEmail").addClass("fieldError")
+            $("#pEmail_error").removeClass('hidden')
+        }
+    })
+
+    $("#bEmail").on('keyup blur', function(){
+        if(isEmail($("#bEmail").val())){
+            $("#bEmail").removeClass("fieldError")
+            $("#bEmail_error").addClass('hidden')
+        }else{
+            $("#bEmail").addClass("fieldError")
+            $("#bEmail_error").removeClass('hidden')
+        }
+    })
+    $("#pNationality").on('change', function(){
+        console.log($("#pNationality").val())
+        if($("#pNationality").val() == "South Africa"){
+            $("#pPassportField").addClass('hidden')
+            $("#pIdField").removeClass('hidden')
+
+            $("#pPassportNo").removeClass("required")
+            $("#pIdNumber").addClass("required")
+            $("#pPassportNo").removeClass("fieldError")
+        }else{
+            $("#pIdField").addClass('hidden')
+            $("#pPassportField").removeClass('hidden')
+
+            $("#pPassportNo").addClass("required")
+            $("#pIdNumber").removeClass("required")
+            $("#pIdNumber").removeClass("fieldError")
+        }
+    })
 
     $("#changeBookingType").on('click', function(){
 
@@ -1580,6 +2040,7 @@
                         room: $("#room").val(),
                         bed: $("#bed").val(),
                         bed_code: $("#bed_code").val(),
+                        change_bed_type: $("#change_bed_type").val(),
                     },
 
                     success: function (data) {
@@ -1587,6 +2048,40 @@
                         // console.log(data)
                         
                         // window.location.reload();
+
+                        if($("#change_bed_type").val() == "cancel"){
+                            $.ajax({
+                                type: "post",
+                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                data: {
+                                    type: "auto",
+                                },
+
+                                success: function (data) {          
+                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                        uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
+                                    }
+                                    
+                                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                                    $("#moveInBanner").empty().append(uploadbtn);
+                                    $("#moveInStatus").empty().append('<div class="button rejected"></div>');
+
+                                    $("#buttonTop").empty();
+
+                                    @if(Auth::user()->role_change_bed == "1")
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking(\'{{$user[0]['userInfo']['id']}}\', \'generate\')">Change Bed</button>');
+                                    @endif
+
+                                    @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease(\'{{$user[0]['userInfo']['id']}}\')">Change Lease Dates</button>');
+                                    @endif
+                                },
+                            });
+                        }
+
+                        $("#change_bed_type").val();
                         bookingTypeDetails();
                         refreshActions();
 
@@ -1604,7 +2099,9 @@
                             }
                         }
 
-                        $("#myModalEditApp").html("");
+                        $("#changeBookingType").empty().append('Change booking')
+
+                        // $("#myModalEditApp").html("");
                         $("#myModalEditApp").css("display", "none");
                     },
                 });
@@ -1675,34 +2172,39 @@
     $("#property").on('change', function(){
         let propValue = $("#property").val();
 
-        if(propValue == "Braamlofts"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>')
-        }else if(propValue == "80 Jorissen"){
-            $("#roomSection").addClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "49 Jorissen"){
-            $("#roomSection").addClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="Single">Single</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option><option value="Single 4 bedroom">Single | 4 Bedroom</option>')
-        }else if(propValue == "Dunvista Mansions"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "Wynton Joy"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "126 Siemert"){
-            $("#roomSection").removeClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>')
-        }else if(propValue == "YMCA"){
-            $("#roomSection").addClass('hidden');
-            $("#roomType").empty().append('<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single | 3 Bedroom</option>')
-        }
+        //here
+        $("#roomType").empty().append('<option value="">Loading</option>');
 
-        $("#floor").empty();
-        $("#unit").empty();
-        $("#room").empty();
-        $("#bed").empty();
-        $("#bed_code").empty();
+        $.ajax({
+            type: "get",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                //
+
+                console.log(data)
+                let roomData = data[3]
+
+                $("#roomType").empty().append('<option value="">Select One</option>');
+                Object.keys(roomData).forEach( function(key) {
+                    if(propValue == roomData[key].residence){
+                        var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
+                        $("#roomType").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');
+                    }
+                });
+
+                $("#floor").empty();
+                $("#unit").empty();
+                $("#room").empty();
+                $("#bed").empty();
+                $("#bed_code").empty();
+                $("#roomType").val('<?php echo $booking->roomType;?>');
+                callRoomDetails('floor');
+            }
+        })
+
+        
+
+        
     })
 
     // function openModal(field, url, uploaded_by, created_at, fileId, status){
@@ -2283,10 +2785,37 @@
         }
     }
 
+    function restoreBooking(bookingId, userId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This booking will become active again!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, activate it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/restore/booking",
+                    data: {
+                        bookingId: bookingId, 
+                        userId: userId,
+                    },
+
+                    success: function (data) {
+                        window.location = "/applications";
+                    },
+                });
+            }
+        })
+    }
+
     function cancelBooking(bookingId, userId){
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "You will cancel this booking!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -2366,7 +2895,10 @@
                 type: "auto",
             },
 
-            success: function (data) {                
+            success: function (data) {          
+                // if($("#change_bed_type").val() == "cancel"){
+                    console.log(data)
+                // }      
                 $(btn).html('REGEN LEASE');
             },
         });
@@ -2413,9 +2945,15 @@
 
     jQuery(document).ready( function($) {
         $(document).on("click", '#btn_clear_bed', function(e) {
+            var msg = "You are about to unallocate this bed, the bed will be available to book again";
+
+            if ($(this).data("lease") === "true") {
+                msg = "You are about to unallocate this bed, the bed will be available to book again. The Lease will also be rejected.";
+            }
+
             Swal.fire({
                 title: 'Are you sure?',
-                text: "You are about to unallocate this bed, the bed will be available to book again",
+                text: msg,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -2434,6 +2972,11 @@
                         success: function (data) {
                             $("#prop_room_row1, #prop_room_row2").remove();
                             // $("#bed_allocated").val('')
+
+                            $('#moveInStatus').parent().remove();
+
+                            //Update change bed to not show lease cancel message
+                            $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="changeBooking({{$user[0]['userInfo']['id']}}, \'generate\')">Change Bed</button>');
 
                             refreshActions();  
                             checkUserStatus();
@@ -2612,6 +3155,20 @@
 
                 let btn = $(this);
 
+                let infoData = "NSFAS";
+
+                if(formId == 'inline_edit_student_type'){
+                    if($("#studentType").val() == "Cash / Direct"){
+                        var modal = document.getElementById("myModalSposorInformation");
+                        modal.style.display = "block";
+                        infoData = "CASH";
+                    }else if($("#studentType").val() == "Bursary"){
+                        var modal = document.getElementById("myModalBursarInformation");
+                        modal.style.display = "block";
+                        infoData = "BURSARY"
+                    }
+                }
+
                 $.ajax({
                     type: "post",
                     url: "/save-inline-data",
@@ -2620,6 +3177,10 @@
                     success: function (data) {
 
                         $(btn).next().click();
+
+                        if(infoData == "NSFAS"){
+                            window.location.reload();
+                        }
         
                     },
                 });
@@ -2767,6 +3328,251 @@
             }
         })
     }
+
+    $("#app_address_p").on('change', function(){
+
+    if(document.getElementById('app_address_p').checked == true){
+        $(".pAddress").addClass("hidden");
+    }else{
+        $(".pAddress").removeClass('hidden')
+    }
+    })
+
+    $("#sponsorSubmit").on('click', function(){
+        //Check if any hidden fields are required, remove required check
+        $('.hidden .fieldError').removeClass('fieldError').val('');
+        $("#sponsorSubmit").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error")
+
+        if(isEmail($("#pEmail").val())){
+            $("#pEmail").removeClass("fieldError")
+            $("#pEmail_error").addClass('hidden')
+        }else{
+            $("#pEmail").addClass("fieldError")
+            $("#pEmail_error").removeClass('hidden')
+        }
+
+
+        var req = 1;
+
+        console.log($("#app_address_p").val())
+
+        if(document.getElementById("app_address_p").checked !== true){
+            postal = $("#pAddressPostal").val()
+
+            if(/\b\d{4}\b/g.test(postal)){
+                $("#pAddressPostal").removeClass("fieldError")
+                $("#pAddressPostal_error").addClass('hidden')
+                console.log("1")
+            }else{
+                $("#pAddressPostal").addClass("fieldError")
+                $("#pAddressPostal_error").removeClass('hidden')
+                console.log('2')
+            }
+
+            var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality", "pAddress1", "pAddress2", "pAddressCity", "pAddressPostal"];
+        }else{
+            var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality"];
+        }
+
+        if($("#pNationality").val() == "South Africa"){
+            sponArr.push("pIdNumber")
+        }else{
+            sponArr.push("pPassportNo")
+        }
+
+        sponArr.forEach( function(value){
+            if($("#"+value).val() === "" || $("#"+value).val() === null){
+
+                $("#"+value).addClass("fieldError")
+                $("#"+value+"_error").removeClass("hidden")
+            }
+        })
+
+        if ($('.fieldDuplicate').length > 0) {
+            req = 0;
+        }
+
+        if ($('.fieldError').length > 0) {
+            req = 0;
+        }
+
+        if(req == 0){
+            $("#sponsorSubmit").empty().append('Save Sponsor / Parent Information')
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
+
+            return false;
+        }else{
+            let total = 1
+            $('.fieldError').each( function(){
+                if($(this).val() === ""){
+                    total = 0
+
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
+                }
+            })
+
+            if(total == 0){
+                $("#sponsorSubmit").empty().append('Save Sponsor / Parent Information')
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
+
+                return false;
+            }else{
+                $.ajax({
+                    type: "post",
+                    url: "/update-sponsor-details",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        pFirstName: $("#pFirstName").val(),
+                        pLastName: $("#pLastName").val(),
+                        pCell_no: $("#pCell_no").val(),
+                        pEmail: $("#pEmail").val(),
+                        pNationality: $("#pNationality").val(),
+                        pPassportNo: $("#pPassportNo").val(),
+                        pIdNumber: $("#pIdNumber").val(),
+                        app_address_p: document.getElementById("app_address_p").checked !== true ? '0' : '1',
+                        pAddress1: $("#pAddress1").val(),
+                        pAddress2: $("#pAddress2").val(),
+                        pAddressCity: $("#pAddressCity").val(),
+                        pAddressPostal: $("#pAddressPostal").val(),
+                    },
+
+                    success: function (data) {
+
+                        window.location.reload();
+                    },
+                });
+            }
+        }
+    })
+
+    $("#saveBursarDetails").on('click', function(){
+        //Check if any hidden fields are required, remove required check
+        $('.hidden .fieldError').removeClass('fieldError').val('');
+        $("#saveBursarDetails").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+
+        if(isEmail($("#bEmail").val())){
+            $("#bEmail").removeClass("fieldError")
+            $("#bEmail_error").addClass('hidden')
+        }else{
+            $("#bEmail").addClass("fieldError")
+            $("#bEmail_error").removeClass('hidden')
+        }
+
+        postal = $("#bAddressPostal").val()
+
+        if(/\b\d{4}\b/g.test(postal)){
+            $("#bAddressPostal").removeClass("fieldError")
+            $("#bAddressPostal_error").addClass('hidden')
+        }else{
+            $("#bAddressPostal").addClass("fieldError")
+            $("#bAddressPostal_error").removeClass('hidden')
+        }
+
+
+        var req = 1;
+
+        var burArr = ["bCompanyName", "bRegistrationNo", "bContactPerson", "bContactNumber", "bEmail", "bAddress1", "bAddress2", "bAddressCity", "bAddressPostal", "bPayment"];
+
+
+        if($("#bPayment").val() == "Via an INTERMEDIARY"){
+            burArr.push("bint")
+        }
+
+        if($("#bint").val() == "Other"){
+            burArr.push("bIntName")
+        }
+
+        burArr.forEach( function(value){
+            if($("#"+value).val() === "" || $("#"+value).val() === null){
+
+                $("#"+value).addClass("fieldError")
+                $("#"+value+"_error").removeClass("hidden")
+            }
+        })
+
+        if ($('.fieldDuplicate').length > 0) {
+            req = 0;
+        }
+
+        if ($('.fieldError').length > 0) {
+            req = 0;
+        }
+
+        if(req == 0){
+            $("#saveBursarDetails").empty().append('Save Bursar Information')
+            Swal.fire(
+                'Blank Fields',
+                'Please fill in all Required Fields!',
+                'error'
+            )
+
+            return false;
+        }else{
+            let total = 1
+            $('.fieldError').each( function(){
+                if($(this).val() === ""){
+                    total = 0
+
+                    $(this).addClass("fieldError")
+                    id = $(this)[0]["id"]
+                    $("#"+id+"_error").removeClass("hidden")
+                }
+            })
+
+            if(total == 0){
+                $("#saveBursarDetails").empty().append('Save Bursar Information')
+                Swal.fire(
+                    'Blank Fields',
+                    'Please fill in all Required Fields!',
+                    'error'
+                )
+
+                return false;
+            }else{
+                $.ajax({
+                    type: "post",
+                    url: "/update-bursar-details",
+                    data: {
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                        bCompanyName: $("#bCompanyName").val(),
+                        bRegistrationNo: $("#bRegistrationNo").val(),
+                        bContactPerson: $("#bContactPerson").val(),
+                        bContactNumber: $("#bContactNumber").val(),
+                        bEmail: $("#bEmail").val(),
+                        bAddress1: $("#bAddress1").val(),
+                        bAddress2: $("#bAddress2").val(),
+                        bAddressCity: $("#bAddressCity").val(),
+                        bAddressPostal: $("#bAddressPostal").val(),
+                        bPayment: $("#bPayment").val(),
+                        bint: $("#bint").val(),
+                        bIntName: $("#bIntName").val(),
+
+                    },
+
+                    success: function (data) {
+
+                        window.location.reload();
+                    },
+                });
+            }
+        }
+    })
 
 </script>
 

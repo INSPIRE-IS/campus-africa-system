@@ -9,18 +9,31 @@ use App\Models\UserFiles;
 use App\Models\Booking;
 use App\Models\Property;
 use App\Models\ActionList;
+use Auth;
+use App\Models\Residence;
+use App\Models\RoomTypes;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
 
-        $lookups = Lookups::with('users')->get();
+        if(Auth::user()->role_lookup == 1){
+            $lookups = Lookups::with('users')->get();
+    
+            return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
+        }else{
+            return "404 Error";
+        }
 
-        return view('admin.lookups', ["headerTitle" => "Lookups", "lookups" => $lookups, "title" => "Lookups"]);
     }
 
     public function add_lookups(Request $request){
 
-        return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
+        if(Auth::user()->role_lookup == 1){
+
+            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function new_lookups(Request $request){
@@ -44,9 +57,14 @@ class LookupsController extends Controller {
 
     public function edit_lookups(Request $request, $lookupId){
 
-        $lookup = Lookups::where('id', $lookupId)->first();
+        if(Auth::user()->role_lookup == 1){
 
-        return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
+            $lookup = Lookups::where('id', $lookupId)->first();
+
+            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
+        }else{
+            return "404 Error";
+        }
     }
 
     public function save_lookups(Request $request){
@@ -61,6 +79,25 @@ class LookupsController extends Controller {
                 "lease_to_time" => $request->lease_to_time,
                 "actionUserUid" => Auth::user()->id,
             ];
+
+            // $year = Lookups::where('group_id', '4')->first();
+
+            // if(date($year->lookup_name) < date($request->value)){
+
+            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $year->lookup_name)->get();
+    
+            //     foreach($bookingsList as $booking){
+            //         Property::where('id', $booking->property_data_id)->update(['room_available' => null]);
+            //     }
+            // }else{
+            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $request->value)->get();
+
+            //     foreach($bookingsList as $booking){
+            //         Property::where('id', $booking->property_data_id)->update(['room_available' => '1']);
+            //     }
+            // }
+
+
         }else if($request->group_id == "7"){
             $data = [
                 "group_id" => $request->group_id,
@@ -78,6 +115,9 @@ class LookupsController extends Controller {
         }
 
         Lookups::where('id', $request->lookupId)->update($data);
+
+        //Update bookings
+        $this->admin_updates_update_properties();
 
         return redirect()->route('lookups');
     }
@@ -268,7 +308,13 @@ class LookupsController extends Controller {
             foreach($actions as $action){
                 if ($action->action == 'Application Cancelled') {
                     $status_data['rob_60_cancelled'] = 1;
-                    // break;
+                }
+
+            }
+            foreach($actions as $action){
+
+                if ($action->action == 'Restored Cancelled Application') {
+                    $status_data['rob_60_cancelled'] = 0;
                 }
             }
 
@@ -290,12 +336,100 @@ class LookupsController extends Controller {
         echo "done";
     }
 
-    public function admin_updates_update_properties(Request $request){
-        $bed_used = Booking::get();
+    public function admin_updates_update_properties(){
+        //Get current booking year
+        $this_year = Lookups::where('group_id', '4')->first();
+
+        //First make all rooms available
+        Property::where('room_available', '0')->update(['room_available' => null]);
+        Property::where('room_available', '1')->update(['room_available' => null]);
+
+        //Set Inventory to Yes for all
+        Property::where('inventory', '0')->update(['inventory' => '1']);
+        Property::where('inventory', null)->update(['inventory' => '1']);
+
+        //Now find building manager beds and mark inventory no
+        Property::where('room_type', 'Building Manager')->update(['inventory' => '0']);
+        
+        //Then run through and mark all booked rooms
+        $bed_used = Booking::where('year', $this_year->lookup_name)->get();        
 
         foreach($bed_used as $bed){
-            $thisProperty = Property::where('residence', $bed->property)->where('room_type', $bed->roomType)->where('floor', $bed->floor)->where('unit', $bed->unit)->where('bed_code', $bed->bed_code)->update(['room_available' => '1']);
+            $thisProperty = Property::where('residence', $bed->property)->where('room_type', $bed->roomType)->where('floor', $bed->floor)->where('unit', $bed->unit)->where('bed_code', $bed->bed_code)->get();
+            $propertyData = "";
+
+            //Find the correct bed
+            foreach($thisProperty as $pi) {
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        $propertyData = $pi;
+                    }
+                }
+            }
+            
+            if (!empty($propertyData)) {
+                //Update the bed availability
+                Property::where('id', $propertyData->id)->update(['room_available' => '1']);
+
+                //Update the booking with proper bed
+                Booking::where('id', $bed->id)->update(['property_data_id' => $propertyData->id]);
+            }
         }
         
+    }
+
+    public function admin_updates_update_property_id(request $request){
+        $allProperties = Property::get();
+        $allResidence = Residence::get();
+        $allBookings = Booking::get();
+
+        foreach($allProperties as $property){
+            foreach($allResidence as $residence){
+                if(strtoupper($property->residence) == strtoupper($residence->residence)){
+                    $roomType = RoomTypes::where('property_id', $residence->id)->where('name', $property->room_type)->first();
+                    Property::where('id', $property->id)->update(['residence' => $residence->id, 'room_type' => $roomType->id]);
+                }
+            }
+        }
+
+        foreach($allBookings as $booking){
+            foreach($allResidence as $residence){
+                if(strtoupper($booking->property) == strtoupper($residence->residence)){
+                    $roomType = RoomTypes::where('property_id', $residence->id)->where('name', $booking->roomType)->first();
+                    Booking::where('id', $booking->id)->update(['property' => $residence->id, 'roomType' => $roomType->id]);
+                }
+            }
+        }
+
+    }
+
+    public function admin_updates_update_booking_code(Request $request){
+        
+        $allBookings = Booking::get();
+        $residence = Residence::get();
+
+        foreach($allBookings as $booking){
+            
+            $bookingYear = substr($booking->year, -2);
+            $bookingPrefix = "";
+
+            foreach($residence as $res){
+                if($res->id == $booking->property){
+                    $bookingPrefix = $res->building_prefix;
+                }
+            }
+
+            $id_booking = $booking->id;
+            $placeholder = "";
+
+            for($i = 0; $i < 5 - strlen($id_booking); $i++){
+                $placeholder .= "0";
+            }
+
+            $bookingID = $placeholder.$id_booking;
+
+            Booking::where('id', $booking->id)->update(['booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
+
+        }
     }
 }

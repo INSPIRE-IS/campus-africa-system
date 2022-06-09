@@ -126,6 +126,16 @@ class User extends Authenticatable
         'rob_55_lease',
         'rob_45_other',
         'role_lease_regen',
+        'role_modify_approved',
+        'role_non_funding',
+        'role_funding',
+        'role_app_lease',
+        'template',
+        'role_change_student_type',
+        'role_view_booking_summary',
+        'role_toggle_online_booking',
+        'onboard_complete',
+        'email_verified',
     ];
 
     public function files(){
@@ -151,4 +161,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getLoginRouteExpiresInAttribute(): int
+    {
+        return config('laravel-passwordless-login.login_route_expires');
+    }
 }

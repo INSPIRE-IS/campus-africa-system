@@ -63,6 +63,7 @@ jQuery(document).ready(function ($) {
                 idPassport: $("#idPassport").val(),
                 bookingRef: $("#bookingRef").val(),
                 firstLoad: $("#firstLoad").val(),
+                show_cancelled: JSON.stringify(document.getElementById('show_cancelled').checked),
             },
 
             success: function (data) {
@@ -308,15 +309,15 @@ jQuery(document).ready(function ($) {
 
                     var trDOM = datatable.row
                         .add([
-                            "#" + arrayItem["bookingRef"],
+                            "#" + arrayItem["booking_code"],
                             '<span class="bold">' +
                                 arrayItem["userFirstName"] +
                                 " " +
                                 arrayItem["userLastname"] +
                                 "</span> <br/> " +
-                                arrayItem["property"] +
+                                arrayItem["property_residence"] +
                                 " | " +
-                                arrayItem["roomType"],
+                                arrayItem["roomTypeName"],
                             '<span style="white-space: nowrap;">' + dateString + "</span>",
                             studentType,
                             rob_fee,
@@ -389,6 +390,7 @@ jQuery(document).ready(function ($) {
         $("#beds").val("");
         $("#processingStatus").val("");
         $("#status").val(null).trigger("change");
+        $("#show_cancelled").prop("checked", false);
         $("#searchButton").click();
     });
 });

@@ -82,7 +82,7 @@ class PDFController extends Controller
         $data = User::where('id', $studentId)->first();
         $booking = Booking::where('userId', $studentId)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
-        $residence = Residence::where('residence', $propertyData->residence)->first();
+        $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
         $owner = storage_path().'/leases/kim_degenaar.jpeg';
 
@@ -117,11 +117,21 @@ class PDFController extends Controller
 
         if (!empty($lease)) {
           UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->update($data);
+          $action_type = "Regenerated Lease";
+          
         } else {
-            $data['fileId'] = 'moveIn';
-    
+            $data['fileId'] = 'moveIn';    
             UserFiles::insert($data);
+            $action_type = "Generated Lease";
         }
+
+        ActionList::create([
+          "userUid" => $studentId,
+          "action" => $action_type,
+          "actionUserUid" => Auth::user()->id,
+          "actionUserDisplayName" => Auth::user()->userFirstName,
+          "actionUserRole" => Auth::user()->userRole,
+      ]);
 
         User::where('id', $studentId)->update(['rob_55_lease' => 0]);
 

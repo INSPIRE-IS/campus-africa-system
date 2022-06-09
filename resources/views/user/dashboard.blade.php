@@ -8,9 +8,23 @@
 
             <div class="overlay">
                 <div class="cardBody">
-                    <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                    <h2 class="cardHeaderText">Single</h2>
-                    <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
+                    <h4 class="cardSubHeaderGrey">{{$propertyData->residence}}</h4>
+                    <h2 class="cardHeaderText">{{$roomData->name}}</h2>
+                    <h4 class="cardSubHeaderGrey">
+                      @if($booking->floor !== null) 
+                        {{$booking->floor}} Floor 
+                      @endif 
+                      
+                      @if($booking->unit !== null) 
+                        , Unit {{$booking->unit}}
+                      @endif
+
+                      @if($booking->bed_code !== null) 
+                        , Bed Code: {{$booking->bed_code}}
+                      @endif
+                      
+                      </h4>
+
                     <br/><br/><br/>
                     <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>
                     <a href="#"><button type="button" class="roomContactBtn">Want to cancel your booking? Contact Us</button></a>
@@ -20,186 +34,47 @@
             
         </div>
 
-        <div class="whiteYellowCard smallerCard"> 
-            
-            <h2 class="cardHeader redCardHeader">Application
-                <div class="small"><span class="text">Awaiting Documents </span>
-                    <div class="circle">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                </div>
-            </h2>
-                
-            <div class="cardBody">
+        @if($bookHeader != '0')
+          @include('user.documents.bookingDocs')
+        @else
+          @include('user.documents.applicationDocs')
+        @endif
 
-            @foreach ($rejectedFiles as $file)
-
-                <div class="appAwait">
-                    <h3 class="uploadName">
-
-                    @if($file->fileId == 'copyID')
-                        I.D COPY
-                      @elseif($file->fileId == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file->fileId == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file->fileId == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file->fileId == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file->fileId == 'moveIn')
-                        LEASE
-                      @endif
-
-                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                        <span class="text">Outstanding</span>
-                        <i class="fas fa-file-upload" ></i>
-                        <i class="fas fa-exclamation-circle"></i>
-                    </label>
-                    </h3>
-                    <input type="file" id="{{$file->fileId}}" hidden/>
-
-                    <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
-
-                </div>
-
-            @endforeach
-
-            @foreach($outstanding as $file)
-
-              <div class="appAwait">
-                    <h3 class="uploadName">
-                    @if($file == 'copyID')
-                        I.D COPY
-                      @elseif($file == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file == 'moveIn')
-                        LEASE
-                      @endif
-
-                    <label for="{{$file}}" id="{{$file}}Section" class="outstanding">
-                        <span class="text">Outstanding</span>
-                        <i class="fas fa-file-upload" ></i>
-                        <i class="fas fa-exclamation-circle"></i>
-                    </label>
-                    </h3>
-                    <input type="file" id="{{$file}}" hidden/>
-
-                </div>
-            
-            @endforeach
-                
-                
-
-                
-
-                @foreach($pendingFiles as $file)
-
-                <div class="appAwait" id="registrationSection">
-                    <h3 class="uploadName">
-
-                    @if($file->fileId == 'copyID')
-                        I.D COPY
-                      @elseif($file->fileId == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file->fileId == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file->fileId == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file->fileId == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file->fileId == 'moveIn')
-                        LEASE
-                      @endif
-
-                    <label id="registrationPending" class="pending">
-                        <span class="text">Pending Approval</span>
-                        <i class="fad fa-minus-circle"></i>
-                    </label>
-
-                </div>
-
-                @endforeach
-
-                
-
-            </div>
-
-        </div>
+        
     </div>
 
-    <div class="cards">
+    <div class="cards" id="bookingCardDash">
+
         <div class="whiteYellowCard smallerCard" style="margin-right:6%">
             <h2 class="cardHeader greyCardHeader" style="line-height:65px;">Booking Summary</h2>
-
-
             <div class="cardBody">
-            
-                <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
-                <h2 class="cardHeaderBlck" >NSFAS</h2>
-                <br/>
-                <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
-                <h2 class="cardHeaderBlck" >#0000000000</h2>
-                <br/>
-                <h4 class="cardSubHeaderGreyTxt">Year of Study</h4>
-                <h2 class="cardHeaderBlck" >2022</h2>
-            </div>
-            
-            
-            
+              <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
+              <h2 class="cardHeaderBlck" >
+                <?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?> 
+                @if(Auth::user()->rob_55_lease != '2')
+                  <br/> 
+                  <a href="/change-student-type"><button type="button" class="detailsChange" id="studentChangeType" style="margin-top:-40px;">Change Student Type</button></a></h2>
+                @endif
+              <br/>
+              <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
+              <h2 class="cardHeaderBlck" >#{{$booking->booking_code}}</h2>
+              <br/>
+              <h4 class="cardSubHeaderGreyTxt">Year of Study</h4>
+              <h2 class="cardHeaderBlck" >{{$booking->year}}</h2>
+            </div> 
         </div>
-        <div class="whiteYellowCard smallerCard">
-            
-            <h2 class="cardHeader greenCardHeader">Booking
-                <div class="small"><span class="text">Confirmed </span>
-                    <div class="circle">
-                        <i class="fas fa-check"></i>
-                    </div>
-                </div>
-            </h2>
-                
-            <div class="cardBody">
 
-            @foreach ($approvedFiles as $file)
-
-            <div class="appAwait" id="idCopySection">
-                    <h3 class="uploadName">
-                      @if($file->fileId == 'copyID')
-                        I.D COPY
-                      @elseif($file->fileId == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file->fileId == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file->fileId == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file->fileId == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file->fileId == 'moveIn')
-                        LEASE
-                      @endif
-                        <label class="approved">
-                            <span class="text">Approved</span>
-                            <i class="fas fa-check-circle"></i>
-                        </label>
-                    </h3>
-                </div>
-
-            @endforeach
-
-            </div>
-        </div>
+        @if($bookHeader == '0')
+          @include('user.documents.bookingDocs')
+        @else
+          @include('user.documents.applicationDocs')
+        @endif
     </div>
 </div>
 
+<!-- <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
-<div class="clearSpaceLogin"></div>
-<div class="clearSpaceLogin"></div>
+<div class="clearSpaceLogin"></div> -->
 
 <div class="container">
     <div class="otherProperties">
@@ -277,134 +152,51 @@
 
 <script>
 
-$.ajaxSetup({
+  $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-  $("#copyID").on('change', function(){
-        $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    function UploadDocument(field){
+
+        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        let userId = "<?php echo Auth::user()->id;?>";
 
         var form_data = new FormData();
-        form_data.append("file", document.getElementById('copyID').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "copyID");
+        form_data.append("file", document.getElementById(field).files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", field);
+        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
         $.ajax({
             type: "post",
-            url: "/move-in-form",
+            url: "/move-in-form-admin",
             data: form_data,
             cache: false,
             contentType: false,
             processData: false,
 
             success: function (data) {
-                if (data == "done") {
+                if (data[0]> 0) {
+                    
                     window.location.reload();
+
+                } else {
+                    Swal.fire(
+                        'Error',
+                        data[0],
+                        'error'
+                    )
+                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
-    });
+    }
 
-    $("#studentCard").on('change', function(){
-        $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('studentCard').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "studentCard");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });  
-    })
-
-    $("#bankStatement").on('change', function(){
-        $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bankStatement').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "bankStatement");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
-
-    $("#proofRegistration").on('change', function(){
-
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proofRegistration').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "proofRegistration");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
-
-
-    $("#proof_of_payment").on('change', function(){
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "proof_of_payment");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
-    </script>
+ 
+</script>
 
 
 @endsection

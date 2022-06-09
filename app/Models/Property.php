@@ -25,5 +25,11 @@ class Property extends Model
         'room_rate',
         'room_available',
         'user_id_room',
+        'year',
+        'year_end'
     ];
+
+    public function roomType(){
+        return $this->hasOne("App\Models\RoomTypes", "id", "room_type");
+    }
 }

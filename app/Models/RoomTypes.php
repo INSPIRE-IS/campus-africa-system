@@ -14,6 +14,8 @@ class RoomTypes extends Model
     protected $fillable = [
         'id',
         'property_id',
-        'name'
+        'name',
+        'online',
+        'img_url',
     ];
 }

@@ -8,6 +8,7 @@
 
 <div class="container">
     <br/>
+    <a href="/manage-properties"><button type="button" class="detailsChange" >Manage Properties</button></a>
     <a href="/properties-info"><button type="button" class="detailsChange" >Residence Info</button></a>
     <a href="/room-type/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
     <br/>
@@ -23,7 +24,13 @@
 
         @foreach($room_types as $rt)
             <tr>
-                <td>{{$rt->property_id}}</td>
+                <td>
+                    @foreach($residences as $residence)
+                        @if($residence->id == $rt->property_id)
+                            {{$residence->residence}}
+                        @endif
+                    @endforeach
+                </td>
                 <td>{{$rt->name}}</td>
                 <td>
                     <a href="/room-type/edit/{{$rt->id}}">Edit</a>

@@ -10,29 +10,17 @@
     <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">
         <label></label><br/>
-            <select name="property" id="property">
+            <select name="property" id="property" onChange="changeResidence()">
                 <option value="All" selected>All Residences</option>
-                <option value="Braamlofts">Braamlofts</option>
-                <option value="80 Jorissen">80 Jorissen</option>
-                <option value="49 Jorissen">49 Jorissen</option>
-                <option value="Dunvista Mansions">Dunvista Mansions</option>
-                <option value="Wynton Joy">Wynton Joy</option>
-                <option value="126 Siemert">126 Siemert</option>
-                <option value="YMCA">YMCA</option>
+                @foreach($propertyList as $residence)
+                    <option value="{{$residence->id}}" >{{$residence->residence}}</option>
+                @endforeach
             </select>
         </div>
         <div class="searchField">
         <label></label><br/>
             <select name="room_type" id="room_type">
-                <option value="All" selected>All Room Types</option>
-                <option value="Single">Single</option>
-                <option value="2 Sharing">2 Sharing</option>
-                <option value="3 Sharing">3 Sharing</option>
-                <option value="Single 2 bedroom">Single | 2 Bedroom</option>
-                <option value="Single 3 bedroom">Single | 3 Bedroom</option>
-                <option value="Single small">Single | Small</option>
-                <option value="Single medium">Single | Medium</option>
-                <option value="Single large">Single | Large</option>
+                <option value="" selected>Select One</option>
             </select>
         </div>
         <div class="searchField">
@@ -93,6 +81,32 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function changeResidence(){
+        if($("#property").val() !== "All"){
+            $("#room_type").empty().append('<option value="" selected disabled>Loading</option>')
+
+            $.ajax({
+                type: "post",
+                url: "/get-room-types-id",
+                data: {residence: $("#property").val()},
+
+                success: function (data) {          
+                    $("#room_type").empty().append('<option value="" selected disabled>Select a Room Type</option>')
+                    data.forEach(function(index){
+                        let roomTypeSelected = '<?php echo Session::get("room_type"); ?>';
+                        let roomPropertySelected = '<?php echo Session::get("property"); ?>';
+                        let selected = "";
+
+                        if($("#property").val() == roomPropertySelected && roomTypeSelected == index.name){
+                            selected = "selected"
+                        }
+                        $("#room_type").append('<option value="'+index.id+'" '+selected+'>'+index.name+'</option>')
+                    })
+                },
+            });
+        }
+    };
 
     $("#searchButton").on('click', function(){
         

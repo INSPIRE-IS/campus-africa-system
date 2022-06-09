@@ -12,6 +12,7 @@
         "barryvdh/laravel-dompdf": "^0.9.0",
         "doctrine/dbal": "^3.2",
         "fruitcake/laravel-cors": "^2.0",
+        "grosv/laravel-passwordless-login": "^1.8",
         "guzzlehttp/guzzle": "^7.0.1",
         "jenssegers/agent": "^2.6",
         "juanparati/sendinblue": "^8.0",

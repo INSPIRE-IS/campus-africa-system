@@ -19,7 +19,7 @@ class DocumentsController extends Controller {
         $user = User::where('id', $file->userUid)->first();
         $booking = Booking::where('userId', $file->userUid)->first();
 
-        $property = Residence::where('residence', $booking->property)->first();
+        $property = Residence::where('id', $booking->property)->first();
 
         $field = "None";
         $popupTitle = "";

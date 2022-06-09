@@ -8,17 +8,20 @@
 
 <div class="container">
     <br/>
+    <a href="/manage-properties"><button type="button" class="detailsChange" >Manage Properties</button></a>
+    <a href="/room-types"><button type="button" class="detailsChange" >Room Types</button></a>
     <a href="/residence/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
     <br/>
     <table id="properties_table" class="display">
         <thead>
             <tr>
                 <th>Residence</th>
-                <th>Booking Fee (NSFAS)</th>
+                <!-- <th>Booking Fee (NSFAS)</th>
                 <th>Booking Fee (Bursary)</th>
-                <th>Booking Fee (Cash)</th>
+                <th>Booking Fee (Cash)</th> -->
                 <th>Owner</th>
                 <th>Address</th>
+                <th>Building Prefix</th>
                 <th></th>
             </tr> 
         </thead>
@@ -27,11 +30,12 @@
         @foreach($residences as $residence)
             <tr>
                 <td>{{$residence->residence}}</td>
-                <td>{{$residence->nsfas_booking_rate}}</td>
+                <!-- <td>{{$residence->nsfas_booking_rate}}</td>
                 <td>{{$residence->bursary_booking_rate}}</td>
-                <td>{{$residence->booking_rate}}</td>
+                <td>{{$residence->booking_rate}}</td> -->
                 <td>{{$residence->owner}}</td>
                 <td>{{$residence->address}}</td>
+                <td>{{$residence->building_prefix}}</td>
                 <td>
                     <a href="/residence/edit/{{$residence->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Edit</button></a>
                 </td>

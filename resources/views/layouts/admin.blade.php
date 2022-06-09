@@ -54,12 +54,20 @@
                 <a href="/leases">Leases</a>
                 <a href="/invoices">Invoices</a>
                 <a href="/mailing">Mailing</a>
-                <a href="/lookups">Lookups</a>
+                @if(Auth::user()->role_lookup == "1")
+                    <a href="/lookups">Lookups</a>
+                @endif
                 <a href="/reports">Reports</a>
+
+                @if(Auth::user()->role_view_booking_summary == '1')
+                    <a href="/booking-summary">Booking Summary</a>
+                @endif
 
                 @if(Auth::user()->role_manage_users == "1")
                     <a href="/users">Users</a>
                 @endif
+
+                
                 
                 <a href="/logout">Hi {{Auth::user()->userFirstName}}, Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
@@ -92,11 +100,17 @@
             <div class="loginHeader">
                 @if (isset($appProfile) && $appProfile === "true")
                     <h1 class="bookingSub">
-                        Application Profile 
+                        Application 
+                        @if(isset($booking))
+                            <strong>#{{$booking->booking_code}}</strong>
+                        @endif
+
                         <span class="appStatusText"></span>
                     </h1>
                 @endif
                 <h1 class="booking_app">{{$headerTitle}}</h1>
+
+                
 
                 <div class="buttonSidePanel" style="margin-top:-50px;">
                     @if (isset($appProfile) && $appProfile === "true")
@@ -131,7 +145,7 @@
                     </p>
                 </div>
     
-                <div class="col-3" style="padding-left:6%; width:19%; float:left">
+                <div class="col-3" style="padding-left:6%; width:19%;">
                     <p class="linkHeader">Home</p>
                     <p class="link"><a href="https://campusafrica.whitehart.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
                     <!-- Campus Africa Life<br/> -->
@@ -195,6 +209,7 @@
 
                         success: function (data) {
                             // window.location.reload();
+                            checkUserStatus();
                             $.ajax({
                                 type: "post",
                                 url: "/createLease/{{$user[0]['userInfo']['id']}}",
@@ -234,6 +249,7 @@
                                             '</div>'+
                                         '</div>')
                                     checkUserStatus();
+                                    $("#changeDatesLease").addClass('hidden');
                                 },
                             });
                         },
@@ -341,7 +357,7 @@
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
-                document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+                document.getElementById('fullNavbar').setAttribute("style","height:446px !important");
             } else {
                 x.className = "topnav";
                 document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
@@ -349,6 +365,19 @@
         }        
     </script>
     @endif
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+                document.getElementById('fullNavbar').setAttribute("style","height:446px !important");
+            } else {
+                x.className = "topnav";
+                document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+            }
+        }        
+    </script>
 
     @if (App::environment('development'))
         <script>
