@@ -179,7 +179,10 @@
     
 </div>
 
-<div class="clearSpaceLoginPage"></div>
+@if(!$agent->isMobile())
+    <div class="clearSpaceLoginPage"></div>
+@endif
+
 <input type="hidden" id="firstLoad" value="1"/>
 
 <Script>

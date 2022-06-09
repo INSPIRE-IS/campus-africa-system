@@ -24,6 +24,8 @@ use App\Models\Comments;
 use Session;
 use App\Models\UserResetToken;
 use App\Models\PropertyPermission;
+use Jenssegers\Agent\Agent;
+use Grosv\LaravelPasswordlessLogin\LoginUrl;
 
 class HomeController extends Controller
 {
@@ -56,34 +58,163 @@ class HomeController extends Controller
 
         if(Auth::user()->userRole == "0"){
 
-            $allApprovedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Approved')->get();
-            $allPendingFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Uploaded')->get();
-            $allRejectedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Rejected')->get();
+            
+            if(Auth::user()->email_verified != 1){
 
-            $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
-            $user = User::where('id', Auth::user()->id)->first();
+                return redirect('/verify-password');
 
-            $uploaded = [];
-            // $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
-            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+            }else if(Auth::user()->onboard_complete != '2'){
 
-            if($user->applicationStatus == "Approved Confirmed"){
-                array_push($all, "moveIn");
+                User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
+
+                $currUser = User::where('id', Auth::user()->id)->first();
+
+                if($currUser->studentType == "NSFAS"){
+                    $varToCheck = 'kinFirstName';
+                }elseif($currUser->studentType == "Bursary"){
+                    $varToCheck = 'burCompanyName';
+                }else{
+                    $varToCheck = 'sponFirstName';
+                }
+
+                if($currUser->$varToCheck == null){
+                    return redirect('/step-2/online-application');
+                }else{
+
+                    if(($currUser->studentType == "Bursary" || $currUser->studentType == "Cash / Direct") && $currUser->kinFirstName == null){
+                        return redirect('/step-3/online-application');
+                    }else{
+                        $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
+    
+                        if(!empty($userFileProofOfPayment)){
+                            return redirect('/complete/online-application');
+                        }else{
+                            return redirect('/step-4/online-application');
+                        }
+                    }
+                }
+
+            }else{
+
+    
+                $allFiles = [];
+                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+    
+                if(Auth::user()->rob_60_cancelled == "0" && Auth::user()->rob_50_approve == '2'){
+                    array_push($all, "moveIn");
+                }
+                if(Auth::user()->studentType == "Cash / Direct"){
+                    array_push($all, "bankStatement");
+                }
+                if(Auth::user()->studentType !== "Cash / Direct"){
+                    array_push($all, "bursaryApproval");
+                }
+
+                $allSearchable = UserFiles::where("userUid", Auth::user()->id)->get();
+
+                foreach($allSearchable as $search){
+                    if(!in_array($search->fileId, $all)){
+                        array_push($all, $search->fileId);
+                    }
+                }
+
+                $appHeader = 0;
+                $bookHeader = 0;
+    
+                foreach($all as $file){
+                    $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
+
+                    if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+
+                        if($file_search && !empty($file_search)){
+                            $important = 0;
+
+                            if($file_search->status == "Approved"){
+                                $important = 1;
+                            }else if($file_search->status == "Uploaded"){
+                                $important = 2;
+                            }else{
+                                $important = 3;
+                            }
+                            $output = (object) array(
+                                "fileId" => $file_search->fileId,
+                                "status" => $file_search->status !== null ? $file_search->status : "None",
+                                "fileUrl" => $file_search->fileUrl,
+                                "important" => $important,
+                            );
+                            array_push($allFiles, $output);
+                        }else{
+                            $output = (object) array(
+                                "fileId" => $file,
+                                "status" => "None",
+                                "fileUrl" => "",
+                                "important" => 3,
+                            );
+                            array_push($allFiles, $output);
+                        }
+    
+                        if($file !== 'copyID' && $file !== 'proof_of_payment'){
+                            if($output->status == "Uploaded"){
+                                if($appHeader < 1){
+                                    $appHeader = 1;
+                                }
+                            }
+    
+                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                if($appHeader < 2){
+                                    $appHeader = 2;
+                                }
+                            }
+                        }
+
+                        if($appHeader == 0 && (Auth::user()->rob_50_approve == 1 || Auth::user()->rob_50_approve == 0)){
+                            $appHeader = 1;
+                        }
+
+                        if(Auth::user()->rob_50_approve == 2 && $file == 'moveIn'){
+                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                $appHeader = 2;
+                            }
+
+                            if($output->status == "Uploaded"){
+                                $appHeader = 1;
+                            }
+
+                            if($output->status == "Approved"){
+                                $appHeader = 0;
+                            }
+                        }
+    
+                        if($file == 'copyID' || $file == 'proof_of_payment'){
+                            if($output->status == "Uploaded"){
+                                if($bookHeader < 1){
+                                    $bookHeader = 1;
+                                }
+                            }
+    
+                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                if($bookHeader < 2){
+                                    $bookHeader = 2;
+                                }
+                            }
+                        }
+                    }
+
+                }
+    
+                $booking = Booking::where('userId', Auth::user()->id)->first();
+
+                $propertyData = Residence::where('id', $booking->property)->first();
+                $roomData = RoomTypes::where('id', $booking->roomType)->first();
+
+                usort($allFiles, function($a, $b) {
+                    return $b->important - $a->important;
+                });
+
+                return view('user.dashboard', ["headerTitle" => "Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader, "propertyData" => $propertyData, "roomData" => $roomData]);
+    
             }
-            if($user->studentType == "Cash / Direct"){
-                array_push($all, "bankStatement");
-            }
-            if($user->studentType !== "Cash / Direct"){
-                array_push($all, "bursaryApproval");
-            }
 
-            foreach($allFiles as $file){
-                array_push($uploaded, $file->fileId);
-            }
-
-            $outstanding = array_diff($all, $uploaded);
-
-            return view('user.dashboard', ["headerTitle" => "Your Dashboard", "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
         }else{
 
             return view('admin.dashboard', ["headerTitle" => "Admin Dashboard", "title" => "Dashboard"]);
@@ -95,8 +226,10 @@ class HomeController extends Controller
 
         $proof_of_payment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
         $lease = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'moveIn')->first();
+        $booking = Booking::where('userId', Auth::user()->id)->first();
+        $lookup = Lookups::get();
 
-        return view('user.room_booking', ["headerTitle" => "Room Booking", "proof_of_payment" => $proof_of_payment, "lease" => $lease]);
+        return view('user.room_booking', ["headerTitle" => "Room Booking", "proof_of_payment" => $proof_of_payment, "lease" => $lease, "lookups" => $lookup, "booking" => $booking]);
 
     }
 
@@ -340,7 +473,8 @@ class HomeController extends Controller
                     }
                 }
             }
-            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "allowedResidences" => $allowedResidences]);
+            $agent = new Agent();
+            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "allowedResidences" => $allowedResidences, "agent" => $agent]);
         }
     }
 
@@ -579,6 +713,120 @@ class HomeController extends Controller
 
     }
 
+    public function check_booking($userUid){
+        $idCheck = UserFiles::where('userUid', $userUid)->where('fileId', 'copyID')->first();
+        $popCheck = UserFiles::where('userUid', $userUid)->where('fileId', 'proof_of_payment')->first();
+        $user = User::where('id', $userUid)->first();
+        $booking = Booking::where('userid', $userUid)->first();
+
+        $allCheck = UserFiles::where('userUid', $userUid)->get();
+
+        if(!empty($idCheck) && !empty($popCheck)){
+            if($idCheck->status == "Approved" && $popCheck->status == "Approved"){
+
+                $all = ['studentCard', 'proofRegistration'];
+                $outstanding = [];
+
+                if($user->studentType == "Cash / Direct"){
+                    array_push($all, "bankStatement");
+                }
+                if($user->studentType !== "Cash / Direct"){
+                    array_push($all, "bursaryApproval");
+                }
+
+                $allSearchable = UserFiles::where("userUid", $user->id)->get();
+
+                foreach($allSearchable as $search){
+                    if(explode("_", $search->fileId)[0] == "other"){
+                        array_push($all, $search->fileId);
+                    }
+                }
+    
+                foreach($all as $file){
+                    $file_search = UserFiles::where("userUid", $user->id)->where('fileId', $file)->first();
+
+                    if(($user->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $user->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+
+                        if($file == "studentCard"){
+                            $fileName = "Student Card";
+                        }elseif($file == "proofRegistration"){
+                            $fileName = "Proof of Registration";
+                        }elseif($file == "bankStatement"){
+                            $fileName = "Bank Statements";
+                        }elseif($file == "bursaryApproval"){
+                            if($user->studentType != "NSFAS"){
+                                $fileName = "Bursary Approval";
+                            }else{
+                                $fileName = "NSFAS Approval";
+                            }
+                        }elseif(explode("_", $file)[0] == "other"){
+                            $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
+                        }
+
+                        if($file_search && !empty($file_search)){
+                            if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+                                array_push($outstanding, $fileName);
+                            }
+                        }else{
+                            array_push($outstanding, $fileName);
+                        }
+
+                    }
+
+                }
+
+                $outstandingDocsText = "<ol>";
+
+                foreach($outstanding as $out){
+                    $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+                }
+
+                $outstandingDocsText .= "</ol>";
+
+                $generator = new LoginUrl($user);
+                $generator->setRedirectUrl('/dashboard');
+                $url = $generator->generate();
+
+                $message_replace['bookingRef'] = $booking->booking_code;
+                $message_replace['name'] = $user->userFirstName;
+                $message_replace['approvedDocs'] = "<ol><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Copy of ID Document</li><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Booking Fee Proof of Payment</li></ol>";
+                $message_replace['missing'] = $outstandingDocsText;
+                $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+                $message_replace['close_application_link']="</a>";
+
+                $mailerForMessage = MailerList::where("mailer_name", "Booking Confirmation")->first();
+                $mailerMessage = $mailerForMessage->message;
+
+                $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                $newMessage = str_replace("[approved_document_list]", $message_replace['approvedDocs'], $newMessage);
+                $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
+                $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+
+                $data['name'] = $user->userFirstName;
+                $data['email'] = $user->email;
+                $data['messageForMail'] = $newMessage;
+                $data['subject'] = $mailerForMessage->subject;
+
+                if(explode("@", $data['email'])[1] == "conurban.co.za"){
+                    $data['email'] = $user->email;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
+
+                Mail::send('email.green_back', $data, function($message) use ($data) {
+                    // $message->to($data['email'], $data['name'])->subject
+                    //     ('Campus Africa User Application');
+                    $message->to($data['email'])->subject($data['subject']);
+                    $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                    $message->from('noreply@campusafrica.co.za','Campus Africa');
+                });
+
+            }
+        }
+    }
+
     public function action_file(Request $request){
 
         if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3"){
@@ -669,6 +917,11 @@ class HomeController extends Controller
             ]);
 
             $this->update_user_status($userFile->userUid);
+
+
+            if($userFile->fileId == "copyID" || $userFile->fileId == "proof_of_payment"){
+                $this->check_booking($userFile->userUid);
+            }
 
             return [$userFile, User::where('id', $userFile->userUid)->first()];
 
@@ -809,35 +1062,62 @@ class HomeController extends Controller
     }
 
     public function documents(Request $request){
-            $allApprovedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Approved')->get();
-            $allPendingFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Uploaded')->get();
-            $allRejectedFiles = UserFiles::where("userUid", Auth::user()->id)->where('status', 'Rejected')->get();
-
-            $allFiles = UserFiles::where("userUid", Auth::user()->id)->get();
-
-            $uploaded = [];
-            // $all = ['copyID', 'studentCard', 'bankStatement', 'proofRegistration', 'proof_of_payment', 'moveIn'];
-            $user = User::where('id', Auth::user()->id)->first();
-
+            
+            $allFiles = [];
             $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
 
-            if($user->applicationStatus == "Approved Confirmed"){
+            if(Auth::user()->rob_60_cancelled == "0" && Auth::user()->rob_50_approve == '2'){
                 array_push($all, "moveIn");
             }
-            if($user->studentType == "Cash / Direct"){
+            if(Auth::user()->studentType == "Cash / Direct"){
                 array_push($all, "bankStatement");
             }
-            if($user->studentType !== "Cash / Direct"){
+            if(Auth::user()->studentType !== "Cash / Direct"){
                 array_push($all, "bursaryApproval");
             }
 
-            foreach($allFiles as $file){
-                array_push($uploaded, $file->fileId);
+            $allSearchable = UserFiles::where("userUid", Auth::user()->id)->get();
+
+            foreach($allSearchable as $search){
+                if(!in_array($search->fileId, $all)){
+                    array_push($all, $search->fileId);
+                }
             }
 
-            $outstanding = array_diff($all, $uploaded);
+            foreach($all as $file){
+                $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
 
-            return view('user.documents', ["headerTitle" => "My Documents", "approvedFiles" => $allApprovedFiles, "pendingFiles" => $allPendingFiles, "rejectedFiles" => $allRejectedFiles, "outstanding" => $outstanding]);
+                if($file_search && !empty($file_search)){
+                    if($file_search->status == "Approved"){
+                        $important = 1;
+                    }else if($file_search->status == "Uploaded"){
+                        $important = 2;
+                    }else{
+                        $important = 3;
+                    }
+                    $output = (object) array(
+                        "fileId" => $file_search->fileId,
+                        "status" => $file_search->status !== null ? $file_search->status : "None",
+                        "fileUrl" => $file_search->fileUrl,
+                        "important" => $important,
+                    );
+                    array_push($allFiles, $output);
+                }else{
+                    $output = (object) array(
+                        "fileId" => $file,
+                        "status" => "None",
+                        "fileUrl" => "",
+                        "important" => 3
+                    );
+                    array_push($allFiles, $output);
+                }
+            }
+
+            usort($allFiles, function($a, $b) {
+                return $b->important - $a->important;
+            });
+
+            return view('user.documents', ["headerTitle" => "My Documents", "allFiles" => $allFiles]);
     }
 
     public function leases(Request $request){
@@ -890,50 +1170,61 @@ class HomeController extends Controller
         return $mailerId;
     }
 
-    public function saveMailTy(Request $request){
-        
-        MailerList::where('id', '6')->update(['message' => $request->text]);
-
+    public function saveMail(Request $request){
+        MailerList::where('id', $request->mailerID)->update(['message' => $request->text, 'subject' => $request->mailSubject]);
         return 'true';
-        
     }
 
-    public function saveMailAa(Request $request){
-        
-        MailerList::where('id', '1')->update(['message' => $request->text]);
+    public function get_mail_list(Request $request){
+        $mailList = MailerList::get();
 
-        return 'true';
-        
+        return json_encode($mailList);
     }
 
-    public function saveMailAav(Request $request){
+    // public function saveMailTy(Request $request){
         
-        MailerList::where('id', '2')->update(['message' => $request->text]);
+    //     MailerList::where('id', '6')->update(['message' => $request->text]);
 
-        return 'true';
+    //     return 'true';
         
-    }
-    public function saveMailAD(Request $request){
-        
-        MailerList::where('id', '5')->update(['message' => $request->text]);
+    // }
 
-        return 'true';
+    // public function saveMailAa(Request $request){
         
-    }
-    public function saveMailADd(Request $request){
-        
-        MailerList::where('id', '3')->update(['message' => $request->text]);
+    //     MailerList::where('id', '1')->update(['message' => $request->text]);
 
-        return 'true';
+    //     return 'true';
         
-    }
-    public function saveMailAR(Request $request){
-        
-        MailerList::where('id', '4')->update(['message' => $request->text]);
+    // }
 
-        return 'true';
+    // public function saveMailAav(Request $request){
         
-    }
+    //     MailerList::where('id', '2')->update(['message' => $request->text]);
+
+    //     return 'true';
+        
+    // }
+    // public function saveMailAD(Request $request){
+        
+    //     MailerList::where('id', '5')->update(['message' => $request->text]);
+
+    //     return 'true';
+        
+    // }
+    // public function saveMailADd(Request $request){
+        
+    //     MailerList::where('id', '3')->update(['message' => $request->text]);
+
+    //     return 'true';
+        
+    // }
+    // public function saveMailAR(Request $request){
+        
+    //     MailerList::where('id', '4')->update(['message' => $request->text]);
+
+    //     return 'true';
+        
+    // }
 
     public function users(Request $request){
 
@@ -1371,7 +1662,6 @@ class HomeController extends Controller
             }
 
             $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
-            // dd($jsonDataRooms);
 
             $roomType = "";
             $roomName = "";
@@ -1501,6 +1791,42 @@ class HomeController extends Controller
                 ]);
             }
         }
+
+        $generator = new LoginUrl($user);
+        $generator->setRedirectUrl('/verify-email-account');
+        $url = $generator->generate();
+
+        $message_replace['bookingRef'] = $booking->booking_code;
+        $message_replace['name'] = $user->userFirstName;
+        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        $message_replace['close_application_link']="</a>";
+
+        $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+        $mailerMessage = $mailerForMessage->message;
+
+        $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+        $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+        $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+
+        $data['name'] = $user->userFirstName;
+        $data['email'] = $user->email;
+        $data['messageForMail'] = $newMessage;
+        $data['subject'] = $mailerForMessage->subject;
+
+        if(explode("@", $data['email'])[1] == "conurban.co.za"){
+            $data['email'] = $user->email;
+        }else{
+            $data['email'] = "conurbandigital@gmail.com";
+        }
+
+        Mail::send('email.yellow_back', $data, function($message) use ($data) {
+            // $message->to($data['email'], $data['name'])->subject
+            //     ('Campus Africa User Application');
+            $message->to($data['email'])->subject($data['subject']);
+            $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+            $message->from('noreply@campusafrica.co.za','Campus Africa');
+        });
 
         // if(($request->studentType == "NSFAS" && ($residence->nsfas_booking_rate == "0" || $residence->nsfas_booking_rate == "")) || ($request->studentType == "Bursary" && ($residence->bursary_booking_rate == "0" || $residence->bursary_booking_rate == "")) || ($request->studentType == "Cash / Direct" && ($residence->booking_rate == "0" || $residence->booking_rate == ""))){
             
@@ -2528,6 +2854,7 @@ class HomeController extends Controller
                 }
             }
 
+            $booking = Booking::where('userId', $bookingId)->first();
             $bookingYear = substr($oldData->year, -2);
             $bookingPrefix = Residence::where('id', $property)->pluck('building_prefix')->first();
             $id_booking = $booking->id;
@@ -2539,7 +2866,7 @@ class HomeController extends Controller
 
             $bookingID = $placeholder.$id_booking;
     
-            Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
+            Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID, "property_data_id" => null, "floor" => null, "unit" => null, "room" => null, "bed" => null, "bed_code" => null, "room_rate" => null]);
 
             //Update the User robot
             User::where('id', $bookingId)->update(['rob_40_bed' => 0]);
@@ -5076,7 +5403,12 @@ class HomeController extends Controller
                 </form>
                 <?php
             } else {
-                echo $user->userEmail . "<br/>";
+                if($user->email_verified == '1'){
+                    echo $user->userEmail . "<i class='fas fa-check' style='color:green'></i><br/>"; 
+                }else{
+                    echo $user->userEmail . " &#10060;<br/>";
+                }
+                
                 echo $user->userCell . "<br/>";
 
                 ?>
@@ -5212,8 +5544,53 @@ class HomeController extends Controller
 
             $updateData = [
                 'userEmail' => $request->userEmail,
+                'email' => $request->userEmail,
                 'userCell' => $request->userCell,
             ];
+
+            $userBefore = User::where('id', $request->userUid)->first();
+
+            if($request->userEmail !== $userBefore->userEmail){
+                User::where('id', $request->userUid)->update(["email_verified" => 0]);
+
+                $booking = Booking::where('userId', $request->userUid)->first();
+
+                $generator = new LoginUrl($userBefore);
+                $generator->setRedirectUrl('/verify-new-email-account');
+                $url = $generator->generate();
+
+                $message_replace['bookingRef'] = $booking->booking_code;
+                $message_replace['name'] = $userBefore->userFirstName;
+                $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+                $message_replace['close_application_link']="</a>";
+
+                $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+                $mailerMessage = $mailerForMessage->message;
+
+                $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+
+                $data['name'] = $userBefore->userFirstName;
+                $data['email'] = $request->userEmail;
+                $data['messageForMail'] = $newMessage;
+                $data['subject'] = $mailerForMessage->subject;
+
+                if(explode("@", $data['email'])[1] == "conurban.co.za"){
+                    $data['email'] = $request->userEmail;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
+
+                Mail::send('email.yellow_back', $data, function($message) use ($data) {
+                    // $message->to($data['email'], $data['name'])->subject
+                    //     ('Campus Africa User Application');
+                    $message->to($data['email'])->subject($data['subject']);
+                    $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                    $message->from('noreply@campusafrica.co.za','Campus Africa');
+                });
+            }
         }
 
         if (isset($newData)) {

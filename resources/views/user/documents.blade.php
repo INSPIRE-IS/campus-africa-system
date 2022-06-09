@@ -14,7 +14,7 @@
                 <div id="indexOne"><div class="button approved"></div><span class="text">Approved</span></div>
                 <div id="indexOne"><div class="button action"></div><span class="text">Pending Approval</span></div>
                 <div id="indexOne"><div class="button rejected"></div><span class="text">Action Required</span></div>
-                <div id="indexOne"><div class="button na"></div><span class="text">Not Applicable</span></div>
+                <!-- <div id="indexOne"><div class="button na"></div><span class="text">Not Applicable</span></div> -->
             </div>
         </div>
       </div>
@@ -31,140 +31,79 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($outstanding as $file)
+            @foreach($allFiles as $file)
                 <tr>
                     <td>
-                        @if($file == 'copyID')
+                        @if($file->fileId == 'copyID')
                           I.D COPY
-                        @elseif($file == 'studentCard')
+                        @elseif($file->fileId == 'studentCard')
                           STUDENT CARD
-                        @elseif($file == 'bankStatement')
+                        @elseif($file->fileId == 'bankStatement')
                           BANK STATEMENT
-                        @elseif($file == 'proofRegistration')
+                        @elseif($file->fileId == 'proofRegistration')
                           REGISTRATION
-                        @elseif($file == 'proof_of_payment')
+                        @elseif($file->fileId == 'proof_of_payment')
                           BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
-                    <td>
-                      <label for="{{$file}}" id="{{$file}}Section" class="outstandingUpload">
-                          <span class="text">Upload</span>
-                          <i class="fas fa-file-upload" ></i>
-                      </label>
-                      </h3>
-                      <input type="file" id="{{$file}}" hidden/>
-                    </td>
-                </tr>
-            @endforeach
-
-            @foreach($rejectedFiles as $file)
-                <tr>
-                    <td>
-                        @if($file['fileId'] == 'copyID')
-                          I.D COPY
-                        @elseif($file['fileId'] == 'studentCard')
-                          STUDENT CARD
-                        @elseif($file['fileId'] == 'bankStatement')
-                          BANK STATEMENT
-                        @elseif($file['fileId'] == 'proofRegistration')
-                          REGISTRATION
-                        @elseif($file['fileId'] == 'proof_of_payment')
-                          BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file['fileId'] == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
-                    <td>
-                      <label for="{{$file['fileId']}}" id="{{$file['fileId']}}Section" class="outstandingUpload">
-                          <span class="text">Upload</span>
-                          @if (!$agent->isMobile())
-                            <i class="fas fa-file-upload" ></i>
+                        @elseif($file->fileId == 'bursaryApproval')
+                          @if(Auth::user()->studentType == "NSFAS")
+                            NSFAS APPROVAL
+                          @else
+                            BURSARY APPROVAL
                           @endif
-                          
-                      </label>
-                      </h3>
-                      <input type="file" id="{{$file['fileId']}}" hidden/>
+                        @elseif($file->fileId == 'moveIn')
+                          LEASE
+                          @else
+                            <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file->fileId))); ?>
+                        @endif
                     </td>
+                    
+                        @if($file->status == 'None')
+                            <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
+                            <td>
+                                <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
+                                    <span class="text">Upload</span>
+                                    @if (!$agent->isMobile())
+                                        <i class="fas fa-file-upload" ></i>
+                                    @endif
+                                    
+                                </label>
+                                </h3>
+                                <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                                </td>
+                        @elseif($file->status == 'Rejected')
+                            <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
+                            <td>
+                                <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
+                                    <span class="text">Upload</span>
+                                    @if (!$agent->isMobile())
+                                        <i class="fas fa-file-upload" ></i>
+                                    @endif
+                                    
+                                </label>
+                                </h3>
+                                <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                                </td>
+                        @elseif($file->status == 'Uploaded')
+                            <td><span class="flex"><div class="pendingRobot"></div> &nbsp;&nbsp; Pending Approval</span></td>
+                            <td>
+                                <a href="/storage/{{$file->fileUrl}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
+                                </td>
+                        @elseif($file->status == 'Approved')
+                            <td><span class="flex"><div class="approvedRobot"></div> &nbsp;&nbsp; Approved</span></td>
+                            <td>
+                              @if($file->fileUrl !== null && $file->fileUrl !== "")
+                                <a href="/storage/{{$file->fileUrl}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
+                              @endif
+                            </td>
+                        @endif
+                    
                 </tr>
             @endforeach
 
-            @foreach($pendingFiles as $file)
-                <tr>
-                    <td>
-                        @if($file['fileId'] == 'copyID')
-                          I.D COPY
-                        @elseif($file['fileId'] == 'studentCard')
-                          STUDENT CARD
-                        @elseif($file['fileId'] == 'bankStatement')
-                          BANK STATEMENT
-                        @elseif($file['fileId'] == 'proofRegistration')
-                          REGISTRATION
-                        @elseif($file['fileId'] == 'proof_of_payment')
-                          BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file['fileId'] == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="pendingRobot"></div> &nbsp;&nbsp; Pending Approval</span></td>
-                    <td>
-                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
-                    </td>
-                </tr>
-            @endforeach
-
-            @foreach($approvedFiles as $file)
-                <tr>
-                    <td>
-                        @if($file['fileId'] == 'copyID')
-                          I.D COPY
-                        @elseif($file['fileId'] == 'studentCard')
-                          STUDENT CARD
-                        @elseif($file['fileId'] == 'bankStatement')
-                          BANK STATEMENT
-                        @elseif($file['fileId'] == 'proofRegistration')
-                          REGISTRATION
-                        @elseif($file['fileId'] == 'proof_of_payment')
-                          BOOKING FEE PROOF OF PAYMENT
-                        @elseif($file['fileId'] == 'moveIn')
-                          LEASE
-                        @endif
-                    </td>
-                    <td><span class="flex"><div class="approvedRobot"></div> &nbsp;&nbsp; Approved</span></td>
-                    <td>
-                      <a href="/storage/{{$file['fileUrl']}}" style="text-decoration:inherit" target="_blank"><span class="outstandingUpload" style="padding:5px 67px;">View</span></a>
-                    </td>
-                </tr>
-            @endforeach
+           
         </tbody>
     </table>
     <br/>
-</div>
-
-<div id="myModal" class="modal">
-
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modalHeader"></h2>
-        <small>Uploaded by <span id="uploadedBy"></span> at <span id="uploadedTime"></span> on the <span id="uploadedDate"></span></small>
-        <br/>
-        
-          <input type="hidden" id="FileIdForApproval">
-          <div class="flex" style="margin-top:35px;" id="buttonSection">
-          @if(Auth::user()->role_approve_docs == 1)
-              <input type="text" id="rejectReason" placeholder="Type field for rejection reason">
-              <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject with reason</button>
-              <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend &amp; Approve</button>
-              <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
-            @endif
-          </div>
-
-        <div class="pdfSection"></div>
-    </div>
-
 </div>
 
 <script>
@@ -177,131 +116,47 @@ $.ajaxSetup({
 
   $(document).ready( function () {
         $('#documents_table').DataTable({
-          "order": [[ 2, "asc" ]]
+          "order": []
         });
     } );
 
-    $("#copyID").on('change', function(){
-        $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    function UploadDocument(field){
+        console.log("JG")
+
+        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        let userId = "<?php echo Auth::user()->id;?>";
 
         var form_data = new FormData();
-        form_data.append("file", document.getElementById('copyID').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "copyID");
+        form_data.append("file", document.getElementById(field).files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", field);
+        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
         $.ajax({
             type: "post",
-            url: "/move-in-form",
+            url: "/move-in-form-admin",
             data: form_data,
             cache: false,
             contentType: false,
             processData: false,
 
             success: function (data) {
-                if (data == "done") {
+                if (data[0]> 0) {
+                    
                     window.location.reload();
+
+                } else {
+                    Swal.fire(
+                        'Error',
+                        data[0],
+                        'error'
+                    )
+                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
-    });
-
-    $("#studentCard").on('change', function(){
-        $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('studentCard').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "studentCard");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });  
-    })
-
-    $("#bankStatement").on('change', function(){
-        $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bankStatement').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "bankStatement");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
-
-    $("#proofRegistration").on('change', function(){
-
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proofRegistration').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "proofRegistration");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
-
-
-    $("#proof_of_payment").on('change', function(){
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "proof_of_payment");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
+    }
   </script>
 
 

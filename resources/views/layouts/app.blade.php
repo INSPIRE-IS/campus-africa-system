@@ -20,14 +20,30 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/all.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+    <link href="../../css/styles.css?v=<?php echo rand();?>" rel="stylesheet">
+    <!-- <link href="{{ asset('css/styles.css') }}" rel="stylesheet"> -->
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
 
-    <script src="../../js/register.js?v=<?php echo rand();?>"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
     
 </head>
 <body>
+    @if(Auth::check())
+        <div id="fullNavbar">
+            <div class="topnav" id="myTopnav" style='margin-left:50%;'>
+                
+                
+                <a href="/logout">  <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> Log out</a>
+                <!-- <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                    <i class="fa fa-bars"></i>
+                </a> -->
+            </div>
+        </div>
+    @endif
     <div id="app">
         <!--  -->
 
@@ -79,6 +95,19 @@
             <p class="footerRights">Campus Africa - All Right Reserved</p>
         </div>
     </footer>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+                document.getElementById('fullNavbar').setAttribute("style","height:270px !important");
+            } else {
+                x.className = "topnav";
+                document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
+            }
+        }
+    </script>
 
     @if (App::environment('development'))
         <script>

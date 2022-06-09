@@ -10,6 +10,7 @@ use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LookupsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BookingReportController;
+use App\Http\Controllers\ApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,8 @@ Route::post('/approve-inline-data', [HomeController::class, 'approve_inline_data
 
 Route::post('/action/file', [HomeController::class, 'action_file']);
 
+// Route::get("/check_booking/{id}", [HomeController::class, 'check_booking']);
+
 Route::get('/action-list/{userId}/{filter}', [HomeController::class, 'action_list']);
 Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document_list']);
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
@@ -69,12 +72,19 @@ Route::get('/invoices', [HomeController::class, 'invoices']);
 Route::post('/activate_mailer', [HomeController::class, 'activate_mailer']);
 Route::post('/inactivate_mailer', [HomeController::class, 'inactivate_mailer']);
 
-Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
-Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
-Route::post("/saveMailAav", [HomeController::class, 'saveMailAav']);
-Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
-Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
-Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
+Route::post("/saveMail", [HomeController::class, 'saveMail']);
+Route::get("/get-mail-list", [HomeController::class, 'get_mail_list']);
+Route::get('/verify-email-account', [ApplicationController::class, 'verify_email_account']);
+Route::get('/verify-new-email-account', [ApplicationController::class, 'verify_new_email_account']);
+Route::get('/loginAsStudent/{studentId}', [ApplicationController::class, 'loginAsStudent']);
+
+
+// Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
+// Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
+// Route::post("/saveMailAav", [HomeController::class, 'saveMailAav']);
+// Route::post("/saveMailAD", [HomeController::class, 'saveMailAD']);
+// Route::post("/saveMailADd", [HomeController::class, 'saveMailADd']);
+// Route::post("/saveMailAR", [HomeController::class, 'saveMailAR']);
 
 Route::get("/users", [HomeController::class, 'users'])->name('users');
 Route::get("/user/edit/{userId}", [HomeController::class, 'user_edit']);
@@ -117,6 +127,9 @@ Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
+Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
+
+
 
 Route::post('/get-booking-details', [HomeController::class, 'get_booking_details']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
@@ -198,3 +211,25 @@ Route::post("/check-building-prefix", [HomeController::class, 'check_building_pr
 
 Route::get('/booking-summary', [BookingReportController::class, 'booking_summary']);
 Route::post('/update/room-activation', [BookingReportController::class, 'room_activation']);
+
+Route::post('/get-room-ids', [ApplicationController::class, 'get_room_ids']);
+
+//User Online application
+Route::get('/online-application/{property}/{roomType}', [ApplicationController::class, 'step_1']);
+Route::get("/online-application-verify/{applicationToken}", [ApplicationController::class, 'step_verify']);
+Route::post("/veryfiy-user", [ApplicationController::class, 'veryfiy_user']);
+Route::get("/step-2/online-application", [ApplicationController::class, 'step_2']);
+Route::post("/step-2-spon", [ApplicationController::class, 'step_2_spon']);
+Route::post("/step-2-bur", [ApplicationController::class, 'step_2_bur']);
+Route::get("/step-3/online-application", [ApplicationController::class, 'step_3']);
+Route::post("/step-3-kin", [ApplicationController::class, 'step_3_kin']);
+Route::get("/step-4/online-application", [ApplicationController::class, 'step_4']);
+Route::post("/application-file-upload", [ApplicationController::class, 'file_upload']);
+Route::get("/step-5/online-application", [ApplicationController::class, 'step_5']);
+Route::get("/complete/online-application", [ApplicationController::class, 'complete_online_app']);
+Route::get("/verify-password", [ApplicationController::class, 'verify_password']);
+Route::post("/confirm-password", [ApplicationController::class, 'confirm_password']);
+
+Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']);
+Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
+Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);

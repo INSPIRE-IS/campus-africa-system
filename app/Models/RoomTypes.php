@@ -15,6 +15,7 @@ class RoomTypes extends Model
         'id',
         'property_id',
         'name',
-        'online'
+        'online',
+        'img_url',
     ];
 }

@@ -38,4 +38,13 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception->getMessage() == "Expired or Invalid Link") {
+            return response()->view('errors.custom', [], 500);
+        }
+    
+        return parent::render($request, $exception);
+    }
 }
