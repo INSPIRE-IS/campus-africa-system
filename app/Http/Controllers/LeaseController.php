@@ -14,12 +14,13 @@ use PDF;
 use Auth;
 use Mail;
 use App\Models\MailerList;
+use Grosv\LaravelPasswordlessLogin\LoginUrl;
 
 class LeaseController extends Controller
 {
     public function view_sign_lease(Request $request, $lease_link_url){
         
-        $lease_link = UserLeaseToken::where('leaseToken', $lease_link_url)->where('active', '1')->first();
+        $lease_link = UserLeaseToken::where('leaseToken', $lease_link_url)->where('userUid', Auth::user()->id)->where('active', '1')->first();
 
         if($lease_link && !empty($lease_link)){
             $user = User::where('id', $lease_link->userUid)->first();
@@ -28,7 +29,7 @@ class LeaseController extends Controller
             $data = User::where('id', $lease_link->userUid)->first();
             $booking = Booking::where('userId', $lease_link->userUid)->first();
             $propertyData = Property::where('id', $booking->property_data_id)->first();
-            $residence = Residence::where('residence', $propertyData->residence)->first();
+            $residence = Residence::where('id', $propertyData->residence)->first();
             $leaseAdminFee = Lookups::where('group_id', '8')->first();
             $owner = storage_path().'/leases/kim_degenaar.jpeg';
 
@@ -44,7 +45,8 @@ class LeaseController extends Controller
     public function save_signed_lease(Request $request, $lease_link){
 
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', '1')->first();
-        $user = User::where('id', $lease_link->userUid)->first();
+        $user = User::where('id', Auth::user()->id)->first();
+        $booking = Booking::where('userId', Auth::user()->id)->first();
         
         // get the base64 string
         $data = $request->signature_string;
@@ -67,6 +69,7 @@ class LeaseController extends Controller
         // generate a random name
         $new_name = $userIdentification . '_' .strtotime("now").'_'.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyz', ceil(20/strlen($x)) )),1,20).'.'.$extension;
 
+
         file_put_contents(storage_path().'/app/public/files/'.$userIdentification.'/'.$new_name, $data);
 
         //generate the signed lease
@@ -75,7 +78,7 @@ class LeaseController extends Controller
         $data = User::where('id', $user->id)->first();
         $booking = Booking::where('userId', $user->id)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
-        $residence = Residence::where('residence', $propertyData->residence)->first();
+        $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
         $signed_at = $request->signed_at;
         $signature = 'storage/files/'.$userIdentification.'/'.$new_name;
@@ -87,15 +90,20 @@ class LeaseController extends Controller
         // download PDF file with download method
         // return $pdf->download('lease.pdf');
 
-        $content = $pdf->download('lease_Signed.pdf')->getOriginalContent();
+        $bookingYear = substr($booking->year, -2);
+        $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
+
+        $fileNameToSave = $bookingYear.$bookingPrefix."_".$booking->bed_code."_".$user->userLastname."_".$user->userFirstName.".pdf";
+
+        $content = $pdf->download($fileNameToSave)->getOriginalContent();
         $user = User::where('id', $user->id)->first();
 
-        \Storage::put('public/files/'.$userIdentification.'/lease_Signed.pdf', $content);
+        \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
       
         //Data to update
         $data = array(
-            'fileName' => 'lease_Signed.pdf',
-            'fileUrl' => 'files/'.$userIdentification.'/lease_Signed.pdf',
+            'fileName' => $fileNameToSave,
+            'fileUrl' => 'files/'.$userIdentification.'/'.$fileNameToSave,
             'status' => 'Uploaded',
         );
 
@@ -133,10 +141,15 @@ class LeaseController extends Controller
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
         $userForLease = User::where('id', $request->userId)->first();
+        $booking = Booking::where('userId', $request->userId)->first();
 
-        $message_replace['booking_application'] = $userForLease->bookingRef;
+        $generator = new LoginUrl($userForLease);
+        $generator->setRedirectUrl("sign-lease/".$leaseToken->leaseToken);
+        $url = $generator->generate();
+
+        $message_replace['booking_application'] = "#".$booking->booking_code;
         $message_replace['name'] = $userForLease->userFirstName;
-        $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
+        $message_replace['lease_link'] = "<a href='".$url."' target='_blank'>";
         $message_replace['close_lease_link']="</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();

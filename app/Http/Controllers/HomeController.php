@@ -897,8 +897,9 @@ class HomeController extends Controller
                 User::where('id', $userFile->userUid)->update(['overall_status' => "Approved"]);
                 
                 $userForLease = User::where('id', $userFile->userUid)->first();
+                $booking = Booking::where('userId', $userFile->userUid)->first();
 
-                $message_replace['booking_application'] = $userForLease->bookingRef;
+                $message_replace['booking_application'] = "#".$booking->booking_code;
                 $message_replace['name'] = $userForLease->userFirstName;
 
                 $mailerForMessage = MailerList::where("mailer_name", "Lease Approved")->first();

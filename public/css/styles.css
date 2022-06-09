@@ -2009,6 +2009,16 @@ input:read-only {
   max-height:330px;
 }
 
+  .signature .jSignature{
+    width:100% !important;
+  }
+  .detailsChange{
+    margin-top: 18px !important;
+    float: none;
+    width: 130px;
+    margin-left: 0px;
+  }
+
   .roomImgApp{
     margin-left:0px; 
     max-height:185px;

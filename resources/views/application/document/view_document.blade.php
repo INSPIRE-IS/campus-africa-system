@@ -970,6 +970,8 @@
                             let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                         @endif
+
+
                     }else if(type == "Rejected" && fileForApproval == "moveIn"){
                         let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
                         
@@ -982,6 +984,7 @@
                         $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
 
                         bookingTypeDetails();
+                        resendLease();
                     }
                 
                     refreshActions();

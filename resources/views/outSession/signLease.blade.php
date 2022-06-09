@@ -51,7 +51,7 @@
 
 
             <div class="column full center signature_container">
-                <div style="display:flex; width:70%">
+                <div style="width:70%" class="flex">
                     <div style="width:80%">Please sign here</div>
                     <div style="width:20%; justify-content:right;">
                         <button class="detailsChange" id="reset_signature" style="margin-top:-10px;" type="button">
@@ -114,7 +114,7 @@
                             allowOutsideClick: true,
                         }).then(()=> {          
                             $(this).html('<span></span>Completed');                  
-                            window.location.reload();
+                            window.location.replace('/dashboard');
                         })
 
                     },
