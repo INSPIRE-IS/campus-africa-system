@@ -2027,6 +2027,10 @@ input:read-only {
     height:170px !important;
   }
 
+  .cards .customWhiteCard .buttons .appBooking{
+    width:100%
+}
+
   .nsfasSize{
     height:360px !important;
   }
