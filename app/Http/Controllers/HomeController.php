@@ -914,7 +914,7 @@ class HomeController extends Controller
                 $data['messageForMail'] = $newMessage;
                 $data['email'] = $userForLease->userEmail;
                 $data['name'] = $userForLease->userFirstName;
-                $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
+                // $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
                 $data['subject'] = $mailerForMessage->subject;
 
                 if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -927,7 +927,7 @@ class HomeController extends Controller
                     // $message->to($data['email'], $data['name'])->subject('Application Approved');
                     $message->to($data['email'])->subject($data['subject']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
-                    $message->attach($data['file']);
+                    // $message->attach($data['file']);
                     // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
                 });
             }
