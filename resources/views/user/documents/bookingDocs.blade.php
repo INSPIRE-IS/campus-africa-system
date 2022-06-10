@@ -28,7 +28,7 @@
                           @elseif($file->fileId == 'proofRegistration')
                             REGISTRATION
                           @elseif($file->fileId == 'proof_of_payment')
-                            BOOKING FEE PROOF OF PAYMENT
+                            BOOKING FEE <br/>PROOF OF PAYMENT
                           @elseif($file->fileId == 'moveIn')
                             LEASE
                           @else
