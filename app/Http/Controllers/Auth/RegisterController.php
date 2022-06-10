@@ -229,7 +229,7 @@ class RegisterController extends Controller
         $data['subject'] = $mailerForMessage->subject;
 
         if(explode("@", $data['email'])[1] == "conurban.co.za"){
-            $data['email'] = $user->email;
+            $data['email'] = $request->email;
         }else{
             $data['email'] = "conurbandigital@gmail.com";
         }

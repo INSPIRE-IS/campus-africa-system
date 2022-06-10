@@ -5644,7 +5644,7 @@ class HomeController extends Controller
                 $data['subject'] = $mailerForMessage->subject;
 
                 if(explode("@", $data['email'])[1] == "conurban.co.za"){
-                    $data['email'] = $userBefore->userEmail;
+                    $data['email'] = $request->userEmail;
                 }else{
                     $data['email'] = "conurbandigital@gmail.com";
                 }
