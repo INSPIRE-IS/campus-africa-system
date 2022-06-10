@@ -237,3 +237,5 @@ Route::post("/confirm-password", [ApplicationController::class, 'confirm_passwor
 Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']);
 Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
 Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);
+
+Route::post('/re-verify-email', [ApplicationController::class, 're_verify_email']);

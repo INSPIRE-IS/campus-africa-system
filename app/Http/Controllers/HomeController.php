@@ -5469,8 +5469,10 @@ class HomeController extends Controller
             } else {
                 if($user->email_verified == '1'){
                     echo $user->userEmail . "<i class='fas fa-check' style='color:green'></i><br/>"; 
+                    echo '<input type="hidden" id="emailverifiedStatus" value="1"/>';
                 }else{
-                    echo $user->userEmail . " &#10060;<br/>";
+                    echo $user->userEmail . " &#10060; &nbsp;&nbsp; <button type='button' class='unallocateBed' onClick='reVerifyEmail()' id='reVerify'>Resend Email verification</button><br/>";
+                    echo '<input type="hidden" id="emailverifiedStatus" value="0"/>';
                 }
                 
                 echo $user->userCell . "<br/>";

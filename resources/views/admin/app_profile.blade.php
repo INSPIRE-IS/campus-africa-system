@@ -104,13 +104,25 @@
 
                 <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
                     <p class="InfoList">
-                        {{$user[0]['userInfo']['userEmail']}}  @if($user[0]['userInfo']['email_verified'] == '1') <i class="fas fa-check" style="color:green"></i> @else &#10060; @endif<br/>
+                        {{$user[0]['userInfo']['userEmail']}}  
+                        @if($user[0]['userInfo']['email_verified'] == '1') 
+                            <i class="fas fa-check" style="color:green"></i>
+                            <input type="hidden" id="emailverifiedStatus" value="{{$user[0]['userInfo']['email_verified']}}"/>
+                        @else 
+                            &#10060; 
+                            &nbsp;&nbsp;
+                            <button type="button" class="unallocateBed" onClick="reVerifyEmail()" id="reVerify">Resend Email verification</button>
+                            <input type="hidden" id="emailverifiedStatus" value="{{$user[0]['userInfo']['email_verified']}}"/>
+                        @endif
+                        <br/>
+                        
                         {{$user[0]['userInfo']['userCell']}}<br/>
                     </p>
 
                     <div class="app_details_btn"></div>
                     
                 </div>
+                
             </div>
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
@@ -931,6 +943,8 @@
             },
         });
     }   
+
+    
 
 
     checkUserStatus();
@@ -2223,6 +2237,25 @@
         }
     })
 
+    function reVerifyEmail(){
+        $("#reVerify").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        $.ajax({
+            type: "post",
+            url: "/re-verify-email",
+            data: {
+                userUid: "{{$user[0]['userInfo']['id']}}", 
+            },
+
+            success: function (data) {
+                
+                $("#reVerify").empty().append('resend email verification');
+
+            },
+        });
+        
+    }
+
     $("#changeLeaseDates").on('click', function(){
         
         $("#changeLeaseDates").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
@@ -3348,38 +3381,49 @@
                 task = "0";
             }
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: message,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes!',
-                showLoaderOnConfirm: true,
-                preConfirm: (login) => {                    
-                    $.ajax({
-                        type: "post",
-                        url: "/approve-inline-data",
-                        data: {
-                            userUid: "{{$user[0]['userInfo']['id']}}",
-                            formId: formId,
-                            approvefield: approvefield,
-                            task: task
-                        },
-            
-                        success: function (data) {
+            if(formId == "inline_app_details" && message == "You are about to Approve this information" && $("#emailverifiedStatus").val() !== '1'){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email Not Verified',
+                    text: 'Please contact the student directly and ask them to verify their email address ASAP - you may need to resend the verification email.',
+                })
+            }else{
 
-                            $("#"+approvefield).val(task)
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {                    
+                        $.ajax({
+                            type: "post",
+                            url: "/approve-inline-data",
+                            data: {
+                                userUid: "{{$user[0]['userInfo']['id']}}",
+                                formId: formId,
+                                approvefield: approvefield,
+                                task: task
+                            },
+                
+                            success: function (data) {
+    
+                                $("#"+approvefield).val(task)
+    
+                                refreshActions();  
+                                checkUserStatus();
+    
+                
+                            },
+                        });
+                    },
+                });
+            }
 
-                            refreshActions();  
-                            checkUserStatus();
 
-            
-                        },
-                    });
-                },
-            });
 
             e.preventDefault();
         });
