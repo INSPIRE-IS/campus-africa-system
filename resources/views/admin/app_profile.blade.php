@@ -1412,6 +1412,9 @@
 
                         $('#floor').html('<option>Choose a Floor</option>');
 
+                        console.log("roomData")
+                        console.log(roomData)
+
                         Object.keys(roomData).forEach( function(key) {
 
                             let floor_name = "";
@@ -1433,6 +1436,8 @@
                             /*if (data[1].floor == roomData[key].floor) {
                                 selected = "selected='selected'";
                             }*/
+
+                            console.log(floor_name)
 
                             let meta = roomData[key].meta_info_1 !== null ? roomData[key].meta_info_1 : "";
 
