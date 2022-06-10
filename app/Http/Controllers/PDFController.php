@@ -162,10 +162,17 @@ class PDFController extends Controller
         $data['messageForMail'] = $newMessage;
         $data['email'] = $userForLease->userEmail;
         $data['name'] = $userForLease->userFirstName;
+        $data['subject'] = $mailerForMessage->subject;
+
+        if(explode("@", $data['email'])[1] == "conurban.co.za"){
+            $data['email'] = $request->userEmail;
+        }else{
+            $data['email'] = "conurbandigital@gmail.com";
+        }
 
         Mail::send('email.green_back', $data, function($message) use ($data) {
             // $message->to($data['email'], $data['name'])->subject('Application Approved');
-            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject('Application Approved');
+            $message->to(['conurbandigital@gmail.com', 'roger@whitehart.co.za'])->subject($data['subject']);
             $message->from('noreply@campusafrica.co.za','Campus Africa');
             // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
         });
