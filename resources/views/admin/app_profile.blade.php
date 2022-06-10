@@ -144,7 +144,10 @@
                             @endif
                         @endif
 
-                        <!-- <button type="button" class="appBooking" onClick="changeBuilding('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Change Building</button> -->
+
+                        @if(Auth::user()->role_change_building == '1')
+                            <!-- <button type="button" class="appBooking" onClick="changeBuilding('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Change Building</button> -->
+                        @endif
                 </div>
                 <div class="buttons flex" id="buttonBottom">
                         @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
@@ -1257,7 +1260,7 @@
 
         $.ajax({
             type: "get",
-            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            url: "/check-all-rooms/{{$user[0]['userInfo']['id']}}",
             success: function (data) {
                 let properties = data[0];
 
@@ -2086,13 +2089,14 @@
                 type: "post",
                 url: "/change-booking",
                 data: {
-                    bookingId: $("#bookingId").val(), 
+                    bookingId: "{{$user[0]['userInfo']['id']}}", 
                     property: $("#propertyBuilding").val(),
                     roomType: $("#roomTypeBuilding").val(), 
+                    floor: "Choose a Floor",
                 },
 
                 success: function (data) {
-                    window.location.reload();
+                    window.location.replace('/applications');
                 }
             });
         }
@@ -2266,7 +2270,7 @@
 
         $.ajax({
             type: "get",
-            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            url: "/check-all-rooms/{{$user[0]['userInfo']['id']}}",
             success: function (data) {
                 let roomData = data[3]
 
