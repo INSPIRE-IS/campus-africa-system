@@ -122,7 +122,7 @@
 
                 <div class="app_summary_details"></div>
                 
-                <div class="buttons" id="buttonTop">
+                <div class="buttons flex" id="buttonTop">
 
                         @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_change_bed == "1")
@@ -143,8 +143,10 @@
                                 <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                             @endif
                         @endif
+
+                        <!-- <button type="button" class="appBooking" onClick="changeBuilding('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Change Building</button> -->
                 </div>
-                <div class="buttons" id="buttonBottom">
+                <div class="buttons flex" id="buttonBottom">
                         @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_delete_booking == 1)
                                 <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
@@ -162,6 +164,7 @@
                                 @endif
                             @endif
                         @endif
+
                 </div>
             </div>
 
@@ -484,6 +487,34 @@
 </div>
 
 <div id="myModal" class="modal" style="padding-top: 10px;"></div>
+
+<div id="changeBuildingModal" class="modal">
+    <div class="modal-content " id="changeBuildingHeight" style="height: 275px;">
+        <span class="closeBuilding" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <div class="form-card">
+            <h2>Change this booking</h2>
+
+            <input type="hidden" id="bookingId"/>
+            <br/><br/>
+            <div class="form-field">
+                <label>Residence * <span id="propertyBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="propertyBuilding" id='propertyBuilding' class="required">
+                    <option value="" selected disabled>Select a Residence</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Room Type * <span id="roomTypeBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="roomTypeBuilding" id='roomTypeBuilding' class="required">
+                    <option value="" selected disabled>Select a Room Type</option>
+                </select>
+            </div>
+            <div class="form-field-big">
+                <button type="button" id="changeBuildingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change building</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="myModalEditApp" class="modal">
 
@@ -1218,6 +1249,36 @@
         //         }
         //     }
         // })
+    }
+
+    function changeBuilding(bookingId, userid){
+        var modal = document.getElementById("changeBuildingModal");
+        modal.style.display = "block";
+
+        $.ajax({
+            type: "get",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                let properties = data[0];
+
+                console.log(data)
+
+                let selProp = data[2].property;
+
+                properties.sort();
+                $('#propertyBuilding').empty()
+
+                Object.keys(properties).forEach( function(key) {
+                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                });
+
+                $('#propertyBuilding').val(selProp);
+
+                $("#propertyBuilding").change();
+            }
+        });
+
+        callRoomDetails('floor','', '', '', '', '', 'open')
     }
 
     function changeBooking(bookingId, type){
@@ -2007,6 +2068,36 @@
         }
     })
 
+    $("#changeBuildingType").on('click', function(){
+        if($("#propertyBuilding").val() == null || $("#roomTypeBuilding").val() == null){
+            if($("#propertyBuilding").val() == null){
+                $("#propertyBuilding").addClass('fieldError')
+                $("#propertyBuilding_error").removeClass('hidden')
+            }
+            if($("#roomTypeBuilding").val() == null){
+                $("#roomTypeBuilding").addClass('fieldError')
+                $("#roomTypeBuilding_error").removeClass('hidden')
+            }
+        }else{
+
+            $("#changeBuildingType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+            
+            $.ajax({
+                type: "post",
+                url: "/change-booking",
+                data: {
+                    bookingId: $("#bookingId").val(), 
+                    property: $("#propertyBuilding").val(),
+                    roomType: $("#roomTypeBuilding").val(), 
+                },
+
+                success: function (data) {
+                    window.location.reload();
+                }
+            });
+        }
+    })
+
     $("#changeBookingType").on('click', function(){
 
 
@@ -2166,7 +2257,30 @@
             $("#bed_code").removeClass("fieldError")
             $("#bed_code_error").addClass("hidden")
         }
-    });    
+    });  
+    
+    $("#propertyBuilding").on('change', function(){
+        let propValue = $("#propertyBuilding").val();
+
+        $("#roomTypeBuilding").empty().append('<option value="">Loading</option>');
+
+        $.ajax({
+            type: "get",
+            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            success: function (data) {
+                let roomData = data[3]
+
+                $("#roomTypeBuilding").empty().append('<option value="">Select One</option>');
+                Object.keys(roomData).forEach( function(key) {
+                    if(propValue == roomData[key].residence){
+                        var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
+                        $("#roomTypeBuilding").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');
+                    }
+                });
+
+            }
+        })
+    })
 
     $("#property").on('change', function(){
         let propValue = $("#property").val();

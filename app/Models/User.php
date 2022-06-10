@@ -136,6 +136,7 @@ class User extends Authenticatable
         'role_toggle_online_booking',
         'onboard_complete',
         'email_verified',
+        'role_change_building',
     ];
 
     public function files(){

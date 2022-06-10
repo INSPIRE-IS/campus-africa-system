@@ -1313,6 +1313,7 @@ class HomeController extends Controller
             "role_change_student_type" => $request->role_change_student_type,
             "role_view_booking_summary" => $request->role_view_booking_summary,
             "role_toggle_online_booking" => $request->role_toggle_online_booking,
+            "role_change_building" => $request->role_change_building,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -1934,6 +1935,7 @@ class HomeController extends Controller
             "role_change_student_type" => $request->role_change_student_type,
             "role_view_booking_summary" => $request->role_view_booking_summary,
             "role_toggle_online_booking" => $request->role_toggle_online_booking,
+            "role_change_building" => $request->role_change_building,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
