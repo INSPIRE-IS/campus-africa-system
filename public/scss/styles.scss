@@ -2204,14 +2204,18 @@ input:read-only {
         display:block;
     }
     .signature .jSignature{
-        width:100% !important;
+        width:125% !important;
+        margin-left:-40px !important;
     }
     .detailsChange{
-        margin-top: 18px !important;
+        margin-top: -5px !important;
         float: none;
         width: 130px;
         margin-left: 0px;
     }
+    #submitLease{
+        margin-top:10px !important;
+      }
     .footerRights{
         margin-top:450px !important;
     }

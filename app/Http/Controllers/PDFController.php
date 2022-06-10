@@ -141,13 +141,9 @@ class PDFController extends Controller
         $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
         $userForLease = User::where('id', $studentId)->first();
 
-        $generator = new LoginUrl($userForLease);
-        $generator->setRedirectUrl("sign-lease/".$leaseToken->leaseToken);
-        $url = $generator->generate();
-
         $message_replace['booking_application'] = "#".$booking->booking_code;
         $message_replace['name'] = $userForLease->userFirstName;
-        $message_replace['lease_link'] = "<a href='".$url."' target='_blank'>";
+        $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
         $message_replace['close_lease_link']="</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();

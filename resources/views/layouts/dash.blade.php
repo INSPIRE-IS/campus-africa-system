@@ -24,6 +24,8 @@
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
     <link href="{{ asset('css/multistep.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/yos0sjx.css">
+    <script src="../../js/jSignature.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 
@@ -31,7 +33,7 @@
 </head>
 <body>
 
-        
+    @if(Auth::check())
         <div id="fullNavbar">
             <div class="topnav" id="myTopnav">
                 <a class="active" href="/dashboard">Dashboard</a>
@@ -47,6 +49,7 @@
                 </a>
             </div>
         </div>
+    
 
         
 
@@ -75,6 +78,7 @@
             
             </div>
         </div>
+    @endif
 
         
 

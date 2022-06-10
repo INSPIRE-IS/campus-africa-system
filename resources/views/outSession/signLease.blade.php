@@ -1,6 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.dash')
 
 @section('content')
+
+@if(!Auth::check())
 <div class="yellowGradientSmall">
     <div class="container">
 
@@ -22,6 +24,7 @@
     
     </div>
 </div>
+@endif
 
 <div class="container">
     <div class="row justify-content-center">
@@ -51,7 +54,7 @@
 
 
             <div class="column full center signature_container">
-                <div style="width:70%" class="flex">
+                <div style="display:flex; width:70%">
                     <div style="width:80%">Please sign here</div>
                     <div style="width:20%; justify-content:right;">
                         <button class="detailsChange" id="reset_signature" style="margin-top:-10px;" type="button">
@@ -107,15 +110,46 @@
 
                     success: function(data) {
 
-                        Swal.fire({
-                            title: 'Your lease has been uploaded!',
-                            text: '',
-                            icon: 'success',
-                            allowOutsideClick: true,
-                        }).then(()=> {          
+                        // Swal.fire({
+                        //     title: 'Your lease has been uploaded!',
+                        //     text: '',
+                        //     icon: 'success',
+                        //     allowOutsideClick: true,
+                        // }).then(()=> {          
                             $(this).html('<span></span>Completed');                  
-                            window.location.replace('/dashboard');
-                        })
+                            // window.location.replace('/dashboard');
+
+                            if("{{Auth::check()}}" == true){
+
+                                Swal.fire({
+                                    title: 'Thank you!',
+                                    text: "Your lease has been uploaded successfully! Continue to your dashboard?",
+                                    icon: 'success',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Yes!'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.replace('/dashboard');
+                                    }
+                                })
+                            }else{
+                                Swal.fire({
+                                    title: 'Thank you!',
+                                    text: "Your lease has been uploaded successfully! Login to your dashboard.",
+                                    icon: 'success',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Login!'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.replace('/login');
+                                    }
+                                })
+                            }
+                        // })
 
                     },
 
