@@ -238,7 +238,7 @@ class RegisterController extends Controller
             // $message->to($data['email'], $data['name'])->subject
             //     ('Campus Africa User Application');
             $message->to($data['email'])->subject($data['subject']);
-            $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+            $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
             $message->from('noreply@campusafrica.co.za','Campus Africa');
         });
 
