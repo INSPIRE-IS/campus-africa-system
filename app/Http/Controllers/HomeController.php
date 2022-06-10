@@ -1770,8 +1770,6 @@ class HomeController extends Controller
         }
 
         if($request->studentType == "NSFAS"){
-
-            User::where('id', $user->id)->update(["rob_30_funds" => 2]);
             
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
 
@@ -1781,6 +1779,8 @@ class HomeController extends Controller
                     'fileId' => 'bursaryApproval',
                     'status' => 'Approved'
                 ]);
+
+                User::where('id', $user->id)->update(["rob_30_funds" => 2]);
 
                 ActionList::create([
                     "userUid" => $user->id,
@@ -3203,6 +3203,7 @@ class HomeController extends Controller
                 }
     
                 Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
+                User::where('id', $bookingId)->update(['rob_10_fee' => 2]);
     
                 $actionFileData['userUid'] = $bookingId;
                 $actionFileData['action'] = "Booking Fee is R0";
@@ -3223,11 +3224,13 @@ class HomeController extends Controller
                         UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
                             'status' => 'Uploaded'
                         ]);
+                        User::where('id', $bookingId)->update(['rob_10_fee' => 1]);
                     }
                 }else{
                     UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
                         'status' => 'Rejected'
                     ]);
+                    User::where('id', $bookingId)->update(['rob_10_fee' => 0]);
                 }
 
                 //Recalculate booking status
@@ -3253,7 +3256,6 @@ class HomeController extends Controller
             User::where('id', $bookingId)->update(['rob_50_approve' => 1]);
         }
 
-        $this->update_user_status($bookingId);
 
         if($request->change_bed_type == "cancel"){
 
@@ -3273,7 +3275,8 @@ class HomeController extends Controller
 
 
 
-        return "true";
+        $this->update_user_status($bookingId);
+        return ["true", UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first()];
     }
 
     public function change_lease(Request $request){
