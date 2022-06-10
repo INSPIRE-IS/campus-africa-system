@@ -926,9 +926,9 @@ class HomeController extends Controller
                 Mail::send('email.green_back', $data, function($message) use ($data) {
                     // $message->to($data['email'], $data['name'])->subject('Application Approved');
                     $message->to($data['email'])->subject($data['subject']);
+                    $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                     // $message->attach($data['file']);
-                    // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
                 });
             }
 
