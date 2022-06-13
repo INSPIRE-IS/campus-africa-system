@@ -85,6 +85,7 @@
 
         $(".signature").on('click',function(e) {
             $('#signature_given').val('1');
+            document.getElementById('signed_at').blur();
         });
 
         $("#reset_signature").on('click',function(e) {
