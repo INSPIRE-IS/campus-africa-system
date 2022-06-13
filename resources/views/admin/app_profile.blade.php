@@ -2198,20 +2198,23 @@
                             });
                         }
 
-                        if(data[1].status == "Approved"){
-                            $("#proof_of_paymentStatus").empty().append('<div class="button approved"></div>');
-                            var button = '<button type="button" onClick="btn_view_document_ajax('+data[1]['id']+')">View Document</button>';
-                            $("#proof_of_paymentBanner").empty().append(button);
-
-                        }else if(data[1].status == "Uploaded"){
-                            $("#proof_of_paymentStatus").empty().append('<div class="button action"></div>');
-                            var button = '<button type="button" onClick="btn_view_document_ajax('+data[1]['id']+')">View Document</button>';
-                            $("#proof_of_paymentBanner").empty().append(button);
-                        }else{
-                            $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
-                            let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
-                            $("#proof_of_paymentBanner").empty().append(uploadbtn);
+                        if(data[1] != null){
+                            if(data[1].status == "Approved"){
+                                $("#proof_of_paymentStatus").empty().append('<div class="button approved"></div>');
+                                var button = '<button type="button" onClick="btn_view_document_ajax('+data[1]['id']+')">View Document</button>';
+                                $("#proof_of_paymentBanner").empty().append(button);
+    
+                            }else if(data[1].status == "Uploaded"){
+                                $("#proof_of_paymentStatus").empty().append('<div class="button action"></div>');
+                                var button = '<button type="button" onClick="btn_view_document_ajax('+data[1]['id']+')">View Document</button>';
+                                $("#proof_of_paymentBanner").empty().append(button);
+                            }else{
+                                $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
+                                let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
+                                $("#proof_of_paymentBanner").empty().append(uploadbtn);
+                            }
                         }
+
 
                         $("#change_bed_type").val();
                         bookingTypeDetails();
