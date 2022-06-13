@@ -23,4 +23,8 @@ class UserFiles extends Model
     public function users(){
         return $this->hasOne("App\Models\User", "id", "userUid");
     }
+
+    public function booking(){
+        return $this->hasOne("App\Models\Booking", "userId", "userUid");
+    }
 }

@@ -1158,7 +1158,7 @@ class HomeController extends Controller
 
     public function leases(Request $request){
         
-        $leases = UserFiles::with('users')->where('fileId', 'moveIn')->get();
+        $leases = UserFiles::with('users')->with('booking')->where('fileId', 'moveIn')->get();
 
         return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases, "title" => "Leases"]);
     }
