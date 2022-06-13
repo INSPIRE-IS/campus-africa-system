@@ -443,7 +443,9 @@
                                     @if(($file["field"] === "moveIn" && $file["status"] !== "XApproved"))
                                         @if(Auth::user()->role_lease_regen == '1')
                                             <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
-                                            <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>
+                                            @if($file["status"] !== "AUploaded")
+                                                <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>
+                                            @endif
                                         @endif
                                     @endif
 
@@ -2765,7 +2767,7 @@
                         
                         if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                             button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
-                            button += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                            // button += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
                         }
                         
                         button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
