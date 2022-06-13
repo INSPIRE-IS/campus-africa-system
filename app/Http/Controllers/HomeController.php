@@ -518,7 +518,7 @@ class HomeController extends Controller
                 if($file->status == "Uploaded"){
                     $file->status = "AUploaded";
                 }
-                array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+                array_push($data, ["field" => $file->fileId, "status" => $file->status, "fileName" => $file->fileName, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
             }
 
             $left = array_diff($all, $uploaded);

@@ -99,18 +99,24 @@ class PDFController extends Controller
             $userIdentification = $data->userId;
         }
 
-        $content = $pdf->download('lease.pdf')->getOriginalContent();
+        $bookingYear = substr($booking->year, -2);
+        $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
+
+        $fileNameToSave = $bookingYear.$bookingPrefix."_".$booking->bed_code."_".$data->userLastname."_".$data->userFirstName.".pdf";
+        // $fileNameToSave = 'lease.pdf';
+
+        $content = $pdf->download($fileNameToSave)->getOriginalContent();
         $user = User::where('id', $studentId)->first();
 
-        \Storage::put('public/files/'.$userIdentification.'/Lease.pdf', $content);
+        \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
 
         //Check if there is an existing lease to overwrite
         $lease = UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->first();        
 
         $data = array(
             'userUid' => $studentId,
-            'fileName' => 'Lease.pdf',
-            'fileUrl' => 'files/'.$userIdentification.'/Lease.pdf',
+            'fileName' => $fileNameToSave,
+            'fileUrl' => 'files/'.$userIdentification.'/'.$fileNameToSave,
             'status' => 'Rejected',
             'uploaded_by' => Auth::user()->name,
             'created_at' => date('Y-m-d h:m:s')

@@ -437,7 +437,7 @@
 
                                 <div class="banner" id="{{$file['field']}}Banner">
                                     @if($file["field"] === "moveIn")
-                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
+                                        <a href="/storage/{{$file['url']}}" download="{{$file['fileName']}}"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
                                     @endif
 
                                     @if(($file["field"] === "moveIn" && $file["status"] !== "XApproved"))
@@ -2174,7 +2174,8 @@
                                 },
 
                                 success: function (data) {          
-                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
 
                                     if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                                         uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
@@ -2763,7 +2764,7 @@
                     var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
 
                     if(field == "moveIn"){
-                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'
+                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[2]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
                         
                         if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                             button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
@@ -3071,6 +3072,16 @@
             success: function (data) {          
                 // if($("#change_bed_type").val() == "cancel"){
                     console.log(data)
+
+                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                        uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                    }
+                    
+                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                    $("#moveInBanner").empty().append(uploadbtn);
+                    $("#moveInStatus").empty().append('<div class="button rejected"></div>');
                 // }      
                 $(btn).html('REGEN LEASE');
             },
