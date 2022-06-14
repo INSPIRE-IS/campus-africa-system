@@ -123,9 +123,9 @@
         let roomAvailableText = $("#"+roomID+"_text").hasClass('1') == true ? "Yes" : "No";
 
         if(roomAvailableText == "Yes"){
-            var text = "Your are about to disable this room type";
+            var text = "You are about to disable this room type";
         }else{
-            var text = "Your are about to activate this room type";
+            var text = "You are about to activate this room type";
         }
 
 
