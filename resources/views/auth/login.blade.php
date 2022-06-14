@@ -110,6 +110,12 @@
                             'This functionality is only available to students!',
                             'error'
                         ) 
+                    }else if(data == "offline"){
+                        Swal.fire(
+                            'Unavailable',
+                            'Passwordless login is currently unavailable. Please login using your email address and password!',
+                            'error'
+                        ) 
                     }else{
                         Swal.fire(
                             'Email Not Found',

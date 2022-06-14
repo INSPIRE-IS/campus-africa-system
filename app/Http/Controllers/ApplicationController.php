@@ -21,12 +21,20 @@ class ApplicationController extends Controller
 
     public function step_1(Request $request, $propertyID, $roomType){
 
-        $lookups = Lookups::get();
-        $agent = new Agent();
-        $residences = Residence::get();
+        $onlineAppOpen = Lookups::where('group_id', '9')->first();
 
+        if($onlineAppOpen->lookup_name == '1'){
+            //
+            $lookups = Lookups::get();
+            $agent = new Agent();
+            $residences = Residence::get();
+    
+    
+            return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences]);
+        }else{
+            return view('errors.onlineAppOffline');
+        }
 
-        return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences]);
     }
 
     public function step_verify(Request $request, $applicationToken){

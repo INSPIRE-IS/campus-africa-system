@@ -12,6 +12,7 @@
         <thead>
             <tr>
                 <th>Mailer</th>
+                <th>Subject</th>
                 <th>Status</th>
                 <th></th>
             </tr> 
@@ -22,12 +23,10 @@
 
         @foreach($MailerList as $mailer)
 
-            <!-- onClick="activeMailer('{{$mailer->id}}')" -->
-            <!-- onClick="inactiveMailer('{{$mailer->id}}')" -->
-
             <tr>
                 <td>{{$mailer->mailer_name}}</td>
-                <td>@if($mailer->status == "0") <button type="button" class="inactiveBtn"  id="mailer_{{$mailer->id}}"> Inactive </button>@else <button type="button" class="activeBtn"  id="mailer_{{$mailer->id}}">Active</button> @endif</td>
+                <td>{{$mailer->subject}}</td>
+                <td>@if($mailer->status == "0") <button type="button" class="inactiveBtn"  id="mailer_{{$mailer->id}}" onClick="activeMailer('{{$mailer->id}}')"> Inactive </button>@else <button type="button" class="activeBtn"  id="mailer_{{$mailer->id}}" onClick="inactiveMailer('{{$mailer->id}}')">Active</button> @endif</td>
                 <td><button type="button" id="tableBtn" onClick="openModal('{{$mailer->mailer_name}}', '{{$mailer->id}}')" >View</button></td>
             </tr>
         @endforeach
@@ -80,41 +79,41 @@
         $('#mailer_table').DataTable();
     } );
 
-    // function activeMailer(mailerId){
-    //     $("#mailer_"+mailerId).empty().append("...");
-    //     $.ajax({
-    //         type: "post",
-    //         url: "/activate_mailer",
-    //         data: {
-    //             mailerId: mailerId, 
-    //         },
+    function activeMailer(mailerId){
+        $("#mailer_"+mailerId).empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        $.ajax({
+            type: "post",
+            url: "/activate_mailer",
+            data: {
+                mailerId: mailerId, 
+            },
 
-    //         success: function (data) {
-    //             console.log(data)
-    //             $("#mailer_"+data).empty().append("Active");
-    //             $("#mailer_"+data).removeClass("inactiveBtn")
-    //             $("#mailer_"+data).addClass("activeBtn");
-    //         },
-    //     });
-    // }
+            success: function (data) {
+                $("#mailer_"+data).empty().append("Active");
+                $("#mailer_"+data).removeClass("inactiveBtn")
+                $("#mailer_"+data).addClass("activeBtn");
+                document.getElementById( "mailer_"+data ).setAttribute( "onClick", "inactiveMailer('"+mailerId+"');" );
+            },
+        });
+    }
 
-    // function inactiveMailer(mailerId){
-    //     $("#mailer_"+mailerId).empty().append("...");
-    //     $.ajax({
-    //         type: "post",
-    //         url: "/inactivate_mailer",
-    //         data: {
-    //             mailerId: mailerId, 
-    //         },
+    function inactiveMailer(mailerId){
+        $("#mailer_"+mailerId).empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        $.ajax({
+            type: "post",
+            url: "/inactivate_mailer",
+            data: {
+                mailerId: mailerId, 
+            },
 
-    //         success: function (data) {
-    //             console.log(data)
-    //             $("#mailer_"+data).empty().append("Inactive");
-    //             $("#mailer_"+data).removeClass("activeBtn")
-    //             $("#mailer_"+data).addClass("inactiveBtn");
-    //         },
-    //     });
-    // }
+            success: function (data) {
+                $("#mailer_"+data).empty().append("Inactive");
+                $("#mailer_"+data).removeClass("activeBtn")
+                $("#mailer_"+data).addClass("inactiveBtn");
+                document.getElementById( "mailer_"+data ).setAttribute( "onClick", "activeMailer('"+mailerId+"');" );
+            },
+        });
+    }
 
     function openModal(title, mailerID){
 

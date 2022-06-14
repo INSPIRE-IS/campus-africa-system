@@ -46,59 +46,84 @@ class LoginController extends Controller
     }
 
     public function passwordlessLogin(Request $request){
-        
-        $user = User::where('userEmail', $request->email)->where('rob_60_cancelled', '0')->first();
 
-        if($user && !empty($user)){
+        $mailerForMessage = MailerList::where("mailer_name", "Passwordless Login")->first();
 
-            if($user->userRole == '0'){
-
-                $booking = Booking::where("userId", $user->id)->where('year', date('Y'))->first();
-        
-                $generator = new LoginUrl($user);
-                $generator->setRedirectUrl('/dashboard');
-                $url = $generator->generate();
-        
-                $message_replace['bookingRef'] = $booking->booking_code;
-                $message_replace['name'] = $user->userFirstName;
-                $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-                $message_replace['close_application_link']="</a>";
-        
-                $mailerForMessage = MailerList::where("mailer_name", "Passwordless Login")->first();
-                $mailerMessage = $mailerForMessage->message;
-        
-                $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-                $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-                $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
-        
-                $data['name'] = $user->userFirstName;
-                $data['email'] = $user->email;
-                $data['messageForMail'] = $newMessage;
-                $data['subject'] = $mailerForMessage->subject;
-
-                if(explode("@", $data['email'])[1] == "conurban.co.za"){
-                    $data['email'] = $user->email;
-                }else{
-                    $data['email'] = "conurbandigital@gmail.com";
-                }
-        
-                Mail::send('email.yellow_back', $data, function($message) use ($data) {
-                    // $message->to($data['email'], $data['name'])->subject
-                    //     ('Campus Africa User Application');
-                    $message->to($data['email'])->subject($data['subject']);
-                    $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-                    $message->from('noreply@campusafrica.co.za','Campus Africa');
-                });
+        if($mailerForMessage->status == '1'){
+            
+            $user = User::where('userEmail', $request->email)->first();
     
-                return "true";
-            }else{
-                return "admin";
-            }
+            if($user && !empty($user)){
+    
+                if($user->userRole == '0'){
+    
+                    $booking = Booking::where("userId", $user->id)->where('year', date('Y'))->first();
+            
+                    $generator = new LoginUrl($user);
+                    $generator->setRedirectUrl('/dashboard');
+                    $url = $generator->generate();
+            
+                    $message_replace['bookingRef'] = $booking->booking_code;
+                    $message_replace['name'] = $user->userFirstName;
+                    $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+                    $message_replace['close_application_link']="</a>";
+            
+                    $mailerForMessage = MailerList::where("mailer_name", "Passwordless Login")->first();
+    
+                    if($mailerForMessage->status == '1'){
+    
+                        $mailerMessage = $mailerForMessage->message;
+                
+                        $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                        $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                        $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                        $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+                
+                        $data['name'] = $user->userFirstName;
+                        $data['email'] = $user->email;
+                        $data['messageForMail'] = $newMessage;
+                        $data['subject'] = $mailerForMessage->subject;
 
+                        $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+                        $mailArr = explode(";", $allowedMails);
+
+                        $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+                        $data['cc'] = explode(";", $allowedMailsCC);
+
+                        if(in_array($data['email'], $mailArr)){
+                            $data['email'] = $user->email;
+                        }else{
+                            $data['email'] = "conurbandigital@gmail.com";
+                        }
+        
+                        // if(explode("@", $data['email'])[1] == "conurban.co.za"){
+                        //     $data['email'] = $user->email;
+                        // }else{
+                        //     $data['email'] = "conurbandigital@gmail.com";
+                        // }
+                
+                        Mail::send('email.yellow_back', $data, function($message) use ($data) {
+                            // $message->to($data['email'], $data['name'])->subject
+                            //     ('Campus Africa User Application');
+                            $message->to($data['email'])->subject($data['subject']);
+                            $message->cc($data['cc']);
+                            // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                            $message->from('noreply@campusafrica.co.za','Campus Africa');
+                        });
+                    }
+        
+                    return "true";
+                }else{
+                    return "admin";
+                }
+    
+            }else{
+                return "false";
+            }
         }else{
-            return "false";
+            return "offline";
         }
+        
 
     }
 }

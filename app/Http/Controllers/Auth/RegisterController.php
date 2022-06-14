@@ -215,32 +215,49 @@ class RegisterController extends Controller
         $message_replace['close_application_link']="</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Application Thank You")->first();
-        $mailerMessage = $mailerForMessage->message;
 
-        $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-        $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-        $newMessage = str_replace("[security_code]", $message_replace['security_token'], $newMessage);
-        $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-        $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+        if($mailerForMessage->status == '1'){
+            
+            $mailerMessage = $mailerForMessage->message;
+    
+            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+            $newMessage = str_replace("[security_code]", $message_replace['security_token'], $newMessage);
+            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+    
+            $data['name'] = $request->firstName;
+            $data['email'] = $request->email;
+            $data['messageForMail'] = $newMessage;
+            $data['subject'] = $mailerForMessage->subject;
 
-        $data['name'] = $request->firstName;
-        $data['email'] = $request->email;
-        $data['messageForMail'] = $newMessage;
-        $data['subject'] = $mailerForMessage->subject;
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+            $mailArr = explode(";", $allowedMails);
 
-        if(explode("@", $data['email'])[1] == "conurban.co.za"){
-            $data['email'] = $user->email;
-        }else{
-            $data['email'] = "conurbandigital@gmail.com";
+            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+            $data['cc'] = explode(";", $allowedMailsCC);
+
+            if(in_array($data['email'], $mailArr)){
+                $data['email'] = $user->email;
+            }else{
+                $data['email'] = "conurbandigital@gmail.com";
+            }
+    
+            // if(explode("@", $data['email'])[1] == "conurban.co.za"){
+            //     $data['email'] = $user->email;
+            // }else{
+            //     $data['email'] = "conurbandigital@gmail.com";
+            // }
+    
+            Mail::send('email.yellow_back', $data, function($message) use ($data) {
+                // $message->to($data['email'], $data['name'])->subject
+                //     ('Campus Africa User Application');
+                $message->to($data['email'])->subject($data['subject']);
+                $message->cc($data['cc']);
+                // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
+            });
         }
-
-        Mail::send('email.yellow_back', $data, function($message) use ($data) {
-            // $message->to($data['email'], $data['name'])->subject
-            //     ('Campus Africa User Application');
-            $message->to($data['email'])->subject($data['subject']);
-            $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-            $message->from('noreply@campusafrica.co.za','Campus Africa');
-        });
 
         return $userToken->applicationToken;
     }

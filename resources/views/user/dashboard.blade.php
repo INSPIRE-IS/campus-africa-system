@@ -27,7 +27,11 @@
 
                     <br/><br/><br/>
                     <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>
-                    <a href="#"><button type="button" class="roomContactBtn">Want to cancel your booking? Contact Us</button></a>
+                    @if(Auth::user()->rob_60_cancelled != '1')
+                      <button type="button" class="roomContactBtn" onClick="cancelBooking()">Want to cancel your booking?</button>
+                    @else
+                      <button type="button" class="roomContactBtn" onClick="restoreBooking()">Want to restore your booking?</button>
+                    @endif
                 </div>
             </div>
             
@@ -54,6 +58,8 @@
                 @if(Auth::user()->rob_55_lease != '2')
                   <br/> 
                   <a href="/change-student-type"><button type="button" class="detailsChange" id="studentChangeType" style="margin-top:-40px;">Change Student Type</button></a></h2>
+                @else
+                  <br/>
                 @endif
               <br/>
               <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
@@ -150,6 +156,34 @@
 
 <br/><br/>
 
+<div id="changeBuildingModal" class="modal">
+    <div class="modal-content " id="changeBuildingHeight" style="height: 275px;">
+        <span class="closeBuilding" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <div class="form-card">
+            <h2>Restore this booking</h2>
+
+            <input type="hidden" id="bookingId"/>
+            <br/><br/>
+            <div class="form-field">
+                <label>Residence * <span id="propertyBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="propertyBuilding" id='propertyBuilding' class="required">
+                    <option value="" selected disabled>Select a Residence</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Room Type * <span id="roomTypeBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="roomTypeBuilding" id='roomTypeBuilding' class="required">
+                    <option value="" selected disabled>Select a Room Type</option>
+                </select>
+            </div>
+            <div class="form-field-big">
+                <button type="button" id="changeBuildingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Restore Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
   $.ajaxSetup({
@@ -157,6 +191,180 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function cancelBooking(bookingId, userId){
+
+      Swal.fire({
+        title: 'Why do you want to Cancel your booking?',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        showLoaderOnConfirm: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+              type: "post",
+              url: "/cancel/booking",
+              data: {
+                  bookingId: "{{Auth::user()->bookingRef}}", 
+                  userId: "{{Auth::user()->id}}",
+                  reason: result.value,
+              },
+
+              success: function (data) {
+                  window.location.reload();
+              },
+          });
+        }
+      })
+
+    }
+
+    $("#changeBuildingType").on('click', function(){
+        if($("#propertyBuilding").val() == null || $("#roomTypeBuilding").val() == null){
+            if($("#propertyBuilding").val() == null){
+                $("#propertyBuilding").addClass('fieldError')
+                $("#propertyBuilding_error").removeClass('hidden')
+            }
+            if($("#roomTypeBuilding").val() == null){
+                $("#roomTypeBuilding").addClass('fieldError')
+                $("#roomTypeBuilding_error").removeClass('hidden')
+            }
+        }else{
+
+            $("#changeBuildingType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+            
+            $.ajax({
+                type: "post",
+                url: "/restore-student-booking",
+                data: {
+                    userUid: "{{Auth::user()->id}}", 
+                    property: $("#propertyBuilding").val(),
+                    roomType: $("#roomTypeBuilding").val(), 
+                },
+
+                success: function (data) {
+                    window.location.reload();
+                }
+            });
+        }
+    })
+
+    $("#propertyBuilding").on('change', function(){
+        let propValue = $("#propertyBuilding").val();
+
+        //here
+        $("#roomTypeBuilding").empty().append('<option value="">Loading</option>');
+
+        $.ajax({
+            type: "get",
+            url: "/check-all-rooms/{{Auth::user()->id}}",
+            success: function (data) {
+                //
+
+                console.log(data)
+                let roomData = data[3]
+
+                $("#roomTypeBuilding").empty().append('<option value="">Select One</option>');
+                Object.keys(roomData).forEach( function(key) {
+                    if(propValue == roomData[key].residence){
+                        var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
+                        $("#roomTypeBuilding").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');
+                    }
+                });
+            }
+        })
+    })
+
+    function restoreBooking(bookingId, userId){
+
+        var modal = document.getElementById("changeBuildingModal");
+        modal.style.display = "block";
+
+        $.ajax({
+            type: "get",
+            url: "/check-all-rooms/{{Auth::user()->id}}",
+            success: function (data) {
+                let properties = data[0];
+
+                console.log(data)
+
+                let selProp = data[2].property;
+
+                properties.sort();
+                $('#propertyBuilding').empty()
+
+                Object.keys(properties).forEach( function(key) {
+                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                });
+
+                $('#propertyBuilding').val(selProp);
+
+                $("#propertyBuilding").change();
+            }
+        });
+
+        
+
+        // Swal.fire({
+        //   title: 'Select field validation',
+        //   input: 'select',
+        //   inputOptions: {
+        //     'Fruits': {
+        //       apples: 'Apples',
+        //       bananas: 'Bananas',
+        //       grapes: 'Grapes',
+        //       oranges: 'Oranges'
+        //     },
+        //     'Vegetables': {
+        //       potato: 'Potato',
+        //       broccoli: 'Broccoli',
+        //       carrot: 'Carrot'
+        //     },
+        //     'icecream': 'Ice cream'
+        //   },
+        //   inputPlaceholder: 'Select a fruit',
+        //   showCancelButton: true,
+        //   inputValidator: (value) => {
+        //     return new Promise((resolve) => {
+        //       if (value === 'oranges') {
+        //         resolve()
+        //       } else {
+        //         resolve('You need to select oranges :)')
+        //       }
+        //     })
+        //   }
+        // })
+
+
+        // Swal.fire({
+        //     title: 'Are you sure?',
+        //     text: "This booking will become active again!",
+        //     icon: 'warning',
+        //     showCancelButton: true,
+        //     confirmButtonColor: '#3085d6',
+        //     cancelButtonColor: '#d33',
+        //     confirmButtonText: 'Yes, activate it!'
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
+        //         $.ajax({
+        //             type: "post",
+        //             url: "/restore/booking",
+        //             data: {
+        //                 bookingId: bookingId, 
+        //                 userId: userId,
+        //             },
+
+        //             success: function (data) {
+        //                 window.location = "/applications";
+        //             },
+        //         });
+        //     }
+        // })
+    }
 
     function UploadDocument(field){
 

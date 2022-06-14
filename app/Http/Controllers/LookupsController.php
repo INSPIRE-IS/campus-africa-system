@@ -44,6 +44,12 @@ class LookupsController extends Controller {
             $data['waiver_date_from'] = $request->date_from;
             $data['waiver_date_to'] = $request->date_to;
             $data['actionUserUid'] = Auth::user()->id;
+        }else if($request->group_id == "9"){
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->onlineApp_value,
+                "actionUserUid" => Auth::user()->id,
+            ];
         }else{
             $data['group_id'] = $request->group_id;
             $data['lookup_name'] = $request->value;
@@ -104,6 +110,12 @@ class LookupsController extends Controller {
                 "lookup_name" => $request->booking_waiver,
                 "waiver_date_from" => $request->date_from,
                 "waiver_date_to" => $request->date_to,
+                "actionUserUid" => Auth::user()->id,
+            ];
+        }else if($request->group_id == "9"){
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->onlineApp_value,
                 "actionUserUid" => Auth::user()->id,
             ];
         }else{

@@ -20,13 +20,17 @@
                 <option value="6" <?php if($lookup->group_id == "6"){echo "selected";}?>>Year of Study</option>
                 <option value="7" <?php if($lookup->group_id == "7"){echo "selected";}?>>Waive Booking Fee</option>
                 <option value="8" <?php if($lookup->group_id == "8"){echo "selected";}?>>Lease Admin Fee</option>
+                <option value="9" <?php if($lookup->group_id == "9"){echo "selected";}?>>Online Applications</option>
+                <option value="10" <?php if($lookup->group_id == "10"){echo "selected";}?>>Test Emails Allowed</option>
+                <option value="11" <?php if($lookup->group_id == "11"){echo "selected";}?>>Test CC in Mail</option>
             </select>
             <input type="hidden" name="lookupId" id="lookupId" value="{{$lookup->id}}"/>
         </div>
 
-        <div class="form-field <?php if($lookup->group_id == "7"){echo "hidden";} ?>">
+        <div class="form-field <?php if($lookup->group_id == "7" || $lookup->group_id == "9"){echo "hidden";} ?>">
             <label>Value</label>
             <input type="text" name="value" id="value" value="<?php echo $lookup->lookup_name;?>">
+            <small id="mailWording" class="<?php if($lookup->group_id != "10" && $lookup->group_id != "11"){echo "hidden";} ?>">Please seperate email addresses by semicolon</small>
         </div>
 
         @if($lookup->group_id == "4")
@@ -57,6 +61,15 @@
             </select>
         </div>
 
+        <div class="form-field <?php if($lookup->group_id !== "9"){echo "hidden";} ?>" id="onlineAppValue">
+            <label>Value</label>
+            <select name="onlineApp_value" id="onlineApp_value">
+                <option value="0" disabled selected>- Select One -</option>
+                <option value="1" <?php if($lookup->lookup_name == "1"){echo "selected";}?>>Online</option>
+                <option value="2" <?php if($lookup->lookup_name == "2"){echo "selected";}?>>Offline</option>
+            </select>
+        </div>
+
         <!-- <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateFrom">
             <label>Waiver Date From</label>
             <input type="date" name="date_from" id="date_from" value="<?php echo $lookup->waiver_date_from;?>">
@@ -77,11 +90,25 @@
         if($("#group_id").val() == "7"){
             $("#normalVlaue").addClass('hidden');
             $("#waiverValue").removeClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
+            $("#mailWording").addClass('hidden');
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
+        }else if($("#group_id").val() == "9"){
+            $("#onlineAppValue").removeClass('hidden');
+            $("#normalVlaue").addClass('hidden');
+            $("#waiverValue").addClass('hidden');
+            $("#mailWording").addClass('hidden');
+        }else if($("#group_id").val() == "10" || $("#group_id").val() == "11"){
+            $("#mailWording").removeClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
+            $("#normalVlaue").removeClass('hidden');
+            $("#waiverValue").addClass('hidden');
         }else{
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
+            $("#mailWording").addClass('hidden');
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
         }
