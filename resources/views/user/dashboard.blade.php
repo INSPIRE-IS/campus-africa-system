@@ -26,11 +26,13 @@
                       </h4>
 
                     <br/><br/><br/>
-                    <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>
-                    @if(Auth::user()->rob_60_cancelled != '1')
-                      <button type="button" class="roomContactBtn" onClick="cancelBooking()">Want to cancel your booking?</button>
-                    @else
-                      <button type="button" class="roomContactBtn" onClick="restoreBooking()">Want to restore your booking?</button>
+                    <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your room?</button>
+                    @if(Auth::user()->rob_55_lease != '2')
+                      @if(Auth::user()->rob_60_cancelled != '1')
+                        <button type="button" class="roomContactBtn" onClick="cancelBooking()">Want to cancel your booking?</button>
+                      @else
+                        <button type="button" class="roomContactBtn" onClick="restoreBooking()">Want to restore your booking?</button>
+                      @endif
                     @endif
                 </div>
             </div>

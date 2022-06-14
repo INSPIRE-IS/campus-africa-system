@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\MailerList;
 use Mail;
 use App\Models\Booking;
+use App\Models\Lookups;
 
 class LoginController extends Controller
 {

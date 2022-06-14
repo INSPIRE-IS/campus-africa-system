@@ -145,9 +145,9 @@
                         @endif
 
 
-                        @if(Auth::user()->role_change_building == '1')
+                        <!-- @if(Auth::user()->role_change_building == '1')
                             <button type="button" class="appBooking" onClick="changeBuilding('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Change Building</button>
-                        @endif
+                        @endif -->
                 </div>
                 <div class="buttons flex" id="buttonBottom">
                         @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
