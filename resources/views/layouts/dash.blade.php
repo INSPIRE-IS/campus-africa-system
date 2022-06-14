@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title><?php echo $headerTitle;?> | Campus Africa</title>
     <link rel="icon" href="/images/logo/Campus_Africa_Logo.png">
 
     <!-- Scripts -->
@@ -38,13 +38,10 @@
                 <a href="https://campusafrica.whitehart.co.za/residences/" target="_blank">Residences</a>
                 <a href="/room-booking">My Room</a>
                 <a href="/my-documents">My Documents</a>
-                <a href="/my-profile">My Profile</a>
+                <!-- <a href="/my-profile">My Profile</a> -->
 
-                @if (!$agent->isMobile())
-                    <a href="/my-profile"><span class="name">{{Auth::user()->userFirstName}} {{Auth::user()->userLastname}}</span></a>
-                @endif
+                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> @endif Log out</a>
                 
-                <a href="/logout">Log out</a>
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>
                 </a>
@@ -90,7 +87,7 @@
     </div>
     <footer class="footer">
         <div class="footerBanner">
-            <div class="container">
+            <div class="container flex">
                 <div class="col-3">
                     <h2 class="footerHeader">
                         Campus Africa
@@ -137,7 +134,7 @@
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
-                document.getElementById('fullNavbar').setAttribute("style","height:330px !important");
+                document.getElementById('fullNavbar').setAttribute("style","height:270px !important");
             } else {
                 x.className = "topnav";
                 document.getElementById('fullNavbar').setAttribute("style","height:85px !important");

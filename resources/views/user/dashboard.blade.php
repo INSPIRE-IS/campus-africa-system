@@ -8,198 +8,81 @@
 
             <div class="overlay">
                 <div class="cardBody">
-                    <h4 class="cardSubHeaderGrey">Braamlofts</h4>
-                    <h2 class="cardHeaderText">Single</h2>
-                    <h4 class="cardSubHeaderGrey">Room 23 Floor 2</h4>
+                    <h4 class="cardSubHeaderGrey">{{$propertyData->residence}}</h4>
+                    <h2 class="cardHeaderText">{{$roomData->name}}</h2>
+                    <h4 class="cardSubHeaderGrey">
+                      @if($booking->floor !== null) 
+                        {{$booking->floor}} Floor 
+                      @endif 
+                      
+                      @if($booking->unit !== null) 
+                        , Unit {{$booking->unit}}
+                      @endif
+
+                      @if($booking->bed_code !== null) 
+                        , Bed Code: {{$booking->bed_code}}
+                      @endif
+                      
+                      </h4>
+
                     <br/><br/><br/>
-                    <a href="#"><button type="button" class="roomContactBtn">Want to change your room? Contact Us</button></a>
-                    <a href="#"><button type="button" class="roomContactBtn">Want to cancel your booking? Contact Us</button></a>
+                    <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your room?</button>
+                    @if(Auth::user()->rob_55_lease != '2')
+                      @if(Auth::user()->rob_60_cancelled != '1')
+                        <button type="button" class="roomContactBtn" onClick="cancelBooking()">Want to cancel your booking?</button>
+                      @else
+                        <button type="button" class="roomContactBtn" onClick="restoreBooking()">Want to restore your booking?</button>
+                      @endif
+                    @endif
                 </div>
             </div>
             
             
         </div>
 
-        <div class="whiteYellowCard smallerCard"> 
-            
-            <h2 class="cardHeader redCardHeader">Application
-                <div class="small"><span class="text">Awaiting Documents </span>
-                    <div class="circle">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                </div>
-            </h2>
-                
-            <div class="cardBody">
+        @if($bookHeader != '0')
+          @include('user.documents.bookingDocs')
+        @else
+          @include('user.documents.applicationDocs')
+        @endif
 
-            @foreach ($rejectedFiles as $file)
-
-                <div class="appAwait">
-                    <h3 class="uploadName">
-
-                    @if($file->fileId == 'copyID')
-                        I.D COPY
-                      @elseif($file->fileId == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file->fileId == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file->fileId == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file->fileId == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file->fileId == 'moveIn')
-                        LEASE
-                      @endif
-
-                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                        <span class="text">Outstanding</span>
-                        <i class="fas fa-file-upload" ></i>
-                        <i class="fas fa-exclamation-circle"></i>
-                    </label>
-                    </h3>
-                    <input type="file" id="{{$file->fileId}}" hidden/>
-
-                    <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
-
-                </div>
-
-            @endforeach
-
-            @foreach($outstanding as $file)
-
-              <div class="appAwait">
-                    <h3 class="uploadName">
-                    @if($file == 'copyID')
-                        I.D COPY
-                      @elseif($file == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file == 'moveIn')
-                        LEASE
-                      @endif
-
-                    <label for="{{$file}}" id="{{$file}}Section" class="outstanding">
-                        <span class="text">Outstanding</span>
-                        <i class="fas fa-file-upload" ></i>
-                        <i class="fas fa-exclamation-circle"></i>
-                    </label>
-                    </h3>
-                    <input type="file" id="{{$file}}" hidden/>
-
-                </div>
-            
-            @endforeach
-                
-                
-
-                
-
-                @foreach($pendingFiles as $file)
-
-                <div class="appAwait" id="registrationSection">
-                    <h3 class="uploadName">
-
-                    @if($file->fileId == 'copyID')
-                        I.D COPY
-                      @elseif($file->fileId == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file->fileId == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file->fileId == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file->fileId == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file->fileId == 'moveIn')
-                        LEASE
-                      @endif
-
-                    <label id="registrationPending" class="pending">
-                        <span class="text">Pending Approval</span>
-                        <i class="fad fa-minus-circle"></i>
-                    </label>
-
-                </div>
-
-                @endforeach
-
-                
-
-            </div>
-
-        </div>
+        
     </div>
 
-    <div class="cards">
+    <div class="cards" id="bookingCardDash">
+
         <div class="whiteYellowCard smallerCard" style="margin-right:6%">
             <h2 class="cardHeader greyCardHeader" style="line-height:65px;">Booking Summary</h2>
-
-
             <div class="cardBody">
-            
-                <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
-                <h2 class="cardHeaderBlck" >NSFAS</h2>
-                <br/>
-                <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
-                <h2 class="cardHeaderBlck" >#0000000000</h2>
-                <br/>
-                <h4 class="cardSubHeaderGreyTxt">Year of Study</h4>
-                <h2 class="cardHeaderBlck" >2022</h2>
-            </div>
-            
-            
-            
+              <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
+              <h2 class="cardHeaderBlck" >
+                <?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?> 
+                @if(Auth::user()->rob_55_lease != '2')
+                  <br/> 
+                  <a href="/change-student-type"><button type="button" class="detailsChange" id="studentChangeType" style="margin-top:-40px;">Change Student Type</button></a></h2>
+                @else
+                  <br/>
+                @endif
+              <br/>
+              <h4 class="cardSubHeaderGreyTxt">Booking Reference</h4>
+              <h2 class="cardHeaderBlck" >#{{$booking->booking_code}}</h2>
+              <br/>
+              <h4 class="cardSubHeaderGreyTxt">Year of Study</h4>
+              <h2 class="cardHeaderBlck" >{{$booking->year}}</h2>
+            </div> 
         </div>
-        <div class="whiteYellowCard smallerCard">
-            
-            <h2 class="cardHeader greenCardHeader">Booking
-                <div class="small"><span class="text">Confirmed </span>
-                    <div class="circle">
-                        <i class="fas fa-check"></i>
-                    </div>
-                </div>
-            </h2>
-                
-            <div class="cardBody">
 
-            @foreach ($approvedFiles as $file)
-
-            <div class="appAwait" id="idCopySection">
-                    <h3 class="uploadName">
-                      @if($file->fileId == 'copyID')
-                        I.D COPY
-                      @elseif($file->fileId == 'studentCard')
-                        STUDENT CARD
-                      @elseif($file->fileId == 'bankStatement')
-                        BANK STATEMENT
-                      @elseif($file->fileId == 'proofRegistration')
-                        REGISTRATION
-                      @elseif($file->fileId == 'proof_of_payment')
-                        BOOKING FEE PROOF OF PAYMENT
-                      @elseif($file->fileId == 'moveIn')
-                        LEASE
-                      @endif
-                        <label class="approved">
-                            <span class="text">Approved</span>
-                            <i class="fas fa-check-circle"></i>
-                        </label>
-                    </h3>
-                </div>
-
-            @endforeach
-
-            </div>
-        </div>
+        @if($bookHeader == '0')
+          @include('user.documents.bookingDocs')
+        @else
+          @include('user.documents.applicationDocs')
+        @endif
     </div>
 </div>
 
+<!-- <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
-<div class="clearSpaceLogin"></div>
-<div class="clearSpaceLogin"></div>
+<div class="clearSpaceLogin"></div> -->
 
 <div class="container">
     <div class="otherProperties">
@@ -275,136 +158,255 @@
 
 <br/><br/>
 
+<div id="changeBuildingModal" class="modal">
+    <div class="modal-content " id="changeBuildingHeight" style="height: 275px;">
+        <span class="closeBuilding" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <div class="form-card">
+            <h2>Restore this booking</h2>
+
+            <input type="hidden" id="bookingId"/>
+            <br/><br/>
+            <div class="form-field">
+                <label>Residence * <span id="propertyBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="propertyBuilding" id='propertyBuilding' class="required">
+                    <option value="" selected disabled>Select a Residence</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Room Type * <span id="roomTypeBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="roomTypeBuilding" id='roomTypeBuilding' class="required">
+                    <option value="" selected disabled>Select a Room Type</option>
+                </select>
+            </div>
+            <div class="form-field-big">
+                <button type="button" id="changeBuildingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Restore Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
-$.ajaxSetup({
+  $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-  $("#copyID").on('change', function(){
-        $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    function cancelBooking(bookingId, userId){
 
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('copyID').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "copyID");
+      Swal.fire({
+        title: 'Why do you want to Cancel your booking?',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        showLoaderOnConfirm: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+              type: "post",
+              url: "/cancel/booking",
+              data: {
+                  bookingId: "{{Auth::user()->bookingRef}}", 
+                  userId: "{{Auth::user()->id}}",
+                  reason: result.value,
+              },
 
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
+              success: function (data) {
+                  window.location.reload();
+              },
+          });
+        }
+      })
 
-            success: function (data) {
-                if (data == "done") {
+    }
+
+    $("#changeBuildingType").on('click', function(){
+        if($("#propertyBuilding").val() == null || $("#roomTypeBuilding").val() == null){
+            if($("#propertyBuilding").val() == null){
+                $("#propertyBuilding").addClass('fieldError')
+                $("#propertyBuilding_error").removeClass('hidden')
+            }
+            if($("#roomTypeBuilding").val() == null){
+                $("#roomTypeBuilding").addClass('fieldError')
+                $("#roomTypeBuilding_error").removeClass('hidden')
+            }
+        }else{
+
+            $("#changeBuildingType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+            
+            $.ajax({
+                type: "post",
+                url: "/restore-student-booking",
+                data: {
+                    userUid: "{{Auth::user()->id}}", 
+                    property: $("#propertyBuilding").val(),
+                    roomType: $("#roomTypeBuilding").val(), 
+                },
+
+                success: function (data) {
                     window.location.reload();
                 }
-            },
-        });
-    });
+            });
+        }
+    })
 
-    $("#studentCard").on('change', function(){
-        $("#studentCardSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    $("#propertyBuilding").on('change', function(){
+        let propValue = $("#propertyBuilding").val();
+
+        //here
+        $("#roomTypeBuilding").empty().append('<option value="">Loading</option>');
+
+        $.ajax({
+            type: "get",
+            url: "/check-all-rooms/{{Auth::user()->id}}",
+            success: function (data) {
+                //
+
+                console.log(data)
+                let roomData = data[3]
+
+                $("#roomTypeBuilding").empty().append('<option value="">Select One</option>');
+                Object.keys(roomData).forEach( function(key) {
+                    if(propValue == roomData[key].residence){
+                        var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
+                        $("#roomTypeBuilding").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');
+                    }
+                });
+            }
+        })
+    })
+
+    function restoreBooking(bookingId, userId){
+
+        var modal = document.getElementById("changeBuildingModal");
+        modal.style.display = "block";
+
+        $.ajax({
+            type: "get",
+            url: "/check-all-rooms/{{Auth::user()->id}}",
+            success: function (data) {
+                let properties = data[0];
+
+                console.log(data)
+
+                let selProp = data[2].property;
+
+                properties.sort();
+                $('#propertyBuilding').empty()
+
+                Object.keys(properties).forEach( function(key) {
+                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                });
+
+                $('#propertyBuilding').val(selProp);
+
+                $("#propertyBuilding").change();
+            }
+        });
+
+        
+
+        // Swal.fire({
+        //   title: 'Select field validation',
+        //   input: 'select',
+        //   inputOptions: {
+        //     'Fruits': {
+        //       apples: 'Apples',
+        //       bananas: 'Bananas',
+        //       grapes: 'Grapes',
+        //       oranges: 'Oranges'
+        //     },
+        //     'Vegetables': {
+        //       potato: 'Potato',
+        //       broccoli: 'Broccoli',
+        //       carrot: 'Carrot'
+        //     },
+        //     'icecream': 'Ice cream'
+        //   },
+        //   inputPlaceholder: 'Select a fruit',
+        //   showCancelButton: true,
+        //   inputValidator: (value) => {
+        //     return new Promise((resolve) => {
+        //       if (value === 'oranges') {
+        //         resolve()
+        //       } else {
+        //         resolve('You need to select oranges :)')
+        //       }
+        //     })
+        //   }
+        // })
+
+
+        // Swal.fire({
+        //     title: 'Are you sure?',
+        //     text: "This booking will become active again!",
+        //     icon: 'warning',
+        //     showCancelButton: true,
+        //     confirmButtonColor: '#3085d6',
+        //     cancelButtonColor: '#d33',
+        //     confirmButtonText: 'Yes, activate it!'
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
+        //         $.ajax({
+        //             type: "post",
+        //             url: "/restore/booking",
+        //             data: {
+        //                 bookingId: bookingId, 
+        //                 userId: userId,
+        //             },
+
+        //             success: function (data) {
+        //                 window.location = "/applications";
+        //             },
+        //         });
+        //     }
+        // })
+    }
+
+    function UploadDocument(field){
+
+        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        let userId = "<?php echo Auth::user()->id;?>";
 
         var form_data = new FormData();
-        form_data.append("file", document.getElementById('studentCard').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "studentCard");
+        form_data.append("file", document.getElementById(field).files[0]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", field);
+        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
         $.ajax({
             type: "post",
-            url: "/move-in-form",
+            url: "/move-in-form-admin",
             data: form_data,
             cache: false,
             contentType: false,
             processData: false,
 
             success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });  
-    })
+                if (data[0]> 0) {
+                    
+                    window.location.reload();
 
-    $("#bankStatement").on('change', function(){
-        $("#bankStatementSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('bankStatement').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "bankStatement");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
+                } else {
+                    Swal.fire(
+                        'Error',
+                        data[0],
+                        'error'
+                    )
+                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
             },
         });
-    })
+    }
 
-    $("#proofRegistration").on('change', function(){
-
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proofRegistration').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "proofRegistration");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
-
-
-    $("#proof_of_payment").on('change', function(){
-        $("#proofRegistrationSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", {{Auth::user()->id}});
-        form_data.append("fileType", "proof_of_payment");
-
-        $.ajax({
-            type: "post",
-            url: "/move-in-form",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-
-            success: function (data) {
-                if (data == "done") {
-                  window.location.reload();
-                }
-            },
-        });
-    })
-    </script>
+ 
+</script>
 
 
 @endsection

@@ -25,29 +25,30 @@
             </p>
         </div>
 
-        <div class="cards">
-            <div class="whiteCard mainBlock">
+        <div class="cards " id="logincards">
+            <div class="whiteCard mainBlock loginBlock" id="loginBlockApply">
                 <h2 class="cardHeader">Apply</h2>
                 <h4 class="cardSubHeader">Are you new?</h4>
                 <p class="cardText">Before you can view and reserve a room at one of our awesome properties, you'll need to apply and submit all the necessary paperwork. Get started now!</p>
                 <?php /*<a href="/register"><button type="button" class="applyButton">apply now!</button></a>*/ ?>
-                <a href="https://campusafrica.co.za/contact-us/"><button type="button" class="applyButton">apply now!</button></a>
+                <a href="/online-application/0/0"><button type="button" class="applyButton">apply now!</button></a>
             </div>
 
-            <div class="whiteCard mainBlock" style="margin-left:11px;">
+            <div class="whiteCard mainBlock loginBlock" id="loginBlockMain" style="margin-left:11px;">
                 <h2 class="cardHeader" >Login</h2>
                 <h4 class="cardSubHeader">Already registered with Campus Africa? <br/> <span class="info">Come on in!</span></h4>
                 <form class="cardForm" method="POST" action="/login" >
                     @csrf
-                    <label>Username</label>
+                    <label style="color:#464749; font-size:21px; font-family: source-sans-pro, sans-serif;">Email</label>
                     <input type="text" name="email" id="email">
+                    <span class="invalid-feedback hidden" role="alert" id="emailPasswordLess"><strong style="color:red">Email is a required field</strong></span>
                     @error('email')
                         <span class="invalid-feedback" role="alert">
                             <strong style="color:red">{{ $message }}</strong>
                         </span>
                     @enderror
-                    <br/>
-                    <label>Password</label>
+                    <!-- <br/> -->
+                    <label style="color:#464749; font-size:21px; font-family: source-sans-pro, sans-serif;">Password</label>
                     <input type="password" name="password" id="password">
                     @error('password')
                         <span class="invalid-feedback" role="alert">
@@ -55,8 +56,12 @@
                         </span>
                     @enderror
                     <button type="submit" class="submitButton" value="Login">Login</button>
-                    <p class="small">Forgotten your password? <a href="/password/reset" style="color:inherit">Click here</a></p>
+                    
                 </form>
+                <div class="cardForm" >
+                    <button type="button" id="loginPasswordless" class="submitButton" value="magic-link">Passwordless Login</button>
+                    <p class="small">Forgotten your password? <a href="/password/reset" style="color:inherit">Click here</a></p>
+                </div>
             </div>
         </div>
         
@@ -65,7 +70,66 @@
 </div>
 
 
-<div class="clearSpaceLoginPage"></div>
+<div class="clearSpaceLoginPageFirst"></div>
+
+
+<script>
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $("#loginPasswordless").on('click', function(){
+
+        // console.log($("#email").val() !== "")
+
+        if($("#email").val() !== "" && $("#email").val() !== null){
+            $("#loginPasswordless").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+            $("#emailPasswordLess").addClass('hidden')
+            $.ajax({
+                type: "post",
+                url: "/passwordless-login",
+                data: {
+                    email: $("#email").val(), 
+                },
+    
+                success: function (data) {
+                    $("#loginPasswordless").empty().append('Passwordless login');
+
+                    if(data == "true"){
+                        Swal.fire(
+                            'Email Sent',
+                            'Please click on the link sent in your email!',
+                            'success'
+                        )                      
+                    }else if(data == "admin"){
+                        Swal.fire(
+                            'Not a student',
+                            'This functionality is only available to students!',
+                            'error'
+                        ) 
+                    }else if(data == "offline"){
+                        Swal.fire(
+                            'Unavailable',
+                            'Passwordless login is currently unavailable. Please login using your email address and password!',
+                            'error'
+                        ) 
+                    }else{
+                        Swal.fire(
+                            'Email Not Found',
+                            'Email not found in our system. Please try again!',
+                            'error'
+                        ) 
+                    }
+                },
+            });
+        }else{
+            $("#emailPasswordLess").removeClass('hidden')
+        }
+    })
+</script>
 
 <!-- <div class="container">
     <div class="row justify-content-center">

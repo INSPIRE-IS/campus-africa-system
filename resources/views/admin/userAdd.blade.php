@@ -151,6 +151,17 @@
                     <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1">
                     <label for="role_nsfas_approval_upload" style="width:500px">NSFAS File Upload</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_change_student_type" name="role_change_student_type" value="1">
+                    <label for="role_change_student_type" style="width:500px">Change Student Type</label>
+                </li>
+                <!-- <li style="display:inline-flex">
+                    <input type="checkbox" id="role_change_building" name="role_change_building" value="1">
+                    <label for="role_change_building" style="width:500px">Change Building</label>
+                </li> -->
+
+                
+                
             </ul>
         </div>
 
@@ -209,6 +220,16 @@
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1">
                     <label for="role_lookup" style="width:500px">Manage Lookups</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_view_booking_summary" name="role_view_booking_summary" value="1">
+                    <label for="role_view_booking_summary" style="width:500px">View Booking Summary</label>
+                </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_toggle_online_booking" name="role_toggle_online_booking" value="1">
+                    <label for="role_toggle_online_booking" style="width:500px">Toggle Online Booking</label>
+                </li>
+                
+                
             </ul>
         </div>
 

@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 use App\Models\UserFiles;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ActionList;
+use App\Models\Booking;
+use App\Models\Lookups;
+use App\Models\MailerList;
+use Mail;
+use App\Models\ApplicationToken;
+use App\Models\ImportNSFASStudentAuditLog;
+use Grosv\LaravelPasswordlessLogin\LoginUrl;
+use App\Models\Residence;
 
 class RegisterController extends Controller
 {
@@ -89,37 +97,169 @@ class RegisterController extends Controller
         ]);
     }
 
+    public function generateRandomLongString($length = 24) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    public function generateRandomShortString($length = 5) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
     protected function registration_step_one(Request $request){
 
         $user = User::create([
             'name' => $request->firstName,
             'userFirstName' => $request->firstName,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
             'userLastname' => $request->lastName,
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,
             'userEmail' => $request->email,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
             'userId' => $request->idNumber,
             'userNationality' => $request->nationality,
             'userPassport' => $request->passportNo,
             'institutionStudy' => $request->institStudy,
             'studentNo' => $request->studNumber,
-            // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => $request->year,
+            'userAddress1' => $request->userAddress1,
+            'userAddress2' => $request->userAddress2,
+            'userAddressCity' => $request->userAddressCity,
+            'userAddressPostal' => $request->userAddressPostal,
+            'studentType' => $request->studentType,
+            'yearOfStudy' => $request->yearOfStudy,
+            'rob_55_lease' => 3,
+            'rob_45_other' => 3,
         ]);
 
         ActionList::create([
             "userUid" => $user->id,
-            "action" => "Registered",
+            "action" => "Registered ".$request->firstName." as a new user",
             "actionUserUid" => $user->id,
             "actionUserDisplayName" => $request->firstName,
-            "actionUserRole" => "0",
+            "actionUserRole" => '0',
         ]);
 
-        return $user;
+        $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
+
+        //Booking data        
+        $booking = Booking::create(["userId" => $user->id, "property" => $request->property, "roomType" => $request->roomType, "year" => $request->year, "room_rate" => "0", "lease_from_date" => $lookup_lease_dates->lease_from_date, "lease_from_time" => $lookup_lease_dates->lease_from_time, "lease_to_date" => $lookup_lease_dates->lease_to_date, "lease_to_time" => $lookup_lease_dates->lease_to_time]);
+        
+
+        $bookingYear = substr($booking->year, -2);
+        $bookingPrefix = Residence::where('id',  $request->property)->pluck('building_prefix')->first();
+        $id_booking = $booking->id;
+        $placeholder = "";
+
+        for($i = 0; $i < 5 - strlen($id_booking); $i++){
+            $placeholder .= "0";
+        }
+
+        $bookingID = $placeholder.$id_booking;
+
+        Booking::where('id', $booking->id)->update(['booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
+
+        
+    
+        //Link booking to User
+        User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
+
+        if($request->studentType == "NSFAS"){
+            
+            $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
+
+            if(!empty($nsfasStudentsApproval)){
+
+                User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+
+                UserFiles::create([
+                    'userUid' => $user->id,
+                    'fileId' => 'bursaryApproval',
+                    'status' => 'Approved'
+                ]);
+
+                ActionList::create([
+                    "userUid" => $user->id,
+                    "action" => "NSFAS Approval has been Approved via import",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
+        }
+
+        $userToken = ApplicationToken::create(["userUid" => $user->id, "applicationToken" => $this->generateRandomLongString(), 'verified' => 0, 'security_token' => $this->generateRandomShortString()]);
+
+        $generator = new LoginUrl($user);
+        $generator->setRedirectUrl('/verify-password');
+        $url = $generator->generate();
+
+        $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
+        $message_replace['name'] = $request->firstName;
+        $message_replace['security_token'] = $userToken->security_token;
+        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        $message_replace['close_application_link']="</a>";
+
+        $mailerForMessage = MailerList::where("mailer_name", "Application Thank You")->first();
+
+        if($mailerForMessage->status == '1'){
+            
+            $mailerMessage = $mailerForMessage->message;
+    
+            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+            $newMessage = str_replace("[security_code]", $message_replace['security_token'], $newMessage);
+            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+    
+            $data['name'] = $request->firstName;
+            $data['email'] = $request->email;
+            $data['messageForMail'] = $newMessage;
+            $data['subject'] = $mailerForMessage->subject;
+
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+            $mailArr = explode(";", $allowedMails);
+
+            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+            $data['cc'] = explode(";", $allowedMailsCC);
+
+            if(in_array($data['email'], $mailArr)){
+                $data['email'] = $user->email;
+            }else{
+                $data['email'] = "conurbandigital@gmail.com";
+            }
+    
+            // if(explode("@", $data['email'])[1] == "conurban.co.za"){
+            //     $data['email'] = $user->email;
+            // }else{
+            //     $data['email'] = "conurbandigital@gmail.com";
+            // }
+    
+            Mail::send('email.yellow_back', $data, function($message) use ($data) {
+                // $message->to($data['email'], $data['name'])->subject
+                //     ('Campus Africa User Application');
+                $message->to($data['email'])->subject($data['subject']);
+                $message->cc($data['cc']);
+                // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
+            });
+        }
+
+        return $userToken->applicationToken;
     }
 
     protected function registration_step_one_update(Request $request){

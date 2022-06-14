@@ -88,7 +88,7 @@
                     @if ($doc_approved == 2)
 
                         @if($user->rob_50_approve != 2 || Auth::user()->role_delete_uploaded == 1)
-                            @if (($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
+                            @if (($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
                                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                             @endif
                         @endif
@@ -97,14 +97,17 @@
                     @else
                         @if(Auth::user()->role_upload_docs == 1)
                             <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
-                            @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
+
+                            @if(
+                                ($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1 && $data_approved == 1 ) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1 && $data_approved == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1 && $data_approved == 1))
                                 @if ((!empty($field_data) && $data_approved == 0) && explode("_", $file->fileId)[0] !== "other")
                                     <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                                 @endif
                             @endif
+
                         @endif
 
-                        @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
+                        @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
                             @if ((empty($field_data) || !empty($field_data) && $data_approved == 1) || explode("_", $file->fileId)[0] == "other")
                                 <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
                                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
@@ -951,6 +954,7 @@
 
                     // $("#btn_clear_bed").addClass('hidden')
                     $("#btn_clear_bed").data('lease', 'true');
+                    $(".studentType_btn").addClass('hidden')
 
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');

@@ -9,10 +9,10 @@
             <tr width="100%" style="background-color: #f1cc3e;">
                 <td colspan="2" style="width: 100%; padding: 30px 6% 30px 6%;; line-height: 22px">   
                 
-                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Application #00000</p>
+                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Application [application_number]</p>
                     <h1 style="color: #464749; font-size: 40px; font-weight: 700; line-height: 45px;">Thank you for your application!</h1>
                     <br/>
-                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Hi John, we’re busy processing your application.</p>
+                    <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Hi [name], we’re busy processing your application.</p>
                     <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">We will be sure to notify you as soon as we have an answer for you.</p>
 
                     <p style="color: #464749; font-size: 21px; font-weight: 400; line-height: 30px;">Upon a successful application your details will be loaded into our platform, <br/>and profile created for you. You can login with the email and <br/>password you chose at registration.</p>

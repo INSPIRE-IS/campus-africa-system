@@ -32,8 +32,24 @@
 
         @foreach($lookups as $lookup)
             <tr>
-                <td>@if($lookup->group_id == "1") Institution of Study @elseif($lookup->group_id == "2")Insitution Campus @elseif($lookup->group_id == "3") Faculty @elseif($lookup->group_id == "4") Year @elseif($lookup->group_id == "5") Nationality @elseif($lookup->group_id == "6") Year of study @elseif($lookup->group_id == "7") Waive Booking Fee @elseif($lookup->group_id == "8") Lease Admin Fee @endif</td>
-                <td>@if($lookup->lookup_name == '1') Yes @elseif($lookup->lookup_name == "2") No @else {{$lookup->lookup_name}} @endif</td>
+                <td>@if($lookup->group_id == "1") Institution of Study @elseif($lookup->group_id == "2")Insitution Campus @elseif($lookup->group_id == "3") Faculty @elseif($lookup->group_id == "4") Year @elseif($lookup->group_id == "5") Nationality @elseif($lookup->group_id == "6") Year of study @elseif($lookup->group_id == "7") Waive Booking Fee @elseif($lookup->group_id == "8") Lease Admin Fee @elseif($lookup->group_id == "9") Online Applications @elseif($lookup->group_id == "10") Test Emails Allowed @elseif($lookup->group_id == "11") Test CC in Mail @endif</td>
+                <td>
+                    @if($lookup->group_id == "9")
+                        @if($lookup->lookup_name == '1') 
+                            Online  
+                        @else 
+                            Offline
+                        @endif
+                    @else
+                        @if($lookup->lookup_name == '1') 
+                            Yes 
+                        @elseif($lookup->lookup_name == "2") 
+                            No 
+                        @else 
+                            {{$lookup->lookup_name}} 
+                        @endif
+                    @endif
+                </td>
                 <td>{{$lookup->updated_at}}</td>
                 <td>@if($lookup->users && $lookup->users->userFirstName) {{$lookup->users->userFirstName}} {{$lookup->users->userLastname}} @endif</td>
                 <td>

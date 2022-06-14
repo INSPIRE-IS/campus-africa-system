@@ -35,7 +35,7 @@
         </tbody>
     </table>
 
-    <!-- <br/><br/><br/><br/>
+    <br/><br/><br/><br/>
 
     <h1>Students</h1>
     <br/>
@@ -65,11 +65,16 @@
                         @if(Auth::user()->role_edit_app == 1)
                             <a href="/student/edit/{{$user->id}}"><button type="button" class="inactiveBtn">Edit</button></a> &nbsp;&nbsp;
                         @endif
+
+                        @if(Auth::user()->email == "mirichea@whitehart.co.za")
+                        <a href="/loginAsStudent/{{$user->id}}"><button type="button" class="inactiveBtn">Login As</button></a>
+                        @endif
+                        <!-- <a href="/student/upload/{{$user->id}}"><button type="button" class="inactiveBtn">Upload Documents</button></a> -->
                     </td>
                 </tr>
             @endforeach
         </tbody>
-    </table> -->
+    </table> 
 
 </div>
 
