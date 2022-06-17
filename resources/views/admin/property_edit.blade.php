@@ -26,12 +26,12 @@
         </div>
 
         <div class="form-field">
-            <label>Meta Info 1</label>
+            <label>Floor Prefix</label>
             <input type="text" name="meta_info_1" id="meta_info_1" value="<?php if(!empty($propertyData)){echo $propertyData->meta_info_1;}?>">
         </div>
 
         <div class="form-field">
-            <label>Meta Info 2</label>
+            <label>Bed Code Prefix</label>
             <input type="text" name="meta_info_2" id="meta_info_2" value="<?php if(!empty($propertyData)){echo $propertyData->meta_info_2;}?>">
         </div>
 
@@ -39,25 +39,25 @@
             <label>Floor *</label>
             <select name="floor" id='floor' class="required">
                 <option value="" selected disabled>Select One</option>
-                <option value="BASEMENT" <?php if(!empty($propertyData) && ($propertyData->floor == "BASEMENT" || $propertyData->floor == "Basement")){echo "selected";}?>>Basement</option>
-                <option value="GROUND" <?php if(!empty($propertyData) && ($propertyData->floor == "GROUND" || $propertyData->floor == "Ground")){echo "selected";}?>>Ground</option>
-                <option value="1ST" <?php if(!empty($propertyData) && ($propertyData->floor == "1ST" || $propertyData->floor == "1st")){echo "selected";}?>>1st</option>
-                <option value="2ND" <?php if(!empty($propertyData) && ($propertyData->floor == "2ND" || $propertyData->floor == "2nd")){echo "selected";}?>>2nd</option>
-                <option value="3RD" <?php if(!empty($propertyData) && ($propertyData->floor == "3RD" || $propertyData->floor == "3rd")){echo "selected";}?>>3rd</option>
-                <option value="4TH" <?php if(!empty($propertyData) && ($propertyData->floor == "4TH" || $propertyData->floor == "4th")){echo "selected";}?>>4th</option>
-                <option value="5TH" <?php if(!empty($propertyData) && ($propertyData->floor == "5TH" || $propertyData->floor == "5th")){echo "selected";}?>>5th</option>
-                <option value="6TH" <?php if(!empty($propertyData) && ($propertyData->floor == "6TH" || $propertyData->floor == "6th")){echo "selected";}?>>6th</option>
-                <option value="7TH" <?php if(!empty($propertyData) && ($propertyData->floor == "7TH" || $propertyData->floor == "7th")){echo "selected";}?>>7th</option>
-                <option value="8TH" <?php if(!empty($propertyData) && ($propertyData->floor == "8TH" || $propertyData->floor == "8th")){echo "selected";}?>>8th</option>
-                <option value="9TH" <?php if(!empty($propertyData) && ($propertyData->floor == "9TH" || $propertyData->floor == "9th")){echo "selected";}?>>9th</option>
-                <option value="10TH" <?php if(!empty($propertyData) && ($propertyData->floor == "10TH" || $propertyData->floor == "10th")){echo "selected";}?>>10th</option>
-                <option value="11TH" <?php if(!empty($propertyData) && ($propertyData->floor == "11TH" || $propertyData->floor == "11th")){echo "selected";}?>>11th</option>
-                <option value="12TH" <?php if(!empty($propertyData) && ($propertyData->floor == "12TH" || $propertyData->floor == "12th")){echo "selected";}?>>12th</option>
-                <option value="13TH" <?php if(!empty($propertyData) && ($propertyData->floor == "13TH" || $propertyData->floor == "13th")){echo "selected";}?>>13th</option>
-                <option value="14TH" <?php if(!empty($propertyData) && ($propertyData->floor == "14TH" || $propertyData->floor == "14th")){echo "selected";}?>>14th</option>
-                <option value="15TH" <?php if(!empty($propertyData) && ($propertyData->floor == "15TH" || $propertyData->floor == "15th")){echo "selected";}?>>15th</option>
-                <option value="16TH" <?php if(!empty($propertyData) && ($propertyData->floor == "16TH" || $propertyData->floor == "16th")){echo "selected";}?>>16th</option>
-                <option value="17TH" <?php if(!empty($propertyData) && ($propertyData->floor == "17TH" || $propertyData->floor == "17th")){echo "selected";}?>>17th</option>
+                <option value="BASEMENT" <?php if(!empty($propertyData) && ($propertyData->floor == "BASEMENT" || $propertyData->floor == "Basement")){echo "selected";}?>> <?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>Basement</option>
+                <option value="GROUND" <?php if(!empty($propertyData) && ($propertyData->floor == "GROUND" || $propertyData->floor == "Ground")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>Ground</option>
+                <option value="1ST" <?php if(!empty($propertyData) && ($propertyData->floor == "1ST" || $propertyData->floor == "1st")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>1st</option>
+                <option value="2ND" <?php if(!empty($propertyData) && ($propertyData->floor == "2ND" || $propertyData->floor == "2nd")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>2nd</option>
+                <option value="3RD" <?php if(!empty($propertyData) && ($propertyData->floor == "3RD" || $propertyData->floor == "3rd")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>3rd</option>
+                <option value="4TH" <?php if(!empty($propertyData) && ($propertyData->floor == "4TH" || $propertyData->floor == "4th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>4th</option>
+                <option value="5TH" <?php if(!empty($propertyData) && ($propertyData->floor == "5TH" || $propertyData->floor == "5th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>5th</option>
+                <option value="6TH" <?php if(!empty($propertyData) && ($propertyData->floor == "6TH" || $propertyData->floor == "6th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>6th</option>
+                <option value="7TH" <?php if(!empty($propertyData) && ($propertyData->floor == "7TH" || $propertyData->floor == "7th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>7th</option>
+                <option value="8TH" <?php if(!empty($propertyData) && ($propertyData->floor == "8TH" || $propertyData->floor == "8th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>8th</option>
+                <option value="9TH" <?php if(!empty($propertyData) && ($propertyData->floor == "9TH" || $propertyData->floor == "9th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>9th</option>
+                <option value="10TH" <?php if(!empty($propertyData) && ($propertyData->floor == "10TH" || $propertyData->floor == "10th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>10th</option>
+                <option value="11TH" <?php if(!empty($propertyData) && ($propertyData->floor == "11TH" || $propertyData->floor == "11th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>11th</option>
+                <option value="12TH" <?php if(!empty($propertyData) && ($propertyData->floor == "12TH" || $propertyData->floor == "12th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>12th</option>
+                <option value="13TH" <?php if(!empty($propertyData) && ($propertyData->floor == "13TH" || $propertyData->floor == "13th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>13th</option>
+                <option value="14TH" <?php if(!empty($propertyData) && ($propertyData->floor == "14TH" || $propertyData->floor == "14th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>14th</option>
+                <option value="15TH" <?php if(!empty($propertyData) && ($propertyData->floor == "15TH" || $propertyData->floor == "15th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>15th</option>
+                <option value="16TH" <?php if(!empty($propertyData) && ($propertyData->floor == "16TH" || $propertyData->floor == "16th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>16th</option>
+                <option value="17TH" <?php if(!empty($propertyData) && ($propertyData->floor == "17TH" || $propertyData->floor == "17th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>17th</option>
             </select>
         </div>
 
@@ -298,13 +298,40 @@
     <?php } ?>    
 
     $("#unit").keyup(function(){
-        $("#bed_code").val('').val($("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+        $("#bed_code").val('').val($("#meta_info_2").val()+""+$("#unit").val()+""+$("#room").val()+""+$("#bed").val());
     })
     $("#room").on('change', function(){
-        $("#bed_code").val('').val($("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+        $("#bed_code").val('').val($("#meta_info_2").val()+""+$("#unit").val()+""+$("#room").val()+""+$("#bed").val());
     })
     $("#bed").on('change', function(){
-        $("#bed_code").val('').val($("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+        $("#bed_code").val('').val($("#meta_info_2").val()+""+$("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+    })
+    $("#meta_info_2").on('change', function(){
+        $("#bed_code").val('').val($("#meta_info_2").val()+""+$("#unit").val()+""+$("#room").val()+""+$("#bed").val());
+    })
+
+    $("#meta_info_1").on('change', function(){
+        $("#floor").empty()
+        $('#floor').append('<option value="" selected disabled>Select One</option>')
+        $('#floor').append('<option value="BASEMENT">'+$("#meta_info_1").val()+' | BASEMENT</option>')
+        $('#floor').append('<option value="GROUND">'+$("#meta_info_1").val()+' | Ground</option>')
+        $('#floor').append('<option value="1ST">'+$("#meta_info_1").val()+' | 1st</option>')
+        $('#floor').append('<option value="2ND">'+$("#meta_info_1").val()+' | 2nd</option>')
+        $('#floor').append('<option value="3RD">'+$("#meta_info_1").val()+' | 3rd</option>')
+        $('#floor').append('<option value="4TH">'+$("#meta_info_1").val()+' | 4th</option>')
+        $('#floor').append('<option value="5TH">'+$("#meta_info_1").val()+' | 5th</option>')
+        $('#floor').append('<option value="6TH">'+$("#meta_info_1").val()+' | 6th</option>')
+        $('#floor').append('<option value="7TH">'+$("#meta_info_1").val()+' | 7th</option>')
+        $('#floor').append('<option value="8TH">'+$("#meta_info_1").val()+' | 8th</option>')
+        $('#floor').append('<option value="9TH">'+$("#meta_info_1").val()+' | 9th</option>')
+        $('#floor').append('<option value="10TH">'+$("#meta_info_1").val()+' | 10th</option>')
+        $('#floor').append('<option value="11TH">'+$("#meta_info_1").val()+' | 11th</option>')
+        $('#floor').append('<option value="12TH">'+$("#meta_info_1").val()+' | 12th</option>')
+        $('#floor').append('<option value="13TH">'+$("#meta_info_1").val()+' | 13th</option>')
+        $('#floor').append('<option value="14TH">'+$("#meta_info_1").val()+' | 14th</option>')
+        $('#floor').append('<option value="15TH">'+$("#meta_info_1").val()+' | 15th</option>')
+        $('#floor').append('<option value="16TH">'+$("#meta_info_1").val()+' | 16th</option>')
+        $('#floor').append('<option value="17TH">'+$("#meta_info_1").val()+' | 17th</option>')
     })
 </script>
 
