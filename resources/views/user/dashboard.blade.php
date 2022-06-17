@@ -186,6 +186,34 @@
     </div>
 </div>
 
+<div id="changeRoomModal" class="modal">
+    <div class="modal-content " id="changeBuildingHeight" style="height: 275px;">
+        <span class="closeRoom" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+        <div class="form-card">
+            <h2>Change my Room</h2>
+
+            <input type="hidden" id="bookingId"/>
+            <br/><br/>
+            <div class="form-field">
+                <label>Residence * <span id="propertyRoom_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="propertyRoom" id='propertyRoom' class="required">
+                    <option value="" selected disabled>Select a Residence</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Room Type * <span id="roomTypeRoom_error" class="hidden"><small style="color:red">This field is required</small></span></label>
+                <select name="roomTypeRoom" id='roomTypeRoom' class="required">
+                    <option value="" selected disabled>Select a Room Type</option>
+                </select>
+            </div>
+            <div class="form-field-big">
+                <button type="button" id="changeRoomType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change Room</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
   $.ajaxSetup({
@@ -193,6 +221,20 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    var modalRestore = document.getElementById("changeBuildingModal");
+    var spanRestore = document.getElementsByClassName("closeBuilding")[0];
+
+    spanRestore.onclick = function() {
+      modalRestore.style.display = "none";
+    }
+
+    var modalRoom = document.getElementById("changeRoomModal");
+    var spanRoom = document.getElementsByClassName("closeRoom")[0];
+
+    spanRoom.onclick = function() {
+      modalRoom.style.display = "none";
+    }
 
     function cancelBooking(bookingId, userId){
 
@@ -255,6 +297,51 @@
         }
     })
 
+    
+    $("#changeRoomType").on('click', function(){
+        if($("#propertyRoom").val() == null || $("#roomTypeRoom").val() == null){
+            if($("#propertyRoom").val() == null){
+                $("#propertyRoom").addClass('fieldError')
+                $("#propertyRoom_error").removeClass('hidden')
+            }
+            if($("#roomTypeRoom").val() == null){
+                $("#roomTypeRoom").addClass('fieldError')
+                $("#roomTypeRoom_error").removeClass('hidden')
+            }
+        }else{
+
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You will have to pay a new booking fee for a new room Type",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                $("#changeRoomType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+            
+                $.ajax({
+                    type: "post",
+                    url: "/change-student-room",
+                    data: {
+                        userUid: "{{Auth::user()->id}}", 
+                        property: $("#propertyRoom").val(),
+                        roomType: $("#roomTypeRoom").val(), 
+                    },
+
+                    success: function (data) {
+                        window.location.reload();
+                    }
+                });
+              }
+          });
+
+            
+        }
+    })
+
     $("#propertyBuilding").on('change', function(){
         let propValue = $("#propertyBuilding").val();
 
@@ -308,6 +395,57 @@
                 $("#propertyBuilding").change();
             }
         });
+      }
+
+      $("#propertyRoom").on('change', function(){
+        let propValue = $("#propertyRoom").val();
+
+        $("#roomTypeRoom").empty().append('<option value="">Loading</option>');
+
+        $.ajax({
+            type: "get",
+            url: "/check-all-rooms/{{Auth::user()->id}}",
+            success: function (data) {
+
+                let roomData = data[3]
+
+                $("#roomTypeRoom").empty().append('<option value="">Select One</option>');
+                Object.keys(roomData).forEach( function(key) {
+                    if(propValue == roomData[key].residence){
+                        var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
+                        $("#roomTypeRoom").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');
+                    }
+                });
+            }
+        })
+      })
+
+      function changeRoom(bookingId, userId){
+
+        var modal = document.getElementById("changeRoomModal");
+        modal.style.display = "block";
+
+        $.ajax({
+            type: "get",
+            url: "/check-all-rooms/{{Auth::user()->id}}",
+            success: function (data) {
+                let properties = data[0];
+
+                let selProp = data[2].property;
+
+                properties.sort();
+                $('#propertyRoom').empty()
+
+                Object.keys(properties).forEach( function(key) {
+                    $('#propertyRoom').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                });
+
+                $('#propertyRoom').val(selProp);
+
+                $("#propertyRoom").change();
+            }
+        });
+      }
 
         
 
@@ -366,7 +504,7 @@
         //         });
         //     }
         // })
-    }
+    // }
 
     function UploadDocument(field){
 

@@ -641,8 +641,29 @@ class HomeController extends Controller
                 $i++;
             }
 
+            $allowedResidences = [];
+            $allProp = Residence::get();
+            $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved]);
+            foreach($allProp as $prop){
+                foreach($permissionProp as $permission){
+                    if($permission->property == $prop->id){
+                        array_push($allowedResidences, $prop->id);
+                    }
+                }
+            }
+
+            $buildingName = Residence::where('id', $booking->property)->pluck('residence')->first();
+
+
+            if(($userData[0]['userInfo']['rob_60_cancelled'] == '0' && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1'){
+                //
+                return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences]);
+            }else{
+                return view('errors.studentView', ["headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName]);
+            }
+
+
         }
     }
 
@@ -1335,7 +1356,7 @@ class HomeController extends Controller
             "role_change_student_type" => $request->role_change_student_type,
             "role_view_booking_summary" => $request->role_view_booking_summary,
             "role_toggle_online_booking" => $request->role_toggle_online_booking,
-            // "role_change_building" => $request->role_change_building,
+            "role_change_building" => $request->role_change_building,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -1974,7 +1995,7 @@ class HomeController extends Controller
             "role_change_student_type" => $request->role_change_student_type,
             "role_view_booking_summary" => $request->role_view_booking_summary,
             "role_toggle_online_booking" => $request->role_toggle_online_booking,
-            // "role_change_building" => $request->role_change_building,
+            "role_change_building" => $request->role_change_building,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -2784,9 +2805,10 @@ class HomeController extends Controller
 
         $emailValid = true;
         $idNumberValid = true;
+        $property = null;
 
         if($email !== ""){
-            $emailCheck = User::where('email', $email)->first();
+            $user = $emailCheck = User::where('email', $email)->first();
 
             if(!empty($emailCheck)){
                 $emailValid = false;
@@ -2794,14 +2816,16 @@ class HomeController extends Controller
         }
 
         if($idNumber !== ""){
-            $idCheck = User::where('userId', $idNumber)->first();
+            $user = $idCheck = User::where('userId', $idNumber)->first();
 
             if(!empty($idCheck)){
                 $idNumberValid = false;
+                $booking = Booking::where('userId', $idCheck->id)->first();
+                $property = Residence::where('id', $booking->property)->pluck('residence')->first();
             }
         }
 
-        return ["done", $emailValid, $idNumberValid];
+        return ["done", $emailValid, $idNumberValid, $user, $property];
     }
 
     public function get_booking_details(Request $request){
@@ -6107,6 +6131,7 @@ class HomeController extends Controller
 
     public function restore_student_booking(Request $request){
         User::where('id', $request->userUid)->update(['rob_60_cancelled' => 0, "rob_10_fee" => 0]);
+        Booking::where('userId', $request->userUid)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
         ActionList::create([
             "userUid" => $request->userUid,
             "action" => "Restored Booking",
@@ -6245,6 +6270,39 @@ class HomeController extends Controller
             $actionFileData['actionUserRole'] = Auth::user()->userRole;
         
             ActionList::create($actionFileData);
+        }else{
+
+            $fileUploaded = UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->first();
+
+            if($fileUploaded && $fileUploaded->fileUrl !== null){
+                if($booking->room_rate !== $booking_data['room_rate']){
+
+                    UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update([
+                        'status' => 'Uploaded'
+                    ]);
+                    User::where('id', $request->userUid)->update(['rob_10_fee' => 1]);
+                }
+            }else{
+                UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update([
+                    'status' => 'Rejected'
+                ]);
+                User::where('id', $request->userUid)->update(['rob_10_fee' => 0]);
+            }
+
+            //Recalculate booking status
+            User::where('id', $request->userUid)->update([
+                'bookingStatus' => 'Action'
+            ]);
+
+            Booking::where('userId', $request->userUid)->update(['room_rate' => $booking_data['room_rate']]);
+
+            $actionFileData['userUid'] = $request->userUid;
+            $actionFileData['action'] = "Booking Fee updated to R".$booking_data['room_rate'];
+            $actionFileData['actionUserUid'] = Auth::user()->id;
+            $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+            $actionFileData['actionUserRole'] = Auth::user()->userRole;
+        
+            ActionList::create($actionFileData);
         }
 
         foreach($booking_data as $key => $value){
@@ -6282,6 +6340,209 @@ class HomeController extends Controller
 
 
         
+    }
+
+    public function change_student_room(Request $request){
+        Booking::where('userId', $request->userUid)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
+
+
+        $lookup = Lookups::where('group_id', '7')->first();
+        $booking = Booking::where('userId', $request->userUid)->first();
+        $user = User::where('id', $request->userUid)->first();
+        $booking_data = [];
+        $booking_data['property'] = $request->property;
+        $booking_data['roomType'] = $request->roomType;
+       
+
+        $bookingYear = substr($booking->year, -2);
+        $bookingPrefix = Residence::where('id', $request->property)->pluck('building_prefix')->first();
+        $id_booking = $booking->id;
+        $placeholder = "";
+
+        for($i = 0; $i < 5 - strlen($id_booking); $i++){
+            $placeholder .= "0";
+        }
+
+        $bookingID = $placeholder.$id_booking;
+
+        $booking_data['booking_code'] = $bookingYear.$bookingPrefix.$bookingID;
+
+        $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
+        $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
+
+        $allResidences = Residence::get();
+        $allRoomTypes = RoomTypes::get();
+
+        if($lookup && $lookup->lookup_name == "1"){
+            $booking_data['room_rate'] = "0";
+        }else{
+            //Get residences from WP
+            $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+            $residenceId = "";
+
+            foreach($jsonDataResidence as $residence){
+                if($residence->title->rendered == $request->property){
+                    //get room booking fee from residence (WP)
+                    $booking_data['room_rate'] = $residence->acf->booking_fee;
+                    //get residence ID (WP)
+                    $residenceId = $residence->id;
+                }
+            }
+
+            $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+            // dd($jsonDataRooms);
+
+            $roomType = "";
+            $roomName = "";
+
+            foreach($jsonDataRooms as $room){
+                if($residenceId == $room->acf->residence){
+
+                    $slugString = str_replace("-", " ", $room->slug);
+                    $roomType = "";
+                    $roomName = "";
+
+                    foreach($allResidences as $residence){
+                        if(strtoupper($request->property) == strtoupper($residence->residence)){
+                            $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                            $requiredName = $request->roomType;
+
+                            foreach($jsonDataRooms as $roomInfo){
+                                if($residenceId == $roomInfo->acf->residence){
+                                    if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($request->roomType)){
+                                        $roomType = $request->roomType;
+                                        $roomName = $roomInfo->slug;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $appliesTo = $room->acf->booking_fee_applies_to;
+
+                    if($room->slug == $roomName && $roomType == $request->roomType){
+
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                        }
+
+                        if($user->studentType == "NSFAS"){
+                            if(!in_array("NSFAS Students", $appliesTo)){
+                                $booking_data['room_rate'] = "0";
+                            }
+                        }
+
+                        if($user->studentType == "Bursary"){
+                            if(!in_array("Bursary Students", $appliesTo)){
+                                $booking_data['room_rate'] = "0";
+                            }
+                        }
+
+                        if($user->studentType == "Cash / Direct"){
+                            if(!in_array("Cash Students", $appliesTo)){
+                                $booking_data['room_rate'] = "0";
+                            }
+                        }
+                    }
+
+                    
+                }
+            }
+        }
+
+        Booking::where('userId', $request->userUid)->update($booking_data);
+
+        if($booking_data['room_rate'] == "0"){
+
+            User::where('id', $user->id)->update(["rob_10_fee" => 2]);
+
+            $bookingfee = UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->first();
+
+            if(!empty($bookingfee)){
+                UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update(['status' => 'Approved']);
+            }else{
+                UserFiles::create([
+                    'userUid'=> $request->userUid,
+                    'fileId' => 'proof_of_payment',
+                    'status' => 'Approved'
+                ]);
+            }
+
+
+            $actionFileData['userUid'] = $user->id;
+            $actionFileData['action'] =  "Booking Fee is R0";
+            $actionFileData['actionUserUid'] = Auth::user()->id;
+            $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+            $actionFileData['actionUserRole'] = Auth::user()->userRole;
+        
+            ActionList::create($actionFileData);
+        }else{
+
+            $fileUploaded = UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->first();
+
+            if($fileUploaded && $fileUploaded->fileUrl !== null){
+                if($booking->room_rate !== $booking_data['room_rate']){
+
+                    UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update([
+                        'status' => 'Uploaded'
+                    ]);
+                    User::where('id', $request->userUid)->update(['rob_10_fee' => 1]);
+                }
+            }else{
+                UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update([
+                    'status' => 'Rejected'
+                ]);
+                User::where('id', $request->userUid)->update(['rob_10_fee' => 0]);
+            }
+
+            //Recalculate booking status
+            User::where('id', $request->userUid)->update([
+                'bookingStatus' => 'Action'
+            ]);
+
+            Booking::where('userId', $request->userUid)->update(['room_rate' => $booking_data['room_rate']]);
+
+            $actionFileData['userUid'] = $request->userUid;
+            $actionFileData['action'] = "Booking Fee updated to R".$booking_data['room_rate'];
+            $actionFileData['actionUserUid'] = Auth::user()->id;
+            $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+            $actionFileData['actionUserRole'] = Auth::user()->userRole;
+        
+            ActionList::create($actionFileData);
+        }
+
+        foreach($booking_data as $key => $value){
+            if($key == 'property'){
+                $keyName = "Property";
+                $newValue = Residence::where('id', $booking_data['property'])->pluck('residence')->first();
+                $oldValue = Residence::where('id', $booking->property)->pluck('residence')->first();
+            }elseif($key == 'roomType'){
+                $keyName = "Room Type";
+                $newValue = RoomTypes::where('id', $booking_data['roomType'])->pluck('name')->first();
+                $oldValue = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+            }elseif($key == 'room_rate'){
+                $keyName = "Booking Fee";
+                $newValue = $value;
+                $oldValue = $booking->room_rate;
+            }elseif($key == 'booking_code'){
+                $keyName = "Booking Reference";
+                $newValue = $value;
+                $oldValue = $booking->booking_code;
+            }
+
+            if($key == 'room_rate' && $newValue == '0'){
+                //
+            }else{
+                ActionList::create([
+                    "userUid" => Auth::user()->id,
+                    "action" => "Updated ".$keyName." from ".$oldValue." to ".$newValue,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
+
+        }
     }
     
 

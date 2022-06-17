@@ -1995,6 +1995,9 @@ input:read-only {
   max-height:420px;
   overflow:auto
 }
+#newUser .idHeight{
+  height:150px !important
+}
 
 @media only screen and (max-width: 850px) {
   #fullNavbar {

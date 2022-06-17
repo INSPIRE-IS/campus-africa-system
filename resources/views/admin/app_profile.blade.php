@@ -15,7 +15,9 @@
                 {{$user[0]['userInfo']['userAddressCity']}}<br/>
                 {{$user[0]['userInfo']['userAddressPostal']}}<br/>
 
-                <div class="address_btn"></div>
+                @if(in_array($booking->property, $allowedResidences))
+                    <div class="address_btn"></div>
+                @endif
 
             </div>
         </div>
@@ -34,7 +36,9 @@
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
 
-                <div class="kin_btn"></div>
+                @if(in_array($booking->property, $allowedResidences))
+                    <div class="kin_btn"></div>
+                @endif
 
             </div>
 
@@ -65,8 +69,10 @@
                     <p class="listHeader">Student Type</p>
                     <span id="studentUserType" class="{{$user[0]['userInfo']['studentType']}}"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}} @endif </span><br/>
 
-                    @if($user[0]['userInfo']['rob_55_lease'] != "2" && Auth::user()->role_change_student_type == '1')
-                        <div class="studentType_btn"></div>
+                    @if($user[0]['userInfo']['rob_60_cancelled'] != "1" && $user[0]['userInfo']['rob_55_lease'] != "2" && Auth::user()->role_change_student_type == '1')
+                        @if(in_array($booking->property, $allowedResidences))
+                            <div class="studentType_btn"></div>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -108,7 +114,9 @@
                         {{$user[0]['userInfo']['userCell']}}<br/>
                     </p>
 
-                    <div class="app_details_btn"></div>
+                    @if(in_array($booking->property, $allowedResidences))
+                        <div class="app_details_btn"></div>
+                    @endif
                     
                 </div>
             </div>
@@ -124,6 +132,7 @@
                 
                 <div class="buttons flex" id="buttonTop">
 
+                    @if(in_array($booking->property, $allowedResidences))
                         @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_change_bed == "1")
                                 @if ($user[0]['userInfo']['rob_50_approve'] > 0)
@@ -143,13 +152,15 @@
                                 <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
                             @endif
                         @endif
+                    @endif
 
 
-                        <!-- @if(Auth::user()->role_change_building == '1')
+                        @if(Auth::user()->role_change_building == '1')
                             <button type="button" class="appBooking" onClick="changeBuilding('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Change Building</button>
-                        @endif -->
+                        @endif
                 </div>
                 <div class="buttons flex" id="buttonBottom">
+                    @if(in_array($booking->property, $allowedResidences))
                         @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_delete_booking == 1)
                                 <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
@@ -163,10 +174,13 @@
                         @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
                             @if(Auth::user()->role_cancel_booking == 1)
                                 @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
-                                    <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                                    @if(in_array($booking->property, $allowedResidences))
+                                        <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                                    @endif
                                 @endif
                             @endif
                         @endif
+                    @endif
 
                 </div>
             </div>
@@ -272,9 +286,11 @@
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
                     <div class="waitve_btn"></div>
-                    @if((Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_50_approve'] == 2) || $user[0]['userInfo']['rob_50_approve'] == 0)
-                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                            <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
+                    @if(in_array($booking->property, $allowedResidences))
+                        @if((Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_50_approve'] == 2) || $user[0]['userInfo']['rob_50_approve'] == 0)
+                            @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                                <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
+                            @endif
                         @endif
                     @endif
                 </div>
@@ -440,19 +456,21 @@
                                             onClick="btn_view_document_ajax({{$file['id']}})"
                                         >View Document</button>
                                     @else
+                                        @if(in_array($booking->property, $allowedResidences))
+
+                                            @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                                         
-                                        @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                                    
-                                            <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
-                                                <span class="text">Upload</span>
-                                                <i class="fas fa-file-upload" ></i>
-                                            </label>
-                                            <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" hidden/>
+                                                <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
+                                                    <span class="text">Upload</span>
+                                                    <i class="fas fa-file-upload" ></i>
+                                                </label>
+                                                <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" hidden/>
 
-                                            @if(explode("_", $file["field"])[0] == "other")
-                                                <button type="button" style="margin-left:5px;" onClick="deleteFile('{{$file['field']}}')">Delete</button>
+                                                @if(explode("_", $file["field"])[0] == "other")
+                                                    <button type="button" style="margin-left:5px;" onClick="deleteFile('{{$file['field']}}')">Delete</button>
+                                                @endif
+
                                             @endif
-
                                         @endif
                                     @endif
                                 </div>
@@ -470,10 +488,12 @@
 
             <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                 <h2 class="appHeader">Comments</h2>
-                @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                    <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
-                    <br/>
-                    <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
+                @if(in_array($booking->property, $allowedResidences))
+                    @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                        <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
+                        <br/>
+                        <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
+                    @endif
                 @endif
 
                 <!-- comments -->
@@ -1859,12 +1879,15 @@
                 if(data[0].bed_code !== "" && data[0].bed_code !== null){
                     bed_code = "Bed Code: "+data[0].bed_code;
 
-                    if("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2){
-                        // if(data[2] == 'false'){                            
-                            var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
-                        // }
-
-                        // console.log(data);
+                    if("<?php in_array($booking->property, $allowedResidences);?>"){
+                        //
+                        if("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2){
+                            // if(data[2] == 'false'){                            
+                                var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
+                            // }
+    
+                            // console.log(data);
+                        }
                     }
                 }
 

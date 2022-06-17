@@ -12,6 +12,7 @@ use App\Models\ActionList;
 use Auth;
 use App\Models\Residence;
 use App\Models\RoomTypes;
+use Illuminate\Support\Facades\DB;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -443,5 +444,24 @@ class LookupsController extends Controller {
             Booking::where('id', $booking->id)->update(['booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
 
         }
+    }
+
+    public function download_beds(Request $request){
+        $beds = [
+			['<b>Residence</b>', '<b>Room Type</b>', '<b>Meta Info 1</b>', '<b>Meta Info 2</b>', '<b>Floor</b>', '<b>Unit</b>', '<b>Room</b>', '<b>Bed</b>', '<b>Bed Code</b>',  '<b>Inventory</b>', '<b>Year</b>', '<b>Year End</b>'],
+		];
+
+        $allBeds = DB::select('SELECT p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id');
+
+        foreach($allBeds as $bed){
+            // $bedData = [$allBeds['residence']];
+            array_push($beds, $bed);
+        }
+
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
+		$xlsx->addSheet( $beds, 'Beds');
+		$xlsx->saveAs('All Beds Export.xlsx');
+
+		return "true";
     }
 }

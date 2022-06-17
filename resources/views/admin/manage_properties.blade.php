@@ -8,6 +8,8 @@
 
 <div class="container">
     <br/>
+    <button style="float: none;" type="button" id="exportAllBeds" class="detailsChange" >Export All beds</button>
+    <div class="hidden"><a href="/All Beds Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
     <a href="/room-types"><button type="button" class="detailsChange" >Room Types</button></a>
     <a href="/properties-info"><button type="button" class="detailsChange" >Residence Info</button></a>
     <a href="/property/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
@@ -242,6 +244,21 @@
     $("#clear_filters").on('click', function(){
         $("#property").val("All").trigger('change');
         $("#year").val("current").trigger('change');
+    })
+
+    $("#exportAllBeds").on('click', function(){
+        $("#exportAllBeds").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        
+        $.ajax({
+            type: "get",
+            url: "/download-beds",
+
+            success: function (data) {
+                $("#exportAllBeds").empty().append('Export All beds')
+                $("#downloadBtn").click();
+            },
+        });
+
     })
 </script>
 
