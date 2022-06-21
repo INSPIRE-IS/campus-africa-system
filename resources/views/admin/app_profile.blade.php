@@ -470,7 +470,7 @@
 
             </div>
 
-            <!-- <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
+            <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                 <h2 class="appHeader">Comments</h2>
                 @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
@@ -483,7 +483,7 @@
                 <div class="comments_block"></div>
                     
                 </div>
-            </div> -->
+            </div>
 
         </div>
     </div>
