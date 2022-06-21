@@ -470,7 +470,7 @@
 
             </div>
 
-            <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
+            <!-- <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                 <h2 class="appHeader">Comments</h2>
                 @if(Auth::user()->role_comment == "1" && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                     <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
@@ -478,14 +478,12 @@
                     <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
                 @endif
 
-                <!-- comments -->
-
                 <div class="commentItemList" style="<?php if(Auth::user()->role_comment == "1"){echo "margin-top:73px;";} ?> max-height: 350px; overflow: auto; width:100%">
 
                 <div class="comments_block"></div>
                     
                 </div>
-            </div>
+            </div> -->
 
         </div>
     </div>
