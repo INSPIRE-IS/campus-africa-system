@@ -444,12 +444,19 @@
                                         @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
 
                                         <!-- booking_payment_ref -->
-                                    
+                                        @if($file["field"] === "proof_of_payment")
+                                            <label onClick="paymentRef()" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
+                                                <span class="text">Upload</span>
+                                                <i class="fas fa-file-upload" ></i>
+                                            </label>
+                                        @else
                                             <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
                                                 <span class="text">Upload</span>
                                                 <i class="fas fa-file-upload" ></i>
                                             </label>
                                             <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" hidden/>
+                                        @endif
+                                    
 
                                             @if(explode("_", $file["field"])[0] == "other")
                                                 <button type="button" style="margin-left:5px;" onClick="deleteFile('{{$file['field']}}')">Delete</button>
@@ -477,6 +484,8 @@
                     <br/>
                     <button type="button" class='detailsChange' id="addComment" style="background-color:#e74f26">Add Comment</button>
                 @endif
+
+                <!-- comments -->
 
                 <div class="commentItemList" style="<?php if(Auth::user()->role_comment == "1"){echo "margin-top:73px;";} ?> max-height: 350px; overflow: auto; width:100%">
 
@@ -834,6 +843,43 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function paymentRef(){
+        swal.fire({
+                title: 'Please enter the Payment Reference:',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+            }).then((result) => {
+                if (result.isConfirmed && result.value !== "") {
+                    $("#booking_payment").empty().append(result.value);
+
+                    $.ajax({
+                        type: "post",
+                        url: "/UpdatePaymentRef",
+                        data: {
+                            bookingId: "{{$booking->id}}",
+                            reason: result.value
+                        },
+
+                        success: function (data) {
+
+                            $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
+                                let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
+                                $("#proof_of_paymentBanner").empty().append(uploadbtn);
+                                $("#proof_of_paymentSection").click();
+
+                            refreshActions();  
+                            checkUserStatus();
+                        },
+                    });
+                }
+            })
+    }
 
     function changeNsfsBursar(userId, bursar){
 

@@ -149,7 +149,7 @@
                     <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
                     <!-- <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}} -->
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
-                    <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span>
+                    <!-- <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span> -->
                 @endif
 
                 @if($file->fileId == "copyID")
@@ -182,6 +182,13 @@
 
                 <form class="edit_info">
                     @csrf
+
+                    @if($file->fileId == "proof_of_payment")
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Reference*</span>
+                            <input class="noedit required" name="booking_payment_ref" id="booking_payment_ref" disabled type="text" value="{{$booking->booking_payment_ref}}">
+                        </div>
+                    @endif
 
                     @if($file->fileId == "copyID")
                         <div class="form-field">
@@ -470,43 +477,6 @@
 
 <script>
     jQuery(document).ready( function() {
-
-        if("{{$file->fileId}}" == "proof_of_payment"){
-            if("{{Auth::user()->role_edit_app}}" == 1 && "{{$data_approved}}" == 0){
-                if("{{$booking->booking_payment_ref}}" == "" || "{{$booking->booking_payment_ref}}" == null){
-                    swal.fire({
-                        title: 'Please enter a payment refernce',
-                        input: 'text',
-                        inputAttributes: {
-                            autocapitalize: 'off'
-                        },
-                        showCancelButton: true,
-                        confirmButtonText: 'Submit',
-                        showLoaderOnConfirm: true,
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $("#booking_payment").empty().append(result.value);
-
-                            $.ajax({
-                                type: "post",
-                                url: "/UpdatePaymentRef",
-                                data: {
-                                    bookingId: "{{$booking->id}}",
-                                    reason: result.value
-                                },
-
-                                success: function (data) {
-
-                                    refreshActions();  
-                                    checkUserStatus();
-                                },
-                            });
-                        }
-                    })
-                }
-            }
-        }
-
 
         $('.close').on("click", function(e) {
             $("#myModal").html("");
@@ -1005,10 +975,19 @@
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                         @endif
                     }else if(type == "Rejected" && fileForApproval !== "moveIn" ){
-                        @if(Auth::user()->role_upload_docs == 1)
-                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
-                            $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
-                        @endif
+
+                        if(fileForApproval == "proof_of_payment"){
+                            @if(Auth::user()->role_upload_docs == 1)
+                                let uploadbtn = '<label onClick="paymentRef()" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label>';
+                                $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+                            @endif
+                        }else{
+
+                            @if(Auth::user()->role_upload_docs == 1)
+                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
+                                $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+                            @endif
+                        }
                     }else if(type == "Rejected" && fileForApproval == "moveIn"){
                         let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
                         

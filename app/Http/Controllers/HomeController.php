@@ -650,7 +650,7 @@ class HomeController extends Controller
 
         if($fileType == "proof_of_payment"){
             $typeName = "Booking Fee Proof of Payment";
-            $field_data = "";
+            $field_data = "fee_approved";
             $field_doc = "rob_10_fee";
             
 
@@ -3879,6 +3879,9 @@ class HomeController extends Controller
         }else if($request->FileNameForApproval == "proofRegistration"){
             $name = 'PROOF OF REGISTRATION';
             $field = "registration_approved";
+        }else if($request->FileNameForApproval == "proof_of_payment"){
+            $name = 'PROOF OF PAYMENT';
+            $field = "fee_approved";
         }else if($request->FileNameForApproval == "bursaryApproval"){
             if($student->studentType == "NSFAS"){
                 $name = 'NSFAS';
@@ -6360,6 +6363,15 @@ class HomeController extends Controller
 
     public function UpdatePaymentRef(Request $request){
         Booking::where('id', $request->bookingId)->update(['booking_payment_ref' => $request->reason]);
+        $booking = Booking::where('id', $request->bookingId)->first();
+
+        $actionFileData['userUid'] = $booking->userId;
+        $actionFileData['action'] =  "Updated Payment Reference to: ".$request->reason;
+        $actionFileData['actionUserUid'] = Auth::user()->id;
+        $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+        $actionFileData['actionUserRole'] = Auth::user()->userRole;
+    
+        ActionList::create($actionFileData);
         return 'true';
     }
     

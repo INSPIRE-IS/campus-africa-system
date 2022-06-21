@@ -35,7 +35,7 @@
         </div>
 
         <div class="form-field">
-            <label>Building Prefix <span id="building_prefix_error" class="hidden" style="color:red"><small>Building Prefix already in use</small></span></label>
+            <label>MDA Property Code <span id="building_prefix_error" class="hidden" style="color:red"><small>MDA Property Code already in use</small></span></label>
             <input type="text" name="building_prefix" id="building_prefix" value="<?php if(!empty($propertyData)){echo $propertyData->building_prefix;}?>" onKeyUp="updatePrefix()" maxLength="2">
         </div>
 
