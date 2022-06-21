@@ -6331,7 +6331,7 @@ class HomeController extends Controller
                         }
 
                         foreach($rooms as $room){
-                            if(strtoupper($room->name) == strtoupper($beds[1])){
+                            if(strtoupper($room->name) == strtoupper($beds[1]) && $room->property_id == $property['residence']){
                                 $property['room_type'] = $room->id;
                             }
                         }

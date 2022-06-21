@@ -379,7 +379,7 @@
         }        
     </script>
 
-    @if (App::environment('development'))
+    <!-- @if (App::environment('development'))
         <script>
             (function (d, t, g) {
                 var ph    = d.createElement(t), s = d.getElementsByTagName(t)[0];
@@ -390,7 +390,7 @@
                 s.parentNode.insertBefore(ph, s);
             })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
         </script>
-    @endif
+    @endif -->
 </body>
 
 </html>
