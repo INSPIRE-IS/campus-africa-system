@@ -2015,6 +2015,12 @@ class HomeController extends Controller
         return 'true';
     }
 
+    public function delete_room(Request $request){
+        RoomTypes::where('id', $request->roomId)->delete();
+
+        return 'true';
+    }
+
     public function set_page_session(Request $request){
         Session::put('page', $request->page);
     }

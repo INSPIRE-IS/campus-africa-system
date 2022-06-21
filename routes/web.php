@@ -117,6 +117,7 @@ Route::get('/new/admin', [HomeController::class, 'new_admin']);
 Route::post("/add-admin", [HomeController::class, 'add_admin']);
 
 Route::post("/delete/lookup", [HomeController::class, 'delete_lookup']);
+Route::post("/delete/room", [HomeController::class, 'delete_room']);
 Route::post("/applications/filter", [HomeController::class, 'app_filter']);
 
 Route::post("/delete/booking", [HomeController::class, 'delete_booking']);

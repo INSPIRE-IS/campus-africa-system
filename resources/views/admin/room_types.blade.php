@@ -34,6 +34,7 @@
                 <td>{{$rt->name}}</td>
                 <td>
                     <a href="/room-type/edit/{{$rt->id}}">Edit</a>
+                    <button type="button" id="tableBtn" class="detailsChange" onClick="deleteRoom('{{$rt->id}}')" style="margin:5px;">Delete</button>
                 </td>
             </tr>
         @endforeach
@@ -50,6 +51,32 @@
     $(document).ready( function () {
         $('#properties_table').DataTable();
     } );
+
+    function deleteRoom(roomId){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/delete/room",
+                    data: {
+                        roomId: roomId, 
+                    },
+
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                });
+            }
+        })
+    }
 
     // $.ajaxSetup({
     //     headers: {
