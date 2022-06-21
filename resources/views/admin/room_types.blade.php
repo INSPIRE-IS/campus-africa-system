@@ -34,7 +34,19 @@
                 <td>{{$rt->name}}</td>
                 <td>
                     <a href="/room-type/edit/{{$rt->id}}">Edit</a>
-                    <button type="button" id="tableBtn" class="detailsChange" onClick="deleteRoom('{{$rt->id}}')" style="margin:5px;">Delete</button>
+                    <?php
+                    $i = 0;
+                    foreach($property as $p){
+                        if($p->residence == $rt->property_id){
+                            if($p->room_type == $rt->id){
+                                $i++;
+                            }
+                        }
+                    }
+                    
+                    if($i == 0){?>
+                        <button type="button" id="tableBtn" class="detailsChange" onClick="deleteRoom('{{$rt->id}}')" style="margin:5px;">Delete</button>
+                    <?php } ?>
                 </td>
             </tr>
         @endforeach

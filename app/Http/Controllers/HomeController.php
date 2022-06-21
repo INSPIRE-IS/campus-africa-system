@@ -3646,21 +3646,28 @@ class HomeController extends Controller
             $booked_bed_codes = [];
 
             foreach($propertyInfo as $pi) {
-                if (!isset($units[$pi->bed_code])) {
 
-                    $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        if (!isset($units[$pi->bed_code])) {
 
-                    if (count($bed_used) == 0) {
-                        $bed_code[$pi->bed_code] = $pi;
-                    }else{
-
-                        if($bed_used[0]->users->rob_50_approve == "2" || $bed_used[0]->users->rob_60_cancelled == "1"){
-                            $bed_code[$pi->bed_code] = $pi;
-                        }else{
-                            $booked_bed_codes[$pi->bed_code] = $pi;
+                            $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
+        
+                            if (count($bed_used) == 0) {
+                                $bed_code[$pi->bed_code] = $pi;
+                            }else{
+        
+                                if($bed_used[0]->users->rob_50_approve == "2" || $bed_used[0]->users->rob_60_cancelled == "1"){
+                                    $bed_code[$pi->bed_code] = $pi;
+                                }else{
+                                    $booked_bed_codes[$pi->bed_code] = $pi;
+                                }
+                            }
                         }
                     }
                 }
+
+                
             }
 
             return ["true", $selected, $bed_code, $booked_bed_codes];
@@ -3979,9 +3986,10 @@ class HomeController extends Controller
 
             $room_types = RoomTypes::get();
             $residences = Residence::get();
+            $property = Property::get();
             
 
-            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types", "residences" => $residences]);
+            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types", "residences" => $residences, 'property' => $property]);
         }else{
             return "404 Error";
         }
