@@ -108,7 +108,9 @@
                         {{$user[0]['userInfo']['userCell']}}<br/>
                     </p>
 
-                    <div class="app_details_btn"></div>
+                    @if($mailVerificationEmail->status == '1')
+                        <div class="app_details_btn"></div>
+                    @endif
                     
                 </div>
             </div>

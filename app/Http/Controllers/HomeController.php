@@ -641,8 +641,10 @@ class HomeController extends Controller
                 $i++;
             }
 
+            $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
 
-            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved]);
+
+            return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, "mailVerificationEmail" => $mailVerificationEmail]);
         }
     }
 
