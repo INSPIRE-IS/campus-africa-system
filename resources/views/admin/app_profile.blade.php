@@ -2365,6 +2365,7 @@
 
                 console.log(data)
                 let roomData = data[3]
+                console.log(roomData)
 
                 $("#roomType").empty().append('<option value="">Select One</option>');
                 Object.keys(roomData).forEach( function(key) {
