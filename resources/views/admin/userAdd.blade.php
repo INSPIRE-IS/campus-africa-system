@@ -312,6 +312,8 @@
             document.getElementById('role_change_bed').checked = true;
             document.getElementById('role_cancel_booking').checked = true;
             document.getElementById('role_lease_regen').checked = true;
+            document.getElementById('role_view_booking_summary').checked = true;
+            document.getElementById('role_change_student_type').checked = true;
         }
 
         if(templateName == "3"){
