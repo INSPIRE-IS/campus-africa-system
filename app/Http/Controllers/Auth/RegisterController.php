@@ -237,7 +237,7 @@ class RegisterController extends Controller
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array($data['email'], $mailArr)){
+            if(in_array(explode("@", $data['email'])[1], $mailArr)){
                 $data['email'] = $user->email;
             }else{
                 $data['email'] = "conurbandigital@gmail.com";

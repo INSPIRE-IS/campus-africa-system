@@ -823,7 +823,7 @@ class HomeController extends Controller
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array($data['email'], $mailArr)){
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
                         $data['email'] = $user->email;
                     }else{
                         $data['email'] = "conurbandigital@gmail.com";
@@ -1846,7 +1846,7 @@ class HomeController extends Controller
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array($data['email'], $mailArr)){
+            if(in_array(explode("@", $data['email'])[1], $mailArr)){
                 $data['email'] = $user->email;
             }else{
                 $data['email'] = "conurbandigital@gmail.com";
@@ -5655,7 +5655,7 @@ class HomeController extends Controller
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array($data['email'], $mailArr)){
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
                         $data['email'] = $request->userEmail;
                     }else{
                         $data['email'] = "conurbandigital@gmail.com";
@@ -6282,6 +6282,85 @@ class HomeController extends Controller
 
 
         
+    }
+
+    public function bed_import(Request $request){
+        return view('outSession.bed_imports', ["headerTitle" => "Import Beds", "title" => "Import Beds"]);
+    }
+
+    public function import_beds(Request $request){
+        $files = $request->file('file');
+
+        $inputFileName  = $request->file('file')->getClientOriginalName();
+
+        if ($request->hasFile('file')) {
+            
+            if ($request->file('file')->isValid()) {
+
+                $fileName = 'uploads/'.$inputFileName;
+                $path = $request->file('file')->move('uploads/', $inputFileName);
+
+
+                /**  Identify the type of $inputFileName  **/
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($fileName);
+
+                /**  Create a new Reader of the type that has been identified  **/
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+
+                /**  Load $inputFileName to a Spreadsheet Object  **/
+                $spreadsheet = $reader->load($fileName);
+
+                /**  Convert Spreadsheet Object to an Array for ease of use  **/
+                $schdeules = $spreadsheet->getActiveSheet()->toArray();
+
+                $residence = Residence::get();
+                $rooms = RoomTypes::get();
+
+
+                $i = 0;
+
+                foreach($schdeules as $beds){
+                    
+                    if($i > 0){
+                        // $beds[0]
+
+                        foreach($residence as $res){
+                            if(strtoupper($res->residence) == strtoupper($beds[0])){
+                                $property['residence'] = $res->id;
+                            }
+                        }
+
+                        foreach($rooms as $room){
+                            if(strtoupper($room->name) == strtoupper($beds[1])){
+                                $property['room_type'] = $room->id;
+                            }
+                        }
+
+                        $property['meta_info_1'] = $beds[2];
+                        $property['meta_info_2'] = $beds[3];
+                        $property['floor'] = $beds[4];
+                        $property['unit'] = $beds[5];
+                        $property['room'] = $beds[6];
+                        $property['bed'] = $beds[7];
+                        $property['bed_code'] = $beds[8];
+                        $property['inventory'] = $beds[9];
+                        $property['year'] = $beds[10];
+                        $property['year_end'] = $beds[11];
+
+                        Property::create($property);
+
+                    }
+                    $i++;
+                }
+            }
+        }
+
+        echo "done";
+    }
+
+    public function UpdatePaymentRef(Request $request){
+        Booking::where('id', $request->bookingId)->update(['booking_payment_ref' => $request->reason]);
+        return 'true';
     }
     
 

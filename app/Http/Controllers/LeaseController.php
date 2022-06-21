@@ -170,7 +170,7 @@ class LeaseController extends Controller
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array($data['email'], $mailArr)){
+            if(in_array(explode("@", $data['email'])[1], $mailArr)){
                 $data['email'] = $userForLease->userEmail;
             }else{
                 $data['email'] = "conurbandigital@gmail.com";

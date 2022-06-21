@@ -235,3 +235,9 @@ Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']
 Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
 Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);
 Route::post('/restore-student-booking', [HomeController::class, 'restore_student_booking']);
+
+Route::get('/bed_import', [HomeController::class, 'bed_import']);
+Route::post('/import/beds', [HomeController::class, 'import_beds']);
+
+Route::post('/UpdatePaymentRef', [HomeController::class, 'UpdatePaymentRef']);
+

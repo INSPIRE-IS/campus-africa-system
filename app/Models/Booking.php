@@ -31,6 +31,7 @@ class Booking extends Model
         'lease_unique',
         'year',
         'booking_code',
+        'booking_payment_ref',
     ];
 
     public function users(){

@@ -442,6 +442,8 @@
                                     @else
                                         
                                         @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+
+                                        <!-- booking_payment_ref -->
                                     
                                             <label for="{{$file['field']}}" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">
                                                 <span class="text">Upload</span>

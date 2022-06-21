@@ -149,6 +149,7 @@
                     <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
                     <!-- <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}} -->
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
+                    <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span>
                 @endif
 
                 @if($file->fileId == "copyID")
@@ -469,6 +470,44 @@
 
 <script>
     jQuery(document).ready( function() {
+
+        if("{{$file->fileId}}" == "proof_of_payment"){
+            if("{{Auth::user()->role_edit_app}}" == 1 && "{{$data_approved}}" == 0){
+                if("{{$booking->booking_payment_ref}}" == "" || "{{$booking->booking_payment_ref}}" == null){
+                    swal.fire({
+                        title: 'Please enter a payment refernce',
+                        input: 'text',
+                        inputAttributes: {
+                            autocapitalize: 'off'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Submit',
+                        showLoaderOnConfirm: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $("#booking_payment").empty().append(result.value);
+
+                            $.ajax({
+                                type: "post",
+                                url: "/UpdatePaymentRef",
+                                data: {
+                                    bookingId: "{{$booking->id}}",
+                                    reason: result.value
+                                },
+
+                                success: function (data) {
+
+                                    refreshActions();  
+                                    checkUserStatus();
+                                },
+                            });
+                        }
+                    })
+                }
+            }
+        }
+
+
         $('.close').on("click", function(e) {
             $("#myModal").html("");
             $("#myModal").css("display", "none");
