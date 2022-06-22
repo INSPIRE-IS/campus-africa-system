@@ -117,6 +117,7 @@ Route::get('/new/admin', [HomeController::class, 'new_admin']);
 Route::post("/add-admin", [HomeController::class, 'add_admin']);
 
 Route::post("/delete/lookup", [HomeController::class, 'delete_lookup']);
+Route::post("/delete/room", [HomeController::class, 'delete_room']);
 Route::post("/applications/filter", [HomeController::class, 'app_filter']);
 
 Route::post("/delete/booking", [HomeController::class, 'delete_booking']);
@@ -237,3 +238,9 @@ Route::post('/change-new-student-details', [ApplicationController::class, 'updat
 Route::post('/restore-student-booking', [HomeController::class, 'restore_student_booking']);
 Route::post('/change-student-room', [HomeController::class, 'change_student_room']);
 Route::get('/download-beds', [LookupsController::class, 'download_beds']);
+
+Route::get('/bed_import', [HomeController::class, 'bed_import']);
+Route::post('/import/beds', [HomeController::class, 'import_beds']);
+
+Route::post('/UpdatePaymentRef', [HomeController::class, 'UpdatePaymentRef']);
+

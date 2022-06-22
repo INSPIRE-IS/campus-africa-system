@@ -21,7 +21,7 @@
                 <th>Booking Fee (Cash)</th> -->
                 <th>Owner</th>
                 <th>Address</th>
-                <th>Building Prefix</th>
+                <th>MDA Property Code</th>
                 <th></th>
             </tr> 
         </thead>

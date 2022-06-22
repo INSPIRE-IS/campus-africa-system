@@ -137,6 +137,7 @@ class User extends Authenticatable
         'onboard_complete',
         'email_verified',
         'role_change_building',
+        'fee_approved',
     ];
 
     public function files(){

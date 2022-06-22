@@ -141,16 +141,16 @@
             }
         }
 
-        @if (App::environment('development'))
-        (function (d, t, g) {
-            var ph    = d.createElement(t), s = d.getElementsByTagName(t)[0];
-            ph.type   = 'text/javascript';
-            ph.async   = true;
-            ph.charset = 'UTF-8';
-            ph.src     = g + '&v=' + (new Date()).getTime();
-            s.parentNode.insertBefore(ph, s);
-        })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
-        @endif
+        // @if (App::environment('development'))
+        // (function (d, t, g) {
+        //     var ph    = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        //     ph.type   = 'text/javascript';
+        //     ph.async   = true;
+        //     ph.charset = 'UTF-8';
+        //     ph.src     = g + '&v=' + (new Date()).getTime();
+        //     s.parentNode.insertBefore(ph, s);
+        // })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
+        // @endif
     </script>
 
     </body>

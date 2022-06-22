@@ -654,11 +654,12 @@ class HomeController extends Controller
             }
 
             $buildingName = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
 
 
             if(($userData[0]['userInfo']['rob_60_cancelled'] == '0' && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1'){
                 //
-                return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences]);
+                return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail]);
             }else{
                 return view('errors.studentView', ["headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName]);
             }
@@ -671,7 +672,7 @@ class HomeController extends Controller
 
         if($fileType == "proof_of_payment"){
             $typeName = "Booking Fee Proof of Payment";
-            $field_data = "";
+            $field_data = "fee_approved";
             $field_doc = "rob_10_fee";
             
 
@@ -844,7 +845,7 @@ class HomeController extends Controller
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array($data['email'], $mailArr)){
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
                         $data['email'] = $user->email;
                     }else{
                         $data['email'] = "conurbandigital@gmail.com";
@@ -1867,7 +1868,7 @@ class HomeController extends Controller
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array($data['email'], $mailArr)){
+            if(in_array(explode("@", $data['email'])[1], $mailArr)){
                 $data['email'] = $user->email;
             }else{
                 $data['email'] = "conurbandigital@gmail.com";
@@ -2030,6 +2031,12 @@ class HomeController extends Controller
     public function delete_lookup(Request $request){
 
         Lookups::where('id', $request->lookupId)->delete();
+
+        return 'true';
+    }
+
+    public function delete_room(Request $request){
+        RoomTypes::where('id', $request->roomId)->delete();
 
         return 'true';
     }
@@ -3662,21 +3669,28 @@ class HomeController extends Controller
             $booked_bed_codes = [];
 
             foreach($propertyInfo as $pi) {
-                if (!isset($units[$pi->bed_code])) {
 
-                    $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
+                if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
+                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                        if (!isset($units[$pi->bed_code])) {
 
-                    if (count($bed_used) == 0) {
-                        $bed_code[$pi->bed_code] = $pi;
-                    }else{
-
-                        if($bed_used[0]->users->rob_50_approve == "2" || $bed_used[0]->users->rob_60_cancelled == "1"){
-                            $bed_code[$pi->bed_code] = $pi;
-                        }else{
-                            $booked_bed_codes[$pi->bed_code] = $pi;
+                            $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
+        
+                            if (count($bed_used) == 0) {
+                                $bed_code[$pi->bed_code] = $pi;
+                            }else{
+        
+                                if($bed_used[0]->users->rob_50_approve == "2" || $bed_used[0]->users->rob_60_cancelled == "1"){
+                                    $bed_code[$pi->bed_code] = $pi;
+                                }else{
+                                    $booked_bed_codes[$pi->bed_code] = $pi;
+                                }
+                            }
                         }
                     }
                 }
+
+                
             }
 
             return ["true", $selected, $bed_code, $booked_bed_codes];
@@ -3903,6 +3917,9 @@ class HomeController extends Controller
         }else if($request->FileNameForApproval == "proofRegistration"){
             $name = 'PROOF OF REGISTRATION';
             $field = "registration_approved";
+        }else if($request->FileNameForApproval == "proof_of_payment"){
+            $name = 'PROOF OF PAYMENT';
+            $field = "fee_approved";
         }else if($request->FileNameForApproval == "bursaryApproval"){
             if($student->studentType == "NSFAS"){
                 $name = 'NSFAS';
@@ -3992,9 +4009,10 @@ class HomeController extends Controller
 
             $room_types = RoomTypes::get();
             $residences = Residence::get();
+            $property = Property::get();
             
 
-            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types", "residences" => $residences]);
+            return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types", "residences" => $residences, 'property' => $property]);
         }else{
             return "404 Error";
         }
@@ -5679,7 +5697,7 @@ class HomeController extends Controller
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array($data['email'], $mailArr)){
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
                         $data['email'] = $request->userEmail;
                     }else{
                         $data['email'] = "conurbandigital@gmail.com";
@@ -6543,6 +6561,94 @@ class HomeController extends Controller
             }
 
         }
+    }
+
+    public function bed_import(Request $request){
+        return view('outSession.bed_imports', ["headerTitle" => "Import Beds", "title" => "Import Beds"]);
+    }
+
+    public function import_beds(Request $request){
+        $files = $request->file('file');
+
+        $inputFileName  = $request->file('file')->getClientOriginalName();
+
+        if ($request->hasFile('file')) {
+            
+            if ($request->file('file')->isValid()) {
+
+                $fileName = 'uploads/'.$inputFileName;
+                $path = $request->file('file')->move('uploads/', $inputFileName);
+
+
+                /**  Identify the type of $inputFileName  **/
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($fileName);
+
+                /**  Create a new Reader of the type that has been identified  **/
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+
+                /**  Load $inputFileName to a Spreadsheet Object  **/
+                $spreadsheet = $reader->load($fileName);
+
+                /**  Convert Spreadsheet Object to an Array for ease of use  **/
+                $schdeules = $spreadsheet->getActiveSheet()->toArray();
+
+                $residence = Residence::get();
+                $rooms = RoomTypes::get();
+
+
+                $i = 0;
+
+                foreach($schdeules as $beds){
+                    
+                    if($i > 0){
+                        // $beds[0]
+
+                        foreach($residence as $res){
+                            if(strtoupper($res->residence) == strtoupper($beds[0])){
+                                $property['residence'] = $res->id;
+                            }
+                        }
+
+                        foreach($rooms as $room){
+                            if(strtoupper($room->name) == strtoupper($beds[1]) && $room->property_id == $property['residence']){
+                                $property['room_type'] = $room->id;
+                            }
+                        }
+
+                        $property['meta_info_1'] = $beds[2];
+                        $property['meta_info_2'] = $beds[3];
+                        $property['floor'] = $beds[4];
+                        $property['unit'] = $beds[5];
+                        $property['room'] = $beds[6];
+                        $property['bed'] = $beds[7];
+                        $property['bed_code'] = $beds[8];
+                        $property['inventory'] = $beds[9];
+                        $property['year'] = $beds[10];
+                        $property['year_end'] = $beds[11];
+
+                        Property::create($property);
+
+                    }
+                    $i++;
+                }
+            }
+        }
+
+        echo "done";
+    }
+
+    public function UpdatePaymentRef(Request $request){
+        Booking::where('id', $request->bookingId)->update(['booking_payment_ref' => $request->reason]);
+        $booking = Booking::where('id', $request->bookingId)->first();
+
+        $actionFileData['userUid'] = $booking->userId;
+        $actionFileData['action'] =  "Updated Payment Reference to: ".$request->reason;
+        $actionFileData['actionUserUid'] = Auth::user()->id;
+        $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+        $actionFileData['actionUserRole'] = Auth::user()->userRole;
+    
+        ActionList::create($actionFileData);
+        return 'true';
     }
     
 

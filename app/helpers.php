@@ -5,7 +5,7 @@ if (!function_exists('get_user_status')) {
 
         if($fileType == "proof_of_payment"){
             $typeName = "Booking Fee Proof of Payment";
-            $field_data = "";
+            $field_data = "fee_approved";
             $field_doc = "rob_10_fee";
             
 

@@ -59,7 +59,7 @@ class DocumentsController extends Controller {
 
         if($fileType == "proof_of_payment"){
             $typeName = "Booking Fee Proof of Payment";
-            $field_data = "";
+            $field_data = "fee_approved";
             $field_doc = "rob_10_fee";
             
 
@@ -160,6 +160,24 @@ class DocumentsController extends Controller {
             $updateData = [
                 'studentNo' => $request->studentNo
             ];
+
+        } elseif ($request->type == "proof_of_payment") {
+            $paymentData = [
+                'booking_payment_ref|Payment Reference' => $request->booking_payment_ref
+            ];
+
+            $updatePaymentData = [
+                'booking_payment_ref' => $request->booking_payment_ref
+            ];
+
+            Booking::where('userId', $request->userUid)->update($updatePaymentData);
+            ActionList::create([
+                "userUid" => $request->userUid,
+                "action" => "Updated Payment Reference to: ".$request->booking_payment_ref,
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
 
         } elseif ($request->type == "proofRegistration") {
             $newData = [
