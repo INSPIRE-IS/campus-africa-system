@@ -1870,8 +1870,15 @@
     var modalBooking = document.getElementById("myModalEditApp");
     var spanBooking = document.getElementsByClassName("closeBooking")[0];
 
+    var modalBuilding = document.getElementById("changeBuildingModal");
+    var spanBuilding = document.getElementsByClassName("closeBuilding")[0];
+
     spanBooking.onclick = function() {
         modalBooking.style.display = "none";
+    }
+
+    spanBuilding.onclick = function() {
+        modalBuilding.style.display = "none";
     }
 
     var modalLease = document.getElementById("myModalEditLease");
