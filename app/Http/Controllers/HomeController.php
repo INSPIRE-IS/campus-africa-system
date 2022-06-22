@@ -1400,7 +1400,7 @@ class HomeController extends Controller
             });
         }
 
-        return redirect()->back();
+        return redirect('/users');
     }
 
 
