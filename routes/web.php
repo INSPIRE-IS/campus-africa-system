@@ -176,6 +176,7 @@ Route::get('/update/processing-status', [HomeController::class, 'update_processi
 Route::post('/update/lease-dates', [HomeController::class, 'update_lease_dates']);
 Route::post('/get-upload-info', [HomeController::class, 'get_upload_info']);
 Route::get('/download/matched-unmatched/{id}', [HomeController::class, 'download_matched_unmatched']);
+Route::get('/delete/nsfas/{id}', [HomeController::class, 'delete_nsfas']);
 Route::get('download-nsfas-report', [HomeController::class, 'download_nsfas_report']);
 
 

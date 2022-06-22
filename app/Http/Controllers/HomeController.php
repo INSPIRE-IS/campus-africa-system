@@ -4943,6 +4943,14 @@ class HomeController extends Controller
         // return $users;
     }
 
+    public function delete_nsfas($id){
+        //
+        ImportNSFASApproval::where('id', $id)->delete();
+        ImportNSFASStudentAuditLog::where('importId', $id)->delete();
+
+        return 'true';
+    }
+
     public function download_nsfas_report(Request $request){
         $studentArr = User::where('studentType', 'NSFAS')->get();
 
