@@ -350,6 +350,9 @@
             document.getElementById('role_lease_regen').checked = true;
             document.getElementById('role_view_booking_summary').checked = true;
             document.getElementById('role_change_student_type').checked = true;
+            document.getElementById('role_change_building').checked = true;
+            document.getElementById('role_toggle_online_booking').checked = true;
+            
         }
 
         if(templateName == "3"){
