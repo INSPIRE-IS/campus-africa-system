@@ -32,7 +32,7 @@
         <br/>
         <h1 class="formHeading">Thanks for your interest! Unfortunately we're <br/>not taking online applications at the moment</h1>
         <br/>
-        <p>Please get in touch with us by emailing <a href="mailto:hello@campusafrica.co.za">hello@campusafrica.co.za</a> <br/>or contact us via our website by clicking below.</p>
+        <p>Please get in touch with us by emailing <a href="mailto:info@campusafrica.co.za">info@campusafrica.co.za</a> <br/>or contact us via our website by clicking below.</p>
         <a href="https://campusafrica.co.za/contact-us/"><button type="button" class="detailsChange" style="text-transform:uppercase; background-color:#e74f26; float:none; margin-left:0px;">Contact Us</button></a>
         <br/>
     </form>
