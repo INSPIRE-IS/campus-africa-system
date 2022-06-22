@@ -155,6 +155,11 @@
                     <input type="checkbox" id="role_change_student_type" name="role_change_student_type" value="1">
                     <label for="role_change_student_type" style="width:500px">Change Student Type</label>
                 </li>
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_waive_fee" name="role_waive_fee" value="1">
+                    <label for="role_waive_fee" style="width:500px">Waive Booking Fee</label>
+                </li>
+                
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_change_building" name="role_change_building" value="1">
                     <label for="role_change_building" style="width:500px">Change Building</label>

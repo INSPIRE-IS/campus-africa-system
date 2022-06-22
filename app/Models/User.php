@@ -138,6 +138,7 @@ class User extends Authenticatable
         'email_verified',
         'role_change_building',
         'fee_approved',
+        'role_waive_fee',
     ];
 
     public function files(){
