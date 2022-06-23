@@ -538,12 +538,12 @@
                 </select>
             </div>
 
-            <div class="form-field">
+            <!-- <div class="form-field">
                 <label>Room Type * <span id="roomTypeBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
                 <select name="roomTypeBuilding" id='roomTypeBuilding' class="required">
                     <option value="" selected disabled>Select a Room Type</option>
                 </select>
-            </div>
+            </div> -->
             <div class="form-field-big">
                 <button type="button" id="changeBuildingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change building</button>
             </div>
@@ -1350,7 +1350,7 @@
             }
         });
 
-        callRoomDetails('floor','', '', '', '', '', 'open')
+        // callRoomDetails('floor','', '', '', '', '', 'open')
     }
 
     function changeBooking(bookingId, type){
@@ -2151,14 +2151,10 @@
     })
 
     $("#changeBuildingType").on('click', function(){
-        if($("#propertyBuilding").val() == null || $("#roomTypeBuilding").val() == null){
+        if($("#propertyBuilding").val() == null){
             if($("#propertyBuilding").val() == null){
                 $("#propertyBuilding").addClass('fieldError')
                 $("#propertyBuilding_error").removeClass('hidden')
-            }
-            if($("#roomTypeBuilding").val() == null){
-                $("#roomTypeBuilding").addClass('fieldError')
-                $("#roomTypeBuilding_error").removeClass('hidden')
             }
         }else{
 
@@ -2166,12 +2162,12 @@
             
             $.ajax({
                 type: "post",
-                url: "/change-booking",
+                url: "/change-booking-building",
                 data: {
                     bookingId: "{{$user[0]['userInfo']['id']}}", 
                     property: $("#propertyBuilding").val(),
-                    roomType: $("#roomTypeBuilding").val(), 
-                    floor: "Choose a Floor",
+                    // roomType: $("#roomTypeBuilding").val(), 
+                    // floor: "Choose a Floor",
                 },
 
                 success: function (data) {

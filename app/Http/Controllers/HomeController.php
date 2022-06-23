@@ -2890,6 +2890,61 @@ class HomeController extends Controller
         return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived, $user];
     }
 
+    public function change_booking_building(Request $request){
+        $bookingId = $request->bookingId;
+        $property = $request->property;
+
+        $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
+        $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
+
+        if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
+            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+        }
+
+        $oldData = Booking::where('userId', $bookingId)->first();
+        $newData = ['property|Property' => $property];
+
+        $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
+
+        foreach($newData as $key => $new){
+            
+            $info = explode("|", $key);
+            $key = $info[0];
+            $changedField = $info[1];
+
+            if($oldData->$key !== $new){
+                if($oldData->$key == "" || $oldData->$key == null){
+                    $oldData->$key = "Unassigned";
+                }
+                ActionList::create([
+                    "userUid" => $bookingId,
+                    "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
+        }
+
+        $booking = Booking::where('userId', $bookingId)->first();
+        $bookingYear = substr($oldData->year, -2);
+        $bookingPrefix = Residence::where('id', $property)->pluck('building_prefix')->first();
+        $id_booking = $booking->id;
+        $placeholder = "";
+
+        for($i = 0; $i < 5 - strlen($id_booking); $i++){
+            $placeholder .= "0";
+        }
+
+        $bookingID = $placeholder.$id_booking;
+
+        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => null, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID, "property_data_id" => null, "floor" => null, "unit" => null, "room" => null, "bed" => null, "bed_code" => null, "room_rate" => null]);
+
+        //Update the User robot
+        User::where('id', $bookingId)->update(['rob_40_bed' => 0]);
+    }
+
     public function change_booking(Request $request){
 
         $bookingId = $request->bookingId;

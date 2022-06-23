@@ -134,6 +134,7 @@ Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idN
 
 Route::post('/get-booking-details', [HomeController::class, 'get_booking_details']);
 Route::post('/change-booking', [HomeController::class, 'change_booking']);
+Route::post('/change-booking-building', [HomeController::class, 'change_booking_building']);
 Route::post('/change-lease', [HomeController::class, 'change_lease']);
 Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 
