@@ -1820,26 +1820,30 @@ class HomeController extends Controller
         if($request->studentType == "NSFAS"){
             
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
-            $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
-            $this_year = Lookups::where('group_id', '4')->first();
 
-            if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
-                UserFiles::create([
-                    'userUid' => $user->id,
-                    'fileId' => 'bursaryApproval',
-                    'status' => 'Approved'
-                ]);
+            if(!empty($nsfasStudentsApproval)){
 
-                User::where('id', $user->id)->update(["rob_30_funds" => 2]);
-
-                ActionList::create([
-                    "userUid" => $user->id,
-                    // "action" => "NSFAS / Bursary has been Approved via import",
-                    "action" => "NSFAS Approval has been Approved via import",
-                    "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => Auth::user()->userFirstName,
-                    "actionUserRole" => Auth::user()->userRole,
-                ]);
+                $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
+                $this_year = Lookups::where('group_id', '4')->first();
+    
+                if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
+                    UserFiles::create([
+                        'userUid' => $user->id,
+                        'fileId' => 'bursaryApproval',
+                        'status' => 'Approved'
+                    ]);
+    
+                    User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+    
+                    ActionList::create([
+                        "userUid" => $user->id,
+                        // "action" => "NSFAS / Bursary has been Approved via import",
+                        "action" => "NSFAS Approval has been Approved via import",
+                        "actionUserUid" => Auth::user()->id,
+                        "actionUserDisplayName" => Auth::user()->userFirstName,
+                        "actionUserRole" => Auth::user()->userRole,
+                    ]);
+                }
             }
         }
 
