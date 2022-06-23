@@ -3010,7 +3010,7 @@ class HomeController extends Controller
             Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID, "property_data_id" => null, "floor" => null, "unit" => null, "room" => null, "bed" => null, "bed_code" => null, "room_rate" => null]);
 
             //Update the User robot
-            User::where('id', $bookingId)->update(['rob_40_bed' => 0, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
+            User::where('id', $bookingId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
 
             $lookup = Lookups::where('group_id', '7')->first();
             $user = User::where('id', $bookingId)->first();
@@ -6463,7 +6463,7 @@ class HomeController extends Controller
     public function change_student_room(Request $request){
         Booking::where('userId', $request->userUid)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
         //Update the User robot
-        User::where('id',  $request->userUid)->update(['rob_40_bed' => 0, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
+        User::where('id',  $request->userUid)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
 
 
         $lookup = Lookups::where('group_id', '7')->first();
