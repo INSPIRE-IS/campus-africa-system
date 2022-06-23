@@ -22,6 +22,7 @@ class ImportNSFASApproval extends Model
         'status',
         'matched',
         'unmatched',
+        'year',
     ];
 
     public function users(){

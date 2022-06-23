@@ -41,7 +41,7 @@
                 <th>Uploaded By</th>
                 <th>Uploaded At</th>
                 <th>Download</th>
-                <th>Delete</th>
+                <!-- <th>Delete</th> -->
             </tr>
         </thead>
         @foreach($uploads as $upload)
@@ -70,9 +70,9 @@
                 <td>
                     <button type="button" class="detailsChange" id="downloadStudents" onClick="downloadThis('{{$upload->id}}')">Download Matched / Unmatched</button>
                 </td>
-                <td>
+                <!-- <td>
                     <button type="button" class="detailsChange" id="deleteStudents" onClick="deleteThis('{{$upload->id}}')">Delete</button>
-                </td>
+                </td> -->
             </tr>
         @endforeach
         <tbody>
@@ -294,29 +294,29 @@
         });
     }
 
-    function deleteThis(deleteId){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to delete this file",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "get",
-                    url: "/delete/nsfas/"+deleteId,
+    // function deleteThis(deleteId){
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: "You are about to delete this file",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Yes!'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             $.ajax({
+    //                 type: "get",
+    //                 url: "/delete/nsfas/"+deleteId,
 
-                    success: function (data) {
-                        window.location.reload();
-                    },
-                });
-            }
-        });
+    //                 success: function (data) {
+    //                     window.location.reload();
+    //                 },
+    //             });
+    //         }
+    //     });
         
-    }
+    // }
 </script>
 
 

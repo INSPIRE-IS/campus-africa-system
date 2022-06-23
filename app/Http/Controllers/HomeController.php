@@ -1820,8 +1820,10 @@ class HomeController extends Controller
         if($request->studentType == "NSFAS"){
             
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
+            $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
+            $this_year = Lookups::where('group_id', '4')->first();
 
-            if(!empty($nsfasStudentsApproval)){
+            if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
                 UserFiles::create([
                     'userUid' => $user->id,
                     'fileId' => 'bursaryApproval',
@@ -4158,7 +4160,8 @@ class HomeController extends Controller
 
     public function nsfas_approval_upload(Request $request){
 
-        $uploads = ImportNSFASApproval::with('users')->get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $uploads = ImportNSFASApproval::with('users')->where('year', $this_year->lookup_name)->get();
         $active = ImportNSFASApproval::where('status', '1')->first();
         if($active){
             $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
@@ -4170,7 +4173,8 @@ class HomeController extends Controller
     }
 
     public function new_import_data(){
-        $uploads = ImportNSFASApproval::with('users')->get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $uploads = ImportNSFASApproval::with('users')->where('year', $this_year->lookup_name)->get();
         $active = ImportNSFASApproval::where('status', '1')->first();
         if($active){
             $students = ImportNSFASStudentAuditLog::where('importId', $active->id)->where('status', '0')->get();
@@ -4193,6 +4197,8 @@ class HomeController extends Controller
         $files = $request->file('file');
 
         $inputFileName  = $request->file('file')->getClientOriginalName();
+        $this_year = Lookups::where('group_id', '4')->first();
+        
 
         if ($request->hasFile('file')) {
             
@@ -4241,34 +4247,38 @@ class HomeController extends Controller
                             $idFound = 0;
 
                             foreach($allStudents as $thisStudent){
-
-                                if($thisStudent->studentNo == $user[0]){
-                                    $idFound++;
-                                    $this->update_user_status($thisStudent->id);
-                                    if($thisStudent->studentType == "NSFAS"){
-                                        $files = $thisStudent->files;
-                                        $approvalFound = 0;
-
-                                        foreach($files as $file){
-                                            if($file->fileId == "bursaryApproval"){
-                                                $approvalFound++;
-
-                                                if($file->status !== "Approved"){
-                                                    UserFiles::where('userUid', $thisStudent->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'fileName' => null, 'fileUrl' => null, 'uploaded_by' => 'Import']);
-                                                    array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
+                                $booking = Bookings::where('userId', $thisStudent->id)->first();
+                                if($this_year->lookup_name == $booking->year){
+                                    //
+                                    if($thisStudent->studentNo == $user[0]){
+                                        $idFound++;
+                                        $this->update_user_status($thisStudent->id);
+                                        if($thisStudent->studentType == "NSFAS"){
+                                            $files = $thisStudent->files;
+                                            $approvalFound = 0;
+    
+                                            foreach($files as $file){
+                                                if($file->fileId == "bursaryApproval"){
+                                                    $approvalFound++;
+    
+                                                    if($file->status !== "Approved"){
+                                                        UserFiles::where('userUid', $thisStudent->id)->where('fileId', 'bursaryApproval')->update(['status' => 'Approved', 'fileName' => null, 'fileUrl' => null, 'uploaded_by' => 'Import']);
+                                                        array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
+                                                    }
                                                 }
                                             }
+    
+                                            if($approvalFound == 0){
+                                                array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
+                                                array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
+                                            }
+    
+                                            //Update robots
+                                            User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                         }
-
-                                        if($approvalFound == 0){
-                                            array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import']);
-                                            array_push($actionLogList, ["userUid" => $thisStudent->id, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
-                                        }
-
-                                        //Update robots
-                                        User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                     }
                                 }
+
                             }
 
                             if($idFound == "0"){
@@ -4295,7 +4305,8 @@ class HomeController extends Controller
 
         ImportNSFASApproval::where('status', '1')->update(["status" => 0]);
 
-        $newImport = ImportNSFASApproval::create([ 'file_name' => $inputFileName, 'actionUserId' => Auth::user()->id, "matched" => $matched, "unmatched" => $unmatched, "total_records" => $totalStudents, "status" => 1]);
+        $this_year = Lookups::where('group_id', '4')->first();
+        $newImport = ImportNSFASApproval::create([ 'file_name' => $inputFileName, 'actionUserId' => Auth::user()->id, "matched" => $matched, "unmatched" => $unmatched, "total_records" => $totalStudents, "status" => 1, 'year' => $this_year->lookup_name]);
 
         $newStudentForImport = [];
 
