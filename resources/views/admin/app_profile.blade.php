@@ -305,6 +305,8 @@
 
                     @foreach($user[0]["files"] as $file)
 
+                    @if(($file["field"] !== "moveIn") || ($file["field"] == "moveIn" && $user[0]['userInfo']['rob_50_approve'] == '2'))
+
 
                             <div class="section">
                                 <div class="label">
@@ -491,6 +493,7 @@
                             <?php $i++; ?>
 
 
+                        @endif
                     @endforeach
 
                 </div>
@@ -538,12 +541,12 @@
                 </select>
             </div>
 
-            <!-- <div class="form-field">
+            <div class="form-field hidden" id="buildingRooms">
                 <label>Room Type * <span id="roomTypeBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
                 <select name="roomTypeBuilding" id='roomTypeBuilding' class="required">
                     <option value="" selected disabled>Select a Room Type</option>
                 </select>
-            </div> -->
+            </div>
             <div class="form-field-big">
                 <button type="button" id="changeBuildingType" class="profileSubmit" style="width:98%; border:none; padding:12px; border-radius:10px;">Change building</button>
             </div>
@@ -1971,9 +1974,14 @@
                 if(data[3] !== 'false' && data[0].room_rate !== null){
                     var booking_fee = '<h2 class="cardSubHeaderGrey">BOOKING FEE PAID</h2><h4 class="cardHeader" > R '+data[0].room_rate+'</h4><br/></div>';
                 }
+
+                var room_type = "";
+                if( data[0].room_type !== null && data[0].room_type !== undefined){
+                    var room_type = '<h4 class="cardHeader" >'+data[0].room_type.name+'</h4>';
+                }
                 
                 let app_summary_details = '<h4 class="cardSubHeaderGrey">'+data[0].residence.residence+'</h4>'+
-                    '<h4 class="cardHeader" >'+data[0].room_type.name+'</h4>'+
+                    room_type+
                     '<h4 class="cardHeader" id="prop_room_row1" >'+metaInfo1+floor+unit+'</h4>'+
                     '<h4 class="cardHeader" id="prop_room_row2" >'+
                     bed_code+
@@ -2162,12 +2170,12 @@
             
             $.ajax({
                 type: "post",
-                url: "/change-booking-building",
+                url: "/change-booking",
                 data: {
                     bookingId: "{{$user[0]['userInfo']['id']}}", 
                     property: $("#propertyBuilding").val(),
-                    // roomType: $("#roomTypeBuilding").val(), 
-                    // floor: "Choose a Floor",
+                    roomType: $("#roomTypeBuilding").val(), 
+                    floor: "Choose a Floor",
                 },
 
                 success: function (data) {
@@ -2368,6 +2376,11 @@
 
                 $("#roomTypeBuilding").empty().append('<option value="">Select One</option>');
                 Object.keys(roomData).forEach( function(key) {
+                    if("{{$booking->property}}" == propValue){
+                        $("#buildingRooms").addClass('hidden')
+                    }else{
+                        $("#buildingRooms").removeClass('hidden')
+                    }
                     if(propValue == roomData[key].residence){
                         var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
                         $("#roomTypeBuilding").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');

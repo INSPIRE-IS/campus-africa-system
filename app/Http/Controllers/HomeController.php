@@ -124,86 +124,90 @@ class HomeController extends Controller
                 foreach($all as $file){
                     $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
 
-                    if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
-
-                        if($file_search && !empty($file_search)){
-                            $important = 0;
-
-                            if($file_search->status == "Approved"){
-                                $important = 1;
-                            }else if($file_search->status == "Uploaded"){
-                                $important = 2;
+                    if(($file_search->fileId !== "moveIn") || ($file_search->fileId == "moveIn" && Auth::user()->rob_50_approve == '2')){
+                        //
+                        if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+    
+                            if($file_search && !empty($file_search)){
+                                $important = 0;
+    
+                                if($file_search->status == "Approved"){
+                                    $important = 1;
+                                }else if($file_search->status == "Uploaded"){
+                                    $important = 2;
+                                }else{
+                                    $important = 3;
+                                }
+                                $output = (object) array(
+                                    "fileId" => $file_search->fileId,
+                                    "status" => $file_search->status !== null ? $file_search->status : "None",
+                                    "fileUrl" => $file_search->fileUrl,
+                                    "important" => $important,
+                                );
+                                array_push($allFiles, $output);
                             }else{
-                                $important = 3;
+                                $output = (object) array(
+                                    "fileId" => $file,
+                                    "status" => "None",
+                                    "fileUrl" => "",
+                                    "important" => 3,
+                                );
+                                array_push($allFiles, $output);
                             }
-                            $output = (object) array(
-                                "fileId" => $file_search->fileId,
-                                "status" => $file_search->status !== null ? $file_search->status : "None",
-                                "fileUrl" => $file_search->fileUrl,
-                                "important" => $important,
-                            );
-                            array_push($allFiles, $output);
-                        }else{
-                            $output = (object) array(
-                                "fileId" => $file,
-                                "status" => "None",
-                                "fileUrl" => "",
-                                "important" => 3,
-                            );
-                            array_push($allFiles, $output);
-                        }
-    
-                        if($file !== 'copyID' && $file !== 'proof_of_payment'){
-                            if($output->status == "Uploaded"){
-                                if($appHeader < 1){
-                                    $appHeader = 1;
+        
+                            if($file !== 'copyID' && $file !== 'proof_of_payment'){
+                                if($output->status == "Uploaded"){
+                                    if($appHeader < 1){
+                                        $appHeader = 1;
+                                    }
+                                }
+        
+                                if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                    if($appHeader < 2){
+                                        $appHeader = 2;
+                                    }
                                 }
                             }
     
-                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                                if($appHeader < 2){
-                                    $appHeader = 2;
-                                }
-                            }
-                        }
-
-                        if($appHeader == 0 && (Auth::user()->rob_50_approve == 1 || Auth::user()->rob_50_approve == 0)){
-                            $appHeader = 1;
-                        }
-
-                        if(Auth::user()->rob_50_approve == 2 && $file == 'moveIn'){
-                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                                $appHeader = 2;
-                            }
-
-                            if($output->status == "Uploaded"){
+                            if($appHeader == 0 && (Auth::user()->rob_50_approve == 1 || Auth::user()->rob_50_approve == 0)){
                                 $appHeader = 1;
                             }
-
-                            if($output->status == "Approved"){
-                                $appHeader = 0;
-                            }
-                        }
     
-                        if($file == 'copyID' || $file == 'proof_of_payment'){
-                            if($output->status == "Uploaded"){
-                                if($bookHeader < 1){
-                                    $bookHeader = 1;
+                            if(Auth::user()->rob_50_approve == 2 && $file == 'moveIn'){
+                                if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                    $appHeader = 2;
+                                }
+    
+                                if($output->status == "Uploaded"){
+                                    $appHeader = 1;
+                                }
+    
+                                if($output->status == "Approved"){
+                                    $appHeader = 0;
+                                }
+                            }
+        
+                            if($file == 'copyID' || $file == 'proof_of_payment'){
+                                if($output->status == "Uploaded"){
+                                    if($bookHeader < 1){
+                                        $bookHeader = 1;
+                                    }
+                                }
+        
+                                if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                                    if($bookHeader < 2){
+                                        $bookHeader = 2;
+                                    }
                                 }
                             }
     
-                            if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                                if($bookHeader < 2){
-                                    $bookHeader = 2;
-                                }
+                            if(Auth::user()->rob_60_cancelled == '1'){
+                                $appHeader = 3;
+                                $bookHeader = 3;
                             }
-                        }
-
-                        if(Auth::user()->rob_60_cancelled == '1'){
-                            $appHeader = 3;
-                            $bookHeader = 3;
                         }
                     }
+
 
                 }
     
@@ -2890,60 +2894,62 @@ class HomeController extends Controller
         return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived, $user];
     }
 
-    public function change_booking_building(Request $request){
-        $bookingId = $request->bookingId;
-        $property = $request->property;
+    // public function change_booking_building(Request $request){
+    //     $bookingId = $request->bookingId;
+    //     $property = $request->property;
+    //     $roomTypeNew = $request->roomType;
 
-        $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
-        $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
+    //     $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
+    //     $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
 
-        if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
-            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
-            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
-        }
+    //     if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
+    //         User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+    //         UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+    //     }
 
-        $oldData = Booking::where('userId', $bookingId)->first();
-        $newData = ['property|Property' => $property];
+    //     $oldData = Booking::where('userId', $bookingId)->first();
+    //     $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomTypeNew];
 
-        $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
+    //     $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
 
-        foreach($newData as $key => $new){
+    //     foreach($newData as $key => $new){
             
-            $info = explode("|", $key);
-            $key = $info[0];
-            $changedField = $info[1];
+    //         $info = explode("|", $key);
+    //         $key = $info[0];
+    //         $changedField = $info[1];
 
-            if($oldData->$key !== $new){
-                if($oldData->$key == "" || $oldData->$key == null){
-                    $oldData->$key = "Unassigned";
-                }
-                ActionList::create([
-                    "userUid" => $bookingId,
-                    "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
-                    "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => Auth::user()->userFirstName,
-                    "actionUserRole" => Auth::user()->userRole,
-                ]);
-            }
-        }
+    //         if($oldData->$key !== $new){
+    //             if($oldData->$key == "" || $oldData->$key == null){
+    //                 $oldData->$key = "Unassigned";
+    //             }
+    //             ActionList::create([
+    //                 "userUid" => $bookingId,
+    //                 "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+    //                 "actionUserUid" => Auth::user()->id,
+    //                 "actionUserDisplayName" => Auth::user()->userFirstName,
+    //                 "actionUserRole" => Auth::user()->userRole,
+    //             ]);
+    //         }
+    //     }
 
-        $booking = Booking::where('userId', $bookingId)->first();
-        $bookingYear = substr($oldData->year, -2);
-        $bookingPrefix = Residence::where('id', $property)->pluck('building_prefix')->first();
-        $id_booking = $booking->id;
-        $placeholder = "";
+    //     $booking = Booking::where('userId', $bookingId)->first();
+    //     $bookingYear = substr($oldData->year, -2);
+    //     $bookingPrefix = Residence::where('id', $property)->pluck('building_prefix')->first();
+    //     $id_booking = $booking->id;
+    //     $placeholder = "";
 
-        for($i = 0; $i < 5 - strlen($id_booking); $i++){
-            $placeholder .= "0";
-        }
+    //     for($i = 0; $i < 5 - strlen($id_booking); $i++){
+    //         $placeholder .= "0";
+    //     }
 
-        $bookingID = $placeholder.$id_booking;
+    //     $bookingID = $placeholder.$id_booking;
 
-        Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => null, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID, "property_data_id" => null, "floor" => null, "unit" => null, "room" => null, "bed" => null, "bed_code" => null, "room_rate" => null]);
+    //     Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID, "property_data_id" => null, "floor" => null, "unit" => null, "room" => null, "bed" => null, "bed_code" => null, "room_rate" => null]);
 
-        //Update the User robot
-        User::where('id', $bookingId)->update(['rob_40_bed' => 0]);
-    }
+    //     //Update the User robot
+    //     User::where('id', $bookingId)->update(['rob_40_bed' => 0, 'rob_10_fee' => 0, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
+    //     UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update(['status' => 'Rejected']);
+    // }
 
     public function change_booking(Request $request){
 
@@ -3002,7 +3008,7 @@ class HomeController extends Controller
             Booking::where('userId', $bookingId)->update(["property" => $property, "roomType" => $roomTypeNew, 'booking_code' => $bookingYear.$bookingPrefix.$bookingID, "property_data_id" => null, "floor" => null, "unit" => null, "room" => null, "bed" => null, "bed_code" => null, "room_rate" => null]);
 
             //Update the User robot
-            User::where('id', $bookingId)->update(['rob_40_bed' => 0]);
+            User::where('id', $bookingId)->update(['rob_40_bed' => 0, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
 
             $lookup = Lookups::where('group_id', '7')->first();
             $user = User::where('id', $bookingId)->first();
@@ -3119,6 +3125,9 @@ class HomeController extends Controller
                 $actionFileData['actionUserRole'] = Auth::user()->userRole;
             
                 ActionList::create($actionFileData);
+
+                
+
             }else{
                 // UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
                 //     'status' => 'Rejected'
@@ -3128,10 +3137,15 @@ class HomeController extends Controller
                 if($fileUploaded && $fileUploaded->fileUrl !== null){
                     if($oldData->room_rate !== $booking_data['room_rate']){
 
+                        // UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                        //     'status' => 'Uploaded'
+                        // ]);
+                        // User::where('id', $bookingId)->update(['rob_10_fee' => 1]);
+
                         UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
-                            'status' => 'Uploaded'
+                            'status' => 'Rejected'
                         ]);
-                        User::where('id', $bookingId)->update(['rob_10_fee' => 1]);
+                        User::where('id', $bookingId)->update(['rob_10_fee' => 0]);
                     }
                 }else{
                     UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
@@ -3154,6 +3168,18 @@ class HomeController extends Controller
                 $actionFileData['actionUserRole'] = Auth::user()->userRole;
             
                 ActionList::create($actionFileData);
+            }
+
+            if($user->rob_60_cancelled == '1'){
+                User::where('id', $bookingId)->update(['rob_60_cancelled' => 0]);
+
+                ActionList::create([
+                    "userUid" => $bookingId,
+                    "action" => "Restored Cancelled Application",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
             }
 
             $this->update_user_status($bookingId);
@@ -6425,6 +6451,8 @@ class HomeController extends Controller
 
     public function change_student_room(Request $request){
         Booking::where('userId', $request->userUid)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
+        //Update the User robot
+        User::where('id',  $request->userUid)->update(['rob_40_bed' => 0, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
 
 
         $lookup = Lookups::where('group_id', '7')->first();
@@ -6564,10 +6592,14 @@ class HomeController extends Controller
             if($fileUploaded && $fileUploaded->fileUrl !== null){
                 if($booking->room_rate !== $booking_data['room_rate']){
 
+                    // UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update([
+                    //     'status' => 'Uploaded'
+                    // ]);
+                    // User::where('id', $request->userUid)->update(['rob_10_fee' => 1]);
                     UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update([
-                        'status' => 'Uploaded'
+                        'status' => 'Rejected'
                     ]);
-                    User::where('id', $request->userUid)->update(['rob_10_fee' => 1]);
+                    User::where('id', $request->userUid)->update(['rob_10_fee' => 0]);
                 }
             }else{
                 UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->update([
