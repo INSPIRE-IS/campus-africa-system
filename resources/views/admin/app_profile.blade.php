@@ -1344,9 +1344,20 @@
                 $('#propertyBuilding').empty()
                 $('#propertyBuilding').append('<option value="" selected disabled>Select one</option>')
 
+                let propArr = <?php echo json_encode($allowedResidences); ?>;
+
                 Object.keys(properties).forEach( function(key) {
                     if(parseFloat("{{$booking->property}}") !== properties[key].id){
-                        $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+
+                        if("{{$user[0]['userInfo']['rob_60_cancelled']}}" == '1'){
+                            if(propArr.includes(properties[key].id)){
+                                $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                            }
+                        }else{
+                            $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                        }
+
+                        // $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
                     }
                 });
 
