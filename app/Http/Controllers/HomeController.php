@@ -1364,6 +1364,8 @@ class HomeController extends Controller
             "role_view_booking_summary" => $request->role_view_booking_summary,
             "role_toggle_online_booking" => $request->role_toggle_online_booking,
             "role_change_building" => $request->role_change_building,
+            // "role_change_building" => $request->role_change_building,
+            "role_waive_fee" => $request->role_waive_fee,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -2009,6 +2011,8 @@ class HomeController extends Controller
             "role_view_booking_summary" => $request->role_view_booking_summary,
             "role_toggle_online_booking" => $request->role_toggle_online_booking,
             "role_change_building" => $request->role_change_building,
+            // "role_change_building" => $request->role_change_building,
+            "role_waive_fee" => $request->role_waive_fee,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);

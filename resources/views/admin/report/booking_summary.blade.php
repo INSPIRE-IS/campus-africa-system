@@ -35,48 +35,46 @@
             <th>Booking Percent</th>
             <th>Allocated</th>
             <th>Waitlisted</th>
-            <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
-                <th>Online</th>
-            <?php } ?>
+            <th>Online</th>
         </tr>
         @foreach($summaryData as $data)
-
-
+            @if($data['total_beds'] > 0)
             
-            <tr>
-                <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
+                <tr>
                     <td class="clickable" onClick="showData('<?php echo str_replace(" ", "_", $data['building_name']); ?>')">
-                <?php } else { ?>
-                    <td style='text-align:left;'>
-                <?php } ?>
-                    <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
                         <i class="fas fa-angle-down" id="<?php echo str_replace(" ", "_", $data['building_name']);?>_down"></i>
-                        <i class="fas fa-angle-up hidden" id="<?php echo str_replace(" ", "_", $data['building_name']);?>_up"></i>
-                    <?php } ?>
-                    {{$data['building_name']}}
-                </td>
-                <td>{{$data['total_beds']}}</td>
-                <td>{{$data['total_bookings']}}</td>
-                <td style="background-color:<?php if($data['booking_percent'] <= 100){echo '#99f095';}elseif($data['booking_percent'] > 100 && $data['booking_percent'] <= 110){echo '#f7ff69';}else{echo '#f77b74';}?>">{{$data['booking_percent']}} %</td>
-                <td>{{$data['beds_allocated']}}</td>
-                <td>{{$data['beds_waitlisted']}}</td>
-                <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
+                            <i class="fas fa-angle-up hidden" id="<?php echo str_replace(" ", "_", $data['building_name']);?>_up"></i>
+                        {{$data['building_name']}}
+                    </td>
+                    <td>{{$data['total_beds']}}</td>
+                    <td>{{$data['total_bookings']}}</td>
+                    <td style="background-color:<?php if($data['booking_percent'] <= 100){echo '#99f095';}elseif($data['booking_percent'] > 100 && $data['booking_percent'] <= 110){echo '#f7ff69';}else{echo '#f77b74';}?>">{{$data['booking_percent']}} %</td>
+                    <td>{{$data['beds_allocated']}}</td>
+                    <td>{{$data['beds_waitlisted']}}</td>
                     <td></td>
-                <?php } ?>
-            </tr>
-            <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
-                @foreach($data['room_type_data'] as $room)
-                    <tr class="hidden <?php echo str_replace(" ", "_", $data['building_name']);?>" style="background-color: lightgray;">
-                        <td style="text-align:left;">{{$room['room_type']}}</td>
-                        <td>{{$room['room_beds']}}</td>
-                        <td>{{$room['room_total_bookings']}}</td>
-                        <td style="background-color:<?php if($room['room_booking_percent'] <= 100){echo '#99f095';}elseif($room['room_booking_percent'] > 100 && $room['room_booking_percent'] <= 110){echo '#f7ff69';}else{echo '#f77b74';}?>">{{$room['room_booking_percent']}} %</td>
-                        <td>{{$room['room_allocated']}}</td>
-                        <td>{{$room['room_waitlisted']}}</td>
-                        <td><span id="{{$room['room_id']}}_text" class="{{$room['room_online']}}">@if($room['room_online'] == '1') Yes @else No @endif</span> <button type="button" id="{{$room['room_id']}}_button" onClick="changeRoom('{{$room['room_id']}}')" class='detailsChange' style="margin:0px;">Change</button></td>
-                    </tr>
-                @endforeach
-            <?php } ?>
+                </tr>
+                    @foreach($data['room_type_data'] as $room)
+                        @if($room['room_beds'] > 0)
+                            <tr class="hidden <?php echo str_replace(" ", "_", $data['building_name']);?>" style="background-color: lightgray;">
+                                <td style="text-align:left;">{{$room['room_type']}}</td>
+                                <td>{{$room['room_beds']}}</td>
+                                <td>{{$room['room_total_bookings']}}</td>
+                                <td style="background-color:<?php if($room['room_booking_percent'] <= 100){echo '#99f095';}elseif($room['room_booking_percent'] > 100 && $room['room_booking_percent'] <= 110){echo '#f7ff69';}else{echo '#f77b74';}?>">{{$room['room_booking_percent']}} %</td>
+                                <td>{{$room['room_allocated']}}</td>
+                                <td>{{$room['room_waitlisted']}}</td>
+                                
+                                <td>
+                                    <span id="{{$room['room_id']}}_text" class="{{$room['room_online']}}">@if($room['room_online'] == '1') Yes @else No @endif</span> 
+                                    <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
+                                        <button type="button" id="{{$room['room_id']}}_button" onClick="changeRoom('{{$room['room_id']}}')" class='detailsChange' style="margin:0px;">Change</button>
+                                    <?php } ?>
+                                </td>
+                                
+                            </tr>
+                        @endif
+                    @endforeach
+            @endif
+           
         @endforeach
         <tr>
             <td style="text-align:left; border-top:2px solid #000"><strong>TOTAL</strong></td>

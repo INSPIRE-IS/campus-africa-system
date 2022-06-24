@@ -1012,7 +1012,7 @@
         $(".waitve_btn").empty();
 
         if($("#booking_fee_paid").val() == 'false'){
-            if(("{{Auth::user()->role_modify_approved}}" == 1 && "{{$user[0]['userInfo']['rob_50_approve']}}" == 2) || ("{{$user[0]['userInfo']['rob_60_cancelled']}}" == 0 &&  "{{$user[0]['userInfo']['rob_50_approve']}}" != 2)){
+            if(("{{Auth::user()->role_modify_approved}}" == 1 && "{{$user[0]['userInfo']['rob_50_approve']}}" == 2 && "{{Auth::user()->role_waive_fee}}" == 1) || ("{{$user[0]['userInfo']['rob_60_cancelled']}}" == 0 &&  "{{$user[0]['userInfo']['rob_50_approve']}}" != 2 && "{{Auth::user()->role_waive_fee}}" == 1)){
                 if($("#booking_fee_waived").val() == 'false'){
                     $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
                 }else{
@@ -1034,6 +1034,7 @@
                         ?>$(".waived_paid_wording").append('Yes')<?php
                     }else{
                         ?>$(".waived_paid_wording").append('No')<?php
+                        break;
                     }
                 }
             }?>
