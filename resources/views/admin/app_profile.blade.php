@@ -541,7 +541,7 @@
                 </select>
             </div>
 
-            <div class="form-field hidden" id="buildingRooms">
+            <div class="form-field" id="buildingRooms">
                 <label>Room Type * <span id="roomTypeBuilding_error" class="hidden"><small style="color:red">This field is required</small></span></label>
                 <select name="roomTypeBuilding" id='roomTypeBuilding' class="required">
                     <option value="" selected disabled>Select a Room Type</option>
@@ -1342,9 +1342,12 @@
 
                 properties.sort();
                 $('#propertyBuilding').empty()
+                $('#propertyBuilding').append('<option value="" selected disabled>Select one</option>')
 
                 Object.keys(properties).forEach( function(key) {
-                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    if(parseFloat("{{$booking->property}}") !== properties[key].id){
+                        $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    }
                 });
 
                 $('#propertyBuilding').val(selProp);
@@ -2376,11 +2379,11 @@
 
                 $("#roomTypeBuilding").empty().append('<option value="">Select One</option>');
                 Object.keys(roomData).forEach( function(key) {
-                    if("{{$booking->property}}" == propValue){
-                        $("#buildingRooms").addClass('hidden')
-                    }else{
-                        $("#buildingRooms").removeClass('hidden')
-                    }
+                    // if("{{$booking->property}}" == propValue){
+                    //     $("#buildingRooms").addClass('hidden')
+                    // }else{
+                    //     $("#buildingRooms").removeClass('hidden')
+                    // }
                     if(propValue == roomData[key].residence){
                         var selected = "<?php echo $booking->roomType;?>" == roomData[key].room_type.id ? "selected" : "";
                         $("#roomTypeBuilding").append('<option value="'+roomData[key].room_type.id+'" '+selected+'>'+roomData[key].room_type.name+'</option>');
