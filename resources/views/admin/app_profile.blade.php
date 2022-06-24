@@ -2162,10 +2162,15 @@
     })
 
     $("#changeBuildingType").on('click', function(){
-        if($("#propertyBuilding").val() == null){
-            if($("#propertyBuilding").val() == null){
+        if($("#propertyBuilding").val() == ""|| $("#roomTypeBuilding").val() == ""){
+            if($("#propertyBuilding").val() == ""){
                 $("#propertyBuilding").addClass('fieldError')
                 $("#propertyBuilding_error").removeClass('hidden')
+            }
+
+            if($("#roomTypeBuilding").val() == ""){
+                $("#roomTypeBuilding").addClass('fieldError')
+                $("#roomTypeBuilding_error").removeClass('hidden')
             }
         }else{
 
