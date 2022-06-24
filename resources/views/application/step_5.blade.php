@@ -150,7 +150,8 @@
                     <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select name="paymentType" id="paymentType">
                         <option value="Credit card">Credit card</option>
-                        <option value="EFT">EFT</option>
+                        <option value="EFT">Online EFT</option>
+                        <option value="Upload">Upload proof of payment</option>
                     </select>
                 </div>
 
@@ -175,8 +176,16 @@
                         Bank details here<br/>
                         Bank details here<br/>
                     </p>
-                    <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
-                    <input type="file" id="proof_of_payment" hidden/>
+
+                    <div id="paymentSection">
+                        <label onClick="paymentRef()" id="proof_of_paymentSection" class="PaymentLabel">
+                            UPLOAD PROOF OF PAYMENT
+                        </label>
+                    </div>
+
+
+                    <!-- <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label> -->
+                    <!-- <input type="file" id="proof_of_payment" hidden/> -->
                     <br/><br/>
                     <a href="/complete/online-application"><button type="button" id="homeStep" class="previousStepBtn hidden"> Back to home page</button></a>
                 </div>
@@ -232,8 +241,42 @@
 
 <script>
 
+function paymentRef(){
+        swal.fire({
+                title: 'Please enter the Payment Reference:',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+            }).then((result) => {
+                if (result.isConfirmed && result.value !== "") {
+                    $("#booking_payment").empty().append(result.value);
+
+                    $.ajax({
+                        type: "post",
+                        url: "/UpdatePaymentRef",
+                        data: {
+                            bookingId: "{{$booking->id}}",
+                            reason: result.value
+                        },
+
+                        success: function (data) {
+
+                            $("#paymentSection").empty().append('<label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label><input type="file" id="proof_of_payment" hidden/>');
+
+                            $("#proof_of_payment").click();
+
+                        },
+                    });
+                }
+            })
+    }
+
     $("#paymentType").on('change', function(){
-        if($("#paymentType").val() == "EFT"){
+        if($("#paymentType").val() == "Upload"){
             $("#cCard").addClass('hidden');
             $("#eftCard").removeClass('hidden')
             $("#cardholderName").removeClass('required')
@@ -346,8 +389,8 @@
 
     // });
 
-
-    $("#proof_of_payment").on('change', function(){
+    $(document).off('change').on('change', '#proof_of_payment', function(e) {
+    // $("#proof_of_payment").on('change', function(){
         $(".PaymentLabel").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
         var form_data = new FormData();

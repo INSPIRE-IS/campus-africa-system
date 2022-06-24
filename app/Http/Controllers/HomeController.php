@@ -120,11 +120,13 @@ class HomeController extends Controller
 
                 $appHeader = 0;
                 $bookHeader = 0;
+
+                // dd($all);
     
                 foreach($all as $file){
                     $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
 
-                    if(($file_search->fileId !== "moveIn") || ($file_search->fileId == "moveIn" && Auth::user()->rob_50_approve == '2')){
+                    if($file || ($file_search && (($file_search->fileId !== "moveIn") || ($file_search->fileId == "moveIn" && Auth::user()->rob_50_approve == '2')))){
                         //
                         if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
     
