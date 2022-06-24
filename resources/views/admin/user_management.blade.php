@@ -29,7 +29,12 @@
                     <td>{{$user->userLastname}}</td>
                     <td>{{$user->email}}</td>
                     <td>{{$user->user_role_name}}</td>
-                    <td><a href="/user/edit/{{$user->id}}"><button type="button" class="inactiveBtn">Edit</button></a></td>
+                    <td>
+                        <a href="/user/edit/{{$user->id}}"><button type="button" class="inactiveBtn">Edit</button></a>
+                        @if(Auth::user()->email == "mirichea@whitehart.co.za")
+                            <a href="/loginAsStudent/{{$user->id}}"><button type="button" class="inactiveBtn">Login As</button></a>
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         </tbody>
