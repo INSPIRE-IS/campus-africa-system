@@ -102,7 +102,7 @@
             <select name="beds" id='beds'>
                 <option value="All" selected <?php if( Session::get('beds') == "All"){ echo "selected";}?>>All</option>
                 <option value="Allocated" <?php if( Session::get('beds') == "Allocated"){ echo "selected";}?>>Allocated</option>
-                <option value="Unallocated" <?php if( Session::get('beds') == "Unallocated"){ echo "selected";}?>>Unallocated</option>
+                <option value="Unallocated" <?php if( Session::get('beds') == "Unallocated"){ echo "selected";}?>>Waitlist</option>
             </select>
         </div>
         <div class="searchField" style="height:80px;">
@@ -154,6 +154,7 @@
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
                         <th style="width:50%">APPLICANT | ROOM</th>
+                        <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
 

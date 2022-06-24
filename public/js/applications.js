@@ -318,6 +318,7 @@ jQuery(document).ready(function ($) {
                                 arrayItem["property_residence"] +
                                 " | " +
                                 arrayItem["roomTypeName"],
+                                arrayItem["bed_code"],
                             '<span style="white-space: nowrap;">' + dateString + "</span>",
                             studentType,
                             rob_fee,
