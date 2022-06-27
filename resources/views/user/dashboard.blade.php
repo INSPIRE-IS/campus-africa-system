@@ -299,12 +299,12 @@
 
     
     $("#changeRoomType").on('click', function(){
-        if($("#propertyRoom").val() == null || $("#roomTypeRoom").val() == null){
-            if($("#propertyRoom").val() == null){
+        if($("#propertyRoom").val() == "" || $("#roomTypeRoom").val() == ""){
+            if($("#propertyRoom").val() == ""){
                 $("#propertyRoom").addClass('fieldError')
                 $("#propertyRoom_error").removeClass('hidden')
             }
-            if($("#roomTypeRoom").val() == null){
+            if($("#roomTypeRoom").val() == ""){
                 $("#roomTypeRoom").addClass('fieldError')
                 $("#roomTypeRoom_error").removeClass('hidden')
             }
