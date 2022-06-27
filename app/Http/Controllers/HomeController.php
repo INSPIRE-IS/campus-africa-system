@@ -2160,7 +2160,7 @@ class HomeController extends Controller
         }
 
         if($request->bookingRef !== "" && !empty($request->bookingRef)){
-            $bookingRef = 'u.bookingRef LIKE "%'.$request->bookingRef.'%"';
+            $bookingRef = 'bookings_data.booking_code LIKE "%'.$request->bookingRef.'%"';
             array_push($search_value, $bookingRef);
         }
 
