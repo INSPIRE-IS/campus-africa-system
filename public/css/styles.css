@@ -1731,6 +1731,13 @@ input:read-only {
   background-color: #e5b219;
 }
 
+@media only screen and (max-width: 1600px) {
+  #moveInSection{
+    position:absolute;
+    margin-left:2px;
+  }
+}
+
 #togglePassword, #togglePasswordConfirm{
   cursor:pointer;
 }
@@ -2009,6 +2016,20 @@ input:read-only {
 #studentAppBody{
   max-height:330px;
 }
+
+  .signature .jSignature{
+    width:125% !important;
+    margin-left:-40px !important;
+  }
+  .detailsChange{
+    margin-top: -5px !important;
+    float: none;
+    width: 130px;
+    margin-left: 0px;
+  }
+  #submitLease{
+    margin-top:10px !important;
+  }
 
   .roomImgApp{
     margin-left:0px; 
@@ -2759,6 +2780,27 @@ input:read-only {
 .btn_save_inline.approve,
 .btn_approve_inline.approve {
   background-color: #1cb915;
+}
+.signature_container {
+  margin-top: 50px;
+}
+
+.jSignature {
+  width: 70% !important;
+  margin: 0 auto !important;
+  height: 200px !important;
+  border: 2px solid #e9e9e9 !important;
+  border-radius: 20px !important;
+}
+#signed_at{
+  border-radius: 7px;
+  border: 1px solid #e9e9e9;
+  width: 50%;
+  padding: 10px;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
 }.onlineForm .formHeading {
   font-weight: 400;
 }

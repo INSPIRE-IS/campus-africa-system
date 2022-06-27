@@ -135,7 +135,7 @@
     </div>
     <footer class="footer">
         <div class="footerBanner">
-            <div class="container flex">
+            <div class="container <?php if(!$agent->isMobile()){ echo 'flex';} ?>">
                 <div class="col-3">
                     <h2 class="footerHeader">
                         Campus Africa
@@ -235,6 +235,7 @@
                                     if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                                         var regen = '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
                                     }
+
                                     
                                     // window.location.reload();
                                     $("#documentsSectionDisplay").append(
@@ -242,7 +243,7 @@
                                             '<div class="label">LEASE</div>'+
                                             '<div class="status" id="moveInStatus"><div class="button rejected"></div></div>'+
                                             '<div class="banner" id="moveInBanner">'+
-                                                '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'+
+                                                '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'+
                                                 regen+
                                                 '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label>'+
                                                 '<input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')"  hidden>'+

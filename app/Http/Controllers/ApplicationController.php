@@ -15,6 +15,8 @@ use Jenssegers\Agent\Agent;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\RoomTypes;
 use App\Models\Residence;
+use App\Models\MailerList;
+use Mail;
 
 class ApplicationController extends Controller
 {
@@ -802,6 +804,48 @@ class ApplicationController extends Controller
         $rooms = RoomTypes::where('property_id', $residence->id)->where('name', '!=', 'Building Manager')->get();
 
         return $rooms;
+    }
+
+    public function re_verify_email(Request $request){
+
+        $user = User::where('id', $request->userUid)->first();
+        $booking = Booking::where('userId', $request->userUid)->first();
+
+        $generator = new LoginUrl($user);
+        $generator->setRedirectUrl('/verify-new-email-account');
+        $url = $generator->generate();
+
+        $message_replace['bookingRef'] = $booking->booking_code;
+        $message_replace['name'] = $user->userFirstName;
+        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        $message_replace['close_application_link']="</a>";
+
+        $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+        $mailerMessage = $mailerForMessage->message;
+
+        $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+        $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+        $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+
+        $data['name'] = $user->userFirstName;
+        $data['email'] = $user->userEmail;
+        $data['messageForMail'] = $newMessage;
+        $data['subject'] = $mailerForMessage->subject;
+
+        if(explode("@", $data['email'])[1] == "conurban.co.za"){
+            $data['email'] = $user->userEmail;
+        }else{
+            $data['email'] = "conurbandigital@gmail.com";
+        }
+
+        Mail::send('email.yellow_back', $data, function($message) use ($data) {
+            // $message->to($data['email'], $data['name'])->subject
+            //     ('Campus Africa User Application');
+            $message->to($data['email'])->subject($data['subject']);
+            $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
+            $message->from('noreply@campusafrica.co.za','Campus Africa');
+        });
     }
 
 }

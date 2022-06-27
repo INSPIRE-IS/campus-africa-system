@@ -9,6 +9,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LookupsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\LeaseController;
 use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\ApplicationController;
 
@@ -95,8 +96,6 @@ Route::post("/update-student", [HomeController::class, 'edit_student']);
 Route::get("/student/upload/{studentId}", [HomeController::class, 'student_upload']);
 
 
-
-
 Route::get('/lookups', [LookupsController::class, 'lookups'])->name('lookups');
 Route::get('/lookups/new', [LookupsController::class, 'add_lookups']);
 Route::post('/new-lookup', [LookupsController::class, 'new_lookups']);
@@ -149,6 +148,7 @@ Route::post('/get-booking-info', [HomeController::class, 'get_booking_info']);
 Route::get('/properties-import', [HomeController::class, 'properties_import']);
 Route::post('/import/data', [HomeController::class, 'import_data']);
 
+Route::post('/resendLease', [LeaseController::class, 'resendLease']);
 Route::post('/createLease/{studentId}', [PDFController::class, 'createPDF']);
 Route::get('/properties-info', [HomeController::class, 'properties_info']);
 Route::get('/residence/edit/{residenceId}', [HomeController::class, 'residence_edit']);
@@ -209,6 +209,9 @@ Route::post('/remove-document-upload', [DocumentsController::class, 'remove_docu
 Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswordUser']);
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
 
+//Students to sign lease
+Route::get('/sign-lease/{id}', [LeaseController::class, 'view_sign_lease']);
+Route::post('/save-signed-lease/{id}', [LeaseController::class, 'save_signed_lease']);
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::get('/check-all-rooms/{id}', [HomeController::class, 'check_all_rooms']);
 Route::post("/check-building-prefix", [HomeController::class, 'check_building_prefix']);
@@ -246,3 +249,5 @@ Route::post('/import/beds', [HomeController::class, 'import_beds']);
 
 Route::post('/UpdatePaymentRef', [HomeController::class, 'UpdatePaymentRef']);
 
+
+Route::post('/re-verify-email', [ApplicationController::class, 're_verify_email']);

@@ -23,6 +23,7 @@ use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
 use Session;
 use App\Models\UserResetToken;
+use App\Models\UserLeaseToken;
 use App\Models\PropertyPermission;
 use Jenssegers\Agent\Agent;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
@@ -528,7 +529,7 @@ class HomeController extends Controller
                 if($file->status == "Uploaded"){
                     $file->status = "AUploaded";
                 }
-                array_push($data, ["field" => $file->fileId, "status" => $file->status, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+                array_push($data, ["field" => $file->fileId, "status" => $file->status, "fileName" => $file->fileName, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
             }
 
             $left = array_diff($all, $uploaded);
@@ -944,6 +945,41 @@ class HomeController extends Controller
 
             if($userFile['fileId'] == "moveIn" && $action == "Approved"){
                 User::where('id', $userFile->userUid)->update(['overall_status' => "Approved"]);
+                
+                $userForLease = User::where('id', $userFile->userUid)->first();
+                $booking = Booking::where('userId', $userFile->userUid)->first();
+
+                $message_replace['booking_application'] = "#".$booking->booking_code;
+                $message_replace['name'] = $userForLease->userFirstName;
+
+                $mailerForMessage = MailerList::where("mailer_name", "Lease Approved")->first();
+
+                $mailerMessage = $mailerForMessage->message;
+
+                $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+
+                $fileForUser = UserFiles::where('userUid', $userFile->userUid)->where('fileId', 'moveIn')->first();
+
+                $data['messageForMail'] = $newMessage;
+                $data['email'] = $userForLease->userEmail;
+                $data['name'] = $userForLease->userFirstName;
+                // $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
+                $data['subject'] = $mailerForMessage->subject;
+
+                if(explode("@", $data['email'])[1] == "conurban.co.za"){
+                    $data['email'] = $userForLease->userEmail;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
+
+                Mail::send('email.green_back', $data, function($message) use ($data) {
+                    // $message->to($data['email'], $data['name'])->subject('Application Approved');
+                    $message->to($data['email'])->subject($data['subject']);
+                    $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
+                    $message->from('noreply@campusafrica.co.za','Campus Africa');
+                    // $message->attach($data['file']);
+                });
             }
 
             if($request->userName !== "" && !empty($request->userName)){
@@ -1172,7 +1208,7 @@ class HomeController extends Controller
 
     public function leases(Request $request){
         
-        $leases = UserFiles::with('users')->where('fileId', 'moveIn')->get();
+        $leases = UserFiles::with('users')->with('booking')->where('fileId', 'moveIn')->get();
 
         return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases, "title" => "Leases"]);
     }
@@ -2972,10 +3008,10 @@ class HomeController extends Controller
         $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
         $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
 
-        if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
-            User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
-            UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
-        }
+        // if($userLeaseStatus !== '0' && $useApproveStatus == '2'){
+        //     User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
+        //     UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->update(['status' => 'Rejected']);
+        // }
 
         if($request->floor == "Choose a Floor"){
             //Changing Only Property & Room Type
@@ -3261,162 +3297,166 @@ class HomeController extends Controller
 
             //Update the User robot
             User::where('id', $bookingId)->update(['rob_40_bed' => 2]);
-    
-    
-            $lookup = Lookups::where('group_id', '7')->first();
             $booking = Booking::where('userId', $bookingId)->first();
-            $user = User::where('id', $bookingId)->first();
-            $booking_data = [];
 
-            $property = Residence::where('id', $property)->pluck('residence')->first();
-            $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
+            if($oldData->roomType !== $booking->roomType){
 
-            $allResidences = Residence::get();
-            $allRoomTypes = RoomTypes::get();
+                $lookup = Lookups::where('group_id', '7')->first();
+                $user = User::where('id', $bookingId)->first();
+                $booking_data = [];
     
-            if($lookup && $lookup->lookup_name == "1"){
-                $booking_data['room_rate'] = "0";
-                $actionFileData['action'] = "Booking Fee Waived";
-            }else{
-                //Get residences from WP
-                $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
-                $residenceId = "";
+                $property = Residence::where('id', $property)->pluck('residence')->first();
+                $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
     
-                foreach($jsonDataResidence as $residence){
-                    if($residence->title->rendered == $property){
-                        //get room booking fee from residence (WP)
-                        $booking_data['room_rate'] = $residence->acf->booking_fee;
-                        //get residence ID (WP)
-                        $residenceId = $residence->id;
+                $allResidences = Residence::get();
+                $allRoomTypes = RoomTypes::get();
+        
+                if($lookup && $lookup->lookup_name == "1"){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee Waived";
+                }else{
+                    //Get residences from WP
+                    $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+                    $residenceId = "";
+        
+                    foreach($jsonDataResidence as $residence){
+                        if($residence->title->rendered == $property){
+                            //get room booking fee from residence (WP)
+                            $booking_data['room_rate'] = $residence->acf->booking_fee;
+                            //get residence ID (WP)
+                            $residenceId = $residence->id;
+                        }
                     }
-                }
+        
+                    $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+        
+                    $roomType = "";
+                    $roomName = "";
+        
+                    foreach($jsonDataRooms as $room){
+                        if($residenceId == $room->acf->residence){
     
-                $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+                            $slugString = str_replace("-", " ", $room->slug);
+                            $roomType = "";
+                            $roomName = "";
     
-                $roomType = "";
-                $roomName = "";
+                            foreach($allResidences as $residence){
+                                if(strtoupper($property) == strtoupper($residence->residence)){
+                                    $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                                    $requiredName = $roomTypeNew;
     
-                foreach($jsonDataRooms as $room){
-                    if($residenceId == $room->acf->residence){
-
-                        $slugString = str_replace("-", " ", $room->slug);
-                        $roomType = "";
-                        $roomName = "";
-
-                        foreach($allResidences as $residence){
-                            if(strtoupper($property) == strtoupper($residence->residence)){
-                                $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                                $requiredName = $roomTypeNew;
-
-                                foreach($jsonDataRooms as $roomInfo){
-                                    if($residenceId == $roomInfo->acf->residence){
-                                        if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($roomTypeNew)){
-                                            $roomType = $roomTypeNew;
-                                            $roomName = $roomInfo->slug;
+                                    foreach($jsonDataRooms as $roomInfo){
+                                        if($residenceId == $roomInfo->acf->residence){
+                                            if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($roomTypeNew)){
+                                                $roomType = $roomTypeNew;
+                                                $roomName = $roomInfo->slug;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-    
-                        $appliesTo = $room->acf->booking_fee_applies_to;
-    
-                        if($room->slug == $roomName && $roomType == $roomTypeNew){
-    
-    
-                            if($room->acf->booking_fee_override !== ""){
-                                $booking_data['room_rate'] = $room->acf->booking_fee_override;
-                            }
-    
-                            if($user->studentType == "NSFAS"){
-                                if(!in_array("NSFAS Students", $appliesTo)){
-                                    $booking_data['room_rate'] = "0";
-                                    $actionFileData['action'] = "Booking Fee is R0";
+        
+                            $appliesTo = $room->acf->booking_fee_applies_to;
+        
+                            if($room->slug == $roomName && $roomType == $roomTypeNew){
+        
+        
+                                if($room->acf->booking_fee_override !== ""){
+                                    $booking_data['room_rate'] = $room->acf->booking_fee_override;
                                 }
-                            }
-    
-                            if($user->studentType == "Bursary"){
-                                if(!in_array("Bursary Students", $appliesTo)){
-                                    $booking_data['room_rate'] = "0";
-                                    $actionFileData['action'] = "Booking Fee is R0";
+        
+                                if($user->studentType == "NSFAS"){
+                                    if(!in_array("NSFAS Students", $appliesTo)){
+                                        $booking_data['room_rate'] = "0";
+                                        $actionFileData['action'] = "Booking Fee is R0";
+                                    }
                                 }
-                            }
-    
-                            if($user->studentType == "Cash / Direct"){
-                                if(!in_array("Cash Students", $appliesTo)){
-                                    $booking_data['room_rate'] = "0";
-                                    $actionFileData['action'] = "Booking Fee is R0";
+        
+                                if($user->studentType == "Bursary"){
+                                    if(!in_array("Bursary Students", $appliesTo)){
+                                        $booking_data['room_rate'] = "0";
+                                        $actionFileData['action'] = "Booking Fee is R0";
+                                    }
+                                }
+        
+                                if($user->studentType == "Cash / Direct"){
+                                    if(!in_array("Cash Students", $appliesTo)){
+                                        $booking_data['room_rate'] = "0";
+                                        $actionFileData['action'] = "Booking Fee is R0";
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-    
-            
-    
-            if($booking_data['room_rate'] == "0"){
-    
-                $uploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first();
-    
-                if(!$uploaded){
-                    UserFiles::create([
-                        'userUid' => $bookingId,
-                        'fileId' => 'proof_of_payment',
-                        'status' => 'Approved'
-                    ]);
-                }else{
-                    UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
-                        'status' => 'Approved'
-                    ]);
-                }
-    
-                Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
-                User::where('id', $bookingId)->update(['rob_10_fee' => 2]);
-    
-                $actionFileData['userUid'] = $bookingId;
-                $actionFileData['action'] = "Booking Fee is R0";
-                $actionFileData['actionUserUid'] = Auth::user()->id;
-                $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
-                $actionFileData['actionUserRole'] = Auth::user()->userRole;
-            
-                ActionList::create($actionFileData);
-            }else{
-                // UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
-                //     'status' => 'Rejected'
-                // ]);
-                $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first();
-
-                if($fileUploaded && $fileUploaded->fileUrl !== null){
-                    if($oldData->room_rate !== $booking_data['room_rate']){
-
-                        UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
-                            'status' => 'Uploaded'
+        
+                
+        
+                if($booking_data['room_rate'] == "0"){
+        
+                    $uploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first();
+        
+                    if(!$uploaded){
+                        UserFiles::create([
+                            'userUid' => $bookingId,
+                            'fileId' => 'proof_of_payment',
+                            'status' => 'Approved'
                         ]);
-                        User::where('id', $bookingId)->update(['rob_10_fee' => 1]);
+                    }else{
+                        UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                            'status' => 'Approved'
+                        ]);
                     }
+        
+                    Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
+                    User::where('id', $bookingId)->update(['rob_10_fee' => 2]);
+        
+                    $actionFileData['userUid'] = $bookingId;
+                    $actionFileData['action'] = "Booking Fee is R0";
+                    $actionFileData['actionUserUid'] = Auth::user()->id;
+                    $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+                    $actionFileData['actionUserRole'] = Auth::user()->userRole;
+                
+                    ActionList::create($actionFileData);
                 }else{
-                    UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
-                        'status' => 'Rejected'
+                    // UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                    //     'status' => 'Rejected'
+                    // ]);
+                    $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->first();
+    
+                    if($fileUploaded && $fileUploaded->fileUrl !== null){
+                        if($oldData->room_rate !== $booking_data['room_rate']){
+    
+                            UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                                'status' => 'Uploaded'
+                            ]);
+                            User::where('id', $bookingId)->update(['rob_10_fee' => 1]);
+                        }
+                    }else{
+                        UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
+                            'status' => 'Rejected'
+                        ]);
+                        User::where('id', $bookingId)->update(['rob_10_fee' => 0]);
+                    }
+    
+                    //Recalculate booking status
+                    User::where('id', $bookingId)->update([
+                        'bookingStatus' => 'Action'
                     ]);
-                    User::where('id', $bookingId)->update(['rob_10_fee' => 0]);
+        
+                    Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
+        
+                    $actionFileData['userUid'] = $bookingId;
+                    $actionFileData['action'] = "Booking Fee updated to R".$booking_data['room_rate'];
+                    $actionFileData['actionUserUid'] = Auth::user()->id;
+                    $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+                    $actionFileData['actionUserRole'] = Auth::user()->userRole;
+                
+                    ActionList::create($actionFileData);
                 }
-
-                //Recalculate booking status
-                User::where('id', $bookingId)->update([
-                    'bookingStatus' => 'Action'
-                ]);
-    
-                Booking::where('userId', $bookingId)->update(['room_rate' => $booking_data['room_rate']]);
-    
-                $actionFileData['userUid'] = $bookingId;
-                $actionFileData['action'] = "Booking Fee updated to R".$booking_data['room_rate'];
-                $actionFileData['actionUserUid'] = Auth::user()->id;
-                $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
-                $actionFileData['actionUserRole'] = Auth::user()->userRole;
-            
-                ActionList::create($actionFileData);
             }
+    
+    
         }
 
         $status_data = User::where('id', $bookingId)->first();
@@ -5626,8 +5666,14 @@ class HomeController extends Controller
             } else {
                 if($user->email_verified == '1'){
                     echo $user->userEmail . "<i class='fas fa-check' style='color:green'></i><br/>"; 
+                    echo '<input type="hidden" id="emailverifiedStatus" value="1"/>';
                 }else{
-                    echo $user->userEmail . " &#10060;<br/>";
+                    $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+                    
+                    if($mailVerificationEmail->status == '1'){
+                        echo $user->userEmail . " &#10060; &nbsp;&nbsp; <button type='button' class='unallocateBed' onClick='reVerifyEmail()' id='reVerify'>Resend Email verification</button><br/>";
+                    }
+                    echo '<input type="hidden" id="emailverifiedStatus" value="0"/>';
                 }
                 
                 echo $user->userCell . "<br/>";

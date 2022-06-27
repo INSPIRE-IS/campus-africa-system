@@ -11,21 +11,21 @@
             <tr>
                 <th>Booking Reference</th>
                 <th>Name</th>
-                <th>ID Number</th>
+                <th>ID / Passport Number</th>
                 <th>Lease Status</th>
-                <th></th>
+                <!-- <th></th> -->
             </tr>
         </thead>
         <tbody>
             @foreach($leases as $lease)
                 <tr>
-                    <td>{{$lease['users']['bookingRef']}}</td>
+                    <td>#{{$lease['booking']['booking_code']}}</td>
                     <td>{{$lease['users']['userFirstName']}} {{$lease['users']['userLastname']}}</td>
-                    <td>{{$lease['users']['userId']}}</td>
+                    <td>@if($lease['users']['userId']) {{$lease['users']['userId']}} @else {{$lease['users']['userPassport']}} @endif</td>
                     <td>
                         <span class="<?php if($lease['status'] == "Uploaded"){echo "uploaded";}else if($lease['status'] == "Approved"){echo "approved";}else if($lease['status'] == "Rejected"){echo "rejected";}?>">{{$lease['status']}}</span>
                     </td>
-                    <td>
+                    <!-- <td>
                         @if($lease['status'] == "Uploaded")
                             <button type="button" onClick="
                             openModal(
@@ -39,7 +39,7 @@
                         @elseif($lease['status'] == "Rejected")
                             <button type="button" class="error">Send reminder</button>
                         @endif
-                    </td>
+                    </td> -->
                 </tr>
             @endforeach
         </tbody>

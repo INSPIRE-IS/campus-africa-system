@@ -110,7 +110,20 @@
 
                 <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
                     <p class="InfoList">
-                        {{$user[0]['userInfo']['userEmail']}}  @if($user[0]['userInfo']['email_verified'] == '1') <i class="fas fa-check" style="color:green"></i> @else &#10060; @endif<br/>
+                        {{$user[0]['userInfo']['userEmail']}}  
+                        @if($user[0]['userInfo']['email_verified'] == '1') 
+                            <i class="fas fa-check" style="color:green"></i>
+                            <input type="hidden" id="emailverifiedStatus" value="{{$user[0]['userInfo']['email_verified']}}"/>
+                        @else 
+                            &#10060; 
+                            &nbsp;&nbsp;
+                            @if($mailVerificationEmail->status == '1')
+                                <button type="button" class="unallocateBed" onClick="reVerifyEmail()" id="reVerify">Resend Email verification</button>
+                            @endif
+                            <input type="hidden" id="emailverifiedStatus" value="{{$user[0]['userInfo']['email_verified']}}"/>
+                        @endif
+                        <br/>
+                        
                         {{$user[0]['userInfo']['userCell']}}<br/>
                     </p>
 
@@ -121,6 +134,7 @@
                     @endif
                     
                 </div>
+                
             </div>
 
             <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
@@ -338,7 +352,7 @@
                                     <!--  -->
 
                                     @if(explode("_", $file["field"])[0] == "other" && $file["field"] == $file["field"])
-                                        @if($file["status"] == "XApproved")
+                                        @if($file["status"] == "XApproved" || $file["status"] == "Approved")
                                             <div class="button approved"></div>
                                         @elseif($file["status"] == "AUploaded")
                                             <div class="button action"></div>
@@ -445,12 +459,15 @@
 
                                 <div class="banner" id="{{$file['field']}}Banner">
                                     @if($file["field"] === "moveIn")
-                                        <a href="/storage/files/{{$user[0]['userInfo']['userId']}}/Lease.pdf" download="{{$user[0]['userInfo']['userFirstName']}}_{{$user[0]['userInfo']['userLastname']}}_{{$user[0]['userInfo']['userId']}}_Lease.pdf"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
+                                        <a href="/storage/{{$file['url']}}" download="{{$file['fileName']}}"><button type="button" id="myBtn_download">Download Lease</button></a>                                        
                                     @endif
 
-                                    @if($file["field"] === "moveIn" && $file["status"] !== "XApproved")
+                                    @if(($file["field"] === "moveIn" && $file["status"] !== "XApproved"))
                                         @if(Auth::user()->role_lease_regen == '1')
                                             <a href="#"><button type="button" id="myBtn_regen_lease">Regen Lease</button></a>
+                                            @if($file["status"] !== "AUploaded")
+                                                <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>
+                                            @endif
                                         @endif
                                     @endif
 
@@ -1003,6 +1020,8 @@
         });
     }   
 
+    
+
 
     checkUserStatus();
 
@@ -1428,30 +1447,30 @@
             let msg = "The current Lease will be regenerated.";
         @endif
         
-        Swal.fire({
-            title: 'Are you sure?',
-            text: msg,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes!'
-        }).then((result) => {
-            if (result.isConfirmed) {
+        // Swal.fire({
+        //     title: 'Are you sure?',
+        //     text: "The current Approved Lease will be rejected.",
+        //     icon: 'warning',
+        //     showCancelButton: true,
+        //     confirmButtonColor: '#3085d6',
+        //     cancelButtonColor: '#d33',
+        //     confirmButtonText: 'Yes!'
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
 
-                // $.ajax({
-                //     type: "post",
-                //     url: "/cancel-lease",
-                //     data: {
-                //         userId: "{{$user[0]['userInfo']['id']}}",
-                //     },
-                // });
+        //         $.ajax({
+        //             type: "post",
+        //             url: "/cancel-lease",
+        //             data: {
+        //                 userId: "{{$user[0]['userInfo']['id']}}",
+        //             },
+        //         });
 
                 $("#change_bed_type").val('cancel')
                 changeBooking(bookingId, type);
 
-            }
-        });
+        //     }
+        // });
     }
 
     $("#generateLease").on('click', function(){
@@ -1562,6 +1581,9 @@
 
                         $('#floor').html('<option>Choose a Floor</option>');
 
+                        console.log("roomData")
+                        console.log(roomData)
+
                         Object.keys(roomData).forEach( function(key) {
 
                             let floor_name = "";
@@ -1583,6 +1605,8 @@
                             /*if (data[1].floor == roomData[key].floor) {
                                 selected = "selected='selected'";
                             }*/
+
+                            console.log(floor_name)
 
                             let meta = roomData[key].meta_info_1 !== null ? roomData[key].meta_info_1 : "";
 
@@ -2255,7 +2279,8 @@
                                 },
 
                                 success: function (data) {          
-                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
 
                                     if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                                         uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
@@ -2295,6 +2320,7 @@
                             }
                         }
 
+
                         $("#change_bed_type").val();
                         bookingTypeDetails();
                         refreshActions();
@@ -2321,6 +2347,25 @@
                 });
         }
     })
+
+    function reVerifyEmail(){
+        $("#reVerify").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        $.ajax({
+            type: "post",
+            url: "/re-verify-email",
+            data: {
+                userUid: "{{$user[0]['userInfo']['id']}}", 
+            },
+
+            success: function (data) {
+                
+                $("#reVerify").empty().append('resend email verification');
+
+            },
+        });
+        
+    }
 
     $("#changeLeaseDates").on('click', function(){
         
@@ -2804,7 +2849,6 @@
     })
 
     function UploadDocument(field){
-        console.log("here")
         // let field = $(this).attr('id');
         // console.log(field);
 
@@ -2834,10 +2878,11 @@
                     var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
 
                     if(field == "moveIn"){
-                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[1]['userFirstName']+'_'+data[1]['userLastname']+'_'+data[1]['userId']+'_Lease.pdf" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'
+                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[2]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
                         
                         if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
                             button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                            // button += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
                         }
                         
                         button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
@@ -3109,6 +3154,24 @@
         })
     }
 
+
+    function resendLease(){
+        $("#myBtn_resend_lease").html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        $.ajax({
+            type: "post",
+            url: "/resendLease",
+            data: {
+                userId: "{{$user[0]['userInfo']['id']}}",
+            },
+
+            success: function (data) {                
+                $("#myBtn_resend_lease").html('RESEND LEASE');
+            },
+        });
+    }
+    
+
     $(document).off('click').on('click', '#myBtn_regen_lease', function(e) {
         let btn = $(this);
         $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
@@ -3123,6 +3186,16 @@
             success: function (data) {          
                 // if($("#change_bed_type").val() == "cancel"){
                     console.log(data)
+
+                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+
+                    if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                        uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                    }
+                    
+                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                    $("#moveInBanner").empty().append(uploadbtn);
+                    $("#moveInStatus").empty().append('<div class="button rejected"></div>');
                 // }      
                 $(btn).html('REGEN LEASE');
             },
@@ -3435,38 +3508,49 @@
                 task = "0";
             }
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: message,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes!',
-                showLoaderOnConfirm: true,
-                preConfirm: (login) => {                    
-                    $.ajax({
-                        type: "post",
-                        url: "/approve-inline-data",
-                        data: {
-                            userUid: "{{$user[0]['userInfo']['id']}}",
-                            formId: formId,
-                            approvefield: approvefield,
-                            task: task
-                        },
-            
-                        success: function (data) {
+            if(formId == "inline_app_details" && message == "You are about to Approve this information" && $("#emailverifiedStatus").val() !== '1'){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email Not Verified',
+                    text: 'Please contact the student directly and ask them to verify their email address ASAP - you may need to resend the verification email.',
+                })
+            }else{
 
-                            $("#"+approvefield).val(task)
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {                    
+                        $.ajax({
+                            type: "post",
+                            url: "/approve-inline-data",
+                            data: {
+                                userUid: "{{$user[0]['userInfo']['id']}}",
+                                formId: formId,
+                                approvefield: approvefield,
+                                task: task
+                            },
+                
+                            success: function (data) {
+    
+                                $("#"+approvefield).val(task)
+    
+                                refreshActions();  
+                                checkUserStatus();
+    
+                
+                            },
+                        });
+                    },
+                });
+            }
 
-                            refreshActions();  
-                            checkUserStatus();
 
-            
-                        },
-                    });
-                },
-            });
 
             e.preventDefault();
         });
