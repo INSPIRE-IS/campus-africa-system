@@ -1362,7 +1362,7 @@
 
                 properties.sort();
                 $('#propertyBuilding').empty()
-                $('#propertyBuilding').append('<option value="" selected disabled>Select one</option>')
+                $('#propertyBuilding').append('<option value="" selected disabled>Select a Residence</option>')
 
                 let propArr = <?php echo json_encode($allowedResidences); ?>;
 
@@ -1381,9 +1381,9 @@
                     }
                 });
 
-                $('#propertyBuilding').val(selProp);
+                // $('#propertyBuilding').val(selProp);
 
-                $("#propertyBuilding").change();
+                // $("#propertyBuilding").change();
             }
         });
 
