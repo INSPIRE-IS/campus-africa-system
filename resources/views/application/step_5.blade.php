@@ -118,6 +118,8 @@
                         <h2 class="cardHeader" >{{$roomTypeInfo->name}}</h2>
                         <h4 class="cardSubHeaderGrey">Booking Fee</h4>
                         <h2 class="cardHeader" >R {{$room_rate}}</h2>
+                        <h4 class="cardSubHeaderGrey">Booking Reference</h4>
+                        <h2 class="cardHeader" >{{$booking->booking_code}}</h2>
                     </div>
                     <div>
                         <img src="{{$roomTypeInfo->img_url}}" class="roomImgApp">
@@ -195,7 +197,7 @@
                         <div class="whiteCard halfCard">
                             <h4 class="cardSubHeaderGrey">Non Refundable Booking Fee</h4>
                             <h2 class="cardHeader" >R {{$room_rate}}</h2>
-                            <!-- <h4 class="cardSubHeaderGrey">Your application fee is deducted from the total of the room fee required to make this booking.</h4> -->
+                            <p>*Please use <strong>'{{$booking->booking_code}}'</strong> as the reference when paying by EFT or cash deposit</p>
                             
                         </div>
                         <div class="redBottom flex">

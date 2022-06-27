@@ -1221,7 +1221,7 @@ body {
 
 .halfCard {
     width: 77% !important;
-    height: 155px !important;
+    height: 180px !important;
     border-bottom-right-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
@@ -2245,9 +2245,10 @@ input:read-only {
       }
       .roomCardAppOnline{
         margin-top:-15px !important;
+        height:485px !important;
       }
       #seconCards .halfCard{
-        height:170px !important;
+        height:235px !important;
       }
 
       .nsfasSize{
