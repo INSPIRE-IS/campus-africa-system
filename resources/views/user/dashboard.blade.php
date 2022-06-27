@@ -26,7 +26,7 @@
                       </h4>
 
                     <br/><br/><br/>
-                    <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your room?</button>
+                    <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your residence?</button>
                     @if(Auth::user()->rob_55_lease != '2')
                       @if(Auth::user()->rob_60_cancelled != '1')
                         <button type="button" class="roomContactBtn" onClick="cancelBooking()">Want to cancel your booking?</button>
@@ -312,13 +312,14 @@
 
           Swal.fire({
             title: 'Are you sure?',
-            text: "You will have to pay a new booking fee for a new room Type",
+            text: "You will have to pay a new booking fee if you switch residences",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes!'
           }).then((result) => {
+            console.log(result)
               if (result.isConfirmed) {
                 $("#changeRoomType").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
             
@@ -335,6 +336,9 @@
                         window.location.reload();
                     }
                 });
+              }else{
+                var modal = document.getElementById("changeRoomModal");
+                modal.style.display = "none";
               }
           });
 
@@ -435,14 +439,17 @@
 
                 properties.sort();
                 $('#propertyRoom').empty()
+                $('#propertyRoom').append('<option value="" selected disabled>Select a Residence</option>');
 
                 Object.keys(properties).forEach( function(key) {
-                    $('#propertyRoom').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                  if(parseFloat("{{$booking->property}}") !== properties[key].id){
+                    $('#propertyRoom').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>');
+                  }
                 });
 
-                $('#propertyRoom').val(selProp);
+                // $('#propertyRoom').val(selProp);
 
-                $("#propertyRoom").change();
+                // $("#propertyRoom").change();
             }
         });
       }
