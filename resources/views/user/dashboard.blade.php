@@ -374,31 +374,34 @@
 
     function restoreBooking(bookingId, userId){
 
-        var modal = document.getElementById("changeBuildingModal");
-        modal.style.display = "block";
+       
+      Swal.fire('To restore your original booking', 'Please WhatsApp the team <a target="_blank" href="https://wa.me/27719991246?text=Ref%20<?php echo $booking->booking_code; ?>%20%7C%20<?php echo str_replace(" ", "%20", $propertyData->residence); ?>%20%7C%20<?php echo str_replace(" ", "%20", $roomData->name);?>%0A%0A%0A%0A">here</a>', 'question')
 
-        $.ajax({
-            type: "get",
-            url: "/check-all-rooms/{{Auth::user()->id}}",
-            success: function (data) {
-                let properties = data[0];
+        // var modal = document.getElementById("changeBuildingModal");
+        // modal.style.display = "block";
 
-                console.log(data)
+        // $.ajax({
+        //     type: "get",
+        //     url: "/check-all-rooms/{{Auth::user()->id}}",
+        //     success: function (data) {
+        //         let properties = data[0];
 
-                let selProp = data[2].property;
+        //         console.log(data)
 
-                properties.sort();
-                $('#propertyBuilding').empty()
+        //         let selProp = data[2].property;
 
-                Object.keys(properties).forEach( function(key) {
-                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
-                });
+        //         properties.sort();
+        //         $('#propertyBuilding').empty()
 
-                $('#propertyBuilding').val(selProp);
+        //         Object.keys(properties).forEach( function(key) {
+        //             $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+        //         });
 
-                $("#propertyBuilding").change();
-            }
-        });
+        //         $('#propertyBuilding').val(selProp);
+
+        //         $("#propertyBuilding").change();
+        //     }
+        // });
       }
 
       $("#propertyRoom").on('change', function(){
