@@ -5664,19 +5664,22 @@ class HomeController extends Controller
                 </form>
                 <?php
             } else {
+                $booking = Booking::where('userId', $user->id)->first();
                 if($user->email_verified == '1'){
-                    echo $user->userEmail . "<i class='fas fa-check' style='color:green'></i><br/>"; 
+                    echo '<a href="mailto:'.$user->userEmail.'?subject='.$booking->booking_code.'">'.$user->userEmail . "</a><i class='fas fa-check' style='color:green'></i><br/>"; 
                     echo '<input type="hidden" id="emailverifiedStatus" value="1"/>';
                 }else{
                     $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
                     
                     if($mailVerificationEmail->status == '1'){
-                        echo $user->userEmail . " &#10060; &nbsp;&nbsp; <button type='button' class='unallocateBed' onClick='reVerifyEmail()' id='reVerify'>Resend Email verification</button><br/>";
+                        echo '<a href="mailto:'.$user->userEmail.'?subject='.$booking->booking_code.'">'.$user->userEmail . "</a> &#10060; &nbsp;&nbsp; <button type='button' class='unallocateBed' onClick='reVerifyEmail()' id='reVerify'>Resend Email verification</button><br/>";
                     }
                     echo '<input type="hidden" id="emailverifiedStatus" value="0"/>';
                 }
+
+                $number = '27'.substr($user[0]['userInfo']['userCell'], 1);
                 
-                echo $user->userCell . "<br/>";
+                echo '<a href="https://wa.me/'.$number.'?text=Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">'.$user->userCell . "<br/>";
 
                 ?>
                 <!-- <button type="button" class="approve button btn_approve_inline" formid="<?php echo $request->formId; ?>" approvefield="email_data_approved" style="height:40px;">Approve</button>
