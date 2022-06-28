@@ -333,7 +333,16 @@
                     },
 
                     success: function (data) {
-                        window.location.reload();
+                        // 
+                        Swal.fire(
+                          'Your Booking Reference has changed',
+                          'Your new Booking Reference is <b>'+data.booking_code+'<b>',
+                          'success'
+                        ).then((result) => {
+                          if (result.isConfirmed) {
+                            window.location.reload();
+                          }
+                        })
                     }
                 });
               }else{

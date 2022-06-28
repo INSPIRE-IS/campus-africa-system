@@ -6726,6 +6726,10 @@ class HomeController extends Controller
             }
 
         }
+
+        $newBookingData = Booking::where('userId', $request->userUid)->first();
+
+        return $newBookingData;
     }
 
     public function bed_import(Request $request){
