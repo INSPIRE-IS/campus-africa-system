@@ -1,7 +1,7 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="whiteYellowCard smallerCard" id="smallerApplication"> 
             
-            <h2 class="cardHeader  <?php if($appHeader == 0){ echo 'greenCardHeader';}elseif($appHeader == 1){ echo 'yellowCardHeader';}elseif($appHeader == 2){ echo 'redCardHeader';}else{echo "cancelledHeader";}?>">Application
+            <h2 class="cardHeader  <?php if($appHeader == 0){ echo 'greenCardHeader';}elseif($appHeader == 1){ echo 'yellowCardHeader';}elseif($appHeader == 2){ echo 'redCardHeader';}else{echo "cancelledHeader";}?>">Application @if(Auth::user()->rob_60_cancelled == '1') : Cancelled @endif
                 <div class="small"><span class="text"><?php if($appHeader == 0){ echo 'Confirmed';}elseif($appHeader == 1){ echo 'Pending Approval';}elseif($appHeader == 2){ echo 'Awaiting Documents';}else{echo "Cancelled";}?> </span>
                     <div class="circle">
                     <?php if($appHeader == 0){ echo '<i class="fas fa-check"></i>';}else{ echo '<i class="fas fa-file-alt"></i>';}?>

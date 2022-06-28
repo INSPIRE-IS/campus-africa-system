@@ -26,7 +26,9 @@
                       </h4>
 
                     <br/><br/><br/>
-                    <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your residence?</button>
+                    @if(Auth::user()->rob_60_cancelled != '1')
+                      <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your residence?</button>
+                    @endif
                     @if(Auth::user()->rob_55_lease != '2')
                       @if(Auth::user()->rob_60_cancelled != '1')
                         <button type="button" class="roomContactBtn" onClick="cancelBooking()">Want to cancel your booking?</button>
