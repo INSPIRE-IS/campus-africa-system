@@ -68,7 +68,7 @@
 
         <div class="form-field">
             <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="cell_no_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-            <input type="number" name="cell_no" id="cell_no" class="required">
+            <input type="text" name="cell_no" id="cell_no" class="required" value="+27">
         </div>
 
         <div class="form-field">
@@ -315,7 +315,17 @@
     })
 
     function ValidCell(cell, fieldId, fieldError){
-        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        let cellPrefix = cell.slice(0, 3)
+        if(cellPrefix === "+27"){
+            console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
+            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldError).addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldError).removeClass('hidden')
+            }
+        }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
         }else{

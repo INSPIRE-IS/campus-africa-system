@@ -2008,6 +2008,8 @@ input:read-only {
 
 #cancelledStudentTag{
   float:right;
+  text-transform: uppercase;
+  font-weight:500;
 }
 
 

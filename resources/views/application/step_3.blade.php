@@ -111,7 +111,7 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-                    <input type="number" name="kCellNo" id='kCellNo' class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
+                    <input type="text" name="kCellNo" id='kCellNo' class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinCellNo;}else{echo "+27";} ?>">
                 </div>
 
                 <div class="form-field">
@@ -122,12 +122,12 @@
 
         <div class="form-field">
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="number" name="kWorkNo" id="kWorkNo" value="<?php if(isset($user)){ echo $user->kinWorkNo;} ?>">
+            <input type="text" name="kWorkNo" id="kWorkNo" value="<?php if(isset($user)){ echo $user->kinWorkNo;}else{ echo "+27";} ?>">
         </div>
 
         <div class="form-field">
             <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
-            <input type="number" name="kTeleNo" id='kTeleNo' value="<?php if(isset($user)){ echo $user->kinTelNo;} ?>">
+            <input type="text" name="kTeleNo" id='kTeleNo' value="<?php if(isset($user)){ echo $user->kinTelNo;}else{echo "+27";} ?>">
         </div>
 
         <div class="addressSection <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'hidden';} ?>">
@@ -246,7 +246,17 @@ $.ajaxSetup({
     })
 
     function ValidCell(cell, fieldId, fieldError){
-        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        let cellPrefix = cell.slice(0, 3)
+        if(cellPrefix === "+27"){
+            console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
+            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldError).addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldError).removeClass('hidden')
+            }
+        }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
         }else{

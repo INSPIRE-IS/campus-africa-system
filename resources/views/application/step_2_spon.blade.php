@@ -55,7 +55,7 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="number" name="pCell_no" id="pCell_no" class="required" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
+                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="<?php if(isset($user)){ echo $user->sponCell;}else{echo "+27";} ?>">
                 </div>
 
                 <div class="form-field">
@@ -185,7 +185,17 @@
     })
 
     function ValidCell(cell, fieldId, fieldError){
-        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        let cellPrefix = cell.slice(0, 3)
+        if(cellPrefix === "+27"){
+            console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
+            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldError).addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldError).removeClass('hidden')
+            }
+        }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
         }else{
