@@ -110,7 +110,7 @@
 
                 <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
                     <p class="InfoList">
-                    <a href="mailto:{{$user[0]['userInfo']['userEmail']}}?subject={{$booking->booking_code}}">{{$user[0]['userInfo']['userEmail']}}</a>  
+                    <a href="mailto:{{$user[0]['userInfo']['userEmail']}}?subject=Campus Africa Ref {{$booking->booking_code}}">{{$user[0]['userInfo']['userEmail']}}</a>  
                         @if($user[0]['userInfo']['email_verified'] == '1') 
                             <i class="fas fa-check" style="color:green"></i>
                             <input type="hidden" id="emailverifiedStatus" value="{{$user[0]['userInfo']['email_verified']}}"/>
@@ -124,7 +124,7 @@
                         @endif
                         <br/>
                         
-                        <a href="https://wa.me/<?php echo '27'.substr($user[0]['userInfo']['userCell'], 1);  ?>?text=Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">{{$user[0]['userInfo']['userCell']}}</a><br/>
+                        <a href="https://wa.me/<?php echo '27'.substr($user[0]['userInfo']['userCell'], 1);  ?>?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">{{$user[0]['userInfo']['userCell']}}</a><br/>
                     </p>
 
                     @if(in_array($booking->property, $allowedResidences))
