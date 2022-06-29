@@ -64,6 +64,7 @@
         $('#properties_table').DataTable();
     } );
 
+
     function deleteRoom(roomId){
         Swal.fire({
             title: 'Are you sure?',
@@ -90,6 +91,9 @@
         })
     }
 
+    // room_map_slug
+
+    
     // $.ajaxSetup({
     //     headers: {
     //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

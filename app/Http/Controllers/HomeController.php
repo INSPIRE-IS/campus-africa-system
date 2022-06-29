@@ -4143,7 +4143,6 @@ class HomeController extends Controller
             $room_types = RoomTypes::get();
             $residences = Residence::get();
             $property = Property::get();
-            
 
             return view('admin.room_types', ["headerTitle" => "Room Types", "room_types" => $room_types, "title" => "Room Types", "residences" => $residences, 'property' => $property]);
         }else{
@@ -4184,7 +4183,29 @@ class HomeController extends Controller
 
             $residence = Residence::get();
 
-            return view('admin.room_type_edit', ["headerTitle" => $head." Room Type", "title" => $head." Room Type", "roomTypeData" => $roomTypeData, "residence" => $residence]);
+            $roomDetails = [];
+            $propertyDetails = [];
+
+            $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+            $residenceId = "";
+
+            foreach($jsonDataResidence as $res){
+                foreach($residence as $prop){
+                    if(strtoupper($prop->residence) === strtoupper($res->title->rendered)){
+                        array_push($propertyDetails, (object)array("name" => $res->title->rendered, "propId" => $prop->id, "id" => $res->id));
+                    }
+                }
+            }
+
+            $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+
+            foreach($jsonDataRooms as $room){
+                array_push($roomDetails, (object)array("id" => $room->acf->residence, "slug" => $room->slug, "title" => $room->title->rendered));
+            }
+
+            // dd($roomDetails);
+
+            return view('admin.room_type_edit', ["headerTitle" => $head." Room Type", "title" => $head." Room Type", "roomTypeData" => $roomTypeData, "residence" => $residence, 'roomDetails' => $roomDetails, 'propertyDetails' => $propertyDetails]);
         }else{
             return "404 Error";
         }
@@ -4196,7 +4217,8 @@ class HomeController extends Controller
 
         $data = [
             "property_id" => $request->property_id,
-            "name" => $request->name
+            "name" => $request->name,
+            "room_map_slug" => $request->room_map
         ];
 
         if($roomTypeId == "0"){
