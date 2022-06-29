@@ -815,7 +815,7 @@ body {
         background-image: linear-gradient(to left, rgba(255, 0, 0, 0), rgb(0, 0, 0));
         color: #f1f1f1;
         width: 100%;
-        height: 446px;
+        height: 466px;
         opacity: 1;
         color: white;
         padding: 20px;
@@ -847,7 +847,7 @@ body {
 }
 
 .smallerCard {
-    height: 560px !important;
+    height: 580px !important;
     margin-bottom: 30px !important;
 }
 
@@ -2202,6 +2202,7 @@ input:read-only {
   #newUser .idHeight{
     height:150px !important
   }
+
   
 
 @media only screen and (max-width: 850px) {
@@ -2214,6 +2215,9 @@ input:read-only {
     .signature .jSignature{
         width:125% !important;
         margin-left:-40px !important;
+    }
+    .roomImgBack .overlay{
+        height:400px !important;
     }
     .detailsChange{
         margin-top: -5px !important;

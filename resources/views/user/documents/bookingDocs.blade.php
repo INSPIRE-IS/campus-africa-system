@@ -1,6 +1,6 @@
 <div class="whiteYellowCard smallerCard" id="smallerBooking">
             
-            <h2 class="cardHeader <?php if($bookHeader == 0){ echo 'greenCardHeader';}elseif($bookHeader == 1){ echo 'yellowCardHeader';}elseif($bookHeader == 2){ echo 'redCardHeader';}else{echo "cancelledHeader";}?>">Booking  @if(Auth::user()->rob_60_cancelled == '1') : Cancelled @endif
+            <h2 class="cardHeader <?php if($bookHeader == 0){ echo 'greenCardHeader';}elseif($bookHeader == 1){ echo 'yellowCardHeader';}elseif($bookHeader == 2){ echo 'redCardHeader';}else{echo "cancelledHeader";}?>">Booking 
                 <div class="small"><span class="text"><?php if($bookHeader == 0){ echo 'Confirmed';}elseif($bookHeader == 1){ echo 'Pending Approval';}elseif($bookHeader == 2){ echo 'Awaiting Documents';}else{echo "Cancelled";}?> </span>
                     <div class="circle">
                     <?php if($bookHeader == 0){ echo '<i class="fas fa-check"></i>';}else{ echo '<i class="fas fa-file-alt"></i>';}?>
