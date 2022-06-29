@@ -2203,12 +2203,17 @@ input:read-only {
     height:150px !important
   }
 
-  
+  #cancelledStudentTag{
+    float:right;
+  }
 
 @media only screen and (max-width: 850px) {
     #fullNavbar {
         height: 120px !important;
     }
+    #cancelledStudentTag{
+        float:none;
+      }
     .flexMobile{
         display:block;
     }
