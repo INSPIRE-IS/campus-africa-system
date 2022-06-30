@@ -77,7 +77,7 @@
     </div>
     </div>
     
-    <form id="newStudentPayment" class="form onlineForm @if($room_rate == '0') smallPayment @endif" autocomplete="off">
+    <div id="newStudentPayment" class="form onlineForm @if($room_rate == '0') smallPayment @endif" autocomplete="off">
         <br/>
         <div class="cards">
             <div class="whiteCard paymentAppOnline" id="registerPaymentCards">
@@ -158,7 +158,12 @@
                 </div>
 
                 <div class="form-field" id="cCard">
-                    <label>Cardholder Name* <small id="cardholderName_error" class="hidden" style="color:red;">This is a required field</small></label>
+                    <button types="button" onClick="createpayment()">Pay Now</button>
+                    <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
+                        <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
+                        <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
+                    </form>
+                    <!-- <label>Cardholder Name* <small id="cardholderName_error" class="hidden" style="color:red;">This is a required field</small></label>
                     <input type="text" id="cardholderName" class="required">
 
                     <label>Card Number* <small id="cardNumber_error" class="hidden" style="color:red;">This is a required field</small></label>
@@ -168,7 +173,7 @@
                     <input type="date" id="expDate" class="required">
 
                     <label>CVV* <small id="cvv_error" class="hidden" style="color:red;">This is a required field</small></label>
-                    <input type="text" id="cvv" style="width:50%" class="required">
+                    <input type="text" id="cvv" style="width:50%" class="required"> -->
                 </div>
 
                 <div class="form-field hidden" id="eftCard">
@@ -236,12 +241,33 @@
         
         
 
-    </form>
+    </div>
 
 </div>
 
 
 <script>
+
+    function createpayment(){
+        $.ajax({
+            type: "post",
+            url: "/initiate-payment",
+            data: {
+                reference: "{{$booking->booking_code}}",
+                amount: "{{$room_rate}}",
+                id: "{{Auth::user()->id}}",
+            },
+
+            success: function (data) {
+
+                $("#PAY_REQUEST_ID").val(data[0])
+                $("#CHECKSUM").val(data[1])
+
+                $("#paygateForm").submit();
+
+            },
+        });
+    }
 
 function paymentRef(){
         swal.fire({

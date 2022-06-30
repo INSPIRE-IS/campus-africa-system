@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LeaseController;
 use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\OnlinePaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -251,3 +252,12 @@ Route::post('/UpdatePaymentRef', [HomeController::class, 'UpdatePaymentRef']);
 
 
 Route::post('/re-verify-email', [ApplicationController::class, 're_verify_email']);
+
+Route::post('/initiate-payment', [OnlinePaymentController::class, 'initiate_payment']);
+Route::get('/online-application-payment/{id}', [OnlinePaymentController::class, 'online_application_payment']);
+Route::get('/notify-data', [OnlinePaymentController::class, 'notify_data']);
+
+
+
+
+
