@@ -254,7 +254,7 @@ Route::post('/UpdatePaymentRef', [HomeController::class, 'UpdatePaymentRef']);
 Route::post('/re-verify-email', [ApplicationController::class, 're_verify_email']);
 
 Route::post('/initiate-payment', [OnlinePaymentController::class, 'initiate_payment']);
-Route::get('/online-application-payment/{id}', [OnlinePaymentController::class, 'online_application_payment']);
+Route::post('/online-application-payment/{id}', [OnlinePaymentController::class, 'online_application_payment']);
 Route::get('/notify-data', [OnlinePaymentController::class, 'notify_data']);
 
 
