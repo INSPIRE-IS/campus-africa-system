@@ -19,20 +19,22 @@ class OnlinePaymentController extends Controller
 
         $DateTime = new DateTime();
 
-        $request->reference = "pgtest_123456789";
-        $request->amount = 3299;
+        // $request->reference = "pgtest_123456789";
+        // $request->amount = 3299;
 
         $data = array(
             'PAYGATE_ID'        => 10011072130,
             'REFERENCE'         => $request->reference,
-            'AMOUNT'            => $request->amount,
+            'AMOUNT'            => floatval($request->amount)*100,
             'CURRENCY'          => 'ZAR',
-            'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/online-application-payment/'.$request->id,
+            // 'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/online-application-payment/'.$request->id,
+            'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/online-application-payment/'.$request->id,
             'TRANSACTION_DATE'  => $DateTime->format('Y-m-d H:i:s'),
             'LOCALE'            => 'en-za',
             'COUNTRY'           => 'ZAF',
             'EMAIL'             => 'customer@paygate.co.za',
-            'NOTIFY_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/notify-data/',
+            // 'NOTIFY_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/notify-data/',
+            'NOTIFY_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/notify-data/',
         );
 
         $checksum = md5(implode('', $data) . $encryptionKey);
@@ -72,7 +74,7 @@ class OnlinePaymentController extends Controller
     public function notify_data(Request $request){
         OnlinePayments::create([
             "userUid" => '1',
-            "requestID" => $request,
+            "requestID" => $request->REFERENCE,
         ]);
     }
 
