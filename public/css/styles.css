@@ -406,7 +406,7 @@ body {
 .cards .customWhiteCard .buttons {
   display: flex;
 }
-.cards .customWhiteCard .buttons .appBooking {
+.cards .customWhiteCard .buttons .appBooking, .paymentBtn {
   color: #464749;
   font-size: 14px;
   font-weight: 400;

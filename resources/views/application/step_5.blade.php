@@ -158,7 +158,7 @@
                 </div>
 
                 <div class="form-field" id="cCard">
-                    <button types="button" onClick="createpayment()">Pay Now</button>
+                    <button types="button" class="paymentBtn" onClick="createpayment()">Pay Now</button>
                     <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
                         <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
                         <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
