@@ -20,22 +20,17 @@ class OnlinePaymentController extends Controller
 
         $DateTime = new DateTime();
 
-        // $request->reference = "pgtest_123456789";
-        // $request->amount = 3299;
-
         $data = array(
             'PAYGATE_ID'        => 10011072130,
             'REFERENCE'         => $request->reference,
             'AMOUNT'            => floatval($request->amount)*100,
             'CURRENCY'          => 'ZAR',
             'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/online-application-payment/'.$request->id,
-            // 'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/online-application-payment/'.$request->id,
             'TRANSACTION_DATE'  => $DateTime->format('Y-m-d H:i:s'),
             'LOCALE'            => 'en-za',
             'COUNTRY'           => 'ZAF',
             'EMAIL'             => 'customer@paygate.co.za',
             'NOTIFY_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/notify-data',
-            // 'NOTIFY_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/notify-data',
         );
 
         $checksum = md5(implode('', $data) . $encryptionKey);
@@ -64,22 +59,38 @@ class OnlinePaymentController extends Controller
             "checkSum" => explode("=", explode("&", $result)[3])[1],
             "reference" => $request->reference,
             "amount" => $request->amount,
+            "status" => "initiated",
         ]);
 
         //close connection
         curl_close($ch);
 
-        // Log::info('Showing the user profile for user');
-
         return [explode("=", explode("&", $result)[1])[1], explode("=", explode("&", $result)[3])[1]];
     }
 
     public function notify_data(Request $request){
-        // Log::info('Showing Notify');
-        OnlinePayments::create([
-            "userUid" => '1',
-            "requestID" => $request->PAY_REQUEST_ID,
-        ]);
+
+        $transaction = OnlinePayments::where("requestID", $request->PAY_REQUEST_ID)->where("reference", $request->REFERENCE)->first();
+
+        if(!empty($transaction)){
+            if($request->TRANSACTION_STATUS == '0'){
+                $status = "Not Done";
+            }else if($request->TRANSACTION_STATUS == '1'){
+                $status = "Approved";
+            }else if($request->TRANSACTION_STATUS == '2'){
+                $status = "Declined";
+            }else if($request->TRANSACTION_STATUS == '3'){
+                $status = "Cancelled";
+            }else if($request->TRANSACTION_STATUS == '4'){
+                $status = "User Cancelled";
+            }else if($request->TRANSACTION_STATUS == '5'){
+                $status = "Received by GayGate";
+            }else if($request->TRANSACTION_STATUS == '7'){
+                $status = "Settlement Voided";
+            }
+            OnlinePayments::where('id', $transaction->id)->update(['status' => $status]);
+
+        }
     }
 
     public function online_application_payment($id){
