@@ -8,6 +8,7 @@ use App\Models\UserFiles;
 use App\Models\ActionList;
 use App\Models\User;
 use DateTime;
+use Illuminate\Support\Facades\Log;
 
 class OnlinePaymentController extends Controller
 {
@@ -68,13 +69,16 @@ class OnlinePaymentController extends Controller
         //close connection
         curl_close($ch);
 
+        // Log::info('Showing the user profile for user');
+
         return [explode("=", explode("&", $result)[1])[1], explode("=", explode("&", $result)[3])[1]];
     }
 
     public function notify_data(Request $request){
+        // Log::info('Showing Notify');
         OnlinePayments::create([
             "userUid" => '1',
-            "requestID" => $request->REFERENCE,
+            "requestID" => $request->Response,
         ]);
     }
 
