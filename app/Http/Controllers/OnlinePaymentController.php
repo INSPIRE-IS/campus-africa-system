@@ -59,7 +59,7 @@ class OnlinePaymentController extends Controller
             "checkSum" => explode("=", explode("&", $result)[3])[1],
             "reference" => $request->reference,
             "amount" => $request->amount,
-            "status" => "initiated",
+            "status" => "Initiated",
         ]);
 
         //close connection
