@@ -34,8 +34,8 @@ class OnlinePaymentController extends Controller
             'LOCALE'            => 'en-za',
             'COUNTRY'           => 'ZAF',
             'EMAIL'             => 'customer@paygate.co.za',
-            'NOTIFY_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/notify-data/',
-            // 'NOTIFY_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/notify-data/',
+            'NOTIFY_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/notify-data',
+            // 'NOTIFY_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/notify-data',
         );
 
         $checksum = md5(implode('', $data) . $encryptionKey);
@@ -78,7 +78,7 @@ class OnlinePaymentController extends Controller
         // Log::info('Showing Notify');
         OnlinePayments::create([
             "userUid" => '1',
-            "requestID" => $request->Response,
+            "requestID" => $request->PAY_REQUEST_ID,
         ]);
     }
 
