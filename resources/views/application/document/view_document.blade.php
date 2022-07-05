@@ -67,7 +67,9 @@
             <input type="hidden" id="FileIdForApproval" value="{{$file->id}}">
             <input type="hidden" id="FileNameForApproval" value="{{$file->fileId}}">
             
-            @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && Auth::user()->role_non_funding == 1 && (empty($field_data) || !empty($field_data) && $data_approved == 1)) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && Auth::user()->role_funding == 1&& (empty($field_data) || !empty($field_data) && $data_approved == 1)))
+            <!-- && $data_approved == 1 -->
+            <!-- && $data_approved == 1 -->
+            @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && Auth::user()->role_non_funding == 1 && (empty($field_data) || !empty($field_data) )) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && Auth::user()->role_funding == 1&& (empty($field_data) || !empty($field_data) )))
                 <span id="actionUserName_error" class="hidden" ><small style="color:red">This field is required</small></span>
                 <br/>
                 <input type="text" id="actionUserName" placeholder="Name" value="{{Auth::user()->userFirstName}}">
@@ -98,8 +100,12 @@
                         @if(Auth::user()->role_upload_docs == 1)
                             <button type="button" class="amend button" id="amend"  onClick="actionFile('Approved', 'Amend')">Amend</button>
 
+                            <!-- && $data_approved == 1 -->
+                            <!-- && $data_approved == 1 -->
+                            <!-- && $data_approved == 1 -->
+
                             @if(
-                                ($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1 && $data_approved == 1 ) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1 && $data_approved == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1 && $data_approved == 1))
+                                ($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1  ) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1 ) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
                                 @if ((!empty($field_data) && $data_approved == 0) && explode("_", $file->fileId)[0] !== "other")
                                     <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                                 @endif
