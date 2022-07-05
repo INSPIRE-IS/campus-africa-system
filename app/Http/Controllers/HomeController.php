@@ -4207,7 +4207,7 @@ class HomeController extends Controller
             $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
 
             foreach($jsonDataRooms as $room){
-                array_push($roomDetails, (object)array("id" => $room->acf->residence, "slug" => $room->slug, "title" => $room->title->rendered));
+                array_push($roomDetails, (object)array("id" => $room->acf->residence, "slug" => $room->slug, "title" => $room->title->rendered, "roomId" => $room->id));
             }
 
             // dd($roomDetails);

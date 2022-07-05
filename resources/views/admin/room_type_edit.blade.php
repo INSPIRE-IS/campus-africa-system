@@ -50,8 +50,8 @@
                     rooms.forEach(function(roomItem){
                         if(roomItem['id'] == arrayItem['id']){
                             let preselected = "<?php if(!empty($roomTypeData) && $roomTypeData->room_map_slug != "" && $roomTypeData->room_map_slug != null){echo $roomTypeData->room_map_slug;}else {echo "";}?>";
-                            let selected = preselected == roomItem['slug'] ? "selected" : "";
-                            $("#room_map").append('<option value="'+roomItem['slug']+'" '+selected+'>'+roomItem['title']+'</option>')
+                            let selected = preselected == roomItem['roomId'] ? "selected" : "";
+                            $("#room_map").append('<option value="'+roomItem['roomId']+'" '+selected+'>'+roomItem['title']+'</option>')
                         }
                     })
                 }
@@ -69,7 +69,7 @@
                     if(arrayItem['propId'] == $("#property_id").val()){
                         rooms.forEach(function(roomItem){
                             if(roomItem['id'] == arrayItem['id']){
-                                $("#room_map").append('<option value="'+roomItem['slug']+'">'+roomItem['title']+'</option>')
+                                $("#room_map").append('<option value="'+roomItem['roomId']+'">'+roomItem['title']+'</option>')
                             }
                         })
                     }

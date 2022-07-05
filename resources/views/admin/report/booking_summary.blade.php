@@ -66,7 +66,7 @@
                                 <td>
                                     <span id="{{$room['room_id']}}_text" class="{{$room['room_online']}}">@if($room['room_online'] == '1') Yes @else No @endif</span> 
                                     <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
-                                        <button type="button" id="{{$room['room_id']}}_button" onClick="changeRoom('{{$room['room_id']}}')" class='detailsChange' style="margin:0px;">Change</button>
+                                        <button type="button" id="{{$room['room_id']}}_button" onClick="changeRoom('{{$room['room_map_id']}}', '{{$room['room_id']}}')" class='detailsChange' style="margin:0px;">Change</button>
                                     <?php } ?>
                                 </td>
                                 
@@ -116,7 +116,7 @@
         }
     }
 
-    function changeRoom(roomID){
+    function changeRoom(roomMap, roomID){
 
         let roomAvailableText = $("#"+roomID+"_text").hasClass('1') == true ? "Yes" : "No";
 
@@ -141,7 +141,7 @@
                 $.ajax({
                     type: "post",
                     url: "/update/room-activation",
-                    data: {roomAvailableText: roomAvailableText, roomID: roomID},
+                    data: {roomAvailableText: roomAvailableText, roomID: roomID, roomMap: roomMap},
 
                     success: function (data) {
                         $("#"+roomID+"_button").empty().append('Change');
