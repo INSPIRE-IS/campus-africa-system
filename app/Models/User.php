@@ -139,6 +139,12 @@ class User extends Authenticatable
         'role_change_building',
         'fee_approved',
         'role_waive_fee',
+        'userCellCode',
+        'kinCellCode',
+        'kinWorkCode',
+        'kinTelCode',
+        'burContactCode',
+        'sponCellCode',
     ];
 
     public function files(){

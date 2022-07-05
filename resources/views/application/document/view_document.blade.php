@@ -336,7 +336,7 @@
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Contact Number * <span id="burContactNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span> <input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}">
+                            <span style='font-weight:bold'>Contact Number * <span id="burContactNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span> <input class="noedit required" name="burContactCode" id="burContactCode" disabled type="text" value="{{$user->burContactCode}}" style="width:10%; margin-right:2%"><input class="noedit required" name="burContactNo" id="burContactNo" disabled type="text" value="{{$user->burContactNo}}" style="width:48%">
                         </div>
 
                         <div class="form-field">
@@ -409,7 +409,8 @@
                         </div>
 
                         <div class="form-field">
-                            <span style='font-weight:bold'>Sponsor Cellphone * <span id="sponCellNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span> <input class="noedit required" name="sponCellNo" id="sponCellNo" disabled type="text" value="{{$user->sponCell}}">                                       
+                            <span style='font-weight:bold'>Sponsor Cellphone * <span id="sponCellNo_error" class="hidden"><small style="color:red">Not a valid cellphone number</small></span></span>
+                            <input class="noedit required" name="sponCellCode" id="sponCellCode" disabled type="text" value="{{$user->sponCellCode}}" style="width:10%; margin-right:2%"><input class="noedit required" name="sponCellNo" id="sponCellNo" disabled type="text" value="{{$user->sponCell}}" style="width:48%">
                         </div>
 
                         <div class="form-field">
@@ -1199,13 +1200,26 @@
         $('.btns_save_data').hide();
     }
 
-    function ValidCell(cell, fieldId, fieldError){
-        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+    function ValidCell(cell, fieldId, fieldError, code){
+        // if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        //     $("#"+fieldId).removeClass("fieldError")
+        //     $("#"+fieldError).addClass('hidden')
+        // }else{
+        //     $("#"+fieldId).addClass("fieldError")
+        //     $("#"+fieldError).removeClass('hidden')
+        // }
+
+        if(code === "+27"){
+            if (/^\d{9}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldError).addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldError).removeClass('hidden')
+            }
+        }else{
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
-        }else{
-            $("#"+fieldId).addClass("fieldError")
-            $("#"+fieldError).removeClass('hidden')
         }
     }
 
@@ -1278,11 +1292,19 @@
 
     $("#burContactNo").on('keyup blur', function(){
         cell = $("#burContactNo").val()
-        ValidCell(cell, "burContactNo", "burContactNo_error");
+        ValidCell(cell, "burContactNo", "burContactNo_error", $("#burContactCode").val());
+    })
+    $("#burContactCode").on('keyup blur', function(){
+        cell = $("#burContactNo").val()
+        ValidCell(cell, "burContactNo", "burContactNo_error", $("#burContactCode").val());
     })
     $("#sponCellNo").on('keyup blur', function(){
         cell = $("#sponCellNo").val()
-        ValidCell(cell, "sponCellNo", "sponCellNo_error");
+        ValidCell(cell, "sponCellNo", "sponCellNo_error", $("#sponCellCode").val());
+    })
+    $("#sponCellCode").on('keyup blur', function(){
+        cell = $("#sponCellNo").val()
+        ValidCell(cell, "sponCellNo", "sponCellNo_error", $("#sponCellCode").val());
     })
 
 

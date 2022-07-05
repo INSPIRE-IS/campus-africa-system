@@ -132,6 +132,7 @@ class ApplicationController extends Controller
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,
             'sponCell' => $request->pCell_no,
+            'sponCellCode' => $request->sponCellCode,
             'sponEmail' => $request->pEmail,
             'pNationality' => $request->pNationality,
             'sponId' => $request->pIdNumber,
@@ -156,6 +157,7 @@ class ApplicationController extends Controller
             'burRegNo' => $request->bRegistrationNo,
             'burContactPerson' => $request->bContactPerson,
             'burContactNo' => $request->bContactNumber,
+            'burContactCode' => $request->burContactCode,
             'burEmail' => $request->bEmail,
             'bAddress1' => $request->bAddress1,
             'bAddress2' => $request->bAddress2,
@@ -186,6 +188,7 @@ class ApplicationController extends Controller
             $request->kFirstName = $user->sponFirstName;
             $request->kLastName = $user->sponLastName;
             $request->kCellNo = $user->sponCell;
+            $request->kinCellCode = $user->sponCellCode;
             $request->kEmail = $user->sponEmail;
             $request->kAddress1 = $user->pAddress1;
             $request->kAddress2 = $user->pAddress2;
@@ -207,9 +210,12 @@ class ApplicationController extends Controller
             'kinTitle' => $request->kTitle,
             'kinRelationship' => $request->kRelationship,
             'kinCellNo' => $request->kCellNo,
+            'kinCellCode' => $request->kinCellCode,
             'kinEmail' => $request->kEmail,
             'kinWorkNo' => $request->kWorkNo,
+            'kinWorkCode' => $request->kinWorkCode,
             'kinTelNo' => $request->kTeleNo,
+            'kinTelCode' => $request->kinTelCode,
             'app_address' => $request->app_address,
             'kinAddressStr' => $request->kAddress1,
             'kinAddressSuburb' => $request->kAddress2,
@@ -752,6 +758,7 @@ class ApplicationController extends Controller
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,
             'sponCell' => $request->pCell_no,
+            'sponCellCode' => $request->sponCellCode,
             'sponEmail' => $request->pEmail,
             'pNationality' => $request->pNationality,
             'sponId' => $request->pIdNumber,
@@ -765,6 +772,7 @@ class ApplicationController extends Controller
             'burRegNo' => $request->bRegistrationNo,
             'burContactPerson' => $request->bContactPerson,
             'burContactNo' => $request->bContactNumber,
+            'burContactCode' => $request->burContactCode,
             'burEmail' => $request->bEmail,
             'bAddress1' => $request->bAddress1,
             'bAddress2' => $request->bAddress2,

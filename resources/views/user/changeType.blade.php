@@ -49,7 +49,8 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid phone number</small></span></label>
-                    <input type="text" name="pCell_no" id="pCell_no"  value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
+                    <input type="text" name="sponCellCode" id="sponCellCode" style="width:18% !important;" value="<?php if(isset($user) && $user->sponCellCode){ echo $user->sponCellCode;}else{echo "+27";} ?>">
+                    <input type="text" name="pCell_no" id='pCell_no' style="width:77% !important" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -135,7 +136,9 @@
 
             <div class="form-field">
                 <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid phone number</small></span></label>
-                <input type="text" name="bContactNumber" id="bContactNumber"   value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
+
+                <input type="text" name="burContactCode" id="burContactCode" style="width:18% !important;" value="<?php if(isset($user) && $user->burContactCode){ echo $user->burContactCode;}else{echo "+27";} ?>">
+                    <input type="text" name="bContactNumber" id='bContactNumber' style="width:77% !important" value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
             </div>
 
             <div class="form-field">
@@ -329,7 +332,11 @@
 
     $("#pCell_no").on('keyup blur', function(){
         cell = $("#pCell_no").val()
-        ValidCell(cell, "pCell_no", "pCell_no_error")
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#sponCellCode").val())
+    })
+    $("#sponCellCode").on('keyup blur', function(){
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#sponCellCode").val())
     })
 
 
@@ -378,7 +385,11 @@
 
     $("#bContactNumber").on('keyup blur', function(){
         cell = $("#bContactNumber").val()
-        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#burContactCode").val())
+    })
+    $("#burContactCode").on('keyup blur', function(){
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#burContactCode").val())
     })
 
 
@@ -405,14 +416,27 @@
         }
     })
 
-    function ValidCell(cell, fieldId, fieldError){
-        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+    function ValidCell(cell, fieldId, fieldError, code){
+        if(code === "+27"){
+            if (/^\d{9}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldError).addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldError).removeClass('hidden')
+            }
+        }else{
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
-        }else{
-            $("#"+fieldId).addClass("fieldError")
-            $("#"+fieldError).removeClass('hidden')
         }
+        
+        // if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        //     $("#"+fieldId).removeClass("fieldError")
+        //     $("#"+fieldError).addClass('hidden')
+        // }else{
+        //     $("#"+fieldId).addClass("fieldError")
+        //     $("#"+fieldError).removeClass('hidden')
+        // }
     }
 
     function ValidID(idNumber, idField, errorField){
@@ -624,6 +648,7 @@
                             pFirstName: $("#pFirstName").val(), 
                             pLastName: $("#pLastName").val(), 
                             pCell_no: $("#pCell_no").val(), 
+                            sponCellCode: $("#sponCellCode").val(),
                             pEmail: $("#pEmail").val(), 
                             pNationality: $("#pNationality").val(), 
                             pIdNumber: $("#pIdNumber").val(), 
@@ -637,6 +662,7 @@
                             bRegistrationNo: $("#bRegistrationNo").val(), 
                             bContactPerson: $("#bContactPerson").val(), 
                             bContactNumber: $("#bContactNumber").val(), 
+                            burContactCode: $("#burContactCode").val(),
                             bEmail: $("#bEmail").val(), 
                             bAddress1: $("#bAddress1").val(), 
                             bAddress2: $("#bAddress2").val(), 
@@ -653,6 +679,7 @@
                     });
             }
         }
+        
 
     });
 

@@ -111,7 +111,9 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-                    <input type="text" name="kCellNo" id='kCellNo' class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinCellNo;}else{echo "+27";} ?>">
+
+                    <input type="text" name="kinCellCode" id="kinCellCode" style="width:18% !important;" value="<?php if(isset($user) && $user->kinCellCode){ echo $user->kinCellCode;}else{echo "+27";} ?>">
+                    <input type="text" name="kCellNo" id='kCellNo' style="width:77% !important" class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -122,12 +124,16 @@
 
         <div class="form-field">
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="kWorkNo" id="kWorkNo" value="<?php if(isset($user)){ echo $user->kinWorkNo;}else{ echo "+27";} ?>">
+
+            <input type="text" name="kinWorkCode" id="kinWorkCode" style="width:18% !important;" value="<?php if(isset($user) && $user->kinWorkCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
+            <input type="text" name="kWorkNo" id='kWorkNo' style="width:77% !important" value="<?php if(isset($user)){ echo $user->kinWorkNo;} ?>">
         </div>
 
         <div class="form-field">
             <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
-            <input type="text" name="kTeleNo" id='kTeleNo' value="<?php if(isset($user)){ echo $user->kinTelNo;}else{echo "+27";} ?>">
+
+            <input type="text" name="kinTelCode" id="kinTelCode" style="width:18% !important;" value="<?php if(isset($user) && $user->kinTelCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
+            <input type="text" name="kTeleNo" id='kTeleNo' style="width:77% !important" value="<?php if(isset($user)){ echo $user->kinTelNo;} ?>">
         </div>
 
         <div class="addressSection <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'hidden';} ?>">
@@ -209,7 +215,16 @@ $.ajaxSetup({
     $("#kTeleNo").on('keyup blur', function(){
         cell = $("#kTeleNo").val()
         if(cell !== ""){
-            ValidCell(cell, "kTeleNo", "kTeleNo_error")
+            ValidCell(cell, "kTeleNo", "kTeleNo_error", $("#kinTelCode").val())
+        }else{
+            $("#kTeleNo_error").addClass('hidden')
+            $("#kTeleNo").removeClass('fieldError')
+        }
+    })
+    $("#kinTelCode").on('keyup blur', function(){
+        cell = $("#kTeleNo").val()
+        if(cell !== ""){
+            ValidCell(cell, "kTeleNo", "kTeleNo_error", $("#kinTelCode").val())
         }else{
             $("#kTeleNo_error").addClass('hidden')
             $("#kTeleNo").removeClass('fieldError')
@@ -219,13 +234,28 @@ $.ajaxSetup({
     $("#kCellNo").on('keyup blur', function(){
         cell = $("#kCellNo").val();
         
-        ValidCell(cell, "kCellNo", "kCellNo_error");
+        ValidCell(cell, "kCellNo", "kCellNo_error", $("#kinCellCode").val());
+    })
+    $("#kinCellCode").on('keyup blur', function(){
+        cell = $("#kCellNo").val();
+        
+        ValidCell(cell, "kCellNo", "kCellNo_error", $("#kinCellCode").val());
     })
 
     $("#kWorkNo").on('keyup blur', function(){
         cell = $("#kWorkNo").val()
         if(cell !== ""){
-            ValidCell(cell, "kWorkNo", "kWorkNo_error")
+            ValidCell(cell, "kWorkNo", "kWorkNo_error", $("#kinWorkCode").val())
+        }else{
+            $("#kWorkNo_error").addClass('hidden')
+            $("#kWorkNo").removeClass('fieldError')
+        }
+    })
+
+    $("#kinWorkCode").on('keyup blur', function(){
+        cell = $("#kWorkNo").val()
+        if(cell !== ""){
+            ValidCell(cell, "kWorkNo", "kWorkNo_error", $("#kinWorkCode").val())
         }else{
             $("#kWorkNo_error").addClass('hidden')
             $("#kWorkNo").removeClass('fieldError')
@@ -245,24 +275,37 @@ $.ajaxSetup({
         } 
     })
 
-    function ValidCell(cell, fieldId, fieldError){
-        let cellPrefix = cell.slice(0, 3)
-        if(cellPrefix === "+27"){
-            console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
-            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+    function ValidCell(cell, fieldId, fieldError, code){
+        if(code === "+27"){
+            if (/^\d{9}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
                 $("#"+fieldId).addClass("fieldError")
                 $("#"+fieldError).removeClass('hidden')
             }
-        }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        }else{
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
-        }else{
-            $("#"+fieldId).addClass("fieldError")
-            $("#"+fieldError).removeClass('hidden')
         }
+
+        // let cellPrefix = cell.slice(0, 3)
+        // if(cellPrefix === "+27"){
+        //     console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
+        //     if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        //         $("#"+fieldId).removeClass("fieldError")
+        //         $("#"+fieldError).addClass('hidden')
+        //     }else{
+        //         $("#"+fieldId).addClass("fieldError")
+        //         $("#"+fieldError).removeClass('hidden')
+        //     }
+        // }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        //     $("#"+fieldId).removeClass("fieldError")
+        //     $("#"+fieldError).addClass('hidden')
+        // }else{
+        //     $("#"+fieldId).addClass("fieldError")
+        //     $("#"+fieldError).removeClass('hidden')
+        // }
     }
 
     function ValidID(idNumber, idField, errorField){
@@ -484,9 +527,12 @@ $.ajaxSetup({
                             kTitle: $("#kTitle").val(), 
                             kRelationship: $("#kRelationship").val(), 
                             kCellNo: $("#kCellNo").val(), 
+                            kinCellCode: $("#kinCellCode").val(),
                             kEmail: $("#kEmail").val(), 
                             kWorkNo: $("#kWorkNo").val(), 
+                            kinWorkCode: $("#kinWorkCode").val(),
                             kTeleNo: $("#kTeleNo").val(),
+                            kinTelCode: $("#kinTelCode").val(),
                             app_address: $("#app_address").val(),
                             kAddress1: $("#kAddress1").val(), 
                             kAddress2: $("#kAddress2").val(), 

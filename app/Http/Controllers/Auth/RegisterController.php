@@ -126,6 +126,7 @@ class RegisterController extends Controller
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,
+            'userCellCode' => $request->userCellCode,
             'userEmail' => $request->email,
             'email' => $request->email,
             'password' => Hash::make($request->password),

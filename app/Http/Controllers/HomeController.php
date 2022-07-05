@@ -1704,6 +1704,13 @@ class HomeController extends Controller
             // 'nsfas_bursar' => $request->nsfas_bursar,
             'rob_55_lease' => 3,
             'rob_45_other' => 3,
+
+            'userCellCode' => $request->cell_no_code,
+            'kinCellCode' => $request->kCellNo_code,
+            'kinWorkCode' => $request->kWorkNo_code,
+            'kinTelCode' => $request->kTeleNo_code,
+            'burContactCode' => $request->bContactNumber_code,
+            'sponCellCode' => $request->pCell_no_code,
         ]);
 
         ActionList::create([
@@ -5313,7 +5320,7 @@ class HomeController extends Controller
         $user = User::where('id', $student_id)->first();
 
         if (!empty($user)) {
-            return ["burCompanyName" => $user->burCompanyName, "burRegNo" => $user->burRegNo, "burContactPerson" => $user->burContactPerson , "burContactNo" => $user->burContactNo , "burEmail" => $user->burEmail , "bAddress1" => $user->bAddress1 , "bAddress2" => $user->bAddress2, "bAddressCity" => $user->bAddressCity,  "bAddressPostal" => $user->bAddressPostal, "nsfas_bursar" => $user->nsfas_bursar, "studentType" => $user->studentType, 'bPayment' => $user->bPayment, "bint" => $user->bint, "bIntName" => $user->bIntName, "sponFirstName" => $user->sponFirstName, "sponLastName" => $user->sponLastName, "sponCell" => $user->sponCell, "sponEmail" => $user->sponEmail, "sponId" => $user->sponId, "pNationality" => $user->pNationality, "pPassportNo" => $user->pPassportNo, "pAddress1" => $user->pAddress1, "pAddress2" => $user->pAddress2, "pAddressCity" => $user->pAddressCity, "pAddressPostal" => $user->pAddressPostal];
+            return ["burCompanyName" => $user->burCompanyName, "burRegNo" => $user->burRegNo, "burContactPerson" => $user->burContactPerson , "burContactCode" => $user->burContactCode ,"burContactNo" => $user->burContactNo , "burEmail" => $user->burEmail , "bAddress1" => $user->bAddress1 , "bAddress2" => $user->bAddress2, "bAddressCity" => $user->bAddressCity,  "bAddressPostal" => $user->bAddressPostal, "nsfas_bursar" => $user->nsfas_bursar, "studentType" => $user->studentType, 'bPayment' => $user->bPayment, "bint" => $user->bint, "bIntName" => $user->bIntName, "sponFirstName" => $user->sponFirstName, "sponLastName" => $user->sponLastName, "sponCell" => $user->sponCell, "sponCellCode" => $user->sponCellCode, "sponEmail" => $user->sponEmail, "sponId" => $user->sponId, "pNationality" => $user->pNationality, "pPassportNo" => $user->pPassportNo, "pAddress1" => $user->pAddress1, "pAddress2" => $user->pAddress2, "pAddressCity" => $user->pAddressCity, "pAddressPostal" => $user->pAddressPostal];
         } else {
             return false;
         }
@@ -5602,7 +5609,8 @@ class HomeController extends Controller
 
                     <div class="form-field">    
                         <span style='font-weight:bold'>Cellphone Number *</span>
-                        <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>">
+                        <input class="noedit required" name="kinCellCode" id="kinCellCode" type="text" value="<?php echo $user->kinCellCode; ?>" style="width:8%; margin-right:2%">
+                        <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>" style="width:40%">
                         <span id="kinCellNo_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                         <span id="kinCellNo_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
                         <input name="userCell" id="userCell" type="hidden" value="<?php echo $user->userCell; ?>">
@@ -5648,7 +5656,7 @@ class HomeController extends Controller
             } else {
                 echo $user->kinTitle . " " . $user->kinFirstName . " " . $user->kinLastName . "<br/>";
                 echo $user->kinRelationship . "<br/>";
-                echo $user->kinCellNo . "<br/>";
+                echo $user->kinCellCode.$user->kinCellNo . "<br/>";
                 echo $user->kinEmail . "<br/>";
                 echo $user->kinAddressStr . ", " . $user->kinAddressSuburb . "<br/>";
                 echo $user->kinAddressCity . ", " . $user->kinAddressPost . "<br/>";
@@ -5672,7 +5680,8 @@ class HomeController extends Controller
                     
                     <div class="form-field">    
                         <span style='font-weight:bold'>Cellphone Number *</span>
-                        <input class="noedit required" name="userCell" id="userCell" type="text" value="<?php echo $user->userCell; ?>">
+                        <input class="noedit required" name="userCellCode" id="userCellCode" type="text" value="<?php echo $user->userCellCode; ?>" style="width:8%; margin-right:2%">
+                        <input class="noedit required" name="userCell" id="userCell" type="text" value="<?php echo $user->userCell; ?>" style="width:40%">
                         <span id="userCell_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                         <span id="cell_no_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
                         <input type="hidden" name="kinCellNo" id="kinCellNo" value="<?php echo $user->kinCellNo; ?>">
@@ -5699,9 +5708,10 @@ class HomeController extends Controller
                     echo '<input type="hidden" id="emailverifiedStatus" value="0"/>';
                 }
 
-                $number = '27'.substr($user[0]['userInfo']['userCell'], 1);
+                $number = substr($user->userCellCode, 1).$user->userCell;
                 
-                echo '<a href="https://wa.me/'.$number.'?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">'.$user->userCell . "<br/>";
+                
+                echo '<a href="https://wa.me/'.$number.'?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">'.$user->userCellCode.$user->userCell . "<br/>";
 
                 ?>
                 <!-- <button type="button" class="approve button btn_approve_inline" formid="<?php echo $request->formId; ?>" approvefield="email_data_approved" style="height:40px;">Approve</button>
@@ -5804,6 +5814,7 @@ class HomeController extends Controller
                 // 'kinId|Postal' => $request->kinId,
                 // 'kinPassportNo|Postal' => $request->kinPassportNo,
                 'kinCellNo|Cellphone Number' => $request->kinCellNo,
+                'kinCellCode|Country Code' => $request->kinCellCode,
                 'kinEmail|Email' => $request->kinEmail,
                 'kinAddressStr|Physical Address Street' => $request->kinAddressStr,
                 'kinAddressSuburb|Physical Address Suburb' => $request->kinAddressSuburb,
@@ -5820,6 +5831,7 @@ class HomeController extends Controller
                 // 'kinId' => $request->kinId,
                 // 'kinPassportNo' => $request->kinPassportNo,
                 'kinCellNo' => $request->kinCellNo,
+                'kinCellCode' => $request->kinCellCode,
                 'kinEmail' => $request->kinEmail,
                 'kinAddressStr' => $request->kinAddressStr,
                 'kinAddressSuburb' => $request->kinAddressSuburb,
@@ -5832,12 +5844,14 @@ class HomeController extends Controller
             $newData = [
                 'userEmail|Email' => $request->userEmail,
                 'userCell|Cellphone Number' => $request->userCell,
+                'userCellCode|Country Code' => $request->userCellCode,
             ];
 
             $updateData = [
                 'userEmail' => $request->userEmail,
                 'email' => $request->userEmail,
                 'userCell' => $request->userCell,
+                'userCellCode' => $request->userCellCode,
             ];
 
             $userBefore = User::where('id', $request->userUid)->first();
@@ -6259,6 +6273,7 @@ class HomeController extends Controller
             'Sponsor First Name|sponFirstName' => $request->pFirstName,
             'Sponsor Last Name|sponLastName' => $request->pLastName,
             'Sponser Cell|sponCell' => $request->pCell_no,
+            'Sponser Country Code|sponCellCode' => $request->sponCellCode,
             'Sponsor Email|sponEmail' => $request->pEmail,
             'Sponsor ID Number|sponId' => $request->pIdNumber,
             'Sponsor Nationality|pNationality' => $request->pNationality,
@@ -6299,6 +6314,7 @@ class HomeController extends Controller
             'Bursar Registration Number|burRegNo' => $request->bRegistrationNo,
             'Bursar Contact Person|burContactPerson' => $request->bContactPerson,
             'Bursar Contact number|burContactNo' => $request->bContactNumber,
+            'Bursar Country Code|burContactCode' => $request->burContactCode,
             'Bursar Email|burEmail' => $request->bEmail,
             'Bursar Street Number|bAddress1' => $request->bAddress1,
             'Bursar Suburb|bAddress2' => $request->bAddress2,

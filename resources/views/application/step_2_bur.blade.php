@@ -59,7 +59,9 @@
 
                 <div class="form-field">
                     <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="bContactNumber" id="bContactNumber" class="required"  value="<?php if(isset($user)){ echo $user->burContactNo;}else{echo "+27";} ?>">
+
+                    <input type="text" name="burContactCode" id="burContactCode" style="width:18% !important;" value="<?php if(isset($user) && $user->burContactCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
+                    <input type="text" name="bContactNumber" id='bContactNumber' style="width:77% !important" value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -209,7 +211,11 @@
 
     $("#bContactNumber").on('keyup blur', function(){
         cell = $("#bContactNumber").val()
-        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#burContactCode").val())
+    })
+    $("#burContactCode").on('keyup blur', function(){
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#burContactCode").val())
     })
 
 
@@ -226,24 +232,37 @@
         
     })
 
-    function ValidCell(cell, fieldId, fieldError){
-        let cellPrefix = cell.slice(0, 3)
-        if(cellPrefix === "+27"){
-            console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
-            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+    function ValidCell(cell, fieldId, fieldError, code){
+
+        if(code === "+27"){
+            if (/^\d{9}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
                 $("#"+fieldId).addClass("fieldError")
                 $("#"+fieldError).removeClass('hidden')
             }
-        }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        }else{
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
-        }else{
-            $("#"+fieldId).addClass("fieldError")
-            $("#"+fieldError).removeClass('hidden')
         }
+        // let cellPrefix = cell.slice(0, 3)
+        // if(cellPrefix === "+27"){
+        //     console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
+        //     if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        //         $("#"+fieldId).removeClass("fieldError")
+        //         $("#"+fieldError).addClass('hidden')
+        //     }else{
+        //         $("#"+fieldId).addClass("fieldError")
+        //         $("#"+fieldError).removeClass('hidden')
+        //     }
+        // }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        //     $("#"+fieldId).removeClass("fieldError")
+        //     $("#"+fieldError).addClass('hidden')
+        // }else{
+        //     $("#"+fieldId).addClass("fieldError")
+        //     $("#"+fieldError).removeClass('hidden')
+        // }
     }
 
     function ValidID(idNumber, idField, errorField){
@@ -404,6 +423,7 @@
                             bRegistrationNo: $("#bRegistrationNo").val(), 
                             bContactPerson: $("#bContactPerson").val(), 
                             bContactNumber: $("#bContactNumber").val(), 
+                            burContactCode: $("#burContactCode").val(),
                             bEmail: $("#bEmail").val(), 
                             bAddress1: $("#bAddress1").val(), 
                             bAddress2: $("#bAddress2").val(), 

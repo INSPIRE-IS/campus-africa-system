@@ -65,7 +65,8 @@
 
         <div class="form-field">
             <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="cell_no_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-            <input type="text" name="cell_no" id="cell_no" class="required" value="+27">
+            <input type="text" name="cell_no_code" id="cell_no_code" style="width:10% !important;" value="+27">
+            <input type="text" name="cell_no" style="width:85% !important" id="cell_no" class="required">
         </div>
 
         <div class="form-field">
@@ -196,7 +197,8 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="pCell_no" id="pCell_no" value="+27">
+                    <input type="text" name="pCell_no_code" id="pCell_no_code" style="width:10% !important;" value="+27">
+                    <input type="text" name="pCell_no" id='pCell_no' style="width:85% !important" class="required">
                 </div>
 
                 <div class="form-field">
@@ -290,7 +292,8 @@
 
                 <div class="form-field">
                     <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="bContactNumber" id="bContactNumber" value="+27">
+                    <input type="text" name="bContactNumber_code" id="bContactNumber_code" style="width:10% !important;" value="+27">
+                    <input type="text" name="bContactNumber" id='bContactNumber' style="width:85% !important" class="required">
                 </div>
 
                 <div class="form-field">
@@ -440,7 +443,8 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
-                    <input type="text" name="kCellNo" id='kCellNo' class="required" value="+27">
+                    <input type="text" name="kCellNo_code" id="kCellNo_code" style="width:10% !important;" value="+27">
+                    <input type="text" name="kCellNo" id='kCellNo' style="width:85% !important" class="required">
                 </div>
 
                 <div class="form-field">
@@ -451,12 +455,14 @@
 
         <div class="form-field">
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-            <input type="text" name="kWorkNo" id="kWorkNo" value="+27">
+            <input type="text" name="kWorkNo_code" id="kWorkNo_code" style="width:10% !important;" value="+27">
+            <input type="text" name="kWorkNo" id='kWorkNo' style="width:85% !important" class="required">
         </div>
 
         <div class="form-field">
             <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
-            <input type="text" name="kTeleNo" id='kTeleNo' value="+27">
+            <input type="text" name="kTeleNo_code" id="kTeleNo_code" style="width:10% !important;" value="+27">
+            <input type="text" name="kTeleNo" id='kTeleNo' style="width:85% !important" class="required">
         </div>
 
         <div class="addressSection">
@@ -669,24 +675,38 @@
         }
     })
 
-    function ValidCell(cell, fieldId, fieldError){
-        let cellPrefix = cell.slice(0, 3)
-        if(cellPrefix === "+27"){
-            console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
-            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+    function ValidCell(cell, fieldId, fieldError, code){
+        
+        if(code === "+27"){
+            if (/^\d{9}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
                 $("#"+fieldId).addClass("fieldError")
                 $("#"+fieldError).removeClass('hidden')
             }
-        }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        }else{
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
-        }else{
-            $("#"+fieldId).addClass("fieldError")
-            $("#"+fieldError).removeClass('hidden')
         }
+
+
+        // if(cellPrefix === "+27"){
+        //     console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
+        //     if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        //         $("#"+fieldId).removeClass("fieldError")
+        //         $("#"+fieldError).addClass('hidden')
+        //     }else{
+        //         $("#"+fieldId).addClass("fieldError")
+        //         $("#"+fieldError).removeClass('hidden')
+        //     }
+        // }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        //     $("#"+fieldId).removeClass("fieldError")
+        //     $("#"+fieldError).addClass('hidden')
+        // }else{
+        //     $("#"+fieldId).addClass("fieldError")
+        //     $("#"+fieldError).removeClass('hidden')
+        // }
     }
 
     function duplicateCell(){
@@ -708,34 +728,57 @@
             $('#kCellNo').addClass('fieldDuplicate');
         } else {
             cell = $("#cell_no").val()
-            ValidCell(cell, "cell_no", "cell_no_error");
+            ValidCell(cell, "cell_no", "cell_no_error", $("#cell_no_code").val());
             
             cell = $("#kCellNo").val();            
-            ValidCell(cell, "kCellNo", "kCellNo_error");
+            ValidCell(cell, "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
         }
     }
     
 
     $("#cell_no").on('keyup blur', function(){
         cell = $("#cell_no").val()
-        ValidCell(cell, "cell_no", "cell_no_error");
+        ValidCell(cell, "cell_no", "cell_no_error", $("#cell_no_code").val());
+        duplicateCell();
+    })
+
+    $("#cell_no_code").on('keyup blur', function(){
+        cell = $("#cell_no").val()
+        ValidCell(cell, "cell_no", "cell_no_error", $("#cell_no_code").val());
         duplicateCell();
     })
 
     $("#pCell_no").on('keyup blur', function(){
         cell = $("#pCell_no").val()
-        ValidCell(cell, "pCell_no", "pCell_no_error")
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#pCell_no_code").val())
+    })
+    $("#pCell_no_code").on('keyup blur', function(){
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#pCell_no_code").val())
     })
 
     $("#bContactNumber").on('keyup blur', function(){
         cell = $("#bContactNumber").val()
-        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#bContactNumber_code").val())
+    })
+    $("#bContactNumber_code").on('keyup blur', function(){
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#bContactNumber_code").val())
     })
 
     $("#kTeleNo").on('keyup blur', function(){
         cell = $("#kTeleNo").val()
         if(cell !== ""){
-            ValidCell(cell, "kTeleNo", "kTeleNo_error")
+            ValidCell(cell, "kTeleNo", "kTeleNo_error", $("#kTeleNo_code").val())
+        }else{
+            $("#kTeleNo_error").addClass('hidden')
+            $("#kTeleNo").removeClass('fieldError')
+        }
+    })
+    $("#kTeleNo_code").on('keyup blur', function(){
+        cell = $("#kTeleNo").val()
+        if(cell !== ""){
+            ValidCell(cell, "kTeleNo", "kTeleNo_error", $("#kTeleNo_code").val())
         }else{
             $("#kTeleNo_error").addClass('hidden')
             $("#kTeleNo").removeClass('fieldError')
@@ -745,14 +788,29 @@
     $("#kCellNo").on('keyup blur', function(){
         cell = $("#kCellNo").val();
         
-        ValidCell(cell, "kCellNo", "kCellNo_error");
+        ValidCell(cell, "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
+        duplicateCell();
+    })
+    $("#kCellNo_code").on('keyup blur', function(){
+        cell = $("#kCellNo").val();
+        
+        ValidCell(cell, "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
         duplicateCell();
     })
 
     $("#kWorkNo").on('keyup blur', function(){
         cell = $("#kWorkNo").val()
         if(cell !== ""){
-            ValidCell(cell, "kWorkNo", "kWorkNo_error")
+            ValidCell(cell, "kWorkNo", "kWorkNo_error", $("#kWorkNo_code").val())
+        }else{
+            $("#kWorkNo_error").addClass('hidden')
+            $("#kWorkNo").removeClass('fieldError')
+        }
+    })
+    $("#kWorkNo_code").on('keyup blur', function(){
+        cell = $("#kWorkNo").val()
+        if(cell !== ""){
+            ValidCell(cell, "kWorkNo", "kWorkNo_error", $("#kWorkNo_code").val())
         }else{
             $("#kWorkNo_error").addClass('hidden')
             $("#kWorkNo").removeClass('fieldError')

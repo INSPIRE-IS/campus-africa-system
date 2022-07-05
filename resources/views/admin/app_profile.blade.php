@@ -31,7 +31,7 @@
                 {{-- {{$user[0]['userInfo']['kinNationality']}}<br/>
                 @if($user[0]['userInfo']['kinId']){{$user[0]['userInfo']['kinId']}}<br/>@endif
                 @if($user[0]['userInfo']['kinPassportNo']){{$user[0]['userInfo']['kinPassportNo']}}<br/>@endif --}}
-                {{$user[0]['userInfo']['kinCellNo']}}<br/>
+                {{$user[0]['userInfo']['kinCellCode']}}{{$user[0]['userInfo']['kinCellNo']}}<br/>
                 {{$user[0]['userInfo']['kinEmail']}}<br/>
                 {{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>
                 {{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>
@@ -124,7 +124,7 @@
                         @endif
                         <br/>
                         
-                        <a href="https://wa.me/<?php echo '27'.substr($user[0]['userInfo']['userCell'], 1);  ?>?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">{{$user[0]['userInfo']['userCell']}}</a><br/>
+                        <a href="https://wa.me/<?php echo substr($user[0]['userInfo']['userCellCode'], 1).$user[0]['userInfo']['userCell'];  ?>?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">{{$user[0]['userInfo']['userCellCode']}}{{$user[0]['userInfo']['userCell']}}</a><br/>
                     </p>
 
                     @if(in_array($booking->property, $allowedResidences))
@@ -686,7 +686,8 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="{{$user[0]['userInfo']['sponCell']}}">
+                    <input type="text" name="sponCellCode" id="sponCellCode" class="required" value="{{$user[0]['userInfo']['sponCellCode']}}" style="width:8% !important; margin-right:2%" value="+27">
+                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="{{$user[0]['userInfo']['sponCell']}}" style="width:85% !important">
                 </div>
 
                 <div class="form-field">
@@ -778,7 +779,8 @@
 
                 <div class="form-field">
                     <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="bContactNumber" id="bContactNumber" class="required" value="{{$user[0]['userInfo']['burContactNo']}}">
+                    <input type="text" name="burContactCode" id="burContactCode" class="required" value="{{$user[0]['userInfo']['burContactCode']}}" style="width:8% !important; margin-right:2%" value="+27">
+                    <input type="text" name="bContactNumber" id="bContactNumber" class="required" value="{{$user[0]['userInfo']['burContactNo']}}" style="width:85% !important">
                 </div>
 
                 <div class="form-field">
@@ -1095,7 +1097,7 @@
                     var nsfas_bursar = "No"
                 }
 
-                $(".burInfoSection").empty().append(data['burCompanyName']+"<br/>"+data['burRegNo']+"<br/>"+data['burContactPerson']+" - "+data['burContactNo']+"<br/>"+data['burEmail']+"<br/>"+data['bAddress1']+", "+data['bAddress2']+", <br/>"+data['bAddressCity']+", "+data['bAddressPostal']+"<br/><br/> NSFAS bursar? <strong>"+nsfas_bursar+"</strong>")
+                $(".burInfoSection").empty().append(data['burCompanyName']+"<br/>"+data['burRegNo']+"<br/>"+data['burContactPerson']+" - "+data['burContactCode']+""+data['burContactNo']+"<br/>"+data['burEmail']+"<br/>"+data['bAddress1']+", "+data['bAddress2']+", <br/>"+data['bAddressCity']+", "+data['bAddressPostal']+"<br/><br/> NSFAS bursar? <strong>"+nsfas_bursar+"</strong>")
 
                 if(data['studentType'] == "Cash / Direct"){
                     var studentType = "Cash"
@@ -1134,7 +1136,7 @@
 
                 
 
-                $(".sponInfoSection").empty().append(data['sponFirstName']+" "+data['sponLastName']+"<br/>"+data['sponCell']+"<br/>"+data['sponEmail']+"<br/>"+data['pNationality']+"<br/>"+IDspon+"<br/>"+data['pAddress1']+", "+data['pAddress2']+"<br/>"+data['pAddressCity']+", "+data['pAddressPostal'])
+                $(".sponInfoSection").empty().append(data['sponFirstName']+" "+data['sponLastName']+"<br/>"+data['sponCellCode']+data['sponCell']+"<br/>"+data['sponEmail']+"<br/>"+data['pNationality']+"<br/>"+IDspon+"<br/>"+data['pAddress1']+", "+data['pAddress2']+"<br/>"+data['pAddressCity']+", "+data['pAddressPostal'])
             }
         });
 
@@ -2112,23 +2114,46 @@
         }
 
     })
-    function ValidCell(cell, fieldId, fieldError){
-        if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+    function ValidCell(cell, fieldId, fieldError, code){
+        // if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        //     $("#"+fieldId).removeClass("fieldError")
+        //     $("#"+fieldError).addClass('hidden')
+        // }else{
+        //     $("#"+fieldId).addClass("fieldError")
+        //     $("#"+fieldError).removeClass('hidden')
+        // }
+
+        // console.log('2')
+
+        if(code === "+27"){
+            if (/^\d{9}$/.test(cell)) {
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldError).addClass('hidden')
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldError).removeClass('hidden')
+            }
+        }else{
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
-        }else{
-            $("#"+fieldId).addClass("fieldError")
-            $("#"+fieldError).removeClass('hidden')
         }
     }
     $("#pCell_no").on('keyup blur', function(){
         cell = $("#pCell_no").val()
-        ValidCell(cell, "pCell_no", "pCell_no_error")
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#sponCellCode").val())
+    })
+    $("#sponCellCode").on('keyup blur', function(){
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#sponCellCode").val())
     })
 
     $("#bContactNumber").on('keyup blur', function(){
         cell = $("#bContactNumber").val()
-        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#burContactCode").val())
+    })
+    $("#burContactCode").on('keyup blur', function(){
+        cell = $("#bContactNumber").val()
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#burContactCode").val())
     })
     $("#bAddressPostal").on('keyup blur', function(){
         postal = $("#bAddressPostal").val()
@@ -3344,10 +3369,37 @@
         $(document).on('keyup blur', "#kinCellNo, #userCell", function(){
             let cell = $(this).val();
             let id = $(this).attr('id');
+            let code = $("#"+id+"Code").val();
 
-            ValidCell(cell, id);
+            if(id == "kinCellNo"){
+                code = "kinCellCode";
+            }
+
+            ValidCell(cell, id, "", code);
             duplicateCell();          
         });
+
+        $(document).on('keyup blur', "#userCellCode", function(){
+            let cell = $("#userCell").val();
+            let id = "userCell";
+            let code = $("#"+id+"Code").val();
+
+            // console.log(code)
+
+            ValidCell(cell, id, "", code);
+            duplicateCell();          
+        });
+        $(document).on('keyup blur', "#kinCellCode", function(){
+            let cell = $("#userCell").val();
+            let id = "userCell";
+            let code = $("#kinCellCode").val();
+
+            // console.log(code)
+
+            ValidCell(cell, id, "", code);
+            duplicateCell();          
+        });
+        
         
         $(document).on('keyup blur', "#userEmail", function(){
             let id = $(this).attr('id');
@@ -3375,13 +3427,27 @@
             }            
         });
 
-        function ValidCell(cell, fieldId){
-            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
-                $("#"+fieldId).removeClass("fieldError")
-                $("#"+fieldId + "_error").addClass('hidden')
+        function ValidCell(cell, fieldId, fieldError, code){
+            // if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+            //     $("#"+fieldId).removeClass("fieldError")
+            //     $("#"+fieldId + "_error").addClass('hidden')
+            // }else{
+            //     $("#"+fieldId).addClass("fieldError")
+            //     $("#"+fieldId + "_error").removeClass('hidden')
+            // }
+
+
+            if(code === "+27"){
+                if (/^\d{9}$/.test(cell)) {
+                    $("#"+fieldId).removeClass("fieldError")
+                    $("#"+fieldError).addClass('hidden')
+                }else{
+                    $("#"+fieldId).addClass("fieldError")
+                    $("#"+fieldError).removeClass('hidden')
+                }
             }else{
-                $("#"+fieldId).addClass("fieldError")
-                $("#"+fieldId + "_error").removeClass('hidden')
+                $("#"+fieldId).removeClass("fieldError")
+                $("#"+fieldError).addClass('hidden')
             }
         }
 
@@ -3390,7 +3456,7 @@
             $('#cell_no_duplicate').addClass('hidden');
             $('#userCell, #kinCellNo').removeClass('fieldDuplicate');
 
-            console.log($('#userCell').val(), $('#kinCellNo').val());
+            // console.log($('#userCell').val(), $('#kinCellNo').val());
 
             if ($('#userCell').val() != "" && $('#userCell').val() == $('#kinCellNo').val()) {
                 $('#kinCellNo_duplicate').removeClass('hidden');
@@ -3406,10 +3472,10 @@
                 $('#kinCellNo').addClass('fieldDuplicate');
             } else {
                 cell = $("#userCell").val()
-                ValidCell(cell, "userCell");
+                ValidCell(cell, "userCell", "", );
                 
                 cell = $("#kinCellNo").val();            
-                ValidCell(cell, "kinCellNo");
+                ValidCell(cell, "kinCellNo", "", $("#kinCellCode").val());
             }
         }
 
@@ -3653,7 +3719,7 @@
         $("#sponsorSubmit").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
         cell = $("#pCell_no").val()
-        ValidCell(cell, "pCell_no", "pCell_no_error")
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#sponCellCode").val())
 
         if(isEmail($("#pEmail").val())){
             $("#pEmail").removeClass("fieldError")
@@ -3681,9 +3747,9 @@
                 console.log('2')
             }
 
-            var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality", "pAddress1", "pAddress2", "pAddressCity", "pAddressPostal"];
+            var sponArr = ["pFirstName", "pLastName", "pCell_no", "sponCellCode", "pEmail", "pNationality", "pAddress1", "pAddress2", "pAddressCity", "pAddressPostal"];
         }else{
-            var sponArr = ["pFirstName", "pLastName", "pCell_no", "pEmail", "pNationality"];
+            var sponArr = ["pFirstName", "pLastName", "pCell_no", "sponCellCode", "pEmail", "pNationality"];
         }
 
         if($("#pNationality").val() == "South Africa"){
@@ -3747,6 +3813,7 @@
                         pFirstName: $("#pFirstName").val(),
                         pLastName: $("#pLastName").val(),
                         pCell_no: $("#pCell_no").val(),
+                        sponCellCode: $("#sponCellCode").val(),
                         pEmail: $("#pEmail").val(),
                         pNationality: $("#pNationality").val(),
                         pPassportNo: $("#pPassportNo").val(),
@@ -3796,7 +3863,7 @@
 
         var req = 1;
 
-        var burArr = ["bCompanyName", "bRegistrationNo", "bContactPerson", "bContactNumber", "bEmail", "bAddress1", "bAddress2", "bAddressCity", "bAddressPostal", "bPayment"];
+        var burArr = ["bCompanyName", "bRegistrationNo", "bContactPerson", "bContactNumber", "burContactCode", "bEmail", "bAddress1", "bAddress2", "bAddressCity", "bAddressPostal", "bPayment"];
 
 
         if($("#bPayment").val() == "Via an INTERMEDIARY"){
@@ -3863,6 +3930,7 @@
                         bRegistrationNo: $("#bRegistrationNo").val(),
                         bContactPerson: $("#bContactPerson").val(),
                         bContactNumber: $("#bContactNumber").val(),
+                        burContactCode: $("#burContactCode").val(),
                         bEmail: $("#bEmail").val(),
                         bAddress1: $("#bAddress1").val(),
                         bAddress2: $("#bAddress2").val(),

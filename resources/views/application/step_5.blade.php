@@ -107,7 +107,7 @@
                     <hr/>
                     <br/>
                     <span id="dispEmail">{{$user->userEmail}}</span><br/>
-                    <span id="dispCell">{{$user->userCell}}</span><br/>
+                    <span id="dispCell">{{$user->userCellCode}}{{$user->userCell}}</span><br/>
                 </p>
             </div>
 

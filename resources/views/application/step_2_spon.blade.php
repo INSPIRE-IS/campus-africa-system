@@ -55,7 +55,9 @@
 
                 <div class="form-field">
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
-                    <input type="text" name="pCell_no" id="pCell_no" class="required" value="<?php if(isset($user)){ echo $user->sponCell;}else{echo "+27";} ?>">
+
+                    <input type="text" name="sponCellCode" id="sponCellCode" style="width:18% !important;" value="<?php if(isset($user) && $user->sponCellCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
+                    <input type="text" name="pCell_no" id='pCell_no' style="width:77% !important" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -167,7 +169,11 @@
 
     $("#pCell_no").on('keyup blur', function(){
         cell = $("#pCell_no").val()
-        ValidCell(cell, "pCell_no", "pCell_no_error")
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#sponCellCode").val())
+    })
+    $("#sponCellCode").on('keyup blur', function(){
+        cell = $("#pCell_no").val()
+        ValidCell(cell, "pCell_no", "pCell_no_error", $("#sponCellCode").val())
     })
 
 
@@ -184,24 +190,36 @@
         
     })
 
-    function ValidCell(cell, fieldId, fieldError){
-        let cellPrefix = cell.slice(0, 3)
-        if(cellPrefix === "+27"){
-            console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
-            if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+    function ValidCell(cell, fieldId, fieldError, code){
+        if(code === "+27"){
+            if (/^\d{9}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
                 $("#"+fieldId).addClass("fieldError")
                 $("#"+fieldError).removeClass('hidden')
             }
-        }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        }else{
             $("#"+fieldId).removeClass("fieldError")
             $("#"+fieldError).addClass('hidden')
-        }else{
-            $("#"+fieldId).addClass("fieldError")
-            $("#"+fieldError).removeClass('hidden')
         }
+        // let cellPrefix = cell.slice(0, 3)
+        // if(cellPrefix === "+27"){
+        //     console.log(/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell))
+        //     if (/^((\+)27|0)[1-9](\d{2}){4}$/.test(cell)) {
+        //         $("#"+fieldId).removeClass("fieldError")
+        //         $("#"+fieldError).addClass('hidden')
+        //     }else{
+        //         $("#"+fieldId).addClass("fieldError")
+        //         $("#"+fieldError).removeClass('hidden')
+        //     }
+        // }else if (/^((\+)[0-9]{1,3})[1-9](\d{2}){4}$/.test(cell)) {
+        //     $("#"+fieldId).removeClass("fieldError")
+        //     $("#"+fieldError).addClass('hidden')
+        // }else{
+        //     $("#"+fieldId).addClass("fieldError")
+        //     $("#"+fieldError).removeClass('hidden')
+        // }
     }
 
     function ValidID(idNumber, idField, errorField){
@@ -411,6 +429,7 @@
                             pFirstName: $("#pFirstName").val(), 
                             pLastName: $("#pLastName").val(), 
                             pCell_no: $("#pCell_no").val(), 
+                            sponCellCode: $("#sponCellCode").val(),
                             pEmail: $("#pEmail").val(), 
                             pNationality: $("#pNationality").val(), 
                             pIdNumber: $("#pIdNumber").val(), 
