@@ -2154,7 +2154,8 @@ input:read-only {
   }
   #newStudentDocs{
     /* height:2000px; */
-    height:1540px;
+    /* height:1540px; */
+    height:1070px;
   }
   #bannerImgIcon{
     height:40px;
@@ -2376,7 +2377,7 @@ input:read-only {
  }
 
  #newStudent{
-   height:1900px;
+   height:2010px;
  }
 .cards .halfCard, .cards .redBottom{
   width:100% !important;

@@ -198,7 +198,8 @@
                 </div>
 
                 <div class="form-field">
-                    <div class="cards flex flex-col" id="seconCards">
+                <!-- seconCards -->
+                    <div class="cards flex flex-col" id="">
                         <div class="whiteCard halfCard">
                             <h4 class="cardSubHeaderGrey">Non Refundable Booking Fee</h4>
                             <h2 class="cardHeader" >R {{$room_rate}}</h2>
