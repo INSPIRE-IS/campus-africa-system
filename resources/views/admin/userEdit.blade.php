@@ -226,7 +226,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1" <?php if($user->role_lookup == "1"){echo "checked";} ?>>
-                    <label for="role_lookup" style="width:500px">Manage Lookups</label>
+                    <label for="role_lookup" style="width:500px">Manage Lookups & Emails</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_view_booking_summary" name="role_view_booking_summary" value="1" <?php if($user->role_view_booking_summary == "1"){echo "checked";} ?>>

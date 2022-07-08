@@ -1208,18 +1208,28 @@ class HomeController extends Controller
 
     public function leases(Request $request){
         
-        $leases = UserFiles::with('users')->with('booking')->where('fileId', 'moveIn')->get();
+        $this_year = Lookups::where('group_id', '4')->first();
+
+        $leases = UserFiles::with('users')->with('booking')->whereHas('booking', function($q) use($this_year) {
+            $q->where('year', $this_year->lookup_name); 
+        })->where('fileId', 'moveIn')->get();
 
         return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases, "title" => "Leases"]);
     }
 
     public function mailing(Request $request){
 
-        $thankYou = view('email.application_thank_you');
+        if(Auth::user()->role_lookup == 1){
 
-        $MailerList = MailerList::all();
+            $thankYou = view('email.application_thank_you');
+    
+            $MailerList = MailerList::all();
+    
+            return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000", "MailerList" => $MailerList, "title" => "Mailers"]);
+        }else{
+            return "404 Error";
+        }
 
-        return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000", "MailerList" => $MailerList, "title" => "Mailers"]);
     }
 
     public function invoices(Request $request){

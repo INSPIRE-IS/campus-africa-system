@@ -53,8 +53,8 @@
                 <a href="/applications">Applications</a>
                 <a href="/leases">Leases</a>
                 <a href="/invoices">Invoices</a>
-                <a href="/mailing">Mailing</a>
                 @if(Auth::user()->role_lookup == "1")
+                    <a href="/mailing">Mailing</a>
                     <a href="/lookups">Lookups</a>
                 @endif
                 <a href="/reports">Reports</a>
