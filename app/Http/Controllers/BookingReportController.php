@@ -156,36 +156,64 @@ class BookingReportController extends Controller
         $roomAvailableText = $request->roomAvailableText;
         $roomID = $request->roomID;
         $roomMap = $request->roomMap;
-
         $setting = $request->roomAvailableText == "Yes" ? 1 : 0;
 
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://campusafrica.whitehart.co.za/wp-json/wp/v2/rooms/'.$roomMap,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>'{
-                "acf": {
-                    "offline": '.$setting.'
-                }
-            }',
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: Basic cm9nZXI6OHlRVVNRUTFHZVJmaHlsMXV1QWZNTHdM',
-                'Content-Type: application/json',
-                'Cookie: wordpress_test_cookie=WP%20Cookie%20check'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
         RoomTypes:: where('id', $roomID)->update(["online" => $roomAvailableText == "Yes" ? '0' : '1']);
+
+        $allRooms = RoomTypes::where('name', '!=', 'Building Manager')->get();
+
+        $roomActive = 0;
+        $roomCount = 0;
+        foreach($allRooms as $room){
+            if($room->room_map_slug == $roomMap){
+                $roomCount++;
+                if($setting == 1){
+                    if($room->online == '1'){
+                        $roomActive++;
+                    }
+                }else{
+                    if($room->online == '0'){
+                        $roomActive++;
+                    }
+                }
+            }
+        }
+
+        if($setting === 0 && $roomCount > 1){
+            $roomActive = 0;
+        }
+
+        $response = "";
+
+        if($roomActive === 0){
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://campusafrica.whitehart.co.za/wp-json/wp/v2/rooms/'.$roomMap,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS =>'{
+                    "acf": {
+                        "offline": '.$setting.'
+                    }
+                }',
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: Basic cm9nZXI6OHlRVVNRUTFHZVJmaHlsMXV1QWZNTHdM',
+                    'Content-Type: application/json',
+                    'Cookie: wordpress_test_cookie=WP%20Cookie%20check'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+        }
 
         return $response;
     }
