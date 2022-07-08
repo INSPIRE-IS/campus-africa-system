@@ -1218,8 +1218,18 @@
                 $("#"+fieldError).removeClass('hidden')
             }
         }else{
-            $("#"+fieldId).removeClass("fieldError")
-            $("#"+fieldError).addClass('hidden')
+            if(/^(?:[+\d].*\d|\d)$/.test(code)){
+                if(/^(0|[1-9][0-9]*)$/.test(cell)){
+                    $("#"+fieldId).removeClass("fieldError")
+                    $("#"+fieldError).addClass('hidden')
+                }else{
+                    $("#"+fieldId).addClass("fieldError")
+                    $("#"+fieldError).removeClass('hidden')
+                }
+            }else{
+                $("#"+fieldId).addClass("fieldError")
+                $("#"+fieldError).removeClass('hidden')
+            })
         }
     }
 
