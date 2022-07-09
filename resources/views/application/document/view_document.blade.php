@@ -1229,7 +1229,7 @@
             }else{
                 $("#"+fieldId).addClass("fieldError")
                 $("#"+fieldError).removeClass('hidden')
-            })
+            }
         }
     }
 
