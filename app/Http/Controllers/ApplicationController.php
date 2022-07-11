@@ -510,6 +510,8 @@ class ApplicationController extends Controller
                     "actionUserRole" => 0,
                 ]);
 
+                Booking::where('userId', $userUid)->update(['payment_type' => 'Manual EFT']);
+
                 $this->update_user_status($userUid);
 
                 return [$file->id, User::where('id', $userUid)->first(), $file];

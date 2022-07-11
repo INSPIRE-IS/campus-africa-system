@@ -155,6 +155,7 @@
                     <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
                     <!-- <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}} -->
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
+                    <br/><span style='font-weight:bold'>Payment Type:</span> {{$booking->payment_type}}
                     <!-- <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span> -->
                 @endif
 
@@ -193,6 +194,15 @@
                         <div class="form-field">
                             <span style='font-weight:bold'>Payment Reference*</span>
                             <input class="noedit required" name="booking_payment_ref" id="booking_payment_ref" disabled type="text" value="{{$booking->booking_payment_ref}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Type *</span>
+                            <select name="payment_type" id="payment_type" class="noedit required" disabled>
+                                <option value="" selected disabled>Please select one</option>
+                                <option value="Credit card" <?php if($booking->payment_type == "Credit card"){echo "selected";}?>>Credit card</option>
+                                <option value="Online EFT" <?php if($booking->payment_type == "Online EFT"){echo "selected";}?>>Online EFT</option>
+                                <option value="Manual EFT" <?php if($booking->payment_type == "Manual EFT"){echo "selected";}?>>Manual EFT</option>
+                            </select>
                         </div>
                     @endif
 

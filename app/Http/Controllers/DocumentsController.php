@@ -163,17 +163,26 @@ class DocumentsController extends Controller {
 
         } elseif ($request->type == "proof_of_payment") {
             $paymentData = [
-                'booking_payment_ref|Payment Reference' => $request->booking_payment_ref
+                'booking_payment_ref|Payment Reference' => $request->booking_payment_ref,
+                'payment_type|Payment Type' => $request->payment_type
             ];
 
             $updatePaymentData = [
-                'booking_payment_ref' => $request->booking_payment_ref
+                'booking_payment_ref' => $request->booking_payment_ref,
+                'payment_type' => $request->payment_type
             ];
 
             Booking::where('userId', $request->userUid)->update($updatePaymentData);
             ActionList::create([
                 "userUid" => $request->userUid,
                 "action" => "Updated Payment Reference to: ".$request->booking_payment_ref,
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+            ActionList::create([
+                "userUid" => $request->userUid,
+                "action" => "Updated Payment Type to: ".$request->payment_type,
                 "actionUserUid" => Auth::user()->id,
                 "actionUserDisplayName" => Auth::user()->userFirstName,
                 "actionUserRole" => Auth::user()->userRole,

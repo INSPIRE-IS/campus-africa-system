@@ -7,6 +7,7 @@ use App\Models\OnlinePayments;
 use App\Models\UserFiles;
 use App\Models\ActionList;
 use App\Models\User;
+use App\Models\Booking;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 
@@ -63,6 +64,10 @@ class OnlinePaymentController extends Controller
             "amount" => $request->amount,
             "status" => "Initiated",
         ]);
+
+        if($request->payment_type !== ''){
+            Booking::where('userId', $request->id)->update(['payment_type' => $request->payment_type, 'booking_payment_ref' => $request->reference]);
+        }
 
         //close connection
         curl_close($ch);

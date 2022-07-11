@@ -6855,7 +6855,7 @@ class HomeController extends Controller
     }
 
     public function UpdatePaymentRef(Request $request){
-        Booking::where('id', $request->bookingId)->update(['booking_payment_ref' => $request->reason]);
+        Booking::where('id', $request->bookingId)->update(['booking_payment_ref' => $request->reason, 'payment_type' => 'Manual EFT']);
         $booking = Booking::where('id', $request->bookingId)->first();
 
         $actionFileData['userUid'] = $booking->userId;

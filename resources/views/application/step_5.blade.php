@@ -152,8 +152,8 @@
                     <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select name="paymentType" id="paymentType">
                         <option value="Credit card">Credit card</option>
-                        <option value="EFT">Online EFT</option>
-                        <option value="Upload">Upload proof of payment</option>
+                        <option value="Online EFT">Online EFT</option>
+                        <option value="Manual EFT">Manual EFT</option>
                     </select>
                 </div>
 
@@ -257,6 +257,7 @@
                 reference: "{{$booking->booking_code}}",
                 amount: "{{$room_rate}}",
                 id: "{{Auth::user()->id}}",
+                payment_type: $("#paymentType").val(),
             },
 
             success: function (data) {
@@ -305,7 +306,7 @@ function paymentRef(){
     }
 
     $("#paymentType").on('change', function(){
-        if($("#paymentType").val() == "Upload"){
+        if($("#paymentType").val() == "Manual EFT"){
             $("#cCard").addClass('hidden');
             $("#eftCard").removeClass('hidden')
             $("#cardholderName").removeClass('required')
