@@ -38,6 +38,7 @@
 
                           @if($file->status == "Rejected")
 
+
                           <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
                             <span class="text">Outstanding</span>
                             <i class="fas fa-file-upload" ></i>
@@ -48,7 +49,16 @@
 
                           <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
 
+                          @if($file->fileId == 'proof_of_payment')
+                              <button types="button" class="paymentBtn" onClick="createpayment()" style="width:100%">Pay Online Now</button>
+                              <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
+                                  <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
+                                  <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
+                              </form>
+                            @endif
+
                           @elseif($file->status == "None")
+                           
                           <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
                             <span class="text">Outstanding</span>
                             <i class="fas fa-file-upload" ></i>
@@ -56,6 +66,13 @@
                           </label>
                           </h3>
                           <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                          @if($file->fileId == 'proof_of_payment')
+                              <button types="button" class="paymentBtn" onClick="createpayment()" style="width:100%">Pay Online Now</button>
+                              <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
+                                  <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
+                                  <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
+                              </form>
+                            @endif
                           @elseif($file->status == "Uploaded")
                           <label id="registrationPending" class="pending">
                             <span class="text">Pending Approval</span>
@@ -75,3 +92,26 @@
 
             </div>
         </div>
+
+<script>
+  function createpayment(){
+    $.ajax({
+        type: "post",
+        url: "/initiate-payment",
+        data: {
+            reference: "{{$booking->booking_code}}",
+            amount: "{{$booking->room_rate}}",
+            id: "{{Auth::user()->id}}",
+        },
+
+        success: function (data) {
+
+            $("#PAY_REQUEST_ID").val(data[0])
+            $("#CHECKSUM").val(data[1])
+
+            $("#paygateForm").submit();
+
+        },
+    });
+  }
+</script>
