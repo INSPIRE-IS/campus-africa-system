@@ -54,7 +54,7 @@
     <div class="cards" id="bookingCardDash">
 
         <div class="whiteYellowCard smallerCard" style="margin-right:6%">
-            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px;">Booking Summary @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag"> Cancelled</span> @endif</h2>
+            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Booking Summary @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin:auto"> Cancelled</span> @endif</h2>
             <div class="cardBody" id="bookSumCard">
               <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
               <h2 class="cardHeaderBlck" >
