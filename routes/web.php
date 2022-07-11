@@ -255,6 +255,7 @@ Route::post('/re-verify-email', [ApplicationController::class, 're_verify_email'
 
 Route::post('/initiate-payment', [OnlinePaymentController::class, 'initiate_payment']);
 Route::post('/online-application-payment/{id}', [OnlinePaymentController::class, 'online_application_payment']);
+Route::post('/online-application-payment-on-screen/{id}', [OnlinePaymentController::class, 'online_application_payment_on_screen']);
 Route::post('/notify-data', [OnlinePaymentController::class, 'notify_data']);
 
 

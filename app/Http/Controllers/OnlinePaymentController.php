@@ -21,19 +21,25 @@ class OnlinePaymentController extends Controller
 
         $DateTime = new DateTime();
 
+        if($request->req_type == "new"){
+            $req_url = "online-application-payment";
+        }else{
+            $req_url = "online-application-payment-on-screen";
+        }
+
         $data = array(
             'PAYGATE_ID'        => 10011072130,
             'REFERENCE'         => $request->reference,
             'AMOUNT'            => floatval($request->amount)*100,
             'CURRENCY'          => 'ZAR',
-            // 'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/online-application-payment/'.$request->id,
-            'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/online-application-payment/'.$request->id,
+            'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
+            // 'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
             'TRANSACTION_DATE'  => $DateTime->format('Y-m-d H:i:s'),
             'LOCALE'            => 'en-za',
             'COUNTRY'           => 'ZAF',
             'EMAIL'             => 'customer@paygate.co.za',
-            // 'NOTIFY_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/notify-data',
-            'NOTIFY_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/notify-data',
+            'NOTIFY_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/notify-data',
+            // 'NOTIFY_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/notify-data',
         );
 
         $checksum = md5(implode('', $data) . $encryptionKey);
@@ -55,6 +61,8 @@ class OnlinePaymentController extends Controller
 
         //execute post
         $result = curl_exec($ch);
+
+        // dd($result);
 
         OnlinePayments::create([
             "userUid" => $request->id,
@@ -151,6 +159,58 @@ class OnlinePaymentController extends Controller
         $this->update_user_status($id);
 
         return redirect('/complete/online-application');
+    }
+
+    public function online_application_payment_on_screen($id){
+        
+        $fileType = "proof_of_payment";
+        $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->first();
+
+        $user_status = $this->get_user_status($fileType, "", User::where('id', $id)->first());
+        $field_data = $user_status['field_data'];
+        $field_doc = $user_status['field_doc'];                
+
+        UserFiles::create([
+            'fileId' => $fileType,
+            'userUid' => $id,
+            'fileName' => "",
+            'fileUrl' => "",
+            'status' => "Uploaded",
+            'uploaded_by' => $id,
+        ]);
+
+        $text = "Uploaded Proof of payment for review through PayGate";
+        
+        $cur_status = User::find($id);
+
+        //Update data status back to pending
+        if (!empty($field_data)) {
+            //If the data was already approved then unapprove
+            if ($cur_status->{$field_data} == 1) {
+                User::where('id', $id)->update([$field_data => '0']);                        
+            }
+        }
+
+        //Update Robot status back to pending
+        if (!empty($field_doc)) {
+            User::where('id', $id)->update([$field_doc => '1']);
+        }
+
+        //Get the file
+        $file = UserFiles::where('userUid', $id)->where('fileId', $fileType)->first();
+        $currUser = User::where('id', $id)->first();
+
+        ActionList::create([
+            "userUid" => $id,
+            "action" => $text,
+            "actionUserUid" => $id,
+            "actionUserDisplayName" => $currUser->userFirstName,
+            "actionUserRole" => 0,
+        ]);
+
+        $this->update_user_status($id);
+
+        return redirect('/dashboard');
     }
 
     function get_user_status($fileType, $user, $student) {

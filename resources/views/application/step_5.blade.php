@@ -258,6 +258,7 @@
                 amount: "{{$room_rate}}",
                 id: "{{Auth::user()->id}}",
                 payment_type: $("#paymentType").val(),
+                req_type: "new",
             },
 
             success: function (data) {

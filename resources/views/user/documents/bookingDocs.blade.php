@@ -95,23 +95,48 @@
 
 <script>
   function createpayment(){
-    $.ajax({
-        type: "post",
-        url: "/initiate-payment",
-        data: {
-            reference: "{{$booking->booking_code}}",
-            amount: "{{$booking->room_rate}}",
-            id: "{{Auth::user()->id}}",
+
+    Swal.fire({
+      title: 'Select a Payment Method',
+      input: 'select',
+      inputOptions: {
+        'Online Payments': {
+          Credit_card: 'Credit card',
+          Online_EFT: 'Online EFT',
         },
+      },
+      inputPlaceholder: 'Select a Method',
+      showCancelButton: true,
+      inputValidator: (value) => {
+        return new Promise((resolve) => {
 
-        success: function (data) {
+          resolve();
 
-            $("#PAY_REQUEST_ID").val(data[0])
-            $("#CHECKSUM").val(data[1])
+          let newValue = value.replace("_", " ");
+          $.ajax({
+              type: "post",
+              url: "/initiate-payment",
+              data: {
+                  reference: "{{$booking->booking_code}}",
+                  amount: "{{$booking->room_rate}}",
+                  id: "{{Auth::user()->id}}",
+                  payment_type: newValue,
+                  req_type: "on_screen",
+              },
 
-            $("#paygateForm").submit();
+              success: function (data) {
 
-        },
-    });
+                  $("#PAY_REQUEST_ID").val(data[0])
+                  $("#CHECKSUM").val(data[1])
+
+                  $("#paygateForm").submit();
+
+              },
+          });
+        })
+      }
+    })
+
+    
   }
 </script>

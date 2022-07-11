@@ -13,6 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         '/online-application-payment/*',
+        '/online-application-payment-on-screen/*',
         '/notify-data'
     ];
 }
