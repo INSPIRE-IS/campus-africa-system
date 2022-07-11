@@ -1973,7 +1973,7 @@ input:read-only {
 }
 
 #changeStudType{
-  height:950px;
+  height:1050px;
 }
 
 .roomImgApp{
@@ -2019,9 +2019,19 @@ input:read-only {
   }
 }
 
+#permission_c_1, #permission_c_2{
+  height:80px !important;
+}
+
 @media only screen and (max-width: 850px) {
   #fullNavbar {
     height: 120px !important;
+  }
+  #permission_c_1{
+    height:220px !important;
+  }
+  #permission_c_2{
+    height:270px !important;
   }
   #cancelledStudentTag{
     float:none;
@@ -2070,10 +2080,10 @@ input:read-only {
     height:360px !important;
   }
   .bursarySize{
-    height:1330px !important
+    height:1500px !important
   }
   .cashSize{
-    height:1250px !important
+    height:1635px !important
   }
 
   .paymentAppOnline{
@@ -2144,10 +2154,10 @@ input:read-only {
     height: 730px;
   }
   #newStudentBur{
-    height:1222px;
+    height:1580px;
   }
   #newStudentSpon{
-    height:1110px;
+    height:1515px;
   }
   #newStudentKin{
     height:1260px;

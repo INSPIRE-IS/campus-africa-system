@@ -142,6 +142,8 @@ class ApplicationController extends Controller
             'pAddressCity' => $request->pAddressCity,
             'pAddressPostal' => $request->pAddressPostal,
             'app_address_p' => $request->app_address_p,
+            'c_credit_check' => $request->c_credit_check,
+            'c_credit_risk' => $request->c_credit_risk,
         ]);
 
         return "/step-3/online-application";
@@ -781,6 +783,9 @@ class ApplicationController extends Controller
             'bPayment' => $request->bPayment,
             'bint' => $request->bint,
             'bIntName' => $request->bIntName,
+            'b_meeting' => $request->b_meeting,
+            'c_credit_risk' => $request->c_credit_risk,
+            'c_credit_check' => $request->c_credit_check,
         ]);
 
         

@@ -131,6 +131,13 @@
                     </div>
                 </div>
 
+                <div class="form-field-big" id="permission_c_2">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="b_meeting" name="b_meeting" value="1" style="width:50px !important;" <?php if(isset($user) && $user->b_meeting == '1'){echo 'checked';}?>>
+                        <label for="b_meeting" id="" style="width:100%">I understand that approval of my application is subject to my Bursary Provider meeting Campus Africa's internal Bursary Provider requirements and/or some mutually agreed payment arrangement <span id="b_meeting_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    </li>
+                </div>
+
         <button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26">Proceed to next step</button>
 
 
@@ -395,6 +402,11 @@
             req = 0;
         }
 
+        if($('#b_meeting').is(":checked") === false){
+            $("#b_meeting_error").removeClass('hidden');
+            req = 0;
+        }
+
         if(req == 0){
             Swal.fire(
                 'Blank Fields',
@@ -442,6 +454,7 @@
                             bPayment: $("#bPayment").val(), 
                             bint: $("#bint").val(), 
                             bIntName: $("#bIntName").val(), 
+                            b_meeting: $("#b_meeting").val(),
                         },
 
                         success: function (data) {
