@@ -625,8 +625,8 @@
                                 yearOfStudy: $("#yearOfStudy").val(),
                                 property: $("#property").val(),
                                 roomType: $("#roomType").val(),
+                                password: $("#password").val(),
                             },
-
                             success: function (data) {
                                 window.location.replace('/online-application-verify/'+data)   
                             },

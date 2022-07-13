@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Booking;
 use DateTime;
 use Illuminate\Support\Facades\Log;
+use Auth;
 
 class OnlinePaymentController extends Controller
 {
@@ -157,6 +158,10 @@ class OnlinePaymentController extends Controller
         ]);
 
         $this->update_user_status($id);
+
+        if(Auth::check() === false){
+            Auth::loginUsingId($id, true);
+        }
 
         return redirect('/complete/online-application');
     }
