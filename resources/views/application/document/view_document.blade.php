@@ -491,7 +491,8 @@
             <div class="right_pane">
                 <div class="pdfSection" style="margin-top: 0;">
                     @if(strpos($file->fileUrl, "pdf") > 0)
-                        <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
+                        <!-- <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" /> -->
+                        <iframe src="/storage/{{$file->fileUrl}}" width="100%" height="800px" />
                     @else
                         <img src="/storage/{{$file->fileUrl}}" alt="">
                     @endif
