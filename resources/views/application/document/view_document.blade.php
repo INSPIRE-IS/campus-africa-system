@@ -498,13 +498,13 @@
                     <?php if((!$agent->isMobile())){ ?>
                         <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
                     <?php }else{ ?>
-                        <div>
+                        <div style="margin:20px 0px 20px 0px">
+                            <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+                            <br/><br/>
                             <button id="prev">Previous</button>
                             <button id="next">Next</button>
-                            &nbsp; &nbsp;
-                            <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
                         </div>
-                        <canvas id="the-canvas"></canvas>
+                        <canvas id="the-canvas" style="width:100%"></canvas>
                     <?php } ?>
                         
                     @else
