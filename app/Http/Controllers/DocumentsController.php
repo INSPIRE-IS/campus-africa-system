@@ -10,6 +10,7 @@ use App\Models\ActionList;
 use App\Models\Lookups;
 use App\Models\Booking;
 use App\Models\Residence;
+use App\Models\OnlinePayments;
 
 class DocumentsController extends Controller {
 
@@ -18,6 +19,7 @@ class DocumentsController extends Controller {
         $file = UserFiles::find($id);
         $user = User::where('id', $file->userUid)->first();
         $booking = Booking::where('userId', $file->userUid)->first();
+        $onlinePayment = OnlinePayments::where('userUid', $file->userUid)->orderBy('created_at', 'desc')->first();
 
         $property = Residence::where('id', $booking->property)->first();
 
@@ -38,7 +40,8 @@ class DocumentsController extends Controller {
             'doc_approved' => $user_status['doc_approved'], 
             'field_data' => $user_status['field_data'], 
             'booking' => $booking, 
-            'property' => $property
+            'property' => $property,
+            'onlinePayment' => $onlinePayment,
         ];
 
         return view('application.document.view_document', $data);

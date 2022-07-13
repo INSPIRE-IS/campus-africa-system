@@ -17,7 +17,7 @@
             flex: 70%;
         }
 
-        .noedit {
+        .noedit, .disablededit {
             background-color: white !important;
             outline: none;
         }
@@ -156,6 +156,9 @@
                     <!-- <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}} -->
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
                     <br/><span style='font-weight:bold'>Payment Type:</span> {{$booking->payment_type}}
+                    @if($booking->payment_type != "Manual EFT")
+                    <br/><span style='font-weight:bold'>Payment Status:</span> {{$onlinePayment->status}}
+                    @endif
                     <!-- <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span> -->
                 @endif
 
@@ -204,6 +207,12 @@
                                 <option value="Manual EFT" <?php if($booking->payment_type == "Manual EFT"){echo "selected";}?>>Manual EFT</option>
                             </select>
                         </div>
+                        @if($booking->payment_type != "Manual EFT")
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Status*</span>
+                            <input class="disablededit required" name="payment_status" id="payment_status" disabled type="text" value="{{$onlinePayment->status}}">
+                        </div>
+                        @endif
                     @endif
 
                     @if($file->fileId == "copyID")
