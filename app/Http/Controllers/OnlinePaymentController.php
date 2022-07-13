@@ -139,6 +139,7 @@ class OnlinePaymentController extends Controller
                     'status' => "Approved",
                     'uploaded_by' => $id,
                 ]);
+                User::where('id', $id)->update(["rob_10_fee" => 2]);
             }else{
                 UserFiles::create([
                     'fileId' => $fileType,
@@ -154,6 +155,7 @@ class OnlinePaymentController extends Controller
                 UserFiles::where('id', $hasFile->id)->update([
                     'status' => "Approved",
                 ]);
+                User::where('id', $id)->update(["rob_10_fee" => 2]);
             }else{
                 UserFiles::where('id', $hasFile->id)->update([
                     'status' => "Uploaded",
@@ -167,18 +169,21 @@ class OnlinePaymentController extends Controller
         
         $cur_status = User::find($id);
 
-        //Update data status back to pending
-        if (!empty($field_data)) {
-            //If the data was already approved then unapprove
-            if ($cur_status->{$field_data} == 1) {
-                User::where('id', $id)->update([$field_data => '0']);                        
+        if($paymentUpdate->status != "Approved"){
+            //Update data status back to pending
+            if (!empty($field_data)) {
+                //If the data was already approved then unapprove
+                if ($cur_status->{$field_data} == 1) {
+                    User::where('id', $id)->update([$field_data => '0']);                        
+                }
+            }
+    
+            //Update Robot status back to pending
+            if (!empty($field_doc)) {
+                User::where('id', $id)->update([$field_doc => '1']);
             }
         }
 
-        //Update Robot status back to pending
-        if (!empty($field_doc)) {
-            User::where('id', $id)->update([$field_doc => '1']);
-        }
 
         //Get the file
         $file = UserFiles::where('userUid', $id)->where('fileId', $fileType)->first();
@@ -195,7 +200,7 @@ class OnlinePaymentController extends Controller
         $this->update_user_status($id);
 
         if($paymentUpdate->status == "Approved"){
-            User::where('id', $id)->update(["rob_10_fee" => 2]);
+            //
         }
 
         if(Auth::check() === false){
