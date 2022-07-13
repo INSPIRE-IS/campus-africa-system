@@ -109,11 +109,8 @@ class OnlinePaymentController extends Controller
             $hasFile = UserFiles::where('userUid', $transaction->userUid)->where('fileId', 'proof_of_payment')->first();
 
             if(!empty($hasFile) && $status == "Approved"){
-
                 UserFiles::where('id', $hasFile->id)->update(["status" => "Approved"]);
                 User::where('id', $hasFile->id)->update(["rob_10_fee" => 2]);
-
-                $this->update_user_status($transaction->userUid);
             }
 
         }
@@ -196,6 +193,10 @@ class OnlinePaymentController extends Controller
         ]);
 
         $this->update_user_status($id);
+
+        if($paymentUpdate->status == "Approved"){
+            User::where('id', $id)->update(["rob_10_fee" => 2]);
+        }
 
         if(Auth::check() === false){
             Auth::loginUsingId($id, true);
