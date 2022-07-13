@@ -113,7 +113,7 @@
                     <label>Cellphone Number * <span id="kCellNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
 
                     <input type="text" name="kinCellCode" id="kinCellCode" style="width:18% !important;" value="<?php if(isset($user) && $user->kinCellCode){ echo $user->kinCellCode;}else{echo "+27";} ?>">
-                    <input type="text" name="kCellNo" id='kCellNo' style="width:77% !important" class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
+                    <input type="number" name="kCellNo" id='kCellNo' style="width:77% !important" class="<?php if(!isset($user) || (isset($user) && $user->app_parent_kin != '1')){echo 'required';} ?>" value="<?php if(isset($user)){ echo $user->kinCellNo;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -126,14 +126,14 @@
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
 
             <input type="text" name="kinWorkCode" id="kinWorkCode" style="width:18% !important;" value="<?php if(isset($user) && $user->kinWorkCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
-            <input type="text" name="kWorkNo" id='kWorkNo' style="width:77% !important" value="<?php if(isset($user)){ echo $user->kinWorkNo;} ?>">
+            <input type="number" name="kWorkNo" id='kWorkNo' style="width:77% !important" value="<?php if(isset($user)){ echo $user->kinWorkNo;} ?>">
         </div>
 
         <div class="form-field">
             <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
 
             <input type="text" name="kinTelCode" id="kinTelCode" style="width:18% !important;" value="<?php if(isset($user) && $user->kinTelCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
-            <input type="text" name="kTeleNo" id='kTeleNo' style="width:77% !important" value="<?php if(isset($user)){ echo $user->kinTelNo;} ?>">
+            <input type="number" name="kTeleNo" id='kTeleNo' style="width:77% !important" value="<?php if(isset($user)){ echo $user->kinTelNo;} ?>">
         </div>
 
         <div class="addressSection <?php if(isset($user) && $user->app_parent_kin == '1'){echo 'hidden';} ?>">

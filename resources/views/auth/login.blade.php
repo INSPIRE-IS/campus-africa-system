@@ -40,7 +40,7 @@
                 <form class="cardForm" method="POST" action="/login" >
                     @csrf
                     <label style="color:#464749; font-size:21px; font-family: source-sans-pro, sans-serif;">Email</label>
-                    <input type="text" name="email" id="email">
+                    <input type="text" name="email" id="email" style="padding:10px;">
                     <span class="invalid-feedback hidden" role="alert" id="emailPasswordLess"><strong style="color:red">Email is a required field</strong></span>
                     @error('email')
                         <span class="invalid-feedback" role="alert">
@@ -49,7 +49,7 @@
                     @enderror
                     <!-- <br/> -->
                     <label style="color:#464749; font-size:21px; font-family: source-sans-pro, sans-serif;">Password</label>
-                    <input type="password" name="password" id="password">
+                    <input type="password" name="password" id="password" style="padding:10px;">
                     @error('password')
                         <span class="invalid-feedback" role="alert">
                             <strong style="color:red">{{ $message }}</strong>

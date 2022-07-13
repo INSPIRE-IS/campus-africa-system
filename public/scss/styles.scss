@@ -2232,6 +2232,9 @@ input:read-only {
     #fullNavbar {
         height: 120px !important;
     }
+    .mobHidden{
+        display:none
+      }
     #permission_c_1{
         height:220px !important;
       }
@@ -2324,6 +2327,9 @@ input:read-only {
 
       #smallerBooking{
         height:380px !important;
+      }
+      #smallerBookingResize{
+        height:465px !important;
       }
       #smallerApplication{
         height:465px !important
@@ -2908,6 +2914,7 @@ input:read-only {
     #registerPaymentCards,
     .paymentSection {
         width: 87%;
+        height:450px !important;
     }
 
     .paymentSection .header {

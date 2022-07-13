@@ -69,7 +69,7 @@
         <div class="form-field">
             <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="cell_no_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
             <input type="text" name="userCellCode" id="userCellCode" style="width:18% !important;" value="+27">
-            <input type="text" name="cell_no" id='cell_no' style="width:77% !important" class="required">
+            <input type="number" name="cell_no" id='cell_no' style="width:77% !important" class="required">
         </div>
 
         <div class="form-field">
@@ -202,7 +202,7 @@
             <input type="password" name="password" id="password" class="required">
             <i class="far fa-eye" id="togglePassword" style="margin-left:-35px;"></i>
         </div>
-        <div class="form-field">
+        <div class="form-field" style="height:110px !important">
             <label>Confirm Password * <span id="confirm_password_error" class="hidden" style="color:red"><small>This field is required</small></span> <span id="confirm_password_match_error" class="hidden" style="color:red"><small>Passwords don't match</small></span></label>
             <input type="password" name="confirm_password" id="confirm_password" class="required" onKeyUp="match()">
             <i class="far fa-eye" id="togglePasswordConfirm" style="margin-left:-35px;"></i>

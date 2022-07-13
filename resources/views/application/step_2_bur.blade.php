@@ -61,7 +61,7 @@
                     <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
 
                     <input type="text" name="burContactCode" id="burContactCode" style="width:18% !important;" value="<?php if(isset($user) && $user->burContactCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
-                    <input type="text" name="bContactNumber" id='bContactNumber' style="width:77% !important" value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
+                    <input type="number" name="bContactNumber" id='bContactNumber' style="width:77% !important" value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -69,7 +69,7 @@
                     <input type="email" name="bEmail" id="bEmail" class="required"  value="<?php if(isset($user)){ echo $user->burEmail;} ?>">
                 </div>
 
-                <div class="form-field">
+                <div class="form-field mobHidden">
                     <br/>
                 </div>
 
@@ -102,7 +102,7 @@
                     </select>
                 </div>
 
-                <div class="form-field" id="placeholder">
+                <div class="form-field mobHidden" id="placeholder">
                     <br/>
                 </div>
 
@@ -126,7 +126,7 @@
                         <input type="text" name="bIntName" id="bIntName" value="<?php if(isset($user)){ echo $user->bIntName;} ?>">
                     </div>
 
-                    <div class="form-field">
+                    <div class="form-field mobHidden">
                         <br/>
                     </div>
                 </div>

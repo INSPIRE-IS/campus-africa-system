@@ -57,7 +57,7 @@
                     <label>Cellphone Number * <span id="pCell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
 
                     <input type="text" name="sponCellCode" id="sponCellCode" style="width:18% !important;" value="<?php if(isset($user) && $user->sponCellCode){ echo $user->sponCellCode;}else{echo "+27";} ?>">
-                    <input type="text" name="pCell_no" id='pCell_no' style="width:77% !important" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
+                    <input type="number" name="pCell_no" id='pCell_no' style="width:77% !important" value="<?php if(isset($user)){ echo $user->sponCell;} ?>">
                 </div>
 
                 <div class="form-field">
