@@ -1,5 +1,5 @@
 <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
-<div class="modal-content" style="width: @if(!empty($file) && !empty($file->fileName)) {{ "99%" }} @else {{ "50%" }}@endif">
+<div class="modal-content" style="width: @if(!empty($file) && !empty($file->fileName)) {{ "99%" }} @else @if($agent->isMobile()) {{ "99%" }} @else {{ "50%" }} @endif @endif">
     <span class="close">&times;</span>
 
     <style>
