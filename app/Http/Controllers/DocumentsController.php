@@ -11,6 +11,7 @@ use App\Models\Lookups;
 use App\Models\Booking;
 use App\Models\Residence;
 use App\Models\OnlinePayments;
+use Jenssegers\Agent\Agent;
 
 class DocumentsController extends Controller {
 
@@ -31,6 +32,8 @@ class DocumentsController extends Controller {
 
         $lookups = Lookups::get();
 
+        $agent = new Agent();
+
         $data = [
             'user' => $user, 
             'file' => $file, 
@@ -42,6 +45,7 @@ class DocumentsController extends Controller {
             'booking' => $booking, 
             'property' => $property,
             'onlinePayment' => $onlinePayment,
+            'agent' => $agent,
         ];
 
         return view('application.document.view_document', $data);
