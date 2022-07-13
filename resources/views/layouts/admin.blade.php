@@ -358,7 +358,7 @@
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
-                document.getElementById('fullNavbar').setAttribute("style","height:446px !important");
+                document.getElementById('fullNavbar').setAttribute("style","height:495px !important");
             } else {
                 x.className = "topnav";
                 document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
@@ -372,7 +372,7 @@
             var x = document.getElementById("myTopnav");
             if (x.className === "topnav") {
                 x.className += " responsive";
-                document.getElementById('fullNavbar').setAttribute("style","height:446px !important");
+                document.getElementById('fullNavbar').setAttribute("style","height:495px !important");
             } else {
                 x.className = "topnav";
                 document.getElementById('fullNavbar').setAttribute("style","height:85px !important");
