@@ -106,6 +106,13 @@ class OnlinePaymentController extends Controller
             }
             OnlinePayments::where('id', $transaction->id)->update(['status' => $status]);
 
+            $hasFile = UserFiles::where('userUid', $transaction->userUid)->where('fileId', 'proof_of_payment')->first();
+
+            if(!empty($hasFile) && $status == "Approved"){
+                UserFiles::where('id', $hasFile->id)->update(["status" => "Approved"]);
+                $this->update_user_status($transaction->userUid);
+            }
+
         }
     }
 
@@ -117,16 +124,30 @@ class OnlinePaymentController extends Controller
 
         $user_status = $this->get_user_status($fileType, "", User::where('id', $id)->first());
         $field_data = $user_status['field_data'];
-        $field_doc = $user_status['field_doc'];                
+        $field_doc = $user_status['field_doc'];   
+        
+        $paymentUpdate = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
 
-        UserFiles::create([
-            'fileId' => $fileType,
-            'userUid' => $id,
-            'fileName' => "",
-            'fileUrl' => "",
-            'status' => "Uploaded",
-            'uploaded_by' => $id,
-        ]);
+        if($paymentUpdate->status == "Approved"){
+            UserFiles::create([
+                'fileId' => $fileType,
+                'userUid' => $id,
+                'fileName' => "",
+                'fileUrl' => "",
+                'status' => "Approved",
+                'uploaded_by' => $id,
+            ]);
+        }else{
+            UserFiles::create([
+                'fileId' => $fileType,
+                'userUid' => $id,
+                'fileName' => "",
+                'fileUrl' => "",
+                'status' => "Uploaded",
+                'uploaded_by' => $id,
+            ]);
+        }
+
 
         $text = "Uploaded Proof of payment for review through PayGate";
         
