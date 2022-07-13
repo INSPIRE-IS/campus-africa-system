@@ -492,7 +492,10 @@
                 <div class="pdfSection" style="margin-top: 0;">
                     @if(strpos($file->fileUrl, "pdf") > 0)
                         <!-- <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" /> -->
-                        <iframe src="/storage/{{$file->fileUrl}}" width="100%" height="800px" />
+                        <!-- <iframe src="/storage/{{$file->fileUrl}}" width="100%" height="800px" /> -->
+                        <object data="/storage/{{$file->fileUrl}}" type="application/pdf" frameborder="0" width="100%" height="800px" style="padding: 20px;">
+                            <embed src="/storage/{{$file->fileUrl}}" width="100%" height="800px"/> 
+                        </object>
                     @else
                         <img src="/storage/{{$file->fileUrl}}" alt="">
                     @endif
