@@ -197,7 +197,8 @@ function changeResidence(){
                 url: "/get-room-types-id",
                 data: {residence: $("#property").val()},
 
-                success: function (data) {          
+                success: function (data) {        
+                    console.log(data)  
                     $("#room_type").empty().append('<option value="" selected disabled>Select a Room Type</option>')
                     data.forEach(function(index){
                         let roomTypeSelected = '<?php echo Session::get("room_type"); ?>';

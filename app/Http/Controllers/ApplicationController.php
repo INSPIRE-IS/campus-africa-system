@@ -17,6 +17,7 @@ use App\Models\RoomTypes;
 use App\Models\Residence;
 use App\Models\MailerList;
 use Mail;
+use App\Models\Property;
 
 class ApplicationController extends Controller
 {
@@ -816,7 +817,19 @@ class ApplicationController extends Controller
 
         $residence = Residence::where('id', $property)->first();
 
-        $rooms = RoomTypes::where('property_id', $residence->id)->where('name', '!=', 'Building Manager')->get();
+        $property = Property::where('residence', $residence->id)->get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $searchable_rooms = [];
+
+        foreach($property as $prop){
+            if($prop->year_end == 0 || $prop->year_end >= $this_year){
+                if(!in_array($prop->room_type, $searchable_rooms)){
+                    array_push($searchable_rooms, $prop->room_type);
+                }
+            }
+        }
+
+        $rooms = RoomTypes::where('property_id', $residence->id)->where('name', '!=', 'Building Manager')->whereIn('id', $searchable_rooms)->get();
 
         return $rooms;
     }

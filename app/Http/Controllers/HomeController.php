@@ -3717,7 +3717,21 @@ class HomeController extends Controller
     }
 
     public function check_rooms($bookingId){
-        $allRooms = RoomTypes::where('name', '!=', 'Building Manager')->pluck('id');
+
+        $property = Property::get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $searchable_rooms = [];
+
+        foreach($property as $prop){
+            if($prop->year_end == 0 || $prop->year_end >= $this_year){
+                if(!in_array($prop->room_type, $searchable_rooms)){
+                    array_push($searchable_rooms, $prop->room_type);
+                }
+            }
+        }
+
+        $allRooms = RoomTypes::where('name', '!=', 'Building Manager')->whereIn('id', $searchable_rooms)->pluck('id');
+
         $allowedProps = PropertyPermission::where('userUid', Auth::user()->id)->pluck('property');
 
         $propertyInfo = Property::whereNull('room_available')->whereIn('room_type', $allRooms)->whereIn('residence', $allowedProps)->groupBy('residence')->get();
@@ -3734,7 +3748,20 @@ class HomeController extends Controller
     }
 
     public function check_all_rooms($bookingId){
-        $allRooms = RoomTypes::where('name', '!=', 'Building Manager')->pluck('id');
+
+        $property = Property::get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $searchable_rooms = [];
+
+        foreach($property as $prop){
+            if($prop->year_end == 0 || $prop->year_end >= $this_year){
+                if(!in_array($prop->room_type, $searchable_rooms)){
+                    array_push($searchable_rooms, $prop->room_type);
+                }
+            }
+        }
+
+        $allRooms = RoomTypes::where('name', '!=', 'Building Manager')->whereIn('id', $searchable_rooms)->pluck('id');
 
         $propertyInfo = Property::whereNull('room_available')->whereIn('room_type', $allRooms)->groupBy('residence')->get();
         $propertyInfoRooms = Property::with('roomType')->whereNull('room_available')->whereIn('room_type', $allRooms)->groupBy('room_type')->get();
@@ -4182,7 +4209,19 @@ class HomeController extends Controller
 
         $residence = Residence::where('id', $property)->first();
 
-        $rooms = RoomTypes::where('property_id', $residence->id)->where('name', '!=', 'Building Manager')->get();
+        $property = Property::where('residence', $residence->id)->get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $searchable_rooms = [];
+
+        foreach($property as $prop){
+            if($prop->year_end == 0 || $prop->year_end >= $this_year){
+                if(!in_array($prop->room_type, $searchable_rooms)){
+                    array_push($searchable_rooms, $prop->room_type);
+                }
+            }
+        }
+
+        $rooms = RoomTypes::where('property_id', $residence->id)->where('name', '!=', 'Building Manager')->whereIn('id', $searchable_rooms)->get();
 
         return $rooms;
     }
