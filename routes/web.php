@@ -243,7 +243,7 @@ Route::get('/change-student-type', [ApplicationController::class, 'change_studen
 Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);
 Route::post('/restore-student-booking', [HomeController::class, 'restore_student_booking']);
 Route::post('/change-student-room', [HomeController::class, 'change_student_room']);
-Route::get('/download-beds', [LookupsController::class, 'download_beds']);
+Route::post('/download-beds', [LookupsController::class, 'download_beds']);
 
 Route::get('/bed_import', [HomeController::class, 'bed_import']);
 Route::post('/import/beds', [HomeController::class, 'import_beds']);

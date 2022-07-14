@@ -250,8 +250,12 @@
         $("#exportAllBeds").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
         
         $.ajax({
-            type: "get",
+            type: "post",
             url: "/download-beds",
+            data: {
+                property: $("#property").val(),
+                year: $("#year").val(),
+            },
 
             success: function (data) {
                 $("#exportAllBeds").empty().append('Export All beds')
