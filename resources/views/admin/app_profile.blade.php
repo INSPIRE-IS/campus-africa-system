@@ -2126,7 +2126,7 @@
         // console.log('2')
 
         if(code === "+27"){
-            if (/^\d{9}$/.test(cell)) {
+            if (/^[1-9][0-9]{8}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
@@ -3448,7 +3448,7 @@
 
 
             if(code === "+27"){
-                if (/^\d{9}$/.test(cell)) {
+                if (/^[1-9][0-9]{8}$/.test(cell)) {
                     $("#"+fieldId).removeClass("fieldError")
                     $("#"+fieldError).addClass('hidden')
                 }else{
