@@ -4,7 +4,7 @@
 <div class="container">
     <div class="cards">
         <div class="whiteYellowCard roomImgBack smallerCard" style="margin-right:6%">
-            <h2 class="cardHeader greyCardHeader" style="line-height:65px;">Your Room  @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag"> Cancelled</span> @endif</h2>
+            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Your Room  @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin-left:auto"> Cancelled</span> @endif</h2>
 
             <div class="overlay">
                 <div class="cardBody">
@@ -54,7 +54,7 @@
     <div class="cards" id="bookingCardDash">
 
         <div class="whiteYellowCard smallerCard" style="margin-right:6%">
-            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Booking Summary @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin:auto"> Cancelled</span> @endif</h2>
+            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Booking Summary @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin-left:auto"> Cancelled</span> @endif</h2>
             <div class="cardBody" id="bookSumCard">
               <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
               <h2 class="cardHeaderBlck" >
