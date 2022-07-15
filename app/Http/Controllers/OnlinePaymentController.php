@@ -224,7 +224,7 @@ class OnlinePaymentController extends Controller
 
         $paymentStatus = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
         
-        if($paymentStatus->status == "Approved" || $paymentStatus->status ==  "Received by PayGate" || $paymentStatus->status ==  "Initiated"){
+        if($paymentStatus->status == "Approved" || $paymentStatus->status ==  "Received by PayGate"){
             return redirect('/complete/online-application');
         }else{
             return redirect('/retry/online-application');
