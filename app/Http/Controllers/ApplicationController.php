@@ -18,6 +18,7 @@ use App\Models\Residence;
 use App\Models\MailerList;
 use Mail;
 use App\Models\Property;
+use App\Models\OnlinePayments;
 
 class ApplicationController extends Controller
 {
@@ -874,6 +875,17 @@ class ApplicationController extends Controller
             $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
             $message->from('noreply@campusafrica.co.za','Campus Africa');
         });
+    }
+
+    public function retry_payment(Request $request){
+        $lookups = Lookups::get();
+        $user = User::where('id', Auth::user()->id)->first();
+        $agent = new Agent();
+        $transaction = OnlinePayments::where("userUid", Auth::user()->id)->orderBy("created_at", "desc")->first();
+        $booking = Booking::where('userId', Auth::user()->id)->first();
+
+        return view('application.retry', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "transaction", $transaction, "booking" => $booking]);
+
     }
 
 }

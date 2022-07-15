@@ -22,7 +22,7 @@ class OnlinePaymentController extends Controller
 
         $DateTime = new DateTime();
 
-        if($request->req_type == "new"){
+        if($request->req_type == "new" || $request->req_type == "retry"){
             $req_url = "online-application-payment";
         }else{
             $req_url = "online-application-payment-on-screen";
@@ -217,15 +217,16 @@ class OnlinePaymentController extends Controller
 
         $this->update_user_status($id);
 
-        // if($paymentUpdate->status == "Approved"){
-        //     //
-        // }
-
+        
         if(Auth::check() === false){
             Auth::loginUsingId($id, true);
         }
-
-        return redirect('/complete/online-application');
+        
+        if($paymentUpdate->status == "Approved" || $paymentUpdate->status ==  "Received by PayGate" || $paymentUpdate->status ==  "Initiated"){
+            return redirect('/complete/online-application');
+        }else{
+            return redirect('/retry/online-application');
+        }
     }
 
     public function online_application_payment_on_screen($id){

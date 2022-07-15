@@ -237,6 +237,7 @@ Route::get("/step-5/online-application", [ApplicationController::class, 'step_5'
 Route::get("/complete/online-application", [ApplicationController::class, 'complete_online_app']);
 Route::get("/verify-password", [ApplicationController::class, 'verify_password']);
 Route::post("/confirm-password", [ApplicationController::class, 'confirm_password']);
+Route::get("/retry/online-application", [ApplicationController::class, 'retry_payment']);
 
 Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']);
 Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
