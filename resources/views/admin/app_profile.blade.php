@@ -3128,7 +3128,8 @@
                     },
 
                     success: function (data) {
-                        window.location = "/applications";
+                        // window.location = "/applications";
+                        window.location.reload();
                     },
                 });
             }
