@@ -206,7 +206,7 @@
                             <span style='font-weight:bold'>Payment Type *</span>
                             <select name="payment_type" id="payment_type" class="noedit required" disabled>
                                 <option value="" selected disabled>Please select one</option>
-                                <option value="Credit card" <?php if($booking->payment_type == "Credit card"){echo "selected";}?>>Credit card</option>
+                                <option value="Credit/Debit Card" <?php if($booking->payment_type == "Credit/Debit Card"){echo "selected";}?>>Credit/Debit Card</option>
                                 <option value="Online EFT" <?php if($booking->payment_type == "Online EFT"){echo "selected";}?>>Online EFT</option>
                                 <option value="Manual EFT" <?php if($booking->payment_type == "Manual EFT"){echo "selected";}?>>Manual EFT</option>
                             </select>

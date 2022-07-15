@@ -500,7 +500,7 @@
                                                 <div class="form-field">
                                                     <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                                                     <select name="paymentType" >
-                                                        <option value="Credit card">Credit card</option>
+                                                        <option value="Credit/Debit Card">Credit/Debit Card</option>
                                                     </select>
                                                 </div>
 

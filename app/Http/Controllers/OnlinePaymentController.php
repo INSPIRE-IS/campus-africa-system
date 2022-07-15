@@ -78,6 +78,15 @@ class OnlinePaymentController extends Controller
             Booking::where('userId', $request->id)->update(['payment_type' => $request->payment_type, 'booking_payment_ref' => $request->reference]);
         }
 
+        $currUser = User::where('id', $request->id)->first();
+        ActionList::create([
+            "userUid" => $request->id,
+            "action" => "Online Payment Initiated",
+            "actionUserUid" => $request->id,
+            "actionUserDisplayName" => $currUser->userFirstName,
+            "actionUserRole" => 0,
+        ]);
+
         //close connection
         curl_close($ch);
 
@@ -100,7 +109,7 @@ class OnlinePaymentController extends Controller
             }else if($request->TRANSACTION_STATUS == '4'){
                 $status = "User Cancelled";
             }else if($request->TRANSACTION_STATUS == '5'){
-                $status = "Received by GayGate";
+                $status = "Received by PayGate";
             }else if($request->TRANSACTION_STATUS == '7'){
                 $status = "Settlement Voided";
             }
@@ -112,6 +121,15 @@ class OnlinePaymentController extends Controller
                 UserFiles::where('id', $hasFile->id)->update(["status" => "Approved"]);
                 User::where('id', $hasFile->userUid)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
             }
+
+            $currUser = User::where('id', $transaction->userUid)->first();
+            ActionList::create([
+                "userUid" => $transaction->userUid,
+                "action" => "Online Payment Status: ".$status,
+                "actionUserUid" => $transaction->userUid,
+                "actionUserDisplayName" => $currUser->userFirstName,
+                "actionUserRole" => 0,
+            ]);
 
         }
     }

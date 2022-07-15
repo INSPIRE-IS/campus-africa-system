@@ -151,7 +151,7 @@
                 <div class="form-field">
                     <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select name="paymentType" id="paymentType">
-                        <option value="Credit card">Credit card</option>
+                        <option value="Credit/Debit Card">Credit/Debit Card</option>
                         <option value="Online EFT">Online EFT</option>
                         <option value="Manual EFT">Manual EFT</option>
                     </select>

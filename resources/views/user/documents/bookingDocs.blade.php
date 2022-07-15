@@ -101,7 +101,7 @@
       input: 'select',
       inputOptions: {
         'Online Payments': {
-          Credit_card: 'Credit card',
+          Credit$Debit_Card: 'Credit',
           Online_EFT: 'Online EFT',
         },
       },
@@ -112,7 +112,7 @@
 
           resolve();
 
-          let newValue = value.replace("_", " ");
+          let newValue = (value.replace("_", " ")).replace("%", "/");
           $.ajax({
               type: "post",
               url: "/initiate-payment",
