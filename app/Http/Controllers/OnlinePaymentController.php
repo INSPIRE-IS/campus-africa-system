@@ -136,6 +136,8 @@ class OnlinePaymentController extends Controller
 
     public function online_application_payment($id){
 
+        sleep(10);
+
         $fileType = "proof_of_payment";
         
         $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->first();
@@ -224,7 +226,7 @@ class OnlinePaymentController extends Controller
 
         $paymentStatus = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
         
-        if($paymentStatus->status == "Approved" || $paymentStatus->status ==  "Received by PayGate"){
+        if($paymentStatus->status == "Approved" || $paymentStatus->status ==  "Received by PayGate" || $paymentStatus->status ==  "Initiated"){
             return redirect('/complete/online-application');
         }else{
             return redirect('/retry/online-application');

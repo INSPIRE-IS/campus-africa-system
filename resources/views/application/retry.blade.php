@@ -37,7 +37,7 @@
     
     <form id="appRetry" class="form onlineForm" autocomplete="off">
         <br/>
-        <h1 class="formHeading">Your Payment was Unsuccessful</h1>
+        <h1 class="formHeading">Your Payment was Unsuccessful: {{$transaction->status}}</h1>
         <br/>
 
         <div class="form-field">
