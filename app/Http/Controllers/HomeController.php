@@ -3709,9 +3709,18 @@ class HomeController extends Controller
     }
     
     public function delete_bed (Request $request) {
-        $property = Property::where('id', $request->propertyId)->first();
 
-        Property::where('id', $request->propertyId)->update(['year_end' => $property->year - 1]);
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $property = Property::where('id', $request->propertyId)->first();
+        
+        if($property->year == $this_year){
+            Property::where('id', $request->propertyId)->update(['year_end' => $property->year - 1]);
+        }else{
+            Property::where('id', $request->propertyId)->update(['year_end' => $property->year]);
+        }
+
 
         return "done";
     }
