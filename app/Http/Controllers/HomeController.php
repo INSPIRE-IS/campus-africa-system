@@ -3860,7 +3860,7 @@ class HomeController extends Controller
                     if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
                         if (!isset($units[$pi->bed_code])) {
 
-                            $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->get();
+                            $bed_used = Booking::with('users')->where('property', $request->property)->where('roomType', $request->roomType)->where('floor', $request->floor)->where('unit', $request->unit)->where('bed_code', $pi->bed_code)->where('year', $this_year)->get();
         
                             if (count($bed_used) == 0) {
                                 $bed_code[$pi->bed_code] = $pi;
