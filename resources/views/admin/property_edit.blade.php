@@ -174,7 +174,7 @@
 
             $.ajax({
                 type: "post",
-                url: "/get-room-types-id",
+                url: "/get-room-types",
                 data: {residence: $("#residence").val()},
     
                 success: function (data) {          

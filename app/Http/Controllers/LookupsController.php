@@ -486,8 +486,23 @@ class LookupsController extends Controller {
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
 		$xlsx->addSheet( $beds, 'Beds');
-		$xlsx->saveAs('All Beds Export.xlsx');
 
-		return "true";
+        if($year !== "All"){
+            //Bed_Codes_Export_YYYY
+            if($year == "current"){
+                $yearState = $this_year->lookup_name;
+            }else{
+                $yearState = floatval($this_year->lookup_name) + 1;
+            }
+
+            $downloadUrl = 'Bed_Codes_Export_'.$yearState.'.xlsx';
+
+            $xlsx->saveAs('Bed_Codes_Export_'.$yearState.'.xlsx');
+        }else{
+            $downloadUrl = 'System_Bed_Codes_All_Years.xlsx';
+            $xlsx->saveAs('System_Bed_Codes_All_Years.xlsx');
+        }
+
+		return $downloadUrl;
     }
 }

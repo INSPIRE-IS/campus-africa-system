@@ -4195,9 +4195,10 @@ class HomeController extends Controller
     }
 
     public function get_room_types(Request $request){
+
         $property = $request->residence;
 
-        $residence = Residence::where('residence', $property)->first();
+        $residence = Residence::where('id', $property)->first();
 
         $rooms = RoomTypes::where('property_id', $residence->id)->get();
 
