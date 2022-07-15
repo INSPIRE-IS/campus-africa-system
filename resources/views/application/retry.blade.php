@@ -35,51 +35,54 @@
         <div class="tab active">5: Pay Booking Fee</div>
     </div>
     
-    <form id="appRetry" class="form onlineForm" autocomplete="off">
+    <!-- <form id="appRetry" class="form onlineForm" autocomplete="off"> -->
         <br/>
         <h1 class="formHeading">Your Payment was Unsuccessful: {{$transaction->status}}</h1>
         <br/>
 
-        <div class="form-field">
+        <!-- <div class="form-field"> -->
             <p>Please try again or procceed to your dashboard</p>
             <br/><br/>
-            <div class="form-field">
+            <!-- <div class="form-field"> -->
                 <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
-                <select name="paymentType" id="paymentType">
+                <select name="paymentType" id="paymentType" style="width:300px !important;">
                     <option value="Credit/Debit Card">Credit/Debit Card</option>
                     <option value="Online EFT">Online EFT</option>
                     <option value="Manual EFT">Manual EFT</option>
                 </select>
-            </div>
-            @if(!$agent->isMobile())
+                <br/>
+                <br/>
+            <!-- </div> -->
+            <!-- @if(!$agent->isMobile())
                 <div class="form-field">
                     <br/>
                 </div>
-            @endif
-            <div class="form-field">
-                <button types="button" class="paymentBtn" onClick="createpayment()" style="width:94%">Pay Now</button>
+            @endif -->
+            <!-- <div class="form-field"> -->
+                <button types="button" class="paymentBtn" onClick="createpayment()" style="width:300px; margin-left:0px;">Pay Now</button>
+                <br/><br/>
                 <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
                     <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
                     <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
                 </form>
-            </div>
+            <!-- </div> -->
 
-            @if(!$agent->isMobile())
+            <!-- @if(!$agent->isMobile())
                 <div class="form-field">
                     <br/>
                 </div>
-            @endif
+            @endif -->
 
-            <div class="form-field">
+            <!-- <div class="form-field"> -->
                 <a href="/complete/online-application"><button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26; float:left; margin-left:0px;">Continue to Dashboard</button></a>
                 <br/><br/>
-            </div>
-        </div>
+            <!-- </div> -->
+        <!-- </div> -->
 
 
 
 
-    </form>
+    <!-- </form> -->
 
 </div>
 
