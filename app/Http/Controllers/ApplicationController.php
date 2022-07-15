@@ -884,7 +884,7 @@ class ApplicationController extends Controller
         $transaction = OnlinePayments::where("userUid", Auth::user()->id)->orderBy("created_at", "desc")->first();
         $booking = Booking::where('userId', Auth::user()->id)->first();
 
-        return view('application.retry', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "transaction", $transaction, "booking" => $booking]);
+        return view('application.retry', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "transaction" => $transaction, "booking" => $booking]);
 
     }
 

@@ -136,7 +136,7 @@ class OnlinePaymentController extends Controller
 
     public function online_application_payment($id){
 
-        sleep(10);
+        sleep(5);
 
         $fileType = "proof_of_payment";
         
