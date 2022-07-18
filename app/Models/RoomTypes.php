@@ -19,5 +19,11 @@ class RoomTypes extends Model
         'img_url',
         'room_map_slug',
         'room_map_price',
+        'pull_price',
+        'booking_price',
+        'rent_price',
+        'apply_nsfas',
+        'apply_bursary',
+        'apply_cash',
     ];
 }

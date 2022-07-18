@@ -1745,7 +1745,9 @@ class HomeController extends Controller
 
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
-        $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+
+        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
@@ -1832,6 +1834,31 @@ class HomeController extends Controller
                         } 
                     }
 
+                }
+            }
+        }
+
+        if($roomTypeData->pull_price == null){
+            $booking_data['room_rate'] = $roomTypeData->booking_price;
+
+            if($user->studentType == "NSFAS"){
+                if($roomTypeData->apply_nsfas == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+
+            if($user->studentType == "Bursary"){
+                if($roomTypeData->apply_bursary == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+
+            if($user->studentType == "Cash / Direct"){
+                if($roomTypeData->apply_cash == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
                 }
             }
         }
@@ -3088,7 +3115,9 @@ class HomeController extends Controller
 
             $property = Residence::where('id', $property)->pluck('residence')->first();
             $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
-            $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+            
+            $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+            $roomTypeId = $roomTypeData->room_map_slug;
 
             $allResidences = Residence::get();
             $allRoomTypes = RoomTypes::get();
@@ -3174,6 +3203,31 @@ class HomeController extends Controller
                             }
                         }
     
+                    }
+                }
+            }
+
+            if($roomTypeData->pull_price == null){
+                $booking_data['room_rate'] = $roomTypeData->booking_price;
+            
+                if($user->studentType == "NSFAS"){
+                    if($roomTypeData->apply_nsfas == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            
+                if($user->studentType == "Bursary"){
+                    if($roomTypeData->apply_bursary == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            
+                if($user->studentType == "Cash / Direct"){
+                    if($roomTypeData->apply_cash == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
                     }
                 }
             }
@@ -3338,7 +3392,9 @@ class HomeController extends Controller
     
                 $property = Residence::where('id', $property)->pluck('residence')->first();
                 $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
-                $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+
+                $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+                $roomTypeId = $roomTypeData->room_map_slug;
     
                 $allResidences = Residence::get();
                 $allRoomTypes = RoomTypes::get();
@@ -3423,6 +3479,31 @@ class HomeController extends Controller
                                 }
                             }
         
+                        }
+                    }
+                }
+
+                if($roomTypeData->pull_price == null){
+                    $booking_data['room_rate'] = $roomTypeData->booking_price;
+                
+                    if($user->studentType == "NSFAS"){
+                        if($roomTypeData->apply_nsfas == null){
+                            $booking_data['room_rate'] = "0";
+                            $actionFileData['action'] = "Booking Fee is R0";
+                        }
+                    }
+                
+                    if($user->studentType == "Bursary"){
+                        if($roomTypeData->apply_bursary == null){
+                            $booking_data['room_rate'] = "0";
+                            $actionFileData['action'] = "Booking Fee is R0";
+                        }
+                    }
+                
+                    if($user->studentType == "Cash / Direct"){
+                        if($roomTypeData->apply_cash == null){
+                            $booking_data['room_rate'] = "0";
+                            $actionFileData['action'] = "Booking Fee is R0";
                         }
                     }
                 }
@@ -4305,7 +4386,13 @@ class HomeController extends Controller
             "property_id" => $request->property_id,
             "name" => $request->name,
             "room_map_slug" => $request->room_map,
-            "room_map_price" => $request->room_map_price,
+            // "room_map_price" => $request->room_map_price,
+            "pull_price" => $request->pull_price,
+            "booking_price" => $request->booking_price,
+            "rent_price" => $request->rent_price,
+            "apply_nsfas" => $request->apply_nsfas,
+            "apply_bursary" => $request->apply_bursary,
+            "apply_cash" => $request->apply_cash,
         ];
 
         if($roomTypeId == "0"){
@@ -4633,7 +4720,10 @@ class HomeController extends Controller
 
         $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
-        $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+
+        
+        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
@@ -4824,6 +4914,31 @@ class HomeController extends Controller
             }
         }
 
+        if($roomTypeData->pull_price == null){
+            $booking_data['room_rate'] = $roomTypeData->booking_price;
+        
+            if($user->studentType == "NSFAS"){
+                if($roomTypeData->apply_nsfas == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        
+            if($user->studentType == "Bursary"){
+                if($roomTypeData->apply_bursary == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        
+            if($user->studentType == "Cash / Direct"){
+                if($roomTypeData->apply_cash == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        }
+
         $booking = Booking::where('userId', $request->userId)->update($booking_data);
 
         UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->update([
@@ -4848,8 +4963,9 @@ class HomeController extends Controller
 
         $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
         $booking->roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
-
-        $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+        
+        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
@@ -5043,6 +5159,31 @@ class HomeController extends Controller
                         
 
                         
+                    }
+                }
+            }
+
+            if($roomTypeData->pull_price == null){
+                $booking_data['room_rate'] = $roomTypeData->booking_price;
+            
+                if($user->studentType == "NSFAS"){
+                    if($roomTypeData->apply_nsfas == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            
+                if($user->studentType == "Bursary"){
+                    if($roomTypeData->apply_bursary == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            
+                if($user->studentType == "Cash / Direct"){
+                    if($roomTypeData->apply_cash == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
                     }
                 }
             }
@@ -6476,7 +6617,8 @@ class HomeController extends Controller
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
-        $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
@@ -6560,6 +6702,31 @@ class HomeController extends Controller
 
 
                     
+                }
+            }
+        }
+
+        if($roomTypeData->pull_price == null){
+            $booking_data['room_rate'] = $roomTypeData->booking_price;
+        
+            if($user->studentType == "NSFAS"){
+                if($roomTypeData->apply_nsfas == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        
+            if($user->studentType == "Bursary"){
+                if($roomTypeData->apply_bursary == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        
+            if($user->studentType == "Cash / Direct"){
+                if($roomTypeData->apply_cash == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
                 }
             }
         }
@@ -6692,7 +6859,8 @@ class HomeController extends Controller
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
-        $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
@@ -6775,6 +6943,31 @@ class HomeController extends Controller
 
 
                     
+                }
+            }
+        }
+
+        if($roomTypeData->pull_price == null){
+            $booking_data['room_rate'] = $roomTypeData->booking_price;
+        
+            if($user->studentType == "NSFAS"){
+                if($roomTypeData->apply_nsfas == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        
+            if($user->studentType == "Bursary"){
+                if($roomTypeData->apply_bursary == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        
+            if($user->studentType == "Cash / Direct"){
+                if($roomTypeData->apply_cash == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
                 }
             }
         }
