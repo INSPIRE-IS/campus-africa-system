@@ -285,7 +285,7 @@ $.ajaxSetup({
                 $("#"+fieldError).removeClass('hidden')
             }
         }else{
-            if(/^(?:[+\d].*\d|\d)$/.test(code)){
+            if(/^[+][0-9]{1,3}$/.test(code)){
                 if(/^(0|[1-9][0-9]*)$/.test(cell)){
                     $("#"+fieldId).removeClass("fieldError")
                     $("#"+fieldError).addClass('hidden')
