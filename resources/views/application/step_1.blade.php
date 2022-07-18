@@ -267,8 +267,6 @@
     $("#property").on('change', function(){
         $("#roomType").empty().append('<option value="" selected disabled>Loading</option>')
 
-        console.log($("#firstRoom").val())
-
             $.ajax({
                 type: "post",
                 url: "/get-room-ids",
@@ -278,12 +276,21 @@
                     $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
                     data.forEach(function(index){
                         var selected = ""
+                        var disabled = ""
+                        var disabledRoom = ""
 
                         if($("#firstRoom").val() !== ""){
                             var selected = $("#firstRoom").val() == index.id ? "selected" : ""
                         }
-                        
-                        $("#roomType").append('<option value="'+index.id+'" '+selected+'>'+index.name+'</option>')
+
+                        if(index.online == '0'){
+                            var disabled ="disabled"
+                            var disabledRoom = "(Fully Booked)"
+                            var selected = ""
+                        }
+
+                                                
+                        $("#roomType").append('<option value="'+index.id+'" '+selected+' '+disabled+'>'+index.name+' '+disabledRoom+'</option>')
                     })
 
                     $("#firstRoom").val('');
