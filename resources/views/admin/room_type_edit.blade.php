@@ -279,7 +279,7 @@
                 req = 0;
             }
 
-            if(document.getElementById('apply_nsfas').checked == false && document.getElementById('apply_bursary').checked == false && document.getElementById('apply_cash').checked == false){
+            if(document.getElementById('pull_price').checked == false && document.getElementById('apply_nsfas').checked == false && document.getElementById('apply_bursary').checked == false && document.getElementById('apply_cash').checked == false){
                 $("#applies_to").removeClass("hidden")
                 req = 0;
             }
