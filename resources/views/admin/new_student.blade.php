@@ -456,13 +456,13 @@
         <div class="form-field">
             <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
             <input type="text" name="kWorkNo_code" id="kWorkNo_code" style="width:10% !important;" value="+27">
-            <input type="text" name="kWorkNo" id='kWorkNo' style="width:85% !important" class="required">
+            <input type="text" name="kWorkNo" id='kWorkNo' style="width:85% !important">
         </div>
 
         <div class="form-field">
             <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a valid telephone number</small></span></label>
             <input type="text" name="kTeleNo_code" id="kTeleNo_code" style="width:10% !important;" value="+27">
-            <input type="text" name="kTeleNo" id='kTeleNo' style="width:85% !important" class="required">
+            <input type="text" name="kTeleNo" id='kTeleNo' style="width:85% !important">
         </div>
 
         <div class="addressSection">
