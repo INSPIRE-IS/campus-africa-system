@@ -30,6 +30,13 @@
             </select>
         </div>
 
+        <div class="form-field">
+            <label>Website Room Price</label>
+            <select name="room_map_price" id="room_map_price">
+                <option value="">Please Select One</option>
+            </select>
+        </div>
+
         <input type="hidden" name="id" id="id" value="<?php if(!empty($roomTypeData)){echo $roomTypeData->id;}else{echo "0";}?>"/>
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
@@ -45,13 +52,19 @@
             let rooms = <?php echo json_encode($roomDetails); ?>;
 
             $("#room_map").empty().append('<option value="">Please Select One</option>')
+            $("#room_map_price").empty().append('<option value="">Please Select One</option>')
             properties.forEach(function (arrayItem){
                 if(arrayItem['propId'] == $("#property_id").val()){
                     rooms.forEach(function(roomItem){
                         if(roomItem['id'] == arrayItem['id']){
+
                             let preselected = "<?php if(!empty($roomTypeData) && $roomTypeData->room_map_slug != "" && $roomTypeData->room_map_slug != null){echo $roomTypeData->room_map_slug;}else {echo "";}?>";
                             let selected = preselected == roomItem['roomId'] ? "selected" : "";
                             $("#room_map").append('<option value="'+roomItem['roomId']+'" '+selected+'>'+roomItem['title']+'</option>')
+
+                            let preselectedPrice = "<?php if(!empty($roomTypeData) && $roomTypeData->room_map_price != "" && $roomTypeData->room_map_price != null){echo $roomTypeData->room_map_price;}else {echo "";}?>";
+                            let selectedPrice = preselectedPrice == roomItem['roomId'] ? "selected" : "";
+                            $("#room_map_price").append('<option value="'+roomItem['roomId']+'" '+selectedPrice+'>'+roomItem['title']+'</option>')
                         }
                     })
                 }
@@ -70,6 +83,8 @@
                         rooms.forEach(function(roomItem){
                             if(roomItem['id'] == arrayItem['id']){
                                 $("#room_map").append('<option value="'+roomItem['roomId']+'">'+roomItem['title']+'</option>')
+                                $("#room_map_price").append('<option value="'+roomItem['roomId']+'">'+roomItem['title']+'</option>')
+
                             }
                         })
                     }

@@ -550,6 +550,8 @@ class ApplicationController extends Controller
         $property = Residence::where('id', $booking->property)->pluck('residence')->first();
         $roomTypeNew = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
 
+        $roomTypeId = RoomTypes::where('id', $booking->roomType)->pluck('room_map_price')->first();
+
         $bookingRoomtype = $roomTypeInfo->name;
         $booking->property = $propertyTypeInfo->residence;
 
@@ -588,72 +590,81 @@ class ApplicationController extends Controller
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
-                    $attributes = $room->acf->attributes;
-
-                    foreach($attributes as $attr){
-                        if($attr == "436"){
-                            $chair = "true";
+                                        
+                    if($room->id == $roomTypeId){
+                        $attributes = $room->acf->attributes;
+    
+                        foreach($attributes as $attr){
+                            if($attr == "436"){
+                                $chair = "true";
+                            }
+                            if($attr == "405"){
+                                $wifi = "true";
+                            }
+                            if($attr == "413"){
+                                $kitchen = "true";
+                            }
+                            if($attr == "468"){
+                                $bath = "true";
+                            }
                         }
-                        if($attr == "405"){
-                            $wifi = "true";
+
+                        $roomType = $roomTypeNew;
+                        $roomName = $room->slug;
+                        $priced_from = $room->acf->price_from;
+                        $beds = $room->acf->beds;
+
+                        $appliesTo = $room->acf->booking_fee_applies_to;
+    
+                        if($room->acf->booking_fee_override !== ""){
+                            $room_rate = $room->acf->booking_fee_override;
                         }
-                        if($attr == "413"){
-                            $kitchen = "true";
+    
+                        if($user->studentType == "NSFAS"){
+                            if(!in_array("NSFAS Students", $appliesTo)){
+                                $room_rate = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
+                            }
                         }
-                        if($attr == "468"){
-                            $bath = "true";
+    
+                        if($user->studentType == "Bursary"){
+                            if(!in_array("Bursary Students", $appliesTo)){
+                                $room_rate = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
+                            }
                         }
-                    }
-
-                    $appliesTo = $room->acf->booking_fee_applies_to;
-
-                    if($room->acf->booking_fee_override !== ""){
-                        $room_rate = $room->acf->booking_fee_override;
-                    }
-
-                    if($user->studentType == "NSFAS"){
-                        if(!in_array("NSFAS Students", $appliesTo)){
-                            $room_rate = "0";
-                            $actionFileData['action'] = "Booking Fee is R0";
-                        }
-                    }
-
-                    if($user->studentType == "Bursary"){
-                        if(!in_array("Bursary Students", $appliesTo)){
-                            $room_rate = "0";
-                            $actionFileData['action'] = "Booking Fee is R0";
-                        }
-                    }
-
-                    if($user->studentType == "Cash / Direct"){
-                        if(!in_array("Cash Students", $appliesTo)){
-                            $room_rate = "0";
-                            $actionFileData['action'] = "Booking Fee is R0";
-                        }
-                    }
-
-                    $slugString = str_replace("-", " ", $room->slug);
-                    $roomType = "";
-                    $roomName = "";
-
-                    foreach($allResidences as $residence){
-                        if(strtoupper($property) == strtoupper($residence->residence)){
-                            $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                            $requiredName = $roomTypeNew;
-
-                            foreach($jsonDataRooms as $roomInfo){
-                                if($residenceId == $roomInfo->acf->residence){
-                                    if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($roomTypeNew)){
-                                        $roomType = $roomTypeNew;
-                                        $roomName = $roomInfo->slug;
-                                        $priced_from = $roomInfo->acf->price_from;
-                                        $beds = $roomInfo->acf->beds;
-                                        break;
-                                    }
-                                }
+    
+                        if($user->studentType == "Cash / Direct"){
+                            if(!in_array("Cash Students", $appliesTo)){
+                                $room_rate = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
                     }
+
+
+                    // $slugString = str_replace("-", " ", $room->slug);
+                    // $roomType = "";
+                    // $roomName = "";
+
+                    // foreach($allResidences as $residence){
+                    //     if(strtoupper($property) == strtoupper($residence->residence)){
+                    //         $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
+                    //         $requiredName = $roomTypeNew;
+
+                    //         foreach($jsonDataRooms as $roomInfo){
+                    //             if($residenceId == $roomInfo->acf->residence){
+                    //                 if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($roomTypeNew)){
+                    //                     $roomType = $roomTypeNew;
+                    //                     $roomName = $roomInfo->slug;
+                    //                     $priced_from = $roomInfo->acf->price_from;
+                    //                     $beds = $roomInfo->acf->beds;
+                    //                     break;
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
             }
 

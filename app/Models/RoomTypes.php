@@ -18,5 +18,6 @@ class RoomTypes extends Model
         'online',
         'img_url',
         'room_map_slug',
+        'room_map_price',
     ];
 }
