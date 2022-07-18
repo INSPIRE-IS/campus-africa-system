@@ -17,6 +17,11 @@
             <tr>
                 <th>Residence</th>
                 <th>Room Type</th>
+                <th>Website Room Map</th>
+                <th>Price Source</th>
+                <th>Price</th>
+                <th>Booking Fee</th>
+                <th>Applies To</th>
                 <th></th>
             </tr> 
         </thead>
@@ -33,7 +38,69 @@
                 </td>
                 <td>{{$rt->name}}</td>
                 <td>
-                    <a href="/room-type/edit/{{$rt->id}}">Edit</a>
+                    @if($rt->pull_price == '1')
+                        @foreach($roomDetails as $rd)
+                            @if($rd->roomId == $rt->room_map_slug)
+                                {!!$rd->title!!}
+                            @endif
+                        @endforeach
+                    @endif
+                </td>
+                <td>@if($rt->pull_price == '1') Website @else @if($rt->booking_price !== null) Booking System @endif @endif</td>
+                <td>
+                    @if($rt->rent_price !== null) 
+                        R {{$rt->rent_price}} 
+                    @else 
+                        @foreach($roomDetails as $rd)
+                            @if($rd->roomId == $rt->room_map_slug)
+                                R {{$rd->price_from}}
+                            @endif
+                        @endforeach
+                    @endif 
+                </td>
+                <td>
+                    @if($rt->booking_price !== null) 
+                        R {{$rt->booking_price}}
+                    @else 
+                        @foreach($roomDetails as $rd)
+                            @if($rd->roomId == $rt->room_map_slug)
+                                R {{$rd->booking_fee}}
+                            @endif
+                        @endforeach
+                    @endif 
+                </td>
+                <td>
+                    @if($rt->rent_price !== null) 
+                        @if($rt->apply_nsfas !== null)
+                            NSFAS
+                        @endif
+                        
+                        @if($rt->apply_bursary !== null)
+                            @if($rt->apply_nsfas !== null)
+                                 | 
+                            @endif
+
+                            Bursary
+                        @endif
+
+                        @if($rt->apply_cash !== null)
+
+                            @if($rt->apply_bursary !== null || $rt->apply_nsfas !== null)
+                                 | 
+                            @endif
+
+                            Cash
+                        @endif
+                    @else
+                        @foreach($roomDetails as $rd)
+                            @if($rd->roomId == $rt->room_map_slug)
+                                {{str_replace("Students", "", implode(" | ", $rd->applies_to))}}
+                            @endif
+                        @endforeach
+                    @endif
+                </td>
+                <td>
+                    <a href="/room-type/edit/{{$rt->id}}" style="background-color:red; color:#fff; padding:6px; border-radius:9px; text-decoration:none;">Edit</a>
                     <?php
                     $i = 0;
                     foreach($property as $p){
