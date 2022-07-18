@@ -214,6 +214,7 @@
     </form>
 
 </div>
+<input type="hidden" id="firstRoom" value="" />
 <!-- <div class="footerClearfix"></div>
 <div class="footerClearfix"></div>
 <div class="footerClearfix"></div> -->
@@ -248,11 +249,25 @@
     document.getElementById("dob").setAttribute("min", yearBack+"-"+month+"-"+day);
 
     if("{{$propertyID}}" !== "0"){
-        $("#property").val("{{$propertyID}}").trigger("change")
+
+        //Find Room to map Property & Room
+        $.ajax({
+            type: "post",
+            url: "/get-room-maps",
+            data: {residence: "{{$propertyID}}", roomType: "{{$roomType}}"},
+
+            success: function (data) {         
+                console.log(data[1]) 
+                $("#firstRoom").val(data[1]);
+                $("#property").val(data[0]).trigger("change")
+            },
+        });
     }
 
     $("#property").on('change', function(){
         $("#roomType").empty().append('<option value="" selected disabled>Loading</option>')
+
+        console.log($("#firstRoom").val())
 
             $.ajax({
                 type: "post",
@@ -262,8 +277,16 @@
                 success: function (data) {          
                     $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
                     data.forEach(function(index){
-                        $("#roomType").append('<option value="'+index.id+'">'+index.name+'</option>')
+                        var selected = ""
+
+                        if($("#firstRoom").val() !== ""){
+                            var selected = $("#firstRoom").val() == index.id ? "selected" : ""
+                        }
+                        
+                        $("#roomType").append('<option value="'+index.id+'" '+selected+'>'+index.name+'</option>')
                     })
+
+                    $("#firstRoom").val('');
                 },
             });
     })

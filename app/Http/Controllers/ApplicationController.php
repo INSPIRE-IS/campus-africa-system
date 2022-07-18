@@ -41,6 +41,31 @@ class ApplicationController extends Controller
 
     }
 
+    Public function get_room_maps(Request $request){
+        //Get residences from WP
+        $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+        $residenceNameWP = "";
+        $roomID = "";
+
+        foreach($jsonDataResidence as $residence){
+            if($residence->id == $request->residence){
+                //get residence Name from residence (WP)
+                $residenceNameWP = $residence->title->rendered;
+            }
+        }
+
+        $residence = Residence::where('residence', $residenceNameWP)->first();
+        $roomMaps = RoomTypes::where('property_id', $residence->id)->get();
+
+        foreach($roomMaps as $room){
+            if($room->room_map_slug == $request->roomType){
+                $roomID = $room->id;
+            }
+        }
+
+        return [$residence->id, $roomID];
+    }
+
     public function step_verify(Request $request, $applicationToken){
 
         return view('application.verify_user', ["applicationToken" => $applicationToken]);

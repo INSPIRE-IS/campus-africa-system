@@ -249,6 +249,8 @@ Route::post('/download-beds', [LookupsController::class, 'download_beds']);
 Route::get('/bed_import', [HomeController::class, 'bed_import']);
 Route::post('/import/beds', [HomeController::class, 'import_beds']);
 
+Route::post('/get-room-maps', [ApplicationController::class, 'get_room_maps']);
+
 Route::post('/UpdatePaymentRef', [HomeController::class, 'UpdatePaymentRef']);
 
 
