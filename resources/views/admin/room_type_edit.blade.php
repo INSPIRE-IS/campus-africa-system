@@ -39,7 +39,7 @@
             <ul style="list-style-type:none;" id="pull_price_box">
                 <li style="display:inline-flex">
                     <input type="checkbox" id="pull_price" name="pull_price" value="1" style="width:40px !important" <?php if(!empty($roomTypeData) && $roomTypeData->pull_price == '1'){echo "checked";}?>>
-                    <label for="pull_price" style="width:500px; padding-left:10px;">Pull prices and booking fees from webite</label>
+                    <label for="pull_price" style="width:500px; padding-left:10px;">Pull prices and booking fees from website</label>
                 </li>
             </ul>
         </div>
@@ -54,7 +54,7 @@
         </div>
 
         <div class="form-field">
-            <label>Price PM <span id="rent_price_error" class="hidden" style="color:red"><small>This is a required field</small></span></label>
+            <label>Room Price<span id="rent_price_error" class="hidden" style="color:red"><small>This is a required field</small></span></label>
             <input type="number" name="rent_price" id="rent_price" value="<?php if(!empty($roomTypeData)){echo $roomTypeData->rent_price;}?>">
         </div>
 
