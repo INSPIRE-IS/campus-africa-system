@@ -39,21 +39,47 @@
             <input type="text" name="building_prefix" id="building_prefix" value="<?php if(!empty($propertyData)){echo $propertyData->building_prefix;}?>" onKeyUp="updatePrefix()" maxLength="2">
         </div>
 
+        <hr/>
 
-        <!-- <div class="form-field" style="width:33%">
-            <label>Booking Fee (NSFAS)</label>
-            <input type="text" name="nsfas_booking_rate" id="nsfas_booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->nsfas_booking_rate;}?>">
+        <div class="form-field">
+            <br/>
+            <label>Account Name</label>
+            <input type="text" name="account_name" id="account_name" value="<?php if(!empty($propertyData)){echo $propertyData->account_name;}?>">
         </div>
 
-        <div class="form-field" style="width:33%">
-            <label>Booking Fee (Bursary)</label>
-            <input type="text" name="bursary_booking_rate" id="bursary_booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->bursary_booking_rate;}?>">
+        <div class="form-field">
+            <br/>
+            <label>Bank</label>
+            <input type="text" name="bank_name" id="bank_name" value="<?php if(!empty($propertyData)){echo $propertyData->bank_name;}?>">
         </div>
 
-        <div class="form-field" style="width:33%">
-            <label>Booking Fee (Cash)</label>
-            <input type="text" name="booking_rate" id="booking_rate" value="<?php if(!empty($propertyData)){echo $propertyData->booking_rate;}?>">
-        </div> -->
+        <div class="form-field">
+            <br/>
+            <label>Account Number</label>
+            <input type="text" name="account_number" id="account_number" value="<?php if(!empty($propertyData)){echo $propertyData->account_number;}?>">
+        </div>
+
+        <div class="form-field">
+            <br/>
+            <label>Branch</label>
+            <input type="text" name="branch" id="branch" value="<?php if(!empty($propertyData)){echo $propertyData->branch;}?>">
+        </div>
+
+        <div class="form-field">
+            <br/>
+            <label>Branch Code</label>
+            <input type="text" name="branch_code" id="branch_code" value="<?php if(!empty($propertyData)){echo $propertyData->branch_code;}?>">
+        </div>
+
+        <div class="form-field">
+            <br/>
+        </div>
+        <div class="form-field">
+            <br/>
+        </div>
+
+
+
 
 
         <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>

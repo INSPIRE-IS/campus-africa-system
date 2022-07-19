@@ -4099,6 +4099,12 @@ class HomeController extends Controller
             "nsfas_booking_rate" => $request->nsfas_booking_rate,
             "bursary_booking_rate" => $request->bursary_booking_rate,
             "building_prefix" => $request->building_prefix,
+
+            "account_name" => $request->account_name,
+            "bank_name" => $request->bank_name,
+            "account_number" => $request->account_number,
+            "branch" => $request->branch,
+            "branch_code" => $request->branch_code,
         ];
 
         if($request->nsfas_booking_rate == null){
