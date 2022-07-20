@@ -274,7 +274,7 @@
 
 function paymentRef(){
         swal.fire({
-                title: 'Please enter the Payment Reference:',
+                title: 'Please enter the Payment Reference you used:',
                 input: 'text',
                 inputAttributes: {
                     autocapitalize: 'off'

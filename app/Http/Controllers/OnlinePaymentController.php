@@ -19,6 +19,9 @@ class OnlinePaymentController extends Controller
         
         //encryption key set in the Merchant Access Portal
         $encryptionKey = 'secret';
+        // $encryptionKey = 'wUrEU5MlbopX';
+        $paygateId = 10011072130;
+        // $paygateId = 1039719100014;
 
         $DateTime = new DateTime();
 
@@ -29,7 +32,7 @@ class OnlinePaymentController extends Controller
         }
 
         $data = array(
-            'PAYGATE_ID'        => 10011072130,
+            'PAYGATE_ID'        => $paygateId,
             'REFERENCE'         => $request->reference,
             'AMOUNT'            => floatval($request->amount)*100,
             'CURRENCY'          => 'ZAR',
