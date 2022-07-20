@@ -18,6 +18,7 @@ class OnlinePayments extends Model
         'amount',
         'checkSum',
         'returnUrl',
-        'status'
+        'status',
+        'post_data'
     ];
 }

@@ -19,9 +19,7 @@ class OnlinePaymentController extends Controller
         
         //encryption key set in the Merchant Access Portal
         $encryptionKey = 'secret';
-        // $encryptionKey = 'wUrEU5MlbopX';
         $paygateId = 10011072130;
-        // $paygateId = 1039719100014;
 
         $DateTime = new DateTime();
 
@@ -116,7 +114,7 @@ class OnlinePaymentController extends Controller
             }else if($request->TRANSACTION_STATUS == '7'){
                 $status = "Settlement Voided";
             }
-            OnlinePayments::where('id', $transaction->id)->update(['status' => $status]);
+            OnlinePayments::where('id', $transaction->id)->update(['status' => $status, 'post_data' => $_REQUEST]);
 
             $hasFile = UserFiles::where('userUid', $transaction->userUid)->where('fileId', 'proof_of_payment')->first();
 
