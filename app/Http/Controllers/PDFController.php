@@ -166,7 +166,7 @@ class PDFController extends Controller
           $data['messageForMail'] = $newMessage;
           $data['email'] = $userForLease->userEmail;
           $data['name'] = $userForLease->userFirstName;
-          $data['subject'] = str_replace("[application_number]", $message_replace['booking_application'], $mailerForMessage->subject);
+          $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
           $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
           $mailArr = explode(";", $allowedMails);

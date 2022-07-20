@@ -1027,7 +1027,7 @@ class HomeController extends Controller
                 $data['email'] = $userForLease->userEmail;
                 $data['name'] = $userForLease->userFirstName;
                 // $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
-                $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+                $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
                 if(explode("@", $data['email'])[1] == "conurban.co.za"){
                     $data['email'] = $userForLease->userEmail;
