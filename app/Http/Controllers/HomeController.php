@@ -878,6 +878,63 @@ class HomeController extends Controller
         }
     }
 
+    public function rejectMail($typeName, $reason, $userId){
+        
+            //Send email notification about rejected document
+
+            $booking = Booking::where('userid', $userId)->first();
+            $user = User::where('id', $userId)->first();
+
+            $generator = new LoginUrl($user);
+            $generator->setRedirectUrl('/dashboard');
+            $url = $generator->generate();
+
+            $message_replace['bookingRef'] = $booking->booking_code;
+            $message_replace['name'] = $user->userFirstName;
+            $message_replace['document_name'] = $typeName;
+            $message_replace['decline_reason'] = $reason;
+            $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+            $message_replace['close_application_link']="</a>";
+
+            $mailerForMessage = MailerList::where("mailer_name", "Document Declined")->first();
+
+            if($mailerForMessage->status == '1'){
+
+                $mailerMessage = $mailerForMessage->message;
+
+                $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
+                $newMessage = str_replace("[decline_reason]", $message_replace['decline_reason'], $newMessage);
+                $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+
+                $data['name'] = $user->userFirstName;
+                $data['email'] = $user->email;
+                $data['messageForMail'] = $newMessage;
+                $data['subject'] = $mailerForMessage->subject;
+
+                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+                $mailArr = explode(";", $allowedMails);
+
+                $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+                $data['cc'] = explode(";", $allowedMailsCC);
+
+                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                    $data['email'] = $user->email;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
+
+                Mail::send('email.red_back', $data, function($message) use ($data) {
+                    $message->to($data['email'])->subject($data['subject']);
+                    $message->cc($data['cc']);
+                    $message->from('noreply@campusafrica.co.za','Campus Africa');
+                });
+            }
+        
+    }
+
     public function action_file(Request $request){
 
         if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3"){
@@ -911,6 +968,8 @@ class HomeController extends Controller
                 if($user_status['field_doc'] == "rob_30_funds"){
                     User::where('id', $userFile->userUid)->update(['parent_approved' => null, 'burser_approved' => null]);
                 }
+
+                $this->rejectMail($user_status['typeName'], $reason, $userFile->userUid);
                 
 
             } else {
