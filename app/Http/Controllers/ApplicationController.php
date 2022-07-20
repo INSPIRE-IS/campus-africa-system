@@ -923,7 +923,7 @@ class ApplicationController extends Controller
         $data['name'] = $user->userFirstName;
         $data['email'] = $user->userEmail;
         $data['messageForMail'] = $newMessage;
-        $data['subject'] = $mailerForMessage->subject;
+        $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
         if(explode("@", $data['email'])[1] == "conurban.co.za"){
             $data['email'] = $user->userEmail;

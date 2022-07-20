@@ -844,7 +844,7 @@ class HomeController extends Controller
                     $data['name'] = $user->userFirstName;
                     $data['email'] = $user->email;
                     $data['messageForMail'] = $newMessage;
-                    $data['subject'] = $mailerForMessage->subject;
+                    $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
                     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
                     $mailArr = explode(";", $allowedMails);
@@ -1027,7 +1027,7 @@ class HomeController extends Controller
                 $data['email'] = $userForLease->userEmail;
                 $data['name'] = $userForLease->userFirstName;
                 // $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
-                $data['subject'] = $mailerForMessage->subject;
+                $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
                 if(explode("@", $data['email'])[1] == "conurban.co.za"){
                     $data['email'] = $userForLease->userEmail;
@@ -2023,7 +2023,7 @@ class HomeController extends Controller
             $data['name'] = $user->userFirstName;
             $data['email'] = $user->email;
             $data['messageForMail'] = $newMessage;
-            $data['subject'] = $mailerForMessage->subject;
+            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
             $mailArr = explode(";", $allowedMails);
@@ -6206,7 +6206,7 @@ class HomeController extends Controller
                     $data['name'] = $userBefore->userFirstName;
                     $data['email'] = $request->userEmail;
                     $data['messageForMail'] = $newMessage;
-                    $data['subject'] = $mailerForMessage->subject;
+                    $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
                     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
                     $mailArr = explode(";", $allowedMails);

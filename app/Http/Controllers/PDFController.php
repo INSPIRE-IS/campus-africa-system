@@ -164,7 +164,7 @@ class PDFController extends Controller
         $data['messageForMail'] = $newMessage;
         $data['email'] = $userForLease->userEmail;
         $data['name'] = $userForLease->userFirstName;
-        $data['subject'] = $mailerForMessage->subject;
+        $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
         if(explode("@", $data['email'])[1] == "conurban.co.za"){
             $data['email'] = $userForLease->userEmail;

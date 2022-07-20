@@ -162,7 +162,7 @@ class LeaseController extends Controller
             $data['messageForMail'] = $newMessage;
             $data['email'] = $userForLease->userEmail;
             $data['name'] = $userForLease->userFirstName;
-            $data['subject'] = $mailerForMessage->subject;
+            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
             $mailArr = explode(";", $allowedMails);
