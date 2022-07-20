@@ -909,10 +909,13 @@ class HomeController extends Controller
                 $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
                 $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
 
+                $newSubject = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+                $newSubject = str_replace("[document_name]", $message_replace['document_name'], $newSubject);
+
                 $data['name'] = $user->userFirstName;
                 $data['email'] = $user->email;
                 $data['messageForMail'] = $newMessage;
-                $data['subject'] = $mailerForMessage->subject;
+                $data['subject'] = $newSubject;
 
                 $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
                 $mailArr = explode(";", $allowedMails);
