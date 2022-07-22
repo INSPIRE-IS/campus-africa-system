@@ -223,7 +223,14 @@ class HomeController extends Controller
                     return $b->important - $a->important;
                 });
 
-                return view('user.dashboard', ["headerTitle" => "Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader, "propertyData" => $propertyData, "roomData" => $roomData]);
+                $bookingPaid = 1;
+                $findBookingPaid = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
+
+                if(empty($findBookingPaid) || $findBookingPaid->status == "Rejected"){
+                    $bookingPaid = 0;
+                }
+
+                return view('user.dashboard', ["headerTitle" => "Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader, "propertyData" => $propertyData, "roomData" => $roomData, "bookingPaid" => $bookingPaid]);
     
             }
 
@@ -4165,7 +4172,7 @@ class HomeController extends Controller
             "account_name" => $request->account_name,
             "bank_name" => $request->bank_name,
             "account_number" => $request->account_number,
-            "branch" => $request->branch,
+            // "branch" => $request->branch,
             "branch_code" => $request->branch_code,
         ];
 

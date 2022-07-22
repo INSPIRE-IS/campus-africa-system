@@ -53,9 +53,9 @@
 
     <div class="cards" id="bookingCardDash">
 
-        <div class="whiteYellowCard smallerCard" style="margin-right:6%">
+        <div class="whiteYellowCard smallerCard <?php if($bookingPaid == 0){ echo 'bookingDashCard';} ?>" style="margin-right:6%">
             <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Booking Summary @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin-left:auto"> Cancelled</span> @endif</h2>
-            <div class="cardBody" id="bookSumCard">
+            <div class="cardBody <?php if($bookingPaid == 0){ echo 'bookingDashCardBody';} ?>" id="bookSumCard">
               <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
               <h2 class="cardHeaderBlck" >
                 <?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?> 
@@ -70,7 +70,33 @@
               <h2 class="cardHeaderBlck" >#{{$booking->booking_code}}</h2>
               <br/>
               <h4 class="cardSubHeaderGreyTxt">Year of Study</h4>
-              <h2 class="cardHeaderBlck" >{{$booking->year}}</h2>
+              <h2 class="cardHeaderBlck" style="margin-bottom:5px;">{{$booking->year}}</h2>
+
+              @if($bookingPaid == 0)
+                <hr style="background-color: #e3e3e3; height: 1px; border: 0"/>
+                <h2 class="cardHeaderBlck" style="margin-top:5px;"><strong>Bank Details</strong></h2>
+                <br/>
+                <div class="bankDetails">
+                  <p class="title">Bank</p>
+                  <p class="value">{{$propertyData->bank_name}}</p>
+                </div>
+                <div class="bankDetails">
+                  <p class="title">Account Name</p>
+                  <p class="value">{{$propertyData->account_name}}</p>
+                </div>
+                <div class="bankDetails">
+                  <p class="title">Account Number</p>
+                  <p class="value">{{$propertyData->account_number}}</p>
+                </div>
+                <div class="bankDetails">
+                  <p class="title">Branch Code</p>
+                  <p class="value">{{$propertyData->branch_code}}</p>
+                </div>
+                <div class="bankDetails">
+                  <p class="title">Reference</p>
+                  <p class="value">{{$booking->booking_code}}</p>
+                </div>
+              @endif
             </div> 
         </div>
 

@@ -2031,7 +2031,31 @@ input:read-only {
   cursor: context-menu;
 }
 
+.bankDetails{
+  display: flex; 
+  align-items: stretch;
+}
+
+.bankDetails .title{
+  width:50%;
+  font-size:20px;
+}
+
+.bankDetails .value{
+  width:50%;
+  text-align:right;
+  font-size:20px;
+  font-weight:bold;
+}
+
 @media only screen and (max-width: 850px) {
+
+  .bookingDashCard{
+    height:725px !important;
+  }
+  .bookingDashCardBody{
+    max-height:725px !important;
+  }
   #fullNavbar {
     height: 120px !important;
   }

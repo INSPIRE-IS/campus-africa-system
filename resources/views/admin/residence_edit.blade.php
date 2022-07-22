@@ -43,14 +43,14 @@
 
         <div class="form-field">
             <br/>
-            <label>Account Name</label>
-            <input type="text" name="account_name" id="account_name" value="<?php if(!empty($propertyData)){echo $propertyData->account_name;}?>">
+            <label>Bank</label>
+            <input type="text" name="bank_name" id="bank_name" value="<?php if(!empty($propertyData)){echo $propertyData->bank_name;}?>">
         </div>
 
         <div class="form-field">
             <br/>
-            <label>Bank</label>
-            <input type="text" name="bank_name" id="bank_name" value="<?php if(!empty($propertyData)){echo $propertyData->bank_name;}?>">
+            <label>Account Name</label>
+            <input type="text" name="account_name" id="account_name" value="<?php if(!empty($propertyData)){echo $propertyData->account_name;}?>">
         </div>
 
         <div class="form-field">
@@ -59,11 +59,11 @@
             <input type="text" name="account_number" id="account_number" value="<?php if(!empty($propertyData)){echo $propertyData->account_number;}?>">
         </div>
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <br/>
             <label>Branch</label>
             <input type="text" name="branch" id="branch" value="<?php if(!empty($propertyData)){echo $propertyData->branch;}?>">
-        </div>
+        </div> -->
 
         <div class="form-field">
             <br/>

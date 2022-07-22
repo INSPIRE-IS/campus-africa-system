@@ -177,11 +177,13 @@
                 </div>
 
                 <div class="form-field hidden" id="eftCard">
-                    <p>{{$propertyTypeInfo->account_name}}<br/>
-                        {{$propertyTypeInfo->bank_name}}<br/>
-                        {{$propertyTypeInfo->account_number}}<br/>
-                        {{$propertyTypeInfo->branch}}<br/>
-                        {{$propertyTypeInfo->branch_code}}<br/>
+                    <p>
+                        <strong>Bank: </strong>{{$propertyTypeInfo->bank_name}}<br/>
+                        <strong>Account Name: </strong>{{$propertyTypeInfo->account_name}}<br/>
+                        <strong>Account Number: </strong>{{$propertyTypeInfo->account_number}}<br/>
+                        <!-- {{$propertyTypeInfo->branch}}<br/> -->
+                        <strong>Branch Code: </strong>{{$propertyTypeInfo->branch_code}}<br/>
+                        <strong>Reference: </strong>{{$booking->booking_code}}<br/><br/><br/>
                     </p>
 
                     <div id="paymentSection">
