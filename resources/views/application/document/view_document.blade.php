@@ -161,10 +161,12 @@
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
                     <br/><span style='font-weight:bold'>Payment Type:</span> {{$booking->payment_type}}
                     @if($booking->payment_type != "Manual EFT")
-                    <br/><span style='font-weight:bold'>Payment Method Detail:</span> {{$onlinePayment->payment_method_detail}}
-                    <br/><span style='font-weight:bold'>Payment Status:</span> {{$onlinePayment->status}}
-                    <br/><span style='font-weight:bold'>Payment Amount:</span> R {{$onlinePayment->payment_amount/100}}
-                    <br/><span style='font-weight:bold'>Transaction ID:</span> {{$onlinePayment->payment_transaction_id}}
+                        <br/><span style='font-weight:bold'>Payment Method Detail:</span> {{$onlinePayment->payment_method_detail}}
+                        <br/><span style='font-weight:bold'>Payment Status:</span> {{$onlinePayment->status}}
+                        <br/><span style='font-weight:bold'>Payment Amount:</span> R {{$onlinePayment->payment_amount/100}}
+                        <br/><span style='font-weight:bold'>Transaction ID:</span> {{$onlinePayment->payment_transaction_id}}
+                        <br/><span style='font-weight:bold'>Payment Initiated:</span> {{$onlinePayment->created_at}}
+                        <br/><span style='font-weight:bold'>Payment Last Update:</span> {{$onlinePayment->updated_at}}
                     @endif
                     <!-- <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span> -->
                 @endif
@@ -230,6 +232,14 @@
                         <div class="form-field">
                             <span style='font-weight:bold'>Payment Method Detail*</span>
                             <input class="disablededit required" name="payment_method_detail" id="payment_method_detail" disabled type="text" value="{{$onlinePayment->payment_method_detail}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Initiated*</span>
+                            <input class="disablededit required" name="created_at" id="created_at" disabled type="text" value="{{$onlinePayment->created_at}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Last Update*</span>
+                            <input class="disablededit required" name="updated_at" id="updated_at" disabled type="text" value="{{$onlinePayment->updated_at}}">
                         </div>
                         
                         
