@@ -161,10 +161,10 @@
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
                     <br/><span style='font-weight:bold'>Payment Type:</span> {{$booking->payment_type}}
                     @if($booking->payment_type != "Manual EFT")
+                    <br/><span style='font-weight:bold'>Payment Method Detail:</span> {{$onlinePayment->payment_method_detail}}
                     <br/><span style='font-weight:bold'>Payment Status:</span> {{$onlinePayment->status}}
                     <br/><span style='font-weight:bold'>Payment Amount:</span> R {{$onlinePayment->payment_amount/100}}
                     <br/><span style='font-weight:bold'>Transaction ID:</span> {{$onlinePayment->payment_transaction_id}}
-                    <br/><span style='font-weight:bold'>Payment Method Detail:</span> {{$onlinePayment->payment_method_detail}}
                     @endif
                     <!-- <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span> -->
                 @endif

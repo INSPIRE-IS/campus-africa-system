@@ -2037,13 +2037,13 @@ input:read-only {
 }
 
 .bankDetails .title{
-  width:50%;
+  width:250px;
   font-size:20px;
 }
 
 .bankDetails .value{
-  width:50%;
-  text-align:right;
+  width:100%;
+  /* text-align:right; */
   font-size:20px;
   font-weight:bold;
 }
@@ -2051,10 +2051,10 @@ input:read-only {
 @media only screen and (max-width: 850px) {
 
   .bookingDashCard{
-    height:725px !important;
+    height:775px !important;
   }
   .bookingDashCardBody{
-    max-height:725px !important;
+    max-height:775px !important;
   }
   #fullNavbar {
     height: 120px !important;
