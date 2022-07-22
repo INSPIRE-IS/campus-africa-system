@@ -162,6 +162,9 @@
                     <br/><span style='font-weight:bold'>Payment Type:</span> {{$booking->payment_type}}
                     @if($booking->payment_type != "Manual EFT")
                     <br/><span style='font-weight:bold'>Payment Status:</span> {{$onlinePayment->status}}
+                    <br/><span style='font-weight:bold'>Payment Amount:</span> R {{$onlinePayment->payment_amount/100}}
+                    <br/><span style='font-weight:bold'>Transaction ID:</span> {{$onlinePayment->payment_transaction_id}}
+                    <br/><span style='font-weight:bold'>Payment Method Detail:</span> {{$onlinePayment->payment_method_detail}}
                     @endif
                     <!-- <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span> -->
                 @endif
@@ -216,6 +219,21 @@
                             <span style='font-weight:bold'>Payment Status*</span>
                             <input class="disablededit required" name="payment_status" id="payment_status" disabled type="text" value="{{$onlinePayment->status}}">
                         </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Amount*</span>
+                            <input class="disablededit required" name="payment_amount" id="payment_amount" disabled type="text" value="R {{$onlinePayment->payment_amount/100}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Transaction ID*</span>
+                            <input class="disablededit required" name="payment_transaction_id" id="payment_transaction_id" disabled type="text" value="{{$onlinePayment->payment_transaction_id}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Method Detail*</span>
+                            <input class="disablededit required" name="payment_method_detail" id="payment_method_detail" disabled type="text" value="{{$onlinePayment->payment_method_detail}}">
+                        </div>
+                        
+                        
+
                         @endif
                     @endif
 

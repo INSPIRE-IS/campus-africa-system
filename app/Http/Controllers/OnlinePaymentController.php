@@ -114,7 +114,7 @@ class OnlinePaymentController extends Controller
             }else if($request->TRANSACTION_STATUS == '7'){
                 $status = "Settlement Voided";
             }
-            OnlinePayments::where('id', $transaction->id)->update(['status' => $status, 'post_data' => $_REQUEST]);
+            OnlinePayments::where('id', $transaction->id)->update(['status' => $status, 'post_data' => $_REQUEST, 'payment_amount' => $request->AMOUNT, 'payment_transaction_id' => $request->TRANSACTION_ID, 'payment_method' => $request->PAY_METHOD, 'payment_method_detail' => $request->PAY_METHOD_DETAIL, 'payment_status' => $request->TRANSACTION_STATUS]);
 
             $hasFile = UserFiles::where('userUid', $transaction->userUid)->where('fileId', 'proof_of_payment')->first();
 
