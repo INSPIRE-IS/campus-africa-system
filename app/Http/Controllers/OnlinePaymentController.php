@@ -123,6 +123,18 @@ class OnlinePaymentController extends Controller
                 User::where('id', $hasFile->userUid)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
             }
 
+            if($request->PAY_METHOD == "CC" || $request->PAY_METHOD == "DC"){
+                $paymentMethod = "Credit/Debit Card";
+            }else if($request->PAY_METHOD == "BT"){
+                $paymentMethod = "Online EFT";
+            }
+
+            $userBooking = Booking::where('userId', $transaction->userUid)->first();
+
+            if($userBooking->payment_type !== $paymentMethod){
+                Booking::where('id', $userBooking->id)->update(['payment_type' => $paymentMethod]);
+            }
+
             $currUser = User::where('id', $transaction->userUid)->first();
             ActionList::create([
                 "userUid" => $transaction->userUid,
