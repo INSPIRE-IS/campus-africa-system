@@ -15,6 +15,12 @@ use App\Models\PropertyPermission;
 
 class BookingReportController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function booking_summary(Request $request){
 
         $residences = [];

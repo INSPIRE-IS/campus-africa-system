@@ -101,7 +101,7 @@
       input: 'select',
       inputOptions: {
         'Online Payments': {
-          Credit$Debit_Card: 'Credit',
+          Credit$Debit_Card: 'Credit/Debit Card',
           Online_EFT: 'Online EFT',
         },
       },

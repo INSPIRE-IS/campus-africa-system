@@ -247,6 +247,8 @@ class OnlinePaymentController extends Controller
     }
 
     public function online_application_payment_on_screen($id){
+
+        sleep(5);
         
         $fileType = "proof_of_payment";
         $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->first();
@@ -255,30 +257,61 @@ class OnlinePaymentController extends Controller
         $field_data = $user_status['field_data'];
         $field_doc = $user_status['field_doc'];                
 
-        UserFiles::create([
-            'fileId' => $fileType,
-            'userUid' => $id,
-            'fileName' => "",
-            'fileUrl' => "",
-            'status' => "Uploaded",
-            'uploaded_by' => $id,
-        ]);
+        $paymentUpdate = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
+
+        if(empty($hasFile)){
+
+            if($paymentUpdate->status == "Approved"){
+                UserFiles::create([
+                    'fileId' => $fileType,
+                    'userUid' => $id,
+                    'fileName' => "",
+                    'fileUrl' => "",
+                    'status' => "Approved",
+                    'uploaded_by' => $id,
+                ]);
+                User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+            }else{
+                UserFiles::create([
+                    'fileId' => $fileType,
+                    'userUid' => $id,
+                    'fileName' => "",
+                    'fileUrl' => "",
+                    'status' => "Uploaded",
+                    'uploaded_by' => $id,
+                ]);
+            }
+        }else{
+            if($paymentUpdate->status == "Approved"){
+                UserFiles::where('id', $hasFile->id)->update([
+                    'status' => "Approved",
+                ]);
+                User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+            }else{
+                UserFiles::where('id', $hasFile->id)->update([
+                    'status' => "Uploaded",
+                ]);
+            }
+        }
 
         $text = "Uploaded Proof of payment for review through PayGate";
         
         $cur_status = User::find($id);
 
-        //Update data status back to pending
-        if (!empty($field_data)) {
-            //If the data was already approved then unapprove
-            if ($cur_status->{$field_data} == 1) {
-                User::where('id', $id)->update([$field_data => '0']);                        
-            }
-        }
+        if($paymentUpdate->status != "Approved"){
 
-        //Update Robot status back to pending
-        if (!empty($field_doc)) {
-            User::where('id', $id)->update([$field_doc => '1']);
+            //Update data status back to pending
+            if (!empty($field_data)) {
+                //If the data was already approved then unapprove
+                if ($cur_status->{$field_data} == 1) {
+                    User::where('id', $id)->update([$field_data => '0']);                        
+                }
+            }
+
+            //Update Robot status back to pending
+            if (!empty($field_doc)) {
+                User::where('id', $id)->update([$field_doc => '1']);
+            }
         }
 
         //Get the file
@@ -295,7 +328,19 @@ class OnlinePaymentController extends Controller
 
         $this->update_user_status($id);
 
-        return redirect('/dashboard');
+        if(Auth::check() === false){
+            Auth::loginUsingId($id, true);
+        }
+
+        $paymentStatus = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
+        
+        if($paymentStatus->status == "Approved" || $paymentStatus->status ==  "Received by PayGate" || $paymentStatus->status ==  "Initiated"){
+            return redirect('/dashboard');
+        }else{
+            return redirect('/retry/online-application');
+        }
+
+        
     }
 
     function get_user_status($fileType, $user, $student) {
