@@ -137,8 +137,8 @@
                         document.getElementById('apply_bursary').disabled = true;
                         document.getElementById('apply_cash').disabled = true;
                         
-                        $('#booking_price').addClass('required');
-                        $('#rent_price').addClass('required');
+                        $('#booking_price').removeClass('required');
+                        $('#rent_price').removeClass('required');
                     }
                 }
             }else{
