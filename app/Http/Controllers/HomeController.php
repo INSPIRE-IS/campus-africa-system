@@ -1816,7 +1816,13 @@ class HomeController extends Controller
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
         $roomTypeData = RoomTypes::where('id', $request->roomType)->first();
-        $roomTypeId = $roomTypeData->room_map_slug;
+        if(!empty($roomTypeData) && $roomTypeData->room_map_slug !== null){
+            //
+            $roomTypeId = $roomTypeData->room_map_slug;
+        }else{
+            //
+            $roomTypeId = "";
+        }
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
@@ -1907,7 +1913,7 @@ class HomeController extends Controller
             }
         }
 
-        if($roomTypeData->pull_price == null){
+        if($roomTypeData && $roomTypeData->pull_price == null){
             $booking_data['room_rate'] = $roomTypeData->booking_price;
 
             if($user->studentType == "NSFAS"){
