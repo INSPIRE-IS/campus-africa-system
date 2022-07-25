@@ -946,8 +946,9 @@ class ApplicationController extends Controller
         $agent = new Agent();
         $transaction = OnlinePayments::where("userUid", Auth::user()->id)->orderBy("created_at", "desc")->first();
         $booking = Booking::where('userId', Auth::user()->id)->first();
+        $propertyTypeInfo = Residence::where('id', $booking->property)->first();
 
-        return view('application.retry', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "transaction" => $transaction, "booking" => $booking]);
+        return view('application.retry', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "transaction" => $transaction, "booking" => $booking, "propertyTypeInfo" => $propertyTypeInfo]);
 
     }
 

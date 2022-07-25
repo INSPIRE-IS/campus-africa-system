@@ -35,15 +35,12 @@
         <div class="tab active">5: Pay Booking Fee</div>
     </div>
     
-    <!-- <form id="appRetry" class="form onlineForm" autocomplete="off"> -->
         <br/>
         <h1 class="formHeading">Your Payment was Unsuccessful: <span style="color:red;">{{$transaction->status}}</span></h1>
         <br/>
 
-        <!-- <div class="form-field"> -->
             <p>Please try again or procceed to your dashboard</p>
             <br/><br/>
-            <!-- <div class="form-field"> -->
                 <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                 <select name="paymentType" id="paymentType" style="width:300px !important;">
                     <option value="Credit/Debit Card">Credit/Debit Card</option>
@@ -52,37 +49,35 @@
                 </select>
                 <br/>
                 <br/>
-            <!-- </div> -->
-            <!-- @if(!$agent->isMobile())
-                <div class="form-field">
-                    <br/>
-                </div>
-            @endif -->
-            <!-- <div class="form-field"> -->
-                <button types="button" class="paymentBtn" onClick="createpayment()" style="width:300px; margin-left:0px;">Pay Now</button>
-                <br/><br/>
-                <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
-                    <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
-                    <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
-                </form>
-            <!-- </div> -->
 
-            <!-- @if(!$agent->isMobile())
-                <div class="form-field">
-                    <br/>
+                <div id="ccPay">
+                    <button types="button" class="paymentBtn" onClick="createpayment()" style="width:300px; margin-left:0px;">Pay Now</button>
+                    <br/><br/>
+                    <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
+                        <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
+                        <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
+                    </form>
                 </div>
-            @endif -->
 
-            <!-- <div class="form-field"> -->
+                <div class="hidden" id="eftCard">
+                    <p>
+                        <strong>Bank: </strong>{{$propertyTypeInfo->bank_name}}<br/>
+                        <strong>Account Name: </strong>{{$propertyTypeInfo->account_name}}<br/>
+                        <strong>Account Number: </strong>{{$propertyTypeInfo->account_number}}<br/>
+                        <strong>Branch Code: </strong>{{$propertyTypeInfo->branch_code}}<br/>
+                        <strong>Reference: </strong>{{$booking->booking_code}}<br/><br/><br/>
+                    </p>
+
+                    <div id="paymentSection">
+                        <label onClick="paymentRef()" id="proof_of_paymentSection" class="PaymentLabel">
+                            UPLOAD PROOF OF PAYMENT
+                        </label>
+                    </div>
+                </div>
+
                 <a href="/complete/online-application"><button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26; float:left; margin-left:0px;">Continue to Dashboard</button></a>
                 <br/><br/>
-            <!-- </div> -->
-        <!-- </div> -->
 
-
-
-
-    <!-- </form> -->
 
 </div>
 
@@ -93,6 +88,80 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $("#paymentType").on('change', function(){
+        //Manual EFT
+
+        if($("#paymentType").val() == "Manual EFT"){
+            $("#eftCard").removeClass('hidden');
+            $("#ccPay").addClass('hidden');
+        }else{
+            $("#eftCard").addClass('hidden');
+            $("#ccPay").removeClass('hidden');
+        }
+    })
+
+    function paymentRef(){
+        swal.fire({
+            title: 'Please enter the Payment Reference you used:',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.isConfirmed && result.value !== "") {
+                $("#booking_payment").empty().append(result.value);
+
+                $.ajax({
+                    type: "post",
+                    url: "/UpdatePaymentRef",
+                    data: {
+                        bookingId: "{{$booking->id}}",
+                        reason: result.value
+                    },
+
+                    success: function (data) {
+
+                        $("#paymentSection").empty().append('<label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label><input type="file" id="proof_of_payment" hidden/>');
+
+                        $("#proof_of_payment").click();
+
+                    },
+                });
+            }
+        })
+    }
+
+    $(document).off('change').on('change', '#proof_of_payment', function(e) {
+        $(".PaymentLabel").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+        var form_data = new FormData();
+        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
+        form_data.append("userUid", "<?php echo $user->id; ?>");
+        form_data.append("fileType", "proof_of_payment");
+
+        $.ajax({
+            type: "post",
+            url: "/application-file-upload",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0] > 0) {
+                    $(".PaymentLabel").empty().append('UPLOADED')
+                    $("#proofRegistrationSuccess").removeClass('hidden')
+                    $(".PaymentLabel").addClass('greenPayment')
+
+                    window.location.replace('/complete/online-application')
+                }
+            },
+        });
+    })
 
     function createpayment(){
         $.ajax({
