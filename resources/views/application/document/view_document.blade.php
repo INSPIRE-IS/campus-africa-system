@@ -549,8 +549,6 @@
 <script>
     jQuery(document).ready( function() {
 
-
-
         var url = '/storage/{{$file->fileUrl}}';
 
         const script = document.createElement('script');
@@ -657,7 +655,6 @@
         };
         script.src = '//mozilla.github.io/pdf.js/build/pdf.js';
         document.querySelector('#footer').after(script);
-
 
         $('.close').on("click", function(e) {
             $("#myModal").html("");
