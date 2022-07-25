@@ -1812,17 +1812,13 @@ class HomeController extends Controller
 
         $oldPropReq = $request->property;
 
+        $roomId = $request->roomType;
+
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
-        $roomTypeData = RoomTypes::where('id', $request->roomType)->first();
-        if(!empty($roomTypeData) && $roomTypeData->room_map_slug !== null){
-            //
-            $roomTypeId = $roomTypeData->room_map_slug;
-        }else{
-            //
-            $roomTypeId = "";
-        }
+        $roomTypeData = RoomTypes::where('id', $roomId)->first();
+        $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
@@ -1913,7 +1909,7 @@ class HomeController extends Controller
             }
         }
 
-        if($roomTypeData && $roomTypeData->pull_price == null){
+        if($roomTypeData->pull_price == null){
             $booking_data['room_rate'] = $roomTypeData->booking_price;
 
             if($user->studentType == "NSFAS"){
@@ -3188,10 +3184,12 @@ class HomeController extends Controller
             $user = User::where('id', $bookingId)->first();
             $booking_data = [];
 
+            $roomTypeNewId = $roomTypeNew;
+
             $property = Residence::where('id', $property)->pluck('residence')->first();
             $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
             
-            $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+            $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
             $roomTypeId = $roomTypeData->room_map_slug;
 
             $allResidences = Residence::get();
@@ -3464,11 +3462,13 @@ class HomeController extends Controller
                 $lookup = Lookups::where('group_id', '7')->first();
                 $user = User::where('id', $bookingId)->first();
                 $booking_data = [];
+
+                $roomTypeNewId = $roomTypeNew;
     
                 $property = Residence::where('id', $property)->pluck('residence')->first();
                 $roomTypeNew = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
 
-                $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+                $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
                 $roomTypeId = $roomTypeData->room_map_slug;
     
                 $allResidences = Residence::get();
@@ -4815,11 +4815,13 @@ class HomeController extends Controller
 
         $booking_data = [];
 
+        $roomTypeNewId = $request->roomType;
+
         $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
         
-        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
@@ -5058,10 +5060,12 @@ class HomeController extends Controller
 
         $lookup = Lookups::where('group_id', '7')->first();
 
+        $roomTypeNewId = $booking->roomType;
+
         $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
         $booking->roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
         
-        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
@@ -6711,10 +6715,12 @@ class HomeController extends Controller
 
         $booking_data['booking_code'] = $bookingYear.$bookingPrefix.$bookingID;
 
+        $roomTypeNewId = $request->roomType;
+
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
-        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
@@ -6953,10 +6959,12 @@ class HomeController extends Controller
 
         $booking_data['booking_code'] = $bookingYear.$bookingPrefix.$bookingID;
 
+        $roomTypeNewId = $request->roomType;
+
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
-        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
