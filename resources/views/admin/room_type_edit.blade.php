@@ -137,8 +137,8 @@
                         document.getElementById('apply_bursary').disabled = true;
                         document.getElementById('apply_cash').disabled = true;
                         
-                        $('#booking_price').removeClass('required');
-                        $('#rent_price').removeClass('required');
+                        $('#booking_price').removeClass('required').removeClass('fieldError');;
+                        $('#rent_price').removeClass('required').removeClass('fieldError');;
                     }
                 }
             }else{
@@ -162,8 +162,8 @@
                 document.getElementById('apply_bursary').disabled = true;
                 document.getElementById('apply_cash').disabled = true;
 
-                $('#booking_price').removeClass('required');
-                $('#rent_price').removeClass('required');
+                $('#booking_price').removeClass('required').removeClass('fieldError');;
+                $('#rent_price').removeClass('required').removeClass('fieldError');;
 
 
             }else{
@@ -190,8 +190,8 @@
                 document.getElementById('apply_bursary').disabled = true;
                 document.getElementById('apply_cash').disabled = true;
 
-                $('#booking_price').removeClass('required');
-                $('#rent_price').removeClass('required');
+                $('#booking_price').removeClass('required').removeClass('fieldError');;
+                $('#rent_price').removeClass('required').removeClass('fieldError');;
 
             }else{
                 document.getElementById('booking_price').disabled = false;
@@ -216,8 +216,8 @@
                 document.getElementById('apply_bursary').disabled = true;
                 document.getElementById('apply_cash').disabled = true;
 
-                $('#booking_price').removeClass('required');
-                $('#rent_price').removeClass('required');
+                $('#booking_price').removeClass('required').removeClass('fieldError');;
+                $('#rent_price').removeClass('required').removeClass('fieldError');;
 
             }else{
                 document.getElementById('pull_price').checked = false;
