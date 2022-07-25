@@ -21,7 +21,7 @@
             flex: 70%;
         }
 
-        .noedit {
+        .noedit, .disablededit {
             background-color: white !important;
             outline: none;
         }
@@ -159,6 +159,15 @@
                     <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
                     <!-- <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}} -->
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
+                    <br/><span style='font-weight:bold'>Payment Type:</span> {{$booking->payment_type}}
+                    @if($booking->payment_type != "Manual EFT")
+                        <br/><span style='font-weight:bold'>Payment Method Detail:</span> {{$onlinePayment->payment_method_detail}}
+                        <br/><span style='font-weight:bold'>Payment Status:</span> {{$onlinePayment->status}}
+                        <br/><span style='font-weight:bold'>Payment Amount:</span> R {{$onlinePayment->payment_amount/100}}
+                        <br/><span style='font-weight:bold'>Transaction ID:</span> {{$onlinePayment->payment_transaction_id}}
+                        <br/><span style='font-weight:bold'>Payment Initiated:</span> {{$onlinePayment->created_at}}
+                        <br/><span style='font-weight:bold'>Payment Last Update:</span> {{$onlinePayment->updated_at}}
+                    @endif
                     <!-- <br/><span style='font-weight:bold'>Payment Reference:</span> <span id="booking_payment">{{$booking->booking_payment_ref}}</span> -->
                 @endif
 
@@ -198,6 +207,44 @@
                             <span style='font-weight:bold'>Payment Reference*</span>
                             <input class="noedit required" name="booking_payment_ref" id="booking_payment_ref" disabled type="text" value="{{$booking->booking_payment_ref}}">
                         </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Type *</span>
+                            <select name="payment_type" id="payment_type" class="noedit required" disabled>
+                                <option value="" selected disabled>Please select one</option>
+                                <option value="Credit/Debit Card" <?php if($booking->payment_type == "Credit/Debit Card"){echo "selected";}?>>Credit/Debit Card</option>
+                                <option value="Online EFT" <?php if($booking->payment_type == "Online EFT"){echo "selected";}?>>Online EFT</option>
+                                <option value="Manual EFT" <?php if($booking->payment_type == "Manual EFT"){echo "selected";}?>>Manual EFT</option>
+                            </select>
+                        </div>
+                        @if($booking->payment_type != "Manual EFT")
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Status*</span>
+                            <input class="disablededit required" name="payment_status" id="payment_status" disabled type="text" value="{{$onlinePayment->status}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Amount*</span>
+                            <input class="disablededit required" name="payment_amount" id="payment_amount" disabled type="text" value="R {{$onlinePayment->payment_amount/100}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Transaction ID*</span>
+                            <input class="disablededit required" name="payment_transaction_id" id="payment_transaction_id" disabled type="text" value="{{$onlinePayment->payment_transaction_id}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Method Detail*</span>
+                            <input class="disablededit required" name="payment_method_detail" id="payment_method_detail" disabled type="text" value="{{$onlinePayment->payment_method_detail}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Initiated*</span>
+                            <input class="disablededit required" name="created_at" id="created_at" disabled type="text" value="{{$onlinePayment->created_at}}">
+                        </div>
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Payment Last Update*</span>
+                            <input class="disablededit required" name="updated_at" id="updated_at" disabled type="text" value="{{$onlinePayment->updated_at}}">
+                        </div>
+                        
+                        
+
+                        @endif
                     @endif
 
                     @if($file->fileId == "copyID")
@@ -476,17 +523,18 @@
             <div class="right_pane">
                 <div class="pdfSection" style="margin-top: 0;">
                     @if(strpos($file->fileUrl, "pdf") > 0)
-                        <?php if((!$agent->isMobile())){ ?>
-                            <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
-                        <?php }else{ ?>
-                            <div  style="margin:20px 0px 20px 0px">
-                                <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-                                <br/><br/>
-                                <button id="prev">Previous</button>
-                                <button id="next">Next</button>
-                            </div>
-                            <canvas id="the-canvas" style="width:100%"></canvas>
-                        <?php } ?>
+                    <?php if((!$agent->isMobile())){ ?>
+                        <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
+                    <?php }else{ ?>
+                        <div style="margin:20px 0px 20px 0px">
+                            <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+                            <br/><br/>
+                            <button id="prev">Previous</button>
+                            <button id="next">Next</button>
+                        </div>
+                        <canvas id="the-canvas" style="width:100%"></canvas>
+                    <?php } ?>
+                        
                     @else
                         <img src="/storage/{{$file->fileUrl}}" alt="">
                     @endif
@@ -1333,7 +1381,7 @@
         // }
 
         if(code === "+27"){
-            if (/^\d{9}$/.test(cell)) {
+            if (/^[1-9][0-9]{8}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{

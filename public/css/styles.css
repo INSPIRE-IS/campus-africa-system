@@ -1971,9 +1971,12 @@ input:read-only {
 #appVerifyNotify{
   height:400px;
 }
+#appRetry{
+  height:470px;
+}
 
 #changeStudType{
-  height:950px;
+  height:1050px;
 }
 
 .roomImgApp{
@@ -2019,9 +2022,51 @@ input:read-only {
   }
 }
 
+#permission_c_1, #permission_c_2{
+  height:80px !important;
+}
+
+#btn_submit_frm:disabled{
+  opacity: 0.5 !important;
+  cursor: context-menu;
+}
+
+.bankDetails{
+  display: flex; 
+  align-items: stretch;
+}
+
+.bankDetails .title{
+  width:250px;
+  font-size:20px;
+}
+
+.bankDetails .value{
+  width:100%;
+  /* text-align:right; */
+  font-size:20px;
+  font-weight:bold;
+}
+
 @media only screen and (max-width: 850px) {
+
+  .bookingDashCard{
+    height:775px !important;
+  }
+  .bookingDashCardBody{
+    max-height:775px !important;
+  }
   #fullNavbar {
     height: 120px !important;
+  }
+  .mobHidden{
+    display:none
+  }
+  #permission_c_1{
+    height:220px !important;
+  }
+  #permission_c_2{
+    height:270px !important;
   }
   #cancelledStudentTag{
     float:none;
@@ -2070,10 +2115,10 @@ input:read-only {
     height:360px !important;
   }
   .bursarySize{
-    height:1330px !important
+    height:1700px !important
   }
   .cashSize{
-    height:1250px !important
+    height:1760px !important
   }
 
   .paymentAppOnline{
@@ -2110,6 +2155,9 @@ input:read-only {
   #smallerBooking{
     height:380px !important;
   }
+  #smallerBookingResize{
+    height:465px !important
+  }
   #smallerApplication{
     height:465px !important
   }
@@ -2144,10 +2192,10 @@ input:read-only {
     height: 730px;
   }
   #newStudentBur{
-    height:1222px;
+    height:1580px;
   }
   #newStudentSpon{
-    height:1110px;
+    height:1515px;
   }
   #newStudentKin{
     height:1260px;
@@ -2377,7 +2425,7 @@ input:read-only {
  }
 
  #newStudent{
-   height:2010px;
+   height:2050px;
  }
 .cards .halfCard, .cards .redBottom{
   width:100% !important;
@@ -2668,6 +2716,7 @@ input:read-only {
   #registerPaymentCards,
 .paymentSection {
     width: 87%;
+    height:450px !important;
   }
 
   .paymentSection .header {

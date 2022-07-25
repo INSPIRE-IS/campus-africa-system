@@ -447,11 +447,37 @@ class LookupsController extends Controller {
     }
 
     public function download_beds(Request $request){
+
+        $property = $request->property;
+        $year = $request->year;
+        $this_year = Lookups::where('group_id', '4')->first();
+
+        $query = "";
+
+        if($property !== "All"){
+            $query .= "where pd.residence = '".$property."'";
+        }
+
+        if($year !== "All"){
+
+            if($year == "current"){
+                $yearSearch = $this_year->lookup_name;
+            }else{
+                $yearSearch = floatval($this_year->lookup_name) + 1;
+            }
+
+            if($query !== ""){
+                $query .= "and (pd.year_end = '0' or pd.year_end = '".$yearSearch."') ";
+            }else{
+                $query .= "where (pd.year_end = '0' or pd.year_end = '".$yearSearch."') ";
+            }
+        }
+
         $beds = [
 			['<b>Residence</b>', '<b>Room Type</b>', '<b>Meta Info 1</b>', '<b>Meta Info 2</b>', '<b>Floor</b>', '<b>Unit</b>', '<b>Room</b>', '<b>Bed</b>', '<b>Bed Code</b>',  '<b>Inventory</b>', '<b>Year</b>', '<b>Year End</b>'],
 		];
 
-        $allBeds = DB::select('SELECT p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id WHERE pd.year_end != "2021" ORDER BY pd.residence');
+        $allBeds = DB::select('SELECT p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id '.$query.' ORDER BY pd.residence');
 
         foreach($allBeds as $bed){
             // $bedData = [$allBeds['residence']];
@@ -460,8 +486,23 @@ class LookupsController extends Controller {
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
 		$xlsx->addSheet( $beds, 'Beds');
-		$xlsx->saveAs('All Beds Export.xlsx');
 
-		return "true";
+        if($year !== "All"){
+            //Bed_Codes_Export_YYYY
+            if($year == "current"){
+                $yearState = $this_year->lookup_name;
+            }else{
+                $yearState = floatval($this_year->lookup_name) + 1;
+            }
+
+            $downloadUrl = 'Bed_Codes_Export_'.$yearState.'.xlsx';
+
+            $xlsx->saveAs('Bed_Codes_Export_'.$yearState.'.xlsx');
+        }else{
+            $downloadUrl = 'System_Bed_Codes_All_Years.xlsx';
+            $xlsx->saveAs('System_Bed_Codes_All_Years.xlsx');
+        }
+
+		return $downloadUrl;
     }
 }

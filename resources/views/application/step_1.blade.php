@@ -69,7 +69,7 @@
         <div class="form-field">
             <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span><span id="cell_no_duplicate" class="hidden" style="color:red"><small>. Duplicate detected!</small></span></label>
             <input type="text" name="userCellCode" id="userCellCode" style="width:18% !important;" value="+27">
-            <input type="text" name="cell_no" id='cell_no' style="width:77% !important" class="required">
+            <input type="number" name="cell_no" id='cell_no' style="width:77% !important" class="required">
         </div>
 
         <div class="form-field">
@@ -202,7 +202,7 @@
             <input type="password" name="password" id="password" class="required">
             <i class="far fa-eye" id="togglePassword" style="margin-left:-35px;"></i>
         </div>
-        <div class="form-field">
+        <div class="form-field" style="height:120px !important">
             <label>Confirm Password * <span id="confirm_password_error" class="hidden" style="color:red"><small>This field is required</small></span> <span id="confirm_password_match_error" class="hidden" style="color:red"><small>Passwords don't match</small></span></label>
             <input type="password" name="confirm_password" id="confirm_password" class="required" onKeyUp="match()">
             <i class="far fa-eye" id="togglePasswordConfirm" style="margin-left:-35px;"></i>
@@ -214,6 +214,7 @@
     </form>
 
 </div>
+<input type="hidden" id="firstRoom" value="" />
 <!-- <div class="footerClearfix"></div>
 <div class="footerClearfix"></div>
 <div class="footerClearfix"></div> -->
@@ -248,7 +249,19 @@
     document.getElementById("dob").setAttribute("min", yearBack+"-"+month+"-"+day);
 
     if("{{$propertyID}}" !== "0"){
-        $("#property").val("{{$propertyID}}").trigger("change")
+
+        //Find Room to map Property & Room
+        $.ajax({
+            type: "post",
+            url: "/get-room-maps",
+            data: {residence: "{{$propertyID}}", roomType: "{{$roomType}}"},
+
+            success: function (data) {         
+                console.log(data[1]) 
+                $("#firstRoom").val(data[1]);
+                $("#property").val(data[0]).trigger("change")
+            },
+        });
     }
 
     $("#property").on('change', function(){
@@ -262,8 +275,25 @@
                 success: function (data) {          
                     $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
                     data.forEach(function(index){
-                        $("#roomType").append('<option value="'+index.id+'">'+index.name+'</option>')
+                        var selected = ""
+                        var disabled = ""
+                        var disabledRoom = ""
+
+                        if($("#firstRoom").val() !== ""){
+                            var selected = $("#firstRoom").val() == index.id ? "selected" : ""
+                        }
+
+                        if(index.online == '0'){
+                            var disabled ="disabled"
+                            var disabledRoom = "(Fully Booked)"
+                            var selected = ""
+                        }
+
+                                                
+                        $("#roomType").append('<option value="'+index.id+'" '+selected+' '+disabled+'>'+index.name+' '+disabledRoom+'</option>')
                     })
+
+                    $("#firstRoom").val('');
                 },
             });
     })
@@ -322,7 +352,7 @@
     function ValidCell(cell, fieldId, fieldError, code){
 
         if(code === "+27"){
-            if (/^\d{9}$/.test(cell)) {
+            if (/^[1-9][0-9]{8}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
@@ -625,8 +655,8 @@
                                 yearOfStudy: $("#yearOfStudy").val(),
                                 property: $("#property").val(),
                                 roomType: $("#roomType").val(),
+                                password: $("#password").val(),
                             },
-
                             success: function (data) {
                                 window.location.replace('/online-application-verify/'+data)   
                             },

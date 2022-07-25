@@ -48,6 +48,7 @@
         <p>In the meantime, you can login to your account anytime to view the status of your
 	        application & upload any outstanding documents using the email you signed up with.
         </p>
+        <br/>
 
         <a href="/dashboard"><button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26; float:left; margin-left:0px;">Continue to Dashboard</button></a>
     

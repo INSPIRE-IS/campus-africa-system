@@ -151,9 +151,9 @@
                 <div class="form-field">
                     <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select name="paymentType" id="paymentType">
-                        <option value="Credit card">Credit card</option>
-                        <option value="EFT">Online EFT</option>
-                        <option value="Upload">Upload proof of payment</option>
+                        <option value="Credit/Debit Card">Credit/Debit Card</option>
+                        <option value="Online EFT">Online EFT</option>
+                        <option value="Manual EFT">Manual EFT</option>
                     </select>
                 </div>
 
@@ -177,11 +177,13 @@
                 </div>
 
                 <div class="form-field hidden" id="eftCard">
-                    <p>Bank details here<br/>
-                        Bank details here<br/>
-                        Bank details here<br/>
-                        Bank details here<br/>
-                        Bank details here<br/>
+                    <p>
+                        <strong>Bank: </strong>{{$propertyTypeInfo->bank_name}}<br/>
+                        <strong>Account Name: </strong>{{$propertyTypeInfo->account_name}}<br/>
+                        <strong>Account Number: </strong>{{$propertyTypeInfo->account_number}}<br/>
+                        <!-- {{$propertyTypeInfo->branch}}<br/> -->
+                        <strong>Branch Code: </strong>{{$propertyTypeInfo->branch_code}}<br/>
+                        <strong>Reference: </strong>{{$booking->booking_code}}<br/><br/><br/>
                     </p>
 
                     <div id="paymentSection">
@@ -257,6 +259,8 @@
                 reference: "{{$booking->booking_code}}",
                 amount: "{{$room_rate}}",
                 id: "{{Auth::user()->id}}",
+                payment_type: $("#paymentType").val(),
+                req_type: "new",
             },
 
             success: function (data) {
@@ -272,7 +276,7 @@
 
 function paymentRef(){
         swal.fire({
-                title: 'Please enter the Payment Reference:',
+                title: 'Please enter the Payment Reference you used:',
                 input: 'text',
                 inputAttributes: {
                     autocapitalize: 'off'
@@ -305,7 +309,7 @@ function paymentRef(){
     }
 
     $("#paymentType").on('change', function(){
-        if($("#paymentType").val() == "Upload"){
+        if($("#paymentType").val() == "Manual EFT"){
             $("#cCard").addClass('hidden');
             $("#eftCard").removeClass('hidden')
             $("#cardholderName").removeClass('required')

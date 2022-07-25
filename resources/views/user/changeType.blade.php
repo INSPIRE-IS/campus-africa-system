@@ -113,6 +113,19 @@
                         <input type="text" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal"  value="<?php if(isset($user)){ echo $user->pAddressPostal;} ?>">
                     </div>
                 </div>
+
+                <div class="form-field-big" id="permission_c_1">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="c_credit_risk" name="c_credit_risk" value="1" style="width:50px !important;" <?php if(isset($user) && $user->c_credit_risk == '1'){echo 'checked';}?>>
+                        <label for="c_credit_risk" id="" style="width:100%">I understand that approval of my application is subject to my Sponsor meeting Campus Africa's accepted credit risk profile and/or some mutually agreed payment arrangement <span id="c_credit_risk_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    </li>
+                </div>
+                <div class="form-field-big" id="permission_c_1">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="c_credit_check" name="c_credit_check" value="1" style="width:50px !important;" <?php if(isset($user) && $user->c_credit_check == '1'){echo 'checked';}?>>
+                        <label for="c_credit_check" style="width:100%">I confirm that my Sponsor consents to a credit check being performed on their profile for the purposes of my application <span id="c_credit_check_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    </li>
+                </div>
         </div>
 
         <div id="changeBursarDetails" class="<?php if(Auth::user()->studentType !== "Bursary"){echo "hidden";} ?>">
@@ -215,6 +228,13 @@
                     </div>
                 @endif
             </div>
+
+            <div class="form-field-big" id="permission_c_2">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="b_meeting" name="b_meeting" value="1" style="width:50px !important;" <?php if(isset($user) && $user->b_meeting == '1'){echo 'checked';}?>>
+                        <label for="b_meeting" id="" style="width:100%">I understand that approval of my application is subject to my Bursary Provider meeting Campus Africa's internal Bursary Provider requirements and/or some mutually agreed payment arrangement <span id="b_meeting_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    </li>
+                </div>
         </div>
 
         <button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26; float:none; margin-left:0px;">Update My details</button>
@@ -418,7 +438,7 @@
 
     function ValidCell(cell, fieldId, fieldError, code){
         if(code === "+27"){
-            if (/^\d{9}$/.test(cell)) {
+            if (/^[1-9][0-9]{8}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
@@ -620,6 +640,23 @@
             req = 0;
         }
 
+        if($("#studentType").val() == "Bursary"){
+            if($('#b_meeting').is(":checked") === false){
+                $("#b_meeting_error").removeClass('hidden');
+                req = 0;
+            }
+        }else if($("#studentType").val() == "Cash / Direct"){
+            if($('#c_credit_risk').is(":checked") === false){
+                $("#c_credit_risk_error").removeClass('hidden');
+                req = 0;
+            }
+
+            if($('#c_credit_check').is(":checked") === false){
+                $("#c_credit_check_error").removeClass('hidden');
+                req = 0;
+            }
+        }
+
         if(req == 0){
             Swal.fire(
                 'Blank Fields',
@@ -681,6 +718,9 @@
                             bPayment: $("#bPayment").val(), 
                             bint: $("#bint").val(), 
                             bIntName: $("#bIntName").val(), 
+                            b_meeting: $("#b_meeting").val(),
+                            c_credit_risk: $("#c_credit_risk").val(),
+                            c_credit_check: $("#c_credit_check").val(),
                         },
 
                         success: function (data) {

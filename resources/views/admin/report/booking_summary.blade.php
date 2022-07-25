@@ -64,7 +64,7 @@
                                 <td>{{$room['room_waitlisted']}}</td>
                                 
                                 <td>
-                                    <span id="{{$room['room_id']}}_text" class="{{$room['room_online']}}">@if($room['room_online'] == '1') Yes @else No @endif</span> 
+                                    <span id="{{$room['room_id']}}_text" class="{{$room['room_online']}}">@if($room['room_online'] == '1') &#128994; &nbsp;&nbsp; Yes @else &#128308; &nbsp;&nbsp; No  @endif</span> 
                                     <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
                                         <button type="button" id="{{$room['room_id']}}_button" onClick="changeRoom('{{$room['room_map_id']}}', '{{$room['room_id']}}')" class='detailsChange' style="margin:0px;">Change</button>
                                     <?php } ?>
@@ -121,9 +121,9 @@
         let roomAvailableText = $("#"+roomID+"_text").hasClass('1') == true ? "Yes" : "No";
 
         if(roomAvailableText == "Yes"){
-            var text = "You are about to disable this room type";
+            var text = "You are about to disable Online bookings for this room type";
         }else{
-            var text = "You are about to activate this room type";
+            var text = "You are about to enable Online bookings for this room type";
         }
 
 
@@ -149,10 +149,10 @@
 
                         if(roomAvailableText == "Yes"){
                             $("#"+roomID+"_text").removeClass('1').addClass('0')
-                            $("#"+roomID+"_text").empty().append("No")
+                            $("#"+roomID+"_text").empty().append("&#128308; &nbsp;&nbsp; No")
                         }else{
                             $("#"+roomID+"_text").removeClass('0').addClass('1')
-                            $("#"+roomID+"_text").empty().append("Yes")
+                            $("#"+roomID+"_text").empty().append("&#128994; &nbsp;&nbsp; Yes")
                         }
 
                         Swal.fire(

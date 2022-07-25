@@ -230,7 +230,7 @@ class RegisterController extends Controller
             $data['name'] = $request->firstName;
             $data['email'] = $request->email;
             $data['messageForMail'] = $newMessage;
-            $data['subject'] = $mailerForMessage->subject;
+            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
             $mailArr = explode(";", $allowedMails);

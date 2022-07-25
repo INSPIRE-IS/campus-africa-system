@@ -40,7 +40,7 @@
                                 <h2 class="cardHeader"><label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label></h2>
 
                                     <div class="col-md-6">
-                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $user->userEmail}}" required disabled>
+                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $user->userEmail}}" required disabled style="padding:10px;">
 
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
                                 <h2 class="cardHeader"><label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label></h2>
 
                                     <div class="col-md-6">
-                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" autofocus>
+                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" autofocus style="padding:10px;">
                                     </div>
                                 </div>
 

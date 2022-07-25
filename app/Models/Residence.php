@@ -19,5 +19,10 @@ class Residence extends Model
         'nsfas_booking_rate',
         'bursary_booking_rate',
         'building_prefix',
+        'account_name',
+        'bank_name',
+        'account_number',
+        'branch',
+        'branch_code',
     ];
 }

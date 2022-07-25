@@ -145,6 +145,9 @@ class User extends Authenticatable
         'kinTelCode',
         'burContactCode',
         'sponCellCode',
+        'c_credit_risk',
+        'c_credit_check',
+        'b_meeting',
     ];
 
     public function files(){

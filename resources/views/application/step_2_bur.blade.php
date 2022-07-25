@@ -61,7 +61,7 @@
                     <label>Contact Number * <span id="bContactNumber_error" class="hidden" style="color:red"><small>Not a valid cellphone number</small></span></label>
 
                     <input type="text" name="burContactCode" id="burContactCode" style="width:18% !important;" value="<?php if(isset($user) && $user->burContactCode){ echo $user->kinWorkCode;}else{echo "+27";} ?>">
-                    <input type="text" name="bContactNumber" id='bContactNumber' style="width:77% !important" value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
+                    <input type="number" name="bContactNumber" id='bContactNumber' style="width:77% !important" value="<?php if(isset($user)){ echo $user->burContactNo;} ?>">
                 </div>
 
                 <div class="form-field">
@@ -69,7 +69,7 @@
                     <input type="email" name="bEmail" id="bEmail" class="required"  value="<?php if(isset($user)){ echo $user->burEmail;} ?>">
                 </div>
 
-                <div class="form-field">
+                <div class="form-field mobHidden">
                     <br/>
                 </div>
 
@@ -102,7 +102,7 @@
                     </select>
                 </div>
 
-                <div class="form-field" id="placeholder">
+                <div class="form-field mobHidden" id="placeholder">
                     <br/>
                 </div>
 
@@ -126,9 +126,16 @@
                         <input type="text" name="bIntName" id="bIntName" value="<?php if(isset($user)){ echo $user->bIntName;} ?>">
                     </div>
 
-                    <div class="form-field">
+                    <div class="form-field mobHidden">
                         <br/>
                     </div>
+                </div>
+
+                <div class="form-field-big" id="permission_c_2">
+                    <li style="display:inline-flex">
+                        <input type="checkbox" id="b_meeting" name="b_meeting" value="1" style="width:50px !important;" <?php if(isset($user) && $user->b_meeting == '1'){echo 'checked';}?>>
+                        <label for="b_meeting" id="" style="width:100%">I understand that approval of my application is subject to my Bursary Provider meeting Campus Africa's internal Bursary Provider requirements and/or some mutually agreed payment arrangement <span id="b_meeting_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    </li>
                 </div>
 
         <button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26">Proceed to next step</button>
@@ -235,7 +242,7 @@
     function ValidCell(cell, fieldId, fieldError, code){
 
         if(code === "+27"){
-            if (/^\d{9}$/.test(cell)) {
+            if (/^[1-9][0-9]{8}$/.test(cell)) {
                 $("#"+fieldId).removeClass("fieldError")
                 $("#"+fieldError).addClass('hidden')
             }else{
@@ -395,6 +402,11 @@
             req = 0;
         }
 
+        if($('#b_meeting').is(":checked") === false){
+            $("#b_meeting_error").removeClass('hidden');
+            req = 0;
+        }
+
         if(req == 0){
             Swal.fire(
                 'Blank Fields',
@@ -442,6 +454,7 @@
                             bPayment: $("#bPayment").val(), 
                             bint: $("#bint").val(), 
                             bIntName: $("#bIntName").val(), 
+                            b_meeting: $("#b_meeting").val(),
                         },
 
                         success: function (data) {

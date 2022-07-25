@@ -18,6 +18,12 @@ class OnlinePayments extends Model
         'amount',
         'checkSum',
         'returnUrl',
-        'status'
+        'status',
+        'post_data',
+        'payment_amount',
+        'payment_transaction_id',
+        'payment_method',
+        'payment_method_detail',
+        'payment_status',
     ];
 }

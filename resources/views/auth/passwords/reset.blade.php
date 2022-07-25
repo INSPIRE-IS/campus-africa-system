@@ -43,7 +43,7 @@
                                 <h2 class="cardHeader"><label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label></h2>
 
                                     <div class="col-md-6">
-                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $email ?? old('email') }}" required autocomplete="email" autofocus>
+                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $email ?? old('email') }}" required autocomplete="email" autofocus style="padding:10px;">
 
                                         @error('email')
                                             <span class="invalid-feedback" role="alert">
@@ -57,7 +57,7 @@
                                 <h2 class="cardHeader"><label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label></h2>
 
                                     <div class="col-md-6">
-                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" style="padding:10px;">
 
                                         @error('password')
                                             <span class="invalid-feedback" role="alert">
@@ -71,7 +71,7 @@
                                 <h2 class="cardHeader"><label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label></h2>
 
                                     <div class="col-md-6">
-                                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password" style="padding:10px;">
                                     </div>
                                 </div>
 

@@ -500,7 +500,7 @@
                                                 <div class="form-field">
                                                     <label >Payment Type &nbsp;&nbsp;&nbsp;&nbsp;</label>
                                                     <select name="paymentType" >
-                                                        <option value="Credit card">Credit card</option>
+                                                        <option value="Credit/Debit Card">Credit/Debit Card</option>
                                                     </select>
                                                 </div>
 
@@ -556,7 +556,7 @@
                                         <!-- <div class="footerClearfix"></div> --><br/><br/><br/><br/><br/><br/><br/><br/>
 
                                         <!-- <input type="button" name="previous" class="previous action-button-previous" value="Back to previous step" id="back5" onClick="PrevStep('back5')" style="margin-left: -7px !important;"/> <br/><br/><br/><br/> -->
-                                        <a href="https://campusafrica.whitehart.co.za/"><input type="button" name="previous" class="previous action-button-previous" value="Back to home page" style="margin-left: -7px !important; margin-top:59px" /> </a>
+                                        <a href="https://campusafrica.co.za/"><input type="button" name="previous" class="previous action-button-previous" value="Back to home page" style="margin-left: -7px !important; margin-top:59px" /> </a>
                                         <!-- <input type="button" name="next" class="next action-button" value="Pay R2500.00 booking fee" onClick="PayFee()" /> -->
                                         </div>
 

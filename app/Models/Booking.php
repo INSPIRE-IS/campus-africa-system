@@ -32,6 +32,7 @@ class Booking extends Model
         'year',
         'booking_code',
         'booking_payment_ref',
+        'payment_type',
     ];
 
     public function users(){

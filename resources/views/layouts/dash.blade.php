@@ -37,9 +37,10 @@
         <div id="fullNavbar">
             <div class="topnav" id="myTopnav">
                 <a class="active" href="/dashboard">Dashboard</a>
-                <a href="https://campusafrica.whitehart.co.za/residences/" target="_blank">Residences</a>
-                <a href="/room-booking">My Room</a>
+                
+                <!-- <a href="/room-booking">My Room</a> -->
                 <a href="/my-documents">My Documents</a>
+                <a href="https://campusafrica.co.za/residences/" target="_blank">Residences</a>
                 <!-- <a href="/my-profile">My Profile</a> -->
 
                 <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> @endif Log out</a>
@@ -103,10 +104,10 @@
     
                 <div class="col-3" style="padding-left:6%; width:19%">
                     <p class="linkHeader">Home</p>
-                    <p class="link"><a href="https://campusafrica.whitehart.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
+                    <p class="link"><a href="https://campusafrica.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
                     <!-- Campus Africa Life<br/> -->
-                    <a href="https://campusafrica.whitehart.co.za/faq/" style="color:inherit; text-decoration:none; cursor:pointer">FAQ</a><br/>
-                    <a href="https://campusafrica.whitehart.co.za/announcements/" style="color:inherit; text-decoration:none; cursor:pointer">What's Hot</a></p>
+                    <a href="https://campusafrica.co.za/faq/" style="color:inherit; text-decoration:none; cursor:pointer">FAQ</a><br/>
+                    <a href="https://campusafrica.co.za/announcements/" style="color:inherit; text-decoration:none; cursor:pointer">What's Hot</a></p>
                 </div>
     
                 <div class="col-3">

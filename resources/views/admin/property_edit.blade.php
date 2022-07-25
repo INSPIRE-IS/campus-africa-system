@@ -163,6 +163,21 @@
         }
     });
 
+    if(window.location.href.split("/").pop() !== "0"){
+        document.getElementById("btn_submit_frm").disabled = true;
+    }
+    
+
+    function removeDirty(){
+        if(window.location.href.split("/").pop() !== "0"){
+            document.getElementById("btn_submit_frm").disabled = false;
+        }
+    }
+
+    $("#residence, #roomType, #meta_info_1, #meta_info_2, #floor, #unit, #room, #bed, #inventory").on('change', function(){
+        removeDirty();
+    })
+
     document.addEventListener("DOMContentLoaded", function(){
         changeResidence();
     })
@@ -174,7 +189,7 @@
 
             $.ajax({
                 type: "post",
-                url: "/get-room-types-id",
+                url: "/get-room-types",
                 data: {residence: $("#residence").val()},
     
                 success: function (data) {          

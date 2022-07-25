@@ -10,7 +10,7 @@ use App\Models\ActionList;
 use App\Models\Lookups;
 use App\Models\Booking;
 use App\Models\Residence;
-
+use App\Models\OnlinePayments;
 use Jenssegers\Agent\Agent;
 
 class DocumentsController extends Controller {
@@ -20,6 +20,7 @@ class DocumentsController extends Controller {
         $file = UserFiles::find($id);
         $user = User::where('id', $file->userUid)->first();
         $booking = Booking::where('userId', $file->userUid)->first();
+        $onlinePayment = OnlinePayments::where('userUid', $file->userUid)->orderBy('created_at', 'desc')->first();
 
         $property = Residence::where('id', $booking->property)->first();
 
@@ -43,6 +44,7 @@ class DocumentsController extends Controller {
             'field_data' => $user_status['field_data'], 
             'booking' => $booking, 
             'property' => $property,
+            'onlinePayment' => $onlinePayment,
             'agent' => $agent,
         ];
 
@@ -168,17 +170,26 @@ class DocumentsController extends Controller {
 
         } elseif ($request->type == "proof_of_payment") {
             $paymentData = [
-                'booking_payment_ref|Payment Reference' => $request->booking_payment_ref
+                'booking_payment_ref|Payment Reference' => $request->booking_payment_ref,
+                'payment_type|Payment Type' => $request->payment_type
             ];
 
             $updatePaymentData = [
-                'booking_payment_ref' => $request->booking_payment_ref
+                'booking_payment_ref' => $request->booking_payment_ref,
+                'payment_type' => $request->payment_type
             ];
 
             Booking::where('userId', $request->userUid)->update($updatePaymentData);
             ActionList::create([
                 "userUid" => $request->userUid,
                 "action" => "Updated Payment Reference to: ".$request->booking_payment_ref,
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+            ]);
+            ActionList::create([
+                "userUid" => $request->userUid,
+                "action" => "Updated Payment Type to: ".$request->payment_type,
                 "actionUserUid" => Auth::user()->id,
                 "actionUserDisplayName" => Auth::user()->userFirstName,
                 "actionUserRole" => Auth::user()->userRole,

@@ -237,16 +237,19 @@ Route::get("/step-5/online-application", [ApplicationController::class, 'step_5'
 Route::get("/complete/online-application", [ApplicationController::class, 'complete_online_app']);
 Route::get("/verify-password", [ApplicationController::class, 'verify_password']);
 Route::post("/confirm-password", [ApplicationController::class, 'confirm_password']);
+Route::get("/retry/online-application", [ApplicationController::class, 'retry_payment']);
 
 Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']);
 Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
 Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);
 Route::post('/restore-student-booking', [HomeController::class, 'restore_student_booking']);
 Route::post('/change-student-room', [HomeController::class, 'change_student_room']);
-Route::get('/download-beds', [LookupsController::class, 'download_beds']);
+Route::post('/download-beds', [LookupsController::class, 'download_beds']);
 
 Route::get('/bed_import', [HomeController::class, 'bed_import']);
 Route::post('/import/beds', [HomeController::class, 'import_beds']);
+
+Route::post('/get-room-maps', [ApplicationController::class, 'get_room_maps']);
 
 Route::post('/UpdatePaymentRef', [HomeController::class, 'UpdatePaymentRef']);
 
@@ -255,6 +258,7 @@ Route::post('/re-verify-email', [ApplicationController::class, 're_verify_email'
 
 Route::post('/initiate-payment', [OnlinePaymentController::class, 'initiate_payment']);
 Route::post('/online-application-payment/{id}', [OnlinePaymentController::class, 'online_application_payment']);
+Route::post('/online-application-payment-on-screen/{id}', [OnlinePaymentController::class, 'online_application_payment_on_screen']);
 Route::post('/notify-data', [OnlinePaymentController::class, 'notify_data']);
 
 
