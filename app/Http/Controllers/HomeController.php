@@ -1815,7 +1815,7 @@ class HomeController extends Controller
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
-        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+        $roomTypeData = RoomTypes::where('id', $request->roomType)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
