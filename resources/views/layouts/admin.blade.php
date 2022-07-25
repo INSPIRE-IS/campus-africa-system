@@ -147,10 +147,10 @@
     
                 <div class="col-3" style="padding-left:6%; width:19%;">
                     <p class="linkHeader">Home</p>
-                    <p class="link"><a href="https://campusafrica.whitehart.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
+                    <p class="link"><a href="https://campusafrica.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
                     <!-- Campus Africa Life<br/> -->
-                    <a href="https://campusafrica.whitehart.co.za/faq/" style="color:inherit; text-decoration:none; cursor:pointer">FAQ</a><br/>
-                    <a href="https://campusafrica.whitehart.co.za/announcements/" style="color:inherit; text-decoration:none; cursor:pointer">What's Hot</a></p>
+                    <a href="https://campusafrica.co.za/faq/" style="color:inherit; text-decoration:none; cursor:pointer">FAQ</a><br/>
+                    <a href="https://campusafrica.co.za/announcements/" style="color:inherit; text-decoration:none; cursor:pointer">What's Hot</a></p>
                 </div>
     
                 <div class="col-3">

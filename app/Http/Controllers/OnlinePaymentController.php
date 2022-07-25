@@ -18,8 +18,11 @@ class OnlinePaymentController extends Controller
     public function initiate_payment(Request $request){
         
         //encryption key set in the Merchant Access Portal
-        $encryptionKey = 'secret';
-        $paygateId = 10011072130;
+        // $encryptionKey = 'secret';
+        // $paygateId = 10011072130;
+
+        $encryptionKey = 'wUrEU5MlbopX';
+        $paygateId = 1039719100014;
 
         $DateTime = new DateTime();
 
