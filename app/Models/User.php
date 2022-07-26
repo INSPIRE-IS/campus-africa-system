@@ -148,6 +148,7 @@ class User extends Authenticatable
         'c_credit_risk',
         'c_credit_check',
         'b_meeting',
+        'app_source',
     ];
 
     public function files(){

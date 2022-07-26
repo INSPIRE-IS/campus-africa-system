@@ -58,6 +58,7 @@ jQuery(document).ready(function ($) {
                 status: $("#status").val(),
                 date: $("#date").val(),
                 beds: $("#beds").val(),
+                applied: $("#applied").val(),
                 processingStatus: $("#processingStatus").val(),
                 studentNo: $("#studentNo").val(),
                 idPassport: $("#idPassport").val(),
@@ -387,6 +388,7 @@ jQuery(document).ready(function ($) {
         $("#bookingRef").val("");
         document.getElementById("student_type").value = "All";
         document.getElementById("fieldStatus").value = "All";
+        document.getElementById("applied").value = "All";
         $("#date").val("");
         $("#beds").val("");
         $("#processingStatus").val("");

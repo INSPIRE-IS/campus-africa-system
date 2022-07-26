@@ -147,6 +147,7 @@ class RegisterController extends Controller
             'yearOfStudy' => $request->yearOfStudy,
             'rob_55_lease' => 3,
             'rob_45_other' => 3,
+            'app_source' => 1,
         ]);
 
         ActionList::create([

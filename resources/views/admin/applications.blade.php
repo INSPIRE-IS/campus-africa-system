@@ -124,6 +124,20 @@
                 <option value="NA" <?php if( Session::get('processingStatus') == "NA"){ echo "selected";}?>>⚪ NA</option>
             </select> -->
         </div>
+        <div class="searchField" style="height:80px;">
+            <label>Applied</label><br/>
+            <select name="applied" id='applied'>
+                <option value="All" selected <?php if( Session::get('applied') == "All"){ echo "selected";}?>>All</option>
+                <option value="1" <?php if( Session::get('applied') == "1"){ echo "selected";}?>>Online</option>
+                <option value="0" <?php if( Session::get('applied') == "0"){ echo "selected";}?>>Offline</option>
+            </select>
+        </div>
+        <div class="searchField" style="height:80px;">
+            <br/>
+        </div>
+        <div class="searchField" style="height:80px;">
+            <br/>
+        </div>
         
 
         <div class="searchTab" >

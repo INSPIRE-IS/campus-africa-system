@@ -1793,6 +1793,7 @@ class HomeController extends Controller
             'kinTelCode' => $request->kTeleNo_code,
             'burContactCode' => $request->bContactNumber_code,
             'sponCellCode' => $request->pCell_no_code,
+            'app_source' => 0,
         ]);
 
         ActionList::create([
@@ -2246,6 +2247,7 @@ class HomeController extends Controller
             Session::put('beds', $request->beds);
             Session::put('processingStatus', $request->processingStatus);
             Session::put('show_cancelled', $request->show_cancelled);
+            Session::put('applied', $request->applied);
 
         } else {
 
@@ -2262,6 +2264,7 @@ class HomeController extends Controller
             $request->beds = Session::get('beds');
             $request->processingStatus = Session::get('processingStatus');
             $request->show_cancelled = Session::get('show_cancelled');
+            $request->applied = Session::get('applied');
 
         }
 
@@ -2312,6 +2315,13 @@ class HomeController extends Controller
             if($request->room_type !== "All"){
                 $room_type = 'bookings_data.roomType LIKE "%'.$request->room_type.'%"';
                 array_push($search_value, $room_type);
+            }
+        }
+
+        if($request->applied !== "" && !empty($request->applied)){
+            if($request->applied !== "All"){
+                $applied = 'u.app_source LIKE "%'.$request->applied.'%"';
+                array_push($search_value, $applied);
             }
         }
 
