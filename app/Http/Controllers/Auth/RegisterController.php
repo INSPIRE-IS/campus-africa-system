@@ -21,6 +21,7 @@ use App\Models\ImportNSFASApproval;
 use App\Models\ImportNSFASStudentAuditLog;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\Residence;
+use Auth;
 
 class RegisterController extends Controller
 {
@@ -202,9 +203,9 @@ class RegisterController extends Controller
                     ActionList::create([
                         "userUid" => $user->id,
                         "action" => "NSFAS Approval has been Approved via import",
-                        "actionUserUid" => Auth::user()->id,
-                        "actionUserDisplayName" => Auth::user()->userFirstName,
-                        "actionUserRole" => Auth::user()->userRole,
+                        "actionUserUid" => $user->id,
+                        "actionUserDisplayName" => $user->userFirstName,
+                        "actionUserRole" => $user->userRole,
                     ]);
                 }
 
