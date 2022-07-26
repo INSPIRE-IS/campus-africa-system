@@ -308,6 +308,12 @@ jQuery(document).ready(function ($) {
                         bed_code = arrayItem["bed_code"];
                     }
 
+                    if(arrayItem["app_source"] == 0){
+                        source = "Offline";
+                    }else{
+                        source = "Online";
+                    }
+
                     var trDOM = datatable.row
                         .add([
                             "#" + arrayItem["booking_code"],
@@ -319,6 +325,7 @@ jQuery(document).ready(function ($) {
                                 arrayItem["property_residence"] +
                                 " | " +
                                 arrayItem["roomTypeName"],
+                                source,
                                 arrayItem["bed_code"],
                             '<span style="white-space: nowrap;">' + dateString + "</span>",
                             studentType,

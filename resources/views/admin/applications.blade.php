@@ -125,7 +125,7 @@
             </select> -->
         </div>
         <div class="searchField" style="height:80px;">
-            <label>Applied</label><br/>
+            <label>Source</label><br/>
             <select name="applied" id='applied'>
                 <option value="All" selected <?php if( Session::get('applied') == "All"){ echo "selected";}?>>All</option>
                 <option value="1" <?php if( Session::get('applied') == "1"){ echo "selected";}?>>Online</option>
@@ -168,6 +168,7 @@
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
                         <th style="width:50%">APPLICANT | ROOM</th>
+                        <th style="width:10%">Source</th>
                         <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
