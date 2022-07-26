@@ -3493,7 +3493,7 @@
                 $('#kinCellNo').addClass('fieldDuplicate');
             } else {
                 cell = $("#userCell").val()
-                ValidCell(cell, "userCell", "", );
+                ValidCell(cell, "userCell", "",$("#userCellCode").val());
                 
                 cell = $("#kinCellNo").val();            
                 ValidCell(cell, "kinCellNo", "", $("#kinCellCode").val());
