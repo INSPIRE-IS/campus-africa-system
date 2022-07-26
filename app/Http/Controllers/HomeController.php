@@ -1984,7 +1984,7 @@ class HomeController extends Controller
 
         if($request->studentType == "NSFAS"){
             
-            $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->first();
+            $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->orderBy('created_at', 'desc')->first();
 
             if(!empty($nsfasStudentsApproval)){
 
