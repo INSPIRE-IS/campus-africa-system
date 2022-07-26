@@ -2318,12 +2318,12 @@ class HomeController extends Controller
             }
         }
 
-        if($request->applied !== "" && !empty($request->applied)){
+        // if($request->applied !== "" && !empty($request->applied)){
             if($request->applied !== "All"){
-                $applied = 'u.app_source LIKE "%'.$request->applied.'%"';
+                $applied = 'u.app_source = "'.$request->applied.'"';
                 array_push($search_value, $applied);
             }
-        }
+        // }
 
         if($request->applicant !== "" && !empty($request->applicant)){
             $name = $request->applicant;
