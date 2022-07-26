@@ -3574,8 +3574,8 @@
 
             } else {
                 Swal.fire(
-                    'Blank Fields',
-                    'Please fill in all Required Fields!',
+                    'Incorrect Data',
+                    'Please correctly fill in all Required Fields!',
                     'error'
                 );
             }
