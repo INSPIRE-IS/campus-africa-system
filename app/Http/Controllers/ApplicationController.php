@@ -925,6 +925,9 @@ class ApplicationController extends Controller
         $data['messageForMail'] = $newMessage;
         $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
+        $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+        $data['cc'] = explode(";", $allowedMailsCC);
+
         if(explode("@", $data['email'])[1] == "conurban.co.za"){
             $data['email'] = $user->userEmail;
         }else{
@@ -935,7 +938,7 @@ class ApplicationController extends Controller
             // $message->to($data['email'], $data['name'])->subject
             //     ('Campus Africa User Application');
             $message->to($data['email'])->subject($data['subject']);
-            $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
+            $message->cc($data['cc']);
             $message->from('noreply@campusafrica.co.za','Campus Africa');
         });
     }
