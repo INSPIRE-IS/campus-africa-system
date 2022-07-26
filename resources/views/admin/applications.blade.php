@@ -168,7 +168,7 @@
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
                         <th style="width:50%">APPLICANT | ROOM</th>
-                        <th style="width:10%">Source</th>
+                        <th style="width:10%">SOURCE</th>
                         <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
                         <th>STUDENT TYPE</th>
