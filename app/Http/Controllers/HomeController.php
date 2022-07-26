@@ -2017,7 +2017,7 @@ class HomeController extends Controller
         $generator->setRedirectUrl('/verify-email-account');
         $url = $generator->generate();
 
-        $message_replace['bookingRef'] = $booking->booking_code;
+        $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
         $message_replace['name'] = $user->userFirstName;
         $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
         $message_replace['close_application_link']="</a>";

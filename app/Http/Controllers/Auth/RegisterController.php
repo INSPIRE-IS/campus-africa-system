@@ -220,7 +220,9 @@ class RegisterController extends Controller
         $generator->setRedirectUrl('/verify-password');
         $url = $generator->generate();
 
-        $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
+        $bookinfRefNo = Booking::where('id', $booking->id)->first();
+
+        $message_replace['bookingRef'] = $bookinfRefNo->booking_code;
         $message_replace['name'] = $request->firstName;
         $message_replace['security_token'] = $userToken->security_token;
         $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
