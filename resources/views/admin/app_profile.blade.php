@@ -3386,7 +3386,7 @@
                 code = "kinCellCode";
             }
 
-            ValidCell(cell, id, "", code);
+            ValidCell(cell, id, id+"_error", code);
             duplicateCell();          
         });
 
@@ -3397,7 +3397,7 @@
 
             // console.log(code)
 
-            ValidCell(cell, id, "", code);
+            ValidCell(cell, id, "userCell_error", code);
             duplicateCell();          
         });
         $(document).on('keyup blur', "#kinCellCode", function(){
@@ -3447,6 +3447,9 @@
             //     $("#"+fieldId + "_error").removeClass('hidden')
             // }
 
+            // console.log(userCell_error)
+            // console.log(fieldError)
+
 
             if(code === "+27"){
                 if (/^[1-9][0-9]{8}$/.test(cell)) {
@@ -3493,7 +3496,7 @@
                 $('#kinCellNo').addClass('fieldDuplicate');
             } else {
                 cell = $("#userCell").val()
-                ValidCell(cell, "userCell", "", );
+                ValidCell(cell, "userCell", "userCell_error",$("#userCellCode").val());
                 
                 cell = $("#kinCellNo").val();            
                 ValidCell(cell, "kinCellNo", "", $("#kinCellCode").val());
@@ -3574,8 +3577,8 @@
 
             } else {
                 Swal.fire(
-                    'Blank Fields',
-                    'Please fill in all Required Fields!',
+                    'Incorrect Data',
+                    'Please correctly fill in all Required Fields!',
                     'error'
                 );
             }

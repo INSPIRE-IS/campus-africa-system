@@ -6034,9 +6034,9 @@ class HomeController extends Controller
                         <span style='font-weight:bold'>Cellphone Number *</span>
                         <input class="noedit required" name="userCellCode" id="userCellCode" type="text" value="<?php echo $user->userCellCode; ?>" style="width:8%; margin-right:2%">
                         <input class="noedit required" name="userCell" id="userCell" type="text" value="<?php echo $user->userCell; ?>" style="width:40%">
-                        <span id="userCell_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                        <span id="userCell_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid cellphone Number</small></span>
                         <span id="cell_no_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
-                        <input type="hidden" name="kinCellNo" id="kinCellNo" value="<?php echo $user->kinCellNo; ?>">
+                        <!-- <input type="hidden" name="kinCellNo" id="kinCellNo" value="<?php echo $user->kinCellNo; ?>"> -->
                     </div>
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">

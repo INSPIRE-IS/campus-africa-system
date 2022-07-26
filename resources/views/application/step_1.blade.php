@@ -90,9 +90,9 @@
             </select>
         </div>
 
-        <div class="form-field" id="idField">
+        <div class="form-field" id="idField" style="height:143px !important">
             <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span>
-            <span id="idNumber_InUse" class="hidden" style="color:red"><small>ID Number already in use</small></span></label>
+            <span id="idNumber_InUse" class="hidden" style="color:red"><small>ID Number already in use - please <a href="<?php echo "https://$_SERVER[HTTP_HOST]/login"; ?>">login to your account</a> or email us at <a href="mailto:info@campusafrica.co.za">info@campusafrica.co.za</a></small></span></label>
             <input type="text" name="idNumber" id="idNumber" class="required">
         </div>
 
