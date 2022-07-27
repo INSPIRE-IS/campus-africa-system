@@ -96,9 +96,9 @@
             <label>Student Type * <span id="studentType_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="studentType" id='studentType' class="required">
                 <option value="" selected disabled>Select a Student Type</option>
-                <option value="NSFAS">NSFAS</option>
-                <option value="Bursary">Bursary</option>
-                <option value="Cash / Direct">Cash</option>
+                <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
             </select>
         </div>
 
@@ -119,7 +119,7 @@
                 <option value="" selected disabled>Choose one</option>
                 @foreach($lookups as $lookup)
                     @if($lookup->group_id == "1")
-                        <option value="{{$lookup->id}}" >{{$lookup->lookup_name}}</option>
+                        <option value="{{$lookup->id}}" <?php if($user->institutionStudy == $lookup->id){echo "selected";} ?>>{{$lookup->lookup_name}}</option>
                     @endif
                 @endforeach
             </select>
@@ -127,7 +127,7 @@
 
         <div class="form-field">
             <label>Student Number * <span id="studNumber_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="studNumber" id="studNumber" class="required" >
+            <input type="text" name="studNumber" id="studNumber" class="required" value="{{$user->studentNo}}">
         </div>
 
         <div class="form-field">
