@@ -497,186 +497,422 @@ class HomeController extends Controller
         }
     }
 
+    public function activeBooking($userId, $this_year){
+        $user = User::where('id', $userId)->first();
+
+        $name = $user['userFirstName']." ".$user['userLastname'];
+
+        $files = UserFiles::where('userUid', $userId)->where('year', $this_year)->get();
+        $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
+
+        $userData = [];
+        $uploaded = [];
+
+        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+        if($user->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null){
+            array_push($all, "moveIn");
+        }
+        if($user->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if($user->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
+
+        $data = [];
+
+        foreach($files as $file){
+            array_push($uploaded, $file->fileId);
+            if($file->status == "Rejected"){
+                $file->status = "Rejected";
+            }
+            if($file->status == "Approved"){
+                $file->status = "XApproved";
+            }
+            if($file->status == "Uploaded"){
+                $file->status = "AUploaded";
+            }
+            array_push($data, ["field" => $file->fileId, "status" => $file->status, "fileName" => $file->fileName, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+        }
+
+        $left = array_diff($all, $uploaded);
+
+        foreach($left as $dataLeft){
+            array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
+        }
+        
+        usort($data, function($a, $b) {
+            return $a['status'] <=> $b['status'];
+        });
+
+        array_push($userData, ["files" => $data, "userInfo" => $user]);
+
+        $actions = ActionList::with('users')->where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
+
+        $completed = "false";
+        $completedDocs = [];
+
+        foreach($data as $file){
+            if($file['status'] == "XApproved"){
+                array_push($completedDocs, $file['status']);
+            }
+        }
+
+        if(count($completedDocs) == 5){
+            $completed = "true";
+        }
+
+        $lookup = Lookups::get();
+
+        $residence = Residence::where('residence', $booking->property)->first();
+
+        //Get booking Meta
+        $bookingPropData = Property::where('id', $booking->property_data_id)->first();
+
+        $files_to_download = 'false';
+        $booking_paid = 'false';
+        $booking_waived = 'false';
+
+        foreach($files as $file){
+            if($file->status == "XApproved" && $file->fileUrl !== null || $file->status == "Approved" && $file->fileUrl !== null){
+                $files_to_download = 'true';
+            }
+
+            if($file->fileId == "proof_of_payment"){
+                
+                if($file->fileUrl !== null && $file->fileUrl !== '' && $file->status !== "Rejected" && $file->status !== "Uploaded" && $file->status !== "AUploaded"){
+                    $booking_paid = "true";
+                    
+                }else{
+                    if($file->status == "XApproved" || $file->status == "Approved"){
+
+                        $actions = ActionList::where('userUid', $user->id)->orderBy('id', 'DESC')->get();
+
+                        foreach($actions as $action){
+                            if (str_contains($action->action, 'Waived')) {
+                                $booking_waived = 'true';
+                                break;
+                            }
+
+                            if(str_contains($action->action, 'R0')){
+                                $booking_waived = '0';
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        $comments = Comments::with('users')->where('user_uid', $userId)->orderBy('created_at', 'desc')->get();
+
+        $leaseApproved = 'false';
+
+        $bank = 0;
+        $approval = 0;
+
+        foreach($userData[0]['files'] as $userFile){
+            if($userFile['field'] == "moveIn"){
+                if($userFile['status'] == "XApproved"){
+                    $leaseApproved = "true";
+                }
+            }
+
+            if($userFile['field'] == "bankStatement"){
+                $bank = 1;
+            }
+
+            if($userFile['field'] == "bursaryApproval"){
+                $approval = 1;
+            }
+            
+        }
+
+        $i = 0;
+        foreach($userData[0]['files'] as $userFile){
+            
+            if($userData[0]['userInfo']['studentType'] !== "Cash / Direct" && $bank == 1){
+                if($userData[0]['files'][$i]['field'] == "bankStatement"){
+                    unset($userData[0]['files'][$i]);
+                }
+            }
+
+            if($userData[0]['userInfo']['studentType'] == "Cash / Direct" && $approval == 1){
+                if($userData[0]['files'][$i]['field'] == "bursaryApproval"){
+                    unset($userData[0]['files'][$i]);
+                }
+            }
+
+            $i++;
+        }
+
+        $allowedResidences = [];
+        $allProp = Residence::get();
+        $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+        foreach($allProp as $prop){
+            foreach($permissionProp as $permission){
+                if($permission->property == $prop->id){
+                    array_push($allowedResidences, $prop->id);
+                }
+            }
+        }
+
+        $buildingName = Residence::where('id', $booking->property)->pluck('residence')->first();
+        $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+
+
+        if(($userData[0]['userInfo']['rob_60_cancelled'] == '0' && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1'){
+            return ["Info" => 1, "headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail];
+        }else{
+            return ["Info" => 0, "headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName];
+        }
+    }
+
+    public function oldBooking($userId){
+        $user = User::where('id', $userId)->first();
+
+        $name = $user['userFirstName']." ".$user['userLastname'];
+
+        $booking = Booking::where('userId', $userId)->orderBy('year', 'desc')->first();
+        $files = UserFiles::where('userUid', $userId)->where('year', $booking->year)->get();
+
+        $userData = [];
+        $uploaded = [];
+
+        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+
+        if($user->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if($user->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
+
+        $bookingList = Booking::where('userId', $userId)->orderBy('year', 'desc')->get();
+        $buildingList = Residence::get();
+        $roomList = RoomTypes::get();
+        $filesList = UserFiles::where('userUid', $userId)->get();
+
+        return ["Info" => 2, "headerTitle" => $name." - Expired Booking", "title" => "Expired Booking", "bookingList" => $bookingList, "buildingList" => $buildingList, "roomList" => $roomList, "filesList" => $filesList, "all" => $all, "user" => $user];
+    }
+
     public function application_profile(Request $request, $userId){
 
         if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3"){
 
-            $user = User::where('id', $userId)->first();
+            //get current year
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
 
-            $name = $user['userFirstName']." ".$user['userLastname'];
-
-            $user = User::with('files')->where('id', $userId)->first();
-            $booking = Booking::where('userId', $user->id)->first();
-            $userData = [];
-            $uploaded = [];
-            // $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
-
-            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
-
-            if($user->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null){
-                array_push($all, "moveIn");
-            }
-            if($user->studentType == "Cash / Direct"){
-                array_push($all, "bankStatement");
-            }
-            if($user->studentType !== "Cash / Direct"){
-                array_push($all, "bursaryApproval");
-            }
-        
-            $data = [];
-
-            foreach($user->files as $file){
-                array_push($uploaded, $file->fileId);
-                if($file->status == "Rejected"){
-                    $file->status = "Rejected";
-                }
-                if($file->status == "Approved"){
-                    $file->status = "XApproved";
-                }
-                if($file->status == "Uploaded"){
-                    $file->status = "AUploaded";
-                }
-                array_push($data, ["field" => $file->fileId, "status" => $file->status, "fileName" => $file->fileName, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
-            }
-
-            $left = array_diff($all, $uploaded);
-
-            foreach($left as $dataLeft){
-                array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
-            }
-            
-            usort($data, function($a, $b) {
-                return $a['status'] <=> $b['status'];
-            });
-
-            array_push($userData, ["files" => $data, "userInfo" => $user]);
-
-            $actions = ActionList::with('users')->where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
-
-            // dd($actions[0]->users->userFirstName);
-
-            $completed = "false";
-            $completedDocs = [];
-
-            foreach($data as $file){
-                if($file['status'] == "XApproved"){
-                    array_push($completedDocs, $file['status']);
-                }
-            }
-
-            // dd($completedDocs);
-
-            if(count($completedDocs) == 5){
-                $completed = "true";
-            }
-
-            $lookup = Lookups::get();
-
-            $residence = Residence::where('residence', $booking->property)->first();
-
-            //Get booking Meta
-            $bookingPropData = Property::where('id', $booking->property_data_id)->first();
-
-            $files_to_download = 'false';
-            $booking_paid = 'false';
-            $booking_waived = 'false';
-
-            foreach($user['files'] as $file){
-                if($file->status == "XApproved" && $file->fileUrl !== null || $file->status == "Approved" && $file->fileUrl !== null){
-                    $files_to_download = 'true';
-                }
-
-                if($file->fileId == "proof_of_payment"){
-                    
-                    if($file->fileUrl !== null && $file->fileUrl !== '' && $file->status !== "Rejected" && $file->status !== "Uploaded" && $file->status !== "AUploaded"){
-                        $booking_paid = "true";
-                        
-                    }else{
-                        if($file->status == "XApproved" || $file->status == "Approved"){
-
-                            $actions = ActionList::where('userUid', $user->id)->orderBy('id', 'DESC')->get();
-
-                            foreach($actions as $action){
-                                if (str_contains($action->action, 'Waived')) {
-                                    $booking_waived = 'true';
-                                    break;
-                                }
-
-                                if(str_contains($action->action, 'R0')){
-                                    $booking_waived = '0';
-                                    break;
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-
-            $comments = Comments::with('users')->where('user_uid', $userId)->orderBy('created_at', 'desc')->get();
-
-            $leaseApproved = 'false';
-
-            $bank = 0;
-            $approval = 0;
-
-            foreach($userData[0]['files'] as $userFile){
-                if($userFile['field'] == "moveIn"){
-                    if($userFile['status'] == "XApproved"){
-                        $leaseApproved = "true";
-                    }
-                }
-
-                if($userFile['field'] == "bankStatement"){
-                    $bank = 1;
-                }
-
-                if($userFile['field'] == "bursaryApproval"){
-                    $approval = 1;
-                }
-                
-            }
-
-            $i = 0;
-            foreach($userData[0]['files'] as $userFile){
-                
-                if($userData[0]['userInfo']['studentType'] !== "Cash / Direct" && $bank == 1){
-                    if($userData[0]['files'][$i]['field'] == "bankStatement"){
-                        unset($userData[0]['files'][$i]);
-                    }
-                }
-
-                if($userData[0]['userInfo']['studentType'] == "Cash / Direct" && $approval == 1){
-                    if($userData[0]['files'][$i]['field'] == "bursaryApproval"){
-                        unset($userData[0]['files'][$i]);
-                    }
-                }
-
-                $i++;
-            }
-
-            $allowedResidences = [];
-            $allProp = Residence::get();
-            $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
-
-            foreach($allProp as $prop){
-                foreach($permissionProp as $permission){
-                    if($permission->property == $prop->id){
-                        array_push($allowedResidences, $prop->id);
-                    }
-                }
-            }
-
-            $buildingName = Residence::where('id', $booking->property)->pluck('residence')->first();
-            $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+            //See if there is an active booking
+            $bookingCurr = Booking::where('userId', $userId)->where('year', $this_year)->first();
 
 
-            if(($userData[0]['userInfo']['rob_60_cancelled'] == '0' && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1'){
-                //
-                return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail]);
+            $returnInfo = [];
+
+            if(!empty($bookingCurr)){
+                $returnInfo = $this->activeBooking($userId, $this_year);
             }else{
-                return view('errors.studentView', ["headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName]);
+                $returnInfo = $this->oldBooking($userId);
             }
+
+            if($returnInfo['Info'] == '1'){
+                return view('admin.app_profile', ["headerTitle" => $returnInfo['headerTitle'], "appProfile" => "true", "user" => $returnInfo['user'], "actions" => $returnInfo['actions'], "completed" => $returnInfo['completed'], "lookups" => $returnInfo['lookups'], "title" => "Student Profile", "booking" => $returnInfo['booking'], "residence" => $returnInfo['residence'], "bookingPropData" => $returnInfo['bookingPropData'], "files_to_download" => $returnInfo['files_to_download'], "booking_paid" => $returnInfo['booking_paid'], 'booking_waived' => $returnInfo['booking_waived'], 'comments' => $returnInfo['comments'], 'leaseApproved' => $returnInfo['leaseApproved'], 'allowedResidences' => $returnInfo['allowedResidences'], "mailVerificationEmail" => $returnInfo['mailVerificationEmail']]);
+            }elseif($returnInfo['Info'] == '0'){
+                return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
+            }elseif($returnInfo['Info'] == '2'){
+                return view('admin.oldBookingNotification', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "all" => $returnInfo['all'], "user" => $returnInfo['user']]);
+            }
+
+
+
+
+
+
+
+
+
+
+
+            // $user = User::where('id', $userId)->first();
+
+            // $name = $user['userFirstName']." ".$user['userLastname'];
+
+            // $user = User::with('files')->where('id', $userId)->first();
+            // $booking = Booking::where('userId', $user->id)->first();
+            // $userData = [];
+            // $uploaded = [];
+            // // $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];
+
+            // $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+            // if($user->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null){
+            //     array_push($all, "moveIn");
+            // }
+            // if($user->studentType == "Cash / Direct"){
+            //     array_push($all, "bankStatement");
+            // }
+            // if($user->studentType !== "Cash / Direct"){
+            //     array_push($all, "bursaryApproval");
+            // }
+        
+            // $data = [];
+
+            // foreach($user->files as $file){
+            //     array_push($uploaded, $file->fileId);
+            //     if($file->status == "Rejected"){
+            //         $file->status = "Rejected";
+            //     }
+            //     if($file->status == "Approved"){
+            //         $file->status = "XApproved";
+            //     }
+            //     if($file->status == "Uploaded"){
+            //         $file->status = "AUploaded";
+            //     }
+            //     array_push($data, ["field" => $file->fileId, "status" => $file->status, "fileName" => $file->fileName, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+            // }
+
+            // $left = array_diff($all, $uploaded);
+
+            // foreach($left as $dataLeft){
+            //     array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
+            // }
+            
+            // usort($data, function($a, $b) {
+            //     return $a['status'] <=> $b['status'];
+            // });
+
+            // array_push($userData, ["files" => $data, "userInfo" => $user]);
+
+            // $actions = ActionList::with('users')->where('userUid', $userId)->orderBy('created_at', 'DESC')->get();
+
+            // // dd($actions[0]->users->userFirstName);
+
+            // $completed = "false";
+            // $completedDocs = [];
+
+            // foreach($data as $file){
+            //     if($file['status'] == "XApproved"){
+            //         array_push($completedDocs, $file['status']);
+            //     }
+            // }
+
+            // // dd($completedDocs);
+
+            // if(count($completedDocs) == 5){
+            //     $completed = "true";
+            // }
+
+            // $lookup = Lookups::get();
+
+            // $residence = Residence::where('residence', $booking->property)->first();
+
+            // //Get booking Meta
+            // $bookingPropData = Property::where('id', $booking->property_data_id)->first();
+
+            // $files_to_download = 'false';
+            // $booking_paid = 'false';
+            // $booking_waived = 'false';
+
+            // foreach($user['files'] as $file){
+            //     if($file->status == "XApproved" && $file->fileUrl !== null || $file->status == "Approved" && $file->fileUrl !== null){
+            //         $files_to_download = 'true';
+            //     }
+
+            //     if($file->fileId == "proof_of_payment"){
+                    
+            //         if($file->fileUrl !== null && $file->fileUrl !== '' && $file->status !== "Rejected" && $file->status !== "Uploaded" && $file->status !== "AUploaded"){
+            //             $booking_paid = "true";
+                        
+            //         }else{
+            //             if($file->status == "XApproved" || $file->status == "Approved"){
+
+            //                 $actions = ActionList::where('userUid', $user->id)->orderBy('id', 'DESC')->get();
+
+            //                 foreach($actions as $action){
+            //                     if (str_contains($action->action, 'Waived')) {
+            //                         $booking_waived = 'true';
+            //                         break;
+            //                     }
+
+            //                     if(str_contains($action->action, 'R0')){
+            //                         $booking_waived = '0';
+            //                         break;
+            //                     }
+            //                 }
+
+            //             }
+            //         }
+            //     }
+            // }
+
+            // $comments = Comments::with('users')->where('user_uid', $userId)->orderBy('created_at', 'desc')->get();
+
+            // $leaseApproved = 'false';
+
+            // $bank = 0;
+            // $approval = 0;
+
+            // foreach($userData[0]['files'] as $userFile){
+            //     if($userFile['field'] == "moveIn"){
+            //         if($userFile['status'] == "XApproved"){
+            //             $leaseApproved = "true";
+            //         }
+            //     }
+
+            //     if($userFile['field'] == "bankStatement"){
+            //         $bank = 1;
+            //     }
+
+            //     if($userFile['field'] == "bursaryApproval"){
+            //         $approval = 1;
+            //     }
+                
+            // }
+
+            // $i = 0;
+            // foreach($userData[0]['files'] as $userFile){
+                
+            //     if($userData[0]['userInfo']['studentType'] !== "Cash / Direct" && $bank == 1){
+            //         if($userData[0]['files'][$i]['field'] == "bankStatement"){
+            //             unset($userData[0]['files'][$i]);
+            //         }
+            //     }
+
+            //     if($userData[0]['userInfo']['studentType'] == "Cash / Direct" && $approval == 1){
+            //         if($userData[0]['files'][$i]['field'] == "bursaryApproval"){
+            //             unset($userData[0]['files'][$i]);
+            //         }
+            //     }
+
+            //     $i++;
+            // }
+
+            // $allowedResidences = [];
+            // $allProp = Residence::get();
+            // $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+            // foreach($allProp as $prop){
+            //     foreach($permissionProp as $permission){
+            //         if($permission->property == $prop->id){
+            //             array_push($allowedResidences, $prop->id);
+            //         }
+            //     }
+            // }
+
+            // $buildingName = Residence::where('id', $booking->property)->pluck('residence')->first();
+            // $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+
+
+            // if(($userData[0]['userInfo']['rob_60_cancelled'] == '0' && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1'){
+            //     //
+            //     return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail]);
+            // }else{
+            //     return view('errors.studentView', ["headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName]);
+            // }
 
 
         }
@@ -7279,6 +7515,25 @@ class HomeController extends Controller
     
         ActionList::create($actionFileData);
         return 'true';
+    }
+
+    public function create_new_booking(request $request, $userID){
+        $user = User::where('id', $userID)->first();
+        $lookups = Lookups::get();
+
+        $allowed = [];
+        $allProp = Residence::get();
+        $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+
+        foreach($allProp as $prop){
+            foreach($permissionProp as $permission){
+                if($permission->property == $prop->id){
+                    array_push($allowed, $prop);
+                }
+            }
+        }
+
+        return view('admin.newBookingForm', ["headerTitle" => "New Booking", "title" => "new Booking", "user" => $user, "lookups" => $lookups, "PropertyList" => $allowed]);
     }
     
 

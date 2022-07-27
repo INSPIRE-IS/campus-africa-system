@@ -2048,6 +2048,18 @@ input:read-only {
   font-weight:bold;
 }
 
+.newBookingBtn{
+  margin: 30px;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  background-color: #ccc;
+  font-size: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
 @media only screen and (max-width: 850px) {
 
   .bookingDashCard{
