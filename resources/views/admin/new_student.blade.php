@@ -281,7 +281,7 @@
                 </div>
 
                 <div class="form-field">
-                    <label>Registration Number * <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <label>Registration Number  <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
                     <input type="text" name="bRegistrationNo" id="bRegistrationNo" >
                 </div>
 
@@ -1065,7 +1065,7 @@
 
         if(value == true){
             $("#bCompanyName").addClass('required')
-            $("#bRegistrationNo").addClass('required')
+            // $("#bRegistrationNo").addClass('required')
             $("#bContactPerson").addClass('required')
             $("#bContactNumber").addClass('required')
             $("#bEmail").addClass('required')
@@ -1078,7 +1078,7 @@
 
         }else{
             $("#bCompanyName").removeClass('required')
-            $("#bRegistrationNo").removeClass('required')
+            // $("#bRegistrationNo").removeClass('required')
             $("#bContactPerson").removeClass('required')
             $("#bContactNumber").removeClass('required')
             $("#bEmail").removeClass('required')
