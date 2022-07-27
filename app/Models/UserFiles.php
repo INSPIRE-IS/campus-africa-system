@@ -18,6 +18,7 @@ class UserFiles extends Model
         'uploaded_by',
         'approved_by',
         'rejectReason',
+        'year',
     ];
 
     public function users(){
