@@ -48,8 +48,8 @@
                 </div>
 
                 <div class="form-field">
-                    <label>Registration Number * <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" class="required" value="<?php if(isset($user)){ echo $user->burRegNo;} ?>">
+                    <label>Registration Number <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" value="<?php if(isset($user)){ echo $user->burRegNo;} ?>">
                 </div>
 
                 <div class="form-field">

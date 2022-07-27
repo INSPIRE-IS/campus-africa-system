@@ -768,8 +768,8 @@
                 </div>
 
                 <div class="form-field">
-                    <label>Registration Number * <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" class="required" value="{{$user[0]['userInfo']['burRegNo']}}">
+                    <label>Registration Number  <span id="bRegistrationNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                    <input type="text" name="bRegistrationNo" id="bRegistrationNo" value="{{$user[0]['userInfo']['burRegNo']}}">
                 </div>
 
                 <div class="form-field">
@@ -3887,7 +3887,7 @@
 
         var req = 1;
 
-        var burArr = ["bCompanyName", "bRegistrationNo", "bContactPerson", "bContactNumber", "burContactCode", "bEmail", "bAddress1", "bAddress2", "bAddressCity", "bAddressPostal", "bPayment"];
+        var burArr = ["bCompanyName", "bContactPerson", "bContactNumber", "burContactCode", "bEmail", "bAddress1", "bAddress2", "bAddressCity", "bAddressPostal", "bPayment"];
 
 
         if($("#bPayment").val() == "Via an INTERMEDIARY"){
