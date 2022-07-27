@@ -3499,7 +3499,7 @@
                 ValidCell(cell, "userCell", "userCell_error",$("#userCellCode").val());
                 
                 cell = $("#kinCellNo").val();            
-                ValidCell(cell, "kinCellNo", "", $("#kinCellCode").val());
+                ValidCell(cell, "kinCellNo", "kinCellNo_error", $("#kinCellCode").val());
             }
         }
 
@@ -3864,7 +3864,7 @@
         $("#saveBursarDetails").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
         cell = $("#bContactNumber").val()
-        ValidCell(cell, "bContactNumber", "bContactNumber_error")
+        ValidCell(cell, "bContactNumber", "bContactNumber_error", $("#burContactCode").val())
 
         if(isEmail($("#bEmail").val())){
             $("#bEmail").removeClass("fieldError")

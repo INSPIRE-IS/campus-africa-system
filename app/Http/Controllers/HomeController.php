@@ -5965,7 +5965,7 @@ class HomeController extends Controller
                         <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>" style="width:40%">
                         <span id="kinCellNo_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
                         <span id="kinCellNo_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
-                        <input name="userCell" id="userCell" type="hidden" value="<?php echo $user->userCell; ?>">
+                        <!-- <input name="userCell" id="userCell" type="hidden" value="<?php echo $user->userCell; ?>"> -->
                     </div> 
 
                     <div class="form-field">    
