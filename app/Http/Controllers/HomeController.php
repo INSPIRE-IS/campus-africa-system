@@ -5961,9 +5961,9 @@ class HomeController extends Controller
 
                     <div class="form-field">    
                         <span style='font-weight:bold'>Cellphone Number *</span>
-                        <input class="noedit required" name="kinCellCode" id="kinCellCode" type="text" value="<?php echo $user->kinCellCode; ?>" style="width:8%; margin-right:2%">
-                        <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>" style="width:40%">
-                        <span id="kinCellNo_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>This field is required</small></span>
+                        <input class="noedit required" name="kinCellCode" id="kinCellCode" type="text" value="<?php echo $user->kinCellCode; ?>" style="width:13%; margin-right:2%">
+                        <input class="noedit required" name="kinCellNo" id="kinCellNo" type="text" value="<?php echo $user->kinCellNo; ?>" style="width:35%">
+                        <span id="kinCellNo_error" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Not a valid cellphone number</small></span>
                         <span id="kinCellNo_duplicate" class="hidden" style="color:red;width: 90%;padding-left: 40%;"><small>Duplicate detected!</small></span>
                         <!-- <input name="userCell" id="userCell" type="hidden" value="<?php echo $user->userCell; ?>"> -->
                     </div> 
