@@ -198,7 +198,8 @@ class RegisterController extends Controller
                     UserFiles::create([
                         'userUid' => $user->id,
                         'fileId' => 'bursaryApproval',
-                        'status' => 'Approved'
+                        'status' => 'Approved',
+                        'year' => $this_year->lookup_name,
                     ]);
     
                     ActionList::create([
@@ -348,12 +349,16 @@ class RegisterController extends Controller
 
                 $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
 
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+
                 UserFiles::create([
                     'fileId' => $fileType,
                     'userUid' => $userUid,
                     'fileName' => $fileNameToStore,
                     'fileUrl' => $fileUrl,
                     'status' => 'Uploaded',
+                    'year' => $this_year,
                 ]);
 
                 if($fileType == "copyID"){

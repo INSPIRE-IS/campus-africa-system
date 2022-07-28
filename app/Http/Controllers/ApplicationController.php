@@ -484,6 +484,9 @@ class ApplicationController extends Controller
             
             if ($request->file('file')->isValid()) {
 
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+
                 $filenameWithExt  = $request->file('file')->getClientOriginalName();
                 $fileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('file')->extension();
@@ -537,7 +540,7 @@ class ApplicationController extends Controller
                     "actionUserRole" => 0,
                 ]);
 
-                Booking::where('userId', $userUid)->update(['payment_type' => 'Manual EFT']);
+                Booking::where('userId', $userUid)->where('year', $this_year)->update(['payment_type' => 'Manual EFT']);
 
                 $this->update_user_status($userUid);
 
@@ -900,8 +903,11 @@ class ApplicationController extends Controller
 
     public function re_verify_email(Request $request){
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $user = User::where('id', $request->userUid)->first();
-        $booking = Booking::where('userId', $request->userUid)->first();
+        $booking = Booking::where('userId', $request->userUid)->where('year', $this_year)->first();
 
         $generator = new LoginUrl($user);
         $generator->setRedirectUrl('/verify-new-email-account');

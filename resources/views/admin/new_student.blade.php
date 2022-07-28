@@ -54,6 +54,7 @@
                 <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span>
                 <span id="idNumber_InUse_cancelled" class="hidden" style="color:red"><small>a CANCELLED booking with this ID number exists - click <a id="toViewCancelled" href="" target="_blank" style="cursor:pointer">here</a> to view</small></span>
                 <span id="idNumber_InUse_active" class="hidden" style="color:red"><small>an ACTIVE booking with this ID number exists - Please contact the building manager at <span id="activeBuildingName"></span> to move this booking OR advise the student that they can login and change the building</small></span>
+                <span id="idNumber_InUse_old" class="hidden" style="color:red"><small>A previous booking with this ID number exists - <a href="" id="newBookingLink">click here</a> to create a new booking</small></span>
             </label>
             <input type="text" name="idNumber" id="idNumber" class="required">
         </div>
@@ -925,10 +926,25 @@
                                 document.getElementById('toViewCancelled').href = "/application-profile/"+data[3]['id'];
                             }else{
 
-                                $("#idNumber_InUse_active").removeClass('hidden')
-                                $("#idNumber").addClass('fieldError')
-                                $("#activeBuildingName").empty().append(data[4]);
-                                $("#idField").addClass('idHeight');
+                                console.log(data[5]['year'] != data[6])
+
+                                if(data[5]['year'] != data[6]){
+                                    $("#idNumber_InUse_old").removeClass('hidden')
+                                    $("#idNumber").addClass('fieldError')
+                                    document.getElementById('newBookingLink').href = "/application-profile/"+data[3]['id'];
+                                    $("#idField").addClass('idHeight');
+                                }else{
+                                    $("#idNumber_InUse_active").removeClass('hidden')
+                                    $("#idNumber").addClass('fieldError')
+                                    $("#activeBuildingName").empty().append(data[4]);
+                                    $("#idField").addClass('idHeight');
+                                }
+
+
+                                // $("#idNumber_InUse_active").removeClass('hidden')
+                                // $("#idNumber").addClass('fieldError')
+                                // $("#activeBuildingName").empty().append(data[4]);
+                                // $("#idField").addClass('idHeight');
                             }
                         }else{
                             $("#idNumber_InUse").addClass('hidden')

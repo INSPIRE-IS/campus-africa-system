@@ -16,10 +16,14 @@ use Jenssegers\Agent\Agent;
 class DocumentsController extends Controller {
 
     
-    public function view_document($id) {        
+    public function view_document($id) {   
+        
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        
         $file = UserFiles::find($id);
         $user = User::where('id', $file->userUid)->first();
-        $booking = Booking::where('userId', $file->userUid)->first();
+        $booking = Booking::where('userId', $file->userUid)->where('year', $this_year)->first();
         $onlinePayment = OnlinePayments::where('userUid', $file->userUid)->orderBy('created_at', 'desc')->first();
 
         $property = Residence::where('id', $booking->property)->first();
@@ -140,6 +144,9 @@ class DocumentsController extends Controller {
         $oldData = User::where("id", $request->userUid)->first();
         $studentTypeChanged = 0;
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         if ($request->type == "copyID") {
             $newData = [
                 'userFirstName|First Name' => $request->userFirstName,
@@ -179,7 +186,7 @@ class DocumentsController extends Controller {
                 'payment_type' => $request->payment_type
             ];
 
-            Booking::where('userId', $request->userUid)->update($updatePaymentData);
+            Booking::where('userId', $request->userUid)->where('year', $this_year)->update($updatePaymentData);
             ActionList::create([
                 "userUid" => $request->userUid,
                 "action" => "Updated Payment Reference to: ".$request->booking_payment_ref,
@@ -389,6 +396,9 @@ class DocumentsController extends Controller {
         $userUid = $request->userUid;
         $fileType = $request->fileType;
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $fileUrlBack = "";
 
         if ($request->hasFile('file')) {
@@ -405,7 +415,7 @@ class DocumentsController extends Controller {
                 $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
                 $fileUrlBack = $fileUrl;
 
-                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
+                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
 
                 $user_status = $this->get_user_status($fileType, "", User::where('id', $userUid)->first());
                 $field_data = $user_status['field_data'];
@@ -419,17 +429,19 @@ class DocumentsController extends Controller {
                         'fileUrl' => $fileUrl,
                         'status' => "Uploaded",
                         'uploaded_by' => Auth::user()->userFirstName,
+                        'year' => $this_year,
                     ]);
 
                     $text = "Uploaded ".$user_status['typeName']." for review";
                 }else{
-                    UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->update([
+                    UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->update([
                         'fileId' => $fileType,
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
                         'status' => "Uploaded",
                         'uploaded_by' => Auth::user()->userFirstName,
+                        'year' => $this_year,
                     ]);
                     $text = "Re-uploaded ".$user_status['typeName']." for review";                    
                 }
@@ -450,7 +462,7 @@ class DocumentsController extends Controller {
                 }
 
                 //Get the file
-                $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
+                $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
     
                 ActionList::create([
                     "userUid" => $userUid,
@@ -609,9 +621,13 @@ class DocumentsController extends Controller {
         $userUid = $request->userId;
         $documentNewName = $request->docName;
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         UserFiles::create([
             'fileId' => 'other_'.str_replace(" ", "_", $documentNewName),
             'userUid' => $userUid,
+            'year' => $this_year,
         ]);
 
         User::where('id', $userUid)->update(['rob_45_other' => '0']);
@@ -624,7 +640,10 @@ class DocumentsController extends Controller {
         $userUid = $request->userId;
         $fileName = $request->fileName;
 
-        UserFiles::where('fileId', $fileName)->where('userUid', $userUid)->delete();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        UserFiles::where('fileId', $fileName)->where('userUid', $userUid)->where('year', $this_year)->delete();
 
         ActionList::create([
             "userUid" => $userUid,
@@ -634,7 +653,7 @@ class DocumentsController extends Controller {
             "actionUserRole" => Auth::user()->userRole,
         ]);
 
-        $allOtherFiles = UserFiles::where('userUid', $userUid)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
+        $allOtherFiles = UserFiles::where('userUid', $userUid)->where('year', $this_year)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
 
         if(count($allOtherFiles) == 0){
             User::where('id', $userUid)->update(['rob_45_other' => '3']);

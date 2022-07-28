@@ -22,12 +22,15 @@ class LeaseController extends Controller
         
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link_url)->where('active', '1')->first();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         if($lease_link && !empty($lease_link)){
             $user = User::where('id', $lease_link->userUid)->first();
-            $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->first();
+            $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->where('year', $this_year)->first();
 
             $data = User::where('id', $lease_link->userUid)->first();
-            $booking = Booking::where('userId', $lease_link->userUid)->first();
+            $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
             $propertyData = Property::where('id', $booking->property_data_id)->first();
             $residence = Residence::where('id', $propertyData->residence)->first();
             $leaseAdminFee = Lookups::where('group_id', '8')->first();
@@ -44,9 +47,12 @@ class LeaseController extends Controller
 
     public function save_signed_lease(Request $request, $lease_link){
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', '1')->first();
         $user = User::where('id', $lease_link->userUid)->first();
-        $booking = Booking::where('userId', $lease_link->userUid)->first();
+        $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
         
         // get the base64 string
         $data = $request->signature_string;
@@ -76,7 +82,7 @@ class LeaseController extends Controller
 
         // retreive all records from db
         $data = User::where('id', $user->id)->first();
-        $booking = Booking::where('userId', $user->id)->first();
+        $booking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
@@ -107,7 +113,7 @@ class LeaseController extends Controller
             'status' => 'Uploaded',
         );
 
-        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->id)->update($data);
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->id)->where('year', $this_year)->update($data);
 
         User::where('id', $user->id)->update(['rob_55_lease' => 1]);
 
@@ -138,10 +144,13 @@ class LeaseController extends Controller
             }
         }
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
         $userForLease = User::where('id', $request->userId)->first();
-        $booking = Booking::where('userId', $request->userId)->first();
+        $booking = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
 
         $message_replace['booking_application'] = "#".$booking->booking_code;
         $message_replace['name'] = $userForLease->userFirstName;

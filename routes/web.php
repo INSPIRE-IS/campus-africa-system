@@ -262,6 +262,7 @@ Route::post('/online-application-payment-on-screen/{id}', [OnlinePaymentControll
 Route::post('/notify-data', [OnlinePaymentController::class, 'notify_data']);
 
 Route::get('/create-new-booking/{id}', [HomeController::class, 'create_new_booking']);
+Route::post('/new-booking', [HomeController::class, 'new_booking']);
 
 
 

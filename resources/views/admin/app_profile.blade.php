@@ -250,6 +250,32 @@
                 </div>
             </div>
 
+            <div class="customWhiteCard" id="actionListCard" style="margin-top:20px; margin-bottom:20px;">
+                <div class="">
+                    <h2 class="appHeader">Previous Bookings</h2>
+                </div>
+
+                <div class="actionItem">
+
+                    @foreach($previousBookings as $pBooking)
+
+                        <div class="infoBlock">
+                            <div class="responsible">
+                                @if(!empty($pBooking->year))
+                                    <p>{{$pBooking->year}}</p>
+                                @endif
+                                
+                            </div>
+                            <div class="information">
+                                <p><b>Application Reference:</b> {{$pBooking->booking_code}}</p>
+                            </div>
+                        </div>
+
+                    @endforeach
+                </div>
+            </div>
+
+
         </div>
     </div>
     <div class="appRow">
@@ -960,18 +986,18 @@
         });
     }
     
-    $("#updateProfileStatus").on('click', function(){
-        $("#updateProfileStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-        $.ajax({
-            type: "get",
-            url: "/update-user-status/{{$user[0]['userInfo']['id']}}",
-            success: function (data) {
+    // $("#updateProfileStatus").on('click', function(){
+    //     $("#updateProfileStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+    //     $.ajax({
+    //         type: "get",
+    //         url: "/update-user-status/{{$user[0]['userInfo']['id']}}",
+    //         success: function (data) {
                 
-                window.location.reload();
+    //             window.location.reload();
 
-            },
-        });
-    })
+    //         },
+    //     });
+    // })
 
     $("#addComment").on('click', function(){
         $("#addComment").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
