@@ -13,7 +13,7 @@
     @foreach($bookingList as $booking)
     <div style="border:1px solid #ccc; margin:10px; height:250px; padding:15px;">
         <div class="appRow">
-            <h1><u>{{$booking->year}}: {{$booking->booking_code}}</u></h1>
+            <h1><u>{{$booking->year}}: {{$booking->booking_code}} @if($booking->cancelled == 1)  - CANCELLED @endif</u></h1>
             <p><b>Property:</b> @foreach($buildingList as $building) @if($booking->property == $building->id) {{$building->residence}} @endif @endforeach</p>
             <p><b>Room:</b> @foreach($roomList as $room) @if($booking->roomType == $room->id) {{$room->name}} @endif @endforeach</p>
             <p><b>Floor:</b> {{$booking->floor}}</p>

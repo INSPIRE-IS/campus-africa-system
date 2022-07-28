@@ -13,6 +13,8 @@
             <button style="float: none;" type="button" id="updatePropIds" class="detailsChange" >Properties ID Update</button>
 
             <button style="float: none;" type="button" id="newBookingCode" class="detailsChange" >New Booking Code</button>
+
+            <button style="float: none;" type="button" id="newCancelled" class="detailsChange" >Cancelled on bookings</button>
         </div>
 
         
@@ -194,6 +196,36 @@
 
                     success: function (data) {
                         $("#updatePropIds").empty().append('Properties ID Update');
+
+                        Swal.fire(
+                            'Success',
+                            'Data update complete',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
+
+    $("#newCancelled").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#newCancelled").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/admin-updates/update-cancelled",
+
+                    success: function (data) {
+                        $("#newCancelled").empty().append('Cancelled on bookings');
 
                         Swal.fire(
                             'Success',

@@ -1279,7 +1279,7 @@ class HomeController extends Controller
         // });
 
         User::where('id', $userId)->update(['rob_50_approve' => 3, 'rob_60_cancelled' => 1]);
-        Booking::where('userId', $userId)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
+        Booking::where('userId', $userId)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null, 'cancelled' => 1]);
 
         ActionList::create([
             "userUid" => $userId,
@@ -2804,7 +2804,7 @@ class HomeController extends Controller
 
         User::where('id', $request->userId)->update(['rob_60_cancelled' => 1, 'rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
-        Booking::where('userId', $request->userId)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
+        Booking::where('userId', $request->userId)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null, 'cancelled' => 1]);
 
         Property::where('user_id_room', $request->userId)->update(["user_id_room" => null, "room_available" => null]);
 
@@ -2829,7 +2829,13 @@ class HomeController extends Controller
     }
 
     public function restore_booking(Request $request){
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         User::where('id', $request->userId)->update(['rob_60_cancelled' => 0]);
+
+        Booking::where('userId', $request->userId)->where('year', $this_year)->update(['cancelled' => null]);
 
         ActionList::create([
             "userUid" => $request->userId,
@@ -3503,6 +3509,8 @@ class HomeController extends Controller
 
             if($user->rob_60_cancelled == '1'){
                 User::where('id', $bookingId)->update(['rob_60_cancelled' => 0]);
+
+                Booking::where('userId', $request->userId)->where('year', $this_year)->update(['cancelled' => null]);
 
                 ActionList::create([
                     "userUid" => $bookingId,
@@ -6886,7 +6894,8 @@ class HomeController extends Controller
         $this_year = $this_year->lookup_name;
 
         User::where('id', $request->userUid)->update(['rob_60_cancelled' => 0, "rob_10_fee" => 0]);
-        Booking::where('userId', $request->userUid)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null]);
+        Booking::where('userId', $request->userUid)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null, 'cancelled' => null]);
+        
         ActionList::create([
             "userUid" => $request->userUid,
             "action" => "Restored Booking",
@@ -7505,7 +7514,14 @@ class HomeController extends Controller
             }
         }
 
-        return view('admin.newBookingForm', ["headerTitle" => "New Booking", "title" => "new Booking", "user" => $user, "lookups" => $lookups, "PropertyList" => $allowed]);
+        $cancelled = 0;
+
+
+        if($user->rob_60_cancelled == 1){
+            $cancelled = 1;
+        }
+
+        return view('admin.newBookingForm', ["headerTitle" => "New Booking", "title" => "new Booking", "user" => $user, "lookups" => $lookups, "PropertyList" => $allowed, "cancelled" => $cancelled]);
     }
 
     public function new_booking(Request $request){

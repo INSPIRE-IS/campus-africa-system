@@ -497,4 +497,13 @@ class LookupsController extends Controller {
 
 		return $downloadUrl;
     }
+
+    public function admin_updates_update_cancelled(Request $request){
+
+        $allUsers = User::where('rob_60_cancelled', '1')->get();
+
+        foreach($allUsers as $user){
+            Booking::where('userId', $user->id)->update(['cancelled' => 1]);
+        }
+    }
 }
