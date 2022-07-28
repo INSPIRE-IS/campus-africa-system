@@ -68,7 +68,9 @@ class LookupsController extends Controller {
 
             $lookup = Lookups::where('id', $lookupId)->first();
 
-            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
+            $year_lookup = Lookups::where('group_id', '4')->first();
+
+            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup]);
         }else{
             return "404 Error";
         }
@@ -77,33 +79,23 @@ class LookupsController extends Controller {
     public function save_lookups(Request $request){
 
         if($request->group_id == "4"){
+
+            $dateFrom = $request->value."-".$request->month_from."-".$request->day_from;
+            $dateTo = $request->value."-".$request->month_to."-".$request->day_to;
+
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->value,
-                "lease_from_date" => $request->lease_from_date,
+                "lease_from_date" => date("Y-m-d", strtotime($dateFrom)),
+                "day_from" => $request->day_from,
+                "month_from" => $request->month_from,
                 "lease_from_time" => $request->lease_from_time,
-                "lease_to_date" => $request->lease_to_date,
+                "lease_to_date" => date("Y-m-d", strtotime($dateTo)),
+                "day_to" => $request->day_to,
+                "month_to" => $request->month_to,
                 "lease_to_time" => $request->lease_to_time,
                 "actionUserUid" => Auth::user()->id,
             ];
-
-            // $year = Lookups::where('group_id', '4')->first();
-
-            // if(date($year->lookup_name) < date($request->value)){
-
-            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $year->lookup_name)->get();
-    
-            //     foreach($bookingsList as $booking){
-            //         Property::where('id', $booking->property_data_id)->update(['room_available' => null]);
-            //     }
-            // }else{
-            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $request->value)->get();
-
-            //     foreach($bookingsList as $booking){
-            //         Property::where('id', $booking->property_data_id)->update(['room_available' => '1']);
-            //     }
-            // }
-
 
         }else if($request->group_id == "7"){
             $data = [

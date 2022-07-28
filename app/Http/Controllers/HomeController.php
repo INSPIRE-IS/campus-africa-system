@@ -5521,30 +5521,32 @@ class HomeController extends Controller
     }
 
     public function update_lease_dates(Request $request){
-        $allUsers = User::where('overall_status', '!=', 'Cancelled')->get();
+        $allUsers = User::where('rob_60_cancelled', '0')->get();
 
-        // $lookup = Lookups::where('group_id', '4')->first();
+        $this_year = $request->value;
 
         foreach($allUsers as $user){
 
-            if($user->bookingStatus !== "Approved Confirmed" && $user->applicationStatus !== "Approved Confirmed"){
+            if($user->rob_50_approve == "0" || $user->rob_50_approve == "1"){
 
-                if($user->bookingStatus !== "Rejected Confirmed" && $user->applicationStatus !== "Rejected Confirmed"){
-                    
-                    $booking = Booking::where('id', $user->bookingRef)->first();
+                    $booking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
 
-                    if($booking && $booking->lease_unique !== 1){
-                        $updatedDates['lease_from_date'] = $request->lease_from_date;
+                    if(!empty($booking) && $booking->lease_unique !== 1){
+
+                        $dateFrom = $request->value."-".$request->month_from."-".$request->day_from;
+                        $dateTo = $request->value."-".$request->month_to."-".$request->day_to;
+                        
+                        $updatedDates['lease_from_date'] = date("Y-m-d", strtotime($dateFrom));
                         $updatedDates['lease_from_time'] = $request->lease_from_time;
-                        $updatedDates['lease_to_date'] = $request->lease_to_date;
+                        $updatedDates['lease_to_date'] = date("Y-m-d", strtotime($dateTo));
                         $updatedDates['lease_to_time'] = $request->lease_to_time;
 
-                        Booking::where('id', $user->bookingRef)->update($updatedDates);
+                        Booking::where('id', $booking->id)->update($updatedDates);
 
-                        if($booking->lease_from_date !== $request->lease_from_date){
+                        if($booking->lease_from_date !== $updatedDates['lease_from_date']){
                             ActionList::create([
                                 "userUid" => $user->id,
-                                "action" => "Bulk Lease From Date Updated From ".$booking->lease_from_date." to ".$request->lease_from_date,
+                                "action" => "Bulk Lease From Date Updated From ".$booking->lease_from_date." to ".$updatedDates['lease_from_date'],
                                 "actionUserUid" => Auth::user()->id,
                                 "actionUserDisplayName" => Auth::user()->userFirstName,
                                 "actionUserRole" => Auth::user()->userRole,
@@ -5561,10 +5563,10 @@ class HomeController extends Controller
                             ]);
                         }
 
-                        if($booking->lease_to_date !== $request->lease_to_date){
+                        if($booking->lease_to_date !== $updatedDates['lease_to_date']){
                             ActionList::create([
                                 "userUid" => $user->id,
-                                "action" => "Bulk Lease To Date Updated From ".$booking->lease_to_date." to ".$request->lease_to_date,
+                                "action" => "Bulk Lease To Date Updated From ".$booking->lease_to_date." to ".$updatedDates['lease_to_date'],
                                 "actionUserUid" => Auth::user()->id,
                                 "actionUserDisplayName" => Auth::user()->userFirstName,
                                 "actionUserRole" => Auth::user()->userRole,
@@ -5581,7 +5583,6 @@ class HomeController extends Controller
                             ]);
                         }
                     }
-                }
             }
         }
     }

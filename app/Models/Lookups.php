@@ -21,6 +21,10 @@ class Lookups extends Model
         'waiver_date_from',
         'waiver_date_to',
         'actionUserUid',
+        'month_from',
+        'day_from',
+        'month_to',
+        'day_to',
     ];
 
     public function users(){
