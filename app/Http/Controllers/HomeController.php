@@ -3508,9 +3508,12 @@ class HomeController extends Controller
             }
 
             if($user->rob_60_cancelled == '1'){
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+
                 User::where('id', $bookingId)->update(['rob_60_cancelled' => 0]);
 
-                Booking::where('userId', $request->userId)->where('year', $this_year)->update(['cancelled' => null]);
+                Booking::where('userId', $bookingId)->where('year', $this_year)->update(['cancelled' => null]);
 
                 ActionList::create([
                     "userUid" => $bookingId,
