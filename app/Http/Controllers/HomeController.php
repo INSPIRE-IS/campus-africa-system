@@ -2827,7 +2827,7 @@ class HomeController extends Controller
         $this_year = $this_year->lookup_name;
 
         Booking::where('id', $request->bookingId)->where('year', $this_year)->delete();
-        User::where('id', $request->userId)->delete();
+        // User::where('id', $request->userId)->delete();
 
         return 'true';
     }
