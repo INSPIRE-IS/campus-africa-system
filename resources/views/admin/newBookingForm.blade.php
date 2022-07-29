@@ -667,43 +667,43 @@
 
     }
 
-    function duplicateCell(){
-        $('#kCellNo_duplicate').addClass('hidden');
-        $('#cell_no_duplicate').addClass('hidden');
-        $('#cell_no, #kCellNo').removeClass('fieldDuplicate');
+    // function duplicateCell(){
+    //     $('#kCellNo_duplicate').addClass('hidden');
+    //     $('#cell_no_duplicate').addClass('hidden');
+    //     $('#cell_no, #kCellNo').removeClass('fieldDuplicate');
 
-        if ($('#cell_no').val() != "" && $('#cell_no').val() == $('#kCellNo').val()) {
-            $('#kCellNo_duplicate').removeClass('hidden');
-            $('#cell_no_duplicate').removeClass('hidden');
+    //     if ($('#cell_no').val() != "" && $('#cell_no').val() == $('#kCellNo').val()) {
+    //         $('#kCellNo_duplicate').removeClass('hidden');
+    //         $('#cell_no_duplicate').removeClass('hidden');
 
-            $('#cell_no_error').removeClass('hidden');
-            $('#kCellNo_error').removeClass('hidden');
+    //         $('#cell_no_error').removeClass('hidden');
+    //         $('#kCellNo_error').removeClass('hidden');
 
-            $('#cell_no').addClass('fieldError');
-            $('#kCellNo').addClass('fieldError');
+    //         $('#cell_no').addClass('fieldError');
+    //         $('#kCellNo').addClass('fieldError');
 
-            $('#cell_no').addClass('fieldDuplicate');
-            $('#kCellNo').addClass('fieldDuplicate');
-        } else {
-            cell = $("#cell_no").val()
-            ValidCell(cell, "cell_no", "cell_no_error", $("#cell_no_code").val());
+    //         $('#cell_no').addClass('fieldDuplicate');
+    //         $('#kCellNo').addClass('fieldDuplicate');
+    //     } else {
+    //         cell = $("#cell_no").val()
+    //         ValidCell(cell, "cell_no", "cell_no_error", $("#cell_no_code").val());
             
-            cell = $("#kCellNo").val();            
-            ValidCell(cell, "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
-        }
-    }
+    //         cell = $("#kCellNo").val();            
+    //         ValidCell(cell, "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
+    //     }
+    // }
     
 
     $("#cell_no").on('keyup blur', function(){
         cell = $("#cell_no").val()
         ValidCell(cell, "cell_no", "cell_no_error", $("#cell_no_code").val());
-        duplicateCell();
+        // duplicateCell();
     })
 
     $("#cell_no_code").on('keyup blur', function(){
         cell = $("#cell_no").val()
         ValidCell(cell, "cell_no", "cell_no_error", $("#cell_no_code").val());
-        duplicateCell();
+        // duplicateCell();
     })
 
     $("#pCell_no").on('keyup blur', function(){
@@ -747,13 +747,13 @@
         cell = $("#kCellNo").val();
         
         ValidCell(cell, "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
-        duplicateCell();
+        // duplicateCell();
     })
     $("#kCellNo_code").on('keyup blur', function(){
         cell = $("#kCellNo").val();
         
         ValidCell(cell, "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
-        duplicateCell();
+        // duplicateCell();
     })
 
     $("#kWorkNo").on('keyup blur', function(){
@@ -840,55 +840,55 @@
         }
     })
 
-    $("#email, #idNumber").on('blur', function(){
-        $.ajax({
-            type: "post",
-            url: "/email-check",
-            data: {
-                email: $("#email").val(),
-                idNumber: $("#idNumber").val(),
-            },
+    // $("#email, #idNumber").on('blur', function(){
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/email-check",
+    //         data: {
+    //             email: $("#email").val(),
+    //             idNumber: $("#idNumber").val(),
+    //         },
 
-            success: function (data) {
-                console.log(data)
+    //         success: function (data) {
+    //             console.log(data)
                 
-                if (data[0] == "done") {
+    //             if (data[0] == "done") {
 
-                    if($("#email").val() !== ""){
-                        if(data[1] == false){
-                            $("#email_InUse").removeClass('hidden')
-                            $("#email").addClass('fieldError')
-                        }else{
-                            $("#email_InUse").addClass('hidden')
-                            $("#email").removeClass('fieldError')
-                        }
-                    }
+    //                 if($("#email").val() !== ""){
+    //                     if(data[1] == false){
+    //                         $("#email_InUse").removeClass('hidden')
+    //                         $("#email").addClass('fieldError')
+    //                     }else{
+    //                         $("#email_InUse").addClass('hidden')
+    //                         $("#email").removeClass('fieldError')
+    //                     }
+    //                 }
 
-                    if($("#idNumber").val() !== ""){
-                        if(data[2] == false){
-                            if(data[3]['rob_60_cancelled'] == '1'){
-                                $("#idNumber_InUse_cancelled").removeClass('hidden')
-                                $("#idNumber").addClass('fieldError')
-                                document.getElementById('toViewCancelled').href = "/application-profile/"+data[3]['id'];
-                            }else{
+    //                 if($("#idNumber").val() !== ""){
+    //                     if(data[2] == false){
+    //                         if(data[3]['rob_60_cancelled'] == '1'){
+    //                             $("#idNumber_InUse_cancelled").removeClass('hidden')
+    //                             $("#idNumber").addClass('fieldError')
+    //                             document.getElementById('toViewCancelled').href = "/application-profile/"+data[3]['id'];
+    //                         }else{
 
-                                $("#idNumber_InUse_active").removeClass('hidden')
-                                $("#idNumber").addClass('fieldError')
-                                $("#activeBuildingName").empty().append(data[4]);
-                                $("#idField").addClass('idHeight');
-                            }
-                        }else{
-                            $("#idNumber_InUse").addClass('hidden')
-                            $("#idNumber").removeClass('fieldError')
-                            $("#idField").removeClass('idHeight');
-                        }
-                    }
+    //                             $("#idNumber_InUse_active").removeClass('hidden')
+    //                             $("#idNumber").addClass('fieldError')
+    //                             $("#activeBuildingName").empty().append(data[4]);
+    //                             $("#idField").addClass('idHeight');
+    //                         }
+    //                     }else{
+    //                         $("#idNumber_InUse").addClass('hidden')
+    //                         $("#idNumber").removeClass('fieldError')
+    //                         $("#idField").removeClass('idHeight');
+    //                     }
+    //                 }
 
 
-                }
-            },
-        });
-    })
+    //             }
+    //         },
+    //     });
+    // })
 
     $("#pEmail").on('keyup blur', function(){
         if(isEmail($("#pEmail").val())){
