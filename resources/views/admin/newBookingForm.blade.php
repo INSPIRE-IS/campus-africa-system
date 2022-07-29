@@ -638,6 +638,7 @@
         }
     })
 
+
     function ValidCell(cell, fieldId, fieldError, code){
         
         if(code === "+27"){
@@ -1145,6 +1146,23 @@
             $("#pAddress2").removeClass('fieldError').empty().val($("#userAddress2").val())
             $("#pAddressCity").removeClass('fieldError').empty().val($("#userAddressCity").val())
             $("#pAddressPostal").removeClass('fieldError').empty().val($("#userAddressPostal").val())
+        }
+
+        ValidCell($("#cell_no").val(), "cell_no", "cell_no_error", $("#cell_no_code").val());
+        ValidCell($("#kCellNo").val(), "kCellNo", "kCellNo_error", $("#kCellNo_code").val());
+
+        if($("#kWorkNo").val() !== ""){
+            ValidCell($("#kWorkNo").val(), "kWorkNo", "kWorkNo_error", $("#kWorkNo_code").val());
+        }
+        if($("#kTeleNo").val() !== ""){
+            ValidCell($("#kTeleNo").val(), "kTeleNo", "kTeleNo_error", $("#kTeleNo_code").val());
+        }
+
+        if($("#studentType").val() == "Bursary"){
+            ValidCell($("#bContactNumber").val(), "bContactNumber", "bContactNumber_error", $("#bContactNumber_code").val());
+        }
+        if($("#studentType").val() == "Cash / Direct"){
+            ValidCell($("#pCell_no").val(), "pCell_no", "pCell_no_error", $("#pCell_no_code").val());
         }
 
         

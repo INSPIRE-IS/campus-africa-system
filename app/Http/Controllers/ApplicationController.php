@@ -258,14 +258,17 @@ class ApplicationController extends Controller
     public function step_4(Request $request){
         $lookups = Lookups::get();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
-        $IdCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'copyID')->first();
-        $StudentCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'studentCard')->first();
-        $BankCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bankStatement')->first();
-        $BursaryCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bursaryApproval')->first();
-        $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->first();
+        $IdCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'copyID')->where('year', $this_year)->first();
+        $StudentCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'studentCard')->where('year', $this_year)->first();
+        $BankCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bankStatement')->where('year', $this_year)->first();
+        $BursaryCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->first();
+        $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->where('year', $this_year)->first();
 
         return view('application.step_4', ["lookups" => $lookups, "user" => $user, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
     }
@@ -497,7 +500,7 @@ class ApplicationController extends Controller
                 $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
                 $fileUrlBack = $fileUrl;
 
-                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
+                $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
 
                 $user_status = $this->get_user_status($fileType, "", User::where('id', $userUid)->first());
                 $field_data = $user_status['field_data'];
@@ -510,6 +513,7 @@ class ApplicationController extends Controller
                     'fileUrl' => $fileUrl,
                     'status' => "Uploaded",
                     'uploaded_by' => $currUser->userFirstName,
+                    'year' => $this_year,
                 ]);
 
                 $text = "Uploaded ".$user_status['typeName']." for review";
@@ -530,7 +534,7 @@ class ApplicationController extends Controller
                 }
 
                 //Get the file
-                $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->first();
+                $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
     
                 ActionList::create([
                     "userUid" => $userUid,
@@ -557,11 +561,14 @@ class ApplicationController extends Controller
     public function step_5(Request $request){
         $lookups = Lookups::get();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
-        $booking = Booking::where('userId', Auth::user()->id)->first();
+        $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
         // $residences = Property::where('id', $booking->property)
-        $proofPayment = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
+        $proofPayment = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
         $agent = new Agent();
 
        
@@ -671,29 +678,6 @@ class ApplicationController extends Controller
                         }
                     }
 
-
-                    // $slugString = str_replace("-", " ", $room->slug);
-                    // $roomType = "";
-                    // $roomName = "";
-
-                    // foreach($allResidences as $residence){
-                    //     if(strtoupper($property) == strtoupper($residence->residence)){
-                    //         $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                    //         $requiredName = $roomTypeNew;
-
-                    //         foreach($jsonDataRooms as $roomInfo){
-                    //             if($residenceId == $roomInfo->acf->residence){
-                    //                 if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($roomTypeNew)){
-                    //                     $roomType = $roomTypeNew;
-                    //                     $roomName = $roomInfo->slug;
-                    //                     $priced_from = $roomInfo->acf->price_from;
-                    //                     $beds = $roomInfo->acf->beds;
-                    //                     break;
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
                 }
             }
 
@@ -725,20 +709,21 @@ class ApplicationController extends Controller
 
             if($room_rate == "0"){
     
-                $uploaded = UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->first();
+                $uploaded = UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
     
                 if(!$uploaded){
                     UserFiles::create([
                         'userUid' => $user->id,
                         'fileId' => 'proof_of_payment',
-                        'status' => 'Approved'
+                        'status' => 'Approved',
+                        'year' => $this_year,
                     ]);
 
                     User::where('id', $user->id)->update([
                         'rob_10_fee' => 2
                     ]);
                 }else{
-                    UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->update([
+                    UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                         'status' => 'Approved'
                     ]);
 
@@ -747,7 +732,7 @@ class ApplicationController extends Controller
                     ]);
                 }
     
-                Booking::where('userId', $user->id)->update(['room_rate' => $room_rate]);
+                Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
     
                 $actionFileData['userUid'] = $user->id;
                 $actionFileData['action'] = $actionFileData['action'];
@@ -757,10 +742,10 @@ class ApplicationController extends Controller
             
                 ActionList::create($actionFileData);
             }else{
-               Booking::where('userId', $user->id)->update(['room_rate' => $room_rate]);
+               Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
             }
 
-            $newBooking = Booking::where('userId', $user->id)->first();
+            $newBooking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
 
 
         return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate, "roomTypeInfo" => $roomTypeInfo, "propertyTypeInfo" => $propertyTypeInfo]);
@@ -769,10 +754,13 @@ class ApplicationController extends Controller
     public function complete_online_app(Request $request){
         $lookups = Lookups::get();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
-        $booking = Booking::where('userId', Auth::user()->id)->first();
-        User::where('id', Auth::user()->id)->update(['onboard_complete' => 2]);
+        $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+        User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
 
         return view('application.complete', ["lookups" => $lookups, "user" => $user, "booking" => $booking]);
     }
@@ -804,14 +792,17 @@ class ApplicationController extends Controller
         
         $user = User::where('id', Auth::user()->id)->first();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         if($request->studentType !== $user->studentType){
             if($user->studentType == "Cash / Direct"){
-                $file = UserFiles::where('fileId', 'bankStatement')->where('userUid', $user->id)->first();
+                $file = UserFiles::where('fileId', 'bankStatement')->where('userUid', $user->id)->where('year', $this_year)->first();
                 if(!empty($file)){
                     UserFiles::where('id', $file->id)->update(['status' => 'Rejected']);
                 }
             }else{
-                $file = UserFiles::where('fileId', 'bursaryApproval')->where('userUid', $user->id)->first();
+                $file = UserFiles::where('fileId', 'bursaryApproval')->where('userUid', $user->id)->where('year', $this_year)->first();
                 if(!empty($file)){
                     UserFiles::where('id', $file->id)->update(['status' => 'Rejected']);
                 }
@@ -954,11 +945,383 @@ class ApplicationController extends Controller
         $user = User::where('id', Auth::user()->id)->first();
         $agent = new Agent();
         $transaction = OnlinePayments::where("userUid", Auth::user()->id)->orderBy("created_at", "desc")->first();
-        $booking = Booking::where('userId', Auth::user()->id)->first();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
         $propertyTypeInfo = Residence::where('id', $booking->property)->first();
 
         return view('application.retry', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "transaction" => $transaction, "booking" => $booking, "propertyTypeInfo" => $propertyTypeInfo]);
 
+    }
+
+    public function new_booking_step_1(Request $request){
+
+        $lookups = Lookups::get();
+        $residences = Residence::get();
+        $user = User::where('id', Auth::user()->id)->first();
+        $cancelled = 0;
+
+        if($user->rob_60_cancelled == 1){
+            $cancelled = 1;
+        }
+        return view('user.new_booking.step_1', ["user" => $user, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences]);
+    }
+
+    public function new_booking_step_1_save(Request $request){
+        
+        $updateData = [
+            'First Name|userFirstName' => $request->firstName,
+            'Last Name|userLastname' => $request->lastName,
+            'Title|userTitle' => $request->title,
+            'Cellphone Number|userCell' => $request->cell_no,
+            'Cellphone Country Code|userCellCode' => $request->userCellCode,
+            'institution|institutionStudy' => $request->institStudy,
+            'Student Number|studentNo' => $request->studNumber,
+            'Faculty|faculty' => $request->faculty,
+            'Year|year' => $request->year,
+            'Street Address|userAddress1' => $request->userAddress1,
+            'Suburb|userAddress2' => $request->userAddress2,
+            'City|userAddressCity' => $request->userAddressCity,
+            'Postal Code|userAddressPostal' => $request->userAddressPostal,
+            'Student Type|studentType' => $request->studentType,
+            'Year of Study|yearOfStudy' => $request->yearOfStudy,
+        ];
+
+        $userInfo = User::where('id', Auth::user()->id)->first();
+
+        foreach($updateData as $key => $new){
+            $info = explode("|", $key);
+            $key = $info[0];
+            $changedField = $info[1];
+
+            if($userInfo->$key !== $new){
+                ActionList::create([
+                    "userUid" => Auth::user()->id,
+                    "action" => "Updated ".$changedField." From ".$userInfo->$key." to ".$new,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                ]);
+            }
+        }
+
+        User::where('id', Auth::user()->id)->update([
+            'userFirstName' => $request->firstName,
+            'userLastname' => $request->lastName,
+            'userTitle' => $request->title,
+            'userCell' => $request->cell_no,
+            'userCellCode' => $request->userCellCode,
+            'institutionStudy' => $request->institStudy,
+            'studentNo' => $request->studNumber,
+            'faculty' => $request->faculty,
+            'year' => $request->year,
+            'userAddress1' => $request->userAddress1,
+            'userAddress2' => $request->userAddress2,
+            'userAddressCity' => $request->userAddressCity,
+            'userAddressPostal' => $request->userAddressPostal,
+            'studentType' => $request->studentType,
+            'yearOfStudy' => $request->yearOfStudy,
+            'rob_10_fee' => 0,
+            'rob_15_id' => 0,
+            'rob_20_card' => 0,
+            'rob_25_reg' => 0,
+            'rob_30_funds' => 0,
+            'rob_35_info' => 1,
+            'rob_40_bed' => 1,
+            'rob_50_approve' => 0,
+            'rob_55_lease' => 3,
+            'rob_45_other' => 3,
+            'rob_60_cancelled' => 0,
+            'email_data_approved' => 0,
+            'onboard_complete' => 0,
+            'email_verified' => 0,
+            'fee_approved' => 0,
+            'id_data_approved' => 0,
+            'student_card_approved' => 0,
+            'registration_approved' => 0,
+            'bursary_approved' => 0,
+            'bank_approved' => 0,
+            'address_approved' => 0,
+            'kin_approved' => 0,
+            'parent_approved' => 0,
+            'burser_approved' => 0,
+            'email_info' => 0,
+            'app_source' => 1,
+        ]);
+
+        ActionList::create([
+            "userUid" => Auth::user()->id,
+            "action" => "Created a new Booking",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        //Booking data        
+        $booking_data = array(
+            "userId" => Auth::user()->id, 
+            "property" => $request->property, 
+            "roomType" => $request->roomType,
+            "year" => $request->year
+        );
+
+        $lookup = Lookups::where('group_id', '7')->first();
+
+        $oldPropReq = $request->property;
+        $roomId = $request->roomType;
+
+        $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
+        $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
+
+        $roomTypeData = RoomTypes::where('id', $roomId)->first();
+        $roomTypeId = $roomTypeData->room_map_slug;
+
+        $allResidences = Residence::get();
+        $allRoomTypes = RoomTypes::get();
+
+
+        if($lookup && $lookup->lookup_name == "1"){
+            $booking_data['room_rate'] = "0";
+            $actionFileData['action'] = "Booking Fee Waived";
+        }else{
+            //Get residences from WP
+            $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+            $residenceId = "";
+
+            foreach($jsonDataResidence as $residence){
+                if($residence->title->rendered == $request->property){
+                    //get room booking fee from residence (WP)
+                    $booking_data['room_rate'] = $residence->acf->booking_fee;
+                    //get residence ID (WP)
+                    $residenceId = $residence->id;
+                }
+            }
+
+            $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+
+            $roomType = "";
+            $roomName = "";
+
+            foreach($jsonDataRooms as $room){
+                if($residenceId == $room->acf->residence){
+
+                    if($room->id === $roomTypeId){
+                        $roomType = $request->roomType;
+                        $roomName = $room->slug;
+    
+                        $appliesTo = $room->acf->booking_fee_applies_to;
+    
+                        if($room->slug == $roomName && $roomType == $request->roomType){
+    
+                            if($room->acf->booking_fee_override !== ""){
+                                $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                            }
+    
+                            if($request->studentType === "NSFAS"){
+                                if(!in_array("NSFAS Students", $appliesTo)){
+                                    $booking_data['room_rate'] = "0";
+                                    $actionFileData['action'] = "Booking Fee is R0";
+                                }
+                            }
+    
+                            if($request->studentType === "Bursary"){
+                                if(!in_array("Bursary Students", $appliesTo)){
+                                    $booking_data['room_rate'] = "0";
+                                    $actionFileData['action'] = "Booking Fee is R0";
+                                }
+                            }
+    
+                            if($request->studentType === "Cash / Direct"){
+                                if(!in_array("Cash Students", $appliesTo)){
+                                    $booking_data['room_rate'] = "0";
+                                    $actionFileData['action'] = "Booking Fee is R0";
+                                }
+                            }
+                        } 
+                    }
+
+                }
+            }
+        }
+
+        if($roomTypeData && $roomTypeData->pull_price == null){
+            $booking_data['room_rate'] = $roomTypeData->booking_price;
+
+            if($user->studentType == "NSFAS"){
+                if($roomTypeData->apply_nsfas == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+
+            if($user->studentType == "Bursary"){
+                if($roomTypeData->apply_bursary == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+
+            if($user->studentType == "Cash / Direct"){
+                if($roomTypeData->apply_cash == null){
+                    $booking_data['room_rate'] = "0";
+                    $actionFileData['action'] = "Booking Fee is R0";
+                }
+            }
+        }
+        
+
+
+        //Get default lease data for the booking
+        $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
+
+        $booking_data['lease_from_date'] = $lookup_lease_dates['lease_from_date'];
+        $booking_data['lease_from_time'] = $lookup_lease_dates['lease_from_time'];
+        $booking_data['lease_to_date'] = $lookup_lease_dates['lease_to_date'];
+        $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
+
+        $booking = Booking::create($booking_data);
+
+        $bookingYear = substr($request->year, -2);
+        $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
+        $id_booking = $booking->id;
+        $placeholder = "";
+        for($i = 0; $i < 5 - strlen($id_booking); $i++){
+            $placeholder .= "0";
+        }
+        $bookingID = $placeholder.$id_booking;
+        Booking::where('id', $booking->id)->update(['booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
+
+        //Link booking to User
+        User::where('id', Auth::user()->id)->update(["bookingRef" => $booking->id]);
+
+        $residence = Residence::where('residence', $request->property)->first();
+
+        if($booking_data['room_rate'] == "0"){
+
+            User::where('id', Auth::user()->id)->update(["rob_10_fee" => 2]);
+
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+
+            UserFiles::create([
+                'userUid'=> Auth::user()->id,
+                'fileId' => 'proof_of_payment',
+                'status' => 'Approved',
+                'year' => $this_year
+            ]);
+
+            $actionFileData['userUid'] = Auth::user()->id;
+            $actionFileData['actionUserUid'] = Auth::user()->id;
+            $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+            $actionFileData['actionUserRole'] = Auth::user()->userRole;
+        
+            ActionList::create($actionFileData);
+        }
+
+        if($request->studentType == "NSFAS"){
+            
+            $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->orderBy('created_at', 'desc')->first();
+
+            if(!empty($nsfasStudentsApproval)){
+
+                $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
+                $this_year = Lookups::where('group_id', '4')->first();
+    
+                if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
+                    
+                    UserFiles::create([
+                        'userUid' => Auth::user()->id,
+                        'fileId' => 'bursaryApproval',
+                        'status' => 'Approved',
+                        'year' => $this_year->lookup_name,
+                    ]);
+    
+                    User::where('id', Auth::user()->id)->update(["rob_30_funds" => 2]);
+    
+                    ActionList::create([
+                        "userUid" => Auth::user()->id,
+                        // "action" => "NSFAS / Bursary has been Approved via import",
+                        "action" => "NSFAS Approval has been Approved via import",
+                        "actionUserUid" => Auth::user()->id,
+                        "actionUserDisplayName" => Auth::user()->userFirstName,
+                        "actionUserRole" => Auth::user()->userRole,
+                    ]);
+                }
+            }
+        }
+
+        $user = User::where('id', Auth::user()->id)->first();
+
+        $generator = new LoginUrl($user);
+        $generator->setRedirectUrl('/verify-email-account');
+        $url = $generator->generate();
+
+        $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
+        $message_replace['name'] = $user->userFirstName;
+        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        $message_replace['close_application_link']="</a>";
+
+        $mailerForMessage = MailerList::where("mailer_name", "New Booking")->first();
+
+        if($mailerForMessage->status == '1'){
+
+            $mailerMessage = $mailerForMessage->message;
+    
+            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+    
+            $data['name'] = $user->userFirstName;
+            $data['email'] = $user->email;
+            $data['messageForMail'] = $newMessage;
+            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+            $mailArr = explode(";", $allowedMails);
+
+            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+            $data['cc'] = explode(";", $allowedMailsCC);
+
+            if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                $data['email'] = $user->email;
+            }else{
+                $data['email'] = "conurbandigital@gmail.com";
+            }
+    
+            Mail::send('email.yellow_back', $data, function($message) use ($data) {
+                $message->to($data['email'])->subject($data['subject']);
+                $message->cc($data['cc']);
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
+            });
+        }
+
+
+        return redirect('/new-booking-step-2');
+
+    }
+
+    public function new_booking_step_2(Request $request){
+        $lookups = Lookups::get();
+
+        $user = User::where('id', Auth::user()->id)->first();
+
+        $agent = new Agent();
+
+        if($user->studentType == "Cash / Direct")
+        {
+            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+        }
+        elseif($user->studentType == "Bursary")
+        {
+            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+        }
+        else
+        {
+            return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+        } 
     }
 
 }

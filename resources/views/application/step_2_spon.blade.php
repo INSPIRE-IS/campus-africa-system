@@ -77,14 +77,14 @@
                     </select>
                 </div>
 
-                <div class="form-field" id="pIdField">
+                <div class="form-field <?php if(isset($user) && $user->pNationality == "International"){ echo "hidden";} ?>" id="pIdField">
                     <label>I.D Number * <span id="pIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-                    <input type="text" name="pIdNumber" id="pIdNumber" class="required" value="<?php if(isset($user)){ echo $user->sponId;} ?>">
+                    <input type="text" name="pIdNumber" id="pIdNumber" class="<?php if((isset($user) && $user->pNationality !== "International") || !isset($user)){ echo "required";} ?>" value="<?php if(isset($user)){ echo $user->sponId;} ?>">
                 </div>
 
-                <div class="form-field hidden" id="pPassportField">
+                <div class="form-field <?php if(isset($user) && $user->pNationality !== "International"){ echo "hidden";} ?>" id="pPassportField">
                     <label>Passport Number * <span id="pPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" name="pPassportNo" id="pPassportNo" class="required" value="<?php if(isset($user)){ echo $user->pPassportNo;} ?>">
+                    <input type="text" name="pPassportNo" id="pPassportNo" class="<?php if((isset($user) && $user->pNationality == "International") || !isset($user)){ echo "required";} ?>" value="<?php if(isset($user)){ echo $user->pPassportNo;} ?>">
                 </div>
 
                 
@@ -105,19 +105,19 @@
 
                 <div class="pAddress <?php if(isset($user) && $user->app_address_p == '1'){echo 'hidden';}?>" >
                     <div class="form-field-big" style="height:60px !important">
-                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->pAddress1;} ?>">
+                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" class="<?php if((isset($user) && $user->app_address_p !== '1') || !isset($user)){echo 'required';}?>" value="<?php if(isset($user)){ echo $user->pAddress1;} ?>">
                     </div>
                     <div class="form-field-big" style="height:60px !important">
                     <span id="pAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" class="required" value="<?php if(isset($user)){ echo $user->pAddress2;} ?>">
+                        <input type="text" placeholder="Suburb" name="pAddress2" id="pAddress2" style="width:98% !important" class="<?php if((isset($user) && $user->app_address_p !== '1') || !isset($user)){echo 'required';}?>" value="<?php if(isset($user)){ echo $user->pAddress2;} ?>">
                     </div>
                     <div class="form-field" style="height:60px !important">
                     <span id="pAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  class="required" value="<?php if(isset($user)){ echo $user->pAddressCity;} ?>">
+                        <input type="text" placeholder="City" name="pAddressCity" id='pAddressCity'  class="<?php if((isset($user) && $user->app_address_p !== '1') || !isset($user)){echo 'required';}?>" value="<?php if(isset($user)){ echo $user->pAddressCity;} ?>">
                     </div>
                     <div class="form-field" style="height:60px !important">
                     <span id="pAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
-                        <input type="number" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" class="required" value="<?php if(isset($user)){ echo $user->pAddressPostal;} ?>">
+                        <input type="number" placeholder="Postal Code" name="pAddressPostal" id="pAddressPostal" class="<?php if((isset($user) && $user->app_address_p !== '1') || !isset($user)){echo 'required';}?>" value="<?php if(isset($user)){ echo $user->pAddressPostal;} ?>">
                     </div>
                 </div>
 
@@ -404,6 +404,8 @@
                 $(this).addClass("fieldError")
                 id = $(this)[0]["id"]
                 $("#"+id+"_error").removeClass("hidden")
+
+                console.log(id)
             }
         })
 

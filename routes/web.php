@@ -242,6 +242,12 @@ Route::get("/verify-password", [ApplicationController::class, 'verify_password']
 Route::post("/confirm-password", [ApplicationController::class, 'confirm_password']);
 Route::get("/retry/online-application", [ApplicationController::class, 'retry_payment']);
 
+Route::get("/student-create-new-booking", [ApplicationController::class, 'new_booking_step_1']);
+Route::post("/new-booking-step-1-save", [ApplicationController::class, 'new_booking_step_1_save']);
+Route::get("/new-booking-step-2", [ApplicationController::class, 'new_booking_step_2']);
+
+
+
 Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']);
 Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
 Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);

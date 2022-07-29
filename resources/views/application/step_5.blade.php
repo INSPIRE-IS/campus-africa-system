@@ -218,7 +218,7 @@
             </div>
 
             <a href="/complete/online-application">
-                <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">I\'ll Pay Later</button>';} ?>
+                <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">I\'ll Pay Later</button>';}else{echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">Continue</button>';} ?>
                 </a>
         @endif
 

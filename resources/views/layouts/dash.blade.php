@@ -39,7 +39,9 @@
                 <a class="active" href="/dashboard">Dashboard</a>
                 
                 <!-- <a href="/room-booking">My Room</a> -->
-                <a href="/my-documents">My Documents</a>
+                @if($active == 1)
+                    <a href="/my-documents">My Documents</a>
+                @endif
                 <a href="https://campusafrica.co.za/residences/" target="_blank">Residences</a>
                 <!-- <a href="/my-profile">My Profile</a> -->
 

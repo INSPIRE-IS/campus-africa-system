@@ -97,142 +97,26 @@ class HomeController extends Controller
 
             }else{
 
-    
-                $allFiles = [];
-                $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
-    
-                if(Auth::user()->rob_60_cancelled == "0" && Auth::user()->rob_50_approve == '2'){
-                    array_push($all, "moveIn");
-                }
-                if(Auth::user()->studentType == "Cash / Direct"){
-                    array_push($all, "bankStatement");
-                }
-                if(Auth::user()->studentType !== "Cash / Direct"){
-                    array_push($all, "bursaryApproval");
-                }
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
 
-                $allSearchable = UserFiles::where("userUid", Auth::user()->id)->get();
+                //See if there is an active booking
+                $bookingCurr = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
 
-                foreach($allSearchable as $search){
-                    if(!in_array($search->fileId, $all)){
-                        array_push($all, $search->fileId);
-                    }
+                $returnInfo = [];
+
+                if(!empty($bookingCurr)){
+                    $returnInfo = $this->studentActive();
+                }else{
+                    $returnInfo = $this->inActiveStudent();
                 }
 
-                $appHeader = 0;
-                $bookHeader = 0;
-
-                // dd($all);
-    
-                foreach($all as $file){
-                    $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->first();
-
-                    if($file || ($file_search && (($file_search->fileId !== "moveIn") || ($file_search->fileId == "moveIn" && Auth::user()->rob_50_approve == '2')))){
-                        //
-                        if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
-    
-                            if($file_search && !empty($file_search)){
-                                $important = 0;
-    
-                                if($file_search->status == "Approved"){
-                                    $important = 1;
-                                }else if($file_search->status == "Uploaded"){
-                                    $important = 2;
-                                }else{
-                                    $important = 3;
-                                }
-                                $output = (object) array(
-                                    "fileId" => $file_search->fileId,
-                                    "status" => $file_search->status !== null ? $file_search->status : "None",
-                                    "fileUrl" => $file_search->fileUrl,
-                                    "important" => $important,
-                                );
-                                array_push($allFiles, $output);
-                            }else{
-                                $output = (object) array(
-                                    "fileId" => $file,
-                                    "status" => "None",
-                                    "fileUrl" => "",
-                                    "important" => 3,
-                                );
-                                array_push($allFiles, $output);
-                            }
-        
-                            if($file !== 'copyID' && $file !== 'proof_of_payment'){
-                                if($output->status == "Uploaded"){
-                                    if($appHeader < 1){
-                                        $appHeader = 1;
-                                    }
-                                }
-        
-                                if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                                    if($appHeader < 2){
-                                        $appHeader = 2;
-                                    }
-                                }
-                            }
-    
-                            if($appHeader == 0 && (Auth::user()->rob_50_approve == 1 || Auth::user()->rob_50_approve == 0)){
-                                $appHeader = 1;
-                            }
-    
-                            if(Auth::user()->rob_50_approve == 2 && $file == 'moveIn'){
-                                if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                                    $appHeader = 2;
-                                }
-    
-                                if($output->status == "Uploaded"){
-                                    $appHeader = 1;
-                                }
-    
-                                if($output->status == "Approved"){
-                                    $appHeader = 0;
-                                }
-                            }
-        
-                            if($file == 'copyID' || $file == 'proof_of_payment'){
-                                if($output->status == "Uploaded"){
-                                    if($bookHeader < 1){
-                                        $bookHeader = 1;
-                                    }
-                                }
-        
-                                if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
-                                    if($bookHeader < 2){
-                                        $bookHeader = 2;
-                                    }
-                                }
-                            }
-    
-                            if(Auth::user()->rob_60_cancelled == '1'){
-                                $appHeader = 3;
-                                $bookHeader = 3;
-                            }
-                        }
-                    }
-
-
-                }
-                
-    
-                $booking = Booking::where('userId', Auth::user()->id)->first();
-
-                $propertyData = Residence::where('id', $booking->property)->first();
-                $roomData = RoomTypes::where('id', $booking->roomType)->first();
-
-                usort($allFiles, function($a, $b) {
-                    return $b->important - $a->important;
-                });
-
-                $bookingPaid = 1;
-                $findBookingPaid = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->first();
-
-                if(empty($findBookingPaid) || $findBookingPaid->status == "Rejected"){
-                    $bookingPaid = 0;
+                if($returnInfo['Status'] == '1'){
+                    return view('user.dashboard', ["active" => 1, "headerTitle" => $returnInfo['headerTitle'], "booking" => $returnInfo['booking'], "allFiles" => $returnInfo['allFiles'], "bookHeader" => $returnInfo['bookHeader'], "appHeader" => $returnInfo['appHeader'], "propertyData" => $returnInfo['propertyData'], "roomData" => $returnInfo['roomData'], "bookingPaid" => $returnInfo['bookingPaid']]);
+                }else{
+                    return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList']]);
                 }
 
-                return view('user.dashboard', ["headerTitle" => "Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader, "propertyData" => $propertyData, "roomData" => $roomData, "bookingPaid" => $bookingPaid]);
-    
             }
 
         }else{
@@ -240,6 +124,156 @@ class HomeController extends Controller
             return view('admin.dashboard', ["headerTitle" => "Admin Dashboard", "title" => "Dashboard"]);
         }
 
+    }
+
+    public function inActiveStudent(){
+        $bookingList = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->get();
+        $buildingList = Residence::get();
+        $roomList = RoomTypes::get();
+        $filesList = UserFiles::where('userUid', Auth::user()->id)->get();
+
+
+
+        return ["Status" => 0, "bookingList" => $bookingList, "buildingList" => $buildingList, "roomList" => $roomList, "filesList" => $filesList];
+    }
+
+    public function studentActive(){
+        $allFiles = [];
+        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        if(Auth::user()->rob_60_cancelled == "0" && Auth::user()->rob_50_approve == '2'){
+            array_push($all, "moveIn");
+        }
+        if(Auth::user()->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if(Auth::user()->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
+
+        $allSearchable = UserFiles::where("userUid", Auth::user()->id)->where('year', $this_year)->get();
+
+        foreach($allSearchable as $search){
+            if(!in_array($search->fileId, $all)){
+                array_push($all, $search->fileId);
+            }
+        }
+
+        $appHeader = 0;
+        $bookHeader = 0;
+
+        foreach($all as $file){
+            $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->where('year', $this_year)->first();
+
+            if($file || ($file_search && (($file_search->fileId !== "moveIn") || ($file_search->fileId == "moveIn" && Auth::user()->rob_50_approve == '2')))){
+                //
+                if((Auth::user()->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || Auth::user()->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+
+                    if($file_search && !empty($file_search)){
+                        $important = 0;
+
+                        if($file_search->status == "Approved"){
+                            $important = 1;
+                        }else if($file_search->status == "Uploaded"){
+                            $important = 2;
+                        }else{
+                            $important = 3;
+                        }
+                        $output = (object) array(
+                            "fileId" => $file_search->fileId,
+                            "status" => $file_search->status !== null ? $file_search->status : "None",
+                            "fileUrl" => $file_search->fileUrl,
+                            "important" => $important,
+                        );
+                        array_push($allFiles, $output);
+                    }else{
+                        $output = (object) array(
+                            "fileId" => $file,
+                            "status" => "None",
+                            "fileUrl" => "",
+                            "important" => 3,
+                        );
+                        array_push($allFiles, $output);
+                    }
+
+                    if($file !== 'copyID' && $file !== 'proof_of_payment'){
+                        if($output->status == "Uploaded"){
+                            if($appHeader < 1){
+                                $appHeader = 1;
+                            }
+                        }
+
+                        if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                            if($appHeader < 2){
+                                $appHeader = 2;
+                            }
+                        }
+                    }
+
+                    if($appHeader == 0 && (Auth::user()->rob_50_approve == 1 || Auth::user()->rob_50_approve == 0)){
+                        $appHeader = 1;
+                    }
+
+                    if(Auth::user()->rob_50_approve == 2 && $file == 'moveIn'){
+                        if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                            $appHeader = 2;
+                        }
+
+                        if($output->status == "Uploaded"){
+                            $appHeader = 1;
+                        }
+
+                        if($output->status == "Approved"){
+                            $appHeader = 0;
+                        }
+                    }
+
+                    if($file == 'copyID' || $file == 'proof_of_payment'){
+                        if($output->status == "Uploaded"){
+                            if($bookHeader < 1){
+                                $bookHeader = 1;
+                            }
+                        }
+
+                        if($output->status == "Rejected" || $output->status == "None" || $output->status == null){
+                            if($bookHeader < 2){
+                                $bookHeader = 2;
+                            }
+                        }
+                    }
+
+                    if(Auth::user()->rob_60_cancelled == '1'){
+                        $appHeader = 3;
+                        $bookHeader = 3;
+                    }
+                }
+            }
+
+
+        }
+        
+
+        $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+
+        $propertyData = Residence::where('id', $booking->property)->first();
+        $roomData = RoomTypes::where('id', $booking->roomType)->first();
+
+        usort($allFiles, function($a, $b) {
+            return $b->important - $a->important;
+        });
+
+        $bookingPaid = 1;
+        $findBookingPaid = UserFiles::where("userUid", Auth::user()->id)->where('year', $this_year)->where('fileId', 'proof_of_payment')->first();
+
+        if(empty($findBookingPaid) || $findBookingPaid->status == "Rejected"){
+            $bookingPaid = 0;
+        }
+
+        // return view('user.dashboard', ["headerTitle" => "Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader, "propertyData" => $propertyData, "roomData" => $roomData, "bookingPaid" => $bookingPaid]);
+        return ["Status" => 1, "headerTitle" => "Dashboard", "booking" => $booking, "allFiles" => $allFiles, "bookHeader" => $bookHeader, "appHeader" => $appHeader, "propertyData" => $propertyData, "roomData" => $roomData, "bookingPaid" => $bookingPaid];
     }
 
     public function room_booking(){
@@ -7703,6 +7737,7 @@ class HomeController extends Controller
             'kinTelCode' => $request->kTeleNo_code,
             'burContactCode' => $request->bContactNumber_code,
             'sponCellCode' => $request->pCell_no_code,
+            'app_source' => 0,
         ]);
 
         $user = User::where('id', $request->userUid)->first();
