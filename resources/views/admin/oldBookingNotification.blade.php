@@ -4,7 +4,7 @@
 
 
 <div class="container">
-    <a href="/create-new-booking/{{$user->id}}"><button type="button" class="newBookingBtn">
+    <a href="/create-new-booking/{{$user->userUid}}"><button type="button" class="newBookingBtn">
         Create a new booking for {{$this_year}}
     </button></a>
     <br/>
