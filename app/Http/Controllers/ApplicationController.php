@@ -124,6 +124,12 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
+
         // if(!empty($user)){
         //     ApplicationToken::where('applicationToken', $applicationToken)->update(['verified' => 1]);
         // }
@@ -132,15 +138,15 @@ class ApplicationController extends Controller
 
         if($user->studentType == "Cash / Direct")
         {
-            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent]);
         }
         elseif($user->studentType == "Bursary")
         {
-            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent]);
         }
         else
         {
-            return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+            return view('application.step_3', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent]);
         } 
     }
 
@@ -149,14 +155,19 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
         if($request->app_address_p == 1){
-            $request->pAddress1 = $user->userAddress1;
-            $request->pAddress2 = $user->userAddress2;
-            $request->pAddressCity = $user->userAddressCity;
-            $request->pAddressPostal = $user->userAddressPostal;
+            $request->pAddress1 = $userInfo->userAddress1;
+            $request->pAddress2 = $userInfo->userAddress2;
+            $request->pAddressCity = $userInfo->userAddressCity;
+            $request->pAddressPostal = $userInfo->userAddressPostal;
         }
 
-        User::where('id', $user->id)->update([
+        StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update([
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,
             'sponCell' => $request->pCell_no,
@@ -182,7 +193,10 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
-        User::where('id', $user->id)->update([
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update([
             'burCompanyName' => $request->bCompanyName,
             'burRegNo' => $request->bRegistrationNo,
             'burContactPerson' => $request->bContactPerson,
@@ -214,26 +228,31 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
         if($request->app_parent_kin == 1){
-            $request->kFirstName = $user->sponFirstName;
-            $request->kLastName = $user->sponLastName;
-            $request->kCellNo = $user->sponCell;
-            $request->kinCellCode = $user->sponCellCode;
-            $request->kEmail = $user->sponEmail;
-            $request->kAddress1 = $user->pAddress1;
-            $request->kAddress2 = $user->pAddress2;
-            $request->kAddressCity = $user->pAddressCity;
-            $request->kAddressPostal = $user->pAddressPostal;
+            $request->kFirstName = $userInfo->sponFirstName;
+            $request->kLastName = $userInfo->sponLastName;
+            $request->kCellNo = $userInfo->sponCell;
+            $request->kinCellCode = $userInfo->sponCellCode;
+            $request->kEmail = $userInfo->sponEmail;
+            $request->kAddress1 = $userInfo->pAddress1;
+            $request->kAddress2 = $userInfo->pAddress2;
+            $request->kAddressCity = $userInfo->pAddressCity;
+            $request->kAddressPostal = $userInfo->pAddressPostal;
         }
 
         if($request->app_address == 1){
-            $request->kAddress1 = $user->userAddress1;
-            $request->kAddress2 = $user->userAddress2;
-            $request->kAddressCity = $user->userAddressCity;
-            $request->kAddressPostal = $user->userAddressPostal;
+            $request->kAddress1 = $userInfo->userAddress1;
+            $request->kAddress2 = $ususerInfoer->userAddress2;
+            $request->kAddressCity = $userInfo->userAddressCity;
+            $request->kAddressPostal = $userInfo->userAddressPostal;
         }
 
-        User::where('id', $user->id)->update([
+        StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update([
             'app_parent_kin' => $request->app_parent_kin,
             'kinFirstName' => $request->kFirstName,
             'kinLastName' => $request->kLastName,
@@ -264,6 +283,7 @@ class ApplicationController extends Controller
 
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
         $IdCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'copyID')->where('year', $this_year)->first();
         $StudentCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'studentCard')->where('year', $this_year)->first();
@@ -271,7 +291,7 @@ class ApplicationController extends Controller
         $BursaryCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->first();
         $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->where('year', $this_year)->first();
 
-        return view('application.step_4', ["lookups" => $lookups, "user" => $user, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
+        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
     }
 
     function get_user_status($fileType, $user, $student) {
@@ -491,6 +511,8 @@ class ApplicationController extends Controller
                 $this_year = Lookups::where('group_id', '4')->first();
                 $this_year = $this_year->lookup_name;
 
+                $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
                 $filenameWithExt  = $request->file('file')->getClientOriginalName();
                 $fileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('file')->extension();
@@ -503,7 +525,7 @@ class ApplicationController extends Controller
 
                 $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
 
-                $user_status = $this->get_user_status($fileType, "", User::where('id', $userUid)->first());
+                $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first());
                 $field_data = $user_status['field_data'];
                 $field_doc = $user_status['field_doc'];                
 
@@ -513,25 +535,28 @@ class ApplicationController extends Controller
                     'fileName' => $fileNameToStore,
                     'fileUrl' => $fileUrl,
                     'status' => "Uploaded",
-                    'uploaded_by' => $currUser->userFirstName,
+                    'uploaded_by' => $userInfo->userFirstName,
                     'year' => $this_year,
                 ]);
 
                 $text = "Uploaded ".$user_status['typeName']." for review";
                 
-                $cur_status = User::find($userUid);
+                // $cur_status = User::find($userUid);
+                $cur_status = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
                 //Update data status back to pending
                 if (!empty($field_data)) {
                     //If the data was already approved then unapprove
                     if ($cur_status->{$field_data} == 1) {
-                        User::where('id', $userUid)->update([$field_data => '0']);                        
+                        // User::where('id', $userUid)->update([$field_data => '0']);     
+                        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([$field_data => '0']);                
                     }
                 }
 
                 //Update Robot status back to pending
                 if (!empty($field_doc)) {
-                    User::where('id', $userUid)->update([$field_doc => '1']);
+                    // User::where('id', $userUid)->update([$field_doc => '1']);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([$field_doc => '1']);
                 }
 
                 //Get the file
@@ -541,7 +566,7 @@ class ApplicationController extends Controller
                     "userUid" => $userUid,
                     "action" => $text,
                     "actionUserUid" => $userUid,
-                    "actionUserDisplayName" => $currUser->userFirstName,
+                    "actionUserDisplayName" => $userInfo->userFirstName,
                     "actionUserRole" => 0,
                     "year" => $this_year,
                 ]);
@@ -550,7 +575,7 @@ class ApplicationController extends Controller
 
                 $this->update_user_status($userUid);
 
-                return [$file->id, User::where('id', $userUid)->first(), $file];
+                return [$file->id, StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first(), $file];
 
             }else{
                 return ["error", "File Not Valid"];
@@ -568,6 +593,7 @@ class ApplicationController extends Controller
 
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
         $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
         // $residences = Property::where('id', $booking->property)
         $proofPayment = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
@@ -658,21 +684,21 @@ class ApplicationController extends Controller
                             $room_rate = $room->acf->booking_fee_override;
                         }
     
-                        if($user->studentType == "NSFAS"){
+                        if($userInfo->studentType == "NSFAS"){
                             if(!in_array("NSFAS Students", $appliesTo)){
                                 $room_rate = "0";
                                 $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
     
-                        if($user->studentType == "Bursary"){
+                        if($userInfo->studentType == "Bursary"){
                             if(!in_array("Bursary Students", $appliesTo)){
                                 $room_rate = "0";
                                 $actionFileData['action'] = "Booking Fee is R0";
                             }
                         }
     
-                        if($user->studentType == "Cash / Direct"){
+                        if($userInfo->studentType == "Cash / Direct"){
                             if(!in_array("Cash Students", $appliesTo)){
                                 $room_rate = "0";
                                 $actionFileData['action'] = "Booking Fee is R0";
@@ -687,21 +713,21 @@ class ApplicationController extends Controller
                 $priced_from = $roomTypeData->rent_price;
                 $room_rate = $roomTypeData->booking_price;
 
-                if($user->studentType == "NSFAS"){
+                if($userInfo->studentType == "NSFAS"){
                     if($roomTypeData->apply_nsfas == null){
                         $room_rate = "0";
                         $actionFileData['action'] = "Booking Fee is R0";
                     }
                 }
 
-                if($user->studentType == "Bursary"){
+                if($userInfo->studentType == "Bursary"){
                     if($roomTypeData->apply_bursary == null){
                         $room_rate = "0";
                         $actionFileData['action'] = "Booking Fee is R0";
                     }
                 }
 
-                if($user->studentType == "Cash / Direct"){
+                if($userInfo->studentType == "Cash / Direct"){
                     if($roomTypeData->apply_cash == null){
                         $room_rate = "0";
                         $actionFileData['action'] = "Booking Fee is R0";
@@ -711,7 +737,7 @@ class ApplicationController extends Controller
 
             if($room_rate == "0"){
     
-                $uploaded = UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+                $uploaded = UserFiles::where('userUid', $userInfo->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
     
                 if(!$uploaded){
                     UserFiles::create([
@@ -721,7 +747,10 @@ class ApplicationController extends Controller
                         'year' => $this_year,
                     ]);
 
-                    User::where('id', $user->id)->update([
+                    // User::where('id', $user->id)->update([
+                    //     'rob_10_fee' => 2
+                    // ]);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
                         'rob_10_fee' => 2
                     ]);
                 }else{
@@ -729,7 +758,10 @@ class ApplicationController extends Controller
                         'status' => 'Approved'
                     ]);
 
-                    User::where('id', $user->id)->update([
+                    // User::where('id', $user->id)->update([
+                    //     'rob_10_fee' => 2
+                    // ]);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
                         'rob_10_fee' => 2
                     ]);
                 }
@@ -751,7 +783,7 @@ class ApplicationController extends Controller
             $newBooking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
 
 
-        return view('application.step_5', ["lookups" => $lookups, "user" => $user, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate, "roomTypeInfo" => $roomTypeInfo, "propertyTypeInfo" => $propertyTypeInfo]);
+        return view('application.step_5', ["lookups" => $lookups, "user" => $userInfo, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate, "roomTypeInfo" => $roomTypeInfo, "propertyTypeInfo" => $propertyTypeInfo]);
     }
 
     public function complete_online_app(Request $request){

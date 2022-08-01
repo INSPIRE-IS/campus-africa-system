@@ -30,8 +30,8 @@
     <div class="onlineTabs">
     <div class="onlineTabs">
         <div class="tab complete">1: Applicant Details</div>
-        @if(Auth::user()->studentType !== "NSFAS") 
-            <div class="tab complete">2: @if(Auth::user()->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
+        @if(isset($user) && $user->studentType !== "NSFAS") 
+            <div class="tab complete">2: @if(isset($user) && $user->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
             <div class="tab complete">3: Next of Kin</div>
             <div class="tab active">4: Upload Documents</div>
             <div class="tab">5: Pay Booking Fee</div>
@@ -278,7 +278,7 @@
 
         var form_data = new FormData();
         form_data.append("file", document.getElementById(field).files[0]);
-        form_data.append("userUid", "<?php echo $user->id; ?>");
+        form_data.append("userUid", "<?php echo $user->userUid; ?>");
         form_data.append("fileType", field);
 
         $.ajax({

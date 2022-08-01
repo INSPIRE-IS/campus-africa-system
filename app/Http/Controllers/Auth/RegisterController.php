@@ -22,6 +22,7 @@ use App\Models\ImportNSFASStudentAuditLog;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\Residence;
 use Auth;
+use App\Models\StudentsInfo;
 
 class RegisterController extends Controller
 {
@@ -123,6 +124,17 @@ class RegisterController extends Controller
 
         $user = User::create([
             'name' => $request->firstName,
+            'userDob' => $request->dob,
+            'userEmail' => $request->email,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'userId' => $request->idNumber,
+            'userNationality' => $request->nationality,
+            'userPassport' => $request->passportNo,
+        ]);
+
+        $userInfo = StudentsInfo::create([
+            'userUid' => $user->id,
             'userFirstName' => $request->firstName,
             'userLastname' => $request->lastName,
             'userTitle' => $request->title,
@@ -130,8 +142,6 @@ class RegisterController extends Controller
             'userCell' => $request->cell_no,
             'userCellCode' => $request->userCellCode,
             'userEmail' => $request->email,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
             'userId' => $request->idNumber,
             'userNationality' => $request->nationality,
             'userPassport' => $request->passportNo,
@@ -181,7 +191,8 @@ class RegisterController extends Controller
         
     
         //Link booking to User
-        User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
+        // User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
+        StudentsInfo::where('id', $userInfo->id)->update(["bookingRef" => $booking->id]);
 
         if($request->studentType == "NSFAS"){
 
@@ -194,7 +205,8 @@ class RegisterController extends Controller
 
                 if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
                     
-                    User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+                    // User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+                    StudentsInfo::where('id', $userInfo->id)->update(["rob_30_funds" => 2]);
 
                     UserFiles::create([
                         'userUid' => $user->id,
@@ -207,8 +219,8 @@ class RegisterController extends Controller
                         "userUid" => $user->id,
                         "action" => "NSFAS Approval has been Approved via import",
                         "actionUserUid" => $user->id,
-                        "actionUserDisplayName" => $user->userFirstName,
-                        "actionUserRole" => $user->userRole,
+                        "actionUserDisplayName" => $userInfo->userFirstName,
+                        "actionUserRole" => $userInfo->userRole,
                         "year" => $this_year->lookup_name,
                     ]);
                 }

@@ -86,7 +86,8 @@ class OnlinePaymentController extends Controller
             Booking::where('userId', $request->id)->where('year', $this_year)->update(['payment_type' => $request->payment_type, 'booking_payment_ref' => $request->reference]);
         }
 
-        $currUser = User::where('id', $request->id)->first();
+        // $currUser = User::where('id', $request->id)->first();
+        $currUser = StudentsInfo::where('userUid', $request->id)->where('year', $this_year)->first();
         ActionList::create([
             "userUid" => $request->id,
             "action" => "Online Payment Initiated",
@@ -132,6 +133,7 @@ class OnlinePaymentController extends Controller
             if(!empty($hasFile) && $status == "Approved"){
                 UserFiles::where('id', $hasFile->id)->update(["status" => "Approved"]);
                 User::where('id', $hasFile->userUid)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                $currUser = StudentsInfo::where('userUid', $hasFile->userUid)->where('year', $this_year)->first();
             }
 
             if($request->PAY_METHOD == "CC" || $request->PAY_METHOD == "DC"){

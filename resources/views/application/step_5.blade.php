@@ -64,8 +64,8 @@
     <div class="onlineTabs">
     <div class="onlineTabs">
         <div class="tab complete">1: Applicant Details</div>
-        @if(Auth::user()->studentType !== "NSFAS") 
-            <div class="tab complete">2: @if(Auth::user()->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
+        @if(isset($user) && $user->studentType !== "NSFAS") 
+            <div class="tab complete">2: @if(isset($user) && $user->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
             <div class="tab complete">3: Next of Kin</div>
             <div class="tab complete">4: Upload Documents</div>
             <div class="tab active">5: Pay Booking Fee</div>
@@ -258,7 +258,7 @@
             data: {
                 reference: "{{$booking->booking_code}}",
                 amount: "{{$room_rate}}",
-                id: "{{Auth::user()->id}}",
+                id: "{{$user->userUid}}",
                 payment_type: $("#paymentType").val(),
                 req_type: "new",
             },
@@ -428,7 +428,7 @@ function paymentRef(){
 
         var form_data = new FormData();
         form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", "<?php echo $user->id; ?>");
+        form_data.append("userUid", "<?php echo $user->userUid; ?>");
         form_data.append("fileType", "proof_of_payment");
 
         $.ajax({
