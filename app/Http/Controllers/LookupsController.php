@@ -634,7 +634,7 @@ class LookupsController extends Controller {
 
             $allFiles = UserFiles::where('userUid', $user->id)->get();
             foreach($allFiles as $file){
-                UserFiles::where('id', $file->id)->update(['year'=> $booking->year]);
+                UserFiles::where('id', $file->id)->update(['year'=> $booking_year]);
             }
 
             $allComments = Comments::where('user_uid', $user->id)->get();
@@ -644,7 +644,7 @@ class LookupsController extends Controller {
 
             $allActionLists = ActionList::where('userUid', $user->id)->get();
             foreach($allActionLists as $list){
-                ActionList::where('id', $list->id)->update(['year'=> $booking->year]);
+                ActionList::where('id', $list->id)->update(['year'=> $booking_year]);
             }
         }
     }
