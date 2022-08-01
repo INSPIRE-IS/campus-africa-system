@@ -546,7 +546,7 @@ class HomeController extends Controller
         $user = User::where('id', $userId)->first();
         $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
-        $name = $studentInfo['userFirstName']." ".$studentInfo['userLastname'];
+        $name = $studentInfo->userFirstName." ".$studentInfo->userLastname;
 
         $files = UserFiles::where('userUid', $userId)->where('year', $this_year)->get();
         $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
@@ -633,7 +633,7 @@ class HomeController extends Controller
                 }else{
                     if($file->status == "XApproved" || $file->status == "Approved"){
 
-                        $actions = ActionList::where('userUid', $user->id)->where('year', $this_year)->orderBy('id', 'DESC')->get();
+                        $actions = ActionList::where('userUid', $userId)->where('year', $this_year)->orderBy('id', 'DESC')->get();
 
                         foreach($actions as $action){
                             if (str_contains($action->action, 'Waived')) {
