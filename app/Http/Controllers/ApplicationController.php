@@ -865,7 +865,7 @@ class ApplicationController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        StudentsInfo::where('userId', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2, 'email_verified' => 1]);
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2, 'email_verified' => 1]);
 
         return redirect('/dashboard');
     }
@@ -876,7 +876,7 @@ class ApplicationController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        StudentsInfo::where('userId', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
 
         return redirect('/dashboard');
     }

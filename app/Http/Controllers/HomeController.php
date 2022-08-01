@@ -719,9 +719,13 @@ class HomeController extends Controller
     }
 
     public function oldBooking($userId){
-        $user = User::where('id', $userId)->first();
 
-        $name = $user['userFirstName']." ".$user['userLastname'];
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        $user =  StudentsInfo::where('userUid', $userId)->orderBy('year', 'desc')->first();
+        // $user = User::where('id', $userId)->first();
+
+        $name = $user->userFirstName." ".$user->userLastname;
 
         $booking = Booking::where('userId', $userId)->orderBy('year', 'desc')->first();
         $files = UserFiles::where('userUid', $userId)->where('year', $booking->year)->get();
@@ -4921,7 +4925,8 @@ class HomeController extends Controller
                 $fileList = [];
                 $actionLogList = [];
 
-                $allStudents = User::with('files')->where("userRole", "0")->get();
+                // $allStudents = User::with('files')->where("userRole", "0")->get();
+                $allStudents = StudentsInfo::where('year', $this_year->lookup_name)->get();
 
                 foreach($schdeules as $user){
                     
@@ -4933,7 +4938,7 @@ class HomeController extends Controller
                             $idFound = 0;
 
                             foreach($allStudents as $thisStudent){
-                                $booking = Booking::where('userId', $thisStudent->id)->first();
+                                $booking = Booking::where('userId', $thisStudent->id)->where('year', $this_year->lookup_name)->first();
                                 if($this_year->lookup_name == $booking->year){
                                     //
                                     if($thisStudent->studentNo == $user[0]){
@@ -4965,7 +4970,8 @@ class HomeController extends Controller
                                             }
     
                                             //Update robots
-                                            User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
+                                            // User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
+                                            StudentsInfo::where('userUid', $thisStudent->id)->where('year', $this_year->lookup_name)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                         }
                                     }
                                 }
@@ -5710,7 +5716,12 @@ class HomeController extends Controller
     }
 
     public function download_nsfas_report(Request $request){
-        $studentArr = User::where('studentType', 'NSFAS')->get();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        // $studentArr = User::where('studentType', 'NSFAS')->get();
+        $studentArr = StudentsInfo::where('studentType', 'NSFAS')->get();
 
         $users = [
 			['<b>Student Number</b>', '<b>First Name</b>', '<b>Last Name</b>', '<b>ID Number</b>', '<b>Institution</b>', '<b>Status</b>', '<b>Approved By</b>'],
