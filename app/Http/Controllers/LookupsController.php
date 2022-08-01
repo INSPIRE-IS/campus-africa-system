@@ -626,6 +626,12 @@ class LookupsController extends Controller {
 
             $booking = Booking::where('userId', $user->id)->first();
 
+            if(!empty($booking)){
+                $booking_year = $booking->year;
+            }else{
+                $booking_year = $user->year;
+            }
+
             $allFiles = UserFiles::where('userUid', $user->id)->get();
             foreach($allFiles as $file){
                 UserFiles::where('id', $file->id)->update(['year'=> $booking->year]);
