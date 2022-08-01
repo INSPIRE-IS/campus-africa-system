@@ -93,6 +93,7 @@ class OnlinePaymentController extends Controller
             "actionUserUid" => $request->id,
             "actionUserDisplayName" => $currUser->userFirstName,
             "actionUserRole" => 0,
+            "year" => $this_year,
         ]);
 
         //close connection
@@ -155,6 +156,7 @@ class OnlinePaymentController extends Controller
                 "actionUserUid" => $transaction->userUid,
                 "actionUserDisplayName" => $currUser->userFirstName,
                 "actionUserRole" => 0,
+                "year" => $this_year,
             ]);
 
         }
@@ -246,6 +248,7 @@ class OnlinePaymentController extends Controller
             "actionUserUid" => $id,
             "actionUserDisplayName" => $currUser->userFirstName,
             "actionUserRole" => 0,
+            "year" => $this_year,
         ]);
 
         $this->update_user_status($id);
@@ -347,6 +350,7 @@ class OnlinePaymentController extends Controller
             "actionUserUid" => $id,
             "actionUserDisplayName" => $currUser->userFirstName,
             "actionUserRole" => 0,
+            "year" => $this_year,
         ]);
 
         $this->update_user_status($id);

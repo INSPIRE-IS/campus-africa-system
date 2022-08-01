@@ -154,6 +154,10 @@ class User extends Authenticatable
     public function files(){
         return $this->hasMany("App\Models\UserFiles", "userUid", "id");
     }
+
+    public function info(){
+        return $this->hasMany("App\Models\StudentsInfo", "userUid", "id");
+    }
     
 
     /**

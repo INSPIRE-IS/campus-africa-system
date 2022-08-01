@@ -15,6 +15,7 @@ class ActionList extends Model
         'actionUserUid',
         'actionUserDisplayName',
         'actionUserRole',
+        'year',
     ];
 
     public function users(){

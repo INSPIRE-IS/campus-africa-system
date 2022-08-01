@@ -14,7 +14,7 @@
         <div class="form-field">
             <label>First Name * <span id="firstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" name="firstName" id="firstName" class="required" value="<?php if ($cancelled == '0'){echo $user->userFirstName;}?>">
-            <input type="hidden" name="userUid" id="userUid" value="{{$user->id}}">
+            <input type="hidden" name="userUid" id="userUid" value="{{$user->userUid}}">
         </div>
 
         <div class="form-field">

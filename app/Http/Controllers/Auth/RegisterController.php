@@ -156,6 +156,7 @@ class RegisterController extends Controller
             "actionUserUid" => $user->id,
             "actionUserDisplayName" => $request->firstName,
             "actionUserRole" => '0',
+            "year" => $request->year,
         ]);
 
         $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
@@ -208,6 +209,7 @@ class RegisterController extends Controller
                         "actionUserUid" => $user->id,
                         "actionUserDisplayName" => $user->userFirstName,
                         "actionUserRole" => $user->userRole,
+                        "year" => $this_year->lookup_name,
                     ]);
                 }
 
@@ -381,6 +383,7 @@ class RegisterController extends Controller
                     "actionUserUid" => $userUid,
                     "actionUserDisplayName" => $user->userFirstName,
                     "actionUserRole" => "0",
+                    "year" => $this_year,
                 ]);
 
             }

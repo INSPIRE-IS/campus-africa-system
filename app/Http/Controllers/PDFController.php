@@ -16,6 +16,7 @@ use App\Models\UserLeaseToken;
 use App\Models\MailerList;
 use Mail;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
+use App\Models\StudentsInfo;
 
 class PDFController extends Controller
 {
@@ -65,6 +66,7 @@ class PDFController extends Controller
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
                 ]);
             }
         }
@@ -75,6 +77,7 @@ class PDFController extends Controller
           "actionUserUid" => Auth::user()->id,
           "actionUserDisplayName" => Auth::user()->userFirstName,
           "actionUserRole" => Auth::user()->userRole,
+          "year" => $this_year,
         ]);
 
         Booking::where('userId', $bookingId)->where('year', $this_year)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time"=> $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time, "leaseAdminFee" => $leaseAdminFee]);
@@ -85,7 +88,9 @@ class PDFController extends Controller
         $this_year = $this_year->lookup_name;
 
         // retreive all records from db
-        $data = User::where('id', $studentId)->first();
+        // $data = User::where('id', $studentId)->first();
+        $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
+
         $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();
@@ -144,14 +149,17 @@ class PDFController extends Controller
           "actionUserUid" => Auth::user()->id,
           "actionUserDisplayName" => Auth::user()->userFirstName,
           "actionUserRole" => Auth::user()->userRole,
+          "year" => $this_year,
       ]);
 
-        User::where('id', $studentId)->update(['rob_55_lease' => 0]);
+        // User::where('id', $studentId)->update(['rob_55_lease' => 0]);
+        StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_55_lease' => 0]);
 
 
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
-        $userForLease = User::where('id', $studentId)->first();
+        // $userForLease = User::where('id', $studentId)->first();
+        $userForLease = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
 
         $message_replace['booking_application'] = "#".$booking->booking_code;
         $message_replace['name'] = $userForLease->userFirstName;
@@ -204,7 +212,7 @@ class PDFController extends Controller
         $this_year = $this_year->lookup_name;
         
 
-        return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), User::where('id', $studentId)->first()];
+        return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
       }
 
       public function generateRandomLongString($length = 24) {

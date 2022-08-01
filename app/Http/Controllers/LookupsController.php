@@ -9,10 +9,12 @@ use App\Models\UserFiles;
 use App\Models\Booking;
 use App\Models\Property;
 use App\Models\ActionList;
+use App\Models\StudentsInfo;
 use Auth;
 use App\Models\Residence;
 use App\Models\RoomTypes;
 use Illuminate\Support\Facades\DB;
+use App\Models\Comments;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -504,6 +506,140 @@ class LookupsController extends Controller {
 
         foreach($allUsers as $user){
             Booking::where('userId', $user->id)->update(['cancelled' => 1]);
+        }
+    }
+
+    public function admin_updates_update_new_students(Request $request){
+
+        $allUsers = User::where('userRole', '0')->get();
+
+        foreach($allUsers as $user){
+
+            StudentsInfo::create([
+                'userUid' => $user->id,
+                'bookingId' => $user->bookingRef,
+                'userFirstName' => $user->userFirstName,
+                'userLastname' => $user->userLastname,
+                'userTitle' => $user->userTitle,
+                'userDob' => $user->userDob,
+                'userCellCode' => $user->userCellCode,
+                'userCell' => $user->userCell,
+                'userEmail' => $user->userEmail,
+                'userId' => $user->userId,
+                'userNationality' => $user->userNationality,
+                'userPassport' => $user->userPassport,
+                'institutionStudy' => $user->institutionStudy,
+                'studentNo' => $user->studentNo,
+                'institutionCampus' => $user->institutionCampus,
+                'faculty' => $user->faculty,
+                'year' => $user->year,
+                'yearOfStudy' => $user->yearOfStudy,
+                'studentType' => $user->studentType,
+                'userAddress1' => $user->userAddress1,
+                'userAddress2' => $user->userAddress2,
+                'userAddressCity' => $user->userAddressCity,
+                'userAddressPostal' => $user->userAddressPostal,
+                'bookingRef' => $user->bookingRef,
+                'bookingStatus' => $user->bookingStatus,
+                'applicationStatus' => $user->applicationStatus,
+                'sponFirstName' => $user->sponFirstName,
+                'sponLastName' => $user->sponLastName,
+                'sponCellCode' => $user->sponCellCode,
+                'sponCell' => $user->sponCell,
+                'sponEmail' => $user->sponEmail,
+                'pNationality' => $user->pNationality,
+                'pPassportNo' => $user->pPassportNo,
+                'sponId' => $user->sponId,
+                'pAddress1' => $user->pAddress1,
+                'pAddress2' => $user->pAddress2,
+                'pAddressCity' => $user->pAddressCity,
+                'pAddressPostal' => $user->pAddressPostal,
+                'c_credit_risk' => $user->c_credit_risk,
+                'c_credit_check' => $user->c_credit_check,
+                'burCompanyName' => $user->burCompanyName,
+                'burRegNo' => $user->burRegNo,
+                'burContactPerson' => $user->burContactPerson,
+                'burContactCode' => $user->burContactCode,
+                'burContactNo' => $user->burContactNo,
+                'burEmail' => $user->burEmail,
+                'b_meeting' => $user->b_meeting,
+                'bAddress1' => $user->bAddress1,
+                'bAddress2' => $user->bAddress2,
+                'bAddressCity' => $user->bAddressCity,
+                'bAddressPostal' => $user->bAddressPostal,
+                'bPayment' => $user->bPayment,
+                'bint' => $user->bint,
+                'bIntName' => $user->bIntName,
+                'kinFirstName' => $user->kinFirstName,
+                'kinLastName' => $user->kinLastName,
+                'kinTitle' => $user->kinTitle,
+                'kinAddressStr' => $user->kinAddressStr,
+                'kinAddressSuburb' => $user->kinAddressSuburb,
+                'kinAddressCity' => $user->kinAddressCity,
+                'kinAddressPost' => $user->kinAddressPost,
+                'kinRelationship' => $user->kinRelationship,
+                'kinTelCode' => $user->kinTelCode,
+                'kinTelNo' => $user->kinTelNo,
+                'kinCellCode' => $user->kinCellCode,
+                'kinCellNo' => $user->kinCellNo,
+                'kinWorkCode' => $user->kinWorkCode,
+                'kinWorkNo' => $user->kinWorkNo,
+                'kinEmail' => $user->kinEmail,
+                'kinNationality' => $user->kinNationality,
+                'kinPassportNo' => $user->kinPassportNo,
+                'app_address' => $user->app_address,
+                'app_address_p' => $user->app_address_p,
+                'app_parent_kin' => $user->app_parent_kin,
+                'id_data_approved' => $user->id_data_approved,
+                'student_card_approved' => $user->student_card_approved,
+                'registration_approved' => $user->registration_approved,
+                'bursary_approved' => $user->bursary_approved,
+                'bank_approved' => $user->bank_approved,
+                'address_approved' => $user->address_approved,
+                'kin_approved' => $user->kin_approved,
+                'parent_approved' => $user->parent_approved,
+                'burser_approved' => $user->burser_approved,
+                'overall_status' => $user->overall_status,
+                'email_info' => $user->email_info,
+                'nsfas_bursar' => $user->nsfas_bursar,
+                'rob_10_fee' => $user->rob_10_fee,
+                'rob_15_id' => $user->rob_15_id,
+                'rob_20_card' => $user->rob_20_card,
+                'rob_25_reg' => $user->rob_25_reg,
+                'rob_30_funds' => $user->rob_30_funds,
+                'rob_35_info' => $user->rob_35_info,
+                'rob_40_bed' => $user->rob_40_bed,
+                'rob_45_other' => $user->rob_45_other,
+                'rob_50_approve' => $user->rob_50_approve,
+                'rob_55_lease' => $user->rob_55_lease,
+                'email_data_approved' => $user->email_data_approved,
+                'rob_60_cancelled' => $user->rob_60_cancelled,
+                'onboard_complete' => $user->onboard_complete,
+                'email_verified' => $user->email_verified,
+                'fee_approved' => $user->fee_approved,
+                'app_source' => $user->app_source,
+            ]);
+
+            if($user->rob_60_cancelled == 1){
+                Booking::where('userId', $user->id)->update(['cancelled' => 1]);
+            }
+
+            $booking = Booking::where('userId', $user->id)->first();
+
+            $allFiles = UserFiles::where('userUid', $user->id)->get();
+            foreach($allFiles as $file){
+                UserFiles::where('id', $file->id)->update(['year'=> $booking->year]);
+            }
+
+            $allComments = Comments::where('user_uid', $user->id)->get();
+            foreach($allComments as $comment){
+                Comments::where('id', $comment->id)->update(['bookingId'=> $booking->id]);
+            }
+
+            $allActionLists = ActionList::where('userUid', $user->id)->get();
+            foreach($allActionLists as $list){
+                ActionList::where('id', $list->id)->update(['year'=> $booking->year]);
+            }
         }
     }
 }

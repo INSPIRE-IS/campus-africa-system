@@ -12,6 +12,7 @@ use App\Models\Booking;
 use App\Models\Residence;
 use App\Models\OnlinePayments;
 use Jenssegers\Agent\Agent;
+use App\Models\StudentsInfo;
 
 class DocumentsController extends Controller {
 
@@ -22,7 +23,8 @@ class DocumentsController extends Controller {
         $this_year = $this_year->lookup_name;
         
         $file = UserFiles::find($id);
-        $user = User::where('id', $file->userUid)->first();
+        // $user = User::where('id', $file->userUid)->first();
+        $user = StudentsInfo::where('userUid', $file->userUid)->where('year', $this_year)->first();
         $booking = Booking::where('userId', $file->userUid)->where('year', $this_year)->first();
         $onlinePayment = OnlinePayments::where('userUid', $file->userUid)->orderBy('created_at', 'desc')->first();
 
@@ -141,7 +143,12 @@ class DocumentsController extends Controller {
 
     
     public function edit_data_save(Request $request) {
-        $oldData = User::where("id", $request->userUid)->first();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        // $oldData = User::where("id", $request->userUid)->first();
+        $oldStudentData = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
         $studentTypeChanged = 0;
 
         $this_year = Lookups::where('group_id', '4')->first();
@@ -193,6 +200,7 @@ class DocumentsController extends Controller {
                 "actionUserUid" => Auth::user()->id,
                 "actionUserDisplayName" => Auth::user()->userFirstName,
                 "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
             ]);
             ActionList::create([
                 "userUid" => $request->userUid,
@@ -200,6 +208,7 @@ class DocumentsController extends Controller {
                 "actionUserUid" => Auth::user()->id,
                 "actionUserDisplayName" => Auth::user()->userFirstName,
                 "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
             ]);
 
         } elseif ($request->type == "proofRegistration") {
@@ -252,7 +261,7 @@ class DocumentsController extends Controller {
                 'bIntName' => $request->bIntName,
             ];
 
-            if($oldData->studentType !== $request->studentType){
+            if($oldStudentData->studentType !== $request->studentType){
                 $studentTypeChanged = 1;
             }
 
@@ -289,7 +298,7 @@ class DocumentsController extends Controller {
                 'pAddressPostal' => $request->pAddressPostal,
             ];
 
-            if($oldData->studentType !== $request->studentType){
+            if($oldStudentData->studentType !== $request->studentType){
                 $studentTypeChanged = 1;
             }
         }
@@ -307,10 +316,10 @@ class DocumentsController extends Controller {
 
                 if($changedField == "NSFAS Bursar"){
                     
-                    if($oldData->$key !== 1){
-                        $oldData->$key = "No";
+                    if($oldStudentData->$key !== 1){
+                        $oldStudentData->$key = "No";
                     }else{
-                        $oldData->$key = "Yes";
+                        $oldStudentData->$key = "Yes";
                     }
 
                     if($new == 1){
@@ -322,20 +331,22 @@ class DocumentsController extends Controller {
                 }
 
 
-                if($oldData->$key !== $new){
+                if($oldStudentData->$key !== $new){
                     ActionList::create([
                         "userUid" => $request->userUid,
-                        "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
+                        "action" => "Updated ".$changedField." From ".$oldStudentData->$key." to ".$new,
                         "actionUserUid" => Auth::user()->id,
                         "actionUserDisplayName" => Auth::user()->userFirstName,
                         "actionUserRole" => Auth::user()->userRole,
+                        "year" => $this_year,
                     ]);
                 }
             }
 
             //$updateData
 
-            User::where('id', $request->userUid)->update($updateData);
+            // User::where('id', $request->userUid)->update($updateData);
+            StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update($updateData);
         }
 
         // User::where('id', $request->userUid)->update([
@@ -417,7 +428,7 @@ class DocumentsController extends Controller {
 
                 $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
 
-                $user_status = $this->get_user_status($fileType, "", User::where('id', $userUid)->first());
+                $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first());
                 $field_data = $user_status['field_data'];
                 $field_doc = $user_status['field_doc'];                
 
@@ -446,19 +457,22 @@ class DocumentsController extends Controller {
                     $text = "Re-uploaded ".$user_status['typeName']." for review";                    
                 }
 
-                $cur_status = User::find($userUid);
+                // $cur_status = User::find($userUid);
+                $cur_status = StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first();
 
                 //Update data status back to pending
                 if (!empty($field_data)) {
                     //If the data was already approved then unapprove
                     if ($cur_status->{$field_data} == 1) {
-                        User::where('id', $userUid)->update([$field_data => '0']);                        
+                        // User::where('id', $userUid)->update([$field_data => '0']);        
+                        StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update([$field_data => '0']);           
                     }
                 }
 
                 //Update Robot status back to pending
                 if (!empty($field_doc)) {
-                    User::where('id', $userUid)->update([$field_doc => '1']);
+                    // User::where('id', $userUid)->update([$field_doc => '1']);
+                    StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update([$field_doc => '1']);   
                 }
 
                 //Get the file
@@ -470,11 +484,12 @@ class DocumentsController extends Controller {
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
                 ]);
 
                 $this->update_user_status($userUid);
 
-                return [$file->id, User::where('id', $userUid)->first(), $file];
+                return [$file->id, UserFiles::where('userUid', $userUid)->where('year', $this_year)->first(), $file];
 
             }else{
                 return ["error", "File Not Valid"];
@@ -488,10 +503,14 @@ class DocumentsController extends Controller {
     }
 
     public function update_user_status($user_id){
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
         
         $user = User::with('files')->where('id', $user_id)->first();
+        $userInfo = StudentsInfo::where('userUid', $user_id)->where('year', $this_year)->first();
 
-        if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected" && $user->applicationStatus !== "Approved Confirmed"){
+        if($userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed"){
 
             $booking = "Rejected";
             $files_for_booking = [];
@@ -507,9 +526,9 @@ class DocumentsController extends Controller {
             $file_types = ["studentCard", "proofRegistration"];
     
             //Add in additional files based on student type.
-            if($user->studentType == "Cash / Direct"){
+            if($userInfo->studentType == "Cash / Direct"){
                 array_push($file_types, "bankStatement");
-            } elseif($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
+            } elseif($userInfo->studentType == "NSFAS" || $userInfo->studentType == "Bursary"){
                 array_push($file_types, "bursaryApproval");
             }
     
@@ -581,7 +600,8 @@ class DocumentsController extends Controller {
                 $overall = "Approved";
             }
 
-            User::where('id', $user_id)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
+            // User::where('id', $user_id)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
+            StudentsInfo::where('useruid', $user_id)->where('year', $this_year)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
         }
 
         if($user->applicationStatus == "Approved Confirmed"){
@@ -612,7 +632,8 @@ class DocumentsController extends Controller {
                 $overall = "Approved";
             }
 
-            User::where('id', $user_id)->update(['overall_status' => $overall]);
+            // User::where('id', $user_id)->update(['overall_status' => $overall]);
+            StudentsInfo::where('useruid', $user_id)->where('year', $this_year)->update(['overall_status' => $overall]);
         }
  
     }
@@ -630,7 +651,10 @@ class DocumentsController extends Controller {
             'year' => $this_year,
         ]);
 
-        User::where('id', $userUid)->update(['rob_45_other' => '0']);
+
+        
+        // User::where('id', $userUid)->update(['rob_45_other' => '0']);
+        StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '0']);
 
         return 'other_'.str_replace(" ", "_", $documentNewName);
 
@@ -651,12 +675,14 @@ class DocumentsController extends Controller {
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
         ]);
 
         $allOtherFiles = UserFiles::where('userUid', $userUid)->where('year', $this_year)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
 
         if(count($allOtherFiles) == 0){
-            User::where('id', $userUid)->update(['rob_45_other' => '3']);
+            // User::where('id', $userUid)->update(['rob_45_other' => '3']);
+            StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '3']);
         }else{
             $highest = 2;
 
@@ -674,7 +700,8 @@ class DocumentsController extends Controller {
                 }
             }
 
-            User::where('id', $userUid)->update(['rob_45_other' => $highest]);
+            // User::where('id', $userUid)->update(['rob_45_other' => $highest]);
+            StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => $highest]);
         }
     }
 

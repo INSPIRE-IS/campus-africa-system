@@ -11,7 +11,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\Lookups;
 use App\Models\PropertyPermission;
-
+use App\Models\StudentsInfo;
 
 class BookingReportController extends Controller
 {
@@ -90,6 +90,8 @@ class BookingReportController extends Controller
                     foreach($allBookings as $booking){
                         if($booking->property == $res->id && $booking->roomType == $room->id){
                             $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
+                            // $user = StudentsInfo::where('id', $booking->userId)->where('rob_60_cancelled', '0')->where('bookingId', $booking->id)->first();
+
         
                             if(!empty($user)){
                                 if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){

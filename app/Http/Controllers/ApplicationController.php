@@ -19,6 +19,7 @@ use App\Models\MailerList;
 use Mail;
 use App\Models\Property;
 use App\Models\OnlinePayments;
+use App\Models\StudentsInfo;
 
 class ApplicationController extends Controller
 {
@@ -542,6 +543,7 @@ class ApplicationController extends Controller
                     "actionUserUid" => $userUid,
                     "actionUserDisplayName" => $currUser->userFirstName,
                     "actionUserRole" => 0,
+                    "year" => $this_year,
                 ]);
 
                 Booking::where('userId', $userUid)->where('year', $this_year)->update(['payment_type' => 'Manual EFT']);
@@ -739,6 +741,7 @@ class ApplicationController extends Controller
                 $actionFileData['actionUserUid'] = Auth::user()->id;
                 $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
                 $actionFileData['actionUserRole'] = Auth::user()->userRole;
+                $actionFileData['year'] = $this_year;
             
                 ActionList::create($actionFileData);
             }else{
@@ -771,7 +774,11 @@ class ApplicationController extends Controller
 
         // return view('application.password', ["lookups" => $lookups, "user" => $user]);
 
-        User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        // User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
 
         return redirect('/step-2/online-application');
     }
@@ -854,13 +861,22 @@ class ApplicationController extends Controller
 
     public function verify_email_account(Request $request){
 
-        User::where('id', Auth::user()->id)->update(['onboard_complete' => 2, 'email_verified' => 1]);
+        // User::where('id', Auth::user()->id)->update(['onboard_complete' => 2, 'email_verified' => 1]);
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        StudentsInfo::where('userId', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2, 'email_verified' => 1]);
 
         return redirect('/dashboard');
     }
 
     public function verify_new_email_account(Request $request){
-        User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
+        // User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        StudentsInfo::where('userId', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
 
         return redirect('/dashboard');
     }
@@ -897,6 +913,7 @@ class ApplicationController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
+        $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
         $user = User::where('id', $request->userUid)->first();
         $booking = Booking::where('userId', $request->userUid)->where('year', $this_year)->first();
 
@@ -905,7 +922,7 @@ class ApplicationController extends Controller
         $url = $generator->generate();
 
         $message_replace['bookingRef'] = $booking->booking_code;
-        $message_replace['name'] = $user->userFirstName;
+        $message_replace['name'] = $userInfo->userFirstName;
         $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
         $message_replace['close_application_link']="</a>";
 
@@ -917,8 +934,8 @@ class ApplicationController extends Controller
         $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
         $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
 
-        $data['name'] = $user->userFirstName;
-        $data['email'] = $user->userEmail;
+        $data['name'] = $userInfo->userFirstName;
+        $data['email'] = $userInfo->userEmail;
         $data['messageForMail'] = $newMessage;
         $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
@@ -926,7 +943,7 @@ class ApplicationController extends Controller
         $data['cc'] = explode(";", $allowedMailsCC);
 
         if(explode("@", $data['email'])[1] == "conurban.co.za"){
-            $data['email'] = $user->userEmail;
+            $data['email'] = $userInfo->userEmail;
         }else{
             $data['email'] = "conurbandigital@gmail.com";
         }
@@ -970,6 +987,9 @@ class ApplicationController extends Controller
     }
 
     public function new_booking_step_1_save(Request $request){
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
         
         $updateData = [
             'First Name|userFirstName' => $request->firstName,
@@ -1003,6 +1023,7 @@ class ApplicationController extends Controller
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
                 ]);
             }
         }
@@ -1057,6 +1078,7 @@ class ApplicationController extends Controller
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
         ]);
 
         //Booking data        
@@ -1216,6 +1238,7 @@ class ApplicationController extends Controller
             $actionFileData['actionUserUid'] = Auth::user()->id;
             $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
             $actionFileData['actionUserRole'] = Auth::user()->userRole;
+            $actionFileData['year'] = $this_year;
         
             ActionList::create($actionFileData);
         }
@@ -1247,6 +1270,7 @@ class ApplicationController extends Controller
                         "actionUserUid" => Auth::user()->id,
                         "actionUserDisplayName" => Auth::user()->userFirstName,
                         "actionUserRole" => Auth::user()->userRole,
+                        "year" => $this_year,
                     ]);
                 }
             }

@@ -204,7 +204,7 @@
                         type: "post",
                         url: "/approve-application",
                         data: {
-                            userId: "{{$user[0]['userInfo']['id']}}", 
+                            userId: "{{$user[0]['userInfo']['userUid']}}", 
                         },
 
                         success: function (data) {
@@ -212,9 +212,9 @@
                             checkUserStatus();
                             $.ajax({
                                 type: "post",
-                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                url: "/createLease/{{$user[0]['userInfo']['userUid']}}",
                                 data: {
-                                    bookingId: "{{$user[0]['userInfo']['id']}}", 
+                                    bookingId: "{{$user[0]['userInfo']['userUid']}}", 
                                     property: $("#property").val(),
                                     roomType: $("#roomType").val(), 
                                     floor: $("#floor").val(),
@@ -259,71 +259,71 @@
             });            
         }
 
-        function addressApp(){
-            Swal.fire({
-                title: 'Please Approve or Reject this data first.',
-                html: '<span style="font-weight:bold">Physical Address:</span><br/>{{$user[0]["userInfo"]["userAddress1"]}}<br/>{{$user[0]["userInfo"]["userAddress2"]}}<br/>{{$user[0]["userInfo"]["userAddressCity"]}}<br/>{{$user[0]["userInfo"]["userAddressPostal"]}}<br/>',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#1cb915',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Approve',
-                cancelButtonText: 'Reject'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $("#approvedAddr").removeClass('hidden');
-                    $("#rejectedAddr").addClass('hidden');
-                    $("#address_approved").val('2');
-                    $.ajax({
-                        type: "post",
-                        url: "/approve-app-data",
-                        data: {
-                            type: "Address", 
-                            userId: "{{$user[0]['userInfo']['id']}}",
-                        },
-                    });
+        // function addressApp(){
+        //     Swal.fire({
+        //         title: 'Please Approve or Reject this data first.',
+        //         html: '<span style="font-weight:bold">Physical Address:</span><br/>{{$user[0]["userInfo"]["userAddress1"]}}<br/>{{$user[0]["userInfo"]["userAddress2"]}}<br/>{{$user[0]["userInfo"]["userAddressCity"]}}<br/>{{$user[0]["userInfo"]["userAddressPostal"]}}<br/>',
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#1cb915',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'Approve',
+        //         cancelButtonText: 'Reject'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             $("#approvedAddr").removeClass('hidden');
+        //             $("#rejectedAddr").addClass('hidden');
+        //             $("#address_approved").val('2');
+        //             $.ajax({
+        //                 type: "post",
+        //                 url: "/approve-app-data",
+        //                 data: {
+        //                     type: "Address", 
+        //                     userId: "{{$user[0]['userInfo']['userUid']}}",
+        //                 },
+        //             });
 
-                    approveApplication();
-                }
-            })
-        }
+        //             approveApplication();
+        //         }
+        //     })
+        // }
 
-        function kinApp(){
-            Swal.fire({
-                title: 'Please Approve or Reject this data first.',
-                html: '<span style="font-weight:bold">Next of Kin:</span><br/>'+
-                '{{$user[0]["userInfo"]["kinTitle"]}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>'+
-                '{{$user[0]['userInfo']['kinRelationship']}}<br/>'+
-                '{{$user[0]['userInfo']['kinNationality']}}<br/>'+
-                '<?php if($user[0]['userInfo']['kinId']){echo $user[0]['userInfo']['kinId'];}?><br/>'+
-                '<?php if($user[0]['userInfo']['kinPassportNo']){ echo $user[0]['userInfo']['kinPassportNo'];}?><br/>'+
-                '{{$user[0]['userInfo']['kinCellNo']}}<br/>{{$user[0]['userInfo']['kinEmail']}}<br/>'+
-                '{{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>'+
-                '{{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#1cb915',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Approve',
-                cancelButtonText: 'Reject'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $("#approvedKin").removeClass('hidden');
-                    $("#rejectedKin").addClass('hidden');
-                    $("#kin_approved").val('2');
-                    $.ajax({
-                        type: "post",
-                        url: "/approve-app-data",
-                        data: {
-                            type: "Kin", 
-                            userId: "{{$user[0]['userInfo']['id']}}",
-                        },
-                    });
+        // function kinApp(){
+        //     Swal.fire({
+        //         title: 'Please Approve or Reject this data first.',
+        //         html: '<span style="font-weight:bold">Next of Kin:</span><br/>'+
+        //         '{{$user[0]["userInfo"]["kinTitle"]}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>'+
+        //         '{{$user[0]['userInfo']['kinRelationship']}}<br/>'+
+        //         '{{$user[0]['userInfo']['kinNationality']}}<br/>'+
+        //         '<?php if($user[0]['userInfo']['kinId']){echo $user[0]['userInfo']['kinId'];}?><br/>'+
+        //         '<?php if($user[0]['userInfo']['kinPassportNo']){ echo $user[0]['userInfo']['kinPassportNo'];}?><br/>'+
+        //         '{{$user[0]['userInfo']['kinCellNo']}}<br/>{{$user[0]['userInfo']['kinEmail']}}<br/>'+
+        //         '{{$user[0]['userInfo']['kinAddressStr']}}, {{$user[0]['userInfo']['kinAddressSuburb']}}, <br/>'+
+        //         '{{$user[0]['userInfo']['kinAddressCity']}}, {{$user[0]['userInfo']['kinAddressPost']}}<br/>',
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#1cb915',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'Approve',
+        //         cancelButtonText: 'Reject'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             $("#approvedKin").removeClass('hidden');
+        //             $("#rejectedKin").addClass('hidden');
+        //             $("#kin_approved").val('2');
+        //             $.ajax({
+        //                 type: "post",
+        //                 url: "/approve-app-data",
+        //                 data: {
+        //                     type: "Kin", 
+        //                     userId: "{{$user[0]['userInfo']['userUid']}}",
+        //                 },
+        //             });
 
-                    approveApplication();
-                }
-            })
-        }
+        //             approveApplication();
+        //         }
+        //     })
+        // }
 
         function rejectApplication(userId){
             Swal.fire({
