@@ -77,9 +77,15 @@ class ApplicationController extends Controller
 
         $application = ApplicationToken::where('applicationToken', $request->applicationToken)->first();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        
+
         if($request->security_code == $application->security_token){
             ApplicationToken::where('applicationToken', $request->applicationToken)->update(['verified' => 1]);
-            User::where('id', $application->userUid)->update(['email_verified' => 1]);
+            // User::where('id', $application->userUid)->update(['email_verified' => 1]);
+            StudentsInfo::where('userUid', $application->userUid)->where('year', $this_year)->update(['email_verified' => 1]);
             $user = User::where('id', $application->userUid)->first();
 
             $generator = new LoginUrl($user);
@@ -218,8 +224,13 @@ class ApplicationController extends Controller
     public function step_3(Request $request){
         $lookups = Lookups::get();
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
-        $user = User::where('id', Auth::user()->id)->first();
+        // $user = User::where('id', Auth::user()->id)->first();
 
         return view('application.step_3', ["lookups" => $lookups, "user" => $user]);
     }
@@ -368,15 +379,21 @@ class ApplicationController extends Controller
 
     public function update_user_status($user_id){
         
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->first();
+        $userFiles = UserFiles::where('userUid',  $user_id)->where('year', $this_year)->get();
+        
         $user = User::with('files')->where('id', $user_id)->first();
 
-        if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected" && $user->applicationStatus !== "Approved Confirmed"){
+        if($userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed"){
 
             $booking = "Rejected";
             $files_for_booking = [];
             
             //files for booking status === Proof of payment - ID Copy
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if($file->fileId == "proof_of_payment" || $file->fileId == "copyID"){
                     array_push($files_for_booking, $file->status);
                 }
@@ -386,9 +403,9 @@ class ApplicationController extends Controller
             $file_types = ["studentCard", "proofRegistration"];
     
             //Add in additional files based on student type.
-            if($user->studentType == "Cash / Direct"){
+            if($userInfo->studentType == "Cash / Direct"){
                 array_push($file_types, "bankStatement");
-            } elseif($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
+            } elseif($userInfo->studentType == "NSFAS" || $userInfo->studentType == "Bursary"){
                 array_push($file_types, "bursaryApproval");
             }
     
@@ -396,7 +413,7 @@ class ApplicationController extends Controller
             $files_for_application = [];
     
             //files for application status
-            foreach($user->files as $file){
+            foreach($userInfo->files as $file){
                 if(in_array($file->fileId, $file_types)){
                     array_push($files_for_application, $file->status);
                 }
@@ -405,7 +422,7 @@ class ApplicationController extends Controller
             //lease
             $lease = "na";
     
-            foreach($user->files as $file){
+            foreach($userInfo->files as $file){
                 if($file->fileId == "moveIn"){
                     if($file->status == "Approved"){
                         $lease = "Approved";
@@ -460,14 +477,15 @@ class ApplicationController extends Controller
                 $overall = "Approved";
             }
 
-            User::where('id', $user_id)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
+            // User::where('id', $user_id)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
+            StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
         }
 
-        if($user->applicationStatus == "Approved Confirmed"){
+        if($userInfo->applicationStatus == "Approved Confirmed"){
             //lease
             $lease = "na";
     
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if($file->fileId == "moveIn"){
                     if($file->status == "Approved"){
                         $lease = "Approved";
@@ -491,7 +509,8 @@ class ApplicationController extends Controller
                 $overall = "Approved";
             }
 
-            User::where('id', $user_id)->update(['overall_status' => $overall]);
+            // User::where('id', $user_id)->update(['overall_status' => $overall]);
+            StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->update(['overall_status' => $overall]);
         }
  
     }
@@ -795,9 +814,11 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
         $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
-        User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
+        // User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 1]);
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
-        return view('application.complete', ["lookups" => $lookups, "user" => $user, "booking" => $booking]);
+        return view('application.complete', ["lookups" => $lookups, "user" => $userInfo, "booking" => $booking]);
     }
 
     public function verify_password(Request $request){
@@ -816,26 +837,36 @@ class ApplicationController extends Controller
     }
 
     public function confirm_password(Request $request){
-        User::where('id', Auth::user()->id)->update(['password' => Hash::make($request->confirm_password), 'email_verified' => 1]);
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        User::where('id', Auth::user()->id)->update(['password' => Hash::make($request->confirm_password)]);
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
     }
 
     public function change_student_type(Request $request){
         $lookups = Lookups::get();
-        $user = User::where('id', Auth::user()->id)->first();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        // $user = User::where('id', Auth::user()->id)->first();
+        $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
         $agent = new Agent();
 
         return view('user.changeType', ["headerTitle" => "Change Student Type", "lookups" => $lookups, "user" => $user, "agent" => $agent]);
     }
 
     public function update_student_details(Request $request){
-        
-        $user = User::where('id', Auth::user()->id)->first();
 
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        if($request->studentType !== $user->studentType){
-            if($user->studentType == "Cash / Direct"){
+        $user = User::where('id', Auth::user()->id)->first();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
+        if($request->studentType !== $userInfo->studentType){
+            if($useuserInfor->studentType == "Cash / Direct"){
                 $file = UserFiles::where('fileId', 'bankStatement')->where('userUid', $user->id)->where('year', $this_year)->first();
                 if(!empty($file)){
                     UserFiles::where('id', $file->id)->update(['status' => 'Rejected']);
@@ -849,13 +880,13 @@ class ApplicationController extends Controller
         }
 
         if($request->app_address_p == 1){
-            $request->pAddress1 = $user->userAddress1;
-            $request->pAddress2 = $user->userAddress2;
-            $request->pAddressCity = $user->userAddressCity;
-            $request->pAddressPostal = $user->userAddressPostal;
+            $request->pAddress1 = $userInfo->userAddress1;
+            $request->pAddress2 = $userInfo->userAddress2;
+            $request->pAddressCity = $userInfo->userAddressCity;
+            $request->pAddressPostal = $userInfo->userAddressPostal;
         }
 
-        User::where('id', $user->id)->update([
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
             'studentType' => $request->studentType,
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,

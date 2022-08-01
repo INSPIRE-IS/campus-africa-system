@@ -2614,9 +2614,9 @@ class HomeController extends Controller
             
 
             if(!in_array("3", $request->status)){
-                $value = 'ui.'.$request->fieldStatus.' in ('.$queryString.') AND rob_60_cancelled = "0"';
+                $value = 'ui.'.$request->fieldStatus.' in ('.$queryString.') AND ui.rob_60_cancelled = "0"';
             }else{
-                $value = '(ui.'.$request->fieldStatus.' in ('.$queryString.') OR rob_60_cancelled = "1")';
+                $value = '(ui.'.$request->fieldStatus.' in ('.$queryString.') OR ui.rob_60_cancelled = "1")';
             }
 
             array_push($search_value, $value);
