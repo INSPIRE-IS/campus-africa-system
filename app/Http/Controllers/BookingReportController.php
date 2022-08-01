@@ -89,8 +89,8 @@ class BookingReportController extends Controller
 
                     foreach($allBookings as $booking){
                         if($booking->property == $res->id && $booking->roomType == $room->id){
-                            $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
-                            // $user = StudentsInfo::where('id', $booking->userId)->where('rob_60_cancelled', '0')->where('bookingId', $booking->id)->first();
+                            // $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
+                            $user = StudentsInfo::where('userUid', $booking->userId)->where('rob_60_cancelled', '0')->where('year', $lookupYear->lookup_name)->first();
 
         
                             if(!empty($user)){

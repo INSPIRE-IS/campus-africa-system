@@ -856,7 +856,8 @@ class HomeController extends Controller
 
         $idCheck = UserFiles::where('userUid', $userUid)->where('year', $this_year)->where('fileId', 'copyID')->first();
         $popCheck = UserFiles::where('userUid', $userUid)->where('year', $this_year)->where('fileId', 'proof_of_payment')->first();
-        $user = User::where('id', $userUid)->first();
+        // $user = User::where('id', $userUid)->first();
+        $user = StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first();
         $booking = Booking::where('userid', $userUid)->where('year', $this_year)->first();
 
         $allCheck = UserFiles::where('userUid', $userUid)->where('year', $this_year)->get();
@@ -874,7 +875,7 @@ class HomeController extends Controller
                     array_push($all, "bursaryApproval");
                 }
 
-                $allSearchable = UserFiles::where("userUid", $user->id)->where('year', $this_year)->get();
+                $allSearchable = UserFiles::where("userUid", $user->userUid)->where('year', $this_year)->get();
 
                 foreach($allSearchable as $search){
                     if(explode("_", $search->fileId)[0] == "other"){
@@ -883,7 +884,7 @@ class HomeController extends Controller
                 }
     
                 foreach($all as $file){
-                    $file_search = UserFiles::where("userUid", $user->id)->where('fileId', $file)->where('year', $this_year)->first();
+                    $file_search = UserFiles::where("userUid", $user->userUid)->where('fileId', $file)->where('year', $this_year)->first();
 
                     if(($user->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $user->studentType != "Cash / Direct" && $file !== 'bankStatement'){
 
@@ -923,7 +924,8 @@ class HomeController extends Controller
 
                 $outstandingDocsText .= "</ol>";
 
-                $generator = new LoginUrl($user);
+                $genUser = User::where('id', $userUid)->first();
+                $generator = new LoginUrl($genUser);
                 $generator->setRedirectUrl('/dashboard');
                 $url = $generator->generate();
 
@@ -948,7 +950,7 @@ class HomeController extends Controller
                     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
                     $data['name'] = $user->userFirstName;
-                    $data['email'] = $user->email;
+                    $data['email'] = $genUser->email;
                     $data['messageForMail'] = $newMessage;
                     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
@@ -959,7 +961,7 @@ class HomeController extends Controller
                     $data['cc'] = explode(";", $allowedMailsCC);
 
                     if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                        $data['email'] = $user->email;
+                        $data['email'] = $genUser->email;
                     }else{
                         $data['email'] = "conurbandigital@gmail.com";
                     }
@@ -993,13 +995,14 @@ class HomeController extends Controller
 
             $booking = Booking::where('userid', $userId)->where('year', $this_year)->first();
             $user = User::where('id', $userId)->first();
+            $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
             $generator = new LoginUrl($user);
             $generator->setRedirectUrl('/dashboard');
             $url = $generator->generate();
 
             $message_replace['bookingRef'] = $booking->booking_code;
-            $message_replace['name'] = $user->userFirstName;
+            $message_replace['name'] = $userInfo->userFirstName;
             $message_replace['document_name'] = $typeName;
             $message_replace['decline_reason'] = $reason;
             $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
@@ -1021,7 +1024,7 @@ class HomeController extends Controller
                 $newSubject = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
                 $newSubject = str_replace("[document_name]", $message_replace['document_name'], $newSubject);
 
-                $data['name'] = $user->userFirstName;
+                $data['name'] = $userInfo->userFirstName;
                 $data['email'] = $user->email;
                 $data['messageForMail'] = $newMessage;
                 $data['subject'] = $newSubject;
@@ -2190,7 +2193,7 @@ class HomeController extends Controller
 
         //Link booking to User
         User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
-        StudentsInfo::where('id', $userInfo->id)->update(['bookingId' => $booking->id]);
+        StudentsInfo::where('id', $userInfo->id)->update(['bookingId' => $booking->id, "bookingRef" => $booking->id]);
 
         $residence = Residence::where('residence', $request->property)->first();
 
@@ -2199,7 +2202,8 @@ class HomeController extends Controller
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
 
-            User::where('id', $user->id)->update(["rob_10_fee" => 2]);
+            // User::where('id', $user->id)->update(["rob_10_fee" => 2]);
+            StudentsInfo::where('id', $userInfo->id)->update(["rob_10_fee" => 2]);
 
             UserFiles::create([
                 'userUid'=> $user->id,
@@ -2236,7 +2240,8 @@ class HomeController extends Controller
                         'year' => $this_year,
                     ]);
     
-                    User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+                    // User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+                    StudentsInfo::where('id', $userInfo->id)->update(["rob_30_funds" => 2]);
     
                     ActionList::create([
                         "userUid" => $user->id,
@@ -4538,61 +4543,61 @@ class HomeController extends Controller
         return redirect("/properties-info");
     }
 
-    public function updateInfoRes($studentType){
+    // public function updateInfoRes($studentType){
 
-        $students = User::where('studentType', $studentType)->get();
-        foreach($students as $student){
+    //     $students = User::where('studentType', $studentType)->get();
+    //     foreach($students as $student){
 
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
+    //         $this_year = Lookups::where('group_id', '4')->first();
+    //         $this_year = $this_year->lookup_name;
 
-            $file = UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+    //         $file = UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
-            if(!empty($file)){
-                UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->update(['status' => 'Approved']);
-            }else{
-                UserFiles::create([
-                    'userUid'=> $student->id,
-                    'fileId' => 'proof_of_payment',
-                    'status' => 'Approved',
-                    'year' => $this_year
-                ]);
-            }
+    //         if(!empty($file)){
+    //             UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->update(['status' => 'Approved']);
+    //         }else{
+    //             UserFiles::create([
+    //                 'userUid'=> $student->id,
+    //                 'fileId' => 'proof_of_payment',
+    //                 'status' => 'Approved',
+    //                 'year' => $this_year
+    //             ]);
+    //         }
 
-            ActionList::create([
-                "userUid" => $student['id'],
-                "action" => "Booking Fee Waived",
-                "actionUserUid" => Auth::user()->id,
-                "actionUserDisplayName" => Auth::user()->userFirstName,
-                "actionUserRole" => Auth::user()->userRole,
-                "year" => $this_year,
-            ]);
-        }
-    }
+    //         ActionList::create([
+    //             "userUid" => $student['id'],
+    //             "action" => "Booking Fee Waived",
+    //             "actionUserUid" => Auth::user()->id,
+    //             "actionUserDisplayName" => Auth::user()->userFirstName,
+    //             "actionUserRole" => Auth::user()->userRole,
+    //             "year" => $this_year,
+    //         ]);
+    //     }
+    // }
 
-    public function updateInfoResRedo($studentType){
-        $students = User::where('studentType', $studentType)->get();
+    // public function updateInfoResRedo($studentType){
+    //     $students = User::where('studentType', $studentType)->get();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+    //     $this_year = Lookups::where('group_id', '4')->first();
+    //     $this_year = $this_year->lookup_name;
 
-        foreach($students as $student){
-            $file = UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+    //     foreach($students as $student){
+    //         $file = UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
-            if(!empty($file) && $file->fileUrl !== null){
-                UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->update(['status' => 'Rejected']);
-            }
+    //         if(!empty($file) && $file->fileUrl !== null){
+    //             UserFiles::where('userUid', $student['id'])->where('fileId', 'proof_of_payment')->where('year', $this_year)->update(['status' => 'Rejected']);
+    //         }
 
-            ActionList::create([
-                "userUid" => $student['id'],
-                "action" => "Booking Fee Added",
-                "actionUserUid" => Auth::user()->id,
-                "actionUserDisplayName" => Auth::user()->userFirstName,
-                "actionUserRole" => Auth::user()->userRole,
-                "year" => $this_year,
-            ]);
-        }
-    }
+    //         ActionList::create([
+    //             "userUid" => $student['id'],
+    //             "action" => "Booking Fee Added",
+    //             "actionUserUid" => Auth::user()->id,
+    //             "actionUserDisplayName" => Auth::user()->userFirstName,
+    //             "actionUserRole" => Auth::user()->userRole,
+    //             "year" => $this_year,
+    //         ]);
+    //     }
+    // }
 
     public function action_data(Request $request){
         $this_year = Lookups::where('group_id', '4')->first();
@@ -5087,7 +5092,8 @@ class HomeController extends Controller
 
         $allFilesArr = [];
         $files = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('status', 'Approved')->get();
-        $userData = User::where('id', $userId)->first();
+        // $userData = User::where('id', $userId)->first();
+        $userData = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
         foreach($files as $file){
             if($file->fileUrl !== '' && $file->fileUrl !== null){

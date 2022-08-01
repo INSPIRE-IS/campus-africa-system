@@ -205,7 +205,7 @@ Route::post("/update-bursar-details", [HomeController::class, 'update_bursar_det
 
 //Documents
 Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);
-Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
+// Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
 Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save']);
 Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);
 

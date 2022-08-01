@@ -32,6 +32,7 @@ class LeaseController extends Controller
             $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->where('year', $this_year)->first();
 
             // $data = User::where('id', $lease_link->userUid)->first();
+            $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
             $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
             $propertyData = Property::where('id', $booking->property_data_id)->first();
             $residence = Residence::where('id', $propertyData->residence)->first();
@@ -85,6 +86,7 @@ class LeaseController extends Controller
 
         // retreive all records from db
         // $data = User::where('id', $user->userUid)->first();
+        $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
         $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();

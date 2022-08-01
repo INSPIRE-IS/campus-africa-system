@@ -60,13 +60,13 @@ class DocumentsController extends Controller {
 
 
 
-    public function edit_data_form($id, $type) {
-        $user = User::find($id);
+    // public function edit_data_form($id, $type) {
+    //     $user = User::find($id);
 
-        $lookups = Lookups::get();
+    //     $lookups = Lookups::get();
 
-        return view('application.document.edit_data', ['user' => $user, 'lookups' => $lookups, 'type' => $type]);
-    }
+    //     return view('application.document.edit_data', ['user' => $user, 'lookups' => $lookups, 'type' => $type]);
+    // }
 
     function get_user_status($fileType, $user, $student) {
 
@@ -509,6 +509,7 @@ class DocumentsController extends Controller {
         
         $user = User::with('files')->where('id', $user_id)->first();
         $userInfo = StudentsInfo::where('userUid', $user_id)->where('year', $this_year)->first();
+        $userFiles = UserFiles::where('userUid',  $user_id)->where('year', $this_year)->get();
 
         if($userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed"){
 
@@ -516,7 +517,7 @@ class DocumentsController extends Controller {
             $files_for_booking = [];
             
             //files for booking status === Proof of payment - ID Copy
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if($file->fileId == "proof_of_payment" || $file->fileId == "copyID"){
                     array_push($files_for_booking, $file->status);
                 }
@@ -536,7 +537,7 @@ class DocumentsController extends Controller {
             $files_for_application = [];
     
             //files for application status
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if(in_array($file->fileId, $file_types)){
                     array_push($files_for_application, $file->status);
                 }
@@ -545,7 +546,7 @@ class DocumentsController extends Controller {
             //lease
             $lease = "na";
     
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if($file->fileId == "moveIn"){
                     if($file->status == "Approved"){
                         $lease = "Approved";
@@ -604,11 +605,11 @@ class DocumentsController extends Controller {
             StudentsInfo::where('useruid', $user_id)->where('year', $this_year)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
         }
 
-        if($user->applicationStatus == "Approved Confirmed"){
+        if($userInfo->applicationStatus == "Approved Confirmed"){
             //lease
             $lease = "na";
     
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if($file->fileId == "moveIn"){
                     if($file->status == "Approved"){
                         $lease = "Approved";
