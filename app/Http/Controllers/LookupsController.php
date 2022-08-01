@@ -627,25 +627,22 @@ class LookupsController extends Controller {
             $booking = Booking::where('userId', $user->id)->first();
 
             if(!empty($booking)){
-                $booking_year = $booking->year;
-            }else{
-                $booking_year = $user->year;
+                $allFiles = UserFiles::where('userUid', $user->id)->get();
+                foreach($allFiles as $file){
+                    UserFiles::where('id', $file->id)->update(['year'=> $booking_year]);
+                }
+    
+                $allComments = Comments::where('user_uid', $user->id)->get();
+                foreach($allComments as $comment){
+                    Comments::where('id', $comment->id)->update(['bookingId'=> $booking->id]);
+                }
+    
+                $allActionLists = ActionList::where('userUid', $user->id)->get();
+                foreach($allActionLists as $list){
+                    ActionList::where('id', $list->id)->update(['year'=> $booking_year]);
+                }
             }
 
-            $allFiles = UserFiles::where('userUid', $user->id)->get();
-            foreach($allFiles as $file){
-                UserFiles::where('id', $file->id)->update(['year'=> $booking_year]);
-            }
-
-            $allComments = Comments::where('user_uid', $user->id)->get();
-            foreach($allComments as $comment){
-                Comments::where('id', $comment->id)->update(['bookingId'=> $booking->id]);
-            }
-
-            $allActionLists = ActionList::where('userUid', $user->id)->get();
-            foreach($allActionLists as $list){
-                ActionList::where('id', $list->id)->update(['year'=> $booking_year]);
-            }
         }
     }
 }
