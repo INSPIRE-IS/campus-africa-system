@@ -430,7 +430,13 @@ class DocumentsController extends Controller {
 
                 $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first());
                 $field_data = $user_status['field_data'];
-                $field_doc = $user_status['field_doc'];                
+                $field_doc = $user_status['field_doc'];    
+                
+                if(Auth::user()->userFirstName == null){
+                    $name = StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->pluck('userFirstName')->first();
+                }else{
+                    $name = Auth::user()->userFirstName;
+                }
 
                 if(!$hasFile){
                     UserFiles::create([
@@ -439,7 +445,7 @@ class DocumentsController extends Controller {
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
                         'status' => "Uploaded",
-                        'uploaded_by' => Auth::user()->userFirstName,
+                        'uploaded_by' => $name,
                         'year' => $this_year,
                     ]);
 
@@ -451,7 +457,7 @@ class DocumentsController extends Controller {
                         'fileName' => $fileNameToStore,
                         'fileUrl' => $fileUrl,
                         'status' => "Uploaded",
-                        'uploaded_by' => Auth::user()->userFirstName,
+                        'uploaded_by' => $name,
                         'year' => $this_year,
                     ]);
                     $text = "Re-uploaded ".$user_status['typeName']." for review";                    
@@ -477,12 +483,18 @@ class DocumentsController extends Controller {
 
                 //Get the file
                 $file = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
+
+                if(Auth::user()->userFirstName == null){
+                    $name = StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->pluck('userFirstName')->first();
+                }else{
+                    $name = Auth::user()->userFirstName;
+                }
     
                 ActionList::create([
                     "userUid" => $userUid,
                     "action" => $text,
                     "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserDisplayName" => $name,
                     "actionUserRole" => Auth::user()->userRole,
                     "year" => $this_year,
                 ]);

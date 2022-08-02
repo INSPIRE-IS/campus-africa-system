@@ -192,7 +192,7 @@ class RegisterController extends Controller
     
         //Link booking to User
         // User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
-        StudentsInfo::where('id', $userInfo->id)->update(["bookingRef" => $booking->id]);
+        StudentsInfo::where('id', $userInfo->id)->update(["bookingRef" => $booking->id, "bookingId" => $booking->id]);
 
         if($request->studentType == "NSFAS"){
 

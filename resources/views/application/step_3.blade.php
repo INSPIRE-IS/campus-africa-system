@@ -527,9 +527,15 @@ $.ajaxSetup({
 
                 $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
+                if("<?php echo $new;?>" == '1'){
+                    var urlLocation = "/new-booking-step-3-save";
+                }else{
+                    var urlLocation = "/step-3-kin";
+                }
+
                 $.ajax({
                         type: "post",
-                        url: "/step-3-kin",
+                        url: urlLocation,
                         data: {
                             app_parent_kin: $("#app_parent_kin").val(),
                             kFirstName: $("#kFirstName").val(), 

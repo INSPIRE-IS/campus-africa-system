@@ -12,6 +12,7 @@ use App\Models\Lookups;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use Auth;
+use App\Models\StudentsInfo;
 
 class OnlinePaymentController extends Controller
 {
@@ -38,8 +39,8 @@ class OnlinePaymentController extends Controller
             'REFERENCE'         => $request->reference,
             'AMOUNT'            => floatval($request->amount)*100,
             'CURRENCY'          => 'ZAR',
-            'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
-            // 'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
+            // 'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
+            'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
             'TRANSACTION_DATE'  => $DateTime->format('Y-m-d H:i:s'),
             'LOCALE'            => 'en-za',
             'COUNTRY'           => 'ZAF',
@@ -249,7 +250,7 @@ class OnlinePaymentController extends Controller
         //Get the file
         $file = UserFiles::where('userUid', $id)->where('fileId', $fileType)->where('year', $this_year)->first();
         // $currUser = User::where('id', $id)->first();
-        $curruser = StudentsInfo::where('userUid', $id)->where('year', $this_year)->first();
+        $currUser = StudentsInfo::where('userUid', $id)->where('year', $this_year)->first();
 
         ActionList::create([
             "userUid" => $id,

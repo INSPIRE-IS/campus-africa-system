@@ -218,13 +218,14 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                @if(!empty($action->users))
-                                    <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
-                                @else
-                                    <p>{{$action->actionUserDisplayName}}</p>
-                                @endif
-                                
+                                                                
                                 @if($action->actionUserRole !== 0 )
+
+                                    @if(!empty($action->users))
+                                        <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                    @else
+                                        <p>{{$action->actionUserDisplayName}}</p>
+                                    @endif
 
                                     @if(!empty($action->users))
                                         @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
@@ -237,6 +238,13 @@
                                     @endif
                                     
                                 @else
+
+                                    @if(!empty($action->usersInfo))
+                                        <p>{{$action->usersInfo->userFirstName}} {{$action->usersInfo->userLastname}}</p>
+                                    @else
+                                        <p>{{$action->actionUserDisplayName}}</p>
+                                    @endif
+
                                     <button type="button" class="applicant">Applicant</button>
                                 @endif
                                 <p class="datetime">  {{substr($action->created_at, 8, 2)}} | {{substr($action->created_at, 5, 2)}} | {{substr($action->created_at, 0, 4)}} | {{substr($action->created_at, 11, 5)}} </p>
@@ -2785,21 +2793,29 @@
                 
                 data.forEach(myFunction);
                 function myFunction(item, index) {
-                    // console.log(item)
+                    console.log(item)
                     if(item['actionUserRole'] == "1"){
                         if(item['users']['user_role_name'] == ""){
                             var role = '<button type="button" class="admin">Admin</button>';
                         }else{
                             var role = '<button type="button" class="admin">'+item['users']['user_role_name']+'</button>';
                         }
+
+                        if(item['user']){
+                            var usernames = '<p>'+item['user']['userFirstName']+' '+item['user']['userLastname']+'</p>';
+                        }else{
+                            var usernames = '<p>'+item['actionUserDisplayName']+'</p>';
+                        }
+                        // var usernames = '<p>'+item['user']['userFirstName']+' '+item['user']['userLastname']+'</p>';
                     }else{
                         var role = '<button type="button" class="applicant">Applicant</button>';
+                        var usernames = '<p>'+item['actionUserDisplayName']+'</p>';
                     }
 
                     $(".actionItemList").append(
                         '<div class="infoBlock">'+
                             '<div class="responsible">'+
-                                '<p>'+item['users']['userFirstName']+' '+item['users']['userLastname']+'</p>'+
+                                    usernames+
                                     role +
                                 '<p class="datetime">  '+item["created_at"].slice(8, 10)+' | '+item["created_at"].slice(5, 7)+' | '+item["created_at"].slice(0, 4)+' | '+item["created_at"].slice(11, 16)+' </p>'+
                             '</div>'+

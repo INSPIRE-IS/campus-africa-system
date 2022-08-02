@@ -248,6 +248,8 @@ Route::get("/retry/online-application", [ApplicationController::class, 'retry_pa
 Route::get("/student-create-new-booking", [ApplicationController::class, 'new_booking_step_1']);
 Route::post("/new-booking-step-1-save", [ApplicationController::class, 'new_booking_step_1_save']);
 Route::get("/new-booking-step-2", [ApplicationController::class, 'new_booking_step_2']);
+Route::post("/new-booking-step-3-save", [ApplicationController::class, 'new_booking_step_3_save']);
+Route::get('/new-booking-step-4', [ApplicationController::class, 'new_booking_step_4']);
 
 
 

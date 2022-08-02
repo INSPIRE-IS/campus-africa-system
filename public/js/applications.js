@@ -104,8 +104,8 @@ jQuery(document).ready(function ($) {
                     var rob_lease = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
 
                     //For non cancelled rows work out the robots
-                    if (arrayItem["rob_60_cancelled"] == 0) {
-                        if (arrayItem["rob_10_fee"] == 0) {
+                    if (arrayItem["rob_60_cancelled"] == 0 || arrayItem["rob_60_cancelled"] == null) {
+                        if (arrayItem["rob_10_fee"] == 0 || arrayItem["rob_10_fee"] == null) {
                             rob_fee = rob_rejected;
                         } else if (arrayItem["rob_10_fee"] == 1) {
                             rob_fee = rob_pending;
@@ -145,7 +145,7 @@ jQuery(document).ready(function ($) {
                             rob_funds = rob_approved;
                         }
 
-                        if (arrayItem["rob_35_info"] == 0) {
+                        if (arrayItem["rob_35_info"] == 0 || arrayItem["rob_35_info"] == null) {
                             rob_info = rob_rejected;
                         } else if (arrayItem["rob_35_info"] == 1) {
                             rob_info = rob_pending;
@@ -161,7 +161,7 @@ jQuery(document).ready(function ($) {
                             rob_bed = rob_approved;
                         }
 
-                        if (arrayItem["rob_45_other"] == 0) {
+                        if (arrayItem["rob_45_other"] === 0) {
                             rob_other = rob_rejected;
                         } else if (arrayItem["rob_45_other"] == 1) {
                             rob_other = rob_pending;
@@ -185,88 +185,6 @@ jQuery(document).ready(function ($) {
                             rob_lease = rob_approved;
                         }
 
-                        // if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
-                        //     if (arrayItem["bookingStatus"] == "Pending" || arrayItem["bookingStatus"] == "Action") {
-                        //         var bookingStat = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                        //     } else if (arrayItem["bookingStatus"] == "Approved" || arrayItem["bookingStatus"] == "Approved Confirmed") {
-                        //         var bookingStat = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                        //     } else if (
-                        //         arrayItem["bookingStatus"] == "Denied" ||
-                        //         arrayItem["bookingStatus"] == "" ||
-                        //         arrayItem["bookingStatus"] == "Empty" ||
-                        //         arrayItem["bookingStatus"] == "Rejected"
-                        //     ) {
-                        //         var bookingStat = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                        //     } else {
-                        //         var bookingStat = '<span class="hidden">D</span><div class="button rejected bigButton"></div>';
-                        //     }
-                        // } else {
-                        //     var bookingStat = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                        // }
-
-                        // if (arrayItem["overall_status"] !== "Cancelled" && arrayItem["overall_status"] !== "Rejected") {
-                        //     if (arrayItem["applicationStatus"] === "Pending" || arrayItem["applicationStatus"] === "Action") {
-                        //         applicationStatus = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                        //     } else if (arrayItem["applicationStatus"] === "Approved Confirmed") {
-                        //         applicationStatus = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                        //     } else if (arrayItem["applicationStatus"] === "Approved") {
-                        //         if (arrayItem["bookingStatus"] == "Approved") {
-                        //             applicationStatus = '<span class="hidden">C</span><div class="button action bigButton"></div>';
-                        //         } else {
-                        //             applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                        //         }
-                        //     } else if (
-                        //         arrayItem["applicationStatus"] === "Denied" ||
-                        //         arrayItem["applicationStatus"] === null ||
-                        //         arrayItem["applicationStatus"] === "Rejected" ||
-                        //         arrayItem["applicationStatus"] === "Empty" ||
-                        //         arrayItem["applicationStatus"] === "Denied Confimed"
-                        //     ) {
-                        //         applicationStatus = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                        //     } else {
-                        //         applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
-                        //     }
-                        // } else {
-                        //     applicationStatus = '<span class="hidden">B</span><div class="button na bigButton"></div>';
-                        // }
-
-                        // if (arrayItem["leaseStatus"] === "Uploaded") {
-                        //     moveIn = '<span class="hidden">A</span><div class="button action bigButton"></div>';
-                        // } else if (arrayItem["leaseStatus"] === "Approved") {
-                        //     moveIn = '<span class="hidden">C</span><div class="button approved bigButton"></div>';
-                        // } else if (arrayItem["leaseStatus"] === "na") {
-                        //     moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                        // } else if (arrayItem["leaseStatus"] === "Rejected" || arrayItem["leaseStatus"] === "Incomplete") {
-                        //     moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                        // } else if (arrayItem["leaseStatus"] === null && arrayItem["applicationStatus"] === "Approved Confirmed") {
-                        //     moveIn = '<span class="hidden">B</span><div class="button rejected bigButton"></div>';
-                        // } else {
-                        //     moveIn = '<span class="hidden">D</span><div class="button na bigButton"></div>';
-                        // }
-
-                        // if (arrayItem["bursaryApproval"] === "Uploaded") {
-                        //     bursaryApproval = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                        // } else if (arrayItem["bursaryApproval"] === "Approved") {
-                        //     bursaryApproval = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                        // } else if (arrayItem["bursaryApproval"] === "na") {
-                        //     bursaryApproval = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                        // } else if (arrayItem["bursaryApproval"] === "Rejected" || arrayItem["bursaryApproval"] === "") {
-                        //     bursaryApproval = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // } else {
-                        //     bursaryApproval = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // }
-
-                        // if (arrayItem["bankStatement"] === "Uploaded") {
-                        //     bankStatement = '<span class="hidden">A</span><div class="button action noBoarder"></div>';
-                        // } else if (arrayItem["bankStatement"] === "Approved") {
-                        //     bankStatement = '<span class="hidden">C</span><div class="button approved noBoarder"></div>';
-                        // } else if (arrayItem["bankStatement"] === "na") {
-                        //     bankStatement = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
-                        // } else if (arrayItem["bankStatement"] === "Rejected" || arrayItem["bankStatement"] === "") {
-                        //     bankStatement = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // } else {
-                        //     bankStatement = '<span class="hidden">B</span><div class="button rejected noBoarder"></div>';
-                        // }
                     }
 
                     var m = new Date(arrayItem["created_at"]);

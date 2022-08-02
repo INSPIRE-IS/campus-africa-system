@@ -20,6 +20,8 @@ use Mail;
 use App\Models\Property;
 use App\Models\OnlinePayments;
 use App\Models\StudentsInfo;
+use App\Models\ImportNSFASStudentAuditLog;
+use App\Models\ImportNSFASApproval;
 
 class ApplicationController extends Controller
 {
@@ -142,17 +144,17 @@ class ApplicationController extends Controller
 
         $agent = new Agent();
 
-        if($user->studentType == "Cash / Direct")
+        if($userInfo->studentType == "Cash / Direct")
         {
-            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent]);
+            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0]);
         }
-        elseif($user->studentType == "Bursary")
+        elseif($userInfo->studentType == "Bursary")
         {
-            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent]);
+            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0]);
         }
         else
         {
-            return view('application.step_3', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent]);
+            return view('application.step_3', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0]);
         } 
     }
 
@@ -258,7 +260,7 @@ class ApplicationController extends Controller
 
         if($request->app_address == 1){
             $request->kAddress1 = $userInfo->userAddress1;
-            $request->kAddress2 = $ususerInfoer->userAddress2;
+            $request->kAddress2 = $userInfo->userAddress2;
             $request->kAddressCity = $userInfo->userAddressCity;
             $request->kAddressPostal = $userInfo->userAddressPostal;
         }
@@ -530,7 +532,7 @@ class ApplicationController extends Controller
                 $this_year = Lookups::where('group_id', '4')->first();
                 $this_year = $this_year->lookup_name;
 
-                $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+                $userInfo = StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first();
 
                 $filenameWithExt  = $request->file('file')->getClientOriginalName();
                 $fileName = pathinfo($filenameWithExt, PATHINFO_FILENAME);
@@ -544,7 +546,7 @@ class ApplicationController extends Controller
 
                 $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
 
-                $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first());
+                $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first());
                 $field_data = $user_status['field_data'];
                 $field_doc = $user_status['field_doc'];                
 
@@ -561,21 +563,21 @@ class ApplicationController extends Controller
                 $text = "Uploaded ".$user_status['typeName']." for review";
                 
                 // $cur_status = User::find($userUid);
-                $cur_status = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+                $cur_status = StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first();
 
                 //Update data status back to pending
                 if (!empty($field_data)) {
                     //If the data was already approved then unapprove
                     if ($cur_status->{$field_data} == 1) {
                         // User::where('id', $userUid)->update([$field_data => '0']);     
-                        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([$field_data => '0']);                
+                        StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update([$field_data => '0']);                
                     }
                 }
 
                 //Update Robot status back to pending
                 if (!empty($field_doc)) {
                     // User::where('id', $userUid)->update([$field_doc => '1']);
-                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([$field_doc => '1']);
+                    StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update([$field_doc => '1']);
                 }
 
                 //Get the file
@@ -815,7 +817,7 @@ class ApplicationController extends Controller
         $user = User::where('id', Auth::user()->id)->first();
         $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
         // User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
-        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 1]);
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2]);
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
         return view('application.complete', ["lookups" => $lookups, "user" => $userInfo, "booking" => $booking]);
@@ -854,7 +856,7 @@ class ApplicationController extends Controller
         $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
         $agent = new Agent();
 
-        return view('user.changeType', ["headerTitle" => "Change Student Type", "lookups" => $lookups, "user" => $user, "agent" => $agent]);
+        return view('user.changeType', ["headerTitle" => "Change Student Type", "lookups" => $lookups, "user" => $user, "agent" => $agent, "active" => 1]);
     }
 
     public function update_student_details(Request $request){
@@ -866,7 +868,7 @@ class ApplicationController extends Controller
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
         if($request->studentType !== $userInfo->studentType){
-            if($useuserInfor->studentType == "Cash / Direct"){
+            if($userInfo->studentType == "Cash / Direct"){
                 $file = UserFiles::where('fileId', 'bankStatement')->where('userUid', $user->id)->where('year', $this_year)->first();
                 if(!empty($file)){
                     UserFiles::where('id', $file->id)->update(['status' => 'Rejected']);
@@ -877,7 +879,17 @@ class ApplicationController extends Controller
                     UserFiles::where('id', $file->id)->update(['status' => 'Rejected']);
                 }
             }
+
+            ActionList::create([
+                "userUid" => Auth::user()->id,
+                "action" => "Updated Student Type From ".$userInfo->studentType." to ".$request->studentType,
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => $userInfo->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
         }
+
 
         if($request->app_address_p == 1){
             $request->pAddress1 = $userInfo->userAddress1;
@@ -1021,8 +1033,12 @@ class ApplicationController extends Controller
     }
 
     public function retry_payment(Request $request){
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $lookups = Lookups::get();
         $user = User::where('id', Auth::user()->id)->first();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
         $agent = new Agent();
         $transaction = OnlinePayments::where("userUid", Auth::user()->id)->orderBy("created_at", "desc")->first();
 
@@ -1032,7 +1048,7 @@ class ApplicationController extends Controller
         $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
         $propertyTypeInfo = Residence::where('id', $booking->property)->first();
 
-        return view('application.retry', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "transaction" => $transaction, "booking" => $booking, "propertyTypeInfo" => $propertyTypeInfo]);
+        return view('application.retry', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "transaction" => $transaction, "booking" => $booking, "propertyTypeInfo" => $propertyTypeInfo]);
 
     }
 
@@ -1041,12 +1057,13 @@ class ApplicationController extends Controller
         $lookups = Lookups::get();
         $residences = Residence::get();
         $user = User::where('id', Auth::user()->id)->first();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
         $cancelled = 0;
 
-        if($user->rob_60_cancelled == 1){
+        if($userInfo->rob_60_cancelled == 1){
             $cancelled = 1;
         }
-        return view('user.new_booking.step_1', ["user" => $user, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences]);
+        return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences]);
     }
 
     public function new_booking_step_1_save(Request $request){
@@ -1072,26 +1089,33 @@ class ApplicationController extends Controller
             'Year of Study|yearOfStudy' => $request->yearOfStudy,
         ];
 
-        $userInfo = User::where('id', Auth::user()->id)->first();
+        // $userInfo = User::where('id', Auth::user()->id)->first();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
 
         foreach($updateData as $key => $new){
             $info = explode("|", $key);
-            $key = $info[0];
-            $changedField = $info[1];
+            $key = $info[1];
+            $changedField = $info[0];
 
             if($userInfo->$key !== $new){
                 ActionList::create([
                     "userUid" => Auth::user()->id,
                     "action" => "Updated ".$changedField." From ".$userInfo->$key." to ".$new,
                     "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserDisplayName" => $request->firstName,
                     "actionUserRole" => Auth::user()->userRole,
                     "year" => $this_year,
                 ]);
             }
         }
 
-        User::where('id', Auth::user()->id)->update([
+        StudentsInfo::create([
+            'userUid' => Auth::user()->id,
+            'userDob' => $userInfo->userDob,
+            'userEmail' => $userInfo->userEmail,
+            'userId' => $userInfo->userId,
+            'userNationality' => $userInfo->userNationality,
+            'userPassport' => $userInfo->userPassport,
             'userFirstName' => $request->firstName,
             'userLastname' => $request->lastName,
             'userTitle' => $request->title,
@@ -1139,7 +1163,7 @@ class ApplicationController extends Controller
             "userUid" => Auth::user()->id,
             "action" => "Created a new Booking",
             "actionUserUid" => Auth::user()->id,
-            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserDisplayName" => $request->firstName,
             "actionUserRole" => Auth::user()->userRole,
             "year" => $this_year,
         ]);
@@ -1231,6 +1255,8 @@ class ApplicationController extends Controller
             }
         }
 
+        $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
         if($roomTypeData && $roomTypeData->pull_price == null){
             $booking_data['room_rate'] = $roomTypeData->booking_price;
 
@@ -1279,13 +1305,15 @@ class ApplicationController extends Controller
         Booking::where('id', $booking->id)->update(['booking_code' => $bookingYear.$bookingPrefix.$bookingID]);
 
         //Link booking to User
-        User::where('id', Auth::user()->id)->update(["bookingRef" => $booking->id]);
+        // User::where('id', Auth::user()->id)->update(["bookingRef" => $booking->id]);
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(["bookingRef" => $booking->id, "bookingId" => $booking->id]);
 
         $residence = Residence::where('residence', $request->property)->first();
 
         if($booking_data['room_rate'] == "0"){
 
-            User::where('id', Auth::user()->id)->update(["rob_10_fee" => 2]);
+            // User::where('id', Auth::user()->id)->update(["rob_10_fee" => 2]);
+            StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(["rob_10_fee" => 2]);
 
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
@@ -1299,7 +1327,7 @@ class ApplicationController extends Controller
 
             $actionFileData['userUid'] = Auth::user()->id;
             $actionFileData['actionUserUid'] = Auth::user()->id;
-            $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+            $actionFileData['actionUserDisplayName'] = $user->userFirstName;
             $actionFileData['actionUserRole'] = Auth::user()->userRole;
             $actionFileData['year'] = $this_year;
         
@@ -1324,14 +1352,15 @@ class ApplicationController extends Controller
                         'year' => $this_year->lookup_name,
                     ]);
     
-                    User::where('id', Auth::user()->id)->update(["rob_30_funds" => 2]);
+                    // User::where('id', Auth::user()->id)->update(["rob_30_funds" => 2]);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(["rob_30_funds" => 2]);
     
                     ActionList::create([
                         "userUid" => Auth::user()->id,
                         // "action" => "NSFAS / Bursary has been Approved via import",
                         "action" => "NSFAS Approval has been Approved via import",
                         "actionUserUid" => Auth::user()->id,
-                        "actionUserDisplayName" => Auth::user()->userFirstName,
+                        "actionUserDisplayName" => $user->userFirstName,
                         "actionUserRole" => Auth::user()->userRole,
                         "year" => $this_year,
                     ]);
@@ -1340,13 +1369,14 @@ class ApplicationController extends Controller
         }
 
         $user = User::where('id', Auth::user()->id)->first();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
         $generator = new LoginUrl($user);
         $generator->setRedirectUrl('/verify-email-account');
         $url = $generator->generate();
 
         $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
-        $message_replace['name'] = $user->userFirstName;
+        $message_replace['name'] = $request->firstName;
         $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
         $message_replace['close_application_link']="</a>";
 
@@ -1361,7 +1391,7 @@ class ApplicationController extends Controller
             $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
             $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
-            $data['name'] = $user->userFirstName;
+            $data['name'] = $request->firstName;
             $data['email'] = $user->email;
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
@@ -1393,22 +1423,91 @@ class ApplicationController extends Controller
     public function new_booking_step_2(Request $request){
         $lookups = Lookups::get();
 
-        $user = User::where('id', Auth::user()->id)->first();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        // $user = User::where('id', Auth::user()->id)->first();
+        
+        $user = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->where('year', '!=', $this_year)->first();
 
         $agent = new Agent();
 
         if($user->studentType == "Cash / Direct")
         {
-            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
         }
         elseif($user->studentType == "Bursary")
         {
-            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
         }
         else
         {
-            return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent]);
+            return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
         } 
+    }
+
+    public function new_booking_step_3_save(Request $request){
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
+        if($request->app_parent_kin == 1){
+            $request->kFirstName = $userInfo->sponFirstName;
+            $request->kLastName = $userInfo->sponLastName;
+            $request->kCellNo = $userInfo->sponCell;
+            $request->kinCellCode = $userInfo->sponCellCode;
+            $request->kEmail = $userInfo->sponEmail;
+            $request->kAddress1 = $userInfo->pAddress1;
+            $request->kAddress2 = $userInfo->pAddress2;
+            $request->kAddressCity = $userInfo->pAddressCity;
+            $request->kAddressPostal = $userInfo->pAddressPostal;
+        }
+
+        if($request->app_address == 1){
+            $request->kAddress1 = $userInfo->userAddress1;
+            $request->kAddress2 = $userInfo->userAddress2;
+            $request->kAddressCity = $userInfo->userAddressCity;
+            $request->kAddressPostal = $userInfo->userAddressPostal;
+        }
+
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
+            'app_parent_kin' => $request->app_parent_kin,
+            'kinFirstName' => $request->kFirstName,
+            'kinLastName' => $request->kLastName,
+            'kinTitle' => $request->kTitle,
+            'kinRelationship' => $request->kRelationship,
+            'kinCellNo' => $request->kCellNo,
+            'kinCellCode' => $request->kinCellCode,
+            'kinEmail' => $request->kEmail,
+            'kinWorkNo' => $request->kWorkNo,
+            'kinWorkCode' => $request->kinWorkCode,
+            'kinTelNo' => $request->kTeleNo,
+            'kinTelCode' => $request->kinTelCode,
+            'app_address' => $request->app_address,
+            'kinAddressStr' => $request->kAddress1,
+            'kinAddressSuburb' => $request->kAddress2,
+            'kinAddressCity' => $request->kAddressCity,
+            'kinAddressPost' => $request->kAddressPostal,
+        ]);
+
+        return "/new-booking-step-4";
+    }
+
+    public function new_booking_step_4(Request $request){
+        $lookups = Lookups::get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
+
+        $IdCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'copyID')->where('year', $this_year)->first();
+        $StudentCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'studentCard')->where('year', $this_year)->first();
+        $BankCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bankStatement')->where('year', $this_year)->first();
+        $BursaryCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->first();
+        $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->where('year', $this_year)->first();
+
+        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy, "new" => 1]);
     }
 
 }

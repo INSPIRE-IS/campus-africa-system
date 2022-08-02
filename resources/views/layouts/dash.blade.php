@@ -45,7 +45,7 @@
                 <a href="https://campusafrica.co.za/residences/" target="_blank">Residences</a>
                 <!-- <a href="/my-profile">My Profile</a> -->
 
-                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> @endif Log out</a>
+                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{$user->userFirstName}} {{$user->userLastname}},</span> @endif Log out</a>
                 
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>

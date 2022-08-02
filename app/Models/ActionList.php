@@ -21,4 +21,8 @@ class ActionList extends Model
     public function users(){
         return $this->hasOne("App\Models\User", "id", "actionUserUid");
     }
+
+    public function usersInfo(){
+        return $this->hasOne("App\Models\StudentsInfo", "userUid", "actionUserUid");
+    }
 }
