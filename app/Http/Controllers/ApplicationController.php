@@ -1446,6 +1446,78 @@ class ApplicationController extends Controller
         } 
     }
 
+    public function new_booking_step_2_spon_save(Request $request){
+        $user = User::where('id', Auth::user()->id)->first();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+
+        if($request->app_address_p == 1){
+            $request->pAddress1 = $userInfo->userAddress1;
+            $request->pAddress2 = $userInfo->userAddress2;
+            $request->pAddressCity = $userInfo->userAddressCity;
+            $request->pAddressPostal = $userInfo->userAddressPostal;
+        }
+
+        StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update([
+            'sponFirstName' => $request->pFirstName,
+            'sponLastName' => $request->pLastName,
+            'sponCell' => $request->pCell_no,
+            'sponCellCode' => $request->sponCellCode,
+            'sponEmail' => $request->pEmail,
+            'pNationality' => $request->pNationality,
+            'sponId' => $request->pIdNumber,
+            'pPassportNo' => $request->pPassportNo,
+            'pAddress1' => $request->pAddress1,
+            'pAddress2' => $request->pAddress2,
+            'pAddressCity' => $request->pAddressCity,
+            'pAddressPostal' => $request->pAddressPostal,
+            'app_address_p' => $request->app_address_p,
+            'c_credit_check' => $request->c_credit_check,
+            'c_credit_risk' => $request->c_credit_risk,
+        ]);
+
+        return "/new-booking-step-3";
+    }
+
+    public function new_booking_step_2_bur_save(Request $request){
+        $user = User::where('id', Auth::user()->id)->first();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update([
+            'burCompanyName' => $request->bCompanyName,
+            'burRegNo' => $request->bRegistrationNo,
+            'burContactPerson' => $request->bContactPerson,
+            'burContactNo' => $request->bContactNumber,
+            'burContactCode' => $request->burContactCode,
+            'burEmail' => $request->bEmail,
+            'bAddress1' => $request->bAddress1,
+            'bAddress2' => $request->bAddress2,
+            'bAddressCity' => $request->bAddressCity,
+            'bAddressPostal' => $request->bAddressPostal,
+            'bPayment' => $request->bPayment,
+            'bint' => $request->bint,
+            'bIntName' => $request->bIntName,
+        ]);
+
+        return "/new-booking-step-3";
+    }
+
+    public function new_booking_step_3(Request $request){
+        $lookups = Lookups::get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        $user = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->where('year', '!=', $this_year)->first();
+        $agent = new Agent();
+
+        return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
+        
+    }
+
     public function new_booking_step_3_save(Request $request){
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;

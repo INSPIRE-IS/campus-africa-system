@@ -250,6 +250,9 @@ Route::post("/new-booking-step-1-save", [ApplicationController::class, 'new_book
 Route::get("/new-booking-step-2", [ApplicationController::class, 'new_booking_step_2']);
 Route::post("/new-booking-step-3-save", [ApplicationController::class, 'new_booking_step_3_save']);
 Route::get('/new-booking-step-4', [ApplicationController::class, 'new_booking_step_4']);
+Route::post('/new-booking-step-2-spon-save', [ApplicationController::class, 'new_booking_step_2_spon_save']);
+Route::get("/new-booking-step-3", [ApplicationController::class, 'new_booking_step_3']);
+Route::post('/new-booking-step-2-bur-save', [ApplicationController::class, 'new_booking_step_2_bur_save']);
 
 
 

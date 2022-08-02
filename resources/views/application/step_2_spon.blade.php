@@ -458,9 +458,15 @@
 
                 $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
+                if("<?php echo $new;?>" == '1'){
+                    var urlLocation = "/new-booking-step-2-spon-save";
+                }else{
+                    var urlLocation = "/step-2-spon";
+                }
+
                 $.ajax({
                         type: "post",
-                        url: "/step-2-spon",
+                        url: urlLocation,
                         data: {
                             pFirstName: $("#pFirstName").val(), 
                             pLastName: $("#pLastName").val(), 
