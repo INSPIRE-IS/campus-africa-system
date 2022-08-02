@@ -146,15 +146,15 @@ class ApplicationController extends Controller
 
         if($userInfo->studentType == "Cash / Direct")
         {
-            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0]);
+            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0, "userNew" => $userInfo]);
         }
         elseif($userInfo->studentType == "Bursary")
         {
-            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0]);
+            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0, "userNew" => $userInfo]);
         }
         else
         {
-            return view('application.step_3', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0]);
+            return view('application.step_3', ["lookups" => $lookups, "user" => $userInfo, "agent" => $agent, "new" => 0, "userNew" => $userInfo]);
         } 
     }
 
@@ -234,7 +234,7 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         // $user = User::where('id', Auth::user()->id)->first();
 
-        return view('application.step_3', ["lookups" => $lookups, "user" => $user]);
+        return view('application.step_3', ["lookups" => $lookups, "user" => $user, "userNew" => $user, "new" => 0]);
     }
 
     public function step_3_kin(Request $request){
@@ -1429,20 +1429,21 @@ class ApplicationController extends Controller
         // $user = User::where('id', Auth::user()->id)->first();
         
         $user = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->where('year', '!=', $this_year)->first();
+        $userNew = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
         $agent = new Agent();
 
-        if($user->studentType == "Cash / Direct")
+        if($userNew->studentType == "Cash / Direct")
         {
-            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
+            return view('application.step_2_spon', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1, "userNew" => $userNew]);
         }
-        elseif($user->studentType == "Bursary")
+        elseif($userNew->studentType == "Bursary")
         {
-            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
+            return view('application.step_2_bur', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1, "userNew" => $userNew]);
         }
         else
         {
-            return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
+            return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1, "userNew" => $userNew]);
         } 
     }
 
@@ -1512,9 +1513,10 @@ class ApplicationController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
         $user = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->where('year', '!=', $this_year)->first();
+        $userNew = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
         $agent = new Agent();
 
-        return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1]);
+        return view('application.step_3', ["lookups" => $lookups, "user" => $user, "agent" => $agent, "new" => 1, "userNew" => $userNew]);
         
     }
 

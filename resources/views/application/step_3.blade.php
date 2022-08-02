@@ -30,8 +30,8 @@
     <div class="onlineTabs">
     <div class="onlineTabs">
         <div class="tab complete">1: Applicant Details</div>
-        @if(isset($user) && $user->studentType !== "NSFAS") 
-            <div class="tab complete">2: @if(isset($user) && $user->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
+        @if(isset($userNew) && $userNew->studentType !== "NSFAS") 
+            <div class="tab complete">2: @if(isset($userNew) && $userNew->studentType == "Bursary") Burser @else Sponsor @endif Information</div>
             <div class="tab active">3: Next of Kin</div>
             <div class="tab">4: Upload Documents</div>
             <div class="tab">5: Pay Booking Fee</div>
