@@ -440,6 +440,165 @@ class LookupsController extends Controller {
         }
     }
 
+    public function download_bed_codes(Request $request){
+        $property = $request->property;
+        $year = $request->year;
+        $this_year = Lookups::where('group_id', '4')->first();
+        $institutions = Lookups::where('group_id', '1')->first();
+        $faculties = Lookups::where('group_id', '3')->first();
+
+        $query = "";
+
+        if($property !== "All"){
+            $query .= "where pd.residence = '".$property."'";
+        }
+
+        if($year !== "All"){
+
+            if($year == "current"){
+                $yearSearch = $this_year->lookup_name;
+            }else{
+                $yearSearch = floatval($this_year->lookup_name) + 1;
+            }
+
+            if($query !== ""){
+                $query .= "and (pd.year_end = '0' or pd.year_end = '".$yearSearch."') ";
+            }else{
+                $query .= "where (pd.year_end = '0' or pd.year_end = '".$yearSearch."') ";
+            }
+        }
+
+        $beds = [
+			['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>TENANT CODE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER</b>' , '<b>GENDER</b>' , '<b>STUDENT</b>' , '<b>BURSAR COMPANY</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>RELATIONSHIP</b>', '<b>NEXT OF KIN CONTACT</b>'],
+		];
+
+        $waitlist = [
+			['<b>RESIDENCE</b>', '<b>ROOM TYPE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER</b>' , '<b>GENDER</b>' , '<b>STUDENT</b>' , '<b>BURSAR COMPANY</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>RELATIONSHIP</b>', '<b>NEXT OF KIN CONTACT</b>'],
+		];
+
+        if($property !== "All"){
+            if($year !== "All"){
+                $allBookingsThisYear = Booking::where('year', $yearSearch)->where('property_data_id', null)->where('property', $property)->get();
+            }else{
+                $allBookingsThisYear = Booking::where('property_data_id', null)->where('property', $property)->get();
+            }
+        }else{
+            if($year !== "All"){
+                $allBookingsThisYear = Booking::where('year', $yearSearch)->where('property_data_id', null)->get();
+            }else{
+                $allBookingsThisYear = Booking::where('property_data_id', null)->get();
+            }
+        }
+
+        foreach($allBookingsThisYear as $booking){
+            $property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $room = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+            $user = StudentsInfo::where('bookingId', $booking->id)->orderBy('year', 'desc')->first();
+
+            if(!empty($user)){
+
+                $first_name = $user->userFirstName;
+                $last_name = $user->userLastname;
+                $email = $user->userEmail;
+                $cell = $user->userCellCode.$user->userCell;
+                $nationality = $user->userNationality;
+                $id = $user->userId;
+                $gender = "";
+                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
+                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
+                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
+                $studNumber = $user->studentNo;
+                $yearOfStudy = $user->yearOfStudy;
+                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
+                $kinName = $user->kinFirstName." ".$user->kinLastname;
+                $relationship = $user->kinRelationship;
+                $kinContact = $user->kincellCode.$user->kinCellNo;
+    
+                $list = [$property, $room, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $relationship, $kinContact];
+                array_push($waitlist, $list);
+            }
+        }
+
+        $allBeds = DB::select('SELECT pd.id, p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id '.$query.' ORDER BY pd.residence');
+
+        foreach($allBeds as $bed){
+            if($bed->inventory == '1'){
+                $bed->inventory = "Yes";
+            }else{
+                $bed->inventory = "No";
+            }
+
+            $booking = Booking::where('property_data_id', $bed->id)->where('year', $yearSearch)->first();
+
+            if(!empty($booking)){
+                $user = StudentsInfo::where('bookingId', $booking->id)->where('year', $yearSearch)->first();
+
+                $booking_ref = $booking->booking_code;
+                $first_name = $user->userFirstName;
+                $last_name = $user->userLastname;
+                $email = $user->userEmail;
+                $cell = $user->userCellCode.$user->userCell;
+                $nationality = $user->userNationality;
+                $id = $user->userId;
+                $gender = "";
+                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
+                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
+                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
+                $studNumber = $user->studentNo;
+                $yearOfStudy = $user->yearOfStudy;
+                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
+                $kinName = $user->kinFirstName." ".$user->kinLastname;
+                $relationship = $user->kinRelationship;
+                $kinContact = $user->kincellCode.$user->kinCellNo;
+                
+            }else{
+                $booking_ref = "";
+                $first_name = "";
+                $last_name = "";
+                $email = "";
+                $cell = "";
+                $nationality = "";
+                $id = "";
+                $gender = "";
+                $studentType = "";
+                $bursarCompany = "";
+                $instit = "";
+                $studNumber = "";
+                $yearOfStudy = "";
+                $faculty = "";
+                $kinName = "";
+                $relationship = "";
+                $kinContact = "";
+            }
+
+            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $bed->inventory, '', $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $relationship, $kinContact];
+            array_push($beds, $bed);
+        }
+
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
+		$xlsx->addSheet( $beds, 'BED CODES');
+        $xlsx->addSheet( $waitlist, 'WAITLIST');
+
+        $prop = Residence::where('id', $property)->pluck('residence')->first();
+
+        if($year !== "All"){
+            if($year == "current"){
+                $yearState = $this_year->lookup_name;
+            }else{
+                $yearState = floatval($this_year->lookup_name) + 1;
+            }
+
+            $downloadUrl = 'Bed_Allocations_Export_'.$yearState.'_'.$prop.'.xlsx';
+
+            $xlsx->saveAs('Bed_Allocations_Export_'.$yearState.'_'.$prop.'.xlsx');
+        }else{
+            $downloadUrl = 'System_Bed_Allocations_All_Years.xlsx';
+            $xlsx->saveAs('System_Bed_Allocations_All_Years.xlsx');
+        }
+
+		return $downloadUrl;
+    }
+
     public function download_beds(Request $request){
 
         $property = $request->property;

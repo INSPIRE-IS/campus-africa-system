@@ -10,6 +10,8 @@
     <br/>
     <button style="float: none;" type="button" id="exportAllBeds" class="detailsChange" >Export All beds</button>
     <div class="hidden"><a href="" download id="downloadLink"><button type="button" id="downloadBtn">Download</button></a></div>
+    <button style="float: none;" type="button" id="exportBeds" class="detailsChange" >Export Allocated Bed Codes & waitlist</button>
+    <div class="hidden"><a href="" download id="downloadLinkBed"><button type="button" id="downloadBtnBeds">Download</button></a></div>
     <a href="/room-types"><button type="button" class="detailsChange" >Room Types</button></a>
     <a href="/properties-info"><button type="button" class="detailsChange" >Residence Info</button></a>
     <a href="/property/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
@@ -265,6 +267,26 @@
             },
         });
 
+    })
+
+    $("#exportBeds").on('click', function(){
+        $("#exportBeds").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        
+        $.ajax({
+            type: "post",
+            url: "/download-bed-codes",
+            data: {
+                property: $("#property").val(),
+                year: $("#year").val(),
+            },
+
+            success: function (data) {
+
+                $("#downloadLinkBed").attr("href", "/"+data)
+                $("#exportBeds").empty().append('Export Allocated Bed Codes & waitlist')
+                $("#downloadBtnBeds").click();
+            },
+        });
     })
 </script>
 
