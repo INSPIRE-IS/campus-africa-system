@@ -265,25 +265,94 @@
                         <th>
                             <h2 class="appHeader bold" style="text-transform:uppercase;"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}}  @endif </h2>
                         </th>
-                        <th>Upfront</th>
+                        <th style="width:35%">Upfront</th>
                         <th>Monthly</th>
                         <th>Total</th>
                     </tr>
                     <tr>
                         <td>Booking Fee</td>
-                        <td>@if($paymentBooking->booking_fee != '0') R {{$paymentBooking->booking_fee}} @else - @endif</td>
+                        <td class="flex">
+                            <div style="width:85px;" id="booking_info">
+                                @if($paymentBooking->booking_fee_waived == '0')
+                                    @if($paymentBooking->booking_fee != '0') R {{$paymentBooking->booking_fee}} @else - @endif 
+                                @else
+                                    @if($paymentBooking->rob_b_waived == '2') &#128994; @else &#128993; @endif
+                                    <span style="color:red; padding-right:5px;">Waived</span>
+                                @endif
+                            </div>
+                            @if(Auth::user()->role_waive_fee == '1')
+                                <div id="booking_btns">
+                                    @if($paymentBooking->booking_fee_waived == '0')
+                                    <button type="button" class="waiveBtn" onClick="waive('rob_b_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'reason_booking_fee', 'booking_fee_waived', 'Booking fee')">Waive</button>
+                                    @else
+                                        @if($paymentBooking->rob_b_waived == '2')
+                                            <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_b_waived', '{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'Booking fee', 'reason_booking_fee_reject', 'booking_fee_waived')">Change</button>
+                                        @else
+                                            <button type="button" class="waiveAprv" onClick="ActionWaiveAprv('rob_b_waived', '{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'Booking fee')">Approve</button>
+                                            <button type="button" class="waiveRej" onClick="ActionWaiveRej('rob_b_waived', '{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'Booking fee', 'reason_booking_fee_reject', 'booking_fee_waived')">Reject</button>
+                                        @endif
+                                    @endif
+                                </div>
+                            @endif
+                        </td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>Loan Admin Fee</td>
-                        <td>@if($paymentBooking->loan_admin_fee != '0') R {{$paymentBooking->loan_admin_fee}} @else - @endif</td>
+                        <td class="flex">
+                            <div style="width:85px;" id="loan_info">
+                                @if($paymentBooking->loan_admin_fee_waived == '0')
+                                    @if($paymentBooking->loan_admin_fee != '0') R {{$paymentBooking->loan_admin_fee}} @else - @endif
+                                @else
+                                    @if($paymentBooking->rob_loan_waived == '2') &#128994; @else &#128993; @endif
+                                    <span style="color:red; padding-right:5px;">Waived</span>
+                                @endif
+                            </div>
+                            @if(Auth::user()->role_waive_fee == '1')
+                                <div id="loan_btns">
+                                    @if($paymentBooking->loan_admin_fee_waived == '0')
+                                        <button type="button" class="waiveBtn" onClick="waive('rob_loan_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'reason_admin_fee', 'loan_admin_fee_waived', 'Loan Admin fee')">Waive</button>
+                                    @else
+                                        @if($paymentBooking->rob_loan_waived == '2')
+                                            <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_loan_waived', '{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'Loan Admin fee', 'reason_admin_fee_reject', 'loan_admin_fee_waived')">Change</button>
+                                        @else
+                                            <button type="button" class="waiveAprv" onClick="ActionWaiveAprv('rob_loan_waived', '{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'Loan Admin fee')">Approve</button>
+                                            <button type="button" class="waiveRej" onClick="ActionWaiveRej('rob_loan_waived', '{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'Loan Admin fee', 'reason_admin_fee_reject', 'loan_admin_fee_waived')">Reject</button>
+                                        @endif
+                                    @endif
+                                </div>
+                            @endif
+                        </td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>Deposit</td>
-                        <td>@if($paymentBooking->deposit != '0') R {{$paymentBooking->deposit}} @else - @endif</td>
+                        <td class="flex">
+                            <div style="width:85px;" id="deposit_info"> 
+                                @if($paymentBooking->deposit_waived == '0')
+                                    @if($paymentBooking->deposit != '0') R {{$paymentBooking->deposit}} @else - @endif
+                                @else
+                                @if($paymentBooking->rob_deposit_waived == '2') &#128994; @else &#128993; @endif
+                                    <span style="color:red; padding-right:5px;">Waived</span>
+                                @endif
+                            </div>
+                            @if(Auth::user()->role_waive_fee == '1')
+                                <div id="deposit_btns">
+                                    @if($paymentBooking->deposit_waived == '0')
+                                        <button type="button" class="waiveBtn" onClick="waive('rob_deposit_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'reason_deposit', 'deposit_waived', 'Deposit')">Waive</button>
+                                    @else
+                                        @if($paymentBooking->rob_deposit_waived == '2')
+                                            <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_deposit_waived', '{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'Deposit', 'reason_deposit_reject', 'deposit_waived')">Change</button>
+                                        @else
+                                            <button type="button" class="waiveAprv" onClick="ActionWaiveAprv('rob_deposit_waived', '{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'Deposit')">Approve</button>
+                                            <button type="button" class="waiveRej" onClick="ActionWaiveRej('rob_deposit_waived', '{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'Deposit', 'reason_deposit_reject', 'deposit_waived')">Reject</button>
+                                        @endif
+                                    @endif
+                                </div>
+                            @endif
+                        </td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -306,6 +375,7 @@
                         <td>@if($paymentBooking->total_top_up != '0') R {{$paymentBooking->total_top_up}} @else - @endif</td>
                     </tr>
                 </table>
+                <button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Generate Pro Forma Invoice</button>
                         
 
 
@@ -905,6 +975,9 @@
     </div>
 </div>
 
+<div class="hidden">
+<a href="/storage/test.pdf" download><button type="button" id="downloadBtn">Download</button></a></hidden>
+
 <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
@@ -977,6 +1050,25 @@
             })
     }
 
+    function generateInvoice(paymentId, bookingId, userId){
+        $.ajax({
+            type: "post",
+            url: "/download-invoice",
+            data: {
+                paymentId: paymentId, 
+                bookingId: bookingId, 
+                userId: userId, 
+            },
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                $("#downloadBtn").click();
+            },
+        });
+    }
+
     function changeNsfsBursar(userId, bursar){
 
         if(bursar == 1){
@@ -1010,6 +1102,7 @@
             }
         });
     }
+    
     
     $("#updateProfileStatus").on('click', function(){
         $("#updateProfileStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -1080,38 +1173,6 @@
 
     // MainAppSection
     function checkUserStatus(){
-
-        $(".waitve_btn").empty();
-
-        if($("#booking_fee_paid").val() == 'false'){
-            if(("{{Auth::user()->role_modify_approved}}" == 1 && "{{$user[0]['userInfo']['rob_50_approve']}}" == 2 && "{{Auth::user()->role_waive_fee}}" == 1) || ("{{$user[0]['userInfo']['rob_60_cancelled']}}" == 0 &&  "{{$user[0]['userInfo']['rob_50_approve']}}" != 2 && "{{Auth::user()->role_waive_fee}}" == 1)){
-                if($("#booking_fee_waived").val() == 'false'){
-                    $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Waive Booking Fee</button>')
-                }else{
-                    $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['id']}}\')">Undo Booking Fee Waiver </button>')
-                }
-            }
-        }
-
-        $(".waived_paid_wording").empty();
-
-        if($("#booking_fee_waived").val() == 'true'){
-            $(".waived_paid_wording").append('Waived')
-        }else if($("#booking_fee_waived").val() == '0'){
-            $(".waived_paid_wording").append('Yes, no booking fee')
-        }else{
-            <?php foreach($user[0]["files"] as $file){ 
-                if($file["field"] === "proof_of_payment"){
-                    if($file["status"] === "XApproved" || $file["status"] === "Approved"){
-                        ?>$(".waived_paid_wording").append('Yes')<?php
-                    }else{
-                        ?>$(".waived_paid_wording").append('No')<?php
-                        break;
-                    }
-                }
-            }?>
-        }
-        
 
         if($("#kin_approved").val() == "1"){
             $("#rejectedKin").addClass('hidden')
@@ -3081,8 +3142,192 @@
         })
     }
 
-    function waiveBookingFee(userId){
-        $("#waiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+    function ActionWaiveRej(changeField, bookingId, updateField1, updateField2, textChange, rejField, field){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to reject this waiver",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, reject it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swal.fire({
+                    title: 'Reason for rejecting the waiver',
+                    input: 'text',
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    showLoaderOnConfirm: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "post",
+                            url: "/waive-info-reject",
+                            data: {
+                                changeField: changeField,
+                                bookingId: bookingId,
+                                textChange: textChange,
+                                userId: "{{$user[0]['userInfo']['id']}}",
+                                rejField: rejField,
+                                reason: result.value,
+                                field: field,
+                            },
+
+                            success: function (data) {
+                                if(changeField == "rob_b_waived"){
+                                    var value = data.booking_fee == '0' ? '-' : "R "+data.booking_fee
+                                    var reason = "reason_booking_fee"
+                                    var waived = "booking_fee_waived"
+                                    var wording = "Booking Fee"
+
+                                    $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
+
+                                    <?php if(Auth::user()->role_upload_docs == 1){ ?>
+
+                                        let uploadbtn = '<label onClick="paymentRef()" id="{{$file['field']}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label>';
+                                        $("#proof_of_paymentBanner").empty().append(uploadbtn);
+
+
+                                    <?php } ?>
+
+                                }else if(changeField == "rob_loan_waived"){
+                                    var value = data.loan_admin_fee == '0' ? '-' : "R "+data.loan_admin_fee
+                                    var reason = "reason_admin_fee"
+                                    var waived = "loan_admin_fee_waived"
+                                    var wording = "Loan Admin Fee"
+                                }else{
+                                    var value = data.deposit == '0' ? '-' : "R "+data.deposit
+                                    var reason = "reason_deposit"
+                                    var waived = "deposit_waived"
+                                    var wording = "Deposit"
+                                }
+
+                                $("#"+updateField1).empty().append(value)
+                                $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="waive(\''+changeField+'\', \'{{$user[0]['userInfo']['id']}}\',\'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+reason+'\', \''+waived+'\', \''+wording+'\')">Waive</button>')
+
+                                
+
+                                refreshActions();  
+                                checkUserStatus();
+                            },
+                        });   
+                    }
+                })
+            }
+        })
+    }
+
+    function ActionWaiveAprv(changeField, bookingId, updateField1, updateField2, textChange){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to approve this waiver",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, waive it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "post",
+                    url: "/waive-info",
+                    data: {
+                        changeField: changeField,
+                        bookingId: bookingId,
+                        textChange: textChange,
+                        userId: "{{$user[0]['userInfo']['id']}}",
+                    },
+
+                    success: function (data) {
+
+                        if(changeField == "rob_b_waived"){
+                            var rej = "reason_booking_fee_reject"
+                            var waived = "booking_fee_waived"
+                            var wording = "Booking Fee"
+
+                            $("#proof_of_paymentStatus").empty().append('<div class="button approved"></div>');
+                            var button = '<button type="button" onClick="btn_view_document_ajax('+data+')">View Document</button>';
+                            $("#proof_of_paymentBanner").empty().append(button);
+
+                        }else if(changeField == "rob_loan_waived"){
+                            var rej = "reason_admin_fee_reject"
+                            var waived = "loan_admin_fee_waived"
+                            var wording = "Loan Admin Fee"
+                        }else{
+                            var waived = "deposit_waived"
+                            var wording = "Deposit"
+                            var rej = "reason_deposit_reject"
+                        }
+
+                        $("#"+updateField1).empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
+                        $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+wording+'\', \''+rej+'\', \''+waived+'\')">Change</button>')
+
+
+                        refreshActions();  
+                        checkUserStatus();
+                    },
+                });   
+            }
+        })
+    }
+
+    function waive(changeField, userId, bookingId, changeField1, changeField2, reasonField, waiveField, textChange){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to waive this fee",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, waive it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swal.fire({
+                    title: 'Reason for waiving the fee',
+                    input: 'text',
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    showLoaderOnConfirm: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "post",
+                            url: "/waive-fee-request",
+                            data: {
+                                changeField: changeField,
+                                bookingId: bookingId,
+                                userId: userId,
+                                reason: result.value,
+                                reasonField: reasonField,
+                                waiveField: waiveField,
+                                textChange: textChange,
+                            },
+
+                            success: function (data) {
+
+                                $("#"+changeField1).empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
+                                $("#"+changeField2).empty().append('<button type="button" class="waiveAprv" onClick="ActionWaiveAprv(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\')">Approve</button><button type="button" class="waiveRej" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\', \''+reasonField+'_reject\', \''+waiveField+'\')">Reject</button>')
+
+                                
+                                refreshActions();  
+                                checkUserStatus();
+                            },
+                        });
+                    }
+                })
+            }
+        })
+    }
+
+    function waiveBookingFee(userId, bookingId){
+        // $("#waiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
         Swal.fire({
             title: 'Are you sure?',
@@ -3109,6 +3354,7 @@
                             type: "post",
                             url: "/waive-booking-fee",
                             data: {
+                                bookingId: bookingId,
                                 userId: userId,
                                 reason: result.value
                             },
@@ -3122,7 +3368,9 @@
                                 $("#proof_of_paymentBanner").empty().append(button);
 
                     
-                                $("#booking_fee_waived").val('true');
+                                // $("#booking_fee_waived").val('true');
+                                $("#booking_info").empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
+                                $("#booking_btns").empty().append('');
                                 refreshActions();  
                                 checkUserStatus();
                             },

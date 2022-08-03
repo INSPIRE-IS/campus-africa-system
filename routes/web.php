@@ -13,6 +13,7 @@ use App\Http\Controllers\LeaseController;
 use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\OnlinePaymentController;
+use App\http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -171,6 +172,11 @@ Route::get('/import/newData', [HomeController::class, 'new_import_data']);
 Route::get('/download/docs/{id}', [HomeController::class, 'download_docs']);
 Route::post('/waive-booking-fee', [HomeController::class, 'waive_booking_fee']);
 Route::post('/undo-waive-booking-fee', [HomeController::class, 'undo_waive_booking_fee']);
+
+Route::post("/waive-info", [HomeController::class, 'waive_action']);
+Route::post("/waive-fee-request", [HomeController::class, 'waive_request']);
+Route::post("/waive-info-reject", [HomeController::class, 'waive_reject']);
+Route::post("/download-invoice", [InvoiceController::class, 'generate']);
 
 Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees']);
 Route::get('/update/nsfas', [HomeController::class, 'update_nsfas']);

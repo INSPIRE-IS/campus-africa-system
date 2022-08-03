@@ -26,6 +26,12 @@ class BookingPayment extends Model
         'monthly_rental_total',
         'total_funded',
         'total_top_up',
+        'reason_booking_fee',
+        'reason_admin_fee',
+        'reason_deposit',
+        'reason_booking_fee_reject',
+        'reason_admin_fee_reject',
+        'reason_deposit_reject'
     ];
 
     public function booking(){

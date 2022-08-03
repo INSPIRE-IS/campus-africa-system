@@ -4798,9 +4798,190 @@ class HomeController extends Controller
 
     }
 
+    public function waive_action(Request $request){
+        BookingPayment::where('bookingId', $request->bookingId)->update([$request->changeField => 2]);
+
+        if($request->changeField == "rob_b_waived"){
+            $payment = BookingPayment::where('bookingId', $request->bookingId)->first();
+            $booking = Booking::where('id', $request->bookingId)->update(['room_rate' => '0', 'waive_reason' => $payment->reason_booking_fee]);
+
+            $file = UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->first();
+
+            if(!$file){
+                UserFiles::create([
+                    'userUid' => $request->userId,
+                    'fileId' => 'proof_of_payment',
+                    'status' => 'Approved'
+                ]);
+            }else{
+                UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->update([
+                    'status' => 'Approved'
+                ]);
+            }
+
+            User::where('id', $request->userId)->update(["rob_10_fee" => "2"]);
+        }
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Fee Waiver approved for ".$request->textChange,
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        return UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->pluck('id')->first();
+    }
+
+    public function waive_reject(Request $request){
+        BookingPayment::where('bookingId', $request->bookingId)->update([$request->changeField => 0, $request->rejField => $request->reason, $request->field => 0]);
+
+        if($request->changeField == "rob_b_waived"){
+
+            $lookup = Lookups::where('group_id', '7')->first();
+
+            $booking = Booking::where('userId', $request->userId)->first();
+
+            User::where('id', $request->userId)->update(["rob_10_fee" => "0"]);
+
+            $booking_data = [];
+
+            $roomTypeNewId = $booking->roomType;
+
+            $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $request->roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+
+            
+            $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
+            $roomTypeId = $roomTypeData->room_map_slug;
+
+            $allResidences = Residence::get();
+            $allRoomTypes = RoomTypes::get();
+
+
+            if($lookup && $lookup->lookup_name == "1"){
+                $booking_data['room_rate'] = "0";
+            }else{
+                //Get residences from WP
+                $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+                $residenceId = "";
+
+                foreach($jsonDataResidence as $residence){
+                    if($residence->title->rendered == $booking->property){
+                        //get room booking fee from residence (WP)
+                        $booking_data['room_rate'] = $residence->acf->booking_fee;
+                        //get residence ID (WP)
+                        $residenceId = $residence->id;
+                    }
+                }
+
+                $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+
+                $roomType = "";
+                $roomName = "";
+
+                foreach($jsonDataRooms as $room){
+                    if($residenceId == $room->acf->residence){
+
+
+                        if($room->id == $roomTypeId){
+                            $roomType = $request->roomType;
+                            $roomName = $room->slug;
+
+                            $appliesTo = $room->acf->booking_fee_applies_to;
+
+                            if($room->slug == $roomName && $roomType == $request->roomType){
+
+                                if($room->acf->booking_fee_override !== ""){
+                                    $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                                }
+
+                                if($booking->studentType == "NSFAS"){
+                                    if(!in_array("NSFAS Students", $appliesTo)){
+                                        $booking_data['room_rate'] = "0";
+                                    }
+                                }
+
+                                if($booking->studentType == "Bursary"){
+                                    if(!in_array("Bursary Students", $appliesTo)){
+                                        $booking_data['room_rate'] = "0";
+                                    }
+                                }
+
+                                if($booking->studentType == "Cash / Direct"){
+                                    if(!in_array("Cash Students", $appliesTo)){
+                                        $booking_data['room_rate'] = "0";
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+            }
+
+            if($roomTypeData->pull_price == null){
+                $booking_data['room_rate'] = $roomTypeData->booking_price;
+            
+                if($user->studentType == "NSFAS"){
+                    if($roomTypeData->apply_nsfas == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            
+                if($user->studentType == "Bursary"){
+                    if($roomTypeData->apply_bursary == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            
+                if($user->studentType == "Cash / Direct"){
+                    if($roomTypeData->apply_cash == null){
+                        $booking_data['room_rate'] = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            }
+
+            $booking = Booking::where('userId', $request->userId)->update($booking_data);
+
+            UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->update([
+                'status' => 'Rejected'
+            ]);
+
+            BookingPayment::where('bookingId', $request->bookingId)->update(["booking_fee" => $booking_data['room_rate']]);
+        }
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Fee Waiver rejected for ".$request->textChange." with reason: ".$request->reason,
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+
+        return BookingPayment::where('bookingId', $request->bookingId)->first();
+    }
+
+    public function waive_request(Request $request){
+        BookingPayment::where('bookingId', $request->bookingId)->update([$request->waiveField => 1, $request->changeField => 1, $request->reasonField => $request->reason]);
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Fee Waiver requested for ".$request->textChange." with reason: ".$request->reason,
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+        ]);
+        
+    }
+
     public function waive_booking_fee(Request $request){
         
-        $booking = Booking::where('userId', $request->userId)->update(['room_rate' => '0', 'waive_reason' => $request->reason]);
+        $booking = Booking::where('id', $request->bookingId)->update(['room_rate' => '0', 'waive_reason' => $request->reason]);
+        BookingPayment::where('bookingId', $request->bookingId)->update(['booking_fee_waived' => 1, 'rob_b_waived' => 1]);
 
         $file = UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->first();
 
@@ -4871,7 +5052,6 @@ class HomeController extends Controller
             }
 
             $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
-            // dd($jsonDataRooms);
 
             $roomType = "";
             $roomName = "";
@@ -4879,25 +5059,6 @@ class HomeController extends Controller
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
-                    // $slugString = str_replace("-", " ", $room->slug);
-                    // $roomType = "";
-                    // $roomName = "";
-
-                    // foreach($allResidences as $residence){
-                    //     if(strtoupper($booking->property) == strtoupper($residence->residence)){
-                    //         $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                    //         $requiredName = $request->roomType;
-
-                    //         foreach($jsonDataRooms as $roomInfo){
-                    //             if($residenceId == $roomInfo->acf->residence){
-                    //                 if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($request->roomType)){
-                    //                     $roomType = $request->roomType;
-                    //                     $roomName = $roomInfo->slug;
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
 
                     if($room->id == $roomTypeId){
                         $roomType = $request->roomType;
@@ -4930,110 +5091,6 @@ class HomeController extends Controller
                             }
                         }
                     }
-
-                    // if($booking->property == "YMCA"){
-                    //     if($room->slug == "ymca-3-sharing"){
-                    //         $roomType = "3 Sharing";
-                    //         $roomName = "ymca-3-sharing";
-                    //     }
-                    //     if($room->slug == "ymca-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "ymca-2-sharing";
-                    //     }
-                    //     if($room->slug == "ymca-single-room-large"){
-                    //         $roomType = "Single Large";
-                    //         $roomName = "ymca-single-room-large";
-                    //     }
-                    //     if($room->slug == "ymca-single-room-medium"){
-                    //         $roomType = "Single Medium";
-                    //         $roomName = "ymca-single-room-medium";
-                    //     }
-                    //     if($room->slug == "ymca-single-room-small"){
-                    //         $roomType = "Single Small";
-                    //         $roomName = "ymca-single-room-small";
-                    //     }
-                    // }
-
-                    // if($booking->property == "126 Siemert"){
-                    //     if($room->slug == "126-siemert-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "126-siemert-single-room";
-                    //     }
-                    //     if($room->slug == "126-siemert-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "126-siemert-2-sharing";
-                    //     }
-                    // }
-
-                    // if($booking->property == "Wynton Joy"){
-                    //     if($room->slug == "wynton-joy-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "wynton-joy-single-room";
-                    //     }
-                    //     if($room->slug == "wynton-joy-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "wynton-joy-2-sharing";
-                    //     }
-                    // }
-
-                    // if($booking->property == "Dunvista Mansions"){
-                    //     if($room->slug == "dunvista-mansions-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "dunvista-mansions-single-room";
-                    //     }
-                    //     if($room->slug == "dunvista-mansions-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "dunvista-mansions-2-sharing";
-                    //     }
-                    // }
-
-                    // if($booking->property == "49 Jorissen"){
-                    //     if($room->slug == "49-jorissen-single-room-2-bedroom-apartment"){
-                    //         $roomType = "Single 2 bedroom";
-                    //         $roomName = "49-jorissen-single-room-2-bedroom-apartment";
-                    //     }
-                    //     if($room->slug == "49-jorissen-single-room-3-bedroom-apartment"){
-                    //         $roomType = "Single 3 bedroom";
-                    //         $roomName = "49-jorissen-single-room-3-bedroom-apartment";
-                    //     }
-                    //     if($room->slug == "49-jorissen-single-room-4-bedroom-apartment"){
-                    //         $roomType = "Single 4 bedroom";
-                    //         $roomName = "49-jorissen-single-room-4-bedroom-apartment";
-                    //     }
-                    //     if($room->slug == "49-jorissen-2-sharing-hotel"){
-                    //         $roomType = "2 Sharing 2 Bedroom | 2 Sharing";
-                    //         $roomName = "49-jorissen-2-sharing-hotel";
-                    //     }
-                    // }
-
-                    // if($booking->property == "80 Jorissen"){
-                    //     if($room->slug == "80-jorissen-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "80-jorissen-single-room";
-                    //     }
-                    //     if($room->slug == "80-jorissen-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "80-jorissen-2-sharing";
-                    //     }
-                    // }
-
-                    // if($booking->property == "Braamlofts"){
-                    //     if($room->slug == "braamlofts-single-room"){
-                    //         $roomType = "Single";
-                    //         $roomName = "braamlofts-single-room";
-                    //     }
-                    //     if($room->slug == "braamlofts-2-sharing"){
-                    //         $roomType = "2 Sharing";
-                    //         $roomName = "braamlofts-2-sharing";
-                    //     }
-                    //     if($room->slug == "braamlofts-3-sharing"){
-                    //         $roomType = "3 Sharing";
-                    //         $roomName = "braamlofts-3-sharing";
-                    //     }
-                    // }
-
-                    
-
                     
                 }
             }

@@ -2048,6 +2048,37 @@ input:read-only {
   font-weight:bold;
 }
 
+.waiveBtn{
+  background-color: lightgray;
+  padding: 2px;
+  border: none;
+  cursor: pointer;
+}
+.waiveAprv{
+  background-color: #1cb915;
+  color: #fff;
+  border: none;
+  padding: 3px;
+  cursor: pointer;
+}
+.waiveRej{
+  background-color: #e74f26;
+  color: #fff;
+  border: none;
+  padding: 3px;
+  cursor: pointer;
+}
+.generatePdf{
+  padding: 10px;
+  float: right;
+  margin-top: 30px;
+  background-color: #1cb915;
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+}
+
+
 @media only screen and (max-width: 850px) {
 
   .bookingDashCard{
