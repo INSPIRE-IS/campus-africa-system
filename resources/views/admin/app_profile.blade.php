@@ -257,28 +257,79 @@
 
             <div class="customWhiteCard">
                 <!-- <button type="button" class="reminder">Send reminder</button> -->
-                <h2 class="appSubHeader bold">PAYMENT TYPE </h2>
-                <p class="appSubHeader">
+                <!-- <h2 class="appSubHeader bold">PAYMENT TYPE </h2> -->
+               
+
+                <table style="width:100%; text-align:left">
+                    <tr>
+                        <th>
+                            <h2 class="appHeader bold" style="text-transform:uppercase;"> @if($user[0]['userInfo']['studentType'] == "Cash / Direct") Cash @else {{$user[0]['userInfo']['studentType']}}  @endif </h2>
+                        </th>
+                        <th>Upfront</th>
+                        <th>Monthly</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <td>Booking Fee</td>
+                        <td>@if($paymentBooking->booking_fee != '0') R {{$paymentBooking->booking_fee}} @else - @endif</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Loan Admin Fee</td>
+                        <td>@if($paymentBooking->loan_admin_fee != '0') R {{$paymentBooking->loan_admin_fee}} @else - @endif</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Deposit</td>
+                        <td>@if($paymentBooking->deposit != '0') R {{$paymentBooking->deposit}} @else - @endif</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Rental</td>
+                        <td></td>
+                        <td>R {{$paymentBooking->monthly_rental}}</td>
+                        <td>R {{$paymentBooking->monthly_rental_total}}</td>
+                    </tr>
+                    <tr>
+                        <td>Funded</td>
+                        <td></td>
+                        <td></td>
+                        <td>@if($paymentBooking->total_funded != '0') R {{$paymentBooking->total_funded}} @else - @endif</td>
+                    </tr>
+                    <tr>
+                        <td>Top-Up</td>
+                        <td></td>
+                        <td></td>
+                        <td>@if($paymentBooking->total_top_up != '0') R {{$paymentBooking->total_top_up}} @else - @endif</td>
+                    </tr>
+                </table>
+                        
+
+
+                <!-- <p class="appSubHeader">
                     <div class="burPaymentDetails"></div>
                 </p>
-                <br/>
+                <br/> -->
 
-                <h2 class="appSubHeader bold">BOOKING FEE</h2>
-                <p class="appSubHeader">
+                <!-- <h2 class="appSubHeader bold">BOOKING FEE</h2> -->
+                <!-- <p class="appSubHeader"> -->
                     <!-- @if($residence !== null && $user[0]['userInfo']['studentType'] == "NSFAS") R {{$residence->nsfas_booking_rate}} @endif
                     @if($residence !== null && $user[0]['userInfo']['studentType'] == "Bursary") R {{$residence->bursary_booking_rate}} @endif
                     @if($residence !== null && $user[0]['userInfo']['studentType'] == "Cash / Direct") R {{$residence->booking_rate}} @endif -->
-                    R {{$booking->room_rate}}
-                </p>
-                <br/>
+                    <!-- R {{$booking->room_rate}} -->
+                <!-- </p> -->
+                <!-- <br/> -->
 
-                <h2 class="appSubHeader bold">PAID</h2>
+                <!-- <h2 class="appSubHeader bold">PAID</h2>
                 <p class="appSubHeader" id="paidOption">
-                <div class="waived_paid_wording"></div>
+                <div class="waived_paid_wording"></div> -->
                     
 
                     
-                </p>
+                <!-- </p> -->
             </div>
 
             <div class="customWhiteCard" id="documentsCard" style="margin-top:20px;">

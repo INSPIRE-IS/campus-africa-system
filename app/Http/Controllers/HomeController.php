@@ -27,6 +27,7 @@ use App\Models\UserLeaseToken;
 use App\Models\PropertyPermission;
 use Jenssegers\Agent\Agent;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
+use App\Models\BookingPayment;
 
 class HomeController extends Controller
 {
@@ -670,10 +671,12 @@ class HomeController extends Controller
             $buildingName = Residence::where('id', $booking->property)->pluck('residence')->first();
             $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
 
+            $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
 
             if(($userData[0]['userInfo']['rob_60_cancelled'] == '0' && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1'){
                 //
-                return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail]);
+                return view('admin.app_profile', ["headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail, "paymentBooking" => $paymentBooking]);
             }else{
                 return view('errors.studentView', ["headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName]);
             }
@@ -1827,6 +1830,8 @@ class HomeController extends Controller
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
 
+        $deposit = 0;
+
 
         if($lookup && $lookup->lookup_name == "1"){
             $booking_data['room_rate'] = "0";
@@ -1853,29 +1858,15 @@ class HomeController extends Controller
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
-                    // $slugString = str_replace("-", " ", $room->slug);
-                    // $roomType = "";
-                    // $roomName = "";
+                    // dd($room, $roomTypeId);
 
-                    if($room->id === $roomTypeId){
+
+                    if($room->id == $roomTypeId){
                         $roomType = $request->roomType;
                         $roomName = $room->slug;
-                        
-                        // foreach($allResidences as $residence){
-                        //     if(strtoupper($request->property) == strtoupper($residence->residence)){
-                        //         $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                        //         $requiredName = $request->roomType;
-    
-                        //         foreach($jsonDataRooms as $roomInfo){
-                        //             if($residenceId == $roomInfo->acf->residence){
-                        //                 if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($request->roomType)){
-                        //                     $roomType = $request->roomType;
-                        //                     $roomName = $roomInfo->slug;
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
+                        $deposit = $room->acf->price_from;
+
+                        // dd($room);
     
                         $appliesTo = $room->acf->booking_fee_applies_to;
     
@@ -1915,6 +1906,7 @@ class HomeController extends Controller
 
         if($roomTypeData && $roomTypeData->pull_price == null){
             $booking_data['room_rate'] = $roomTypeData->booking_price;
+            $deposit = $roomTypeData->rent_price;
 
             if($user->studentType == "NSFAS"){
                 if($roomTypeData->apply_nsfas == null){
@@ -1939,7 +1931,6 @@ class HomeController extends Controller
         }
         
 
-
         //Get default lease data for the booking
         $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
 
@@ -1949,6 +1940,28 @@ class HomeController extends Controller
         $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
 
         $booking = Booking::create($booking_data);
+
+        $admin_fee = Lookups::where('group_id', '8')->first();
+        // $admin_fee = $admin_fee->lookup_name;
+
+        // dd($admin_fee->lookup_name);
+
+        if(($user->studentType == "Cash / Direct") || ($user->studentType == "Bursary" && $user->nsfas_bursar !== 1)){
+            $admin_fee = $admin_fee->lookup_name;
+            $deposit = $deposit;
+        }else{
+            $deposit = 0;
+            $admin_fee = 0;
+        }
+
+        $ts1 = strtotime($booking_data['lease_from_date']);
+        $ts2 = strtotime($booking_data['lease_to_date']);
+        $month1 = date('m', $ts1);
+        $month2 = date('m', $ts2);
+        $diff = $month2 - $month1;
+        $yearly_rent = floatval($deposit) * floatval($diff);
+
+        BookingPayment::create(["bookingId" => $booking->id, "booking_fee" => $booking_data['room_rate'], "booking_fee_waived" => 0, "rob_b_waived" => 0, "loan_admin_fee" => $admin_fee, "loan_admin_fee_waived" => 0, "rob_loan_waived" => 0, "deposit" => floatval($deposit), "deposit_waived" => 0, "rob_deposit_waived" => 0, "monthly_rental" => $deposit, "monthly_rental_total" => $yearly_rent, "total_funded" => $yearly_rent, "total_top_up" => 0]);
 
         $bookingYear = substr($request->year, -2);
         $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
