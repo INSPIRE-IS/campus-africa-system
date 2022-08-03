@@ -13,7 +13,7 @@ use App\Http\Controllers\LeaseController;
 use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\OnlinePaymentController;
-use App\http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
