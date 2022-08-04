@@ -3104,7 +3104,7 @@ class HomeController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $booking = Booking::where('userId', $user->id)->orderBy('year', 'desc')->first();
+        $booking = Booking::where('userId', $user->userUid)->orderBy('year', 'desc')->first();
 
         return ["done", $emailValid, $idNumberValid, $user, $property, $booking, $this_year];
     }
