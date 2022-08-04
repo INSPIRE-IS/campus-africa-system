@@ -318,7 +318,9 @@
                             @if(Auth::user()->role_waive_fee == '1')
                                 <div id="booking_btns">
                                     @if($paymentBooking->booking_fee_waived == '0')
-                                    <button type="button" class="waiveBtn" onClick="waive('rob_b_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'reason_booking_fee', 'booking_fee_waived', 'Booking fee')">Waive</button>
+                                        @if($paymentBooking->booking_fee != '0')
+                                            <button type="button" class="waiveBtn" onClick="waive('rob_b_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'reason_booking_fee', 'booking_fee_waived', 'Booking fee')">Waive</button>
+                                        @endif
                                     @else
                                         @if($paymentBooking->rob_b_waived == '2')
                                             <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_b_waived', '{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'Booking fee', 'reason_booking_fee_reject', 'booking_fee_waived')">Change</button>
@@ -347,7 +349,9 @@
                             @if(Auth::user()->role_waive_fee == '1')
                                 <div id="loan_btns">
                                     @if($paymentBooking->loan_admin_fee_waived == '0')
-                                        <button type="button" class="waiveBtn" onClick="waive('rob_loan_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'reason_admin_fee', 'loan_admin_fee_waived', 'Loan Admin fee')">Waive</button>
+                                        @if($paymentBooking->loan_admin_fee != '0')
+                                            <button type="button" class="waiveBtn" onClick="waive('rob_loan_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'reason_admin_fee', 'loan_admin_fee_waived', 'Loan Admin fee')">Waive</button>
+                                        @endif
                                     @else
                                         @if($paymentBooking->rob_loan_waived == '2')
                                             <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_loan_waived', '{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'Loan Admin fee', 'reason_admin_fee_reject', 'loan_admin_fee_waived')">Change</button>
@@ -376,7 +380,9 @@
                             @if(Auth::user()->role_waive_fee == '1')
                                 <div id="deposit_btns">
                                     @if($paymentBooking->deposit_waived == '0')
-                                        <button type="button" class="waiveBtn" onClick="waive('rob_deposit_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'reason_deposit', 'deposit_waived', 'Deposit')">Waive</button>
+                                        @if($paymentBooking->deposit != '0')
+                                            <button type="button" class="waiveBtn" onClick="waive('rob_deposit_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'reason_deposit', 'deposit_waived', 'Deposit')">Waive</button>
+                                        @endif
                                     @else
                                         @if($paymentBooking->rob_deposit_waived == '2')
                                             <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_deposit_waived', '{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'Deposit', 'reason_deposit_reject', 'deposit_waived')">Change</button>

@@ -2207,10 +2207,12 @@ class HomeController extends Controller
 
         if(($user->studentType == "Cash / Direct") || ($user->studentType == "Bursary" && $user->nsfas_bursar !== 1)){
             $admin_fee = $admin_fee->lookup_name;
-            $deposit = $deposit;
+            $deposit = $monthly = $deposit;
         }else{
+            $monthly = $deposit;
             $deposit = 0;
             $admin_fee = 0;
+            
         }
 
         $ts1 = strtotime($booking_data['lease_from_date']);
@@ -2218,9 +2220,9 @@ class HomeController extends Controller
         $month1 = date('m', $ts1);
         $month2 = date('m', $ts2);
         $diff = $month2 - $month1;
-        $yearly_rent = floatval($deposit) * floatval($diff);
+        $yearly_rent = floatval($monthly) * floatval($diff);
 
-        BookingPayment::create(["bookingId" => $booking->id, "booking_fee" => $booking_data['room_rate'], "booking_fee_waived" => 0, "rob_b_waived" => 0, "loan_admin_fee" => $admin_fee, "loan_admin_fee_waived" => 0, "rob_loan_waived" => 0, "deposit" => floatval($deposit), "deposit_waived" => 0, "rob_deposit_waived" => 0, "monthly_rental" => $deposit, "monthly_rental_total" => $yearly_rent, "total_funded" => $yearly_rent, "total_top_up" => 0]);
+        BookingPayment::create(["bookingId" => $booking->id, "booking_fee" => $booking_data['room_rate'], "booking_fee_waived" => 0, "rob_b_waived" => 0, "loan_admin_fee" => $admin_fee, "loan_admin_fee_waived" => 0, "rob_loan_waived" => 0, "deposit" => floatval($deposit), "deposit_waived" => 0, "rob_deposit_waived" => 0, "monthly_rental" => $monthly, "monthly_rental_total" => $yearly_rent, "total_funded" => $yearly_rent, "total_top_up" => 0]);
 
         $bookingYear = substr($request->year, -2);
         $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
