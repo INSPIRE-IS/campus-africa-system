@@ -923,7 +923,7 @@
                             if(data[3]['rob_60_cancelled'] == '1'){
                                 $("#idNumber_InUse_cancelled").removeClass('hidden')
                                 $("#idNumber").addClass('fieldError')
-                                document.getElementById('toViewCancelled').href = "/application-profile/"+data[3]['id'];
+                                document.getElementById('toViewCancelled').href = "/application-profile/"+data[3]['userUid'];
                             }else{
 
                                 console.log(data)
@@ -933,7 +933,7 @@
                                 if(data[5]['year'] != data[6]){
                                     $("#idNumber_InUse_old").removeClass('hidden')
                                     $("#idNumber").addClass('fieldError')
-                                    document.getElementById('newBookingLink').href = "/application-profile/"+data[3]['id'];
+                                    document.getElementById('newBookingLink').href = "/application-profile/"+data[3]['userUid'];
                                     $("#idField").addClass('idHeight');
                                 }else{
                                     $("#idNumber_InUse_active").removeClass('hidden')
