@@ -160,7 +160,7 @@
                     <!-- <br/><span style='font-weight:bold'>Application Number:</span> #{{$user->bookingRef}} -->
                     <br/><span style='font-weight:bold'>Booking Reference:</span> #{{$booking->booking_code}}
                     <br/><span style='font-weight:bold'>Payment Type:</span> {{$booking->payment_type}}
-                    @if($booking->payment_type != "Manual EFT")
+                    @if($booking->payment_type == "Online EFT" || $booking->payment_type == "Credit/Debit Card")
                         <br/><span style='font-weight:bold'>Payment Method Detail:</span> {{$onlinePayment->payment_method_detail}}
                         <br/><span style='font-weight:bold'>Payment Status:</span> {{$onlinePayment->status}}
                         <br/><span style='font-weight:bold'>Payment Amount:</span> R {{$onlinePayment->payment_amount/100}}
@@ -216,7 +216,7 @@
                                 <option value="Manual EFT" <?php if($booking->payment_type == "Manual EFT"){echo "selected";}?>>Manual EFT</option>
                             </select>
                         </div>
-                        @if($booking->payment_type != "Manual EFT")
+                        @if($booking->payment_type == "Online EFT" || $booking->payment_type == "Credit/Debit Card")
                         <div class="form-field">
                             <span style='font-weight:bold'>Payment Status*</span>
                             <input class="disablededit required" name="payment_status" id="payment_status" disabled type="text" value="{{$onlinePayment->status}}">

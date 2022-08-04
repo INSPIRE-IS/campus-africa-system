@@ -288,7 +288,7 @@
                 $("#"+id).removeClass("required")
             })
             $("#bCompanyName").addClass("required")
-            $("#bRegistrationNo").addClass("required")
+            // $("#bRegistrationNo").addClass("required")
             $("#bContactPerson").addClass("required")
             $("#bContactNumber").addClass("required")
             $("#bEmail").addClass("required")
