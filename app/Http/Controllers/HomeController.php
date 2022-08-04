@@ -7503,9 +7503,10 @@ class HomeController extends Controller
         $cancelled = 0;
 
 
-        if($user->rob_60_cancelled == 1){
+        if($user->rob_60_cancelled == 1 || $user->year < $this_year - 1){
             $cancelled = 1;
         }
+        
 
         return view('admin.newBookingForm', ["headerTitle" => "New Booking", "title" => "new Booking", "user" => $user, "lookups" => $lookups, "PropertyList" => $allowed, "cancelled" => $cancelled]);
     }
