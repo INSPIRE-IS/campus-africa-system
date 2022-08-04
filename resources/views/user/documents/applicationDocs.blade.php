@@ -31,7 +31,7 @@
                       @elseif($file->fileId == 'proof_of_payment')
                         BOOKING FEE PROOF OF PAYMENT
                       @elseif($file->fileId == 'bursaryApproval')
-                        @if(Auth::user()->studentType == "NSFAS")
+                        @if($user->studentType == "NSFAS")
                           NSFAS APPROVAL
                         @else
                           BURSARY APPROVAL

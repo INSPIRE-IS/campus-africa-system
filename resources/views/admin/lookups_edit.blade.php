@@ -35,16 +35,122 @@
 
         @if($lookup->group_id == "4")
             <div class="form-field">
-                <label>Lease From Date</label>
-                <input type="date" name="lease_from_date" id="lease_from_date" value="{{$lookup->lease_from_date}}">
+                <div class="form-field">
+                    <label>Lease From Date (Month)</label>
+                    <select name="month_from" id='month_from'>
+                        <option value="0" disabled selected>Select one</option>
+                        <option value="1" <?php if($lookup->month_from == '1'){ echo "selected";} ?>>January</option>
+                        <option value="2" <?php if($lookup->month_from == '2'){ echo "selected";} ?>>February</option>
+                        <option value="3" <?php if($lookup->month_from == '3'){ echo "selected";} ?>>March</option>
+                        <option value="4" <?php if($lookup->month_from == '4'){ echo "selected";} ?>>April</option>
+                        <option value="5" <?php if($lookup->month_from == '5'){ echo "selected";} ?>>May</option>
+                        <option value="6" <?php if($lookup->month_from == '6'){ echo "selected";} ?>>June</option>
+                        <option value="7" <?php if($lookup->month_from == '7'){ echo "selected";} ?>>July</option>
+                        <option value="8" <?php if($lookup->month_from == '8'){ echo "selected";} ?>>August</option>
+                        <option value="9" <?php if($lookup->month_from == '9'){ echo "selected";} ?>>September</option>
+                        <option value="10" <?php if($lookup->month_from == '10'){ echo "selected";} ?>>October</option>
+                        <option value="11" <?php if($lookup->month_from == '11'){ echo "selected";} ?>>November</option>
+                        <option value="12" <?php if($lookup->month_from == '12'){ echo "selected";} ?>>December</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Lease From Date (Day)</label>
+                    <select name="day_from" id='day_from'>
+                        <option value="0" disabled selected>Select one</option>
+                        <option value="1" <?php if($lookup->day_from == '1'){ echo "selected";} ?>>01</option>
+                        <option value="2" <?php if($lookup->day_from == '2'){ echo "selected";} ?>>02</option>
+                        <option value="3" <?php if($lookup->day_from == '3'){ echo "selected";} ?>>03</option>
+                        <option value="4" <?php if($lookup->day_from == '4'){ echo "selected";} ?>>04</option>
+                        <option value="5" <?php if($lookup->day_from == '5'){ echo "selected";} ?>>05</option>
+                        <option value="6" <?php if($lookup->day_from == '6'){ echo "selected";} ?>>06</option>
+                        <option value="7" <?php if($lookup->day_from == '7'){ echo "selected";} ?>>07</option>
+                        <option value="8" <?php if($lookup->day_from == '8'){ echo "selected";} ?>>08</option>
+                        <option value="9" <?php if($lookup->day_from == '9'){ echo "selected";} ?>>09</option>
+                        <option value="10" <?php if($lookup->day_from == '10'){ echo "selected";} ?>>10</option>
+                        <option value="11" <?php if($lookup->day_from == '11'){ echo "selected";} ?>>11</option>
+                        <option value="12" <?php if($lookup->day_from == '12'){ echo "selected";} ?>>12</option>
+                        <option value="13" <?php if($lookup->day_from == '13'){ echo "selected";} ?>>13</option>
+                        <option value="14" <?php if($lookup->day_from == '14'){ echo "selected";} ?>>14</option>
+                        <option value="15" <?php if($lookup->day_from == '15'){ echo "selected";} ?>>15</option>
+                        <option value="16" <?php if($lookup->day_from == '16'){ echo "selected";} ?>>16</option>
+                        <option value="17" <?php if($lookup->day_from == '17'){ echo "selected";} ?>>17</option>
+                        <option value="18" <?php if($lookup->day_from == '18'){ echo "selected";} ?>>18</option>
+                        <option value="19" <?php if($lookup->day_from == '19'){ echo "selected";} ?>>19</option>
+                        <option value="20" <?php if($lookup->day_from == '20'){ echo "selected";} ?>>20</option>
+                        <option value="21" <?php if($lookup->day_from == '21'){ echo "selected";} ?>>21</option>
+                        <option value="22" <?php if($lookup->day_from == '22'){ echo "selected";} ?>>22</option>
+                        <option value="23" <?php if($lookup->day_from == '23'){ echo "selected";} ?>>23</option>
+                        <option value="24" <?php if($lookup->day_from == '24'){ echo "selected";} ?>>24</option>
+                        <option value="25" <?php if($lookup->day_from == '25'){ echo "selected";} ?>>25</option>
+                        <option value="26" <?php if($lookup->day_from == '26'){ echo "selected";} ?>>26</option>
+                        <option value="27" <?php if($lookup->day_from == '27'){ echo "selected";} ?>>27</option>
+                        <option value="28" <?php if($lookup->day_from == '28'){ echo "selected";} ?>>28</option>
+                        <option value="29" <?php if($lookup->day_from == '29'){ echo "selected";} ?>>29</option>
+                        <option value="30" <?php if($lookup->day_from == '30'){ echo "selected";} ?>>30</option>
+                        <option value="31" <?php if($lookup->day_from == '31'){ echo "selected";} ?>>31</option>
+                    </select>
+                </div>
             </div>
             <div class="form-field">
                 <label>Lease From Time</label>
                 <input type="time" id="lease_from_time" name="lease_from_time" value="{{$lookup->lease_from_time}}">
             </div>
             <div class="form-field">
-                <label>Lease To Date</label>
-                <input type="date" name="lease_to_date" id="lease_to_date" value="{{$lookup->lease_to_date}}">
+                <div class="form-field">
+                    <label>Lease To Date (Month)</label>
+                    <select name="month_to" id='month_to'>
+                        <option value="0" disabled selected>Select one</option>
+                        <option value="1" <?php if($lookup->month_to == '1'){ echo "selected";} ?>>January</option>
+                        <option value="2" <?php if($lookup->month_to == '2'){ echo "selected";} ?>>February</option>
+                        <option value="3" <?php if($lookup->month_to == '3'){ echo "selected";} ?>>March</option>
+                        <option value="4" <?php if($lookup->month_to == '4'){ echo "selected";} ?>>April</option>
+                        <option value="5" <?php if($lookup->month_to == '5'){ echo "selected";} ?>>May</option>
+                        <option value="6" <?php if($lookup->month_to == '6'){ echo "selected";} ?>>June</option>
+                        <option value="7" <?php if($lookup->month_to == '7'){ echo "selected";} ?>>July</option>
+                        <option value="8" <?php if($lookup->month_to == '8'){ echo "selected";} ?>>August</option>
+                        <option value="9" <?php if($lookup->month_to == '9'){ echo "selected";} ?>>September</option>
+                        <option value="10" <?php if($lookup->month_to == '10'){ echo "selected";} ?>>October</option>
+                        <option value="11" <?php if($lookup->month_to == '11'){ echo "selected";} ?>>November</option>
+                        <option value="12" <?php if($lookup->month_to == '12'){ echo "selected";} ?>>December</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Lease To Date (Day)</label>
+                    <select name="day_to" id='day_to'>
+                        <option value="0" disabled selected>Select one</option>
+                        <option value="1" <?php if($lookup->day_to == '1'){ echo "selected";} ?>>01</option>
+                        <option value="2" <?php if($lookup->day_to == '2'){ echo "selected";} ?>>02</option>
+                        <option value="3" <?php if($lookup->day_to == '3'){ echo "selected";} ?>>03</option>
+                        <option value="4" <?php if($lookup->day_to == '4'){ echo "selected";} ?>>04</option>
+                        <option value="5" <?php if($lookup->day_to == '5'){ echo "selected";} ?>>05</option>
+                        <option value="6" <?php if($lookup->day_to == '6'){ echo "selected";} ?>>06</option>
+                        <option value="7" <?php if($lookup->day_to == '7'){ echo "selected";} ?>>07</option>
+                        <option value="8" <?php if($lookup->day_to == '8'){ echo "selected";} ?>>08</option>
+                        <option value="9" <?php if($lookup->day_to == '9'){ echo "selected";} ?>>09</option>
+                        <option value="10" <?php if($lookup->day_to == '10'){ echo "selected";} ?>>10</option>
+                        <option value="11" <?php if($lookup->day_to == '11'){ echo "selected";} ?>>11</option>
+                        <option value="12" <?php if($lookup->day_to == '12'){ echo "selected";} ?>>12</option>
+                        <option value="13" <?php if($lookup->day_to == '13'){ echo "selected";} ?>>13</option>
+                        <option value="14" <?php if($lookup->day_to == '14'){ echo "selected";} ?>>14</option>
+                        <option value="15" <?php if($lookup->day_to == '15'){ echo "selected";} ?>>15</option>
+                        <option value="16" <?php if($lookup->day_to == '16'){ echo "selected";} ?>>16</option>
+                        <option value="17" <?php if($lookup->day_to == '17'){ echo "selected";} ?>>17</option>
+                        <option value="18" <?php if($lookup->day_to == '18'){ echo "selected";} ?>>18</option>
+                        <option value="19" <?php if($lookup->day_to == '19'){ echo "selected";} ?>>19</option>
+                        <option value="20" <?php if($lookup->day_to == '20'){ echo "selected";} ?>>20</option>
+                        <option value="21" <?php if($lookup->day_to == '21'){ echo "selected";} ?>>21</option>
+                        <option value="22" <?php if($lookup->day_to == '22'){ echo "selected";} ?>>22</option>
+                        <option value="23" <?php if($lookup->day_to == '23'){ echo "selected";} ?>>23</option>
+                        <option value="24" <?php if($lookup->day_to == '24'){ echo "selected";} ?>>24</option>
+                        <option value="25" <?php if($lookup->day_to == '25'){ echo "selected";} ?>>25</option>
+                        <option value="26" <?php if($lookup->day_to == '26'){ echo "selected";} ?>>26</option>
+                        <option value="27" <?php if($lookup->day_to == '27'){ echo "selected";} ?>>27</option>
+                        <option value="28" <?php if($lookup->day_to == '28'){ echo "selected";} ?>>28</option>
+                        <option value="29" <?php if($lookup->day_to == '29'){ echo "selected";} ?>>29</option>
+                        <option value="30" <?php if($lookup->day_to == '30'){ echo "selected";} ?>>30</option>
+                        <option value="31" <?php if($lookup->day_to == '31'){ echo "selected";} ?>>31</option>
+                    </select>
+                </div>
             </div>
             <div class="form-field">
                 <label>Lease To Time</label>
@@ -116,36 +222,48 @@
 
     $("#submitLookup").on('click', function(){
         if($("#group_id").val() == "4"){
-            Swal.fire({
-                title: 'Update All Lease Dates',
-                text: "Apply this lease period to all existing (unapproved) applications as well?",
-                icon: 'warning',
-                showDenyButton: true,
-                denyButtonText: 'No',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $("#submitLookup").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-                    $.ajax({
-                        type: "post",
-                        url: "/update/lease-dates",
-                        data: {
-                            lease_from_date: $("#lease_from_date").val(),
-                            lease_from_time: $("#lease_from_time").val(),
-                            lease_to_date: $("#lease_to_date").val(),
-                            lease_to_time: $("#lease_to_time").val(),
-                        },
 
-                        success: function (data) {
-                            $('#lookupForm').submit();
-                        },
-                    });
-                } else if (result.isDenied) {
-                    $('#lookupForm').submit();
-                }
-            });
+            let yearInfo = <?php echo $year_lookup; ?>;
+            console.log(yearInfo)
+
+            if(yearInfo.lookup_name == $("#value").val() && (yearInfo.month_from !== $("#month_from").val() || yearInfo.day_from !== $("#day_from").val() || yearInfo.lease_from_time !== $("#lease_from_time").val() || yearInfo.month_to !== $("#month_to").val() || yearInfo.day_to !== $("#day_to").val() || yearInfo.lease_to_time !== $("#lease_to_time").val() )){
+                Swal.fire({
+                    title: 'Update All Lease Dates',
+                    text: "Apply this lease period to all existing (unapproved) applications as well?",
+                    icon: 'warning',
+                    showDenyButton: true,
+                    denyButtonText: 'No',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $("#submitLookup").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                        $.ajax({
+                            type: "post",
+                            url: "/update/lease-dates",
+                            data: {
+                                month_from: $("#month_from").val(),
+                                day_from: $("#day_from").val(),
+                                lease_from_time: $("#lease_from_time").val(),
+                                month_to: $("#month_to").val(),
+                                day_to: $("#day_to").val(),
+                                lease_to_time: $("#lease_to_time").val(),
+                                value: $("#value").val(),
+                            },
+
+                            success: function (data) {
+                                $('#lookupForm').submit();
+                            },
+                        });
+                    } else if (result.isDenied) {
+                        $('#lookupForm').submit();
+                    }
+                });
+            }else{
+                $('#lookupForm').submit();
+            }
+            
         }else{
             $('#lookupForm').submit();
         }

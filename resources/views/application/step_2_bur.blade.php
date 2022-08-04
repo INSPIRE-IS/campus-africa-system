@@ -437,9 +437,15 @@
 
                 $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
+                if("<?php echo $new;?>" == '1'){
+                    var urlLocation = "/new-booking-step-2-bur-save";
+                }else{
+                    var urlLocation = "/step-2-bur";
+                }
+
                 $.ajax({
                         type: "post",
-                        url: "/step-2-bur",
+                        url: urlLocation,
                         data: {
                             bCompanyName: $("#bCompanyName").val(), 
                             bRegistrationNo: $("#bRegistrationNo").val(), 

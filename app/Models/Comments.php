@@ -14,7 +14,8 @@ class Comments extends Model
     protected $fillable = [
         'user_uid',
         'comment',
-        'action_user_uid'
+        'action_user_uid',
+        'bookingId'
     ];
 
     public function users(){

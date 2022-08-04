@@ -33,6 +33,7 @@ class Booking extends Model
         'booking_code',
         'booking_payment_ref',
         'payment_type',
+        'cancelled',
     ];
 
     public function users(){

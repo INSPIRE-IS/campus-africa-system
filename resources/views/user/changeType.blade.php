@@ -6,7 +6,7 @@
 <div class="container form-card">
     
     
-    <form id="changeStudType" class="form onlineForm <?php if(Auth::user()->studentType == "NSFAS"){echo "nsfasSize";}elseif(Auth::user()->studentType == "Bursary"){echo "bursarySize";}else{echo "cashSize";} ?>" autocomplete="off">
+    <form id="changeStudType" class="form onlineForm <?php if($user->studentType == "NSFAS"){echo "nsfasSize";}elseif($user->studentType == "Bursary"){echo "bursarySize";}else{echo "cashSize";} ?>" autocomplete="off">
         <br/>
         <h1 class="formHeading">Complete the relevant information</h1>
         <br/>
@@ -15,9 +15,9 @@
             <label>Student Type * <span id="studentType_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="studentType" id='studentType' class="required">
                 <option value="" selected disabled>Select a Student Type</option>
-                <option value="NSFAS" <?php if(Auth::user()->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
-                <option value="Bursary" <?php if(Auth::user()->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
-                <option value="Cash / Direct" <?php if(Auth::user()->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
+                <option value="NSFAS" <?php if($user->studentType == "NSFAS"){echo "selected";} ?>>NSFAS</option>
+                <option value="Bursary" <?php if($user->studentType == "Bursary"){echo "selected";} ?>>Bursary</option>
+                <option value="Cash / Direct" <?php if($user->studentType == "Cash / Direct"){echo "selected";} ?>>Cash</option>
             </select>
         </div>
 
@@ -33,7 +33,7 @@
             <br/>
         @endif
 
-        <div id="changeSponsorDetails" class="<?php if(Auth::user()->studentType !== "Cash / Direct"){echo "hidden";} ?>">
+        <div id="changeSponsorDetails" class="<?php if($user->studentType !== "Cash / Direct"){echo "hidden";} ?>">
         <h1 class="formHeading">Sponsor Information</h1>
         <h2 style="text-transform:uppercase; font-weight:400">Parent / Gaurdians Details</h2>
         <br/>
@@ -128,7 +128,7 @@
                 </div>
         </div>
 
-        <div id="changeBursarDetails" class="<?php if(Auth::user()->studentType !== "Bursary"){echo "hidden";} ?>">
+        <div id="changeBursarDetails" class="<?php if($user->studentType !== "Bursary"){echo "hidden";} ?>">
 
         <h1 class="formHeading">Bursar Information</h1>
         <br/>

@@ -8,9 +8,11 @@ use App\Models\UserFiles;
 use App\Models\ActionList;
 use App\Models\User;
 use App\Models\Booking;
+use App\Models\Lookups;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use Auth;
+use App\Models\StudentsInfo;
 
 class OnlinePaymentController extends Controller
 {
@@ -18,11 +20,11 @@ class OnlinePaymentController extends Controller
     public function initiate_payment(Request $request){
         
         //encryption key set in the Merchant Access Portal
-        // $encryptionKey = 'secret';
-        // $paygateId = 10011072130;
+        $encryptionKey = 'secret';
+        $paygateId = 10011072130;
 
-        $encryptionKey = 'wUrEU5MlbopX';
-        $paygateId = 1039719100014;
+        // $encryptionKey = 'wUrEU5MlbopX';
+        // $paygateId = 1039719100014;
 
         $DateTime = new DateTime();
 
@@ -37,8 +39,8 @@ class OnlinePaymentController extends Controller
             'REFERENCE'         => $request->reference,
             'AMOUNT'            => floatval($request->amount)*100,
             'CURRENCY'          => 'ZAR',
-            'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
-            // 'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
+            // 'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
+            'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
             'TRANSACTION_DATE'  => $DateTime->format('Y-m-d H:i:s'),
             'LOCALE'            => 'en-za',
             'COUNTRY'           => 'ZAF',
@@ -78,17 +80,22 @@ class OnlinePaymentController extends Controller
             "status" => "Initiated",
         ]);
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         if($request->payment_type !== ''){
-            Booking::where('userId', $request->id)->update(['payment_type' => $request->payment_type, 'booking_payment_ref' => $request->reference]);
+            Booking::where('userId', $request->id)->where('year', $this_year)->update(['payment_type' => $request->payment_type, 'booking_payment_ref' => $request->reference]);
         }
 
-        $currUser = User::where('id', $request->id)->first();
+        // $currUser = User::where('id', $request->id)->first();
+        $currUser = StudentsInfo::where('userUid', $request->id)->where('year', $this_year)->first();
         ActionList::create([
             "userUid" => $request->id,
             "action" => "Online Payment Initiated",
             "actionUserUid" => $request->id,
             "actionUserDisplayName" => $currUser->userFirstName,
             "actionUserRole" => 0,
+            "year" => $this_year,
         ]);
 
         //close connection
@@ -100,6 +107,9 @@ class OnlinePaymentController extends Controller
     public function notify_data(Request $request){
 
         $transaction = OnlinePayments::where("requestID", $request->PAY_REQUEST_ID)->where("reference", $request->REFERENCE)->first();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
 
         if(!empty($transaction)){
             if($request->TRANSACTION_STATUS == '0'){
@@ -119,11 +129,12 @@ class OnlinePaymentController extends Controller
             }
             OnlinePayments::where('id', $transaction->id)->update(['status' => $status, 'post_data' => $_REQUEST, 'payment_amount' => $request->AMOUNT, 'payment_transaction_id' => $request->TRANSACTION_ID, 'payment_method' => $request->PAY_METHOD, 'payment_method_detail' => $request->PAY_METHOD_DETAIL, 'payment_status' => $request->TRANSACTION_STATUS]);
 
-            $hasFile = UserFiles::where('userUid', $transaction->userUid)->where('fileId', 'proof_of_payment')->first();
+            $hasFile = UserFiles::where('userUid', $transaction->userUid)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
             if(!empty($hasFile) && $status == "Approved"){
                 UserFiles::where('id', $hasFile->id)->update(["status" => "Approved"]);
-                User::where('id', $hasFile->userUid)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                // User::where('id', $hasFile->userUid)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                StudentsInfo::where('userUid', $hasFile->userUid)->where('year', $this_year)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
             }
 
             if($request->PAY_METHOD == "CC" || $request->PAY_METHOD == "DC"){
@@ -132,19 +143,24 @@ class OnlinePaymentController extends Controller
                 $paymentMethod = "Online EFT";
             }
 
-            $userBooking = Booking::where('userId', $transaction->userUid)->first();
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+
+            $userBooking = Booking::where('userId', $transaction->userUid)->where('year', $this_year)->first();
 
             if($userBooking->payment_type !== $paymentMethod){
                 Booking::where('id', $userBooking->id)->update(['payment_type' => $paymentMethod]);
             }
 
-            $currUser = User::where('id', $transaction->userUid)->first();
+            // $currUser = User::where('id', $transaction->userUid)->first();
+            $currUser = StudentsInfo::where('userUid', $transaction->userUid)->where('year', $this_year)->first();
             ActionList::create([
                 "userUid" => $transaction->userUid,
                 "action" => "Online Payment Status: ".$status,
                 "actionUserUid" => $transaction->userUid,
                 "actionUserDisplayName" => $currUser->userFirstName,
                 "actionUserRole" => 0,
+                "year" => $this_year,
             ]);
 
         }
@@ -155,10 +171,13 @@ class OnlinePaymentController extends Controller
         sleep(5);
 
         $fileType = "proof_of_payment";
-        
-        $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->first();
 
-        $user_status = $this->get_user_status($fileType, "", User::where('id', $id)->first());
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        
+        $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+
+        $user_status = $this->get_user_status($fileType, "",  StudentsInfo::where('userUid', $id)->where('year', $this_year)->first());
         $field_data = $user_status['field_data'];
         $field_doc = $user_status['field_doc'];   
         
@@ -174,8 +193,10 @@ class OnlinePaymentController extends Controller
                     'fileUrl' => "",
                     'status' => "Approved",
                     'uploaded_by' => $id,
+                    'year' => $this_year,
                 ]);
-                User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                // User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                StudentsInfo::where('userUid', $id)->where('year', $this_year)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
             }else{
                 UserFiles::create([
                     'fileId' => $fileType,
@@ -184,6 +205,7 @@ class OnlinePaymentController extends Controller
                     'fileUrl' => "",
                     'status' => "Uploaded",
                     'uploaded_by' => $id,
+                    'year' => $this_year,
                 ]);
             }
         }else{
@@ -191,7 +213,8 @@ class OnlinePaymentController extends Controller
                 UserFiles::where('id', $hasFile->id)->update([
                     'status' => "Approved",
                 ]);
-                User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                // User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                StudentsInfo::where('userUid', $id)->where('year', $this_year)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
             }else{
                 UserFiles::where('id', $hasFile->id)->update([
                     'status' => "Uploaded",
@@ -203,27 +226,31 @@ class OnlinePaymentController extends Controller
 
         $text = "Uploaded Proof of payment for review through PayGate";
         
-        $cur_status = User::find($id);
+        // $cur_status = User::find($id);
+        $cur_status = StudentsInfo::where('userUid', $id)->where('year', $this_year)->first();
 
         if($paymentUpdate->status != "Approved"){
             //Update data status back to pending
             if (!empty($field_data)) {
                 //If the data was already approved then unapprove
                 if ($cur_status->{$field_data} == 1) {
-                    User::where('id', $id)->update([$field_data => '0']);                        
+                    // User::where('id', $id)->update([$field_data => '0']);       
+                    StudentsInfo::where('userUid', $id)->where('year', $this_year)->update([$field_data => '0']);                  
                 }
             }
     
             //Update Robot status back to pending
             if (!empty($field_doc)) {
-                User::where('id', $id)->update([$field_doc => '1']);
+                // User::where('id', $id)->update([$field_doc => '1']);
+                StudentsInfo::where('userUid', $id)->where('year', $this_year)->update([$field_doc => '1']);
             }
         }
 
 
         //Get the file
-        $file = UserFiles::where('userUid', $id)->where('fileId', $fileType)->first();
-        $currUser = User::where('id', $id)->first();
+        $file = UserFiles::where('userUid', $id)->where('fileId', $fileType)->where('year', $this_year)->first();
+        // $currUser = User::where('id', $id)->first();
+        $currUser = StudentsInfo::where('userUid', $id)->where('year', $this_year)->first();
 
         ActionList::create([
             "userUid" => $id,
@@ -231,6 +258,7 @@ class OnlinePaymentController extends Controller
             "actionUserUid" => $id,
             "actionUserDisplayName" => $currUser->userFirstName,
             "actionUserRole" => 0,
+            "year" => $this_year,
         ]);
 
         $this->update_user_status($id);
@@ -252,11 +280,14 @@ class OnlinePaymentController extends Controller
     public function online_application_payment_on_screen($id){
 
         sleep(5);
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
         
         $fileType = "proof_of_payment";
-        $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->first();
+        $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
-        $user_status = $this->get_user_status($fileType, "", User::where('id', $id)->first());
+        $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', $id)->where('year', $this_year)->first());
         $field_data = $user_status['field_data'];
         $field_doc = $user_status['field_doc'];                
 
@@ -272,8 +303,10 @@ class OnlinePaymentController extends Controller
                     'fileUrl' => "",
                     'status' => "Approved",
                     'uploaded_by' => $id,
+                    'year' => $this_year,
                 ]);
-                User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                // User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                StudentsInfo::where('userUid', $id)->where('year', $this_year)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
             }else{
                 UserFiles::create([
                     'fileId' => $fileType,
@@ -282,6 +315,7 @@ class OnlinePaymentController extends Controller
                     'fileUrl' => "",
                     'status' => "Uploaded",
                     'uploaded_by' => $id,
+                    'year' => $this_year,
                 ]);
             }
         }else{
@@ -289,7 +323,8 @@ class OnlinePaymentController extends Controller
                 UserFiles::where('id', $hasFile->id)->update([
                     'status' => "Approved",
                 ]);
-                User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                // User::where('id', $id)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
+                StudentsInfo::where('userUid', $id)->where('year', $this_year)->update(["rob_10_fee" => 2, "fee_approved" => 1]);
             }else{
                 UserFiles::where('id', $hasFile->id)->update([
                     'status' => "Uploaded",
@@ -299,7 +334,8 @@ class OnlinePaymentController extends Controller
 
         $text = "Uploaded Proof of payment for review through PayGate";
         
-        $cur_status = User::find($id);
+        // $cur_status = User::find($id);
+        $cur_status = StudentsInfo::where('userUid', $id)->where('year', $this_year)->first();
 
         if($paymentUpdate->status != "Approved"){
 
@@ -307,19 +343,22 @@ class OnlinePaymentController extends Controller
             if (!empty($field_data)) {
                 //If the data was already approved then unapprove
                 if ($cur_status->{$field_data} == 1) {
-                    User::where('id', $id)->update([$field_data => '0']);                        
+                    // User::where('id', $id)->update([$field_data => '0']);    
+                    StudentsInfo::where('userUid', $id)->where('year', $this_year)->update([$field_data => '0']);                  
                 }
             }
 
             //Update Robot status back to pending
             if (!empty($field_doc)) {
-                User::where('id', $id)->update([$field_doc => '1']);
+                // User::where('id', $id)->update([$field_doc => '1']);
+                StudentsInfo::where('userUid', $id)->where('year', $this_year)->update([$field_doc => '1']);
             }
         }
 
         //Get the file
-        $file = UserFiles::where('userUid', $id)->where('fileId', $fileType)->first();
-        $currUser = User::where('id', $id)->first();
+        $file = UserFiles::where('userUid', $id)->where('fileId', $fileType)->where('year', $this_year)->first();
+        // $currUser = User::where('id', $id)->first();
+        $currUser = StudentsInfo::where('userUid', $id)->where('year', $this_year)->first();
 
         ActionList::create([
             "userUid" => $id,
@@ -327,6 +366,7 @@ class OnlinePaymentController extends Controller
             "actionUserUid" => $id,
             "actionUserDisplayName" => $currUser->userFirstName,
             "actionUserRole" => 0,
+            "year" => $this_year,
         ]);
 
         $this->update_user_status($id);
@@ -420,15 +460,21 @@ class OnlinePaymentController extends Controller
 
     public function update_user_status($user_id){
         
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->first();
+        $userFiles = UserFiles::where('userUid',  $user_id)->where('year', $this_year)->get();
+        
         $user = User::with('files')->where('id', $user_id)->first();
 
-        if($user->overall_status !== "Cancelled" && $user->overall_status !== "Rejected" && $user->applicationStatus !== "Approved Confirmed"){
+        if($userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed"){
 
             $booking = "Rejected";
             $files_for_booking = [];
             
             //files for booking status === Proof of payment - ID Copy
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if($file->fileId == "proof_of_payment" || $file->fileId == "copyID"){
                     array_push($files_for_booking, $file->status);
                 }
@@ -438,9 +484,9 @@ class OnlinePaymentController extends Controller
             $file_types = ["studentCard", "proofRegistration"];
     
             //Add in additional files based on student type.
-            if($user->studentType == "Cash / Direct"){
+            if($userInfo->studentType == "Cash / Direct"){
                 array_push($file_types, "bankStatement");
-            } elseif($user->studentType == "NSFAS" || $user->studentType == "Bursary"){
+            } elseif($userInfo->studentType == "NSFAS" || $userInfo->studentType == "Bursary"){
                 array_push($file_types, "bursaryApproval");
             }
     
@@ -448,7 +494,7 @@ class OnlinePaymentController extends Controller
             $files_for_application = [];
     
             //files for application status
-            foreach($user->files as $file){
+            foreach($userInfo->files as $file){
                 if(in_array($file->fileId, $file_types)){
                     array_push($files_for_application, $file->status);
                 }
@@ -457,7 +503,7 @@ class OnlinePaymentController extends Controller
             //lease
             $lease = "na";
     
-            foreach($user->files as $file){
+            foreach($userInfo->files as $file){
                 if($file->fileId == "moveIn"){
                     if($file->status == "Approved"){
                         $lease = "Approved";
@@ -512,14 +558,15 @@ class OnlinePaymentController extends Controller
                 $overall = "Approved";
             }
 
-            User::where('id', $user_id)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
+            // User::where('id', $user_id)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
+            StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
         }
 
-        if($user->applicationStatus == "Approved Confirmed"){
+        if($userInfo->applicationStatus == "Approved Confirmed"){
             //lease
             $lease = "na";
     
-            foreach($user->files as $file){
+            foreach($userFiles as $file){
                 if($file->fileId == "moveIn"){
                     if($file->status == "Approved"){
                         $lease = "Approved";
@@ -543,7 +590,8 @@ class OnlinePaymentController extends Controller
                 $overall = "Approved";
             }
 
-            User::where('id', $user_id)->update(['overall_status' => $overall]);
+            // User::where('id', $user_id)->update(['overall_status' => $overall]);
+            StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->update(['overall_status' => $overall]);
         }
  
     }

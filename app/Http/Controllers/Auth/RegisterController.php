@@ -22,6 +22,7 @@ use App\Models\ImportNSFASStudentAuditLog;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\Residence;
 use Auth;
+use App\Models\StudentsInfo;
 
 class RegisterController extends Controller
 {
@@ -123,6 +124,17 @@ class RegisterController extends Controller
 
         $user = User::create([
             'name' => $request->firstName,
+            'userDob' => $request->dob,
+            'userEmail' => $request->email,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'userId' => $request->idNumber,
+            'userNationality' => $request->nationality,
+            'userPassport' => $request->passportNo,
+        ]);
+
+        $userInfo = StudentsInfo::create([
+            'userUid' => $user->id,
             'userFirstName' => $request->firstName,
             'userLastname' => $request->lastName,
             'userTitle' => $request->title,
@@ -130,8 +142,6 @@ class RegisterController extends Controller
             'userCell' => $request->cell_no,
             'userCellCode' => $request->userCellCode,
             'userEmail' => $request->email,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
             'userId' => $request->idNumber,
             'userNationality' => $request->nationality,
             'userPassport' => $request->passportNo,
@@ -156,6 +166,7 @@ class RegisterController extends Controller
             "actionUserUid" => $user->id,
             "actionUserDisplayName" => $request->firstName,
             "actionUserRole" => '0',
+            "year" => $request->year,
         ]);
 
         $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
@@ -180,7 +191,8 @@ class RegisterController extends Controller
         
     
         //Link booking to User
-        User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
+        // User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
+        StudentsInfo::where('id', $userInfo->id)->update(["bookingRef" => $booking->id, "bookingId" => $booking->id]);
 
         if($request->studentType == "NSFAS"){
 
@@ -193,20 +205,23 @@ class RegisterController extends Controller
 
                 if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
                     
-                    User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+                    // User::where('id', $user->id)->update(["rob_30_funds" => 2]);
+                    StudentsInfo::where('id', $userInfo->id)->update(["rob_30_funds" => 2]);
 
                     UserFiles::create([
                         'userUid' => $user->id,
                         'fileId' => 'bursaryApproval',
-                        'status' => 'Approved'
+                        'status' => 'Approved',
+                        'year' => $this_year->lookup_name,
                     ]);
     
                     ActionList::create([
                         "userUid" => $user->id,
                         "action" => "NSFAS Approval has been Approved via import",
                         "actionUserUid" => $user->id,
-                        "actionUserDisplayName" => $user->userFirstName,
-                        "actionUserRole" => $user->userRole,
+                        "actionUserDisplayName" => $userInfo->userFirstName,
+                        "actionUserRole" => $userInfo->userRole,
+                        "year" => $this_year->lookup_name,
                     ]);
                 }
 
@@ -348,12 +363,16 @@ class RegisterController extends Controller
 
                 $fileUrl = 'files/'.$userUid.'/'. $fileNameToStore;
 
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+
                 UserFiles::create([
                     'fileId' => $fileType,
                     'userUid' => $userUid,
                     'fileName' => $fileNameToStore,
                     'fileUrl' => $fileUrl,
                     'status' => 'Uploaded',
+                    'year' => $this_year,
                 ]);
 
                 if($fileType == "copyID"){
@@ -376,6 +395,7 @@ class RegisterController extends Controller
                     "actionUserUid" => $userUid,
                     "actionUserDisplayName" => $user->userFirstName,
                     "actionUserRole" => "0",
+                    "year" => $this_year,
                 ]);
 
             }

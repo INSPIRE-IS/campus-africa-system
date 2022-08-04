@@ -39,11 +39,13 @@
                 <a class="active" href="/dashboard">Dashboard</a>
                 
                 <!-- <a href="/room-booking">My Room</a> -->
-                <a href="/my-documents">My Documents</a>
+                @if($active == 1)
+                    <a href="/my-documents">My Documents</a>
+                @endif
                 <a href="https://campusafrica.co.za/residences/" target="_blank">Residences</a>
                 <!-- <a href="/my-profile">My Profile</a> -->
 
-                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{Auth::user()->userFirstName}} {{Auth::user()->userLastname}},</span> @endif Log out</a>
+                <a href="/logout">  @if (!$agent->isMobile()) <span class="name">Hi {{$user->userFirstName}} {{$user->userLastname}},</span> @endif Log out</a>
                 
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                     <i class="fa fa-bars"></i>

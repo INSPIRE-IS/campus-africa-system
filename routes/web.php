@@ -108,6 +108,12 @@ Route::get('/admin-updates/fix-data', [LookupsController::class, 'admin_updates_
 Route::get('/admin-updates/update-properties', [LookupsController::class, 'admin_updates_update_properties']);
 Route::get('/admin-updates/update-property-id', [LookupsController::class, 'admin_updates_update_property_id']);
 Route::get('/admin-updates/update-booking-code', [LookupsController::class, 'admin_updates_update_booking_code']);
+Route::get('/admin-updates/update-cancelled', [LookupsController::class, 'admin_updates_update_cancelled']);
+Route::get('/admin-updates/update-new-students', [LookupsController::class, 'admin_updates_update_new_students']);
+
+
+
+
 
 
 
@@ -205,7 +211,7 @@ Route::post("/update-bursar-details", [HomeController::class, 'update_bursar_det
 
 //Documents
 Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);
-Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
+// Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
 Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save']);
 Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);
 
@@ -245,12 +251,24 @@ Route::get("/verify-password", [ApplicationController::class, 'verify_password']
 Route::post("/confirm-password", [ApplicationController::class, 'confirm_password']);
 Route::get("/retry/online-application", [ApplicationController::class, 'retry_payment']);
 
+Route::get("/student-create-new-booking", [ApplicationController::class, 'new_booking_step_1']);
+Route::post("/new-booking-step-1-save", [ApplicationController::class, 'new_booking_step_1_save']);
+Route::get("/new-booking-step-2", [ApplicationController::class, 'new_booking_step_2']);
+Route::post("/new-booking-step-3-save", [ApplicationController::class, 'new_booking_step_3_save']);
+Route::get('/new-booking-step-4', [ApplicationController::class, 'new_booking_step_4']);
+Route::post('/new-booking-step-2-spon-save', [ApplicationController::class, 'new_booking_step_2_spon_save']);
+Route::get("/new-booking-step-3", [ApplicationController::class, 'new_booking_step_3']);
+Route::post('/new-booking-step-2-bur-save', [ApplicationController::class, 'new_booking_step_2_bur_save']);
+
+
+
 Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']);
 Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
 Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);
 Route::post('/restore-student-booking', [HomeController::class, 'restore_student_booking']);
 Route::post('/change-student-room', [HomeController::class, 'change_student_room']);
 Route::post('/download-beds', [LookupsController::class, 'download_beds']);
+Route::post('/download-bed-codes', [LookupsController::class, 'download_bed_codes']);
 
 Route::get('/bed_import', [HomeController::class, 'bed_import']);
 Route::post('/import/beds', [HomeController::class, 'import_beds']);
@@ -266,6 +284,9 @@ Route::post('/initiate-payment', [OnlinePaymentController::class, 'initiate_paym
 Route::post('/online-application-payment/{id}', [OnlinePaymentController::class, 'online_application_payment']);
 Route::post('/online-application-payment-on-screen/{id}', [OnlinePaymentController::class, 'online_application_payment_on_screen']);
 Route::post('/notify-data', [OnlinePaymentController::class, 'notify_data']);
+
+Route::get('/create-new-booking/{id}', [HomeController::class, 'create_new_booking']);
+Route::post('/new-booking', [HomeController::class, 'new_booking']);
 
 
 

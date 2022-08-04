@@ -11,7 +11,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\Lookups;
 use App\Models\PropertyPermission;
-
+use App\Models\StudentsInfo;
 
 class BookingReportController extends Controller
 {
@@ -89,7 +89,9 @@ class BookingReportController extends Controller
 
                     foreach($allBookings as $booking){
                         if($booking->property == $res->id && $booking->roomType == $room->id){
-                            $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
+                            // $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
+                            $user = StudentsInfo::where('userUid', $booking->userId)->where('rob_60_cancelled', '0')->where('year', $lookupYear->lookup_name)->first();
+
         
                             if(!empty($user)){
                                 if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
@@ -196,7 +198,7 @@ class BookingReportController extends Controller
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://campusafrica.co.za/wp-json/wp/v2/rooms/'.$roomMap,
+                CURLOPT_URL => 'https://campusafrica.whitehart.co.za/wp-json/wp/v2/rooms/'.$roomMap,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,

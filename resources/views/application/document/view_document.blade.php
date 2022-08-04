@@ -504,7 +504,7 @@
 
                             @if(Auth::user()->role_edit_app == 1 && $data_approved == 0)
                                 <div style="margin-top: 35px;display: none;" class="btns_save_data">
-                                    <input type="hidden" name="userUid" value="{{$user->id}}">
+                                    <input type="hidden" name="userUid" value="{{$user->userUid}}">
                                     <input type="hidden" name="type" value="{{$file->fileId}}">
 
                                     <button type="button" class="approve button" style="height:40px;" onClick="updateData()">Update</button>
@@ -924,7 +924,7 @@
                     data: {
                         FileNameForApproval: "{{$file->fileId}}", 
                         type: type, 
-                        userId: "{{$user->id}}",
+                        userId: "{{$user->userUid}}",
                     },
 
                     success: function (data) {
@@ -1007,7 +1007,7 @@
                         $("#approved").attr("disabled", "disabled");
 
                         // $("#copyIDSection").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-                        let userId = "{{$user->id}}";
+                        let userId = "{{$user->userUid}}";
 
                         var form_data = new FormData();
                         form_data.append("file", file);

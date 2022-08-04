@@ -9,10 +9,12 @@ use App\Models\UserFiles;
 use App\Models\Booking;
 use App\Models\Property;
 use App\Models\ActionList;
+use App\Models\StudentsInfo;
 use Auth;
 use App\Models\Residence;
 use App\Models\RoomTypes;
 use Illuminate\Support\Facades\DB;
+use App\Models\Comments;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -68,7 +70,9 @@ class LookupsController extends Controller {
 
             $lookup = Lookups::where('id', $lookupId)->first();
 
-            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup"]);
+            $year_lookup = Lookups::where('group_id', '4')->first();
+
+            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup]);
         }else{
             return "404 Error";
         }
@@ -77,33 +81,23 @@ class LookupsController extends Controller {
     public function save_lookups(Request $request){
 
         if($request->group_id == "4"){
+
+            $dateFrom = $request->value."-".$request->month_from."-".$request->day_from;
+            $dateTo = $request->value."-".$request->month_to."-".$request->day_to;
+
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->value,
-                "lease_from_date" => $request->lease_from_date,
+                "lease_from_date" => date("Y-m-d", strtotime($dateFrom)),
+                "day_from" => $request->day_from,
+                "month_from" => $request->month_from,
                 "lease_from_time" => $request->lease_from_time,
-                "lease_to_date" => $request->lease_to_date,
+                "lease_to_date" => date("Y-m-d", strtotime($dateTo)),
+                "day_to" => $request->day_to,
+                "month_to" => $request->month_to,
                 "lease_to_time" => $request->lease_to_time,
                 "actionUserUid" => Auth::user()->id,
             ];
-
-            // $year = Lookups::where('group_id', '4')->first();
-
-            // if(date($year->lookup_name) < date($request->value)){
-
-            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $year->lookup_name)->get();
-    
-            //     foreach($bookingsList as $booking){
-            //         Property::where('id', $booking->property_data_id)->update(['room_available' => null]);
-            //     }
-            // }else{
-            //     $bookingsList = Booking::whereNotNull('property_data_id')->where('year', $request->value)->get();
-
-            //     foreach($bookingsList as $booking){
-            //         Property::where('id', $booking->property_data_id)->update(['room_available' => '1']);
-            //     }
-            // }
-
 
         }else if($request->group_id == "7"){
             $data = [
@@ -446,6 +440,165 @@ class LookupsController extends Controller {
         }
     }
 
+    public function download_bed_codes(Request $request){
+        $property = $request->property;
+        $year = $request->year;
+        $this_year = Lookups::where('group_id', '4')->first();
+        $institutions = Lookups::where('group_id', '1')->first();
+        $faculties = Lookups::where('group_id', '3')->first();
+
+        $query = "";
+
+        if($property !== "All"){
+            $query .= "where pd.residence = '".$property."'";
+        }
+
+        if($year !== "All"){
+
+            if($year == "current"){
+                $yearSearch = $this_year->lookup_name;
+            }else{
+                $yearSearch = floatval($this_year->lookup_name) + 1;
+            }
+
+            if($query !== ""){
+                $query .= "and (pd.year_end = '0' or pd.year_end = '".$yearSearch."') ";
+            }else{
+                $query .= "where (pd.year_end = '0' or pd.year_end = '".$yearSearch."') ";
+            }
+        }
+
+        $beds = [
+			['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>TENANT CODE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER</b>' , '<b>GENDER</b>' , '<b>STUDENT</b>' , '<b>BURSAR COMPANY</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>RELATIONSHIP</b>', '<b>NEXT OF KIN CONTACT</b>'],
+		];
+
+        $waitlist = [
+			['<b>RESIDENCE</b>', '<b>ROOM TYPE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER</b>' , '<b>GENDER</b>' , '<b>STUDENT</b>' , '<b>BURSAR COMPANY</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>RELATIONSHIP</b>', '<b>NEXT OF KIN CONTACT</b>'],
+		];
+
+        if($property !== "All"){
+            if($year !== "All"){
+                $allBookingsThisYear = Booking::where('year', $yearSearch)->where('property_data_id', null)->where('property', $property)->get();
+            }else{
+                $allBookingsThisYear = Booking::where('property_data_id', null)->where('property', $property)->get();
+            }
+        }else{
+            if($year !== "All"){
+                $allBookingsThisYear = Booking::where('year', $yearSearch)->where('property_data_id', null)->get();
+            }else{
+                $allBookingsThisYear = Booking::where('property_data_id', null)->get();
+            }
+        }
+
+        foreach($allBookingsThisYear as $booking){
+            $property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $room = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+            $user = StudentsInfo::where('bookingId', $booking->id)->orderBy('year', 'desc')->first();
+
+            if(!empty($user)){
+
+                $first_name = $user->userFirstName;
+                $last_name = $user->userLastname;
+                $email = $user->userEmail;
+                $cell = $user->userCellCode.$user->userCell;
+                $nationality = $user->userNationality;
+                $id = $user->userId;
+                $gender = "";
+                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
+                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
+                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
+                $studNumber = $user->studentNo;
+                $yearOfStudy = $user->yearOfStudy;
+                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
+                $kinName = $user->kinFirstName." ".$user->kinLastname;
+                $relationship = $user->kinRelationship;
+                $kinContact = $user->kincellCode.$user->kinCellNo;
+    
+                $list = [$property, $room, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $relationship, $kinContact];
+                array_push($waitlist, $list);
+            }
+        }
+
+        $allBeds = DB::select('SELECT pd.id, p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id '.$query.' ORDER BY pd.residence');
+
+        foreach($allBeds as $bed){
+            if($bed->inventory == '1'){
+                $bed->inventory = "Yes";
+            }else{
+                $bed->inventory = "No";
+            }
+
+            $booking = Booking::where('property_data_id', $bed->id)->where('year', $yearSearch)->first();
+
+            if(!empty($booking)){
+                $user = StudentsInfo::where('bookingId', $booking->id)->where('year', $yearSearch)->first();
+
+                $booking_ref = $booking->booking_code;
+                $first_name = $user->userFirstName;
+                $last_name = $user->userLastname;
+                $email = $user->userEmail;
+                $cell = $user->userCellCode.$user->userCell;
+                $nationality = $user->userNationality;
+                $id = $user->userId;
+                $gender = "";
+                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
+                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
+                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
+                $studNumber = $user->studentNo;
+                $yearOfStudy = $user->yearOfStudy;
+                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
+                $kinName = $user->kinFirstName." ".$user->kinLastname;
+                $relationship = $user->kinRelationship;
+                $kinContact = $user->kincellCode.$user->kinCellNo;
+                
+            }else{
+                $booking_ref = "";
+                $first_name = "";
+                $last_name = "";
+                $email = "";
+                $cell = "";
+                $nationality = "";
+                $id = "";
+                $gender = "";
+                $studentType = "";
+                $bursarCompany = "";
+                $instit = "";
+                $studNumber = "";
+                $yearOfStudy = "";
+                $faculty = "";
+                $kinName = "";
+                $relationship = "";
+                $kinContact = "";
+            }
+
+            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $bed->inventory, '', $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $relationship, $kinContact];
+            array_push($beds, $bed);
+        }
+
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
+		$xlsx->addSheet( $beds, 'BED CODES');
+        $xlsx->addSheet( $waitlist, 'WAITLIST');
+
+        $prop = Residence::where('id', $property)->pluck('residence')->first();
+
+        if($year !== "All"){
+            if($year == "current"){
+                $yearState = $this_year->lookup_name;
+            }else{
+                $yearState = floatval($this_year->lookup_name) + 1;
+            }
+
+            $downloadUrl = 'Bed_Allocations_Export_'.$yearState.'_'.$prop.'.xlsx';
+
+            $xlsx->saveAs('Bed_Allocations_Export_'.$yearState.'_'.$prop.'.xlsx');
+        }else{
+            $downloadUrl = 'System_Bed_Allocations_All_Years.xlsx';
+            $xlsx->saveAs('System_Bed_Allocations_All_Years.xlsx');
+        }
+
+		return $downloadUrl;
+    }
+
     public function download_beds(Request $request){
 
         $property = $request->property;
@@ -504,5 +657,151 @@ class LookupsController extends Controller {
         }
 
 		return $downloadUrl;
+    }
+
+    public function admin_updates_update_cancelled(Request $request){
+
+        $allUsers = User::where('rob_60_cancelled', '1')->get();
+
+        foreach($allUsers as $user){
+            Booking::where('userId', $user->id)->update(['cancelled' => 1]);
+        }
+    }
+
+    public function admin_updates_update_new_students(Request $request){
+
+        $allUsers = User::where('userRole', '0')->get();
+
+        foreach($allUsers as $user){
+
+            StudentsInfo::create([
+                'userUid' => $user->id,
+                'bookingId' => $user->bookingRef,
+                'userFirstName' => $user->userFirstName,
+                'userLastname' => $user->userLastname,
+                'userTitle' => $user->userTitle,
+                'userDob' => $user->userDob,
+                'userCellCode' => $user->userCellCode,
+                'userCell' => $user->userCell,
+                'userEmail' => $user->userEmail,
+                'userId' => $user->userId,
+                'userNationality' => $user->userNationality,
+                'userPassport' => $user->userPassport,
+                'institutionStudy' => $user->institutionStudy,
+                'studentNo' => $user->studentNo,
+                'institutionCampus' => $user->institutionCampus,
+                'faculty' => $user->faculty,
+                'year' => $user->year,
+                'yearOfStudy' => $user->yearOfStudy,
+                'studentType' => $user->studentType,
+                'userAddress1' => $user->userAddress1,
+                'userAddress2' => $user->userAddress2,
+                'userAddressCity' => $user->userAddressCity,
+                'userAddressPostal' => $user->userAddressPostal,
+                'bookingRef' => $user->bookingRef,
+                'bookingStatus' => $user->bookingStatus,
+                'applicationStatus' => $user->applicationStatus,
+                'sponFirstName' => $user->sponFirstName,
+                'sponLastName' => $user->sponLastName,
+                'sponCellCode' => $user->sponCellCode,
+                'sponCell' => $user->sponCell,
+                'sponEmail' => $user->sponEmail,
+                'pNationality' => $user->pNationality,
+                'pPassportNo' => $user->pPassportNo,
+                'sponId' => $user->sponId,
+                'pAddress1' => $user->pAddress1,
+                'pAddress2' => $user->pAddress2,
+                'pAddressCity' => $user->pAddressCity,
+                'pAddressPostal' => $user->pAddressPostal,
+                'c_credit_risk' => $user->c_credit_risk,
+                'c_credit_check' => $user->c_credit_check,
+                'burCompanyName' => $user->burCompanyName,
+                'burRegNo' => $user->burRegNo,
+                'burContactPerson' => $user->burContactPerson,
+                'burContactCode' => $user->burContactCode,
+                'burContactNo' => $user->burContactNo,
+                'burEmail' => $user->burEmail,
+                'b_meeting' => $user->b_meeting,
+                'bAddress1' => $user->bAddress1,
+                'bAddress2' => $user->bAddress2,
+                'bAddressCity' => $user->bAddressCity,
+                'bAddressPostal' => $user->bAddressPostal,
+                'bPayment' => $user->bPayment,
+                'bint' => $user->bint,
+                'bIntName' => $user->bIntName,
+                'kinFirstName' => $user->kinFirstName,
+                'kinLastName' => $user->kinLastName,
+                'kinTitle' => $user->kinTitle,
+                'kinAddressStr' => $user->kinAddressStr,
+                'kinAddressSuburb' => $user->kinAddressSuburb,
+                'kinAddressCity' => $user->kinAddressCity,
+                'kinAddressPost' => $user->kinAddressPost,
+                'kinRelationship' => $user->kinRelationship,
+                'kinTelCode' => $user->kinTelCode,
+                'kinTelNo' => $user->kinTelNo,
+                'kinCellCode' => $user->kinCellCode,
+                'kinCellNo' => $user->kinCellNo,
+                'kinWorkCode' => $user->kinWorkCode,
+                'kinWorkNo' => $user->kinWorkNo,
+                'kinEmail' => $user->kinEmail,
+                'kinNationality' => $user->kinNationality,
+                'kinPassportNo' => $user->kinPassportNo,
+                'app_address' => $user->app_address,
+                'app_address_p' => $user->app_address_p,
+                'app_parent_kin' => $user->app_parent_kin,
+                'id_data_approved' => $user->id_data_approved,
+                'student_card_approved' => $user->student_card_approved,
+                'registration_approved' => $user->registration_approved,
+                'bursary_approved' => $user->bursary_approved,
+                'bank_approved' => $user->bank_approved,
+                'address_approved' => $user->address_approved,
+                'kin_approved' => $user->kin_approved,
+                'parent_approved' => $user->parent_approved,
+                'burser_approved' => $user->burser_approved,
+                'overall_status' => $user->overall_status,
+                'email_info' => $user->email_info,
+                'nsfas_bursar' => $user->nsfas_bursar,
+                'rob_10_fee' => $user->rob_10_fee,
+                'rob_15_id' => $user->rob_15_id,
+                'rob_20_card' => $user->rob_20_card,
+                'rob_25_reg' => $user->rob_25_reg,
+                'rob_30_funds' => $user->rob_30_funds,
+                'rob_35_info' => $user->rob_35_info,
+                'rob_40_bed' => $user->rob_40_bed,
+                'rob_45_other' => $user->rob_45_other,
+                'rob_50_approve' => $user->rob_50_approve,
+                'rob_55_lease' => $user->rob_55_lease,
+                'email_data_approved' => $user->email_data_approved,
+                'rob_60_cancelled' => $user->rob_60_cancelled,
+                'onboard_complete' => $user->onboard_complete,
+                'email_verified' => $user->email_verified,
+                'fee_approved' => $user->fee_approved,
+                'app_source' => $user->app_source,
+            ]);
+
+            if($user->rob_60_cancelled == 1){
+                Booking::where('userId', $user->id)->update(['cancelled' => 1]);
+            }
+
+            $booking = Booking::where('userId', $user->id)->first();
+
+            if(!empty($booking)){
+                $allFiles = UserFiles::where('userUid', $user->id)->get();
+                foreach($allFiles as $file){
+                    UserFiles::where('id', $file->id)->update(['year'=> $booking->year]);
+                }
+    
+                $allComments = Comments::where('user_uid', $user->id)->get();
+                foreach($allComments as $comment){
+                    Comments::where('id', $comment->id)->update(['bookingId'=> $booking->id]);
+                }
+    
+                $allActionLists = ActionList::where('userUid', $user->id)->get();
+                foreach($allActionLists as $list){
+                    ActionList::where('id', $list->id)->update(['year'=> $booking->year]);
+                }
+            }
+
+        }
     }
 }

@@ -152,46 +152,46 @@
                         @if($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_change_bed == "1")
                                 @if ($user[0]['userInfo']['rob_50_approve'] > 0)
-                                    <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                    <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['userUid']}}', 'generate')">Change Bed</button>
                                 @else
-                                    <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                    <button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking('{{$user[0]['userInfo']['userUid']}}', 'generate')">Change Bed</button>
                                 @endif                                
                             @endif
 
                             @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
-                                <button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease('{{$user[0]['userInfo']['id']}}')">Change Lease Dates</button>
+                                <button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease('{{$user[0]['userInfo']['userUid']}}')">Change Lease Dates</button>
                             @endif
                         @endif
 
                         @if($leaseApproved == 'true' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_modify_approved == 1)
-                                <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['id']}}', 'generate')">Change Bed</button>
+                                <button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease('{{$user[0]['userInfo']['userUid']}}', 'generate')">Change Bed</button>
                             @endif
                         @endif
                     @endif
 
 
                         @if(Auth::user()->role_change_building == '1')
-                            <button type="button" class="appBooking" onClick="changeBuilding('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Change Building</button>
+                            <button type="button" class="appBooking" onClick="changeBuilding('{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Change Building</button>
                         @endif
                 </div>
                 <div class="buttons flex" id="buttonBottom">
                     @if(in_array($booking->property, $allowedResidences))
                         @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
                             @if(Auth::user()->role_delete_booking == 1)
-                                <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Delete this booking</button>
+                                <button type="button" class="appBooking" onClick="deleteBooking('{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Delete this booking</button>
                             @endif
 
                             @if(Auth::user()->role_cancel_booking == 1)
                                 @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
-                                    <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Cancel booking</button>
+                                    <button type="button" class="appBooking" onClick="cancelBooking('{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Cancel booking</button>
                                 @endif
                             @endif
                         @elseif($user[0]['userInfo']['rob_60_cancelled'] == 1)
                             @if(Auth::user()->role_cancel_booking == 1)
                                 @if($user[0]['userInfo']['rob_55_lease'] != 2 || (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
                                     @if(in_array($booking->property, $allowedResidences))
-                                        <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Restore booking</button>
+                                        <button type="button" class="appBooking" onClick="restoreBooking('{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Restore booking</button>
                                     @endif
                                 @endif
                             @endif
@@ -218,13 +218,14 @@
 
                         <div class="infoBlock">
                             <div class="responsible">
-                                @if(!empty($action->users))
-                                    <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
-                                @else
-                                    <p>{{$action->actionUserDisplayName}}</p>
-                                @endif
-                                
+                                                                
                                 @if($action->actionUserRole !== 0 )
+
+                                    @if(!empty($action->users))
+                                        <p>{{$action->users->userFirstName}} {{$action->users->userLastname}}</p>
+                                    @else
+                                        <p>{{$action->actionUserDisplayName}}</p>
+                                    @endif
 
                                     @if(!empty($action->users))
                                         @if($action->users->user_role_name == "" || $action->users->user_role_name == null)
@@ -237,6 +238,13 @@
                                     @endif
                                     
                                 @else
+
+                                    @if(!empty($action->usersInfo))
+                                        <p>{{$action->usersInfo->userFirstName}} {{$action->usersInfo->userLastname}}</p>
+                                    @else
+                                        <p>{{$action->actionUserDisplayName}}</p>
+                                    @endif
+
                                     <button type="button" class="applicant">Applicant</button>
                                 @endif
                                 <p class="datetime">  {{substr($action->created_at, 8, 2)}} | {{substr($action->created_at, 5, 2)}} | {{substr($action->created_at, 0, 4)}} | {{substr($action->created_at, 11, 5)}} </p>
@@ -250,6 +258,32 @@
                 </div>
             </div>
 
+            <div class="customWhiteCard" id="actionListCard" style="margin-top:20px; margin-bottom:20px;">
+                <div class="">
+                    <h2 class="appHeader">Previous Bookings</h2>
+                </div>
+
+                <div class="actionItem">
+
+                    @foreach($previousBookings as $pBooking)
+
+                        <div class="infoBlock">
+                            <div class="responsible">
+                                @if(!empty($pBooking->year))
+                                    <p>{{$pBooking->year}}</p>
+                                @endif
+                                
+                            </div>
+                            <div class="information">
+                                <p><b>Application Reference:</b> {{$pBooking->booking_code}}</p>
+                            </div>
+                        </div>
+
+                    @endforeach
+                </div>
+            </div>
+
+
         </div>
     </div>
     <div class="appRow">
@@ -260,6 +294,7 @@
                 <!-- <h2 class="appSubHeader bold">PAYMENT TYPE </h2> -->
                
 
+                @if($paymentBooking)
                 <table style="width:100%; text-align:left">
                     <tr>
                         <th>
@@ -376,6 +411,7 @@
                     </tr>
                 </table>
                 <button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Generate Pro Forma Invoice</button>
+                @endif
                         
 
 
@@ -419,14 +455,14 @@
                             <div id="indexOne"><div class="button rejected"></div><span class="text">NO DOCUMENT</span></div>
                         </div>
                     </div>
-                    <!-- <a href="/download/docs/{{$user[0]['userInfo']['id']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
+                    <!-- <a href="/download/docs/{{$user[0]['userInfo']['userUid']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
                     <!-- files_to_download -->
-                    <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['id']}}')">Download All</button>
+                    <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['userUid']}}')">Download All</button>
                     <div class="waitve_btn"></div>
                     @if(in_array($booking->property, $allowedResidences))
                         @if((Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_50_approve'] == 2) || $user[0]['userInfo']['rob_50_approve'] == 0)
                             @if(Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
-                                <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['id']}}')">Add Document</button>
+                                <button type="button" class="appBooking" id="addOtherDocument" onClick="addOtherDoc('{{$user[0]['userInfo']['userUid']}}')">Add Document</button>
                             @endif
                         @endif
                     @endif
@@ -1090,7 +1126,7 @@
                     type: "post",
                     url: "/change-nsfsbursar",
                     data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
+                        userId: "{{$user[0]['userInfo']['userUid']}}",
                     },
         
                     success: function (data) {
@@ -1103,19 +1139,18 @@
         });
     }
     
-    
-    $("#updateProfileStatus").on('click', function(){
-        $("#updateProfileStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
-        $.ajax({
-            type: "get",
-            url: "/update-user-status/{{$user[0]['userInfo']['id']}}",
-            success: function (data) {
+    // $("#updateProfileStatus").on('click', function(){
+    //     $("#updateProfileStatus").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+    //     $.ajax({
+    //         type: "get",
+    //         url: "/update-user-status/{{$user[0]['userInfo']['userUid']}}",
+    //         success: function (data) {
                 
-                window.location.reload();
+    //             window.location.reload();
 
-            },
-        });
-    })
+    //         },
+    //     });
+    // })
 
     $("#addComment").on('click', function(){
         $("#addComment").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -1123,7 +1158,8 @@
             type: "post",
             url: "/add-comment",
             data: {
-                userId: "{{$user[0]['userInfo']['id']}}",
+                userId: "{{$user[0]['userInfo']['userUid']}}",
+                bookingId: "{{$booking->id}}",
                 comment: $("#newComment").val(),
             },
 
@@ -1145,7 +1181,8 @@
             type: "post",
             url: "/get-comments",
             data: {
-                userId: "{{$user[0]['userInfo']['id']}}",
+                userId: "{{$user[0]['userInfo']['userUid']}}",
+                bookingId: "{{$booking->id}}",
             },
 
             success: function (data) {
@@ -1174,6 +1211,23 @@
     // MainAppSection
     function checkUserStatus(){
 
+        // $(".waitve_btn").empty();
+
+        // if($("#booking_fee_paid").val() == 'false'){
+        //     if(("{{Auth::user()->role_modify_approved}}" == 1 && "{{$user[0]['userInfo']['rob_50_approve']}}" == 2 && "{{Auth::user()->role_waive_fee}}" == 1) || ("{{$user[0]['userInfo']['rob_60_cancelled']}}" == 0 &&  "{{$user[0]['userInfo']['rob_50_approve']}}" != 2 && "{{Auth::user()->role_waive_fee}}" == 1)){
+        //         if($("#booking_fee_waived").val() == 'false'){
+        //             $(".waitve_btn").append('<button type="button" class="appBooking" id="waiveThisBookingFee" onClick="waiveBookingFee(\'{{$user[0]['userInfo']['userUid']}}\')">Waive Booking Fee</button>')
+        //         }else{
+        //             $(".waitve_btn").append('<button type="button" class="appBooking" id="unWaiveThisBookingFee" onClick="unWaiveBookingFee(\'{{$user[0]['userInfo']['userUid']}}\')">Undo Booking Fee Waiver </button>')
+        //         }
+        //     }
+        // }
+
+        // $(".waived_paid_wording").empty();
+
+        
+        
+
         if($("#kin_approved").val() == "1"){
             $("#rejectedKin").addClass('hidden')
             $("#approvedKin").removeClass('hidden')
@@ -1201,7 +1255,7 @@
         //
         $.ajax({
             type: "get",
-            url: "/check-user-payment/{{$user[0]['userInfo']['id']}}",
+            url: "/check-user-payment/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
                 if(data['nsfas_bursar'] == 1){
                     var nsfas_bursar = "Yes";
@@ -1256,7 +1310,7 @@
         //Check if we show/hide the approve user section
         $.ajax({
             type: "get",
-            url: "/check-user-status/{{$user[0]['userInfo']['id']}}",
+            url: "/check-user-status/{{$user[0]['userInfo']['userUid']}}",
 
             success: function (data) {
 
@@ -1402,7 +1456,7 @@
                         && data['rob_40_bed'] == 2
                         && (data['rob_45_other'] == 3 || data['rob_45_other'] == 2))
                     {
-                        $(".main_btn").empty().append('<button type="button" class="appBtn" id="approveProfile" onClick="approveApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">APPROVE APPLICATION AND SEND CONFIRMATION</button><br/><br/><br/><button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication(\'<?php echo $user[0]['userInfo']['id']; ?>\')">REJECT APPLICATION AND SEND NOTIFICATION</button><br/><br/><br/>')
+                        $(".main_btn").empty().append('<button type="button" class="appBtn" id="approveProfile" onClick="approveApplication(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">APPROVE APPLICATION AND SEND CONFIRMATION</button><br/><br/><br/><button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">REJECT APPLICATION AND SEND NOTIFICATION</button><br/><br/><br/>')
                     }
                 }
 
@@ -1466,7 +1520,7 @@
 
         $.ajax({
             type: "get",
-            url: "/check-all-rooms/{{$user[0]['userInfo']['id']}}",
+            url: "/check-all-rooms/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
                 let properties = data[0];
 
@@ -1520,7 +1574,7 @@
 
         $.ajax({
             type: "get",
-            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            url: "/check-rooms/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
                 let properties = data[0];
 
@@ -1576,7 +1630,7 @@
         //             type: "post",
         //             url: "/cancel-lease",
         //             data: {
-        //                 userId: "{{$user[0]['userInfo']['id']}}",
+        //                 userId: "{{$user[0]['userInfo']['userUid']}}",
         //             },
         //         });
 
@@ -2068,7 +2122,7 @@
             type: "post",
             url: "/get-booking-details",
             data: {
-                userId: "{{$user[0]['userInfo']['id']}}",
+                userId: "{{$user[0]['userInfo']['userUid']}}",
             },
 
             success: function (data) {
@@ -2090,9 +2144,9 @@
                 var unallocated_bed = "";
                 if(data[0].bed_code !== "" && data[0].bed_code !== null){
                     bed_code = "Bed Code: "+data[0].bed_code;
-
-                    if("<?php in_array($booking->property, $allowedResidences);?>"){
-                        //
+                    
+                    if("<?php echo in_array($booking->property, $allowedResidences);?>"){
+                        console.log('1')
                         if("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2){
                             // if(data[2] == 'false'){                            
                                 var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
@@ -2363,7 +2417,7 @@
                 type: "post",
                 url: "/change-booking",
                 data: {
-                    bookingId: "{{$user[0]['userInfo']['id']}}", 
+                    bookingId: "{{$user[0]['userInfo']['userUid']}}", 
                     property: $("#propertyBuilding").val(),
                     roomType: $("#roomTypeBuilding").val(), 
                     floor: "Choose a Floor",
@@ -2420,7 +2474,7 @@
                         if($("#change_bed_type").val() == "cancel"){
                             $.ajax({
                                 type: "post",
-                                url: "/createLease/{{$user[0]['userInfo']['id']}}",
+                                url: "/createLease/{{$user[0]['userInfo']['userUid']}}",
                                 data: {
                                     type: "auto",
                                 },
@@ -2440,11 +2494,11 @@
                                     $("#buttonTop").empty();
 
                                     @if(Auth::user()->role_change_bed == "1")
-                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking(\'{{$user[0]['userInfo']['id']}}\', \'generate\')">Change Bed</button>');
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeBedOnly" onClick="changeBooking(\'{{$user[0]['userInfo']['userUid']}}\', \'generate\')">Change Bed</button>');
                                     @endif
 
                                     @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
-                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease(\'{{$user[0]['userInfo']['id']}}\')">Change Lease Dates</button>');
+                                        $("#buttonTop").append('<button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease(\'{{$user[0]['userInfo']['userUid']}}\')">Change Lease Dates</button>');
                                     @endif
                                 },
                             });
@@ -2502,7 +2556,7 @@
             type: "post",
             url: "/re-verify-email",
             data: {
-                userUid: "{{$user[0]['userInfo']['id']}}", 
+                userUid: "{{$user[0]['userInfo']['userUid']}}", 
             },
 
             success: function (data) {
@@ -2582,7 +2636,7 @@
 
         $.ajax({
             type: "get",
-            url: "/check-all-rooms/{{$user[0]['userInfo']['id']}}",
+            url: "/check-all-rooms/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
                 let roomData = data[3]
 
@@ -2611,7 +2665,7 @@
 
         $.ajax({
             type: "get",
-            url: "/check-rooms/{{$user[0]['userInfo']['id']}}",
+            url: "/check-rooms/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
                 //
 
@@ -2863,27 +2917,35 @@
 
         $.ajax({
             type: "get",
-            url: "/action-list/<?php echo $user[0]['userInfo']['id']; ?>/all",
+            url: "/action-list/<?php echo $user[0]['userInfo']['userUid']; ?>/all",
             success: function (data) {
                 $(".actionItemList").empty();
                 
                 data.forEach(myFunction);
                 function myFunction(item, index) {
-                    // console.log(item)
+                    console.log(item)
                     if(item['actionUserRole'] == "1"){
                         if(item['users']['user_role_name'] == ""){
                             var role = '<button type="button" class="admin">Admin</button>';
                         }else{
                             var role = '<button type="button" class="admin">'+item['users']['user_role_name']+'</button>';
                         }
+
+                        if(item['user']){
+                            var usernames = '<p>'+item['user']['userFirstName']+' '+item['user']['userLastname']+'</p>';
+                        }else{
+                            var usernames = '<p>'+item['actionUserDisplayName']+'</p>';
+                        }
+                        // var usernames = '<p>'+item['user']['userFirstName']+' '+item['user']['userLastname']+'</p>';
                     }else{
                         var role = '<button type="button" class="applicant">Applicant</button>';
+                        var usernames = '<p>'+item['actionUserDisplayName']+'</p>';
                     }
 
                     $(".actionItemList").append(
                         '<div class="infoBlock">'+
                             '<div class="responsible">'+
-                                '<p>'+item['users']['userFirstName']+' '+item['users']['userLastname']+'</p>'+
+                                    usernames+
                                     role +
                                 '<p class="datetime">  '+item["created_at"].slice(8, 10)+' | '+item["created_at"].slice(5, 7)+' | '+item["created_at"].slice(0, 4)+' | '+item["created_at"].slice(11, 16)+' </p>'+
                             '</div>'+
@@ -2904,7 +2966,7 @@
 
         $.ajax({
             type: "get",
-            url: "/action-list/<?php echo $user[0]['userInfo']['id']; ?>/"+$("#actionListSort").val(),
+            url: "/action-list/<?php echo $user[0]['userInfo']['userUid']; ?>/"+$("#actionListSort").val(),
             success: function (data) {
                 $(".actionItemList").empty();
                 
@@ -2939,7 +3001,7 @@
 
         $.ajax({
             type: "get",
-            url: "/document-list/<?php echo $user[0]['userInfo']['id']; ?>/"+$("#documentSortList").val(),
+            url: "/document-list/<?php echo $user[0]['userInfo']['userUid']; ?>/"+$("#documentSortList").val(),
             success: function (data) {
 
                 $("#documentsSectionDisplay").empty();
@@ -3001,7 +3063,7 @@
 
         $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        let userId = <?php echo $user[0]['userInfo']['id'];?>
+        let userId = <?php echo $user[0]['userInfo']['userUid'];?>
 
         var form_data = new FormData();
         form_data.append("file", document.getElementById(field).files[0]);
@@ -3059,7 +3121,7 @@
 
     //     $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-    //     let userId = <?php echo $user[0]['userInfo']['id'];?>
+    //     let userId = <?php echo $user[0]['userInfo']['userUid'];?>
 
     //     var form_data = new FormData();
     //     form_data.append("file", document.getElementById(field).files[0]);
@@ -3206,8 +3268,10 @@
                                     var wording = "Deposit"
                                 }
 
+                                @if($paymentBooking)
                                 $("#"+updateField1).empty().append(value)
                                 $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="waive(\''+changeField+'\', \'{{$user[0]['userInfo']['id']}}\',\'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+reason+'\', \''+waived+'\', \''+wording+'\')">Waive</button>')
+                                @endif
 
                                 
 
@@ -3263,8 +3327,10 @@
                             var rej = "reason_deposit_reject"
                         }
 
+                        @if($paymentBooking)
                         $("#"+updateField1).empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
                         $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+wording+'\', \''+rej+'\', \''+waived+'\')">Change</button>')
+                        @endif
 
 
                         refreshActions();  
@@ -3312,8 +3378,10 @@
 
                             success: function (data) {
 
+                                @if($paymentBooking)
                                 $("#"+changeField1).empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
                                 $("#"+changeField2).empty().append('<button type="button" class="waiveAprv" onClick="ActionWaiveAprv(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\')">Approve</button><button type="button" class="waiveRej" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\', \''+reasonField+'_reject\', \''+waiveField+'\')">Reject</button>')
+                                @endif
 
                                 
                                 refreshActions();  
@@ -3497,7 +3565,7 @@
             type: "post",
             url: "/resendLease",
             data: {
-                userId: "{{$user[0]['userInfo']['id']}}",
+                userId: "{{$user[0]['userInfo']['userUid']}}",
             },
 
             success: function (data) {                
@@ -3513,7 +3581,7 @@
 
         $.ajax({
             type: "post",
-            url: "/createLease/{{$user[0]['userInfo']['id']}}",
+            url: "/createLease/{{$user[0]['userInfo']['userUid']}}",
             data: {
                 type: "auto",
             },
@@ -3543,7 +3611,7 @@
     // function checkData(){
     //     $.ajax({
     //         type: "get",
-    //         url: "/action-list/<?php echo $user[0]['userInfo']['id']; ?>/all",
+    //         url: "/action-list/<?php echo $user[0]['userInfo']['userUid']; ?>/all",
     //         success: function (data) {
     //             $(".actionItemList").empty();
                 
@@ -3599,7 +3667,7 @@
                         type: "post",
                         url: "/unallocate-bed",
                         data: {
-                            userId: "{{$user[0]['userInfo']['id']}}",
+                            userId: "{{$user[0]['userInfo']['userUid']}}",
                         },
 
                         success: function (data) {
@@ -3609,7 +3677,7 @@
                             $('#moveInStatus').parent().remove();
 
                             //Update change bed to not show lease cancel message
-                            $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="changeBooking({{$user[0]['userInfo']['id']}}, \'generate\')">Change Bed</button>');
+                            $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="changeBooking({{$user[0]['userInfo']['userUid']}}, \'generate\')">Change Bed</button>');
 
                             refreshActions();  
                             checkUserStatus();
@@ -3634,7 +3702,7 @@
                 type: "get",
                 url: "/edit-inline-data",
                 data: {
-                    userUid: "{{$user[0]['userInfo']['id']}}",
+                    userUid: "{{$user[0]['userInfo']['userUid']}}",
                     formId: formId,
                     type: edittype
                 },
@@ -3919,7 +3987,7 @@
                             type: "post",
                             url: "/approve-inline-data",
                             data: {
-                                userUid: "{{$user[0]['userInfo']['id']}}",
+                                userUid: "{{$user[0]['userInfo']['userUid']}}",
                                 formId: formId,
                                 approvefield: approvefield,
                                 task: task
@@ -3961,7 +4029,7 @@
                     type: "post",
                     url: "/add-other-document",
                     data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
+                        userId: "{{$user[0]['userInfo']['userUid']}}",
                         docName: result.value
                     },
 
@@ -4012,7 +4080,7 @@
                     type: "post",
                     url: "/remove-document-upload",
                     data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
+                        userId: "{{$user[0]['userInfo']['userUid']}}",
                         fileName: fileName
                     },
 
@@ -4132,7 +4200,7 @@
                     type: "post",
                     url: "/update-sponsor-details",
                     data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
+                        userId: "{{$user[0]['userInfo']['userUid']}}",
                         pFirstName: $("#pFirstName").val(),
                         pLastName: $("#pLastName").val(),
                         pCell_no: $("#pCell_no").val(),
@@ -4248,7 +4316,7 @@
                     type: "post",
                     url: "/update-bursar-details",
                     data: {
-                        userId: "{{$user[0]['userInfo']['id']}}",
+                        userId: "{{$user[0]['userInfo']['userUid']}}",
                         bCompanyName: $("#bCompanyName").val(),
                         bRegistrationNo: $("#bRegistrationNo").val(),
                         bContactPerson: $("#bContactPerson").val(),

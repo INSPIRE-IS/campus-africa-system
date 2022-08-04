@@ -15,6 +15,7 @@ use Auth;
 use Mail;
 use App\Models\MailerList;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
+use App\Models\StudentsInfo;
 
 class LeaseController extends Controller
 {
@@ -22,12 +23,17 @@ class LeaseController extends Controller
         
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link_url)->where('active', '1')->first();
 
-        if($lease_link && !empty($lease_link)){
-            $user = User::where('id', $lease_link->userUid)->first();
-            $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->first();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
 
-            $data = User::where('id', $lease_link->userUid)->first();
-            $booking = Booking::where('userId', $lease_link->userUid)->first();
+        if($lease_link && !empty($lease_link)){
+            // $user = User::where('id', $lease_link->userUid)->first();
+            $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
+            $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->where('year', $this_year)->first();
+
+            // $data = User::where('id', $lease_link->userUid)->first();
+            $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
+            $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
             $propertyData = Property::where('id', $booking->property_data_id)->first();
             $residence = Residence::where('id', $propertyData->residence)->first();
             $leaseAdminFee = Lookups::where('group_id', '8')->first();
@@ -44,9 +50,13 @@ class LeaseController extends Controller
 
     public function save_signed_lease(Request $request, $lease_link){
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', '1')->first();
-        $user = User::where('id', $lease_link->userUid)->first();
-        $booking = Booking::where('userId', $lease_link->userUid)->first();
+        // $user = User::where('id', $lease_link->userUid)->first();
+        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
+        $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
         
         // get the base64 string
         $data = $request->signature_string;
@@ -75,8 +85,9 @@ class LeaseController extends Controller
         //generate the signed lease
 
         // retreive all records from db
-        $data = User::where('id', $user->id)->first();
-        $booking = Booking::where('userId', $user->id)->first();
+        // $data = User::where('id', $user->userUid)->first();
+        $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
+        $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
@@ -96,7 +107,8 @@ class LeaseController extends Controller
         $fileNameToSave = $bookingYear.$bookingPrefix."_".$booking->bed_code."_".$user->userLastname."_".$user->userFirstName.".pdf";
 
         $content = $pdf->download($fileNameToSave)->getOriginalContent();
-        $user = User::where('id', $user->id)->first();
+        // $user = User::where('id', $user->id)->first();
+        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
 
         \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
       
@@ -107,9 +119,10 @@ class LeaseController extends Controller
             'status' => 'Uploaded',
         );
 
-        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->id)->update($data);
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->userUid)->where('year', $this_year)->update($data);
 
-        User::where('id', $user->id)->update(['rob_55_lease' => 1]);
+        // User::where('id', $user->id)->update(['rob_55_lease' => 1]);
+        StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->update(['rob_55_lease' => 1]);
 
         //Update Token to signed & inactive
         UserLeaseToken::where('leaseToken', $lease_link->leaseToken)->update(['active' => 0, 'signed' => 1, 'signature_url' => $new_name]);
@@ -138,10 +151,13 @@ class LeaseController extends Controller
             }
         }
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
-        $userForLease = User::where('id', $request->userId)->first();
-        $booking = Booking::where('userId', $request->userId)->first();
+        $userForLease = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
+        $booking = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
 
         $message_replace['booking_application'] = "#".$booking->booking_code;
         $message_replace['name'] = $userForLease->userFirstName;
@@ -162,7 +178,7 @@ class LeaseController extends Controller
             $data['messageForMail'] = $newMessage;
             $data['email'] = $userForLease->userEmail;
             $data['name'] = $userForLease->userFirstName;
-            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+            $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
             $mailArr = explode(";", $allowedMails);

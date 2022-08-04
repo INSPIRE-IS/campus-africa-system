@@ -140,7 +140,7 @@
 
         var form_data = new FormData();
         form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", "<?php echo $user->id; ?>");
+        form_data.append("userUid", "<?php echo $user->userUid; ?>");
         form_data.append("fileType", "proof_of_payment");
 
         $.ajax({

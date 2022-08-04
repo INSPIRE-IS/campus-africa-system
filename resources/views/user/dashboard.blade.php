@@ -4,7 +4,7 @@
 <div class="container">
     <div class="cards">
         <div class="whiteYellowCard roomImgBack smallerCard" style="margin-right:6%">
-            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Your Room  @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin-left:auto"> Cancelled</span> @endif</h2>
+            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Your Room  @if($user->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin-left:auto"> Cancelled</span> @endif</h2>
 
             <div class="overlay">
                 <div class="cardBody">
@@ -26,11 +26,11 @@
                       </h4>
 
                     <br/><br/><br/>
-                    @if(Auth::user()->rob_60_cancelled != '1')
+                    @if($user->rob_60_cancelled != '1')
                       <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your residence?</button>
                     @endif
-                    @if(Auth::user()->rob_55_lease != '2')
-                      @if(Auth::user()->rob_60_cancelled != '1')
+                    @if($user->rob_55_lease != '2')
+                      @if($user->rob_60_cancelled != '1')
                         <button type="button" class="roomContactBtn" onClick="cancelBooking()">Want to cancel your booking?</button>
                       @else
                         <button type="button" class="roomContactBtn" onClick="restoreBooking()">Want to restore your booking?</button>
@@ -54,12 +54,12 @@
     <div class="cards" id="bookingCardDash">
 
         <div class="whiteYellowCard smallerCard <?php if($bookingPaid == 0){ echo 'bookingDashCard';} ?>" style="margin-right:6%">
-            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Booking Summary @if(Auth::user()->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin-left:auto"> Cancelled</span> @endif</h2>
+            <h2 class="cardHeader greyCardHeader bookingTopHeaderStud" style="line-height:65px; font-size:30px;">Booking Summary @if($user->rob_60_cancelled == '1') <span id="cancelledStudentTag" style="margin-left:auto"> Cancelled</span> @endif</h2>
             <div class="cardBody <?php if($bookingPaid == 0){ echo 'bookingDashCardBody';} ?>" id="bookSumCard">
               <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
               <h2 class="cardHeaderBlck" >
-                <?php if(Auth::user()->studentType == "Cash / Direct"){echo "Cash";}else{echo Auth::user()->studentType;}?> 
-                @if(Auth::user()->rob_55_lease != '2')
+                <?php if($user->studentType == "Cash / Direct"){echo "Cash";}else{echo $user->studentType;}?> 
+                @if($user->rob_55_lease != '2')
                   <br/> 
                   <a href="/change-student-type"><button type="button" class="detailsChange" id="studentChangeType" style="margin-top:-40px;">Change Student Type</button></a></h2>
                 @else
@@ -281,7 +281,7 @@
               type: "post",
               url: "/cancel/booking",
               data: {
-                  bookingId: "{{Auth::user()->bookingRef}}", 
+                  bookingId: "{{$user->bookingId}}", 
                   userId: "{{Auth::user()->id}}",
                   reason: result.value,
               },
@@ -563,7 +563,7 @@
         form_data.append("file", document.getElementById(field).files[0]);
         form_data.append("userUid", userId);
         form_data.append("fileType", field);
-        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
+        form_data.append("adminName", "{{$user->userFirstName}}");
 
         $.ajax({
             type: "post",
