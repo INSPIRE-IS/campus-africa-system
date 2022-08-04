@@ -3096,7 +3096,7 @@ class HomeController extends Controller
 
             if(!empty($idCheck)){
                 $idNumberValid = false;
-                $booking = Booking::where('userId', $idCheck->id)->orderBy('year', 'desc')->first();
+                $booking = Booking::where('userId', $idCheck->userUid)->orderBy('year', 'desc')->first();
                 $property = Residence::where('id', $booking->property)->pluck('residence')->first();
             }
         }
