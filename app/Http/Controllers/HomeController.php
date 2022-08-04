@@ -3733,7 +3733,7 @@ class HomeController extends Controller
                     $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
     
                     if($fileUploaded && $fileUploaded->fileUrl !== null){
-                        if($oldData->room_rate !== $booking_data['room_rate']){
+                        if($oldData->room_rate != $booking_data['room_rate']){
     
                             UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                                 'status' => 'Uploaded'
@@ -7032,7 +7032,7 @@ class HomeController extends Controller
             $fileUploaded = UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
             if($fileUploaded && $fileUploaded->fileUrl !== null){
-                if($booking->room_rate !== $booking_data['room_rate']){
+                if($booking->room_rate != $booking_data['room_rate']){
 
                     UserFiles::where('userUid', $request->userUid)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                         'status' => 'Uploaded'
