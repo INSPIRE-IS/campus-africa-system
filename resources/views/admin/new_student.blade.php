@@ -926,6 +926,8 @@
                                 document.getElementById('toViewCancelled').href = "/application-profile/"+data[3]['id'];
                             }else{
 
+                                console.log(data)
+
                                 console.log(data[5]['year'] != data[6])
 
                                 if(data[5]['year'] != data[6]){

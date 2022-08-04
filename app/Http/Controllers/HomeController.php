@@ -3082,7 +3082,7 @@ class HomeController extends Controller
         $property = null;
 
         if($email !== ""){
-            $user = $emailCheck = User::where('email', $email)->first();
+            $user = $emailCheck = StudentsInfo::where('email', $email)->orderBy('year', 'desc')->first();
 
             if(!empty($emailCheck)){
                 $emailValid = false;
@@ -3090,7 +3090,7 @@ class HomeController extends Controller
         }
 
         if($idNumber !== ""){
-            $user = $idCheck = User::where('userId', $idNumber)->first();
+            $user = $idCheck = StudentsInfo::where('userId', $idNumber)->orderby('year', 'desc')->first();
 
             if(!empty($idCheck)){
                 $idNumberValid = false;
@@ -3102,7 +3102,7 @@ class HomeController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $booking = Booking::where('userId', $user->id)->orderBy('year', 'desc')->first();
+        $booking = Booking::where('userId', $user->userUid)->orderBy('year', 'desc')->first();
 
         return ["done", $emailValid, $idNumberValid, $user, $property, $booking, $this_year];
     }
