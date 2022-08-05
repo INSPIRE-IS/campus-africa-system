@@ -2167,21 +2167,21 @@ class HomeController extends Controller
             $booking_data['room_rate'] = $roomTypeData->booking_price;
             $deposit = $roomTypeData->rent_price;
 
-            if($user->studentType == "NSFAS"){
+            if($userInfo->studentType == "NSFAS"){
                 if($roomTypeData->apply_nsfas == null){
                     $booking_data['room_rate'] = "0";
                     $actionFileData['action'] = "Booking Fee is R0";
                 }
             }
 
-            if($user->studentType == "Bursary"){
+            if($userInfo->studentType == "Bursary"){
                 if($roomTypeData->apply_bursary == null){
                     $booking_data['room_rate'] = "0";
                     $actionFileData['action'] = "Booking Fee is R0";
                 }
             }
 
-            if($user->studentType == "Cash / Direct"){
+            if($userInfo->studentType == "Cash / Direct"){
                 if($roomTypeData->apply_cash == null){
                     $booking_data['room_rate'] = "0";
                     $actionFileData['action'] = "Booking Fee is R0";
@@ -2205,7 +2205,7 @@ class HomeController extends Controller
 
         // dd($admin_fee->lookup_name);
 
-        if(($user->studentType == "Cash / Direct") || ($user->studentType == "Bursary" && $user->nsfas_bursar !== 1)){
+        if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
             $admin_fee = $admin_fee->lookup_name;
             $deposit = $monthly = $deposit;
         }else{

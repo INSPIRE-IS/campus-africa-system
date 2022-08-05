@@ -110,6 +110,7 @@ Route::get('/admin-updates/update-property-id', [LookupsController::class, 'admi
 Route::get('/admin-updates/update-booking-code', [LookupsController::class, 'admin_updates_update_booking_code']);
 Route::get('/admin-updates/update-cancelled', [LookupsController::class, 'admin_updates_update_cancelled']);
 Route::get('/admin-updates/update-new-students', [LookupsController::class, 'admin_updates_update_new_students']);
+Route::get('/admin-updates/payments-update', [LookupsController::class, 'admin_updates_payments_update']);
 
 
 

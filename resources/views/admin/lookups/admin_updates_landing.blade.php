@@ -6,22 +6,21 @@
     @if(Auth::user()->id == 1 || Auth::user()->email == "roger@whitehart.co.za")
         <h1>New</h1>
         <div>
-            <button style="float: none;" type="button" id="updateDataNewRobots" class="detailsChange" >New Robots - Data Update</button>
-
-            <button style="float: none;" type="button" id="updateProperties" class="detailsChange" >Properties Update</button>
-
-            <button style="float: none;" type="button" id="updatePropIds" class="detailsChange" >Properties ID Update</button>
-
-            <button style="float: none;" type="button" id="newBookingCode" class="detailsChange" >New Booking Code</button>
-
             <button style="float: none;" type="button" id="newCancelled" class="detailsChange" >Cancelled on bookings</button>
 
             <button style="float: none;" type="button" id="newStudents" class="detailsChange" >New Students Table</button>
+
+            <button style="float: none;" type="button" id="newPayments" class="detailsChange" >Payments Update</button>
         </div>
 
         
         <h1>Legacy</h1>
         <div>
+            <button style="float: none;" type="button" id="updateDataNewRobots" class="detailsChange" >New Robots - Data Update</button>
+            <button style="float: none;" type="button" id="updateProperties" class="detailsChange" >Properties Update</button>
+            <button style="float: none;" type="button" id="updatePropIds" class="detailsChange" >Properties ID Update</button>
+            <button style="float: none;" type="button" id="newBookingCode" class="detailsChange" >New Booking Code</button>
+            <br/><br/>
             <button style="float: none;" type="button" id="updateBookingFee" class="detailsChange" >Update All Booking Fees</button>
             <button style="float: none;" type="button" id="updateProcessingStatus" class="detailsChange" >Update Student Processing Status</button>
             <button style="float: none;" type="button" id="updateStudentsStatus" class="detailsChange" >Update Student Overall Status</button>
@@ -198,6 +197,36 @@
 
                     success: function (data) {
                         $("#updatePropIds").empty().append('Properties ID Update');
+
+                        Swal.fire(
+                            'Success',
+                            'Data update complete',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
+
+    $("#newPayments").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#newPayments").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/admin-updates/payments-update",
+
+                    success: function (data) {
+                        $("#newPayments").empty().append('Payments Update');
 
                         Swal.fire(
                             'Success',
