@@ -2590,7 +2590,7 @@ class HomeController extends Controller
         }
 
         // if($request->applied !== "" && !empty($request->applied)){
-            if($request->applied !== "All"){
+            if($request->applied !== "All" && $request->applied !== null){
                 $applied = 'ui.app_source = "'.$request->applied.'"';
                 array_push($search_value, $applied);
             }
@@ -2681,6 +2681,8 @@ class HomeController extends Controller
                 LEFT OUTER JOIN property p on p.id = bookings_data.property
                 LEFT OUTER JOIN room_types r on r.id = bookings_data.roomType
             WHERE u.userRole = 0 ' . implode($query);
+
+            // dd($sql);
 
         //Get all of our students
         $searched_students = DB::select($sql);
