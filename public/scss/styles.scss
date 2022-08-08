@@ -292,7 +292,11 @@ body {
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         border-radius: 10px;
         background-color: #f8f8f8;
-        padding: 39px 50px;
+        padding: 20px;
+
+        @media only screen and (min-width: 768px) {
+            padding: 39px 50px;
+        }
 
         .actionItemList,
         .commentItemList {
@@ -344,6 +348,7 @@ body {
             }
             .information {
                 padding: 20px;
+                overflow-wrap: break-word;
             }
         }
 
@@ -1483,9 +1488,14 @@ input:read-only {
     border-radius: 6px;
     border: 1px solid #464749;
     padding: 2px;
-    margin: 5px;
-    width: 40%;
+    margin: 5px;    
     cursor: pointer;
+}
+
+@media only screen and (min-width: 768px) {
+    .unallocateBed {
+        width: 40%;
+    }
 }
 
 #downloadAllDocs,
@@ -2493,7 +2503,7 @@ input:read-only {
       }
 
       .greyAppSection{
-        height:500px !important;
+        height: auto !important;
       }
 
       .cards .customWhiteCard .InfoList{
