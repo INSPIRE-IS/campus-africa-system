@@ -758,7 +758,7 @@
                     <br />
                 </div>
 
-                <input type="submit" value="Save" class="profileSubmit" style="opacity:1;" />
+                <input type="submit" value="Save" id="newBookingSubmit" class="profileSubmit" style="opacity:1;" />
         </form>
     </div>
 
@@ -1506,7 +1506,10 @@
                     return false;
                 } else {
                     //Disable double clicks
-                    $('.profileSubmit').hide();
+                    // $('.profileSubmit').hide();
+                    $('#newBookingSubmit').val('Saving ...');
+                    $('#newBookingSubmit').attr('disabled', 'disabled');
+                    document.getElementById("newBookingSubmit").style.opacity = "0.5";
 
                     return true;
                 }

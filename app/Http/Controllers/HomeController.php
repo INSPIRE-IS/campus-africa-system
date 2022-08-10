@@ -7600,7 +7600,9 @@ class HomeController extends Controller
             }
         }
 
-        StudentsInfo::where('userUid', $request->userUid)->create([
+        // $checkStudent = StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->first();
+
+        $newStudentData = [
             'userUid' => $request->userUid,
             'userFirstName' => $request->firstName,
             'userLastname' => $request->lastName,
@@ -7693,7 +7695,23 @@ class HomeController extends Controller
             'burContactCode' => $request->bContactNumber_code,
             'sponCellCode' => $request->pCell_no_code,
             'app_source' => 0,
-        ]);
+        ];
+
+        // if(empty($checkStudent)){
+        if($userInfo->year !== $request->year){
+            $user = StudentsInfo::create($newStudentData);
+
+            ActionList::create([
+                "userUid" => $request->userUid,
+                "action" => "Created a new Booking ",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $request->year,
+            ]);
+        }else{
+            $user = StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->update($newStudentData);
+        }
 
         User::where('id', $request->userUid)->update([
             'name' => $request->firstName,
@@ -7705,20 +7723,7 @@ class HomeController extends Controller
         ]);
 
         // $user = User::where('id', $request->userUid)->first();
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
-        $user = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
-
-        ActionList::create([
-            "userUid" => $request->userUid,
-            "action" => "Created a new Booking ",
-            "actionUserUid" => Auth::user()->id,
-            "actionUserDisplayName" => Auth::user()->userFirstName,
-            "actionUserRole" => Auth::user()->userRole,
-            "year" => $this_year,
-        ]);
+        // $user = StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->first();
 
         //Booking data        
         $booking_data = array(
@@ -7733,14 +7738,29 @@ class HomeController extends Controller
         $oldPropReq = $request->property;
         $roomId = $request->roomType;
 
-        $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
-        $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
+        // $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
+        // $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
-        $roomTypeData = RoomTypes::where('id', $roomId)->first();
-        $roomTypeId = $roomTypeData->room_map_slug;
+        // $roomTypeData = RoomTypes::where('id', $roomId)->first();
+        // $roomTypeId = $roomTypeData->room_map_slug;
 
         $allResidences = Residence::get();
         $allRoomTypes = RoomTypes::get();
+
+        foreach($allResidences as $res){
+            if($res->id == $request->property){
+                $request->property = $res->residence;
+                $bookingPrefix = $res->building_prefix;
+            }
+        }
+
+        foreach($allRoomTypes as $rt){
+            if($rt->id == $request->roomType){
+                $request->roomType = $rt->name;
+                $roomTypeData = $rt;
+                $roomTypeId = $rt->room_map_slug;
+            }
+        }
 
 
         if($lookup && $lookup->lookup_name == "1"){
@@ -7842,10 +7862,20 @@ class HomeController extends Controller
         $booking_data['lease_to_date'] = $lookup_lease_dates['lease_to_date'];
         $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
 
-        $booking = Booking::create($booking_data);
+        
+
+        $booking_search = Booking::where('userId', $request->userUid)->where('year', $request->year)->first();
+
+        if(empty($booking_search)){
+            $booking = Booking::create($booking_data);
+        }else{
+            Booking::where('userId', $request->userUid)->where('year', $request->year)->update($booking_data);
+            $booking = $booking_search;
+        }
+
 
         $bookingYear = substr($request->year, -2);
-        $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
+        // $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
         $id_booking = $booking->id;
         $placeholder = "";
         for($i = 0; $i < 5 - strlen($id_booking); $i++){
@@ -7856,30 +7886,27 @@ class HomeController extends Controller
 
         //Link booking to User
         // User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
-        StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update(["bookingRef" => $id_booking, "bookingId" => $id_booking]);
+        StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->update(["bookingRef" => $id_booking, "bookingId" => $id_booking]);
 
         $residence = Residence::where('residence', $request->property)->first();
 
         if($booking_data['room_rate'] == "0"){
 
             // User::where('id', $user->id)->update(["rob_10_fee" => 2]);
-            StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update(["rob_10_fee" => 2]);
-
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
+            StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->update(["rob_10_fee" => 2]);
 
             UserFiles::create([
                 'userUid'=> $user->id,
                 'fileId' => 'proof_of_payment',
                 'status' => 'Approved',
-                'year' => $this_year
+                'year' => $request->year
             ]);
 
             $actionFileData['userUid'] = $request->userUid;
             $actionFileData['actionUserUid'] = Auth::user()->id;
             $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
             $actionFileData['actionUserRole'] = Auth::user()->userRole;
-            $actionFileData['year'] = $this_year;
+            $actionFileData['year'] = $request->year;
         
             ActionList::create($actionFileData);
         }
@@ -7891,19 +7918,18 @@ class HomeController extends Controller
             if(!empty($nsfasStudentsApproval)){
 
                 $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
-                $this_year = Lookups::where('group_id', '4')->first();
     
-                if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
+                if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $request->year){
                     
                     UserFiles::create([
                         'userUid' => $request->userUid,
                         'fileId' => 'bursaryApproval',
                         'status' => 'Approved',
-                        'year' => $this_year->lookup_name,
+                        'year' => $request->year,
                     ]);
     
                     // User::where('id', $user->id)->update(["rob_30_funds" => 2]);
-                    StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update(["rob_30_funds" => 2]);
+                    StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->update(["rob_30_funds" => 2]);
     
                     ActionList::create([
                         "userUid" => $request->userUid,
@@ -7912,7 +7938,7 @@ class HomeController extends Controller
                         "actionUserUid" => Auth::user()->id,
                         "actionUserDisplayName" => Auth::user()->userFirstName,
                         "actionUserRole" => Auth::user()->userRole,
-                        "year" => $this_year,
+                        "year" => $request->year,
                     ]);
                 }
             }
@@ -7927,7 +7953,7 @@ class HomeController extends Controller
         $newBooking = Booking::where('id', $booking->id)->first();
 
         $message_replace['bookingRef'] = $newBooking->booking_code;
-        $message_replace['name'] = $user->userFirstName;
+        $message_replace['name'] = $request->firstName;
         $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
         $message_replace['close_application_link']="</a>";
 
@@ -7942,7 +7968,7 @@ class HomeController extends Controller
             $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
             $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
-            $data['name'] = $user->userFirstName;
+            $data['name'] = $request->firstName;
             $data['email'] = $genUser->email;
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
@@ -7965,7 +7991,6 @@ class HomeController extends Controller
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
         }
-
 
         return redirect('/application-profile/'.$genUser->id);
     }
