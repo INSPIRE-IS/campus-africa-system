@@ -170,7 +170,7 @@ class HomeController extends Controller
 
         $bookingList = Booking::where('userId', Auth::user()->id)->where('id', $userInfo->bookingId)->get();
 
-        if($userInfo->year < $this_year - 1){
+        if(($userInfo->year < $this_year - 1) || $userInfo->rob_50_approved != '2'){
             $bookingList = [];
         }
 

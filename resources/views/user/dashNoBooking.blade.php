@@ -17,10 +17,10 @@
         <div class="">
             <h1>{{$booking->year}} Booking</h1>
             <p class="prevBookingTitle"><b>Booking:</b> {{$booking->booking_code}}</p>
-            <p class="prevBookingTitle"><b>Property:</b> @foreach($buildingList as $building) @if($booking->property == $building->id) {{$building->residence}} @endif @endforeach @foreach($roomList as $room) @if($booking->roomType == $room->id) {{$room->name}} @endif @endforeach</p>
+            <p class="prevBookingTitle"><b>Property:</b> @foreach($buildingList as $building) @if($booking->property == $building->id) {{$building->residence}} @endif @endforeach - @foreach($roomList as $room) @if($booking->roomType == $room->id) {{$room->name}} @endif @endforeach</p>
             <!-- <p class="prevBookingTitle"><b>Room:</b> </p> -->
             <!-- <p class="prevBookingTitle"><b>Floor:</b> {{$booking->floor}}</p> -->
-            <p class="prevBookingTitle"><b>Unit:</b> {{$booking->unit}}</p>
+            <p class="prevBookingTitle"><b>Unit:</b> {{$booking->bed_code}}</p>
             <!-- <p class="prevBookingTitle"><b>Bed Code:</b> </p> -->
             <p class="prevBookingTitle"><b>Booking Fee:</b> R {{$booking->room_rate}}</p>
             <p class="prevBookingTitle"><b>Lease From:</b> {{$booking->lease_from_date}}</p>
