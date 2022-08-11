@@ -2253,6 +2253,7 @@ input:read-only {
     .title{
         width:250px;
         font-size:20px;
+        margin-top:10px;
     }
 
     .value{
@@ -2282,7 +2283,7 @@ input:read-only {
         flex-direction: column;
     }
     .bookingDashCard{
-        height:800px !important;
+        height:865px !important;
       }
       .bookingDashCardBody{
         max-height:775px !important;
