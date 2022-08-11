@@ -2775,6 +2775,12 @@ class HomeController extends Controller
 
         Booking::where('id', $request->bookingId)->where('year', $this_year)->delete();
         StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->delete();
+
+        $allFiles = UserFiles::where('userUid', $request->userId)->where('year', $this_year)->get();
+
+        foreach($allFiles as $file){
+            UserFiles::where('id', $file->id)->delete();
+        }
         // User::where('id', $request->userId)->delete();
 
         return 'true';
