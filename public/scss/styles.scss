@@ -89,6 +89,7 @@ body {
             font-weight: 400;
             line-height: 28px;
             text-align: left;
+            max-width:250px;
         }
 
         .linkHeader {
@@ -2279,6 +2280,9 @@ input:read-only {
     #fullNavbar {
         height: 120px !important;
     }
+    .homeSection{
+        padding-left:0px !important
+    }
     .contentSection{
         width:100%;
     }
@@ -2699,7 +2703,7 @@ input:read-only {
 
 
     .footer .footerBanner {
-        height: 532px;
+        height: 740px;
     }
 
     #msform #step4.next.action-button {
@@ -3203,4 +3207,9 @@ input:read-only {
     width:100%;
     max-width:400px;
     margin:auto
+}
+
+.homeSection{
+    padding-left:6%; 
+    width:19%
 }

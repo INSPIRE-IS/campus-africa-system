@@ -100,11 +100,11 @@
                         Campus Africa
                     </h2>
                     <p class="footerSubHeader">
-                        If your looking for a place<br/> of learning and fun to grow<br/> and express yourself, then<br/> Campus Africa is your home.
+                        If your looking for a place of learning and fun to grow and express yourself, then Campus Africa is your home.
                     </p>
                 </div>
     
-                <div class="col-3" style="padding-left:6%; width:19%">
+                <div class="col-3 homeSection" style="">
                     <p class="linkHeader">Home</p>
                     <p class="link"><a href="https://campusafrica.co.za/residences/" style="color:inherit; text-decoration:none; cursor:pointer">Residences</a><br/>
                     <!-- Campus Africa Life<br/> -->
