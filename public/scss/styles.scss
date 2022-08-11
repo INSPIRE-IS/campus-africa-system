@@ -2251,7 +2251,7 @@ input:read-only {
     align-items: stretch;
 
     .title{
-        width:250;
+        width:250px;
         font-size:20px;
     }
 
@@ -2282,7 +2282,7 @@ input:read-only {
         flex-direction: column;
     }
     .bookingDashCard{
-        height:775px !important;
+        height:800px !important;
       }
       .bookingDashCardBody{
         max-height:775px !important;
