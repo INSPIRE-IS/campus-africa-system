@@ -264,7 +264,6 @@ body {
 .appRow {
     width: 48%;
     margin-right: 1%;
-    float: left;
 }
 
 .updateProfile {
@@ -3190,4 +3189,8 @@ input:read-only {
     background-color: #fff;
     cursor:pointer;
     width:360px;
+}
+
+.prevBookingTitle{
+    margin-top:5px;
 }

@@ -150,10 +150,22 @@ class HomeController extends Controller
     }
 
     public function inActiveStudent(){
-        $bookingList = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->get();
+        
         $buildingList = Residence::get();
         $roomList = RoomTypes::get();
         $filesList = UserFiles::where('userUid', Auth::user()->id)->get();
+
+        $bookingsIds = [];
+
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->get();
+
+        foreach($userInfo as $info){
+            if($info->rob_50_approve == '2'){
+                array_push($bookingsIds, $info->bookingId);
+            }
+        }
+
+        $bookingList = Booking::where('userId', Auth::user()->id)->whereIn('id', $bookingsIds)->get();
 
 
 
