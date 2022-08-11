@@ -1054,13 +1054,16 @@ class ApplicationController extends Controller
 
     public function new_booking_step_1(Request $request){
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $lookups = Lookups::get();
         $residences = Residence::get();
         $user = User::where('id', Auth::user()->id)->first();
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
         $cancelled = 0;
 
-        if($userInfo->rob_60_cancelled == 1){
+        if($userInfo->rob_60_cancelled == 1 || $userInfo->year < $this_year - 1){
             $cancelled = 1;
         }
         return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences]);

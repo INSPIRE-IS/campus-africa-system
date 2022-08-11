@@ -157,15 +157,22 @@ class HomeController extends Controller
 
         $bookingsIds = [];
 
-        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->get();
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
 
-        foreach($userInfo as $info){
-            if($info->rob_50_approve == '2'){
-                array_push($bookingsIds, $info->bookingId);
-            }
+        // foreach($userInfo as $info){
+        //     if($info->rob_50_approve == '2'){
+        //         array_push($bookingsIds, $info->bookingId);
+        //     }
+        // }
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $bookingList = Booking::where('userId', Auth::user()->id)->where('id', $userInfo->bookingId)->get();
+
+        if($userInfo->year < $this_year - 1){
+            $bookingList = [];
         }
-
-        $bookingList = Booking::where('userId', Auth::user()->id)->whereIn('id', $bookingsIds)->get();
 
 
 

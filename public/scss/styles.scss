@@ -2254,7 +2254,6 @@ input:read-only {
     .title{
         width:250px;
         font-size:20px;
-        margin-top:10px;
     }
 
     .value{
@@ -2280,6 +2279,7 @@ input:read-only {
     #fullNavbar {
         height: 120px !important;
     }
+    
     .homeSection{
         padding-left:0px !important
     }
@@ -2322,6 +2322,9 @@ input:read-only {
         float: none;
         width: 130px;
         margin-left: 0px;
+    }
+    .payBtnLater{
+        margin-top:597px !important;
     }
     #submitLease{
         margin-top:10px !important;
