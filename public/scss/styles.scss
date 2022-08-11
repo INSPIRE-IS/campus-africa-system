@@ -264,6 +264,7 @@ body {
 .appRow {
     width: 48%;
     margin-right: 1%;
+    float:left;
 }
 
 .updateProfile {
@@ -2278,6 +2279,9 @@ input:read-only {
     #fullNavbar {
         height: 120px !important;
     }
+    .contentSection{
+        width:100%;
+    }
     .bankDetails{
         flex-direction: column;
     }
@@ -3193,4 +3197,9 @@ input:read-only {
 
 .prevBookingTitle{
     margin-top:5px;
+}
+
+.contentSection{
+    width:25%;
+    margin:auto
 }
