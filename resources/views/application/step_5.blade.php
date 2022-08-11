@@ -115,11 +115,11 @@
                 <div class="flex">
                     <div>
                         <h4 class="cardSubHeaderGrey">{{$propertyTypeInfo->residence}}</h4>
-                        <h2 class="cardHeader" >{{$roomTypeInfo->name}}</h2>
+                        <h2 class="cardHeader" style="font-size:25px">{{$roomTypeInfo->name}}</h2>
                         <h4 class="cardSubHeaderGrey">Booking Fee</h4>
-                        <h2 class="cardHeader" >R {{$room_rate}}</h2>
+                        <h2 class="cardHeader" style="font-size:25px">R {{$room_rate}}</h2>
                         <h4 class="cardSubHeaderGrey">Booking Reference</h4>
-                        <h2 class="cardHeader" >{{$booking->booking_code}}</h2>
+                        <h2 class="cardHeader" style="font-size:25px">{{$booking->booking_code}}</h2>
                     </div>
                     <div>
                         <img src="{{$roomTypeInfo->img_url}}" class="roomImgApp">
@@ -218,7 +218,7 @@
             </div>
 
             <a href="/complete/online-application">
-                <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">I\'ll Pay Later</button>';}else{echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">Continue</button>';} ?>
+                <?php if(($proofPayment && $proofPayment->status != "Uploaded") || !$proofPayment){echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26; margin-top:597px !important;">I\'ll Pay Later</button>';}else{echo '<button type="button" class="detailsChange" id="submitFormPay" style="text-transform:uppercase; background-color:#e74f26">Continue</button>';} ?>
                 </a>
         @endif
 

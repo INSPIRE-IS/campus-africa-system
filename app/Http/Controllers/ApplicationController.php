@@ -1109,7 +1109,7 @@ class ApplicationController extends Controller
             }
         }
 
-        StudentsInfo::create([
+        $newStudentData = [
             'userUid' => Auth::user()->id,
             'userDob' => $userInfo->userDob,
             'userEmail' => $userInfo->userEmail,
@@ -1157,16 +1157,32 @@ class ApplicationController extends Controller
             'burser_approved' => 0,
             'email_info' => 0,
             'app_source' => 1,
+        ];
+
+        if($userInfo->year !== $request->year){
+            $user = StudentsInfo::create($newStudentData);
+
+            ActionList::create([
+                "userUid" => $request->userUid,
+                "action" => "Created a new Booking ",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $request->year,
+            ]);
+        }else{
+            $user = StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->update($newStudentData);
+        }
+
+        User::where('id', $request->userUid)->update([
+            'name' => $request->firstName,
+            'email' => $request->userEmail,
+            'userId' => $request->userId,
+            'userNationality' => $request->userNationality,
+            'userPassport' => $request->userPassport,
+            'year' => $request->year,
         ]);
 
-        ActionList::create([
-            "userUid" => Auth::user()->id,
-            "action" => "Created a new Booking",
-            "actionUserUid" => Auth::user()->id,
-            "actionUserDisplayName" => $request->firstName,
-            "actionUserRole" => Auth::user()->userRole,
-            "year" => $this_year,
-        ]);
 
         //Booking data        
         $booking_data = array(
@@ -1292,7 +1308,15 @@ class ApplicationController extends Controller
         $booking_data['lease_to_date'] = $lookup_lease_dates['lease_to_date'];
         $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
 
-        $booking = Booking::create($booking_data);
+        // $booking = Booking::create($booking_data);
+        $booking_search = Booking::where('userId', $request->userUid)->where('year', $request->year)->first();
+
+        if(empty($booking_search)){
+            $booking = Booking::create($booking_data);
+        }else{
+            Booking::where('userId', $request->userUid)->where('year', $request->year)->update($booking_data);
+            $booking = $booking_search;
+        }
 
         $bookingYear = substr($request->year, -2);
         $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
@@ -1318,12 +1342,20 @@ class ApplicationController extends Controller
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
 
-            UserFiles::create([
-                'userUid'=> Auth::user()->id,
-                'fileId' => 'proof_of_payment',
-                'status' => 'Approved',
-                'year' => $this_year
-            ]);
+            $findPop = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+
+            if(empty($findPop)){
+                UserFiles::create([
+                    'userUid'=> Auth::user()->id,
+                    'fileId' => 'proof_of_payment',
+                    'status' => 'Approved',
+                    'year' => $this_year
+                ]);
+            }else{
+                UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
+                    'status' => 'Approved',
+                ]);
+            }
 
             $actionFileData['userUid'] = Auth::user()->id;
             $actionFileData['actionUserUid'] = Auth::user()->id;
@@ -1344,16 +1376,24 @@ class ApplicationController extends Controller
                 $this_year = Lookups::where('group_id', '4')->first();
     
                 if(!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name){
-                    
-                    UserFiles::create([
-                        'userUid' => Auth::user()->id,
-                        'fileId' => 'bursaryApproval',
-                        'status' => 'Approved',
-                        'year' => $this_year->lookup_name,
-                    ]);
+
+                    $findBa = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year->lookup_name)->first();
+
+                    if(empty($findBa)){
+                        UserFiles::create([
+                            'userUid'=> Auth::user()->id,
+                            'fileId' => 'bursaryApproval',
+                            'status' => 'Approved',
+                            'year' => $this_year->lookup_name
+                        ]);
+                    }else{
+                        UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year->lookup_name)->update([
+                            'status' => 'Approved',
+                        ]);
+                    }
     
                     // User::where('id', Auth::user()->id)->update(["rob_30_funds" => 2]);
-                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(["rob_30_funds" => 2]);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year->lookup_name)->update(["rob_30_funds" => 2]);
     
                     ActionList::create([
                         "userUid" => Auth::user()->id,
@@ -1362,7 +1402,7 @@ class ApplicationController extends Controller
                         "actionUserUid" => Auth::user()->id,
                         "actionUserDisplayName" => $user->userFirstName,
                         "actionUserRole" => Auth::user()->userRole,
-                        "year" => $this_year,
+                        "year" => $this_year->lookup_name,
                     ]);
                 }
             }

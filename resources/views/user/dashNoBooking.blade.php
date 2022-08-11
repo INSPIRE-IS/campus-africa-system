@@ -9,7 +9,11 @@
     <hr/>
     <br/>
     @foreach($bookingList as $booking)
-    <div style="border:1px solid #ccc; margin:10px; height:250px; padding:15px;">
+    @if(!$agent->isMobile())
+      <div style="border:1px solid #ccc; margin:10px; height:250px; padding:15px;">
+    @else
+      <div style="border:1px solid #ccc; margin:10px; height:500px; padding:15px;">
+    @endif
         <div class="appRow">
             <h1><u>{{$booking->year}}: {{$booking->booking_code}} @if($booking->cancelled == 1)  - CANCELLED @endif</u></h1>
             <p><b>Property:</b> @foreach($buildingList as $building) @if($booking->property == $building->id) {{$building->residence}} @endif @endforeach</p>

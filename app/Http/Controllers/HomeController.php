@@ -73,7 +73,8 @@ class HomeController extends Controller
                 $student = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
                 $returnInfo = $this->inActiveStudent();
 
-                return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student]);
+                $agent = new Agent();
+                return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student, "agent" => $agent]);
             }
 
             
@@ -135,7 +136,8 @@ class HomeController extends Controller
                 if($returnInfo['Status'] == '1'){
                     return view('user.dashboard', ["active" => 1, "headerTitle" => $returnInfo['headerTitle'], "booking" => $returnInfo['booking'], "allFiles" => $returnInfo['allFiles'], "bookHeader" => $returnInfo['bookHeader'], "appHeader" => $returnInfo['appHeader'], "propertyData" => $returnInfo['propertyData'], "roomData" => $returnInfo['roomData'], "bookingPaid" => $returnInfo['bookingPaid'], "user" => $student]);
                 }else{
-                    return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student]);
+                    $agent = new Agent();
+                    return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student, "agent" => $agent]);
                 }
 
             }

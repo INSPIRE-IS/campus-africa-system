@@ -2263,7 +2263,7 @@ input:read-only {
   }
 
   .newBookingBtn{
-  margin: 30px;
+  margin: 30px 0px;
   width: 100%;
   padding: 15px;
   border: none;
@@ -2277,6 +2277,9 @@ input:read-only {
 @media only screen and (max-width: 850px) {
     #fullNavbar {
         height: 120px !important;
+    }
+    .bankDetails{
+        flex-direction: column;
     }
     .bookingDashCard{
         height:775px !important;
@@ -2329,7 +2332,7 @@ input:read-only {
       }
     .roomImgApp{
         margin-left:0px; 
-        max-height:185px;
+        max-height:150px;
       }
       .paymentAppOnline{
         margin-top:-30px !important;
@@ -2439,7 +2442,7 @@ input:read-only {
       #newStudentDocs{
         // height:2000px;
         // height:1540px;
-        height:1070px;
+        height:1550px;
       }
       #labelAddrP{
         width:200px !important;
@@ -2679,7 +2682,7 @@ input:read-only {
     line-height:20px !important;
   }
   #newStudent{
-    height:2050px;
+    height:2100px;
   }
   #seconCards{
     // margin-top:300px;
