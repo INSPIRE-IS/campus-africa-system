@@ -917,7 +917,7 @@ class LookupsController extends Controller {
             $topup = floatval($yearly_rent) - floatval($funded);
 
             if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
-                $admin_fee = $admin_fee['lookup_name'];
+                $admin_fee = $admin_fee->lookup_name;
                 $deposit = $monthly = $deposit;
                 $funded = $yearly_rent;
                 $topup = '0';
