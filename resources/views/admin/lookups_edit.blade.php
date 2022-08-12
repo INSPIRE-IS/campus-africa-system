@@ -177,7 +177,7 @@
         </div>
 
         <div class="form-field <?php if($lookup->group_id !== "1"){echo "hidden";} ?>" id="nsfas_value">
-            <label>NSFAS Funded Amount</label>
+            <label>NSFAS Rate</label>
             <input type="number" id="nsfas_amount" name="nsfas_amount" value="{{$lookup->nsfas_amount}}" >
         </div>
 

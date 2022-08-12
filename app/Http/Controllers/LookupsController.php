@@ -914,7 +914,7 @@ class LookupsController extends Controller {
                 $yearly_rent = floatval($deposit) * floatval($diff);
     
                 $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
-                $funded = $institution->nsfas_amount;
+                $funded = floatval($institution->nsfas_amount) * floatval($diff);
     
                 $topup = floatval($yearly_rent) - floatval($funded);
     

@@ -267,8 +267,16 @@ class DocumentsController extends Controller {
             }
 
             if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
+
+                $booking = Booking::where('id', $oldStudentData->bookingId)->first();
+                $ts1 = strtotime($booking->lease_from_date);
+                $ts2 = strtotime($booking->lease_to_date);
+                $month1 = date('m', $ts1);
+                $month2 = date('m', $ts2);
+                $diff = $month2 - $month1;
+
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
-                $funded = $institution->nsfas_amount;
+                $funded = floatval($institution->nsfas_amount) * floatval($diff);
                 $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
                 BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
                     'deposit' => '0',
@@ -280,9 +288,17 @@ class DocumentsController extends Controller {
             }
 
             if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
+
+                $booking = Booking::where('id', $oldStudentData->bookingId)->first();
+                $ts1 = strtotime($booking->lease_from_date);
+                $ts2 = strtotime($booking->lease_to_date);
+                $month1 = date('m', $ts1);
+                $month2 = date('m', $ts2);
+                $diff = $month2 - $month1;
+
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
                 $admin_fee = Lookups::where('group_id', '8')->first();
-                $funded = $institution->nsfas_amount;
+                $funded = floatval($institution->nsfas_amount) * floatval($diff);
                 $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
                 BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
                     'deposit' => $thisBookingPayment->monthly_rental,
@@ -333,8 +349,16 @@ class DocumentsController extends Controller {
 
 
             if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
+
+                $booking = Booking::where('id', $oldStudentData->bookingId)->first();
+                $ts1 = strtotime($booking->lease_from_date);
+                $ts2 = strtotime($booking->lease_to_date);
+                $month1 = date('m', $ts1);
+                $month2 = date('m', $ts2);
+                $diff = $month2 - $month1;
+
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
-                $funded = $institution->nsfas_amount;
+                $funded = floatval($institution->nsfas_amount) * floatval($diff);
                 $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
                 BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
                     'deposit' => '0',
@@ -346,9 +370,17 @@ class DocumentsController extends Controller {
             }
 
             if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
+
+                $booking = Booking::where('id', $oldStudentData->bookingId)->first();
+                $ts1 = strtotime($booking->lease_from_date);
+                $ts2 = strtotime($booking->lease_to_date);
+                $month1 = date('m', $ts1);
+                $month2 = date('m', $ts2);
+                $diff = $month2 - $month1;
+
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
                 $admin_fee = Lookups::where('group_id', '8')->first();
-                $funded = $institution->nsfas_amount;
+                $funded = floatval($institution->nsfas_amount) * floatval($diff);
                 $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
                 BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
                     'deposit' => $thisBookingPayment->monthly_rental,

@@ -2214,7 +2214,7 @@ class HomeController extends Controller
         $yearly_rent = floatval($deposit) * floatval($diff);
 
         $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
-        $funded = $institution->nsfas_amount;
+        $funded = floatval($institution->nsfas_amount) * floatval($diff);
 
         $topup = floatval($yearly_rent) - floatval($funded);
 
@@ -6568,8 +6568,15 @@ class HomeController extends Controller
             $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
 
             if($request->studentType == "NSFAS"){
+                $booking = Booking::where('id', $userInfo->bookingId)->first();
+                $ts1 = strtotime($booking->lease_from_date);
+                $ts2 = strtotime($booking->lease_to_date);
+                $month1 = date('m', $ts1);
+                $month2 = date('m', $ts2);
+                $diff = $month2 - $month1;
+
                 $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
-                $funded = $institution->nsfas_amount;
+                $funded = floatval($institution->nsfas_amount) * floatval($diff);
                 $thisBookingPayment = BookingPayment::where('bookingId', $userInfo->bookingId)->first();
                 BookingPayment::where('bookingId', $userInfo->bookingId)->update([
                     'deposit' => '0',
@@ -7112,9 +7119,16 @@ class HomeController extends Controller
             }
         }
 
+        $booking = Booking::where('id', $userCurr->bookingId)->first();
+        $ts1 = strtotime($booking->lease_from_date);
+        $ts2 = strtotime($booking->lease_to_date);
+        $month1 = date('m', $ts1);
+        $month2 = date('m', $ts2);
+        $diff = $month2 - $month1;
+
         $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
         $admin_fee = Lookups::where('group_id', '8')->first();
-        $funded = $institution->nsfas_amount;
+        $funded = floatval($institution->nsfas_amount) * floatval($diff);
         $thisBookingPayment = BookingPayment::where('bookingId', $userCurr->bookingId)->first();
         BookingPayment::where('bookingId', $userCurr->bookingId)->update([
             'deposit' => $thisBookingPayment->monthly_rental,
@@ -7169,9 +7183,16 @@ class HomeController extends Controller
             }
         }
 
+        $booking = Booking::where('id', $userCurr->bookingId)->first();
+        $ts1 = strtotime($booking->lease_from_date);
+        $ts2 = strtotime($booking->lease_to_date);
+        $month1 = date('m', $ts1);
+        $month2 = date('m', $ts2);
+        $diff = $month2 - $month1;
+
         $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
         $admin_fee = Lookups::where('group_id', '8')->first();
-        $funded = $institution->nsfas_amount;
+        $funded = floatval($institution->nsfas_amount) * floatval($diff);
         $thisBookingPayment = BookingPayment::where('bookingId', $userCurr->bookingId)->first();
         BookingPayment::where('bookingId', $userCurr->bookingId)->update([
             'deposit' => $thisBookingPayment->monthly_rental,
