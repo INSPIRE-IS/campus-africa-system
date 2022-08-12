@@ -30,12 +30,12 @@
         <br/>
         <table style="width:100%">
             <tr>
-                <td>VAT NO: 4760279952</td>
-                <td style="text-align:right">Owner Reg No: 2017/370430/07</td>
+                <td>VAT NO: {{$property->company_vat}}</td>
+                <td style="text-align:right">Owner Reg No: {{$property->company_reg}}</td>
             </tr>
         </table>
-        <p style="text-align: center">Pontei Investments (PTY) Ltd t/a<br/>
-        <span style="text-transform:uppercase">Braamlofts</span> - CAMPUS AFRICA<br/>
+        <p style="text-align: center">{{$property->account_name}}<br/>
+        <span style="text-transform:uppercase">{{$property->residence}}</span> - CAMPUS AFRICA<br/>
         TEL: 011 0256257 | Email: accounts@conurban.co.za | Fax: 0865587632</p>
         <br/>
         <table style="width:100%">
@@ -53,8 +53,8 @@
                 <td style="border-top: 1px solid #000; border-right: 1px solid #000;"></td>
             </tr>
             <tr>
-                <td style="border-left: 1px solid #000;">Name</td>
-                <td style="border-right: 1px solid #000;">Surname</td>
+                <td style="border-left: 1px solid #000;">{{$user->userFirstName}}</td>
+                <td style="border-right: 1px solid #000;">{{$user->userLastname}}</td>
                 <td style="border-left: 1px solid #000;">Date</td>
                 <td style="border-right: 1px solid #000;"><?php echo date('Y-m-d');?></td>
             </tr>
@@ -62,7 +62,7 @@
                 <td style="border-bottom: 1px solid #000; border-left: 1px solid #000;"></td>
                 <td style="border-bottom: 1px solid #000; border-right: 1px solid #000;"></td>
                 <td style="border-bottom: 1px solid #000; border-left: 1px solid #000;">Student No</td>
-                <td style="border-bottom: 1px solid #000; border-right: 1px solid #000;">1234</td>
+                <td style="border-bottom: 1px solid #000; border-right: 1px solid #000;">{{$user->studentNo}}</td>
             </tr>
         </table>
         <br/>
@@ -83,7 +83,7 @@
                 <td>Lease Admin Fee</td>
                 <td></td>
                 <td></td>
-                <td>R 1000.00</td>
+                <td>R {{number_format($bookingPayment->loan_admin_fee, 2, '.', ' ')}}</td>
             </tr>
             <tr>
                 <td></td>
@@ -92,7 +92,7 @@
                 <td>Deposit</td>
                 <td></td>
                 <td></td>
-                <td>R 4500.00</td>
+                <td>R {{number_format($bookingPayment->deposit, 2, '.', ' ')}}</td>
             </tr>
             <tr>
                 <td></td>
@@ -103,96 +103,19 @@
                 <td></td>
                 <td></td>
             </tr>
-            <tr>
-                <td>01/02/2022</td>
-                <td></td>
-                <td></td>
-                <td>February Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/03/2022</td>
-                <td></td>
-                <td></td>
-                <td>March Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/04/2022</td>
-                <td></td>
-                <td></td>
-                <td>April Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/05/2022</td>
-                <td></td>
-                <td></td>
-                <td>May Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/06/2022</td>
-                <td></td>
-                <td></td>
-                <td>June Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/07/2022</td>
-                <td></td>
-                <td></td>
-                <td>July Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/08/2022</td>
-                <td></td>
-                <td></td>
-                <td>August Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/09/2022</td>
-                <td></td>
-                <td></td>
-                <td>Sepetember Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/10/2022</td>
-                <td></td>
-                <td></td>
-                <td>October Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
-            <tr>
-                <td>01/11/2022</td>
-                <td></td>
-                <td></td>
-                <td>November Rent</td>
-                <td></td>
-                <td></td>
-                <td>R 4500.00</td>
-            </tr>
+            <?php for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){ ?>
+
+                <tr>
+                    <td><?php echo $i->format("Y-m-d");?></td>
+                    <td></td>
+                    <td></td>
+                    <td><?php echo $i->format("F");?> Rent</td>
+                    <td></td>
+                    <td></td>
+                    <td>R {{number_format($bookingPayment->monthly_rental, 2, '.', ' ')}}</td>
+                </tr>
+
+            <?php }?>
             <tr>
                 <td style="border-bottom:1px solid #000"></td>
                 <td style="border-bottom:1px solid #000"></td>
@@ -209,7 +132,7 @@
                 <td>Total Due</td>
                 <td></td>
                 <td>R</td>
-                <td>R 50500.00</td>
+                <td>R {{number_format(($bookingPayment->monthly_rental_total + $bookingPayment->deposit + $bookingPayment->loan_admin_fee), 2, '.', ' ')}}</td>
             </tr>
             <tr>
                 <td></td>
@@ -242,7 +165,7 @@
                 <td style="border-bottom:1px solid #000">0.0</td>
                 <td style="border-bottom:1px solid #000">0.0</td>
                 <td style="border-bottom:1px solid #000">0.0</td>
-                <td style="border-bottom:1px solid #000">R 50500.00</td>
+                <td style="border-bottom:1px solid #000">R {{number_format(($bookingPayment->monthly_rental_total + $bookingPayment->deposit + $bookingPayment->loan_admin_fee), 2, '.', ' ')}}</td>
                 <td style="border-bottom:1px solid #000"></td>
                 <td style="border-bottom:1px solid #000"></td>
                 <td style="border-bottom:1px solid #000"></td>
@@ -254,10 +177,10 @@
         Subject to change</p>
         <br/>
         <p><b>BANKING DETAILS</b></p>
-        <p><b>Pontei Investments PTY (Ltd)<br/>
-        NEDBANK<br/>
-        ACCOUNT NUMBER: 1171770340<br/>
-        BRANCH NAME: EASTERN GAUTENG</p>
+        <p><b>{{$property->account_name}}<br/>
+        {{$property->bank_name}}<br/>
+        ACCOUNT NUMBER: {{$property->account_number}}<br/>
+        BRANCH NAME: {{$property->branch}}</p>
     </div>
 </body>
 

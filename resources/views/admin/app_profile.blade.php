@@ -319,7 +319,7 @@
                                 <div id="booking_btns">
                                     @if($paymentBooking->booking_fee_waived == '0')
                                         @if($paymentBooking->booking_fee != '0')
-                                            <button type="button" class="waiveBtn" onClick="waive('rob_b_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'reason_booking_fee', 'booking_fee_waived', 'Booking fee')">Waive</button>
+                                            <button type="button" class="waiveBtn" onClick="waive('rob_b_waived', '{{$user[0]['userInfo']['userUid']}}','{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'reason_booking_fee', 'booking_fee_waived', 'Booking fee')">Waive</button>
                                         @endif
                                     @else
                                         @if($paymentBooking->rob_b_waived == '2')
@@ -350,7 +350,7 @@
                                 <div id="loan_btns">
                                     @if($paymentBooking->loan_admin_fee_waived == '0')
                                         @if($paymentBooking->loan_admin_fee != '0')
-                                            <button type="button" class="waiveBtn" onClick="waive('rob_loan_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'reason_admin_fee', 'loan_admin_fee_waived', 'Loan Admin fee')">Waive</button>
+                                            <button type="button" class="waiveBtn" onClick="waive('rob_loan_waived', '{{$user[0]['userInfo']['userUid']}}','{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'reason_admin_fee', 'loan_admin_fee_waived', 'Loan Admin fee')">Waive</button>
                                         @endif
                                     @else
                                         @if($paymentBooking->rob_loan_waived == '2')
@@ -381,7 +381,7 @@
                                 <div id="deposit_btns">
                                     @if($paymentBooking->deposit_waived == '0')
                                         @if($paymentBooking->deposit != '0')
-                                            <button type="button" class="waiveBtn" onClick="waive('rob_deposit_waived', '{{$user[0]['userInfo']['id']}}','{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'reason_deposit', 'deposit_waived', 'Deposit')">Waive</button>
+                                            <button type="button" class="waiveBtn" onClick="waive('rob_deposit_waived', '{{$user[0]['userInfo']['userUid']}}','{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'reason_deposit', 'deposit_waived', 'Deposit')">Waive</button>
                                         @endif
                                     @else
                                         @if($paymentBooking->rob_deposit_waived == '2')
@@ -400,23 +400,23 @@
                     <tr>
                         <td>Monthly Rental</td>
                         <td></td>
-                        <td>R {{$paymentBooking->monthly_rental}}</td>
-                        <td>R {{$paymentBooking->monthly_rental_total}}</td>
+                        <td id="monthlyRentalAmnt">R {{$paymentBooking->monthly_rental}}</td>
+                        <td id="monthlyRentalTotalAmnt">R {{$paymentBooking->monthly_rental_total}}</td>
                     </tr>
                     <tr>
                         <td>Funded</td>
                         <td></td>
                         <td></td>
-                        <td>@if($paymentBooking->total_funded != '0') R {{$paymentBooking->total_funded}} @else - @endif</td>
+                        <td id="fundedAmnt">@if($paymentBooking->total_funded != '0') R {{$paymentBooking->total_funded}} @else - @endif</td>
                     </tr>
                     <tr>
                         <td>Top-Up</td>
                         <td></td>
                         <td></td>
-                        <td>@if($paymentBooking->total_top_up != '0') R {{$paymentBooking->total_top_up}} @else - @endif</td>
+                        <td id="topupAmnt">@if($paymentBooking->total_top_up != '0') R {{$paymentBooking->total_top_up}} @else - @endif</td>
                     </tr>
                 </table>
-                <button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['id']}}')">Generate Pro Forma Invoice</button>
+                <button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Generate Pro Forma Invoice</button>
                 @endif
                         
 
@@ -1025,7 +1025,7 @@
 <div class="footerClearfix"></div>
 
 <div class="hidden">
-<a href="/storage/test.pdf" download><button type="button" id="downloadBtn">Download</button></a></hidden>
+<a href="/storage/files/<?php if($user[0]['userInfo']['userId'] == ""){echo $user[0]['userInfo']['userPassport']; }else{ echo $user[0]['userInfo']['userId'];} ?>/<?php if($user[0]['userInfo']['userId'] == ""){echo $user[0]['userInfo']['userPassport']; }else{ echo $user[0]['userInfo']['userId'];} ?>_invoice.pdf" download><button type="button" id="downloadBtn">Download</button></a></hidden>
 
 <div class="clearSpaceLogin"></div>
 <div class="clearSpaceLogin"></div>
@@ -1108,9 +1108,6 @@
                 bookingId: bookingId, 
                 userId: userId, 
             },
-            cache: false,
-            contentType: false,
-            processData: false,
 
             success: function (data) {
                 $("#downloadBtn").click();
@@ -1537,7 +1534,7 @@
             success: function (data) {
                 let properties = data[0];
 
-                console.log(data)
+                // console.log(data)
 
                 let selProp = data[2].property;
 
@@ -1573,11 +1570,11 @@
 
     function changeBooking(bookingId, type){
 
-        console.log(bookingId)
-        console.log(type)
+        // console.log(bookingId)
+        // console.log(type)
 
         if (type === "generate" && $('#moveInStatus').length) {
-            console.log('regen lease');
+            // console.log('regen lease');
             $("#change_bed_type").val('cancel')
         }
 
@@ -1591,7 +1588,7 @@
             success: function (data) {
                 let properties = data[0];
 
-                console.log(data)
+                // console.log(data)
 
                 let selProp = data[2].property;
 
@@ -1762,8 +1759,8 @@
 
                         $('#floor').html('<option>Choose a Floor</option>');
 
-                        console.log("roomData")
-                        console.log(roomData)
+                        // console.log("roomData")
+                        // console.log(roomData)
 
                         Object.keys(roomData).forEach( function(key) {
 
@@ -1787,7 +1784,7 @@
                                 selected = "selected='selected'";
                             }*/
 
-                            console.log(floor_name)
+                            // console.log(floor_name)
 
                             let meta = roomData[key].meta_info_1 !== null ? roomData[key].meta_info_1 : "";
 
@@ -1873,7 +1870,7 @@
                     }); 
 
                     Object.keys(roomCodes).forEach( function(key) {
-                        console.log(roomCodes[key])
+                        // console.log(roomCodes[key])
                         if(RoomSelected == roomCodes[key]){
                             $('#room').append("<option value='"+roomCodes[key]+"' selected>"+roomCodes[key]+"</option>")
                         }else{
@@ -2159,7 +2156,7 @@
                     bed_code = "Bed Code: "+data[0].bed_code;
                     
                     if("<?php echo in_array($booking->property, $allowedResidences);?>"){
-                        console.log('1')
+                        // console.log('1')
                         if("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2){
                             // if(data[2] == 'false'){                            
                                 var unallocated_bed = '<button data-lease="'+data[2]+'" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
@@ -2393,7 +2390,7 @@
         }
     })
     $("#pNationality").on('change', function(){
-        console.log($("#pNationality").val())
+        // console.log($("#pNationality").val())
         if($("#pNationality").val() == "South Africa"){
             $("#pPassportField").addClass('hidden')
             $("#pIdField").removeClass('hidden')
@@ -2538,6 +2535,7 @@
                         $("#change_bed_type").val();
                         bookingTypeDetails();
                         refreshActions();
+                        getBookingPaymentInfo();
 
                         // $(".waived_paid_wording").empty();
 
@@ -2600,6 +2598,7 @@
                     
                     // window.location.reload();
 
+                    getBookingPaymentInfo();
                     bookingTypeDetails();
                     refreshActions();
                     $("#myModalEditLease").html("");
@@ -2682,9 +2681,9 @@
             success: function (data) {
                 //
 
-                console.log(data)
+                // console.log(data)
                 let roomData = data[3]
-                console.log(roomData)
+                // console.log(roomData)
 
                 $("#roomType").empty().append('<option value="">Select One</option>');
                 Object.keys(roomData).forEach( function(key) {
@@ -2936,7 +2935,7 @@
                 
                 data.forEach(myFunction);
                 function myFunction(item, index) {
-                    console.log(item)
+                    // console.log(item)
                     if(item['actionUserRole'] == "1"){
                         if(item['users']['user_role_name'] == ""){
                             var role = '<button type="button" class="admin">Admin</button>';
@@ -3217,6 +3216,68 @@
         })
     }
 
+    function getBookingPaymentInfo(){
+        $.ajax({
+            type: "post",
+            url: "/getPaymentInfo",
+            data: {
+                bookingId: "{{$user[0]['userInfo']['bookingId']}}",
+            },
+
+            success: function (data) {
+                console.log(data)
+
+                var bookingPrice = data.booking_fee == '0' ? '-' : "R "+data.booking_fee
+                var adminPrice = data.loan_admin_fee == '0' ? '-' : "R "+data.loan_admin_fee
+                var depositPrice = data.deposit == '0' ? '-' : "R "+data.deposit
+
+                var MonthlyPrice = data.monthly_rental == '0' ? '-' : "R "+data.monthly_rental
+                var MonthlyTotal = data.monthly_rental_total == '0' ? '-' : "R "+data.monthly_rental_total
+                var TopupPrice = data.total_top_up == '0' ? '-' : "R "+data.total_top_up
+
+                $("#booking_info").empty().append(bookingPrice)
+                if(bookingPrice != '-'){
+                    @if($paymentBooking)
+                        $("#booking_btns").empty().append('<button type="button" class="waiveBtn" onClick="waive(\'rob_b_waived\', \'{{$user[0]['userInfo']['userUid']}}\',\'{{$paymentBooking->bookingId}}\', \'booking_info\', \'booking_btns\', \'reason_booking_fee\', \'booking_fee_waived\', \'Booking Fee\')">Waive</button>');
+                    @endif
+                }
+
+                $("#loan_info").empty().append(adminPrice)
+                if(adminPrice != '-'){
+                    @if($paymentBooking)
+                        if(data.loan_admin_fee_waived == '0'){
+                            $("#loan_btns").empty().append('<button type="button" class="waiveBtn" onClick="waive(\'rob_loan_waived\', \'{{$user[0]['userInfo']['userUid']}}\',\'{{$paymentBooking->bookingId}}\', \'loan_info\', \'loan_btns\', \'reason_admin_fee\', \'loan_admin_fee_waived\', \'Loan Admin fee\')">Waive</button>')
+                        }else{
+                            if(data.rob_loan_waived == '2'){
+                                $("#loan_btns").empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\'rob_loan_waived\', \'{{$paymentBooking->bookingId}}\', \'loan_info\', \'loan_btns\', \'Loan Admin fee\', \'reason_admin_fee_reject\', \'loan_admin_fee_waived\')">Change</button>')
+                            }else{
+                                $("#loan_btns").empty().append('<button type="button" class="waiveAprv" onClick="ActionWaiveAprv(\'rob_loan_waived\', \'{{$paymentBooking->bookingId}}\', \'loan_info\', \'loan_btns\', \'Loan Admin fee\')">Approve</button><button type="button" class="waiveRej" onClick="ActionWaiveRej(\'rob_loan_waived\', \'{{$paymentBooking->bookingId}}\', \'loan_info\', \'loan_btns\', \'Loan Admin fee\', \'reason_admin_fee_reject\', \'loan_admin_fee_waived\')">Reject</button>')
+                            }
+                        }
+                    @endif
+                }
+
+                $("#deposit_info").empty().append(depositPrice)
+                if(depositPrice != '-'){
+                    @if($paymentBooking)
+                        $("#deposit_btns").empty().append('<button type="button" class="waiveBtn" onClick="waive(\'rob_deposit_waived\', \'{{$user[0]['userInfo']['userUid']}}\',\'{{$paymentBooking->bookingId}}\', \'deposit_info\', \'deposit_btns\', \'reason_deposit\', \'deposit_waived\', \'Deposit\')">Waive</button>')
+                    @endif
+                }
+
+                $("#monthlyRentalAmnt").empty().append(MonthlyPrice)
+                $("#monthlyRentalTotalAmnt").empty().append(MonthlyTotal)
+                $("#topupAmnt").empty().append(TopupPrice)
+
+ 
+
+                
+
+                refreshActions();  
+                checkUserStatus();
+            },
+        }); 
+    }
+
     function ActionWaiveRej(changeField, bookingId, updateField1, updateField2, textChange, rejField, field){
         Swal.fire({
             title: 'Are you sure?',
@@ -3246,7 +3307,7 @@
                                 changeField: changeField,
                                 bookingId: bookingId,
                                 textChange: textChange,
-                                userId: "{{$user[0]['userInfo']['id']}}",
+                                userId: "{{$user[0]['userInfo']['userUid']}}",
                                 rejField: rejField,
                                 reason: result.value,
                                 field: field,
@@ -3283,7 +3344,7 @@
 
                                 @if($paymentBooking)
                                 $("#"+updateField1).empty().append(value)
-                                $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="waive(\''+changeField+'\', \'{{$user[0]['userInfo']['id']}}\',\'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+reason+'\', \''+waived+'\', \''+wording+'\')">Waive</button>')
+                                $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="waive(\''+changeField+'\', \'{{$user[0]['userInfo']['userUid']}}\',\'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+reason+'\', \''+waived+'\', \''+wording+'\')">Waive</button>')
                                 @endif
 
                                 
@@ -3316,7 +3377,7 @@
                         changeField: changeField,
                         bookingId: bookingId,
                         textChange: textChange,
-                        userId: "{{$user[0]['userInfo']['id']}}",
+                        userId: "{{$user[0]['userInfo']['userUid']}}",
                     },
 
                     success: function (data) {
@@ -3601,7 +3662,7 @@
 
             success: function (data) {          
                 // if($("#change_bed_type").val() == "cancel"){
-                    console.log(data)
+                    // console.log(data)
 
                     let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
 
@@ -3903,7 +3964,7 @@
                     if (!$(this).parent().hasClass('hidden')) {
                         req = 0
 
-                        console.log($(this)[0]["id"])
+                        // console.log($(this)[0]["id"])
 
                         $(this).addClass("fieldError")
                         id = $(this)[0]["id"]
@@ -4136,7 +4197,7 @@
 
         var req = 1;
 
-        console.log($("#app_address_p").val())
+        // console.log($("#app_address_p").val())
 
         if(document.getElementById("app_address_p").checked !== true){
             postal = $("#pAddressPostal").val()
@@ -4144,11 +4205,11 @@
             if(/\b\d{4}\b/g.test(postal)){
                 $("#pAddressPostal").removeClass("fieldError")
                 $("#pAddressPostal_error").addClass('hidden')
-                console.log("1")
+                // console.log("1")
             }else{
                 $("#pAddressPostal").addClass("fieldError")
                 $("#pAddressPostal_error").removeClass('hidden')
-                console.log('2')
+                // console.log('2')
             }
 
             var sponArr = ["pFirstName", "pLastName", "pCell_no", "sponCellCode", "pEmail", "pNationality", "pAddress1", "pAddress2", "pAddressCity", "pAddressPostal"];

@@ -39,6 +39,16 @@
             <input type="text" name="building_prefix" id="building_prefix" value="<?php if(!empty($propertyData)){echo $propertyData->building_prefix;}?>" onKeyUp="updatePrefix()" maxLength="2">
         </div>
 
+        <div class="form-field">
+            <label>Company Registration</label>
+            <input type="text" name="company_reg" id="company_reg" value="<?php if(!empty($propertyData)){echo $propertyData->company_reg;}?>">
+        </div>
+
+        <div class="form-field">
+            <label>VAT Number</label>
+            <input type="text" name="company_vat" id="company_vat" value="<?php if(!empty($propertyData)){echo $propertyData->company_vat;}?>">
+        </div>
+
         <hr/>
 
         <div class="form-field">
@@ -77,6 +87,7 @@
         <div class="form-field">
             <br/>
         </div>
+
 
 
 

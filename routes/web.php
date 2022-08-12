@@ -146,6 +146,8 @@ Route::post('/change-booking', [HomeController::class, 'change_booking']);
 Route::post('/change-lease', [HomeController::class, 'change_lease']);
 Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 
+Route::post('/getPaymentInfo', [HomeController::class, 'getPaymentInfo']);
+
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::post("/manage-properties-filter", [HomeController::class, 'properties_filter']);
 Route::get("/manage-properties-filter-v2", [HomeController::class, 'properties_filter_v2']);
