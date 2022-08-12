@@ -180,7 +180,8 @@
         <p><b>{{$property->account_name}}<br/>
         {{$property->bank_name}}<br/>
         ACCOUNT NUMBER: {{$property->account_number}}<br/>
-        BRANCH NAME: {{$property->branch}}</p>
+        <!-- BRANCH NAME: {{$property->branch}}</p> -->
+        BRANCH NUMBER: {{$property->branch_code}}</p>
     </div>
 </body>
 
