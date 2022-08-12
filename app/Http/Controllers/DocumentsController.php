@@ -13,6 +13,7 @@ use App\Models\Residence;
 use App\Models\OnlinePayments;
 use Jenssegers\Agent\Agent;
 use App\Models\StudentsInfo;
+use App\Models\BookingPayment;
 
 class DocumentsController extends Controller {
 
@@ -265,6 +266,34 @@ class DocumentsController extends Controller {
                 $studentTypeChanged = 1;
             }
 
+            if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
+                $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
+                $funded = $institution->nsfas_amount;
+                $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
+                BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
+                    'deposit' => '0',
+                    'loan_admin_fee' => '0',
+                    'total_funded' => $funded,
+                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded)
+                ]);
+                $studentTypeChanged = 1;
+            }
+
+            if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
+                $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
+                $admin_fee = Lookups::where('group_id', '8')->first();
+                $funded = $institution->nsfas_amount;
+                $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
+                BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
+                    'deposit' => $thisBookingPayment->monthly_rental,
+                    'loan_admin_fee' => $admin_fee->lookup_name,
+                    'total_funded' => $thisBookingPayment->monthly_rental_total,
+                    'total_top_up' => '0',
+                ]);
+                $studentTypeChanged = 1;
+            }
+
+
         } elseif ($request->type == "bankStatement") {
             $newData = [
                 'studentType|Student Type' => $request->studentType,
@@ -299,6 +328,34 @@ class DocumentsController extends Controller {
             ];
 
             if($oldStudentData->studentType !== $request->studentType){
+                $studentTypeChanged = 1;
+            }
+
+
+            if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
+                $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
+                $funded = $institution->nsfas_amount;
+                $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
+                BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
+                    'deposit' => '0',
+                    'loan_admin_fee' => '0',
+                    'total_funded' => $funded,
+                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded)
+                ]);
+                $studentTypeChanged = 1;
+            }
+
+            if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
+                $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
+                $admin_fee = Lookups::where('group_id', '8')->first();
+                $funded = $institution->nsfas_amount;
+                $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
+                BookingPayment::where('bookingId', $oldStudentData->bookingId)->update([
+                    'deposit' => $thisBookingPayment->monthly_rental,
+                    'loan_admin_fee' => $admin_fee->lookup_name,
+                    'total_funded' => $thisBookingPayment->monthly_rental_total,
+                    'total_top_up' => '0',
+                ]);
                 $studentTypeChanged = 1;
             }
         }

@@ -25,6 +25,7 @@ class Lookups extends Model
         'day_from',
         'month_to',
         'day_to',
+        'nsfas_amount',
     ];
 
     public function users(){

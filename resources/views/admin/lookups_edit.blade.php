@@ -176,6 +176,11 @@
             </select>
         </div>
 
+        <div class="form-field <?php if($lookup->group_id !== "1"){echo "hidden";} ?>" id="nsfas_value">
+            <label>NSFAS Funded Amount</label>
+            <input type="number" id="nsfas_amount" name="nsfas_amount" value="{{$lookup->nsfas_amount}}" >
+        </div>
+
         <!-- <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateFrom">
             <label>Waiver Date From</label>
             <input type="date" name="date_from" id="date_from" value="<?php echo $lookup->waiver_date_from;?>">
@@ -198,6 +203,7 @@
             $("#waiverValue").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
+            $("#nsfas_value").addClass('hidden');
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
         }else if($("#group_id").val() == "9"){
@@ -205,16 +211,25 @@
             $("#normalVlaue").addClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
+            $("#nsfas_value").addClass('hidden');
         }else if($("#group_id").val() == "10" || $("#group_id").val() == "11"){
             $("#mailWording").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
+            $("#nsfas_value").addClass('hidden');
+        }else if($("#group_id").val() == "1" ){
+            $("#nsfas_value").removeClass('hidden');
+            $("#normalVlaue").addClass('hidden');
+            $("#waiverValue").addClass('hidden');
+            $("#mailWording").addClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
         }else{
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
+            $("#nsfas_value").addClass('hidden');
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
         }

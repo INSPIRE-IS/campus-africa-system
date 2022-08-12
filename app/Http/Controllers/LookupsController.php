@@ -54,6 +54,13 @@ class LookupsController extends Controller {
                 "lookup_name" => $request->onlineApp_value,
                 "actionUserUid" => Auth::user()->id,
             ];
+        }else if($request->group_id == "1"){
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->value,
+                "nsfas_amount" => $request->nsfas_amount,
+                "actionUserUid" => Auth::user()->id,
+            ];
         }else{
             $data['group_id'] = $request->group_id;
             $data['lookup_name'] = $request->value;
@@ -112,6 +119,13 @@ class LookupsController extends Controller {
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->onlineApp_value,
+                "actionUserUid" => Auth::user()->id,
+            ];
+        }elseif($request->group_id == '1'){
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->value,
+                "nsfas_amount" => $request->nsfas_amount,
                 "actionUserUid" => Auth::user()->id,
             ];
         }else{
@@ -886,14 +900,7 @@ class LookupsController extends Controller {
             }
 
 
-            if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
-                $admin_fee = $admin_fee['lookup_name'];
-                $deposit = $monthly = $deposit;
-            }else{
-                $monthly = $deposit;
-                $deposit = 0;
-                $admin_fee = 0;
-            }
+           
 
             // $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
 
@@ -902,7 +909,23 @@ class LookupsController extends Controller {
             $month1 = date('m', $ts1);
             $month2 = date('m', $ts2);
             $diff = $month2 - $month1;
-            $yearly_rent = floatval($monthly) * floatval($diff);
+            $yearly_rent = floatval($deposit) * floatval($diff);
+
+            $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
+            $funded = $institution->nsfas_amount;
+
+            $topup = floatval($yearly_rent) - floatval($funded);
+
+            if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
+                $admin_fee = $admin_fee['lookup_name'];
+                $deposit = $monthly = $deposit;
+                $funded = $yearly_rent;
+                $topup = '0';
+            }else{
+                $monthly = $deposit;
+                $deposit = 0;
+                $admin_fee = 0;
+            }
 
             BookingPayment::create([
                 "bookingId" => $booking->id, 
@@ -917,11 +940,10 @@ class LookupsController extends Controller {
                 "rob_deposit_waived" => 0, 
                 "monthly_rental" => $monthly, 
                 "monthly_rental_total" => $yearly_rent, 
-                "total_funded" => $yearly_rent, 
-                "total_top_up" => 0
+                "total_funded" => $funded, 
+                "total_top_up" => $topup,
             ]);
 
-            break;
         }
     }
 }
