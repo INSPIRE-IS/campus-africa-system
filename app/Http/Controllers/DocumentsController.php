@@ -14,6 +14,7 @@ use App\Models\OnlinePayments;
 use Jenssegers\Agent\Agent;
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
+use DateTime;
 
 class DocumentsController extends Controller {
 
@@ -269,11 +270,15 @@ class DocumentsController extends Controller {
             if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
-                $ts1 = strtotime($booking->lease_from_date);
-                $ts2 = strtotime($booking->lease_to_date);
-                $month1 = date('m', $ts1);
-                $month2 = date('m', $ts2);
-                $diff = $month2 - $month1;
+                // $ts1 = strtotime($booking->lease_from_date);
+                // $ts2 = strtotime($booking->lease_to_date);
+                // $month1 = date('m', $ts1);
+                // $month2 = date('m', $ts2);
+                // $diff = $month2 - $month1;
+                $diff = 0;
+                for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                    $diff++;
+                }
 
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
                 $funded = floatval($institution->nsfas_amount) * floatval($diff);
@@ -290,11 +295,15 @@ class DocumentsController extends Controller {
             if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
-                $ts1 = strtotime($booking->lease_from_date);
-                $ts2 = strtotime($booking->lease_to_date);
-                $month1 = date('m', $ts1);
-                $month2 = date('m', $ts2);
-                $diff = $month2 - $month1;
+                // $ts1 = strtotime($booking->lease_from_date);
+                // $ts2 = strtotime($booking->lease_to_date);
+                // $month1 = date('m', $ts1);
+                // $month2 = date('m', $ts2);
+                // $diff = $month2 - $month1;
+                $diff = 0;
+                for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                    $diff++;
+                }
 
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
                 $admin_fee = Lookups::where('group_id', '8')->first();
@@ -351,11 +360,15 @@ class DocumentsController extends Controller {
             if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
-                $ts1 = strtotime($booking->lease_from_date);
-                $ts2 = strtotime($booking->lease_to_date);
-                $month1 = date('m', $ts1);
-                $month2 = date('m', $ts2);
-                $diff = $month2 - $month1;
+                // $ts1 = strtotime($booking->lease_from_date);
+                // $ts2 = strtotime($booking->lease_to_date);
+                // $month1 = date('m', $ts1);
+                // $month2 = date('m', $ts2);
+                // $diff = $month2 - $month1;
+                $diff = 0;
+                for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                    $diff++;
+                }
 
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
                 $funded = floatval($institution->nsfas_amount) * floatval($diff);
@@ -372,11 +385,15 @@ class DocumentsController extends Controller {
             if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
-                $ts1 = strtotime($booking->lease_from_date);
-                $ts2 = strtotime($booking->lease_to_date);
-                $month1 = date('m', $ts1);
-                $month2 = date('m', $ts2);
-                $diff = $month2 - $month1;
+                // $ts1 = strtotime($booking->lease_from_date);
+                // $ts2 = strtotime($booking->lease_to_date);
+                // $month1 = date('m', $ts1);
+                // $month2 = date('m', $ts2);
+                // $diff = $month2 - $month1;
+                $diff = 0;
+                for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                    $diff++;
+                }
 
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
                 $admin_fee = Lookups::where('group_id', '8')->first();

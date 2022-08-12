@@ -29,6 +29,7 @@ use Jenssegers\Agent\Agent;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\BookingPayment;
 use App\Models\StudentsInfo;
+use DateTime;
 
 class HomeController extends Controller
 {
@@ -2206,11 +2207,15 @@ class HomeController extends Controller
 
         // dd($admin_fee->lookup_name);
 
-        $ts1 = strtotime($booking_data['lease_from_date']);
-        $ts2 = strtotime($booking_data['lease_to_date']);
-        $month1 = date('m', $ts1);
-        $month2 = date('m', $ts2);
-        $diff = $month2 - $month1;
+        // $ts1 = strtotime($booking_data['lease_from_date']);
+        // $ts2 = strtotime($booking_data['lease_to_date']);
+        // $month1 = date('m', $ts1);
+        // $month2 = date('m', $ts2);
+        // $diff = $month2 - $month1;
+        $diff = 0;
+        for($i = new DateTime($booking_data['lease_from_date']); $i <= new DateTime($booking_data['lease_to_date']); $i->modify('+1 month')){
+            $diff++;
+        }
         $yearly_rent = floatval($deposit) * floatval($diff);
 
         $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
@@ -6569,11 +6574,15 @@ class HomeController extends Controller
 
             if($request->studentType == "NSFAS"){
                 $booking = Booking::where('id', $userInfo->bookingId)->first();
-                $ts1 = strtotime($booking->lease_from_date);
-                $ts2 = strtotime($booking->lease_to_date);
-                $month1 = date('m', $ts1);
-                $month2 = date('m', $ts2);
-                $diff = $month2 - $month1;
+                // $ts1 = strtotime($booking->lease_from_date);
+                // $ts2 = strtotime($booking->lease_to_date);
+                // $month1 = date('m', $ts1);
+                // $month2 = date('m', $ts2);
+                // $diff = $month2 - $month1;
+                $diff = 0;
+                for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                    $diff++;
+                }
 
                 $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
                 $funded = floatval($institution->nsfas_amount) * floatval($diff);
@@ -7120,11 +7129,15 @@ class HomeController extends Controller
         }
 
         $booking = Booking::where('id', $userCurr->bookingId)->first();
-        $ts1 = strtotime($booking->lease_from_date);
-        $ts2 = strtotime($booking->lease_to_date);
-        $month1 = date('m', $ts1);
-        $month2 = date('m', $ts2);
-        $diff = $month2 - $month1;
+        // $ts1 = strtotime($booking->lease_from_date);
+        // $ts2 = strtotime($booking->lease_to_date);
+        // $month1 = date('m', $ts1);
+        // $month2 = date('m', $ts2);
+        // $diff = $month2 - $month1;
+        $diff = 0;
+        for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+            $diff++;
+        }
 
         $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
         $admin_fee = Lookups::where('group_id', '8')->first();
@@ -7184,11 +7197,15 @@ class HomeController extends Controller
         }
 
         $booking = Booking::where('id', $userCurr->bookingId)->first();
-        $ts1 = strtotime($booking->lease_from_date);
-        $ts2 = strtotime($booking->lease_to_date);
-        $month1 = date('m', $ts1);
-        $month2 = date('m', $ts2);
-        $diff = $month2 - $month1;
+        // $ts1 = strtotime($booking->lease_from_date);
+        // $ts2 = strtotime($booking->lease_to_date);
+        // $month1 = date('m', $ts1);
+        // $month2 = date('m', $ts2);
+        // $diff = $month2 - $month1;
+        $diff = 0;
+        for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+            $diff++;
+        }
 
         $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
         $admin_fee = Lookups::where('group_id', '8')->first();

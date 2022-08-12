@@ -16,6 +16,7 @@ use App\Models\RoomTypes;
 use Illuminate\Support\Facades\DB;
 use App\Models\Comments;
 use App\Models\BookingPayment;
+use DateTime;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -906,11 +907,15 @@ class LookupsController extends Controller {
     
                 // $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
     
-                $ts1 = strtotime($lookup_lease_dates['lease_from_date']);
-                $ts2 = strtotime($lookup_lease_dates['lease_to_date']);
-                $month1 = date('m', $ts1);
-                $month2 = date('m', $ts2);
-                $diff = $month2 - $month1;
+                // $ts1 = strtotime($lookup_lease_dates['lease_from_date']);
+                // $ts2 = strtotime($lookup_lease_dates['lease_to_date']);
+                // $month1 = date('m', $ts1);
+                // $month2 = date('m', $ts2);
+                // $diff = $month2 - $month1;
+                $diff = 0;
+                for($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')){
+                    $diff++;
+                }
                 $yearly_rent = floatval($deposit) * floatval($diff);
     
                 $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
