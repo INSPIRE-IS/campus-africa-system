@@ -3946,12 +3946,17 @@ class HomeController extends Controller
         $paymentBooking = BookingPayment::where('bookingId', $oldData->id)->first();
         $userInfo = StudentsInfo::where('bookingId', $oldData->id)->where('year', $this_year)->first();
 
-        $ts1 = strtotime($lease_from_date);
-        $ts2 = strtotime($lease_to_date);
-        $month1 = date('m', $ts1);
-        $month2 = date('m', $ts2);
-        $diff = $month2 - $month1;
-        $yearly_rent = floatval($paymentBooking->deposit) * floatval($diff);
+        // $ts1 = strtotime($lease_from_date);
+        // $ts2 = strtotime($lease_to_date);
+        // $month1 = date('m', $ts1);
+        // $month2 = date('m', $ts2);
+        // $diff = $month2 - $month1;
+        $diff = 0;
+        for($i = new DateTime($lease_from_date); $i <= new DateTime($lease_to_date); $i->modify('+1 month')){
+            $diff++;
+        }
+
+        $yearly_rent = floatval($paymentBooking->monthly_rental) * floatval($diff);
         
         $topup = floatval($yearly_rent) - floatval($paymentBooking->total_funded);
 
