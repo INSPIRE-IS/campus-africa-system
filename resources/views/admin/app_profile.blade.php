@@ -834,7 +834,7 @@
                 </div>
                 <div class="form-field">
                     <label>Lease To Time * <span id="lease_to_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                    <input type="time" id="lease_to_time" name="lease_to_time" <?php if($booking->lease_to_time == null){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}}else{echo "value='".$lookup->lease_to_time."'";}?>>
+                    <input type="time" id="lease_to_time" name="lease_to_time" <?php if($booking->lease_to_time == null){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}}else{echo "value='".$booking->lease_to_time."'";}?>>
                 </div>
             </div>
             <div class="form-field-big" id="changeLeaseDatesOnly">
