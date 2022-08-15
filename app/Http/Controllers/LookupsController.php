@@ -927,11 +927,9 @@ class LookupsController extends Controller {
     
                 if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
                     $admin_fee = '1000';
-                    $deposit = $monthly = $deposit;
+                    $deposit = $monthly = $monthlyFunded = $deposit;
                     $funded = $yearly_rent;
                     $topup = '0';
-                    $monthlyFunded = 0;
-
                 }else{
                     $monthly = $deposit;
                     $deposit = 0;

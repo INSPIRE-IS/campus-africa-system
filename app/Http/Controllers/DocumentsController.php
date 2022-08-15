@@ -315,6 +315,7 @@ class DocumentsController extends Controller {
                     'loan_admin_fee' => $admin_fee->lookup_name,
                     'total_funded' => $thisBookingPayment->monthly_rental_total,
                     'total_top_up' => '0',
+                    'funded_monthly' => $thisBookingPayment->monthly_rental,
                 ]);
                 $studentTypeChanged = 1;
             }
@@ -406,7 +407,7 @@ class DocumentsController extends Controller {
                     'loan_admin_fee' => $admin_fee->lookup_name,
                     'total_funded' => $thisBookingPayment->monthly_rental_total,
                     'total_top_up' => '0',
-                    'funded_monthly' => $institution->nsfas_amount,
+                    'funded_monthly' => $institution->monthly_rental,
                 ]);
                 $studentTypeChanged = 1;
             }

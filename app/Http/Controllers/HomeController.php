@@ -2226,10 +2226,10 @@ class HomeController extends Controller
 
         if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
             $admin_fee = $admin_fee->lookup_name;
-            $deposit = $monthly = $deposit;
+            $deposit = $monthly = $monthlyFunded = $deposit;
             $funded = $yearly_rent;
             $topup = '0';
-            $monthlyFunded = 0;
+            // $monthlyFunded = 0;
         }else{
             $monthly = $deposit;
             $deposit = 0;
@@ -4006,7 +4006,7 @@ class HomeController extends Controller
         if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
             $funded = $yearly_rent;
             $topup = '0';
-            $monthlyFunded = 0;
+            $monthlyFunded = $paymentBooking->monthly_rental;
         }else{
             $funded = $funded;
             $topup = $topup;
@@ -5803,7 +5803,7 @@ class HomeController extends Controller
                         if(($user->studentType == "Cash / Direct") || ($user->studentType == "Bursary" && $user->nsfas_bursar !== 1)){
                             $funded = $yearly_rent;
                             $topup = '0';
-                            $monthlyFunded = 0;
+                            $monthlyFunded = $paymentBooking->monthly_rental;
                         }else{
                             $funded = $funded;
                             $topup = $topup;
