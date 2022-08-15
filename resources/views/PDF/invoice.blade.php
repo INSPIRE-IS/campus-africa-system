@@ -34,14 +34,14 @@
                 <td style="text-align:right">Owner Reg No: {{$property->company_reg}}</td>
             </tr>
         </table>
-        <p style="text-align: center">{{$property->account_name}}<br/>
+        <p style="text-align: center">{{$property->account_name}} t/a<br/>
         <span style="text-transform:uppercase">{{$property->residence}}</span> - CAMPUS AFRICA<br/>
         TEL: 011 0256257 | Email: accounts@conurban.co.za | Fax: 0865587632</p>
         <br/>
         <table style="width:100%">
             <tr>
-                <td style="text-transform:uppercase">Performa Invoice</td>
-                <td style="text-align:right">No: 072/2022</td>
+                <td style="text-transform:uppercase">PROFORMA INVOICE</td>
+                <td style="text-align:right">No: PF{{$booking->booking_code}}</td>
             </tr>
         </table>
         <br/>
@@ -83,7 +83,7 @@
                 <td>Lease Admin Fee</td>
                 <td></td>
                 <td></td>
-                <td>R {{number_format($bookingPayment->loan_admin_fee, 2, '.', ' ')}}</td>
+                <td>R {{number_format($leaseFee, 2, '.', ' ')}}</td>
             </tr>
             <tr>
                 <td></td>
@@ -92,7 +92,7 @@
                 <td>Deposit</td>
                 <td></td>
                 <td></td>
-                <td>R {{number_format($bookingPayment->deposit, 2, '.', ' ')}}</td>
+                <td>R {{number_format($deposit, 2, '.', ' ')}}</td>
             </tr>
             <tr>
                 <td></td>
@@ -132,7 +132,7 @@
                 <td>Total Due</td>
                 <td></td>
                 <td>R</td>
-                <td>R {{number_format(($bookingPayment->monthly_rental_total + $bookingPayment->deposit + $bookingPayment->loan_admin_fee), 2, '.', ' ')}}</td>
+                <td>R {{number_format(($bookingPayment->monthly_rental_total + $deposit + $leaseFee), 2, '.', ' ')}}</td>
             </tr>
             <tr>
                 <td></td>
@@ -165,7 +165,7 @@
                 <td style="border-bottom:1px solid #000">0.0</td>
                 <td style="border-bottom:1px solid #000">0.0</td>
                 <td style="border-bottom:1px solid #000">0.0</td>
-                <td style="border-bottom:1px solid #000">R {{number_format(($bookingPayment->monthly_rental_total + $bookingPayment->deposit + $bookingPayment->loan_admin_fee), 2, '.', ' ')}}</td>
+                <td style="border-bottom:1px solid #000">R {{number_format(($bookingPayment->monthly_rental_total + $deposit + $leaseFee), 2, '.', ' ')}}</td>
                 <td style="border-bottom:1px solid #000"></td>
                 <td style="border-bottom:1px solid #000"></td>
                 <td style="border-bottom:1px solid #000"></td>

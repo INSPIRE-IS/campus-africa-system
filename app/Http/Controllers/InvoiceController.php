@@ -31,7 +31,17 @@ class InvoiceController extends Controller
             $userIdentification = $user->userId;
         }
 
-        $pdf = PDF::loadView('PDF.invoice', compact('user', 'booking', 'property', 'bookingPayment'));
+        $leaseFee = $bookingPayment->loan_admin_fee;
+        $deposit = $bookingPayment->deposit;
+
+        if($bookingPayment->rob_loan_waived == '2'){
+            $leaseFee = 0;
+        }
+        if($bookingPayment->rob_deposit_waived == '2'){
+            $deposit = 0;
+        }
+
+        $pdf = PDF::loadView('PDF.invoice', compact('user', 'booking', 'property', 'bookingPayment', 'leaseFee', 'deposit'));
         $content = $pdf->download('test')->getOriginalContent();
         $new_name = $userIdentification . '_invoice.pdf';
 
