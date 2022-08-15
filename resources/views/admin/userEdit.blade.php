@@ -156,7 +156,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_waive_fee" name="role_waive_fee" value="1" <?php if($user->role_waive_fee == "1"){echo "checked";} ?>>
-                    <label for="role_waive_fee" style="width:500px">Waive Booking Fee</label>
+                    <label for="role_waive_fee" style="width:500px">Request Fee Waiver</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_approve_waive" name="role_approve_waive" value="1" <?php if($user->role_approve_waive == "1"){echo "checked";} ?>>
