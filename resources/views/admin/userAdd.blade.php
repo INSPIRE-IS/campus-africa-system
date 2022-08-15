@@ -327,6 +327,7 @@
             document.getElementById('role_change_student_type').checked = true;
             document.getElementById('role_change_building').checked = true;
             document.getElementById('role_toggle_online_booking').checked = true;
+            document.getElementById('role_waive_fee').checked = true;
             
         }
 
@@ -340,6 +341,8 @@
             document.getElementById('role_non_funding').checked = true;
             document.getElementById('role_funding').checked = true;
             document.getElementById('role_app_lease').checked = true;
+            document.getElementById('role_approve_waive').checked = true;
+            
         }
     })
 </script>
