@@ -287,7 +287,8 @@ class DocumentsController extends Controller {
                     'deposit' => '0',
                     'loan_admin_fee' => '0',
                     'total_funded' => $funded,
-                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded)
+                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded),
+                    'funded_monthly' => $institution->nsfas_amount,
                 ]);
                 $studentTypeChanged = 1;
             }
@@ -377,7 +378,8 @@ class DocumentsController extends Controller {
                     'deposit' => '0',
                     'loan_admin_fee' => '0',
                     'total_funded' => $funded,
-                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded)
+                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded),
+                    'funded_monthly' => $institution->nsfas_amount,
                 ]);
                 $studentTypeChanged = 1;
             }
@@ -404,6 +406,7 @@ class DocumentsController extends Controller {
                     'loan_admin_fee' => $admin_fee->lookup_name,
                     'total_funded' => $thisBookingPayment->monthly_rental_total,
                     'total_top_up' => '0',
+                    'funded_monthly' => $institution->nsfas_amount,
                 ]);
                 $studentTypeChanged = 1;
             }

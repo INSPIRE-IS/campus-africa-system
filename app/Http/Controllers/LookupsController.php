@@ -922,12 +922,16 @@ class LookupsController extends Controller {
                 $funded = floatval($institution->nsfas_amount) * floatval($diff);
     
                 $topup = floatval($yearly_rent) - floatval($funded);
+                $monthlyFunded = $institution->nsfas_amount;
+
     
                 if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
                     $admin_fee = '1000';
                     $deposit = $monthly = $deposit;
                     $funded = $yearly_rent;
                     $topup = '0';
+                    $monthlyFunded = 0;
+
                 }else{
                     $monthly = $deposit;
                     $deposit = 0;
@@ -949,6 +953,7 @@ class LookupsController extends Controller {
                     "monthly_rental_total" => $yearly_rent, 
                     "total_funded" => $funded, 
                     "total_top_up" => $topup,
+                    "funded_monthly" => $monthlyFunded
                 ]);
             }
 

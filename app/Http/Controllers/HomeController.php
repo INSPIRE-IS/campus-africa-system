@@ -797,7 +797,7 @@ class HomeController extends Controller
             }
 
             if($returnInfo['Info'] == '1'){
-                return view('admin.app_profile', ["headerTitle" => $returnInfo['headerTitle'], "appProfile" => "true", "user" => $returnInfo['user'], "actions" => $returnInfo['actions'], "completed" => $returnInfo['completed'], "lookups" => $returnInfo['lookups'], "title" => "Student Profile", "booking" => $returnInfo['booking'], "residence" => $returnInfo['residence'], "bookingPropData" => $returnInfo['bookingPropData'], "files_to_download" => $returnInfo['files_to_download'], "booking_paid" => $returnInfo['booking_paid'], 'booking_waived' => $returnInfo['booking_waived'], 'comments' => $returnInfo['comments'], 'leaseApproved' => $returnInfo['leaseApproved'], 'allowedResidences' => $returnInfo['allowedResidences'], "mailVerificationEmail" => $returnInfo['mailVerificationEmail'], "previousBookings" => $returnInfo['previousBookings'], "paymentBooking" => $returnInfo['paymentBooking']]);
+                return view('admin.app_profile', ["headerTitle" => $returnInfo['headerTitle'], "appProfile" => "true", "user" => $returnInfo['user'], "actions" => $returnInfo['actions'], "completed" => $returnInfo['completed'], "lookups" => $returnInfo['lookups'], "title" => "Student Profile", "booking" => $returnInfo['booking'], "residence" => $returnInfo['residence'], "bookingPropData" => $returnInfo['bookingPropData'], "files_to_download" => $returnInfo['files_to_download'], "booking_paid" => $returnInfo['booking_paid'], 'booking_waived' => $returnInfo['booking_waived'], 'comments' => $returnInfo['comments'], 'leaseApproved' => $returnInfo['leaseApproved'], 'allowedResidences' => $returnInfo['allowedResidences'], "mailVerificationEmail" => $returnInfo['mailVerificationEmail'], "previousBookings" => $returnInfo['previousBookings'], "paymentBooking" => $returnInfo['paymentBooking'], "this_year" => $this_year]);
             }elseif($returnInfo['Info'] == '0'){
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
             }elseif($returnInfo['Info'] == '2'){
@@ -2222,19 +2222,21 @@ class HomeController extends Controller
         $funded = floatval($institution->nsfas_amount) * floatval($diff);
 
         $topup = floatval($yearly_rent) - floatval($funded);
+        $monthlyFunded = $institution->nsfas_amount;
 
         if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
             $admin_fee = $admin_fee->lookup_name;
             $deposit = $monthly = $deposit;
             $funded = $yearly_rent;
             $topup = '0';
+            $monthlyFunded = 0;
         }else{
             $monthly = $deposit;
             $deposit = 0;
             $admin_fee = 0;
         }
 
-        BookingPayment::create(["bookingId" => $booking->id, "booking_fee" => $booking_data['room_rate'], "booking_fee_waived" => 0, "rob_b_waived" => 0, "loan_admin_fee" => $admin_fee, "loan_admin_fee_waived" => 0, "rob_loan_waived" => 0, "deposit" => floatval($deposit), "deposit_waived" => 0, "rob_deposit_waived" => 0, "monthly_rental" => $monthly, "monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup]);
+        BookingPayment::create(["bookingId" => $booking->id, "booking_fee" => $booking_data['room_rate'], "booking_fee_waived" => 0, "rob_b_waived" => 0, "loan_admin_fee" => $admin_fee, "loan_admin_fee_waived" => 0, "rob_loan_waived" => 0, "deposit" => floatval($deposit), "deposit_waived" => 0, "rob_deposit_waived" => 0, "monthly_rental" => $monthly, "monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup, "funded_monthly" => $monthlyFunded]);
 
         $bookingYear = substr($request->year, -2);
         $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
@@ -3999,16 +4001,18 @@ class HomeController extends Controller
         $funded = floatval($institution->nsfas_amount) * floatval($diff);
         
         $topup = floatval($yearly_rent) - floatval($funded);
+        $monthlyFunded = $institution->nsfas_amount;
 
         if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
             $funded = $yearly_rent;
             $topup = '0';
+            $monthlyFunded = 0;
         }else{
             $funded = $funded;
             $topup = $topup;
         }
 
-        BookingPayment::where('bookingId', $oldData->id)->update(["monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup]);
+        BookingPayment::where('bookingId', $oldData->id)->update(["monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup, "funded_monthly" => $monthlyFunded]);
 
         return "true";
     }
@@ -5794,16 +5798,18 @@ class HomeController extends Controller
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         
                         $topup = floatval($yearly_rent) - floatval($funded);
+                        $monthlyFunded = $institution->nsfas_amount;
 
                         if(($user->studentType == "Cash / Direct") || ($user->studentType == "Bursary" && $user->nsfas_bursar !== 1)){
                             $funded = $yearly_rent;
                             $topup = '0';
+                            $monthlyFunded = 0;
                         }else{
                             $funded = $funded;
                             $topup = $topup;
                         }
 
-                        BookingPayment::where('bookingId', $user->bookingId)->update(["monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup]);
+                        BookingPayment::where('bookingId', $user->bookingId)->update(["monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup, "funded_monthly" => $monthlyFunded]);
 
 
                         if($booking->lease_from_date !== $updatedDates['lease_from_date']){
@@ -6661,7 +6667,8 @@ class HomeController extends Controller
                     'deposit' => '0',
                     'loan_admin_fee' => '0',
                     'total_funded' => $funded,
-                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded)
+                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded),
+                    'funded_monthly' => $institution->nsfas_amount
                 ]);
             }
         } elseif ($request->task == "inline_edit_kin") {

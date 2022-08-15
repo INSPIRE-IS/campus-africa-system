@@ -418,8 +418,8 @@
                     <tr>
                         <td>Funded</td>
                         <td></td>
-                        <td></td>
-                        <td id="fundedAmnt">@if($paymentBooking->total_funded != '0') R {{$paymentBooking->total_funded}} @else - @endif</td>
+                        <td id="mthlyfunded">@if($paymentBooking->funded_monthly != '0') R {{$paymentBooking->funded_monthly}} @else - @endif</td>
+                        <td id="fundedAmnt">@if($paymentBooking->total_funded != '0' && $paymentBooking->total_funded != null) R {{$paymentBooking->total_funded}} @else - @endif</td>
                     </tr>
                     <tr>
                         <td>Top-Up</td>
@@ -822,19 +822,19 @@
             <div id="LeaseInfo">
                 <div class="form-field">
                     <label>Lease From Date * <span id="lease_from_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                    <input type="date" name="lease_from_date" id="lease_from_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_date."'";}}?>>
+                    <input type="date" name="lease_from_date" id="lease_from_date" <?php if($booking->lease_from_date == null ){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_date."'";}}}else{echo "value='".$booking->lease_from_date."'";}?> max="<?php echo $this_year;?>-12-31" min="<?php echo $this_year;?>-01-01">
                 </div>
                 <div class="form-field">
                     <label>Lease From Time * <span id="lease_from_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                    <input type="time" id="lease_from_time" name="lease_from_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_time."'";}}?>>
+                    <input type="time" id="lease_from_time" name="lease_from_time" <?php if($booking->lease_from_time == null){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_from_time."'";}}}else{echo "value='".$booking->lease_from_time."'";}?>>
                 </div>
                 <div class="form-field">
                     <label>Lease To Date * <span id="lease_to_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                    <input type="date" name="lease_to_date" id="lease_to_date" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_date."'";}}?>>
+                    <input type="date" name="lease_to_date" id="lease_to_date" <?php if($booking->lease_to_date){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_date."'";}}}else{echo "value='".$booking->lease_to_date."'";}?> max="<?php echo $this_year;?>-12-31" min="<?php echo $this_year;?>-01-01">
                 </div>
                 <div class="form-field">
                     <label>Lease To Time * <span id="lease_to_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                    <input type="time" id="lease_to_time" name="lease_to_time" <?php foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}?>>
+                    <input type="time" id="lease_to_time" name="lease_to_time" <?php if($booking->lease_to_time == null){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_time."'";}}}else{echo "value='".$lookup->lease_to_time."'";}?>>
                 </div>
             </div>
             <div class="form-field-big" id="changeLeaseDatesOnly">
@@ -3247,6 +3247,9 @@
                 var MonthlyTotal = data.monthly_rental_total == '0' ? '-' : "R "+data.monthly_rental_total
                 var TopupPrice = data.total_top_up == '0' ? '-' : "R "+data.total_top_up
 
+                var totalFunded = data.total_funded == '0' ? '-' : "R "+data.total_funded
+                var MonthlyTotalFunded = data.funded_monthly == '0' ? '-' : 'R '+data.funded_monthly
+
                 $("#booking_info").empty().append(bookingPrice)
                 if(bookingPrice != '-'){
                     @if($paymentBooking)
@@ -3324,7 +3327,9 @@
 
                 $("#monthlyRentalAmnt").empty().append(MonthlyPrice)
                 $("#monthlyRentalTotalAmnt").empty().append(MonthlyTotal)
+                $("#fundedAmnt").empty().append(totalFunded)
                 $("#topupAmnt").empty().append(TopupPrice)
+                $("#mthlyfunded").empty().append(MonthlyTotalFunded)
 
  
 

@@ -31,7 +31,8 @@ class BookingPayment extends Model
         'reason_deposit',
         'reason_booking_fee_reject',
         'reason_admin_fee_reject',
-        'reason_deposit_reject'
+        'reason_deposit_reject',
+        'funded_monthly'
     ];
 
     public function booking(){
