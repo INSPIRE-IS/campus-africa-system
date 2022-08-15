@@ -830,7 +830,7 @@
                 </div>
                 <div class="form-field">
                     <label>Lease To Date * <span id="lease_to_date_error" class="hidden"><small style="color:red">This field is required</small></span></label>
-                    <input type="date" name="lease_to_date" id="lease_to_date" <?php if($booking->lease_to_date){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_date."'";}}}else{echo "value='".$booking->lease_to_date."'";}?> max="<?php echo $this_year;?>-12-31" min="<?php echo $this_year;?>-01-01">
+                    <input type="date" name="lease_to_date" id="lease_to_date" <?php if($booking->lease_to_date == null){foreach($lookups as $lookup){if($lookup->group_id == "4"){echo "value='".$lookup->lease_to_date."'";}}}else{echo "value='".$booking->lease_to_date."'";}?> max="<?php echo $this_year;?>-12-31" min="<?php echo $this_year;?>-01-01">
                 </div>
                 <div class="form-field">
                     <label>Lease To Time * <span id="lease_to_time_error" class="hidden"><small style="color:red">This field is required</small></span></label>
