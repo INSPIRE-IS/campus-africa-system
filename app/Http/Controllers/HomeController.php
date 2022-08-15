@@ -3459,16 +3459,24 @@ class HomeController extends Controller
 
                 if($booking_data['room_rate'] != $booking->room_rate){
 
-                    $ts1 = strtotime($booking->lease_from_date);
-                    $ts2 = strtotime($booking->lease_to_date);
-                    $month1 = date('m', $ts1);
-                    $month2 = date('m', $ts2);
-                    $diff = $month2 - $month1;
+                    // $ts1 = strtotime($booking->lease_from_date);
+                    // $ts2 = strtotime($booking->lease_to_date);
+                    // $month1 = date('m', $ts1);
+                    // $month2 = date('m', $ts2);
+                    // $diff = $month2 - $month1;
+                    $diff = 0;
+                    for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                        $diff++;
+                    }
                     $yearly_rent = floatval($deposit) * floatval($diff);
+                    $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+
+                    $institution = Lookups::where('id', $user->institutionStudy)->first();
+                    $funded = floatval($institution->nsfas_amount) * floatval($diff);
     
                     $payment = BookingPayment::where('bookingId', $booking->id)->first();
     
-                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $payment->total_funded]);
+                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded]);
                 }
 
     
@@ -3528,16 +3536,25 @@ class HomeController extends Controller
 
                 if($booking_data['room_rate'] != $booking->room_rate){
 
-                    $ts1 = strtotime($booking->lease_from_date);
-                    $ts2 = strtotime($booking->lease_to_date);
-                    $month1 = date('m', $ts1);
-                    $month2 = date('m', $ts2);
-                    $diff = $month2 - $month1;
+                    // $ts1 = strtotime($booking->lease_from_date);
+                    // $ts2 = strtotime($booking->lease_to_date);
+                    // $month1 = date('m', $ts1);
+                    // $month2 = date('m', $ts2);
+                    // $diff = $month2 - $month1;
+                    // $yearly_rent = floatval($deposit) * floatval($diff);
+                    $diff = 0;
+                    for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                        $diff++;
+                    }
                     $yearly_rent = floatval($deposit) * floatval($diff);
+                    $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+
+                    $institution = Lookups::where('id', $user->institutionStudy)->first();
+                    $funded = floatval($institution->nsfas_amount) * floatval($diff);
 
                     $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
-                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $payment->total_funded]);
+                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded]);
                 }
     
                 $actionFileData['userUid'] = $bookingId;
@@ -3779,16 +3796,26 @@ class HomeController extends Controller
 
                     if($booking_data['room_rate'] != $booking->room_rate){
 
-                        $ts1 = strtotime($booking->lease_from_date);
-                        $ts2 = strtotime($booking->lease_to_date);
-                        $month1 = date('m', $ts1);
-                        $month2 = date('m', $ts2);
-                        $diff = $month2 - $month1;
+                        // $ts1 = strtotime($booking->lease_from_date);
+                        // $ts2 = strtotime($booking->lease_to_date);
+                        // $month1 = date('m', $ts1);
+                        // $month2 = date('m', $ts2);
+                        // $diff = $month2 - $month1;
+                        // $yearly_rent = floatval($deposit) * floatval($diff);
+
+                        $diff = 0;
+                        for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                            $diff++;
+                        }
                         $yearly_rent = floatval($deposit) * floatval($diff);
+                        $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+
+                        $institution = Lookups::where('id', $user->institutionStudy)->first();
+                        $funded = floatval($institution->nsfas_amount) * floatval($diff);
 
                         $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
-                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $payment->total_funded]);
+                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded]);
                     }
         
                     $actionFileData['userUid'] = $bookingId;
@@ -3838,16 +3865,26 @@ class HomeController extends Controller
 
                     if($booking_data['room_rate'] != $booking->room_rate){
 
-                        $ts1 = strtotime($booking->lease_from_date);
-                        $ts2 = strtotime($booking->lease_to_date);
-                        $month1 = date('m', $ts1);
-                        $month2 = date('m', $ts2);
-                        $diff = $month2 - $month1;
+                        // $ts1 = strtotime($booking->lease_from_date);
+                        // $ts2 = strtotime($booking->lease_to_date);
+                        // $month1 = date('m', $ts1);
+                        // $month2 = date('m', $ts2);
+                        // $diff = $month2 - $month1;
+                        // $yearly_rent = floatval($deposit) * floatval($diff);
+
+                        $diff = 0;
+                        for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                            $diff++;
+                        }
                         $yearly_rent = floatval($deposit) * floatval($diff);
+                        $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+
+                        $institution = Lookups::where('id', $user->institutionStudy)->first();
+                        $funded = floatval($institution->nsfas_amount) * floatval($diff);
 
                         $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
-                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $payment->total_funded]);
+                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded]);
                     }
         
                     $actionFileData['userUid'] = $bookingId;
@@ -3957,14 +3994,17 @@ class HomeController extends Controller
         }
 
         $yearly_rent = floatval($paymentBooking->monthly_rental) * floatval($diff);
+
+        $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
+        $funded = floatval($institution->nsfas_amount) * floatval($diff);
         
-        $topup = floatval($yearly_rent) - floatval($paymentBooking->total_funded);
+        $topup = floatval($yearly_rent) - floatval($funded);
 
         if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
             $funded = $yearly_rent;
             $topup = '0';
         }else{
-            $funded = $paymentBooking->total_funded;
+            $funded = $funded;
             $topup = $topup;
         }
 
@@ -5719,15 +5759,15 @@ class HomeController extends Controller
     }
 
     public function update_lease_dates(Request $request){
-        $allUsers = User::where('rob_60_cancelled', '0')->get();
-
         $this_year = $request->value;
+        // $allUsers = User::where('rob_60_cancelled', '0')->get();
+        $allUsers = StudentsInfo::where('rob_60_cancelled', '0')->where('year', $this_year)->get();
 
         foreach($allUsers as $user){
 
             if($user->rob_50_approve == "0" || $user->rob_50_approve == "1"){
 
-                    $booking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
+                    $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
 
                     if(!empty($booking) && $booking->lease_unique !== 1){
 
@@ -5741,9 +5781,34 @@ class HomeController extends Controller
 
                         Booking::where('id', $booking->id)->update($updatedDates);
 
+                        $paymentBooking = BookingPayment::where('bookingId', $user->bookingId)->first();
+
+                        $diff = 0;
+                        for($i = new DateTime($updatedDates['lease_from_date']); $i <= new DateTime($updatedDates['lease_to_date']); $i->modify('+1 month')){
+                            $diff++;
+                        }
+                        
+                        $yearly_rent = floatval($paymentBooking->monthly_rental) * floatval($diff);
+
+                        $institution = Lookups::where('id', $user->institutionStudy)->first();
+                        $funded = floatval($institution->nsfas_amount) * floatval($diff);
+                        
+                        $topup = floatval($yearly_rent) - floatval($funded);
+
+                        if(($user->studentType == "Cash / Direct") || ($user->studentType == "Bursary" && $user->nsfas_bursar !== 1)){
+                            $funded = $yearly_rent;
+                            $topup = '0';
+                        }else{
+                            $funded = $funded;
+                            $topup = $topup;
+                        }
+
+                        BookingPayment::where('bookingId', $user->bookingId)->update(["monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup]);
+
+
                         if($booking->lease_from_date !== $updatedDates['lease_from_date']){
                             ActionList::create([
-                                "userUid" => $user->id,
+                                "userUid" => $user->userUid,
                                 "action" => "Bulk Lease From Date Updated From ".$booking->lease_from_date." to ".$updatedDates['lease_from_date'],
                                 "actionUserUid" => Auth::user()->id,
                                 "actionUserDisplayName" => Auth::user()->userFirstName,
@@ -5754,7 +5819,7 @@ class HomeController extends Controller
 
                         if($booking->lease_from_time !== $request->lease_from_time){
                             ActionList::create([
-                                "userUid" => $user->id,
+                                "userUid" => $user->userUid,
                                 "action" => "Bulk Lease From Time Updated From ".$booking->lease_from_time." to ".$request->lease_from_time,
                                 "actionUserUid" => Auth::user()->id,
                                 "actionUserDisplayName" => Auth::user()->userFirstName,
@@ -5765,7 +5830,7 @@ class HomeController extends Controller
 
                         if($booking->lease_to_date !== $updatedDates['lease_to_date']){
                             ActionList::create([
-                                "userUid" => $user->id,
+                                "userUid" => $user->userUid,
                                 "action" => "Bulk Lease To Date Updated From ".$booking->lease_to_date." to ".$updatedDates['lease_to_date'],
                                 "actionUserUid" => Auth::user()->id,
                                 "actionUserDisplayName" => Auth::user()->userFirstName,
@@ -5776,7 +5841,7 @@ class HomeController extends Controller
 
                         if($booking->lease_to_time !== $request->lease_to_time){
                             ActionList::create([
-                                "userUid" => $user->id,
+                                "userUid" => $user->userUid,
                                 "action" => "Bulk Lease To Time Updated From ".$booking->lease_to_time." to ".$request->lease_to_time,
                                 "actionUserUid" => Auth::user()->id,
                                 "actionUserDisplayName" => Auth::user()->userFirstName,
