@@ -3258,7 +3258,7 @@
                             $("#booking_btns").empty().append('<button type="button" class="waiveBtn" onClick="waive(\'rob_b_waived\', \'{{$user[0]['userInfo']['userUid']}}\',\'{{$paymentBooking->bookingId}}\', \'booking_info\', \'booking_btns\', \'reason_booking_fee\', \'booking_fee_waived\', \'Booking Fee\')">Waive</button>');
                         @endif
                     }else{
-                        if(data.booking_fee_waived == '1'){
+                        if(data.rob_b_waived == '1'){
                             $("#booking_info").empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
                         }else{
                             $("#booking_info").empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
@@ -3284,7 +3284,7 @@
                                 $("#loan_btns").empty().append('<button type="button" class="waiveBtn" onClick="waive(\'rob_loan_waived\', \'{{$user[0]['userInfo']['userUid']}}\',\'{{$paymentBooking->bookingId}}\', \'loan_info\', \'loan_btns\', \'reason_admin_fee\', \'loan_admin_fee_waived\', \'Loan Admin fee\')">Waive</button>')
                             @endif
                         }else{
-                            if(data.loan_admin_fee_waived == '1'){
+                            if(data.rob_loan_waived == '1'){
                                 $("#loan_info").empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
                             }else{
                                 $("#loan_info").empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
@@ -3309,7 +3309,7 @@
                                 $("#deposit_btns").empty().append('<button type="button" class="waiveBtn" onClick="waive(\'rob_deposit_waived\', \'{{$user[0]['userInfo']['userUid']}}\',\'{{$paymentBooking->bookingId}}\', \'deposit_info\', \'deposit_btns\', \'reason_deposit\', \'deposit_waived\', \'Deposit\')">Waive</button>')
                             @endif
                         }else{
-                            if(data.deposit_waived == '1'){
+                            if(data.rob_deposit_waived == '1'){
                                 $("#deposit_info").empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
                             }else{
                                 $("#deposit_info").empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')

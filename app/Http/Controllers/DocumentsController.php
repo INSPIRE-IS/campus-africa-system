@@ -267,7 +267,7 @@ class DocumentsController extends Controller {
                 $studentTypeChanged = 1;
             }
 
-            if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
+            if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS' && $request->nsfas_bursar == '1')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
                 // $ts1 = strtotime($booking->lease_from_date);
@@ -280,6 +280,8 @@ class DocumentsController extends Controller {
                     $diff++;
                 }
 
+                
+
                 $institution = Lookups::where('id', $oldStudentData->institutionStudy)->first();
                 $funded = floatval($institution->nsfas_amount) * floatval($diff);
                 $thisBookingPayment = BookingPayment::where('bookingId', $oldStudentData->bookingId)->first();
@@ -291,9 +293,10 @@ class DocumentsController extends Controller {
                     'funded_monthly' => $institution->nsfas_amount,
                 ]);
                 $studentTypeChanged = 1;
+
             }
 
-            if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
+            if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS' && $request->nsfas_bursar == '0')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
                 // $ts1 = strtotime($booking->lease_from_date);
@@ -359,7 +362,7 @@ class DocumentsController extends Controller {
             }
 
 
-            if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS')){
+            if(($request->nsfas_bursar == '1' && $oldStudentData->nsfas_bursar !== '1') || ($studentTypeChanged == '1' && $request->studentType == 'NSFAS' && $request->nsfas_bursar == '1')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
                 // $ts1 = strtotime($booking->lease_from_date);
@@ -385,7 +388,7 @@ class DocumentsController extends Controller {
                 $studentTypeChanged = 1;
             }
 
-            if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS')){
+            if(($request->nsfas_bursar == '0' && $oldStudentData->nsfas_bursar !== '0') || ($studentTypeChanged == '1' && $request->studentType != 'NSFAS' && $request->nsfas_bursar == '0')){
 
                 $booking = Booking::where('id', $oldStudentData->bookingId)->first();
                 // $ts1 = strtotime($booking->lease_from_date);
