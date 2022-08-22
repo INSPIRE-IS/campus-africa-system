@@ -1245,7 +1245,7 @@ class ApplicationController extends Controller
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
-                    if($room->id === $roomTypeId){
+                    if($room->id == $roomTypeId){
                         $roomType = $request->roomType;
                         $roomName = $room->slug;
     

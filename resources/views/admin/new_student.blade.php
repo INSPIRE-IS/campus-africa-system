@@ -1394,7 +1394,7 @@
                     return false;
                 } else {
                     //Disable double clicks
-                    $('.profileSubmit').hide();
+                    // $('.profileSubmit').hide();
 
                     return true;
                 }

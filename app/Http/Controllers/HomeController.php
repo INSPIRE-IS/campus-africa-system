@@ -2151,32 +2151,14 @@ class HomeController extends Controller
             $roomType = "";
             $roomName = "";
 
+            
+
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
-                    // $slugString = str_replace("-", " ", $room->slug);
-                    // $roomType = "";
-                    // $roomName = "";
-
-                    if($room->id === $roomTypeId){
+                    if($room->id == $roomTypeId){
                         $roomType = $request->roomType;
                         $roomName = $room->slug;
-                        
-                        // foreach($allResidences as $residence){
-                        //     if(strtoupper($request->property) == strtoupper($residence->residence)){
-                        //         $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                        //         $requiredName = $request->roomType;
-    
-                        //         foreach($jsonDataRooms as $roomInfo){
-                        //             if($residenceId == $roomInfo->acf->residence){
-                        //                 if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($request->roomType)){
-                        //                     $roomType = $request->roomType;
-                        //                     $roomName = $roomInfo->slug;
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
     
                         $appliesTo = $room->acf->booking_fee_applies_to;
     
@@ -2238,8 +2220,6 @@ class HomeController extends Controller
                 }
             }
         }
-        
-
 
         //Get default lease data for the booking
         $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
@@ -3426,6 +3406,7 @@ class HomeController extends Controller
                                     }
                                 }
                             }
+
                         }
     
                     }
@@ -7849,7 +7830,7 @@ class HomeController extends Controller
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
 
-                    if($room->id === $roomTypeId){
+                    if($room->id == $roomTypeId){
                         $roomType = $request->roomType;
                         $roomName = $room->slug;
     
