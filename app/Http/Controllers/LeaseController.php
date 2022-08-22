@@ -180,16 +180,24 @@ class LeaseController extends Controller
             $data['name'] = $userForLease->userFirstName;
             $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-            $mailArr = explode(";", $allowedMails);
+           
 
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $userForLease->userEmail;
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+            if(!empty($allowedMails)){
+
+                $mailArr = explode(";", $allowedMails);
+    
+                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                    $data['email'] = $userForLease->userEmail;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
             }else{
-                $data['email'] = "conurbandigital@gmail.com";
+                $data['email'] = $userForLease->userEmail;
             }
     
             // if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -200,7 +208,7 @@ class LeaseController extends Controller
     
             Mail::send('email.green_back', $data, function($message) use ($data) {
                 $message->to($data['email'])->subject($data['subject']);
-                $message->cc($data['cc']);
+                $message->bcc($data['cc']);
                 // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });

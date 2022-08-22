@@ -1001,16 +1001,21 @@ class HomeController extends Controller
                     $data['messageForMail'] = $newMessage;
                     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-                    $mailArr = explode(";", $allowedMails);
-
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                        $data['email'] = $genUser->email;
+                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                    if(!empty($allowedMails)){
+                        $mailArr = explode(";", $allowedMails);
+    
+                        if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                            $data['email'] = $genUser->email;
+                        }else{
+                            $data['email'] = "conurbandigital@gmail.com";
+                        }
                     }else{
-                        $data['email'] = "conurbandigital@gmail.com";
+                        $data['email'] = $genUser->email;
                     }
     
                     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -1023,7 +1028,7 @@ class HomeController extends Controller
                         // $message->to($data['email'], $data['name'])->subject
                         //     ('Campus Africa User Application');
                         $message->to($data['email'])->subject($data['subject']);
-                        $message->cc($data['cc']);
+                        $message->bcc($data['cc']);
                         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
                         $message->from('noreply@campusafrica.co.za','Campus Africa');
                     });
@@ -1076,21 +1081,28 @@ class HomeController extends Controller
                 $data['messageForMail'] = $newMessage;
                 $data['subject'] = $newSubject;
 
-                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-                $mailArr = explode(";", $allowedMails);
-
+                
                 $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                 $data['cc'] = explode(";", $allowedMailsCC);
 
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                    $data['email'] = $user->email;
+                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                if(!empty($allowedMails)){
+
+                    $mailArr = explode(";", $allowedMails);
+    
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                        $data['email'] = $user->email;
+                    }else{
+                        $data['email'] = "conurbandigital@gmail.com";
+                    }
                 }else{
-                    $data['email'] = "conurbandigital@gmail.com";
+                    $data['email'] = $user->email;
                 }
 
                 Mail::send('email.red_back', $data, function($message) use ($data) {
                     $message->to($data['email'])->subject($data['subject']);
-                    $message->cc($data['cc']);
+                    $message->bcc($data['cc']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                 });
             }
@@ -1202,16 +1214,25 @@ class HomeController extends Controller
                 $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                 $data['cc'] = explode(";", $allowedMailsCC);
 
-                if(explode("@", $data['email'])[1] == "conurban.co.za"){
-                    $data['email'] = $userForLease->userEmail;
+                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                if(!empty($allowedMails)){
+
+                    $mailArr = explode(";", $allowedMails);
+    
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                        $data['email'] = $userForLease->userEmail;
+                    }else{
+                        $data['email'] = "conurbandigital@gmail.com";
+                    }
                 }else{
-                    $data['email'] = "conurbandigital@gmail.com";
+                    $data['email'] = $userForLease->userEmail;
                 }
 
                 Mail::send('email.green_back', $data, function($message) use ($data) {
                     // $message->to($data['email'], $data['name'])->subject('Application Approved');
                     $message->to($data['email'])->subject($data['subject']);
-                    $message->cc($data['cc']);
+                    $message->bcc($data['cc']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                     // $message->attach($data['file']);
                 });
@@ -1348,7 +1369,7 @@ class HomeController extends Controller
         // Mail::send('email.application_approved', $data, function($message) use ($data) {
         //     $message->to($data['email'], $data['name'])->subject
         //         ('Thank you Application');
-        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->bcc('test@whitehart.co.za','Name');
         //     $message->from('test@test.com','test@test.com');
         // });
 
@@ -1388,7 +1409,7 @@ class HomeController extends Controller
         // Mail::send('email.application_approved', $data, function($message) use ($data) {
         //     $message->to($data['email'], $data['name'])->subject
         //         ('Thank you Application');
-        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->bcc('test@whitehart.co.za','Name');
         //     $message->from('test@test.com','test@test.com');
         // });
 
@@ -1509,7 +1530,7 @@ class HomeController extends Controller
         // Mail::send('email.application_thank_you', $data, function($message) use ($data) {
         //     $message->to("mirichea@whitehart.co.za", "Mirichea")->subject
         //         ('Thank you Application');
-        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->bcc('test@whitehart.co.za','Name');
         //     $message->from('test@test.com','test@test.com');
         // });
 
@@ -2330,16 +2351,21 @@ class HomeController extends Controller
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-            $mailArr = explode(";", $allowedMails);
-
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $user->email;
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+            if(!empty($allowedMails)){
+                $mailArr = explode(";", $allowedMails);
+    
+                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                    $data['email'] = $user->email;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
             }else{
-                $data['email'] = "conurbandigital@gmail.com";
+                $data['email'] = $user->email;
             }
     
             // if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -2353,7 +2379,7 @@ class HomeController extends Controller
                 //     ('Campus Africa User Application');
                 $message->to($data['email'])->subject($data['subject']);
                 // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-                $message->cc($data['cc']);
+                $message->bcc($data['cc']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
         }
@@ -6390,16 +6416,24 @@ class HomeController extends Controller
                     $data['messageForMail'] = $newMessage;
                     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-                    $mailArr = explode(";", $allowedMails);
+                    
 
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                        $data['email'] = $request->userEmail;
+                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                    if(!empty($allowedMails)){
+
+                        $mailArr = explode(";", $allowedMails);
+    
+                        if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                            $data['email'] = $request->userEmail;
+                        }else{
+                            $data['email'] = "conurbandigital@gmail.com";
+                        }
                     }else{
-                        $data['email'] = "conurbandigital@gmail.com";
+                        $data['email'] = $request->userEmail;
                     }
     
                     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -6412,7 +6446,7 @@ class HomeController extends Controller
                         // $message->to($data['email'], $data['name'])->subject
                         //     ('Campus Africa User Application');
                         $message->to($data['email'])->subject($data['subject']);
-                        $message->cc($data['cc']);
+                        $message->bcc($data['cc']);
                         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
                         $message->from('noreply@campusafrica.co.za','Campus Africa');
                     });
@@ -8000,21 +8034,29 @@ class HomeController extends Controller
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-            $mailArr = explode(";", $allowedMails);
+            
 
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $genUser->email;
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+            if(!empty($allowedMails)){
+
+                $mailArr = explode(";", $allowedMails);
+    
+                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                    $data['email'] = $genUser->email;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
             }else{
-                $data['email'] = "conurbandigital@gmail.com";
+                $data['email'] = $genUser->email;
             }
     
             Mail::send('email.yellow_back', $data, function($message) use ($data) {
                 $message->to($data['email'])->subject($data['subject']);
-                $message->cc($data['cc']);
+                $message->bcc($data['cc']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
         }
