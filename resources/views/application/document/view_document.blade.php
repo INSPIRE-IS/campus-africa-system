@@ -91,6 +91,7 @@
             
             <div class="flex" style="margin: 35px 0;" id="buttonSection">
                 @if ($user->rob_60_cancelled == 0)
+                @if($file->fileId != "MDA")
                     @if ($doc_approved == 2)
 
                         @if($user->rob_50_approve != 2 || Auth::user()->role_delete_uploaded == 1)
@@ -123,6 +124,7 @@
                                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                             @endif
                         @endif
+                    @endif
                     @endif
                 @endif
             </div>
@@ -191,6 +193,17 @@
                     <br /><span style='font-weight:bold'>Institution:</span> @foreach($lookups as $lookup) @if($user->institutionStudy == $lookup->id) {{$lookup->lookup_name}} @endif @endforeach</span>
                     <br/><span style='font-weight:bold'>Student Number:</span> {{$user->studentNo}}                
                     <br/><span style='font-weight:bold'>Email:</span> {{$user->userEmail}}
+                @endif
+
+                @if($file->fileId == "MDA")
+                    @if(property_exists($mdaInfoMsg, 'ErrorCode'))
+                        @foreach($mdaInfoMsg->FurtherDetails as $details)
+                            <br/><span style='font-weight:bold'>Failed reason:</span> {{$details->Message}}
+                        @endforeach
+                    @else
+                        <br/><span style='font-weight:bold'>Lease ID:</span> {{$mdaInfoMsg->LeaseId}}
+                        <br/><span style='font-weight:bold'>Tenant ID:</span> {{$mdaInfoMsg->TenantId}}
+                    @endif
                 @endif
             </div>
             
@@ -485,7 +498,13 @@
                         </div>
                     @endif
 
-                    @if(explode("_", $file->fileId)[0] !== "other")
+                    @if($file->fileId == "MDA" && $file->status == "Uploaded")
+                        @if($user->rob_60_cancelled == 0)
+                            <button type="button" class="amend button" style="height:40px;" id="rerun" onClick="runMDA()">Re-run MDA</button>
+                        @endif
+                    @endif
+
+                    @if(explode("_", $file->fileId)[0] !== "other" && $file->fileId != "MDA")
                 
                         @if($user->rob_60_cancelled == 0)
                             <div style="margin-top: 35px;" class="btns_approve_data">
@@ -898,6 +917,36 @@
 
     })
 
+    function runMDA(){
+
+        $("#rerun").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+
+        $.ajax({
+            type: "post",
+            url: "/mda-tenant-save",
+            data: {
+                userUid: "{{$user->userUid}}", 
+            },
+            success: function (data) {
+
+                $("#myModal").html("");
+                $("#myModal").css("display", "none");
+
+                if(data['status'] == "Uploaded"){
+                    var btnType = "action";
+                }else{
+                    var btnType = "approved"
+                }
+
+                $("#MDAStatus").empty().append('<div class="button '+btnType+'"></div>')
+
+
+
+                console.log(data)
+            }
+        })
+    }
+
     function approveData(type) {
         let message = "You are about to approve this data";
 
@@ -1143,6 +1192,26 @@
                     $("#btn_clear_bed").data('lease', 'true');
                     $(".studentType_btn").addClass('hidden')
 
+                    $.ajax({
+                        type: "post",
+                        url: "/mda-tenant-save",
+                        data: {
+                            userUid: "{{$user->userUid}}", 
+                        },
+                        success: function (data) {
+
+                            if(data['status'] == "Uploaded"){
+                                var btnType = "action";
+                            }else{
+                                var btnType = "approved"
+                            }
+
+                            $("#documentsSectionDisplay").append('<div class="section"><div class="label">MDA</div><div class="status" id="MDAStatus"><div class="button '+btnType+'"></div></div><div class="banner" id="MDABanner"><button type="button" onclick="btn_view_document_ajax(\''+data['id']+'\')">View Docuument</button></div></div>')
+
+                            // console.log(data)
+                        }
+                    })
+
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
 
@@ -1176,6 +1245,10 @@
                         
                         uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
                         $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+
+                        var pDoc = document.getElementById("MDAStatus");
+                        parentDiv = pDoc.parentNode;
+                        parentDiv.style.display = 'none';
 
                         bookingTypeDetails();
                         resendLease();
