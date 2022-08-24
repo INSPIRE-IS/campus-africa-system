@@ -940,9 +940,11 @@
 
                 $("#MDAStatus").empty().append('<div class="button '+btnType+'"></div>')
 
+                refreshActions();
 
 
-                console.log(data)
+
+                // console.log(data)
             }
         })
     }
@@ -1185,12 +1187,13 @@
                     $("#myModal").css("display", "none");
 
                     @if(Auth::user()->role_modify_approved == 1)
-                        $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease(' + data[1]['id'] + ', \'generate\')">Change Bed</button>');
+                        $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="cancelLease(' + data[1]['userUid'] + ', \'generate\')">Change Bed</button>');
                     @endif
 
                     // $("#btn_clear_bed").addClass('hidden')
                     $("#btn_clear_bed").data('lease', 'true');
                     $(".studentType_btn").addClass('hidden')
+
 
                     $.ajax({
                         type: "post",
@@ -1207,6 +1210,8 @@
                             }
 
                             $("#documentsSectionDisplay").append('<div class="section"><div class="label">MDA</div><div class="status" id="MDAStatus"><div class="button '+btnType+'"></div></div><div class="banner" id="MDABanner"><button type="button" onclick="btn_view_document_ajax(\''+data['id']+'\')">View Docuument</button></div></div>')
+
+                            refreshActions();
 
                             // console.log(data)
                         }
@@ -1513,7 +1518,7 @@
             },
 
             success: function (data) {
-                console.log(data)
+                // console.log(data)
                 
                 if (data[0] == "done") {
 
@@ -1584,7 +1589,7 @@
                 if (!$(this).parent().hasClass('hidden')) {
                     req = 0
 
-                    console.log($(this)[0]["id"])
+                    // console.log($(this)[0]["id"])
 
                     $(this).addClass("fieldError")
                     id = $(this)[0]["id"]
@@ -1611,7 +1616,7 @@
 
                     } else {
                         alert("error");
-                        console.log(data);
+                        // console.log(data);
                     }
 
                     if(data[1] == '1'){

@@ -19,6 +19,7 @@ use App\Models\StudentsInfo;
 use App\Models\MDAInfo;
 use App\Models\RoomTypes;
 use DateTime;
+use App\Models\ActionList;
 
 class LeaseController extends Controller
 {
@@ -298,14 +299,17 @@ class LeaseController extends Controller
 
                 if(strtoupper($bedUnit[1]) == strtoupper($propertyData->bed)){
                     $RentableId = $list->Id;
+                    break;
                 }
             }
             
         }
 
+        
+
 
         //Create & SAVE Tenant
-        $curl = curl_init();
+       
         $studentType = "";
         $lesseeName = "";
         $listOrTradingName = "";
@@ -322,45 +326,54 @@ class LeaseController extends Controller
             $lesseeName = $listOrTradingName = '"'.$userForLease->userFirstName.' '.$userForLease->userLastname.' | '.$studentType.'"';
         }
 
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/Tenants/Save/',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>'{
-            "Dto" : {
-                "PropertyId" : '.$bookingProperty->mda_id.',
-                "SendSmsOnSave" : false, 
-                "CorrespondenceTypePref" : 3, 
-                "StatementsTo" : 2, 
-                "StatementDeliveryMethod" : 4, 
-                "LesseeName" : '.$lesseeName.', 
-                "ListOrTradingAsName" : '.$listOrTradingName.', 
-                "GroupTenantId" : 3, 
-                "ControlOfficeId" : 1, 
-                "PaymentMethod" : 1, 
-                "LesseeSalutation" : "'.$userForLease->userTitle.'", 
-                "GeneralContactEmailNos" : "'.$userForLease->userEmail.'", 
-                "GeneralContactTelephoneNos" : "'.$userForLease->studentNo.' | '.$lookupsInstit->lookup_name.'", 
-                "GeneralContactName" : "'.$userForLease->userFirstName.' '.$userForLease->userLastname.' | '.$studentType.'", 
-                "GeneralContactMobileNos" : "'.str_replace("+", "", $userForLease->userCellCode).''.$userForLease->userCell.'",
-                "CustomerServiceContactUserId": 4
-            },
-            "ConfirmationResponses" : {}
-        }',
-        CURLOPT_HTTPHEADER => array(
-            'DatabaseIdentifier: CC84465A-301E-4C19-AFA0-1939AB658425',
-            'Authorization: Bearer '.$loginToken,
-            'Content-Type: application/json'
-        ),
-        ));
+        $tenatntId = $userForLease->mda_tenant_id;
 
-        $response = curl_exec($curl);
-        curl_close($curl);
+        if($tenatntId == null){
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/Tenants/Save/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "Dto" : {
+                    "PropertyId" : '.$bookingProperty->mda_id.',
+                    "SendSmsOnSave" : false, 
+                    "CorrespondenceTypePref" : 3, 
+                    "StatementsTo" : 2, 
+                    "StatementDeliveryMethod" : 4, 
+                    "LesseeName" : '.$lesseeName.', 
+                    "ListOrTradingAsName" : '.$listOrTradingName.', 
+                    "GroupTenantId" : 3, 
+                    "ControlOfficeId" : 1, 
+                    "PaymentMethod" : 1, 
+                    "LesseeSalutation" : "'.$userForLease->userTitle.'", 
+                    "GeneralContactEmailNos" : "'.$userForLease->userEmail.'", 
+                    "GeneralContactTelephoneNos" : "'.$userForLease->studentNo.' | '.$lookupsInstit->lookup_name.'", 
+                    "GeneralContactName" : "'.$userForLease->userFirstName.' '.$userForLease->userLastname.' | '.$studentType.'", 
+                    "GeneralContactMobileNos" : "'.str_replace("+", "", $userForLease->userCellCode).''.$userForLease->userCell.'",
+                    "CustomerServiceContactUserId": 4
+                },
+                "ConfirmationResponses" : {}
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'DatabaseIdentifier: CC84465A-301E-4C19-AFA0-1939AB658425',
+                'Authorization: Bearer '.$loginToken,
+                'Content-Type: application/json'
+            ),
+            ));
+    
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $tenatntId = json_decode($response)->TenantId;
+        }
+
 
         //get rental prices
         $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
@@ -389,19 +402,14 @@ class LeaseController extends Controller
             $deposit = $roomTypeData->rent_price;
         }
 
-        $tenatntId = json_decode($response)->TenantId;
+        if($userForLease->mda_tenant_id == null){
+            StudentsInfo::where('id', $userForLease->id)->update(['mda_tenant_id' => $tenatntId]);
+            MDAInfo::create(["userUid" => $userForLease->userUid, "mda_tenant_id" => $tenatntId, "mda_data" => $response, 'call_type' => '1']);
+        }
 
-        StudentsInfo::where('id', $userForLease->id)->update(['mda_tenant_id' => $tenatntId]);
-
-        MDAInfo::create(["userUid" => $userForLease->userUid, "mda_tenant_id" => $tenatntId, "mda_data" => $response, 'call_type' => '1']);
-
-        // $fromDate = new DateTime($bookingForLease->lease_from_date);
-        // $toDate = new DateTime($bookingForLease->lease_to_date);
 
         //Create MDA Lease
         $curl = curl_init();
-
-        // $deposit = '4500';
 
         $leasefrom = $bookingForLease->lease_from_date.' '.$bookingForLease->lease_from_time.':00';
         $leaseTo = $bookingForLease->lease_to_date.' '.$bookingForLease->lease_to_time.':00';
@@ -471,12 +479,32 @@ class LeaseController extends Controller
 
             if(property_exists($responseData, "ErrorCode")){
                 UserFiles::create(['userUid'=> $userForLease->userUid, 'year' => $this_year, 'fileId' => 'MDA', 'status' => 'Uploaded']);
+
+                ActionList::create([
+                    "userUid" => $userForLease->userUid,
+                    "action" => "MDA Lease Creation Failed",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
+                ]);
+
             }else{
                 UserFiles::create(['userUid'=> $userForLease->userUid, 'year' => $this_year, 'fileId' => 'MDA', 'status' => 'Approved']);
             }
         }else{
             if(property_exists($responseData, "ErrorCode")){
                 UserFiles::where('userUid', $userForLease->userUid)->where('year', $this_year)->where('fileId', 'MDA')->update(['status' => 'Uploaded']);
+
+                ActionList::create([
+                    "userUid" => $userForLease->userUid,
+                    "action" => "MDA Lease Creation Failed",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
+                ]);
+                
             }else{
                 UserFiles::where('userUid', $userForLease->userUid)->where('year', $this_year)->where('fileId', 'MDA')->update(['status' => 'Approved']);
             }
