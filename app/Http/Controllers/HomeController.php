@@ -63,84 +63,90 @@ class HomeController extends Controller
 
         if(Auth::user()->userRole == "0"){
 
+            $appOnline = Lookups::where('group_id', '9')->first();
+            if($appOnline == '1'){
 
-            // $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-            $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
-
-            if($studentInfo->year == $this_year){
-                $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-            }else{
-                $student = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
-                $returnInfo = $this->inActiveStudent();
-
-                $agent = new Agent();
-                return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student, "agent" => $agent]);
-            }
-
-            
-            // if($student->email_verified != 1){
-
-            //     return redirect('/verify-password');
-
-            // }else 
-            if($student->onboard_complete != '2'){
-
-                // User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
-                StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 1]);
-
-                // $currUser = User::where('id', Auth::user()->id)->first();
-                $currUser = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-
-                if($currUser->studentType == "NSFAS"){
-                    $varToCheck = 'kinFirstName';
-                }elseif($currUser->studentType == "Bursary"){
-                    $varToCheck = 'burCompanyName';
-                }else{
-                    $varToCheck = 'sponFirstName';
-                }
-
-                if($currUser->$varToCheck == null){
-                    return redirect('/step-2/online-application');
-                }else{
-
-
-                    if(($currUser->studentType == "Bursary" || $currUser->studentType == "Cash / Direct") && $currUser->kinFirstName == null){
-                        return redirect('/step-3/online-application');
-                    }else{
-                        $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+                // $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+                $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
     
-                        if(!empty($userFileProofOfPayment)){
-                            return redirect('/complete/online-application');
-                        }else{
-                            return redirect('/step-4/online-application');
-                        }
-                    }
-                }
-
-            }else{
-
-                $this_year = Lookups::where('group_id', '4')->first();
-                $this_year = $this_year->lookup_name;
-
-                //See if there is an active booking
-                $bookingCurr = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
-
-                $returnInfo = [];
-
-                if(!empty($bookingCurr)){
-                    $returnInfo = $this->studentActive();
+                if($studentInfo->year == $this_year){
+                    $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
                 }else{
+                    $student = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
                     $returnInfo = $this->inActiveStudent();
-                }
-
-                if($returnInfo['Status'] == '1'){
-                    return view('user.dashboard', ["active" => 1, "headerTitle" => $returnInfo['headerTitle'], "booking" => $returnInfo['booking'], "allFiles" => $returnInfo['allFiles'], "bookHeader" => $returnInfo['bookHeader'], "appHeader" => $returnInfo['appHeader'], "propertyData" => $returnInfo['propertyData'], "roomData" => $returnInfo['roomData'], "bookingPaid" => $returnInfo['bookingPaid'], "user" => $student]);
-                }else{
+    
                     $agent = new Agent();
                     return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student, "agent" => $agent]);
                 }
-
+    
+                
+                // if($student->email_verified != 1){
+    
+                //     return redirect('/verify-password');
+    
+                // }else 
+                if($student->onboard_complete != '2'){
+    
+                    // User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 1]);
+    
+                    // $currUser = User::where('id', Auth::user()->id)->first();
+                    $currUser = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+    
+                    if($currUser->studentType == "NSFAS"){
+                        $varToCheck = 'kinFirstName';
+                    }elseif($currUser->studentType == "Bursary"){
+                        $varToCheck = 'burCompanyName';
+                    }else{
+                        $varToCheck = 'sponFirstName';
+                    }
+    
+                    if($currUser->$varToCheck == null){
+                        return redirect('/step-2/online-application');
+                    }else{
+    
+    
+                        if(($currUser->studentType == "Bursary" || $currUser->studentType == "Cash / Direct") && $currUser->kinFirstName == null){
+                            return redirect('/step-3/online-application');
+                        }else{
+                            $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+        
+                            if(!empty($userFileProofOfPayment)){
+                                return redirect('/complete/online-application');
+                            }else{
+                                return redirect('/step-4/online-application');
+                            }
+                        }
+                    }
+    
+                }else{
+    
+                    $this_year = Lookups::where('group_id', '4')->first();
+                    $this_year = $this_year->lookup_name;
+    
+                    //See if there is an active booking
+                    $bookingCurr = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+    
+                    $returnInfo = [];
+    
+                    if(!empty($bookingCurr)){
+                        $returnInfo = $this->studentActive();
+                    }else{
+                        $returnInfo = $this->inActiveStudent();
+                    }
+    
+                    if($returnInfo['Status'] == '1'){
+                        return view('user.dashboard', ["active" => 1, "headerTitle" => $returnInfo['headerTitle'], "booking" => $returnInfo['booking'], "allFiles" => $returnInfo['allFiles'], "bookHeader" => $returnInfo['bookHeader'], "appHeader" => $returnInfo['appHeader'], "propertyData" => $returnInfo['propertyData'], "roomData" => $returnInfo['roomData'], "bookingPaid" => $returnInfo['bookingPaid'], "user" => $student]);
+                    }else{
+                        $agent = new Agent();
+                        return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student, "agent" => $agent]);
+                    }
+    
+                }
+            }else{
+                return redirect('/logout');
             }
+
 
         }else{
 

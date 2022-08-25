@@ -942,7 +942,13 @@ class ApplicationController extends Controller
 
         StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2, 'email_verified' => 1]);
 
-        return redirect('/dashboard');
+        $appOnline = Lookups::where('group_id', '9')->first();
+
+        if($appOnline->lookup_name == '1'){
+            return redirect('/dashboard');
+        }else{
+            return redirect('/verified');
+        }
     }
 
     public function verify_new_email_account(Request $request){
@@ -953,7 +959,23 @@ class ApplicationController extends Controller
 
         StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
 
-        return redirect('/dashboard');
+        $appOnline = Lookups::where('group_id', '9')->first();
+
+        if($appOnline->lookup_name == '1'){
+            return redirect('/dashboard');
+        }else{
+            return redirect('/verified');
+        }
+        
+    }
+
+    public function verified(){
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $info = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        $booking = Booking::where('id', $info->bookingId)->first();
+        return view('outSession.verified', compact('info', 'booking'));
     }
 
     public function loginAsStudent($userid){
