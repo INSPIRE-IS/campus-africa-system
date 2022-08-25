@@ -39,19 +39,19 @@
             <input type="text" name="building_prefix" id="building_prefix" value="<?php if(!empty($propertyData)){echo $propertyData->building_prefix;}?>" onKeyUp="updatePrefix()" maxLength="2">
         </div>
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <label>MDA Property Link</label>
             <select name="mda_id" id='mda_id'>
                 <option value="" selected disabled>Select One</option>
-                @foreach($mda as $m)
+                {{-- @foreach($mda as $m)
                     <option value="{{$m->PropertyId}}" <?php if(!empty($propertyData) && $propertyData->mda_id == $m->PropertyId){echo "selected";}?>>{{$m->PropertyName}}</option>
-                @endforeach
+                @endforeach --}}
             </select>
-        </div>
+        </div> -->
 
-        <div class="form-field">
+        <!-- <div class="form-field">
             <br/>
-        </div>
+        </div> -->
 
         <hr/>
 

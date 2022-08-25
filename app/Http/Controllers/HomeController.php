@@ -611,9 +611,9 @@ class HomeController extends Controller
 
         $approvedLease = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'moveIn')->first();
 
-        if(!empty($approvedLease) && $approvedLease->status == "Approved"){
-            array_push($all, "MDA");
-        }
+        // if(!empty($approvedLease) && $approvedLease->status == "Approved"){
+        //     array_push($all, "MDA");
+        // }
 
         $data = [];
 
@@ -1191,9 +1191,9 @@ class HomeController extends Controller
                 
             }
 
-            if($userFile['fileId'] == "moveIn" && $action == "Rejected"){
-                UserFiles::where('userUid', $userFile->userUid)->where('year', $this_year)->where('fileId', 'MDA')->delete();
-            }
+            // if($userFile['fileId'] == "moveIn" && $action == "Rejected"){
+            //     UserFiles::where('userUid', $userFile->userUid)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+            // }
 
             if($userFile['fileId'] == "moveIn" && $action == "Approved"){
                 // User::where('id', $userFile->userUid)->update(['overall_status' => "Approved"]);
@@ -2835,11 +2835,11 @@ class HomeController extends Controller
         //Delete the Lease
         UserFiles::where('userUid', $request->userId)->where('fileId', 'moveIn')->where('year', $this_year)->delete();
 
-        $hasMda = UserFiles::where('userUid', $request->userId)->where('year', $this_year)->where('fileId', 'MDA')->first();
+        // $hasMda = UserFiles::where('userUid', $request->userId)->where('year', $this_year)->where('fileId', 'MDA')->first();
         
-        if(!empty($hasMda)){
-            UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
-        }
+        // if(!empty($hasMda)){
+        //     UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+        // }
 
         if($request->reason){
             $cancelledReason = "Application Cancelled because: ".$request->reason;
@@ -3845,11 +3845,11 @@ class HomeController extends Controller
             StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->update(['rob_55_lease' => '0']);
             UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->where('year', $this_year)->update(['status' => 'Rejected']);
 
-            $hasMda = UserFiles::where('userUid', $bookingId)->where('year', $this_year)->where('fileId', 'MDA')->first();
+            // $hasMda = UserFiles::where('userUid', $bookingId)->where('year', $this_year)->where('fileId', 'MDA')->first();
         
-            if(!empty($hasMda)){
-                UserFiles::where('userUid', $bookingId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
-            }
+            // if(!empty($hasMda)){
+            //     UserFiles::where('userUid', $bookingId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+            // }
     
             ActionList::create([
                 "userUid" => $bookingId,
@@ -5892,11 +5892,11 @@ class HomeController extends Controller
         //Delete the Lease
         UserFiles::where('userUid', $userId)->where('fileId', 'moveIn')->where('year', $this_year)->delete();
 
-        $hasMda = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->first();
+        // $hasMda = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->first();
 
-        if(!empty($hasMda)){
-            UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
-        }
+        // if(!empty($hasMda)){
+        //     UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+        // }
         
 
         ActionList::create([
@@ -6376,16 +6376,16 @@ class HomeController extends Controller
             $this_year = $this_year->lookup_name;
 
             $lease = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->first();
-            $mda = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'MDA')->first();
+            // $mda = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'MDA')->first();
             $bursary = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bursaryApproval')->first();
             $bankStatement = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bankStatement')->first();
 
             if(!empty($lease)){
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->delete();
             }
-            if(!empty($mda)){
-                UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'MDA')->delete();
-            }
+            // if(!empty($mda)){
+            //     UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+            // }
             if(!empty($bursary)){
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bursaryApproval')->update(['status' => 'Rejected']);
             }
