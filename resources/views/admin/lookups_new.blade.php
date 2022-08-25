@@ -20,8 +20,8 @@
                 <option value="7" >Waive Booking Fee</option>
                 <option value="8" >Lease Admin Fee</option>
                 <option value="9" >Online Applications</option>
-                <option value="10" >Test Emails Allowed</option>
-                <option value="11" >Test CC in Mail</option>
+                <option value="10" >Email - Restrict to Test Domain(s)</option>
+                <option value="11" >Email - BCC Email Addresses</option>
             </select>
         </div>
 

@@ -251,8 +251,8 @@
 
         <a href="/step-5/online-application"><button type="button" class="detailsChange" id="submitForm" style="text-transform:uppercase; background-color:#e74f26">Pay Booking Fee</button></a>
 
-        <div class="clearSpaceLogin"></div>
-        <div class="clearSpaceLogin"></div>
+        <!-- <div class="clearSpaceLogin"></div> -->
+        <!-- <div class="clearSpaceLogin"></div> -->
         <div class="redBannerNotice">
             <i class="fas fa-exclamation-circle"></i>
             <p>Please note that you can upload these documents via your online profile at a later date, however delays may cause you to not get the room you want! Your booking fee is processed in the next step; and you can upload proof of payment immediately or via your profile later.</p>

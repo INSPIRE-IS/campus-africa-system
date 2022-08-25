@@ -114,6 +114,7 @@ class StudentsInfo extends Model
         'email_verified',
         'fee_approved',
         'app_source',
+        'mda_tenant_id',
     ];
 
     public function files(){

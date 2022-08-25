@@ -21,16 +21,21 @@
                 <option value="7" <?php if($lookup->group_id == "7"){echo "selected";}?>>Waive Booking Fee</option>
                 <option value="8" <?php if($lookup->group_id == "8"){echo "selected";}?>>Lease Admin Fee</option>
                 <option value="9" <?php if($lookup->group_id == "9"){echo "selected";}?>>Online Applications</option>
-                <option value="10" <?php if($lookup->group_id == "10"){echo "selected";}?>>Test Emails Allowed</option>
-                <option value="11" <?php if($lookup->group_id == "11"){echo "selected";}?>>Test CC in Mail</option>
+                <option value="10" <?php if($lookup->group_id == "10"){echo "selected";}?>>Email - Restrict to Test Domain(s)</option>
+                <option value="11" <?php if($lookup->group_id == "11"){echo "selected";}?>>Email - BCC Email Addresses</option>
             </select>
             <input type="hidden" name="lookupId" id="lookupId" value="{{$lookup->id}}"/>
         </div>
 
-        <div class="form-field <?php if($lookup->group_id == "7" || $lookup->group_id == "9"){echo "hidden";} ?>">
+        <div class="form-field <?php if($lookup->group_id == "7" || $lookup->group_id == "9"){echo "hidden";} ?>" <?php if($lookup->group_id == "10"){echo 'style="height:170px !important;"';}?>>
             <label>Value</label>
             <input type="text" name="value" id="value" value="<?php echo $lookup->lookup_name;?>">
-            <small id="mailWording" class="<?php if($lookup->group_id != "10" && $lookup->group_id != "11"){echo "hidden";} ?>">Please seperate email addresses by semicolon</small>
+            <small id="mailWording" class="<?php if($lookup->group_id != "10"){echo "hidden";} ?>">
+            <br/>- When this is set, emails are limited to the specified domains.<br/>
+                - These should be domains only<br/>
+                - When this is not set, no restrictions on email sending<br/>
+                - Please seperate by semicolon</small>
+            <small id="mailCCWording" class="<?php if($lookup->group_id != "11"){echo "hidden";} ?>">Specify individual email addresses to BCC, Please seperate email addresses by semicolon</small>
         </div>
 
         @if($lookup->group_id == "4")
@@ -198,6 +203,7 @@
             $("#waiverValue").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
+            $("#mailCCWording").addClass('hidden');
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
         }else if($("#group_id").val() == "9"){
@@ -205,16 +211,27 @@
             $("#normalVlaue").addClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
-        }else if($("#group_id").val() == "10" || $("#group_id").val() == "11"){
+            $("#mailCCWording").addClass('hidden');
+        }else if($("#group_id").val() == "10"){
             $("#mailWording").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
+
+            $("#mailCCWording").addClass('hidden');
+        }else if($("#group_id").val() == "11"){
+            $("#mailWording").addClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
+            $("#normalVlaue").removeClass('hidden');
+            $("#waiverValue").addClass('hidden');
+
+            $("#mailCCWording").removeClass('hidden');
         }else{
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
+            $("#mailCCWording").addClass('hidden');
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
         }

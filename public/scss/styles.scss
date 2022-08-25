@@ -89,6 +89,7 @@ body {
             font-weight: 400;
             line-height: 28px;
             text-align: left;
+            max-width:250px;
         }
 
         .linkHeader {
@@ -264,7 +265,7 @@ body {
 .appRow {
     width: 48%;
     margin-right: 1%;
-    float: left;
+    float:left;
 }
 
 .updateProfile {
@@ -292,7 +293,11 @@ body {
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         border-radius: 10px;
         background-color: #f8f8f8;
-        padding: 39px 50px;
+        padding: 20px;
+
+        @media only screen and (min-width: 768px) {
+            padding: 39px 50px;
+        }
 
         .actionItemList,
         .commentItemList {
@@ -344,6 +349,7 @@ body {
             }
             .information {
                 padding: 20px;
+                overflow-wrap: break-word;
             }
         }
 
@@ -1483,9 +1489,14 @@ input:read-only {
     border-radius: 6px;
     border: 1px solid #464749;
     padding: 2px;
-    margin: 5px;
-    width: 40%;
+    margin: 5px;    
     cursor: pointer;
+}
+
+@media only screen and (min-width: 768px) {
+    .unallocateBed {
+        width: 40%;
+    }
 }
 
 #downloadAllDocs,
@@ -2241,7 +2252,7 @@ input:read-only {
     align-items: stretch;
 
     .title{
-        width:250;
+        width:250px;
         font-size:20px;
     }
 
@@ -2253,7 +2264,7 @@ input:read-only {
   }
 
   .newBookingBtn{
-  margin: 30px;
+  margin: 30px 0px;
   width: 100%;
   padding: 15px;
   border: none;
@@ -2268,8 +2279,18 @@ input:read-only {
     #fullNavbar {
         height: 120px !important;
     }
+    
+    .homeSection{
+        padding-left:0px !important
+    }
+    .contentSection{
+        width:100%;
+    }
+    .bankDetails{
+        flex-direction: column;
+    }
     .bookingDashCard{
-        height:775px !important;
+        height:865px !important;
       }
       .bookingDashCardBody{
         max-height:775px !important;
@@ -2302,6 +2323,9 @@ input:read-only {
         width: 130px;
         margin-left: 0px;
     }
+    .payBtnLater{
+        margin-top:597px !important;
+    }
     #submitLease{
         margin-top:10px !important;
       }
@@ -2319,7 +2343,7 @@ input:read-only {
       }
     .roomImgApp{
         margin-left:0px; 
-        max-height:185px;
+        max-height:150px;
       }
       .paymentAppOnline{
         margin-top:-30px !important;
@@ -2429,7 +2453,7 @@ input:read-only {
       #newStudentDocs{
         // height:2000px;
         // height:1540px;
-        height:1070px;
+        height:1550px;
       }
       #labelAddrP{
         width:200px !important;
@@ -2493,7 +2517,7 @@ input:read-only {
       }
 
       .greyAppSection{
-        height:500px !important;
+        height: auto !important;
       }
 
       .cards .customWhiteCard .InfoList{
@@ -2669,7 +2693,7 @@ input:read-only {
     line-height:20px !important;
   }
   #newStudent{
-    height:2050px;
+    height:2100px;
   }
   #seconCards{
     // margin-top:300px;
@@ -2682,7 +2706,7 @@ input:read-only {
 
 
     .footer .footerBanner {
-        height: 532px;
+        height: 740px;
     }
 
     #msform #step4.next.action-button {
@@ -3176,4 +3200,19 @@ input:read-only {
     background-color: #fff;
     cursor:pointer;
     width:360px;
+}
+
+.prevBookingTitle{
+    margin-top:5px;
+}
+
+.contentSection{
+    width:100%;
+    max-width:400px;
+    margin:auto
+}
+
+.homeSection{
+    padding-left:6%; 
+    width:19%
 }

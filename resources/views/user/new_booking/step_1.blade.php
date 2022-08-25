@@ -412,6 +412,7 @@
                     confirmButtonText: 'Accept'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        $("#submitForm").attr('disabled', 'disabled');
                         $.ajax({
                             type: "post",
                             url: "/new-booking-step-1-save",

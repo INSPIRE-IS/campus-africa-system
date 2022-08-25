@@ -80,6 +80,8 @@ Route::get('/verify-email-account', [ApplicationController::class, 'verify_email
 Route::get('/verify-new-email-account', [ApplicationController::class, 'verify_new_email_account']);
 Route::get('/loginAsStudent/{studentId}', [ApplicationController::class, 'loginAsStudent']);
 
+Route::get("/verified", [ApplicationController::class, 'verified']);
+
 
 // Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
 // Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
@@ -281,6 +283,8 @@ Route::post('/notify-data', [OnlinePaymentController::class, 'notify_data']);
 
 Route::get('/create-new-booking/{id}', [HomeController::class, 'create_new_booking']);
 Route::post('/new-booking', [HomeController::class, 'new_booking']);
+
+Route::post("/mda-tenant-save", [LeaseController::class, 'mda_tenant_save']);
 
 
 

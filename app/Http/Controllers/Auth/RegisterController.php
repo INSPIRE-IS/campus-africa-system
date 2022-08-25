@@ -260,16 +260,24 @@ class RegisterController extends Controller
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-            $mailArr = explode(";", $allowedMails);
+            
 
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $user->email;
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+            if(!empty($allowedMails)){
+
+                $mailArr = explode(";", $allowedMails);
+    
+                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                    $data['email'] = $user->email;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
             }else{
-                $data['email'] = "conurbandigital@gmail.com";
+                $data['email'] = $user->email;
             }
     
             // if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -282,7 +290,7 @@ class RegisterController extends Controller
                 // $message->to($data['email'], $data['name'])->subject
                 //     ('Campus Africa User Application');
                 $message->to($data['email'])->subject($data['subject']);
-                $message->cc($data['cc']);
+                $message->bcc($data['cc']);
                 // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
