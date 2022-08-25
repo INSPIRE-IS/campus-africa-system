@@ -609,6 +609,12 @@ class HomeController extends Controller
             array_push($all, "bursaryApproval");
         }
 
+        $approvedLease = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'moveIn')->first();
+
+        // if(!empty($approvedLease) && $approvedLease->status == "Approved"){
+        //     array_push($all, "MDA");
+        // }
+
         $data = [];
 
         foreach($files as $file){
@@ -1001,16 +1007,21 @@ class HomeController extends Controller
                     $data['messageForMail'] = $newMessage;
                     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-                    $mailArr = explode(";", $allowedMails);
-
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                        $data['email'] = $genUser->email;
+                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                    if(!empty($allowedMails)){
+                        $mailArr = explode(";", $allowedMails);
+    
+                        if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                            $data['email'] = $genUser->email;
+                        }else{
+                            $data['email'] = "conurbandigital@gmail.com";
+                        }
                     }else{
-                        $data['email'] = "conurbandigital@gmail.com";
+                        $data['email'] = $genUser->email;
                     }
     
                     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -1023,7 +1034,7 @@ class HomeController extends Controller
                         // $message->to($data['email'], $data['name'])->subject
                         //     ('Campus Africa User Application');
                         $message->to($data['email'])->subject($data['subject']);
-                        $message->cc($data['cc']);
+                        $message->bcc($data['cc']);
                         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
                         $message->from('noreply@campusafrica.co.za','Campus Africa');
                     });
@@ -1076,21 +1087,28 @@ class HomeController extends Controller
                 $data['messageForMail'] = $newMessage;
                 $data['subject'] = $newSubject;
 
-                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-                $mailArr = explode(";", $allowedMails);
-
+                
                 $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                 $data['cc'] = explode(";", $allowedMailsCC);
 
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                    $data['email'] = $user->email;
+                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                if(!empty($allowedMails)){
+
+                    $mailArr = explode(";", $allowedMails);
+    
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                        $data['email'] = $user->email;
+                    }else{
+                        $data['email'] = "conurbandigital@gmail.com";
+                    }
                 }else{
-                    $data['email'] = "conurbandigital@gmail.com";
+                    $data['email'] = $user->email;
                 }
 
                 Mail::send('email.red_back', $data, function($message) use ($data) {
                     $message->to($data['email'])->subject($data['subject']);
-                    $message->cc($data['cc']);
+                    $message->bcc($data['cc']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                 });
             }
@@ -1173,6 +1191,10 @@ class HomeController extends Controller
                 
             }
 
+            // if($userFile['fileId'] == "moveIn" && $action == "Rejected"){
+            //     UserFiles::where('userUid', $userFile->userUid)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+            // }
+
             if($userFile['fileId'] == "moveIn" && $action == "Approved"){
                 // User::where('id', $userFile->userUid)->update(['overall_status' => "Approved"]);
                 StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update(['overall_status' => "Approved"]);
@@ -1202,16 +1224,25 @@ class HomeController extends Controller
                 $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                 $data['cc'] = explode(";", $allowedMailsCC);
 
-                if(explode("@", $data['email'])[1] == "conurban.co.za"){
-                    $data['email'] = $userForLease->userEmail;
+                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                if(!empty($allowedMails)){
+
+                    $mailArr = explode(";", $allowedMails);
+    
+                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                        $data['email'] = $userForLease->userEmail;
+                    }else{
+                        $data['email'] = "conurbandigital@gmail.com";
+                    }
                 }else{
-                    $data['email'] = "conurbandigital@gmail.com";
+                    $data['email'] = $userForLease->userEmail;
                 }
 
                 Mail::send('email.green_back', $data, function($message) use ($data) {
                     // $message->to($data['email'], $data['name'])->subject('Application Approved');
                     $message->to($data['email'])->subject($data['subject']);
-                    $message->cc($data['cc']);
+                    $message->bcc($data['cc']);
                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                     // $message->attach($data['file']);
                 });
@@ -1348,7 +1379,7 @@ class HomeController extends Controller
         // Mail::send('email.application_approved', $data, function($message) use ($data) {
         //     $message->to($data['email'], $data['name'])->subject
         //         ('Thank you Application');
-        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->bcc('test@whitehart.co.za','Name');
         //     $message->from('test@test.com','test@test.com');
         // });
 
@@ -1388,7 +1419,7 @@ class HomeController extends Controller
         // Mail::send('email.application_approved', $data, function($message) use ($data) {
         //     $message->to($data['email'], $data['name'])->subject
         //         ('Thank you Application');
-        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->bcc('test@whitehart.co.za','Name');
         //     $message->from('test@test.com','test@test.com');
         // });
 
@@ -1509,7 +1540,7 @@ class HomeController extends Controller
         // Mail::send('email.application_thank_you', $data, function($message) use ($data) {
         //     $message->to("mirichea@whitehart.co.za", "Mirichea")->subject
         //         ('Thank you Application');
-        //     $message->cc('test@whitehart.co.za','Name');
+        //     $message->bcc('test@whitehart.co.za','Name');
         //     $message->from('test@test.com','test@test.com');
         // });
 
@@ -2130,32 +2161,14 @@ class HomeController extends Controller
             $roomType = "";
             $roomName = "";
 
+            
+
             foreach($jsonDataRooms as $room){
                 if($residenceId == $room->acf->residence){
-
-                    // $slugString = str_replace("-", " ", $room->slug);
-                    // $roomType = "";
-                    // $roomName = "";
 
                     if($room->id == $roomTypeId){
                         $roomType = $request->roomType;
                         $roomName = $room->slug;
-                        
-                        // foreach($allResidences as $residence){
-                        //     if(strtoupper($request->property) == strtoupper($residence->residence)){
-                        //         $postSlugStringName = trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",$slugString)))."\r\n";
-                        //         $requiredName = $request->roomType;
-    
-                        //         foreach($jsonDataRooms as $roomInfo){
-                        //             if($residenceId == $roomInfo->acf->residence){
-                        //                 if(strtolower(trim(str_replace("room", "", str_replace(strtolower($residence->residence), "",str_replace("-", " ", $roomInfo->slug))))) == strtolower($request->roomType)){
-                        //                     $roomType = $request->roomType;
-                        //                     $roomName = $roomInfo->slug;
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
     
                         $appliesTo = $room->acf->booking_fee_applies_to;
     
@@ -2217,8 +2230,6 @@ class HomeController extends Controller
                 }
             }
         }
-        
-
 
         //Get default lease data for the booking
         $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
@@ -2330,16 +2341,21 @@ class HomeController extends Controller
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-            $mailArr = explode(";", $allowedMails);
-
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $user->email;
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+            if(!empty($allowedMails)){
+                $mailArr = explode(";", $allowedMails);
+    
+                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                    $data['email'] = $user->email;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
             }else{
-                $data['email'] = "conurbandigital@gmail.com";
+                $data['email'] = $user->email;
             }
     
             // if(explode("@", $data['email'])[1] == "conurban.co.za"){
@@ -2353,7 +2369,7 @@ class HomeController extends Controller
                 //     ('Campus Africa User Application');
                 $message->to($data['email'])->subject($data['subject']);
                 // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-                $message->cc($data['cc']);
+                $message->bcc($data['cc']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
         }
@@ -2818,6 +2834,12 @@ class HomeController extends Controller
 
         //Delete the Lease
         UserFiles::where('userUid', $request->userId)->where('fileId', 'moveIn')->where('year', $this_year)->delete();
+
+        // $hasMda = UserFiles::where('userUid', $request->userId)->where('year', $this_year)->where('fileId', 'MDA')->first();
+        
+        // if(!empty($hasMda)){
+        //     UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+        // }
 
         if($request->reason){
             $cancelledReason = "Application Cancelled because: ".$request->reason;
@@ -3400,6 +3422,7 @@ class HomeController extends Controller
                                     }
                                 }
                             }
+
                         }
     
                     }
@@ -3821,6 +3844,12 @@ class HomeController extends Controller
             // User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
             StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->update(['rob_55_lease' => '0']);
             UserFiles::where('userUid', $bookingId)->where('fileId', 'moveIn')->where('year', $this_year)->update(['status' => 'Rejected']);
+    
+            // $hasMda = UserFiles::where('userUid', $bookingId)->where('year', $this_year)->where('fileId', 'MDA')->first();
+        
+            // if(!empty($hasMda)){
+            //     UserFiles::where('userUid', $bookingId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+            // }
     
             ActionList::create([
                 "userUid" => $bookingId,
@@ -4331,7 +4360,57 @@ class HomeController extends Controller
 
             $allProperties = Residence::get();
 
-            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData, "allProperties" => $allProperties]);
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/token',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_POSTFIELDS => 'grant_type=password&username=mri.api%40conurban.co.za&password=3ub4%5E2t2Y9PhPTEq',
+            CURLOPT_HTTPHEADER => array(
+                'cache-control: no-cache',
+                'Authorization: Basic your-API-key',
+                'Content-Type: application/x-www-form-urlencoded',
+                'Cookie: NSC_ESNS=0a80b654-6595-1303-9678-00505691daed_3897103846_3196003446_00000000000176021283'
+            ),
+            ));
+    
+            $response = curl_exec($curl);
+    
+            curl_close($curl);
+
+            //login Token
+            $loginToken = json_decode($response)->access_token;
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/Properties/SearchProperties?PropertySearchFilter=',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'PropertySearchFilter=',
+            CURLOPT_HTTPHEADER => array(
+                'DatabaseIdentifier: CC84465A-301E-4C19-AFA0-1939AB658425',
+                'Authorization: Bearer '.$loginToken,
+                'Cookie: NSC_ESNS=0a82f70c-6ac3-1303-9678-00505691daed_0229467849_1536900378_00000000000176163305'
+            ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+
+            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData, "allProperties" => $allProperties, "mda" => json_decode($response)->ResultSet]);
         }else{
             return "404 Error";
         }
@@ -4355,6 +4434,7 @@ class HomeController extends Controller
             "account_number" => $request->account_number,
             // "branch" => $request->branch,
             "branch_code" => $request->branch_code,
+            "mda_id" => $request->mda_id,
         ];
 
         if($request->nsfas_booking_rate == null){
@@ -5812,6 +5892,13 @@ class HomeController extends Controller
         //Delete the Lease
         UserFiles::where('userUid', $userId)->where('fileId', 'moveIn')->where('year', $this_year)->delete();
 
+        // $hasMda = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->first();
+
+        // if(!empty($hasMda)){
+        //     UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+        // }
+        
+
         ActionList::create([
             "userUid" => $userId,
             "action" => "Unallocated Bed ".$booking_old->bed_code." on the ".$booking_old->floor." floor, unit ".$booking_old->unit,
@@ -6289,12 +6376,16 @@ class HomeController extends Controller
             $this_year = $this_year->lookup_name;
 
             $lease = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->first();
+            // $mda = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'MDA')->first();
             $bursary = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bursaryApproval')->first();
             $bankStatement = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bankStatement')->first();
 
             if(!empty($lease)){
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->delete();
             }
+            // if(!empty($mda)){
+            //     UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'MDA')->delete();
+            // }
             if(!empty($bursary)){
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bursaryApproval')->update(['status' => 'Rejected']);
             }
@@ -6390,17 +6481,29 @@ class HomeController extends Controller
                     $data['messageForMail'] = $newMessage;
                     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-                    $mailArr = explode(";", $allowedMails);
+                    
 
                     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
                     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                        $data['email'] = $request->userEmail;
+                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                    if(!empty($allowedMails)){
+
+                        $mailArr = explode(";", $allowedMails);
+    
+                        if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                            $data['email'] = $request->userEmail;
+                        }else{
+                            $data['email'] = "conurbandigital@gmail.com";
+                        }
                     }else{
-                        $data['email'] = "conurbandigital@gmail.com";
+                        $data['email'] = $request->userEmail;
                     }
+                    
+                    
+                    
+                    
     
                     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
                     //     $data['email'] = $request->userEmail;
@@ -6412,7 +6515,7 @@ class HomeController extends Controller
                         // $message->to($data['email'], $data['name'])->subject
                         //     ('Campus Africa User Application');
                         $message->to($data['email'])->subject($data['subject']);
-                        $message->cc($data['cc']);
+                        $message->bcc($data['cc']);
                         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
                         $message->from('noreply@campusafrica.co.za','Campus Africa');
                     });
@@ -8000,21 +8103,29 @@ class HomeController extends Controller
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-            $mailArr = explode(";", $allowedMails);
+            
 
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $data['cc'] = explode(";", $allowedMailsCC);
 
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $genUser->email;
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+            if(!empty($allowedMails)){
+
+                $mailArr = explode(";", $allowedMails);
+    
+                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                    $data['email'] = $genUser->email;
+                }else{
+                    $data['email'] = "conurbandigital@gmail.com";
+                }
             }else{
-                $data['email'] = "conurbandigital@gmail.com";
+                $data['email'] = $genUser->email;
             }
     
             Mail::send('email.yellow_back', $data, function($message) use ($data) {
                 $message->to($data['email'])->subject($data['subject']);
-                $message->cc($data['cc']);
+                $message->bcc($data['cc']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
         }

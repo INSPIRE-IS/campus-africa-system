@@ -13,6 +13,7 @@ use App\Models\Residence;
 use App\Models\OnlinePayments;
 use Jenssegers\Agent\Agent;
 use App\Models\StudentsInfo;
+use App\Models\MDAInfo;
 
 class DocumentsController extends Controller {
 
@@ -27,6 +28,13 @@ class DocumentsController extends Controller {
         $user = StudentsInfo::where('userUid', $file->userUid)->where('year', $this_year)->first();
         $booking = Booking::where('userId', $file->userUid)->where('year', $this_year)->first();
         $onlinePayment = OnlinePayments::where('userUid', $file->userUid)->orderBy('created_at', 'desc')->first();
+        $mda_info = MDAInfo::where('userUid', $file->userUid)->where('call_type', '2')->orderBy('created_at', 'desc')->first();
+        if(!empty($mda_info)){
+
+            $mdaInfoMsg = json_decode($mda_info->mda_data);
+        }else{
+           $mdaInfoMsg = (object)[]; 
+        }
 
         $property = Residence::where('id', $booking->property)->first();
 
@@ -52,6 +60,8 @@ class DocumentsController extends Controller {
             'property' => $property,
             'onlinePayment' => $onlinePayment,
             'agent' => $agent,
+            'mda_info' => $mda_info,
+            'mdaInfoMsg' => $mdaInfoMsg
         ];
 
         return view('application.document.view_document', $data);

@@ -421,6 +421,16 @@
                                         @endif
                                     @endif
 
+                                    {{-- @if($file["field"] === "MDA")
+                                        
+                                        @if($file["status"] == "XApproved" || $file["status"] == "Approved")
+                                            <div class="button approved"></div>
+                                        @else
+                                            <div class="button action"></div>
+                                        @endif
+                                        
+                                    @endif --}}
+
                                     @if($file["field"] === "studentCard")
                                         @if ($user[0]['userInfo']['rob_20_card'] == 0)
                                             <div class="button rejected"></div>
@@ -2370,6 +2380,10 @@
                                     @if(Auth::user()->role_change_date == "1" && $user[0]['userInfo']['rob_50_approve'] != 2)
                                         $("#buttonTop").append('<button type="button" class="appBooking" id="changeDatesLease" onClick="changeLease(\'{{$user[0]['userInfo']['userUid']}}\')">Change Lease Dates</button>');
                                     @endif
+
+                                    var pDoc = document.getElementById("MDAStatus");
+                                    parentDiv = pDoc.parentNode;
+                                    parentDiv.style.display = 'none';
                                 },
                             });
                         }
@@ -3355,6 +3369,10 @@
 
                             //Update change bed to not show lease cancel message
                             $("#buttonTop").empty().append('<button type="button" class="appBooking" id="changeLeaseCancel" onClick="changeBooking({{$user[0]['userInfo']['userUid']}}, \'generate\')">Change Bed</button>');
+
+                            var pDoc = document.getElementById("MDAStatus");
+                            parentDiv = pDoc.parentNode;
+                            parentDiv.style.display = 'none';
 
                             refreshActions();  
                             checkUserStatus();
