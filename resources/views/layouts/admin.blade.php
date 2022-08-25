@@ -108,15 +108,7 @@
                         <span class="appStatusText"></span>
                     </h1>
                 @endif
-                <h1 class="booking_app">{{$headerTitle}} 
-                    @if(isset($appProfile) && $appProfile === "true")
-                        @if(isset($user) && $user[0] && $user[0]['userInfo']['email_verified'] == '1')
-                            <i class='fas fa-check' style='color:green'></i>
-                        @else
-                            &#10060;
-                        @endif
-                    @endif
-                </h1>
+                <h1 class="booking_app">{{$headerTitle}}</h1>
 
                 
 
