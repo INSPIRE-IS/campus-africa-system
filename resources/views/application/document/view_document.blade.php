@@ -919,34 +919,34 @@
 
     function runMDA(){
 
-        // $("#rerun").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $("#rerun").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
-        // $.ajax({
-        //     type: "post",
-        //     url: "/mda-tenant-save",
-        //     data: {
-        //         userUid: "{{$user->userUid}}", 
-        //     },
-        //     success: function (data) {
+        $.ajax({
+            type: "post",
+            url: "/mda-tenant-save",
+            data: {
+                userUid: "{{$user->userUid}}", 
+            },
+            success: function (data) {
 
-        //         $("#myModal").html("");
-        //         $("#myModal").css("display", "none");
+                $("#myModal").html("");
+                $("#myModal").css("display", "none");
 
-        //         if(data['status'] == "Uploaded"){
-        //             var btnType = "action";
-        //         }else{
-        //             var btnType = "approved"
-        //         }
+                if(data['status'] == "Uploaded"){
+                    var btnType = "action";
+                }else{
+                    var btnType = "approved"
+                }
 
-        //         $("#MDAStatus").empty().append('<div class="button '+btnType+'"></div>')
+                $("#MDAStatus").empty().append('<div class="button '+btnType+'"></div>')
 
-        //         refreshActions();
+                refreshActions();
 
 
 
-        //         // console.log(data)
-        //     }
-        // })
+                // console.log(data)
+            }
+        })
     }
 
     function approveData(type) {
@@ -1195,27 +1195,27 @@
                     $(".studentType_btn").addClass('hidden')
 
 
-                    // $.ajax({
-                    //     type: "post",
-                    //     url: "/mda-tenant-save",
-                    //     data: {
-                    //         userUid: "{{$user->userUid}}", 
-                    //     },
-                    //     success: function (data) {
+                    $.ajax({
+                        type: "post",
+                        url: "/mda-tenant-save",
+                        data: {
+                            userUid: "{{$user->userUid}}", 
+                        },
+                        success: function (data) {
 
-                    //         if(data['status'] == "Uploaded"){
-                    //             var btnType = "action";
-                    //         }else{
-                    //             var btnType = "approved"
-                    //         }
+                            if(data['status'] == "Uploaded"){
+                                var btnType = "action";
+                            }else{
+                                var btnType = "approved"
+                            }
 
-                    //         $("#documentsSectionDisplay").append('<div class="section"><div class="label">MDA</div><div class="status" id="MDAStatus"><div class="button '+btnType+'"></div></div><div class="banner" id="MDABanner"><button type="button" onclick="btn_view_document_ajax(\''+data['id']+'\')">View Docuument</button></div></div>')
+                            $("#documentsSectionDisplay").append('<div class="section"><div class="label">MDA</div><div class="status" id="MDAStatus"><div class="button '+btnType+'"></div></div><div class="banner" id="MDABanner"><button type="button" onclick="btn_view_document_ajax(\''+data['id']+'\')">View Docuument</button></div></div>')
 
-                    //         refreshActions();
+                            refreshActions();
 
-                    //         // console.log(data)
-                    //     }
-                    // })
+                            // console.log(data)
+                        }
+                    })
 
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');

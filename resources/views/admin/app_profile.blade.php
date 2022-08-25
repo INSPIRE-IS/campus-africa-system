@@ -421,7 +421,7 @@
                                         @endif
                                     @endif
 
-                                    {{-- @if($file["field"] === "MDA")
+                                    @if($file["field"] === "MDA")
                                         
                                         @if($file["status"] == "XApproved" || $file["status"] == "Approved")
                                             <div class="button approved"></div>
@@ -429,7 +429,7 @@
                                             <div class="button action"></div>
                                         @endif
                                         
-                                    @endif --}}
+                                    @endif
 
                                     @if($file["field"] === "studentCard")
                                         @if ($user[0]['userInfo']['rob_20_card'] == 0)
