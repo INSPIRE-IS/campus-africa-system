@@ -64,7 +64,8 @@ class HomeController extends Controller
         if(Auth::user()->userRole == "0"){
 
             $appOnline = Lookups::where('group_id', '9')->first();
-            if($appOnline == '1'){
+
+            if($appOnline->lookup_name == '1'){
 
                 // $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
                 $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
