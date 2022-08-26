@@ -6402,10 +6402,6 @@ class HomeController extends Controller
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bankStatement')->update(['status' => 'Rejected']);
             }
 
-            if($request->studentType !== "NSFAS"){
-                $updateData['rob_35_info'] = 1;
-            }
-
             
         } elseif ($request->task == "inline_edit_kin") {
             $newData = [
@@ -6441,28 +6437,13 @@ class HomeController extends Controller
                 'kinAddressSuburb' => $request->kinAddressSuburb,
                 'kinAddressCity' => $request->kinAddressCity,
                 'kinAddressPost' => $request->kinAddressPost,
+                'rob_35_info' => 1,
             ];
 
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
 
             $userInfoUse = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
-
-            if($userInfoUse->studentType == "Bursary"){
-                if($userInfoUse->burCompanyName !== null && $userInfoUse->burCompanyName !== ""){
-                    $updateData['rob_35_info'] = 1;
-                }
-            }
-
-            if($userInfoUse->studentType == "Cash / Direct"){
-                if($userInfoUse->sponFirstName !== null && $userInfoUse->sponFirstName !== ""){
-                    $updateData['rob_35_info'] = 1;
-                }
-            }
-
-            if($userInfoUse->studentType == "NSFAS"){
-                $updateData['rob_35_info'] = 1;
-            }
         
         } elseif ($request->task == "inline_app_details") {
             $newData = [
