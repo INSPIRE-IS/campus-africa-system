@@ -2146,6 +2146,7 @@
     $("select").blur(function(){
         let fieldId = $(this)[0]["id"]
 
+
         // var required = document.getElementById(fieldId).required
         var required = $("#"+fieldId).hasClass('required')
 
@@ -3607,6 +3608,7 @@
             var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
             return regex.test(email);
         }
+        
 
         $(document).on('click', '.btn_save_inline', function(e) {
 
@@ -3616,6 +3618,12 @@
             $('.edit_info .hidden .fieldError').removeClass('fieldError').val('');
             
             var req = 1;
+
+            if(formid == "inline_edit_kin"){
+                if($("#kinTitle").val() !== ""){
+                    $("#kinTitle").removeClass('fieldError')
+                }
+            }
 
             //Check empty fields that are required
             $('#'+formid+' .required').each( function(){
@@ -3631,6 +3639,10 @@
                     }
                 }
             });
+
+            
+
+            
 
             //Check any other fields with validation errors
             if ($('#'+formid+' .fieldError').length > 0) {
