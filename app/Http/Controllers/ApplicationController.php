@@ -283,6 +283,7 @@ class ApplicationController extends Controller
             'kinAddressSuburb' => $request->kAddress2,
             'kinAddressCity' => $request->kAddressCity,
             'kinAddressPost' => $request->kAddressPostal,
+            'rob_35_info' => 1,
         ]);
 
         return "/step-4/online-application";
@@ -1171,7 +1172,7 @@ class ApplicationController extends Controller
             'rob_20_card' => 0,
             'rob_25_reg' => 0,
             'rob_30_funds' => 0,
-            'rob_35_info' => 1,
+            'rob_35_info' => 0,
             'rob_40_bed' => 1,
             'rob_50_approve' => 0,
             'rob_55_lease' => 3,

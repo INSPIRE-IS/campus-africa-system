@@ -5860,7 +5860,7 @@ class HomeController extends Controller
         $user = StudentsInfo::where('userUid', $student_id)->where('year', $this_year)->first();
 
         if (!empty($user)) {
-            return ["rob_10_fee" => $user->rob_10_fee, "rob_15_id" => $user->rob_15_id, "rob_20_card" => $user->rob_20_card , "rob_25_reg" => $user->rob_25_reg , "rob_30_funds" => $user->rob_30_funds , "rob_35_info" => $user->rob_35_info , "rob_40_bed" => $user->rob_40_bed, "rob_45_other" => $user->rob_45_other,  "rob_50_approve" => $user->rob_50_approve, "rob_60_cancelled" => $user->rob_60_cancelled, 'parent_approved' => $user->parent_approved, 'burser_approved' => $user->burser_approved ];
+            return ["rob_10_fee" => $user->rob_10_fee, "rob_15_id" => $user->rob_15_id, "rob_20_card" => $user->rob_20_card , "rob_25_reg" => $user->rob_25_reg , "rob_30_funds" => $user->rob_30_funds , "rob_35_info" => $user->rob_35_info , "rob_40_bed" => $user->rob_40_bed, "rob_45_other" => $user->rob_45_other,  "rob_50_approve" => $user->rob_50_approve, "rob_60_cancelled" => $user->rob_60_cancelled, 'parent_approved' => $user->parent_approved, 'burser_approved' => $user->burser_approved, 'burCompanyName' => $user->burCompanyName, 'sponFirstName' => $user->sponFirstName ];
         } else {
             return false;
         }
@@ -6379,6 +6379,8 @@ class HomeController extends Controller
                 'parent_approved' => null,
             ];
 
+            
+
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
 
@@ -6399,6 +6401,12 @@ class HomeController extends Controller
             if(!empty($bankStatement)){
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bankStatement')->update(['status' => 'Rejected']);
             }
+
+            if($request->studentType !== "NSFAS"){
+                $updateData['rob_35_info'] = 1;
+            }
+
+            
         } elseif ($request->task == "inline_edit_kin") {
             $newData = [
                 'kinTitle|Title' => $request->kinTitle,
@@ -6434,6 +6442,27 @@ class HomeController extends Controller
                 'kinAddressCity' => $request->kinAddressCity,
                 'kinAddressPost' => $request->kinAddressPost,
             ];
+
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+
+            $userInfoUse = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
+
+            if($userInfoUse->studentType == "Bursary"){
+                if($userInfoUse->burCompanyName !== null && $userInfoUse->burCompanyName !== ""){
+                    $updateData['rob_35_info'] = 1;
+                }
+            }
+
+            if($userInfoUse->studentType == "Cash / Direct"){
+                if($userInfoUse->sponFirstName !== null && $userInfoUse->sponFirstName !== ""){
+                    $updateData['rob_35_info'] = 1;
+                }
+            }
+
+            if($userInfoUse->studentType == "NSFAS"){
+                $updateData['rob_35_info'] = 1;
+            }
         
         } elseif ($request->task == "inline_app_details") {
             $newData = [

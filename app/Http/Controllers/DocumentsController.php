@@ -275,6 +275,11 @@ class DocumentsController extends Controller {
                 $studentTypeChanged = 1;
             }
 
+            if($oldStudentData->kinFirstName !== null && $oldStudentData->kinFirstName !== ""){
+                $updateData['rob_35_info'] = 1;
+            }
+            
+
         } elseif ($request->type == "bankStatement") {
             $newData = [
                 'studentType|Student Type' => $request->studentType,
@@ -310,6 +315,10 @@ class DocumentsController extends Controller {
 
             if($oldStudentData->studentType !== $request->studentType){
                 $studentTypeChanged = 1;
+            }
+
+            if($oldStudentData->kinFirstName !== null && $oldStudentData->kinFirstName !== ""){
+                $updateData['rob_35_info'] = 1;
             }
         }
 

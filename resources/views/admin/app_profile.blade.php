@@ -8,7 +8,7 @@
     <div class="container">
         <div class="col-3" id="col1">
         <div class="flex">
-            <span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128308;</span><p class="listHeader">Physical Address</p></div>
+            <span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128993;</span><p class="listHeader">Physical Address</p></div>
             <div class="form" id="inline_edit_address">
                 {{$user[0]['userInfo']['userAddress1']}}<br/>
                 {{$user[0]['userInfo']['userAddress2']}}<br/>
@@ -24,7 +24,10 @@
         <div class="col-3" id="col2">
             
         <div class="flex">
-            <span id="approvedKin" class="hidden">&#128994;</span><span id="rejectedKin">&#128308;</span><p class="listHeader">Next of Kin</p></div>
+            <span id="approvedKin" class="hidden">&#128994;</span>
+            <span id="rejectedKin">&#128993;</span>
+            <span id="notLoadKin" class="hidden">&#128308;</span>
+            <p class="listHeader">Next of Kin</p></div>
             <div class="form" id="inline_edit_kin">
                 {{$user[0]['userInfo']['kinTitle']}} {{$user[0]['userInfo']['kinFirstName']}} {{$user[0]['userInfo']['kinLastName']}}<br/>
                 {{$user[0]['userInfo']['kinRelationship']}}<br/>
@@ -46,7 +49,11 @@
         
         @if($user[0]['userInfo']['studentType'] == "Cash / Direct")
             <div class="col-3" id="col3">
-                <div class="flex"><span id="approvedSpon" class="hidden">&#128994;</span><span id="rejectedSpon">&#128308;</span><p class="listHeader">Sponsor/Parent </p></div>
+                <div class="flex">
+                    <span id="approvedSpon" class="hidden">&#128994;</span>
+                    <span id="rejectedSpon" class="hidden">&#128993;</span>
+                    <span id="notLoadSpon" class="hidden">&#128308;</span>
+                    <p class="listHeader">Sponsor/Parent </p></div>
                 <div class="form">
                     <div class="sponInfoSection"></div>
                 </div>
@@ -55,7 +62,14 @@
 
         @if($user[0]['userInfo']['studentType'] == "Bursary")
             <div class="col-3" id="col3">
-                <div class="flex"><span id="approvedBur" class="<?php if($user[0]['userInfo']['burser_approved'] != '1'){ echo "hidden";} ?>">&#128994;</span><span id="rejectedBur" class="<?php if($user[0]['userInfo']['burser_approved'] == '1'){ echo "hidden";} ?>">&#128308;</span><p class="listHeader">Bursar</p></div>
+                <div class="flex">
+                    <!-- <span id="approvedBur" class="<?php if($user[0]['userInfo']['burser_approved'] != '1'){ echo "hidden";} ?>">&#128994;</span>
+                    <span id="rejectedBur" class="<?php if($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== ""){ echo "hidden";} ?>">&#128993;</span>
+                    <span id="notLoadBur" class="<?php if($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null){ echo "hidden";} ?>">&#128308;</span> -->
+                    <span id="approvedBur" class="hidden">&#128994;</span>
+                    <span id="rejectedBur" class="hidden">&#128993;</span>
+                    <span id="notLoadBur" class="hidden">&#128308;</span>
+                    <p class="listHeader">Bursar <?php echo $user[0]['userInfo']['burCompanyName'];?></p></div>
                 <div class="form">
                     <div class="burInfoSection"></div>
                 </div>
@@ -89,7 +103,7 @@
             <div class="customWhiteCard" >
                 <div class="flex">                    
                     <span id="app_det_statYes" class="hidden" style="margin-top:10px;">&#128994;</span>                    
-                    <span id="app_det_statNo" style="margin-top:10px;">&#128308;</span>                    
+                    <span id="app_det_statNo" style="margin-top:10px;">&#128993;</span>                    
                     <h2 class="appHeader">Applicant Details</h2>
                 </div>
                 
@@ -1112,8 +1126,13 @@
             $("#rejectedKin").addClass('hidden')
             $("#approvedKin").removeClass('hidden')
         }else{
-            $("#rejectedKin").removeClass('hidden')
-            $("#approvedKin").addClass('hidden')
+            if("{{$user[0]['userInfo']['kinFirstName']}}" == "" || "{{$user[0]['userInfo']['kinFirstName']}}" == null){
+                $("#rejectedKin").addClass('hidden')
+                $("#notLoadKin").removeClass('hidden')
+            }else{
+                $("#rejectedKin").removeClass('hidden')
+                $("#approvedKin").addClass('hidden')
+            }
         }
 
         if($("#address_approved").val() == "1"){
@@ -1302,23 +1321,40 @@
                 if(data['parent_approved'] == 1){
                     $("#rejectedSpon").addClass('hidden')
                     $("#approvedSpon").removeClass('hidden')
+                    $("#notLoadSpon").addClass('hidden')
                 }else{
-                    $("#rejectedSpon").removeClass('hidden')
-                    $("#approvedSpon").addClass('hidden')
+                    if(data['sponFirstName'] == '' || data['sponFirstName'] == null){
+                        $("#rejectedSpon").addClass('hidden')
+                        $("#approvedSpon").addClass('hidden')
+                        $("#notLoadSpon").removeClass('hidden')
+                    }else{
+                        $("#rejectedSpon").removeClass('hidden')
+                        $("#approvedSpon").addClass('hidden')
+                        $("#notLoadSpon").addClass('hidden')
+                    }
                 }
 
                 if(data['burser_approved'] == 1){
                     $("#rejectedBur").addClass('hidden')
                     $("#approvedBur").removeClass('hidden')
+                    $("#notLoadBur").addClass('hidden')
                 }else{
-                    $("#rejectedBur").removeClass('hidden')
-                    $("#approvedBur").addClass('hidden')
+                    
+                    if(data['burCompanyName'] == "" || data['burCompanyName'] == null){
+                        $("#notLoadBur").removeClass('hidden')
+                        $("#approvedBur").addClass('hidden')
+                        $("#rejectedBur").addClass('hidden')
+                    }else{
+                        $("#rejectedBur").removeClass('hidden')
+                        $("#approvedBur").addClass('hidden')
+                        $("#notLoadBur").addClass('hidden')
+                    }
                 }
 
                 if(data['rob_40_bed'] == 2){
                     $(".bed_code_status").empty().append('<span id="bedAllocatedYes" style="margin-top:10px;">&#128994;</span>')
                 }else{
-                    $(".bed_code_status").empty().append('<span id="bedAllocatedNo" style="margin-top:10px;">&#128308;</span>')
+                    $(".bed_code_status").empty().append('<span id="bedAllocatedNo" style="margin-top:10px;">&#128993;</span>')
                 }
 
                 $(".appSection").empty()
