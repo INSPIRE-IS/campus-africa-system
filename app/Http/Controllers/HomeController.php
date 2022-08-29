@@ -3167,6 +3167,33 @@ class HomeController extends Controller
         return ["done", $emailValid, $idNumberValid, $user, $property, $booking, $this_year];
     }
 
+    public function passport_check(Request $request){
+        $passportNo = $request->passportNo;
+        $passportNoValid = true;
+        $property = null;
+
+        if($passportNo !== ""){
+            $user = $idCheck = StudentsInfo::where('userPassport', $passportNo)->orderby('year', 'desc')->first();
+
+            if(!empty($idCheck)){
+                $passportNoValid = false;
+                $booking = Booking::where('id', $idCheck->bookingId)->orderBy('year', 'desc')->first();
+                $property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            }
+        }
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $booking = (object)[];
+
+        if(!empty($user)){
+            $booking = Booking::where('userId', $user->userUid)->orderBy('year', 'desc')->first();
+        }
+
+        return ["done", $passportNoValid, $user, $property, $booking, $this_year];
+    }
+
     public function get_booking_details(Request $request){
         //
 

@@ -137,6 +137,8 @@ Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
+Route::post('/passport-check', [HomeController::class, 'passport_check']);
+Route::Post('/passport-check_reg', [ApplicationController::class, 'passport_check_registration']);
 
 
 
