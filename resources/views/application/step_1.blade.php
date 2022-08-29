@@ -97,7 +97,9 @@
         </div>
 
         <div class="form-field hidden" id="passportField">
-            <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+            <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span>
+            <span id="passport_InUse" class="hidden" style="color:red"><small>Passport Number already in use - please <a href="<?php echo "https://$_SERVER[HTTP_HOST]/login"; ?>">login to your account</a> or email us at <a href="mailto:info@campusafrica.co.za">info@campusafrica.co.za</a></small></span>
+        </label>
             <input type="text" name="passportNo" id="passportNo" >
         </div>
 
@@ -478,6 +480,30 @@
 
         cecheckIDEmail();
     })
+
+    $("#passportNo").on('keyup blur', function() {
+        $.ajax({
+            type: "post",
+            url: "/passport-check_reg",
+            data: {
+                passportNo: $("#passportNo").val(),
+            },
+
+            success: function(data) {
+
+                if ($("#passportNo").val() !== "") {
+                        if (data[1] == false) {
+                            $("#passport_InUse").removeClass('hidden')
+                            $("#passportNo").addClass('fieldError')
+                        } else {
+                            $("#passport_InUse").addClass('hidden')
+                            $("#passportNo").removeClass('fieldError')
+                            $("#passportField").removeClass('idHeight');
+                        }
+                    }
+            }
+        });
+    });
 
     function cecheckIDEmail(){
         $.ajax({

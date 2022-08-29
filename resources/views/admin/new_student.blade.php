@@ -71,8 +71,19 @@
             </div>
 
             <div class="form-field hidden" id="passportField">
-                <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is
-                            required</small></span></label>
+                <label>Passport Number * 
+                    <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span>
+                    <span id="passport_InUse_cancelled" class="hidden" style="color:red"><small>a CANCELLED booking with
+                            this passport number exists - click <a id="toViewCancelledPassport" href="" target="_blank"
+                                style="cursor:pointer">here</a> to view</small></span>
+                    <span id="passport_InUse_active" class="hidden" style="color:red"><small>an ACTIVE booking with this passport
+                            number exists - Please contact the building manager at <span id="activeBuildingNamePassport"></span> to
+                            move this booking OR advise the student that they can login and change the
+                            building</small></span>
+                    <span id="passport_InUse_old" class="hidden" style="color:red"><small>A previous booking with this passport
+                            number exists - <a href="" id="newBookingLinkPassport">click here</a> to create a new
+                            booking</small></span>
+                </label>
                 <input type="text" name="passportNo" id="passportNo">
             </div>
 
@@ -729,6 +740,8 @@
 
         })
 
+       
+
         /*
         $("#kIdNumber").on('keyup blur', function(){
             let idNumber = $("#kIdNumber").val();
@@ -978,6 +991,53 @@
                 $("#email_error").removeClass('hidden')
             }
         })
+
+        $("#passportNo").on('keyup blur', function() {
+            $.ajax({
+                type: "post",
+                url: "/passport-check",
+                data: {
+                    passportNo: $("#passportNo").val(),
+                },
+
+                success: function(data) {
+
+                    if ($("#passportNo").val() !== "") {
+                            if (data[1] == false) {
+                                if (data[2]['rob_60_cancelled'] == '1') {
+                                    $("#passport_InUse_cancelled").removeClass('hidden')
+                                    $("#passportNo").addClass('fieldError')
+                                    document.getElementById('toViewCancelledPassport').href =
+                                        "/application-profile/" + data[2]['userUid'];
+                                } else {
+
+                                    console.log(data[4]['year'] != data[5])
+
+                                    if (data[4]['year'] != data[5]) {
+                                        $("#passport_InUse_old").removeClass('hidden')
+                                        $("#passportNo").addClass('fieldError')
+                                        document.getElementById('newBookingLinkPassport').href =
+                                            "/application-profile/" + data[2]['userUid'];
+                                        $("#passportField").addClass('idHeight');
+                                    } else {
+                                        $("#passport_InUse_active").removeClass('hidden')
+                                        $("#passportNo").addClass('fieldError')
+                                        $("#activeBuildingNamePassport").empty().append(data[3]);
+                                        $("#passportField").addClass('idHeight');
+                                    }
+
+                                }
+                            } else {
+                                $("#passport_InUse_old").addClass('hidden')
+                                $("#passport_InUse_active").addClass('hidden')
+                                $("#passport_InUse_cancelled").addClass('hidden')
+                                $("#passportNo").removeClass('fieldError')
+                                $("#passportField").removeClass('idHeight');
+                            }
+                        }
+                }
+            });
+        });
 
         $("#email, #idNumber").on('blur', function() {
             $.ajax({
