@@ -2645,6 +2645,7 @@
                         refreshActions();
                         // $("#myModalEditLease").html("");
                         $("#myModalEditLease").css("display", "none");
+                        $("#changeLeaseDates").empty().append('Change Lease Dates');
                     },
                 });
         }
