@@ -88,18 +88,24 @@ class BookingReportController extends Controller
                     }
 
                     foreach($allBookings as $booking){
-                        if($booking->property == $res->id && $booking->roomType == $room->id){
-                            // $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
-                            $user = StudentsInfo::where('userUid', $booking->userId)->where('rob_60_cancelled', '0')->where('year', $lookupYear->lookup_name)->first();
+                        if($booking->cancelled != '1'){
 
-        
-                            if(!empty($user)){
-                                if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
-                                    $roomSummary['room_allocated']++;
-                                    $propSummary['beds_allocated']++;
-                                }else if($user->rob_10_fee == '2' && $user->rob_40_bed == '1'){
-                                    $roomSummary['room_waitlisted']++;
-                                    $propSummary['beds_waitlisted']++;
+                            if($booking->property == $res->id && $booking->roomType == $room->id){
+                                // $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
+                                $user = StudentsInfo::where('userUid', $booking->userId)->where('year', $lookupYear->lookup_name)->first();
+    
+            
+                                if(!empty($user)){
+                                    if($user->rob_60_cancelled != 1){
+    
+                                        if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
+                                            $roomSummary['room_allocated']++;
+                                            $propSummary['beds_allocated']++;
+                                        }else if($user->rob_10_fee == '2' && $user->rob_40_bed == '1'){
+                                            $roomSummary['room_waitlisted']++;
+                                            $propSummary['beds_waitlisted']++;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -198,7 +204,7 @@ class BookingReportController extends Controller
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://campusafrica.whitehart.co.za/wp-json/wp/v2/rooms/'.$roomMap,
+                CURLOPT_URL => 'https://campusafrica.co.za/wp-json/wp/v2/rooms/'.$roomMap,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,

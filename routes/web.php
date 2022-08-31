@@ -81,6 +81,8 @@ Route::get('/verify-email-account', [ApplicationController::class, 'verify_email
 Route::get('/verify-new-email-account', [ApplicationController::class, 'verify_new_email_account']);
 Route::get('/loginAsStudent/{studentId}', [ApplicationController::class, 'loginAsStudent']);
 
+Route::get("/verified", [ApplicationController::class, 'verified']);
+
 
 // Route::post("/saveMailTy", [HomeController::class, 'saveMailTy']);
 // Route::post("/saveMailAa", [HomeController::class, 'saveMailAa']);
@@ -137,6 +139,8 @@ Route::post('/download-report', [HomeController::class, 'download_report']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
+Route::post('/passport-check', [HomeController::class, 'passport_check']);
+Route::Post('/passport-check_reg', [ApplicationController::class, 'passport_check_registration']);
 
 
 
@@ -191,6 +195,7 @@ Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees'
 Route::get('/update/nsfas', [HomeController::class, 'update_nsfas']);
 Route::get('/update/processing-status', [HomeController::class, 'update_processing_status']);
 Route::post('/update/lease-dates', [HomeController::class, 'update_lease_dates']);
+Route::post('/update/nsfas-amount', [LookupsController::class, 'update_nsfas_amount']);
 Route::post('/get-upload-info', [HomeController::class, 'get_upload_info']);
 Route::get('/download/matched-unmatched/{id}', [HomeController::class, 'download_matched_unmatched']);
 Route::get('/delete/nsfas/{id}', [HomeController::class, 'delete_nsfas']);
@@ -290,6 +295,8 @@ Route::post('/notify-data', [OnlinePaymentController::class, 'notify_data']);
 
 Route::get('/create-new-booking/{id}', [HomeController::class, 'create_new_booking']);
 Route::post('/new-booking', [HomeController::class, 'new_booking']);
+
+Route::post("/mda-tenant-save", [LeaseController::class, 'mda_tenant_save']);
 
 
 

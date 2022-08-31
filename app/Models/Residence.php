@@ -24,6 +24,7 @@ class Residence extends Model
         'account_number',
         'branch',
         'branch_code',
+        'mda_id',
         'company_reg',
         'company_vat',
     ];

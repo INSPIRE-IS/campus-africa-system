@@ -20,15 +20,20 @@
                 <option value="7" >Waive Booking Fee</option>
                 <option value="8" >Lease Admin Fee</option>
                 <option value="9" >Online Applications</option>
-                <option value="10" >Test Emails Allowed</option>
-                <option value="11" >Test CC in Mail</option>
+                <option value="10" >Email - Restrict to Test Domain(s)</option>
+                <option value="11" >Email - BCC Email Addresses</option>
             </select>
         </div>
 
         <div class="form-field" id="normalVlaue">
             <label>Value</label>
             <input type="text" name="value" id="value"  >
-            <small id="mailWording" class="hidden">Please seperate email addresses by semicolon</small>
+            <small id="mailWording" class="hidden">
+            <br/>- When this is set, emails are limited to the specified domains.<br/>
+                - These should be domains only<br/>
+                - When this is not set, no restrictions on email sending<br/>
+                - Please seperate by semicolon</small>
+            <small id="mailCCWording" class="hidden">Specify individual email addresses to BCC, Please seperate email addresses by semicolon</small>
         </div>
 
         <div class="form-field hidden" id="waiverValue">
@@ -49,6 +54,11 @@
             </select>
         </div>
 
+        <div class="form-field hidden" id="nsfas_value">
+            <label>NSFAS Rate</label>
+            <input type="number" id="nsfas_amount" name="nsfas_amount" >
+        </div>
+
         <!-- <div class="form-field hidden" id="waiverDateFrom">
             <label>Waiver Date From</label>
             <input type="date" name="date_from" id="date_from">
@@ -67,9 +77,11 @@
     $("#group_id").on('change', function(){
         if($("#group_id").val() == "7"){
             $("#normalVlaue").addClass('hidden');
-            $("#onlineAppValue").addClass('hidden');
             $("#waiverValue").removeClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
+            $("#mailCCWording").addClass('hidden');
+            $("#nsfas_value").addClass('hidden');
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
         }else if($("#group_id").val() == "9"){
@@ -77,16 +89,36 @@
             $("#normalVlaue").addClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
-        }else if($("#group_id").val() == "10" || $("#group_id").val() == "11"){
+            $("#nsfas_value").addClass('hidden');
+            $("#mailCCWording").addClass('hidden');
+        }else if($("#group_id").val() == "10"){
             $("#mailWording").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
+
+            $("#mailCCWording").addClass('hidden');
+        }else if($("#group_id").val() == "11"){
+            $("#mailWording").addClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
+            $("#normalVlaue").removeClass('hidden');
+            $("#waiverValue").addClass('hidden');
+
+            $("#mailCCWording").removeClass('hidden');
+            $("#nsfas_value").addClass('hidden');
+        }else if($("#group_id").val() == "1" ){
+            $("#nsfas_value").removeClass('hidden');
+            $("#normalVlaue").removeClass('hidden');
+            $("#waiverValue").addClass('hidden');
+            $("#mailWording").addClass('hidden');
+            $("#onlineAppValue").addClass('hidden');
         }else{
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
+            $("#mailCCWording").addClass('hidden');
+            $("#nsfas_value").addClass('hidden');
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
         }

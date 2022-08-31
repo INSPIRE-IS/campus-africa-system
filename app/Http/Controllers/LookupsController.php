@@ -963,4 +963,32 @@ class LookupsController extends Controller {
 
         }
     }
+
+    public function update_nsfas_amount(Request $request){
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $allStudentInfo = StudentsInfo::where('year', $this_year)->where('institutionStudy', $request->lookup_id)->get();
+
+        foreach($allStudentInfo as $student){
+            $booking = Booking::where('id', $student->bookingId)->first();
+            $payment = BookingPayment::where('bookingId', $booking->id)->first();
+
+            if(!empty($payment)){
+
+                $diff = 0;
+                for($i = new DateTime($booking['lease_from_date']); $i <= new DateTime($booking['lease_to_date']); $i->modify('+1 month')){
+                    $diff++;
+                }
+    
+                $institutionAmount = $monthlyFunded = $request->nsfas_amount;
+                $funded = floatval($institutionAmount) * floatval($diff);
+    
+                $topup = floatval($payment->monthly_rental_total) - floatval($funded);
+    
+                BookingPayment::where('id', $payment->id)->update(["total_funded" => $funded, "funded_monthly" => $monthlyFunded, "total_top_up" => $topup]);
+            }
+
+        }
+    }
 }

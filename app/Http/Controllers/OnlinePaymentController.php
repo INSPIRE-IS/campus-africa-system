@@ -20,11 +20,11 @@ class OnlinePaymentController extends Controller
     public function initiate_payment(Request $request){
         
         //encryption key set in the Merchant Access Portal
-        $encryptionKey = 'secret';
-        $paygateId = 10011072130;
+        // $encryptionKey = 'secret';
+        // $paygateId = 10011072130;
 
-        // $encryptionKey = 'wUrEU5MlbopX';
-        // $paygateId = 1039719100014;
+        $encryptionKey = 'wUrEU5MlbopX';
+        $paygateId = 1039719100014;
 
         $DateTime = new DateTime();
 
@@ -39,8 +39,8 @@ class OnlinePaymentController extends Controller
             'REFERENCE'         => $request->reference,
             'AMOUNT'            => floatval($request->amount)*100,
             'CURRENCY'          => 'ZAR',
-            // 'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
-            'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
+            'RETURN_URL'        => 'https://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
+            // 'RETURN_URL'        => 'http://'.$_SERVER['HTTP_HOST'].'/'.$req_url.'/'.$request->id,
             'TRANSACTION_DATE'  => $DateTime->format('Y-m-d H:i:s'),
             'LOCALE'            => 'en-za',
             'COUNTRY'           => 'ZAF',

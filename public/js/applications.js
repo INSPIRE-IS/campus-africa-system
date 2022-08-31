@@ -46,6 +46,8 @@ jQuery(document).ready(function ($) {
 
         var datatable = $("#application_table").DataTable();
 
+        console.log(JSON.stringify(document.getElementById('show_cancelled').checked))
+
         $.ajax({
             type: "post",
             url: "/applications/filter",
@@ -65,6 +67,7 @@ jQuery(document).ready(function ($) {
                 bookingRef: $("#bookingRef").val(),
                 firstLoad: $("#firstLoad").val(),
                 show_cancelled: JSON.stringify(document.getElementById('show_cancelled').checked),
+                applied: $("#applied").val(),
             },
 
             success: function (data) {
@@ -232,6 +235,12 @@ jQuery(document).ready(function ($) {
                         source = "Online";
                     }
 
+                    if(arrayItem['email_verified'] == '1'){
+                        verified = "<i class='fas fa-check' style='color:green'></i>";
+                    }else{
+                        verified = "&#10060;";
+                    }
+
                     var trDOM = datatable.row
                         .add([
                             "#" + arrayItem["booking_code"],
@@ -239,7 +248,7 @@ jQuery(document).ready(function ($) {
                                 arrayItem["userFirstName"] +
                                 " " +
                                 arrayItem["userLastname"] +
-                                "</span> <br/> " +
+                                "</span> "+verified+"<br/> " +
                                 arrayItem["property_residence"] +
                                 " | " +
                                 arrayItem["roomTypeName"],

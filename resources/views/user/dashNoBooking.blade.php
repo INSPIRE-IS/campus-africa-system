@@ -2,36 +2,35 @@
 
 @section('content')
 <div class="container">
-    <a href="/student-create-new-booking"><button type="button" class="newBookingBtn">
+  <div class="contentSection">
+    <a href="/student-create-new-booking">
+      <button type="button" class="newBookingBtn">
         Apply for {{$this_year}} now!
-    </button></a>
+      </button>
+    </a>
     <br/>
     <hr/>
     <br/>
+    <div class="cards">
     @foreach($bookingList as $booking)
-    <div style="border:1px solid #ccc; margin:10px; height:250px; padding:15px;">
-        <div class="appRow">
-            <h1><u>{{$booking->year}}: {{$booking->booking_code}} @if($booking->cancelled == 1)  - CANCELLED @endif</u></h1>
-            <p><b>Property:</b> @foreach($buildingList as $building) @if($booking->property == $building->id) {{$building->residence}} @endif @endforeach</p>
-            <p><b>Room:</b> @foreach($roomList as $room) @if($booking->roomType == $room->id) {{$room->name}} @endif @endforeach</p>
-            <p><b>Floor:</b> {{$booking->floor}}</p>
-            <p><b>Unit:</b> {{$booking->unit}}</p>
-            <p><b>Bed Code:</b> {{$booking->bed_code}}</p>
-            <p><b>Booking Fee:</b> {{$booking->room_rate}}</p>
-            <p><b>Lease From:</b> {{$booking->lease_from_date}} {{$booking->lease_from_time}}</p>
-            <p><b>Lease To:</b> {{$booking->lease_to_date}} {{$booking->lease_to_time}}</p>
-        </div>
-        <div class="appRow">
-            <br/><br/>
-            @foreach($filesList as $file)
-                @if($file->year == $booking->year)
-                    <p><b>{{$file->fileId}}</b> : {{$file->status}}</p>
-                @endif
-            @endforeach
+      <div class='customWhiteCard' style="float:none">
+        <div class="">
+            <h1>{{$booking->year}} Booking</h1>
+            <p class="prevBookingTitle"><b>Booking:</b> {{$booking->booking_code}}</p>
+            <p class="prevBookingTitle"><b>Property:</b> @foreach($buildingList as $building) @if($booking->property == $building->id) {{$building->residence}} @endif @endforeach - @foreach($roomList as $room) @if($booking->roomType == $room->id) {{$room->name}} @endif @endforeach</p>
+            <!-- <p class="prevBookingTitle"><b>Room:</b> </p> -->
+            <!-- <p class="prevBookingTitle"><b>Floor:</b> {{$booking->floor}}</p> -->
+            <p class="prevBookingTitle"><b>Unit:</b> {{$booking->bed_code}}</p>
+            <!-- <p class="prevBookingTitle"><b>Bed Code:</b> </p> -->
+            <p class="prevBookingTitle"><b>Booking Fee:</b> R {{$booking->room_rate}}</p>
+            <p class="prevBookingTitle"><b>Lease From:</b> {{$booking->lease_from_date}}</p>
+            <p class="prevBookingTitle"><b>Lease To:</b> {{$booking->lease_to_date}}</p>
         </div>
     </div>
     @endforeach
-    <br/><hr/><br/>
+    </div>
+    <br/><br/>
+</div>
 </div>
 
 

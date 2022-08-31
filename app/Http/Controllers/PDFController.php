@@ -185,16 +185,24 @@ class PDFController extends Controller
           $data['name'] = $userForLease->userFirstName;
           $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
-          $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-          $mailArr = explode(";", $allowedMails);
+          
 
           $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
           $data['cc'] = explode(";", $allowedMailsCC);
 
-          if(in_array(explode("@", $data['email'])[1], $mailArr)){
-              $data['email'] = $userForLease->userEmail;
+          $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+          if(!empty($allowedMails)){
+
+            $mailArr = explode(";", $allowedMails);
+  
+            if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                $data['email'] = $userForLease->userEmail;
+            }else{
+                $data['email'] = "conurbandigital@gmail.com";
+            }
           }else{
-              $data['email'] = "conurbandigital@gmail.com";
+            $data['email'] = $userForLease->userEmail;
           }
   
           Mail::send('email.green_back', $data, function($message) use ($data) {
@@ -202,7 +210,7 @@ class PDFController extends Controller
               // $message->to($data['email'])->subject($data['subject']);
               // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
               $message->to($data['email'])->subject($data['subject']);
-                $message->cc($data['cc']);
+                $message->bcc($data['cc']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
               // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
           });
