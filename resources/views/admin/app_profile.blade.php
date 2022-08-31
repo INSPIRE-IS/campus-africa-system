@@ -2591,32 +2591,64 @@
         
     }
 
+    $("#lease_to_date").on('blur', function(){
+        let date = new Date($("#lease_to_date").val());
+
+        if ( Object.prototype.toString.call(date) === "[object Date]" ) {
+            if ( !isNaN(date.getTime()) ) {
+                $("#lease_to_date").removeClass("fieldError")
+            } else {
+                $("#lease_to_date").addClass("fieldError")
+            }
+        } else {
+            $("#lease_to_date").addClass("fieldError")
+        }
+    })
+
+    $("#lease_from_date").on('blur', function(){
+        let date = new Date($("#lease_from_date").val());
+
+        if ( Object.prototype.toString.call(date) === "[object Date]" ) {
+            if ( !isNaN(date.getTime()) ) {
+                $("#lease_from_date").removeClass("fieldError")
+            } else {
+                $("#lease_from_date").addClass("fieldError")
+            }
+        } else {
+            $("#lease_from_date").addClass("fieldError")
+        }
+    })
+
     $("#changeLeaseDates").on('click', function(){
         
-        $("#changeLeaseDates").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        if($("#lease_to_date").hasClass('fieldError') === false && $("#lease_from_date").hasClass('fieldError') === false){
 
-        $.ajax({
-                type: "post",
-                url: "/change-lease",
-                data: {
-                    bookingId: $("#bookingId2").val(), 
-                    lease_from_date: $("#lease_from_date").val(), 
-                    lease_from_time: $("#lease_from_time").val(),
-                    lease_to_date: $("#lease_to_date").val(), 
-                    lease_to_time: $("#lease_to_time").val(),
-                },
-
-                success: function (data) {
-                    
-                    // window.location.reload();
-
-                    getBookingPaymentInfo();
-                    bookingTypeDetails();
-                    refreshActions();
-                    $("#myModalEditLease").html("");
-                    $("#myModalEditLease").css("display", "none");
-                },
-            });
+            $("#changeLeaseDates").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+    
+            $.ajax({
+                    type: "post",
+                    url: "/change-lease",
+                    data: {
+                        bookingId: $("#bookingId2").val(), 
+                        lease_from_date: $("#lease_from_date").val(), 
+                        lease_from_time: $("#lease_from_time").val(),
+                        lease_to_date: $("#lease_to_date").val(), 
+                        lease_to_time: $("#lease_to_time").val(),
+                    },
+    
+                    success: function (data) {
+                        
+                        // window.location.reload();
+    
+                        getBookingPaymentInfo();
+                        bookingTypeDetails();
+                        refreshActions();
+                        // $("#myModalEditLease").html("");
+                        $("#myModalEditLease").css("display", "none");
+                    },
+                });
+        }
+        
     })
 
     $("#property").on('blur', function(){
@@ -3468,11 +3500,13 @@
                             var rej = "reason_deposit_reject"
                         }
 
-                        $("#"+updateField1).empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
-                        @if(Auth::user()->role_approve_waive == '1')
-                        $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+wording+'\', \''+rej+'\', \''+waived+'\')">Change</button>')
-                        @else
-                        $("#"+updateField2).empty()
+                        @if($paymentBooking)
+                            $("#"+updateField1).empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
+                            @if(Auth::user()->role_approve_waive == '1')
+                            $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+wording+'\', \''+rej+'\', \''+waived+'\')">Change</button>')
+                            @else
+                            $("#"+updateField2).empty()
+                            @endif
                         @endif
 
 
@@ -3522,10 +3556,12 @@
                             success: function (data) {
 
                                 $("#"+changeField1).empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
-                                @if(Auth::user()->role_approve_waive == '1')
-                                $("#"+changeField2).empty().append('<button type="button" class="waiveAprv" onClick="ActionWaiveAprv(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\')">Approve</button><button type="button" class="waiveRej" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\', \''+reasonField+'_reject\', \''+waiveField+'\')">Reject</button>')
-                                @else
-                                $("#"+changeField2).empty()
+                                @if($paymentBooking)
+                                    @if(Auth::user()->role_approve_waive == '1')
+                                    $("#"+changeField2).empty().append('<button type="button" class="waiveAprv" onClick="ActionWaiveAprv(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\')">Approve</button><button type="button" class="waiveRej" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\', \''+reasonField+'_reject\', \''+waiveField+'\')">Reject</button>')
+                                    @else
+                                    $("#"+changeField2).empty()
+                                    @endif
                                 @endif
 
                                 

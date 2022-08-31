@@ -1753,12 +1753,16 @@ class HomeController extends Controller
 
 
             if($oldData->$key !== $new){
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+
                 ActionList::create([
                     "userUid" => $request->userUid,
                     "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year
                 ]);
             }
         }
@@ -5172,12 +5176,16 @@ class HomeController extends Controller
             User::where('id', $request->userId)->update(["rob_10_fee" => "2"]);
         }
 
+        $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Fee Waiver approved for ".$request->textChange,
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year
         ]);
 
         return UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->pluck('id')->first();
@@ -5304,12 +5312,17 @@ class HomeController extends Controller
             BookingPayment::where('bookingId', $request->bookingId)->update(["booking_fee" => $booking_data['room_rate']]);
         }
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Fee Waiver rejected for ".$request->textChange." with reason: ".$request->reason,
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year
         ]);
 
         return BookingPayment::where('bookingId', $request->bookingId)->first();
@@ -5318,12 +5331,16 @@ class HomeController extends Controller
     public function waive_request(Request $request){
         BookingPayment::where('bookingId', $request->bookingId)->update([$request->waiveField => 1, $request->changeField => 1, $request->reasonField => $request->reason]);
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         ActionList::create([
             "userUid" => $request->userId,
             "action" => "Fee Waiver requested for ".$request->textChange." with reason: ".$request->reason,
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year
         ]);
         
     }
@@ -5734,6 +5751,10 @@ class HomeController extends Controller
             }
 
             Booking::where('userId', $booking->userId)->update($booking_data);
+
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+    
         
             ActionList::create([
                 "userUid" => $booking->userId,
@@ -5741,6 +5762,7 @@ class HomeController extends Controller
                 "actionUserUid" => Auth::user()->id,
                 "actionUserDisplayName" => Auth::user()->userFirstName,
                 "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year
             ]);
         }
     }

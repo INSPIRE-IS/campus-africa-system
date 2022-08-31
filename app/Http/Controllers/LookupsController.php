@@ -835,7 +835,12 @@ class LookupsController extends Controller {
             $residenceId = 0;
             $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
             $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
-            $roomTypeId = $roomTypeData->room_map_slug;
+            $roomTypeId = ""; 
+
+            if($roomTypeData && $roomTypeData->room_map_slug){
+                //
+                $roomTypeId = $roomTypeData->room_map_slug;
+            }
             $deposit = 0;
             $userInfo = StudentsInfo::where('userUid', $booking->userId)->orderBy('year', 'desc')->first();
 
