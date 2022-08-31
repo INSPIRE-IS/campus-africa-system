@@ -40,7 +40,9 @@ class LeaseController extends Controller
             $leaseAdminFee = Lookups::where('group_id', '8')->first();
             $owner = storage_path().'/leases/kim_degenaar.jpeg';
 
-            $pdf = view('PDF.leasesForScreen', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner'));
+            $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
+            $pdf = view('PDF.leasesForScreen', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking'));
 
             return view('outSession.signLease', ["headerTitle" => "Sign Your Lease", "userCustomId" => $lease_link_url, "user" => $user, "file" => $file, "pdf" => $pdf]);
         }else{
@@ -96,8 +98,10 @@ class LeaseController extends Controller
         $signature = 'storage/files/'.$userIdentification.'/'.$new_name;
         $owner = 'storage/leases/kim_degenaar.jpeg';
 
+        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
         // share data to view
-        $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner'));
+        $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
   
         // download PDF file with download method
         // return $pdf->download('lease.pdf');
