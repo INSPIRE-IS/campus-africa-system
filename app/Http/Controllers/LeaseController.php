@@ -16,6 +16,7 @@ use Mail;
 use App\Models\MailerList;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\StudentsInfo;
+use App\Models\BookingPayment;
 
 class LeaseController extends Controller
 {

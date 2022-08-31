@@ -17,6 +17,7 @@ use App\Models\MailerList;
 use Mail;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\StudentsInfo;
+use App\Models\BookingPayment;
 
 class PDFController extends Controller
 {
@@ -97,8 +98,10 @@ class PDFController extends Controller
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
         $owner = storage_path().'/leases/kim_degenaar.jpeg';
 
+        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
         // share data to view
-        $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner'));
+        $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking'));
   
         // download PDF file with download method
         // return $pdf->download('lease.pdf');
