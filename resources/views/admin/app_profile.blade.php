@@ -69,7 +69,8 @@
                     <span id="approvedBur" class="hidden">&#128994;</span>
                     <span id="rejectedBur" class="hidden">&#128993;</span>
                     <span id="notLoadBur" class="hidden">&#128308;</span>
-                    <p class="listHeader">Bursar <?php echo $user[0]['userInfo']['burCompanyName'];?></p></div>
+                    <p class="listHeader">Bursar </p></div>
+                    <!-- <?php echo $user[0]['userInfo']['burCompanyName'];?> -->
                 <div class="form">
                     <div class="burInfoSection"></div>
                 </div>
