@@ -257,14 +257,15 @@
         if($("#group_id").val() == "1"){
             if("{{$lookup->nsfas_amount}}" !== $("#nsfas_amount").val()){
                 Swal.fire({
-                    title: 'Update NSFAS AMount',
-                    text: "Apply this NSFAS Amount to Financial Summary?",
+                    title: 'Update NSFAS Rate?',
+                    text: "This will update the NSFAS Rate for all applications from this institution",
                     icon: 'warning',
                     showDenyButton: true,
-                    denyButtonText: 'No',
+                    denyButtonText: 'Cancel',
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes!'
+                    confirmButtonText: 'Continue',
+                    cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $("#submitLookup").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -281,6 +282,7 @@
                             },
                         });
                     } else if (result.isDenied) {
+                        $("#nsfas_amount").val('').val("{{$lookup->nsfas_amount}}")
                         $('#lookupForm').submit();
                     }
                 });
