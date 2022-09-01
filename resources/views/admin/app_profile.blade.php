@@ -338,7 +338,7 @@
                                             @endif
                                         @endif
                                     @else
-                                        @if(Auth::user()->role_approve_waive == '1')
+                                        @if(Auth::user()->role_funding == '1')
                                             @if($paymentBooking->rob_b_waived == '2')
                                                 <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_b_waived', '{{$paymentBooking->bookingId}}', 'booking_info', 'booking_btns', 'Booking fee', 'reason_booking_fee_reject', 'booking_fee_waived')">Change</button>
                                             @else
@@ -373,7 +373,7 @@
                                             @endif
                                         @endif
                                     @else
-                                        @if(Auth::user()->role_approve_waive == '1')
+                                        @if(Auth::user()->role_funding == '1')
                                             @if($paymentBooking->rob_loan_waived == '2')
                                                 <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_loan_waived', '{{$paymentBooking->bookingId}}', 'loan_info', 'loan_btns', 'Loan Admin fee', 'reason_admin_fee_reject', 'loan_admin_fee_waived')">Change</button>
                                             @else
@@ -408,7 +408,7 @@
                                             @endif
                                         @endif
                                     @else
-                                        @if(Auth::user()->role_approve_waive == '1')
+                                        @if(Auth::user()->role_funding == '1')
                                             @if($paymentBooking->rob_deposit_waived == '2')
                                                 <button type="button" class="waiveBtn" onClick="ActionWaiveRej('rob_deposit_waived', '{{$paymentBooking->bookingId}}', 'deposit_info', 'deposit_btns', 'Deposit', 'reason_deposit_reject', 'deposit_waived')">Change</button>
                                             @else
@@ -3349,7 +3349,7 @@
                         }else{
                             $("#booking_info").empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
                         }
-                        @if(Auth::user()->role_approve_waive == '1')
+                        @if(Auth::user()->role_funding == '1')
                             if(data.rob_b_waived == '2'){
                                 $("#booking_btns").empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\'rob_b_waived\', \'{{$paymentBooking->bookingId}}\', \'booking_info\', \'booking_btns\', \'Booking Fee\', \'reason_booking_fee_reject\', \'booking_fee_waived\')">Change</button>')
                             }else{
@@ -3375,7 +3375,7 @@
                             }else{
                                 $("#loan_info").empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
                             }
-                            @if(Auth::user()->role_approve_waive == '1')
+                            @if(Auth::user()->role_funding == '1')
                                 if(data.rob_loan_waived == '2'){
                                     $("#loan_btns").empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\'rob_loan_waived\', \'{{$paymentBooking->bookingId}}\', \'loan_info\', \'loan_btns\', \'Loan Admin fee\', \'reason_admin_fee_reject\', \'loan_admin_fee_waived\')">Change</button>')
                                 }else{
@@ -3400,7 +3400,7 @@
                             }else{
                                 $("#deposit_info").empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
                             }
-                            @if(Auth::user()->role_approve_waive == '1')
+                            @if(Auth::user()->role_funding == '1')
                                 if(data.rob_deposit_waived == '2'){
                                     $("#deposit_btns").empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\'rob_deposit_waived\', \'{{$paymentBooking->bookingId}}\', \'deposit_info\', \'deposit_btns\', \'Deposit\', \'reason_deposit_reject\', \'deposit_waived\')">Change</button>')
                                 }else{
@@ -3556,7 +3556,7 @@
 
                         @if($paymentBooking)
                             $("#"+updateField1).empty().append('&#128994; <span style="color:red; padding-right:5px;">Waived</span>')
-                            @if(Auth::user()->role_approve_waive == '1')
+                            @if(Auth::user()->role_funding == '1')
                             $("#"+updateField2).empty().append('<button type="button" class="waiveBtn" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+updateField1+'\', \''+updateField2+'\', \''+wording+'\', \''+rej+'\', \''+waived+'\')">Change</button>')
                             @else
                             $("#"+updateField2).empty()
@@ -3611,7 +3611,7 @@
 
                                 $("#"+changeField1).empty().append('&#128993; <span style="color:red; padding-right:5px;">Waived</span>')
                                 @if($paymentBooking)
-                                    @if(Auth::user()->role_approve_waive == '1')
+                                    @if(Auth::user()->role_funding == '1')
                                     $("#"+changeField2).empty().append('<button type="button" class="waiveAprv" onClick="ActionWaiveAprv(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\')">Approve</button><button type="button" class="waiveRej" onClick="ActionWaiveRej(\''+changeField+'\', \'{{$paymentBooking->bookingId}}\', \''+changeField1+'\', \''+changeField2+'\', \''+textChange+'\', \''+reasonField+'_reject\', \''+waiveField+'\')">Reject</button>')
                                     @else
                                     $("#"+changeField2).empty()

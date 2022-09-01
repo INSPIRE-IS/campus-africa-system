@@ -796,10 +796,19 @@ class DocumentsController extends Controller {
             'year' => $this_year,
         ]);
 
+        $studentInfo  = StudentsInfo::where('useruid', $userUid)->where('year', $this_year)->first();
+
+        $payment = BookingPayment::where('bookingId', $studentInfo->bookingId)->first();
 
         
         // User::where('id', $userUid)->update(['rob_45_other' => '0']);
-        StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '0']);
+        if(($payment->rob_b_waived == '0' || $payment->rob_b_waived == '2') && ($payment->rob_loan_waived == '0' || $payment->rob_loan_waived == '2') && ($payment->rob_deposit_waived == '0' || $payment->rob_deposit_waived == '2')){
+            StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '0']);
+        }else{
+            StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '1']);
+        }
+
+        
 
         return 'other_'.str_replace(" ", "_", $documentNewName);
 
@@ -827,7 +836,19 @@ class DocumentsController extends Controller {
 
         if(count($allOtherFiles) == 0){
             // User::where('id', $userUid)->update(['rob_45_other' => '3']);
-            StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '3']);
+            // StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '3']);
+
+            $studentInfo  = StudentsInfo::where('useruid', $userUid)->where('year', $this_year)->first();
+            $payment = BookingPayment::where('bookingId', $studentInfo->bookingId)->first();
+    
+            if($payment->rob_b_waived == '0' && $payment->rob_loan_waived == '0' && $payment->rob_deposit_waived == '0'){
+                StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '3']);
+            }elseif($payment->rob_b_waived == '1' || $payment->rob_loan_waived == '1' || $payment->rob_deposit_waived == '1'){
+                StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '1']);
+            }else{
+                StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '2']);
+            }
+
         }else{
             $highest = 2;
 
@@ -845,8 +866,16 @@ class DocumentsController extends Controller {
                 }
             }
 
+            $studentInfo  = StudentsInfo::where('useruid', $userUid)->where('year', $this_year)->first();
+            $payment = BookingPayment::where('bookingId', $studentInfo->bookingId)->first();
+
             // User::where('id', $userUid)->update(['rob_45_other' => $highest]);
-            StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => $highest]);
+
+            if($payment->rob_b_waived == '1' || $payment->rob_loan_waived == '1' || $payment->rob_deposit_waived == '1'){
+                StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '1']);
+            }else{
+                StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => $highest]);
+            }
         }
     }
 
