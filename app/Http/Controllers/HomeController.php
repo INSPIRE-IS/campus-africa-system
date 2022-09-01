@@ -3435,6 +3435,8 @@ class HomeController extends Controller
             //Changing Only Property & Room Type
 
             $oldData = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
+            $oldData->roomType = RoomTypes::where('id', $oldData->roomType)->pluck('name')->first();
+            $oldData->property = Residence::where('id', $oldData->property)->pluck('residence')->first();
             $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomTypeNew];
 
             $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
@@ -3448,6 +3450,14 @@ class HomeController extends Controller
                 if($oldData->$key !== $new){
                     if($oldData->$key == "" || $oldData->$key == null){
                         $oldData->$key = "Unassigned";
+                    }
+
+                    if($changedField == "Property"){
+                        $new = Residence::where('id', $new)->pluck('residence')->first();
+                    }
+
+                    if($changedField == "Room Type"){
+                        $new = RoomTypes::where('id', $new)->pluck('name')->first();
                     }
                     ActionList::create([
                         "userUid" => $bookingId,
@@ -3766,6 +3776,7 @@ class HomeController extends Controller
             $newRoom = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
 
             $oldData = Booking::where('userId', $bookingId)->where('year', $this_year->lookup_name)->first();
+            $oldData->roomId = $oldData->roomType;
             $oldData->roomType = RoomTypes::where('id', $oldData->roomType)->pluck('name')->first();
             $oldData->property = Residence::where('id', $oldData->property)->pluck('residence')->first();
 
@@ -3828,7 +3839,8 @@ class HomeController extends Controller
 
             $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year->lookup_name)->first();
 
-            if($oldData->roomType !== $booking->roomType){
+
+            if($oldData->roomId !== $booking->roomType){
 
                 $lookup = Lookups::where('group_id', '7')->first();
                 $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year->lookup_name)->first();
@@ -3937,8 +3949,6 @@ class HomeController extends Controller
                     }
                 }
         
-                
-        
                 if($booking_data['room_rate'] == "0"){
 
                     $this_year = Lookups::where('group_id', '4')->first();
@@ -3963,7 +3973,7 @@ class HomeController extends Controller
                     // User::where('id', $bookingId)->update(['rob_10_fee' => 2]);
                     StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->update(['rob_10_fee' => 2]);
 
-                    if($booking_data['room_rate'] != $booking->room_rate){
+                    // if($booking_data['room_rate'] != $booking->room_rate){
 
                         // $ts1 = strtotime($booking->lease_from_date);
                         // $ts2 = strtotime($booking->lease_to_date);
@@ -3991,7 +4001,7 @@ class HomeController extends Controller
                         $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
                         BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded]);
-                    }
+                    // }
         
                     $actionFileData['userUid'] = $bookingId;
                     $actionFileData['action'] = "Booking Fee is R0";
@@ -4038,7 +4048,7 @@ class HomeController extends Controller
         
                     Booking::where('userId', $bookingId)->where('year', $this_year)->update(['room_rate' => $booking_data['room_rate']]);
 
-                    if($booking_data['room_rate'] != $booking->room_rate){
+                    // if($booking_data['room_rate'] != $booking->room_rate){
 
                         // $ts1 = strtotime($booking->lease_from_date);
                         // $ts2 = strtotime($booking->lease_to_date);
@@ -4067,38 +4077,38 @@ class HomeController extends Controller
                         $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
                         BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded]);
-                    }
+                    // }
         
-                    if($booking_data['room_rate'] != $booking->room_rate){
+                    // if($booking_data['room_rate'] != $booking->room_rate){
 
-                        // $ts1 = strtotime($booking->lease_from_date);
-                        // $ts2 = strtotime($booking->lease_to_date);
-                        // $month1 = date('m', $ts1);
-                        // $month2 = date('m', $ts2);
-                        // $diff = $month2 - $month1;
-                        // $yearly_rent = floatval($deposit) * floatval($diff);
+                    //     // $ts1 = strtotime($booking->lease_from_date);
+                    //     // $ts2 = strtotime($booking->lease_to_date);
+                    //     // $month1 = date('m', $ts1);
+                    //     // $month2 = date('m', $ts2);
+                    //     // $diff = $month2 - $month1;
+                    //     // $yearly_rent = floatval($deposit) * floatval($diff);
 
-                        $diff = 0;
-                        for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
-                            $diff++;
-                        }
-                        $yearly_rent = floatval($deposit) * floatval($diff);
-                        $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+                    //     $diff = 0;
+                    //     for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+                    //         $diff++;
+                    //     }
+                    //     $yearly_rent = floatval($deposit) * floatval($diff);
+                    //     $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
 
-                        $institution = Lookups::where('id', $user->institutionStudy)->first();
-                        // $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                        if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
-                            $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                            $monthlyFunded = $institution->nsfas_amount;
-                        }else{
-                            $funded = $yearly_rent;
-                            $monthlyFunded = $deposit;
-                        }
+                    //     $institution = Lookups::where('id', $user->institutionStudy)->first();
+                    //     // $funded = floatval($institution->nsfas_amount) * floatval($diff);
+                    //     if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
+                    //         $funded = floatval($institution->nsfas_amount) * floatval($diff);
+                    //         $monthlyFunded = $institution->nsfas_amount;
+                    //     }else{
+                    //         $funded = $yearly_rent;
+                    //         $monthlyFunded = $deposit;
+                    //     }
 
-                        $payment = BookingPayment::where('bookingId', $booking->id)->first();
+                    //     $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
-                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded]);
-                    }
+                    //     BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded]);
+                    // }
         
                     $actionFileData['userUid'] = $bookingId;
                     $actionFileData['action'] = "Booking Fee updated to R".$booking_data['room_rate'];
