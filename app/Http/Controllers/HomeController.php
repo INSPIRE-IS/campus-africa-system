@@ -1167,6 +1167,39 @@ class HomeController extends Controller
                     StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update(['parent_approved' => null, 'burser_approved' => null]);
                 }
 
+                if(explode("_", $user_status['field_data'])[0] == "other" && count($allOtherFiles) > 1){
+                    $highest = 2;
+
+                    foreach($allOtherFiles as $otherFile){
+                        if($otherFile->status == "Approved"){
+                            $value = 2;
+                        }else if($otherFile->status == "Uploaded"){
+                            $value = 1;
+                        }else{
+                            $value = 0;
+                        }
+
+                        if($value < $highest){
+                            $highest = $value;
+                        }
+                    }
+
+                    // User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => $highest]);
+                    // StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update([$user_status['field_doc'] => $highest]);
+
+                    $studentInfo  = StudentsInfo::where('useruid', $userFile->userUid)->where('year', $this_year)->first();
+                    $payment = BookingPayment::where('bookingId', $studentInfo->bookingId)->first();
+
+                    // User::where('id', $userUid)->update(['rob_45_other' => $highest]);
+
+                    if($payment->rob_b_waived == '1' || $payment->rob_loan_waived == '1' || $payment->rob_deposit_waived == '1'){
+                        StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update(['rob_45_other' => '1']);
+                    }else{
+                        StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update([$user_status['field_doc'] => $highest]);
+                    }
+
+                }
+
                 $this->rejectMail($user_status['typeName'], $reason, $userFile->userUid);
                 
 
@@ -1192,7 +1225,18 @@ class HomeController extends Controller
                     }
 
                     // User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => $highest]);
-                    StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update([$user_status['field_doc'] => $highest]);
+                    // StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update([$user_status['field_doc'] => $highest]);
+
+                    $studentInfo  = StudentsInfo::where('useruid', $userFile->userUid)->where('year', $this_year)->first();
+                    $payment = BookingPayment::where('bookingId', $studentInfo->bookingId)->first();
+
+                    // User::where('id', $userUid)->update(['rob_45_other' => $highest]);
+
+                    if($payment->rob_b_waived == '1' || $payment->rob_loan_waived == '1' || $payment->rob_deposit_waived == '1'){
+                        StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update(['rob_45_other' => '1']);
+                    }else{
+                        StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update([$user_status['field_doc'] => $highest]);
+                    }
 
                 }else{
                     
@@ -1720,7 +1764,7 @@ class HomeController extends Controller
             "role_change_building" => $request->role_change_building,
             // "role_change_building" => $request->role_change_building,
             "role_waive_fee" => $request->role_waive_fee,
-            "role_approve_waive" => $request->role_approve_waive,
+            // "role_approve_waive" => $request->role_approve_waive,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -2542,7 +2586,7 @@ class HomeController extends Controller
             "role_change_building" => $request->role_change_building,
             // "role_change_building" => $request->role_change_building,
             "role_waive_fee" => $request->role_waive_fee,
-            "role_approve_waive" => $request->role_approve_waive,
+            // "role_approve_waive" => $request->role_approve_waive,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -5346,31 +5390,35 @@ class HomeController extends Controller
     }
 
     public function waive_action(Request $request){
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         BookingPayment::where('bookingId', $request->bookingId)->update([$request->changeField => 2]);
 
         if($request->changeField == "rob_b_waived"){
             $payment = BookingPayment::where('bookingId', $request->bookingId)->first();
             $booking = Booking::where('id', $request->bookingId)->update(['room_rate' => '0', 'waive_reason' => $payment->reason_booking_fee]);
 
-            $file = UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->first();
+            $file = UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
             if(!$file){
                 UserFiles::create([
                     'userUid' => $request->userId,
                     'fileId' => 'proof_of_payment',
-                    'status' => 'Approved'
+                    'status' => 'Approved',
+                    'year' => $this_year,
                 ]);
             }else{
-                UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->update([
+                UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                     'status' => 'Approved'
                 ]);
             }
 
-            User::where('id', $request->userId)->update(["rob_10_fee" => "2"]);
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_10_fee" => "2"]);
         }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-                $this_year = $this_year->lookup_name;
+        
 
         ActionList::create([
             "userUid" => $request->userId,
@@ -5380,6 +5428,32 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
             "year" => $this_year
         ]);
+
+        //find other files
+        $allOtherFiles = 0;
+        $status = 2;
+        $allSearchable = UserFiles::where("userUid", $request->userId)->where('year', $this_year)->get();
+        foreach($allSearchable as $search){
+            if(explode("_", $search->fileId)[0] == "other"){
+                $allOtherFiles++;
+                if($search->status == "Uploaded"){
+                    $status = 1;
+                }else if($search->status == "rejected"){
+                    $status = 0;
+                }
+            }
+        }
+
+        $payment = BookingPayment::where('bookingId', $request->bookingId)->first();
+
+        if($payment->rob_b_waived == '1' || $payment->rob_loan_waived == '1' || $payment->rob_deposit_waived == '1' || $status == 1){
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_45_other" => "1"]);
+        }else if($status == 0){
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_45_other" => "0"]);
+        }else{
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_45_other" => "2"]);
+        }
+
 
         return UserFiles::where('userUid', $request->userId)->where('fileId', 'proof_of_payment')->pluck('id')->first();
     }
@@ -5518,6 +5592,35 @@ class HomeController extends Controller
             "year" => $this_year
         ]);
 
+        //find other files
+        $allOtherFiles = 0;
+        $status = 3;
+        $allSearchable = UserFiles::where("userUid", $request->userId)->where('year', $this_year)->get();
+        foreach($allSearchable as $search){
+            if(explode("_", $search->fileId)[0] == "other"){
+                $allOtherFiles++;
+                if($search->status == "Uploaded"){
+                    $status = 1;
+                }else if($search->status == "Rejected"){
+                    $status = 0;
+                }else if($search->status == "Approved"){
+                    $status = 2;
+                }
+            }
+        }
+
+        $payment = BookingPayment::where('bookingId', $request->bookingId)->first();
+
+        if($payment->rob_b_waived == '0' && $payment->rob_loan_waived == '0' && $payment->rob_deposit_waived == '0' && $status == 3){
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_45_other" => "3"]);
+        }else if($payment->rob_b_waived == '1' || $payment->rob_loan_waived == '1' || $payment->rob_deposit_waived == '1' || $status == 1){
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_45_other" => "1"]);
+        }else if($status == 0){
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_45_other" => "0"]);
+        }else{
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(["rob_45_other" => "2"]);
+        }
+
         return BookingPayment::where('bookingId', $request->bookingId)->first();
     }
 
@@ -5526,6 +5629,8 @@ class HomeController extends Controller
 
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
+
+        StudentsInfo::where('bookingId', $request->bookingId)->where('year', $this_year)->update(["rob_45_other" => "1"]);
 
         ActionList::create([
             "userUid" => $request->userId,

@@ -141,7 +141,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_funding" name="role_funding" value="1">
-                    <label for="role_funding" style="width:500px">Approve Funding Documents</label>
+                    <label for="role_funding" style="width:500px">Approve Funding, Other & Fee Waiver</label>
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1">
@@ -159,10 +159,10 @@
                     <input type="checkbox" id="role_waive_fee" name="role_waive_fee" value="1">
                     <label for="role_waive_fee" style="width:500px">Request Fee Waiver</label>
                 </li>
-                <li style="display:inline-flex">
+                <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_approve_waive" name="role_approve_waive" value="1">
                     <label for="role_approve_waive" style="width:500px">Approve Fee Waiver </label>
-                </li>
+                </li> -->
 
                 
                 
@@ -341,7 +341,7 @@
             document.getElementById('role_non_funding').checked = true;
             document.getElementById('role_funding').checked = true;
             document.getElementById('role_app_lease').checked = true;
-            document.getElementById('role_approve_waive').checked = true;
+            // document.getElementById('role_approve_waive').checked = true;
             
         }
     })
