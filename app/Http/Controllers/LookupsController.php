@@ -831,136 +831,149 @@ class LookupsController extends Controller {
 
 
         foreach($allBookings as $booking){
-            $bookingPrice = 0;
-            $residenceId = 0;
-            $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
-            $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
-            $roomTypeId = ""; 
 
-            if($roomTypeData && $roomTypeData->room_map_slug){
-                //
-                $roomTypeId = $roomTypeData->room_map_slug;
-            }
-            $deposit = 0;
-            $userInfo = StudentsInfo::where('userUid', $booking->userId)->orderBy('year', 'desc')->first();
+            $alreadyPayment = BookingPayment::where("bookingId", $booking->id)->first();
 
-            if(!empty($userInfo)){
+            if(empty($alreadyPayment)){
 
-                foreach($jsonDataResidence as $residence){
-                    if($residence->title->rendered == $booking->property){
-                        $bookingPrice = $residence->acf->booking_fee;
-                        $residenceId = $residence->id;
-                    }
-    
-                    foreach($jsonDataRooms as $room){
-                        if($residenceId == $room->acf->residence){    
-                            if($room->id == $roomTypeId){
-                                $deposit = $room->acf->price_from;
-                                $appliesTo = $room->acf->booking_fee_applies_to;
+
+                $bookingPrice = 0;
+                $residenceId = 0;
+                $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+                $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
+                $roomTypeId = ""; 
+
+                if($roomTypeData && $roomTypeData->room_map_slug){
+                    //
+                    $roomTypeId = $roomTypeData->room_map_slug;
+                }
+                $deposit = 0;
+                $userInfo = StudentsInfo::where('userUid', $booking->userId)->orderBy('year', 'desc')->first();
+
+                if(!empty($userInfo)){
+
+                    foreach($jsonDataResidence as $residence){
+                        if($residence->title->rendered == $booking->property){
+                            $bookingPrice = $residence->acf->booking_fee;
+                            $residenceId = $residence->id;
+                        }
+        
+                        foreach($jsonDataRooms as $room){
+                            if($residenceId == $room->acf->residence){    
+                                if($room->id == $roomTypeId){
+                                    $deposit = $room->acf->price_from;
+                                    $appliesTo = $room->acf->booking_fee_applies_to;
+                
+                                    if($room->acf->booking_fee_override !== ""){
+                                        $bookingPrice = $room->acf->booking_fee_override;
+                                    }
             
-                                if($room->acf->booking_fee_override !== ""){
-                                    $bookingPrice = $room->acf->booking_fee_override;
-                                }
-        
-                                if($userInfo->studentType === "NSFAS"){
-                                    if(!in_array("NSFAS Students", $appliesTo)){
-                                        $bookingPrice = 0;
+                                    if($userInfo->studentType === "NSFAS"){
+                                        if(!in_array("NSFAS Students", $appliesTo)){
+                                            $bookingPrice = 0;
+                                        }
                                     }
-                                }
-        
-                                if($userInfo->studentType === "Bursary"){
-                                    if(!in_array("Bursary Students", $appliesTo)){
-                                        $bookingPrice = 0;
+            
+                                    if($userInfo->studentType === "Bursary"){
+                                        if(!in_array("Bursary Students", $appliesTo)){
+                                            $bookingPrice = 0;
+                                        }
                                     }
-                                }
-        
-                                if($userInfo->studentType === "Cash / Direct"){
-                                    if(!in_array("Cash Students", $appliesTo)){
-                                        $bookingPrice = 0;
+            
+                                    if($userInfo->studentType === "Cash / Direct"){
+                                        if(!in_array("Cash Students", $appliesTo)){
+                                            $bookingPrice = 0;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-    
-                if($roomTypeData && $roomTypeData->pull_price == null){
-                    $bookingPrice = $roomTypeData->booking_price;
-                    $deposit = $roomTypeData->rent_price;
         
-                    if($userInfo->studentType == "NSFAS"){
-                        if($roomTypeData->apply_nsfas == null){
-                            $bookingPrice = 0;
+                    if($roomTypeData && $roomTypeData->pull_price == null){
+                        $bookingPrice = $roomTypeData->booking_price;
+                        $deposit = $roomTypeData->rent_price;
+            
+                        if($userInfo->studentType == "NSFAS"){
+                            if($roomTypeData->apply_nsfas == null){
+                                $bookingPrice = 0;
+                            }
+                        }
+            
+                        if($userInfo->studentType == "Bursary"){
+                            if($roomTypeData->apply_bursary == null){
+                                $bookingPrice = 0;
+                            }
+                        }
+            
+                        if($userInfo->studentType == "Cash / Direct"){
+                            if($roomTypeData->apply_cash == null){
+                                $bookingPrice = 0;
+                            }
                         }
                     }
         
-                    if($userInfo->studentType == "Bursary"){
-                        if($roomTypeData->apply_bursary == null){
-                            $bookingPrice = 0;
-                        }
-                    }
         
-                    if($userInfo->studentType == "Cash / Direct"){
-                        if($roomTypeData->apply_cash == null){
-                            $bookingPrice = 0;
-                        }
+                
+        
+                    // $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
+        
+                    // $ts1 = strtotime($lookup_lease_dates['lease_from_date']);
+                    // $ts2 = strtotime($lookup_lease_dates['lease_to_date']);
+                    // $month1 = date('m', $ts1);
+                    // $month2 = date('m', $ts2);
+                    // $diff = $month2 - $month1;
+                    $diff = 0;
+                    for($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')){
+                        $diff++;
                     }
-                }
-    
-    
-               
-    
-                // $lookup_lease_dates = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
-    
-                // $ts1 = strtotime($lookup_lease_dates['lease_from_date']);
-                // $ts2 = strtotime($lookup_lease_dates['lease_to_date']);
-                // $month1 = date('m', $ts1);
-                // $month2 = date('m', $ts2);
-                // $diff = $month2 - $month1;
-                $diff = 0;
-                for($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')){
-                    $diff++;
-                }
-                $yearly_rent = floatval($deposit) * floatval($diff);
-    
-                $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
-                $funded = floatval($institution->nsfas_amount) * floatval($diff);
-    
-                $topup = floatval($yearly_rent) - floatval($funded);
-                $monthlyFunded = $institution->nsfas_amount;
+                    $yearly_rent = floatval($deposit) * floatval($diff);
+        
+                    $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
+                    $funded = floatval($institution->nsfas_amount) * floatval($diff);
+        
+                    $topup = floatval($yearly_rent) - floatval($funded);
+                    $monthlyFunded = $institution->nsfas_amount;
 
-    
-                if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
-                    $admin_fee = '1000';
-                    $deposit = $monthly = $monthlyFunded = $deposit;
-                    $funded = $yearly_rent;
-                    $topup = '0';
-                }else{
-                    $monthly = $deposit;
-                    $deposit = 0;
-                    $admin_fee = 0;
+        
+                    if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
+                        $admin_fee = '1000';
+                        $deposit = $monthly = $monthlyFunded = $deposit;
+                        $funded = $yearly_rent;
+                        $topup = '0';
+                    }else{
+                        $monthly = $deposit;
+                        $deposit = 0;
+                        $admin_fee = 0;
+                    }
+
+                    
+
+                    
+                        
+                        BookingPayment::create([
+                            "bookingId" => $booking->id, 
+                            "booking_fee" => $bookingPrice, 
+                            "booking_fee_waived" => 0, 
+                            "rob_b_waived" => 0, 
+                            "loan_admin_fee" => $admin_fee, 
+                            "loan_admin_fee_waived" => 0, 
+                            "rob_loan_waived" => 0, 
+                            "deposit" => floatval($deposit), 
+                            "deposit_waived" => 0, 
+                            "rob_deposit_waived" => 0, 
+                            "monthly_rental" => $monthly, 
+                            "monthly_rental_total" => $yearly_rent, 
+                            "total_funded" => $funded, 
+                            "total_top_up" => $topup,
+                            "funded_monthly" => $monthlyFunded
+                        ]);
+                    
+        
                 }
-    
-                BookingPayment::create([
-                    "bookingId" => $booking->id, 
-                    "booking_fee" => $bookingPrice, 
-                    "booking_fee_waived" => 0, 
-                    "rob_b_waived" => 0, 
-                    "loan_admin_fee" => $admin_fee, 
-                    "loan_admin_fee_waived" => 0, 
-                    "rob_loan_waived" => 0, 
-                    "deposit" => floatval($deposit), 
-                    "deposit_waived" => 0, 
-                    "rob_deposit_waived" => 0, 
-                    "monthly_rental" => $monthly, 
-                    "monthly_rental_total" => $yearly_rent, 
-                    "total_funded" => $funded, 
-                    "total_top_up" => $topup,
-                    "funded_monthly" => $monthlyFunded
-                ]);
+
+
             }
-
-
         }
     }
 
