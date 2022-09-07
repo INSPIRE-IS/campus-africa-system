@@ -278,6 +278,8 @@ Route::post('/change-student-room', [HomeController::class, 'change_student_room
 Route::post('/download-beds', [LookupsController::class, 'download_beds']);
 Route::post('/download-bed-codes', [LookupsController::class, 'download_bed_codes']);
 
+Route::post("/check-uploaded-docs", [ApplicationController::class, 'check_uploaded_docs']);
+
 Route::get('/bed_import', [HomeController::class, 'bed_import']);
 Route::post('/import/beds', [HomeController::class, 'import_beds']);
 

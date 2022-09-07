@@ -1810,4 +1810,18 @@ class ApplicationController extends Controller
         return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy, "new" => 1]);
     }
 
+    public function check_uploaded_docs(Request $request){
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $IdCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'copyID')->where('year', $this_year)->first();
+        $StudentCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'studentCard')->where('year', $this_year)->first();
+        $BankCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bankStatement')->where('year', $this_year)->first();
+        $BursaryCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->first();
+        $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->where('year', $this_year)->first();
+
+        return [$IdCopy, $StudentCopy, $BankCopy, $BursaryCopy, $RegistrationCopy];
+    }
+
 }

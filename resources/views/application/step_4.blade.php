@@ -271,8 +271,56 @@
         }
     });
 
+    checkDocuments();
+
+    function checkDocuments(){
+        $.ajax({
+            type: "post",
+            url: "/check-uploaded-docs",
+            data: {userUid: "<?php echo $user->userUid; ?>"},
+
+            success: function (data) {
+                console.log(data)
+                if(data[0].status == "Uploaded"){
+                    $("#copyIDSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#copyIDUploadSection").empty().append('<label id="copyIDSection" class="toUploadLabel">UPLOADED</label>')
+                    $("#copyIDUpload").addClass('yellowBorder')
+                    $("#copyIDUpload").removeClass('redBorder')
+                }
+
+                if(data[1].status == "Uploaded"){
+                    $("#studentCardSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#studentCardUploadSection").empty().append('<label id="studentCardSection" class="toUploadLabel">UPLOADED</label>')
+                    $("#studentCardUpload").addClass('yellowBorder')
+                    $("#studentCardUpload").removeClass('redBorder')
+                }
+
+                if(data[2].status == "Uploaded"){
+                    $("#bursaryApprovalSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#bursaryApprovalUploadSection").empty().append('<label id="bursaryApprovalSection" class="toUploadLabel">UPLOADED</label>')
+                    $("#bursaryApprovalUpload").addClass('yellowBorder')
+                    $("#bursaryApprovalUpload").removeClass('redBorder')
+                }
+
+                if(data[3].status == "Uploaded"){
+                    $("#bursaryApprovalSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#bursaryApprovalUploadSection").empty().append('<label id="bursaryApprovalSection" class="toUploadLabel">UPLOADED</label>')
+                    $("#bursaryApprovalUpload").addClass('yellowBorder')
+                    $("#bursaryApprovalUpload").removeClass('redBorder')
+                }
+
+                if(data[4].status == "Uploaded"){
+                    $("#proofRegistrationSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#proofRegistrationUploadSection").empty().append('<label id="proofRegistrationSection" class="toUploadLabel">UPLOADED</label>')
+                    $("#proofRegistrationUpload").addClass('yellowBorder')
+                    $("#proofRegistrationUpload").removeClass('redBorder')
+                }
+
+            },
+        });
+    }
+
     function UploadDocument(field){
-        console.log("here")
 
         $("#"+field+"Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
