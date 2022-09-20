@@ -38,7 +38,7 @@
             <small id="mailCCWording" class="<?php if($lookup->group_id != "11"){echo "hidden";} ?>">Specify individual email addresses to BCC, Please seperate email addresses by semicolon</small>
         </div>
 
-        <div class="form-field" style="height:400px !important;">
+        <div class="form-field <?php if($lookup->group_id != "1"){echo "hidden";} ?>" id="propertyListNsfas" style="height:450px !important;">
             <label>Properties</label>
             <ul style="list-style-type:none; width:100%">
                 @foreach($allProperties as $prop)
@@ -221,6 +221,7 @@
             $("#nsfas_value").addClass('hidden');
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
         }else if($("#group_id").val() == "9"){
             $("#onlineAppValue").removeClass('hidden');
             $("#normalVlaue").addClass('hidden');
@@ -228,6 +229,7 @@
             $("#mailWording").addClass('hidden');
             $("#nsfas_value").addClass('hidden');
             $("#mailCCWording").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
         }else if($("#group_id").val() == "10"){
             $("#mailWording").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
@@ -235,6 +237,7 @@
             $("#waiverValue").addClass('hidden');
 
             $("#mailCCWording").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
         }else if($("#group_id").val() == "11"){
             $("#mailWording").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
@@ -243,12 +246,14 @@
 
             $("#mailCCWording").removeClass('hidden');
             $("#nsfas_value").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
         }else if($("#group_id").val() == "1" ){
             $("#nsfas_value").removeClass('hidden');
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
+            $("#propertyListNsfas").removeClass('hidden');
         }else{
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
@@ -258,6 +263,7 @@
             $("#nsfas_value").addClass('hidden');
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
         }
     })
 
