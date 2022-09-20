@@ -298,6 +298,12 @@ Route::post('/notify-data', [OnlinePaymentController::class, 'notify_data']);
 Route::get('/create-new-booking/{id}', [HomeController::class, 'create_new_booking']);
 Route::post('/new-booking', [HomeController::class, 'new_booking']);
 
+Route::get('/get-all-properties', [HomeController::class, 'all_properties']);
+Route::post('/get-nsfas-properties', [HomeController::class, 'nsfas_properties']);
+
+Route::get('/get-all-properties-online', [ApplicationController::class, 'all_properties_online']);
+Route::post('/get-nsfas-properties-online', [ApplicationController::class, 'nsfas_properties_online']);
+
 Route::post("/mda-tenant-save", [LeaseController::class, 'mda_tenant_save']);
 
 

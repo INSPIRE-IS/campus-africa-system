@@ -30,6 +30,7 @@ use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\BookingPayment;
 use App\Models\StudentsInfo;
 use DateTime;
+use App\Models\InstitutionProperties;
 
 class HomeController extends Controller
 {
@@ -4458,7 +4459,10 @@ class HomeController extends Controller
 
         $booking = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
 
-        return [$property, $propertyInfo, $booking, $propertyInfoRooms];
+        $userInfo = StudentsInfo::where('bookingId', $booking->id)->first();
+        $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
+
+        return [$property, $propertyInfo, $booking, $propertyInfoRooms, $userInfo, $inSelected];
     }
 
     public function check_all_rooms($bookingId){
@@ -4490,7 +4494,10 @@ class HomeController extends Controller
 
         $booking = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
 
-        return [$property, $propertyInfo, $booking, $propertyInfoRooms];
+        $userInfo = StudentsInfo::where('bookingId', $booking->id)->first();
+        $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
+
+        return [$property, $propertyInfo, $booking, $propertyInfoRooms, $userInfo, $inSelected];
     }
 
     public function get_booking_info(Request $request){
@@ -8384,6 +8391,7 @@ class HomeController extends Controller
 
         // $user = StudentsInfo::where('userUid', $userID)->where('year', $this_year)->first();
         $user = StudentsInfo::where('userUid', $userID)->orderBy('year', 'desc')->first();
+        $inSelected = InstitutionProperties::where("institution_id", $user->institutionStudy)->pluck('property_id')->toArray();
         $lookups = Lookups::get();
 
         $allowed = [];
@@ -8406,7 +8414,7 @@ class HomeController extends Controller
         }
         
 
-        return view('admin.newBookingForm', ["headerTitle" => "New Booking", "title" => "new Booking", "user" => $user, "lookups" => $lookups, "PropertyList" => $allowed, "cancelled" => $cancelled]);
+        return view('admin.newBookingForm', ["headerTitle" => "New Booking", "title" => "new Booking", "user" => $user, "lookups" => $lookups, "PropertyList" => $allowed, "cancelled" => $cancelled, "inSelected" => $inSelected]);
     }
 
     public function new_booking(Request $request){
@@ -8967,6 +8975,19 @@ class HomeController extends Controller
         $payments = BookingPayment::where('bookingId', $request->bookingId)->first();
 
         return $payments;
+    }
+
+    public function all_properties(Request $request){
+        $allRes = Residence::get();
+
+        return $allRes;
+    }
+
+    public function nsfas_properties(Request $request){
+        $allRes = Residence::get();
+        $inSelected = InstitutionProperties::where("institution_id", $request->institStudy)->pluck('property_id')->toArray();
+
+        return [$allRes, $inSelected];
     }
     
     

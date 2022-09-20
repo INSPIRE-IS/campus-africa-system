@@ -588,6 +588,73 @@
         }
     })
 
+    $("#studentType").on('change', function() {
+        if ($("#studentType").val() == "NSFAS") {
+            nsfasProp()
+        } else {
+            allowAllProp()
+        }
+    })
+
+    $("#institStudy").on('change', function(){
+        if ($("#studentType").val() == "NSFAS") {
+            nsfasProp()
+        }
+    })
+
+    function allowAllProp(){
+        $("#property").empty().append('<option value="" selected disabled>Loading</option>')
+
+        $.ajax({
+            type: "get",
+            url: "/get-all-properties-online",
+
+            success: function(data) {
+                $("#property").empty().append(
+                    '<option value="" selected disabled>Select a Residence</option>')
+                data.forEach(function(index) {
+                    $("#property").append('<option value="' + index.id + '">' + index.residence +
+                        '</option>')
+                })
+            },
+        });
+    }
+
+    function nsfasProp(){
+        $("#property").empty().append('<option value="" selected disabled>Loading</option>')
+
+        $.ajax({
+            type: "post",
+            url: "/get-nsfas-properties-online",
+            data: {institStudy: $("#institStudy").val()},
+
+            success: function(data) {
+
+                allprops = data[0];
+                allowed = data[1];
+                $("#property").empty().append(
+                    '<option value="" selected disabled>Select a Residence</option>')
+                    if($("#institStudy").val() == "" || $("#institStudy").val() == null){
+                        allprops.forEach(function(index) {
+                            $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +
+                                ' (No Institution Selected)</option>')
+                        })
+                    }else{
+                        allprops.forEach(function(index) {
+                            if(allowed.includes(index.id)){
+                                $("#property").append('<option value="' + index.id + '">' + index.residence +
+                                    '</option>')
+                            }else{
+
+                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +
+                                    ' (Not Allowed)</option>')
+                            }
+                        })
+                    }
+            },
+        });
+    }
+
 
     $("#submitForm").on('click', function() {
 

@@ -24,6 +24,7 @@ use App\Models\ImportNSFASStudentAuditLog;
 use App\Models\ImportNSFASApproval;
 use App\Models\BookingPayment;
 use DateTime;
+use App\Models\InstitutionProperties;
 
 class ApplicationController extends Controller
 {
@@ -1167,12 +1168,13 @@ class ApplicationController extends Controller
         $residences = Residence::get();
         $user = User::where('id', Auth::user()->id)->first();
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
+        $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
         $cancelled = 0;
 
         if($userInfo->rob_60_cancelled == 1 || $userInfo->year < $this_year - 1){
             $cancelled = 1;
         }
-        return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences]);
+        return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences, "inSelected" => $inSelected]);
     }
 
     public function new_booking_step_1_save(Request $request){
@@ -1822,6 +1824,19 @@ class ApplicationController extends Controller
         $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->where('year', $this_year)->first();
 
         return [$IdCopy, $StudentCopy, $BankCopy, $BursaryCopy, $RegistrationCopy];
+    }
+
+    public function all_properties_online(Request $request){
+        $allRes = Residence::get();
+
+        return $allRes;
+    }
+
+    public function nsfas_properties_online(Request $request){
+        $allRes = Residence::get();
+        $inSelected = InstitutionProperties::where("institution_id", $request->institStudy)->pluck('property_id')->toArray();
+
+        return [$allRes, $inSelected];
     }
 
 }

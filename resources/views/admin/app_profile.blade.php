@@ -1604,16 +1604,32 @@
                 $('#propertyBuilding').append('<option value="" selected disabled>Select a Residence</option>')
 
                 let propArr = <?php echo json_encode($allowedResidences); ?>;
+                let propNsfasAllow = data[5];
 
                 Object.keys(properties).forEach( function(key) {
                     if(parseFloat("{{$booking->property}}") !== properties[key].id){
 
                         if("{{$user[0]['userInfo']['rob_60_cancelled']}}" == '1'){
                             if(propArr.includes(properties[key].id)){
-                                $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                                if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
+                                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                                }else if(data[4].studentType != "NSFAS"){
+                                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                                }else{
+                                    $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
+                                }
+                                
                             }
                         }else{
-                            $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                            
+
+                            if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
+                                $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                            }else if(data[4].studentType != "NSFAS"){
+                                $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                            }else{
+                                $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
+                            }
                         }
 
                         // $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
@@ -1652,12 +1668,19 @@
                 // console.log(data)
 
                 let selProp = data[2].property;
+                let propNsfasAllow = data[5];
 
                 properties.sort();
                 $('#property').empty()
 
                 Object.keys(properties).forEach( function(key) {
-                    $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
+                        $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    }else if(data[4].studentType != "NSFAS"){
+                        $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    }else{
+                        $('#property').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
+                    }
                 });
 
                 $('#property').val(selProp);

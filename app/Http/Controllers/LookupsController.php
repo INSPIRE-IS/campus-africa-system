@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Comments;
 use App\Models\BookingPayment;
 use DateTime;
+use App\Models\InstitutionProperties;
 
 class LookupsController extends Controller {
     public function lookups(Request $request){
@@ -81,7 +82,10 @@ class LookupsController extends Controller {
 
             $year_lookup = Lookups::where('group_id', '4')->first();
 
-            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup]);
+            $allProperties = Residence::get();
+            $instProps = InstitutionProperties::where('institution_id', $lookupId)->pluck('property_id')->toArray();
+
+            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup, "allProperties" => $allProperties, "instProps" => $instProps]);
         }else{
             return "404 Error";
         }
@@ -123,6 +127,17 @@ class LookupsController extends Controller {
                 "actionUserUid" => Auth::user()->id,
             ];
         }elseif($request->group_id == '1'){
+
+            InstitutionProperties::where('institution_id', $request->lookupId)->delete();
+            
+            $allProperties = Residence::get();
+            foreach($allProperties as $prop){
+                $propName = $prop->id."_prop";
+                if($request->$propName == '1'){
+                    InstitutionProperties::create(["institution_id" => $request->lookupId, "property_id" => $prop->id]);
+                }
+            }
+
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->value,

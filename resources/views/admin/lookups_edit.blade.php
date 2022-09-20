@@ -31,11 +31,20 @@
             <label>Value</label>
             <input type="text" name="value" id="value" value="<?php echo $lookup->lookup_name;?>">
             <small id="mailWording" class="<?php if($lookup->group_id != "10"){echo "hidden";} ?>">
-            <br/>- When this is set, emails are limited to the specified domains.<br/>
+            <br/>- When this is set, emails are limited to the specified domains.<br/> 
                 - These should be domains only<br/>
                 - When this is not set, no restrictions on email sending<br/>
                 - Please seperate by semicolon</small>
             <small id="mailCCWording" class="<?php if($lookup->group_id != "11"){echo "hidden";} ?>">Specify individual email addresses to BCC, Please seperate email addresses by semicolon</small>
+        </div>
+
+        <div class="form-field" style="height:400px !important;">
+            <label>Properties</label>
+            <ul style="list-style-type:none; width:100%">
+                @foreach($allProperties as $prop)
+                <li style="display:inline-flex"><input type="checkbox" id="{{$prop->id}}_prop" name="{{$prop->id}}_prop" style="width:27px !important" <?php if(in_array($prop->id, $instProps)){echo "checked";}?> value='1'><label for="{{$prop->id}}_prop">&nbsp; &nbsp;{{$prop->residence}}</label></li><br/>
+                @endforeach
+            </ul>
         </div>
 
         @if($lookup->group_id == "4")
