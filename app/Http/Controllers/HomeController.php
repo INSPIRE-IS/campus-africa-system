@@ -1344,81 +1344,81 @@ class HomeController extends Controller
                 $generator->setRedirectUrl('/dashboard');
                 $url = $generator->generate();
 
-                $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
-                $outstanding = [];
-                $approved = [];
+                // $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
+                // $outstanding = [];
+                // $approved = [];
 
-                if($studentInfoForMail->studentType == "Cash / Direct"){
-                    array_push($all, "bankStatement");
-                }
-                if($studentInfoForMail->studentType !== "Cash / Direct"){
-                    array_push($all, "bursaryApproval");
-                }
+                // if($studentInfoForMail->studentType == "Cash / Direct"){
+                //     array_push($all, "bankStatement");
+                // }
+                // if($studentInfoForMail->studentType !== "Cash / Direct"){
+                //     array_push($all, "bursaryApproval");
+                // }
 
-                $allSearchable = UserFiles::where("userUid", $userFile->userUid)->where('year', $this_year)->get();
+                // $allSearchable = UserFiles::where("userUid", $userFile->userUid)->where('year', $this_year)->get();
 
-                foreach($allSearchable as $search){
-                    if(explode("_", $search->fileId)[0] == "other"){
-                        array_push($all, $search->fileId);
-                    }
-                }
+                // foreach($allSearchable as $search){
+                //     if(explode("_", $search->fileId)[0] == "other"){
+                //         array_push($all, $search->fileId);
+                //     }
+                // }
     
-                foreach($all as $file){
-                    $file_search = UserFiles::where("userUid", $userFile->userUid)->where('fileId', $file)->where('year', $this_year)->first();
+                // foreach($all as $file){
+                //     $file_search = UserFiles::where("userUid", $userFile->userUid)->where('fileId', $file)->where('year', $this_year)->first();
 
-                    if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+                //     if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
 
-                        if($file == "studentCard"){
-                            $fileName = "Student Card";
-                        }elseif($file == "copyID"){
-                            $fileName = "ID Document";
-                        }elseif($file == "proof_of_payment"){
-                            $fileName = "Proof of Payment";
-                        }elseif($file == "proofRegistration"){
-                            $fileName = "Proof of Registration";
-                        }elseif($file == "bankStatement"){
-                            $fileName = "Bank Statements";
-                        }elseif($file == "bursaryApproval"){
-                            if($studentInfoForMail->studentType != "NSFAS"){
-                                $fileName = "Bursary Approval";
-                            }else{
-                                $fileName = "NSFAS Approval";
-                            }
-                        }elseif(explode("_", $file)[0] == "other"){
-                            $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
-                        }
+                //         if($file == "studentCard"){
+                //             $fileName = "Student Card";
+                //         }elseif($file == "copyID"){
+                //             $fileName = "ID Document";
+                //         }elseif($file == "proof_of_payment"){
+                //             $fileName = "Proof of Payment";
+                //         }elseif($file == "proofRegistration"){
+                //             $fileName = "Proof of Registration";
+                //         }elseif($file == "bankStatement"){
+                //             $fileName = "Bank Statements";
+                //         }elseif($file == "bursaryApproval"){
+                //             if($studentInfoForMail->studentType != "NSFAS"){
+                //                 $fileName = "Bursary Approval";
+                //             }else{
+                //                 $fileName = "NSFAS Approval";
+                //             }
+                //         }elseif(explode("_", $file)[0] == "other"){
+                //             $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
+                //         }
 
-                        if($file_search && !empty($file_search)){
-                            if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
-                                array_push($outstanding, $fileName);
-                            }
+                //         if($file_search && !empty($file_search)){
+                //             if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+                //                 array_push($outstanding, $fileName);
+                //             }
 
-                            if($file_search->status == "Approved"){
-                                array_push($approved, $fileName);
-                            }
-                        }else{
-                            array_push($outstanding, $fileName);
-                        }
+                //             if($file_search->status == "Approved"){
+                //                 array_push($approved, $fileName);
+                //             }
+                //         }else{
+                //             array_push($outstanding, $fileName);
+                //         }
 
-                    }
+                //     }
 
-                }
+                // }
 
-                $outstandingDocsText = "<ol>";
+                // $outstandingDocsText = "<ol>";
 
-                foreach($outstanding as $out){
-                    $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
-                }
+                // foreach($outstanding as $out){
+                //     $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+                // }
 
-                $outstandingDocsText .= "</ol>";
+                // $outstandingDocsText .= "</ol>";
 
-                $approvedDocsText = "<ol>";
+                // $approvedDocsText = "<ol>";
 
-                foreach($approved as $apprv){
-                    $approvedDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$apprv."</li>";
-                }
+                // foreach($approved as $apprv){
+                //     $approvedDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$apprv."</li>";
+                // }
 
-                $approvedDocsText .= "</ol>";
+                // $approvedDocsText .= "</ol>";
 
 
                 $message_replace['bookingRef'] = $booking->booking_code;
@@ -1426,8 +1426,8 @@ class HomeController extends Controller
                 $message_replace['document_name'] = $user_status['typeName'];
                 $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
                 $message_replace['close_application_link']="</a>";
-                $message_replace['missing'] = $outstandingDocsText;
-                $message_replace['apprved'] = $approvedDocsText;
+                // $message_replace['missing'] = $outstandingDocsText;
+                // $message_replace['apprved'] = $approvedDocsText;
 
                 $mailerForMessage = MailerList::where("mailer_name", "Document Approved")->first();
 
@@ -1437,9 +1437,10 @@ class HomeController extends Controller
 
                     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
                     $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
+                    $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
                     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-                    $newMessage = str_replace("[approved_document_list]", $message_replace['apprved'], $newMessage);
-                    $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
+                    // $newMessage = str_replace("[approved_document_list]", $message_replace['apprved'], $newMessage);
+                    // $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
                     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
                     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
