@@ -9131,6 +9131,283 @@ class HomeController extends Controller
 
         return [$allRes, $inSelected];
     }
+
+    public function send_reminder_mail(Request $request){
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $user = User::where('id', $request->userId)->first();
+        $studentInfoForMail = StudentsInfo::where('userUid',  $request->userId)->where('year', $this_year)->first();
+        $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
+
+        $generator = new LoginUrl($user);
+        $generator->setRedirectUrl('/dashboard');
+        $url = $generator->generate();
+
+        $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
+        $outstanding = [];
+
+        if($studentInfoForMail->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if($studentInfoForMail->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
+
+        $allSearchable = UserFiles::where("userUid", $request->userId)->where('year', $this_year)->get();
+
+        foreach($allSearchable as $search){
+            if(explode("_", $search->fileId)[0] == "other"){
+                array_push($all, $search->fileId);
+            }
+        }
+
+        foreach($all as $file){
+            $file_search = UserFiles::where("userUid", $request->userId)->where('fileId', $file)->where('year', $this_year)->first();
+
+            if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+
+                if($file == "studentCard"){
+                    $fileName = "Student Card";
+                }elseif($file == "copyID"){
+                    $fileName = "ID Document";
+                }elseif($file == "proof_of_payment"){
+                    $fileName = "Proof of Payment";
+                }elseif($file == "proofRegistration"){
+                    $fileName = "Proof of Registration";
+                }elseif($file == "bankStatement"){
+                    $fileName = "Bank Statements";
+                }elseif($file == "bursaryApproval"){
+                    if($studentInfoForMail->studentType != "NSFAS"){
+                        $fileName = "Bursary Approval";
+                    }else{
+                        $fileName = "NSFAS Approval";
+                    }
+                }elseif(explode("_", $file)[0] == "other"){
+                    $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
+                }
+
+                if($file_search && !empty($file_search)){
+                    if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+                        array_push($outstanding, $fileName);
+                    }
+                }else{
+                    array_push($outstanding, $fileName);
+                }
+
+            }
+
+        }
+
+        $outstandingDocsText = "<ol>";
+
+        foreach($outstanding as $out){
+            $outstandingDocsText .= "<li style='color: #000; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+        }
+
+        $outstandingDocsText .= "</ol>";
+
+
+        $message_replace['bookingRef'] = $booking->booking_code;
+        $message_replace['name'] = $studentInfoForMail->userFirstName;
+        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        $message_replace['close_application_link']="</a>";
+        $message_replace['missing'] = $outstandingDocsText;
+
+        $mailerForMessage = MailerList::where("mailer_name", "Reminder Mail")->first();
+
+        if($mailerForMessage->status == '1'){
+
+            $mailerMessage = $mailerForMessage->message;
+
+            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+            $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
+            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+
+            $mailData['name'] = $studentInfoForMail->userFirstName;
+            $mailData['email'] = $user->email;
+            $mailData['messageForMail'] = $newMessage;
+            $mailData['subject'] =str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+            
+            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+            $mailData['cc'] = explode(";", $allowedMailsCC);
+
+            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+            if(!empty($allowedMails)){
+
+                $mailArr = explode(";", $allowedMails);
+
+                if(in_array(explode("@", $mailData['email'])[1], $mailArr)){
+                    $mailData['email'] = $studentInfoForMail->userEmail;
+                }else{
+                    $mailData['email'] = "conurbandigital@gmail.com";
+                }
+            }else{
+                $mailData['email'] = $studentInfoForMail->userEmail;
+            }
+
+            Mail::send('email.yellow_back', $mailData, function($message) use ($mailData) {
+                $message->to($mailData['email'])->subject($mailData['subject']);
+                $message->bcc($mailData['cc']);
+                $message->from('noreply@campusafrica.co.za','Campus Africa');
+            });
+        }
+    }
+
+    public function download_beds(Request $request){
+        $property = $request->property;
+        $this_year = Lookups::where('group_id', '4')->first();
+        $institutions = Lookups::where('group_id', '1')->first();
+        $faculties = Lookups::where('group_id', '3')->first();
+
+        $query = "";
+
+        if($property !== "All"){
+            $query .= "where pd.residence = '".$property."'";
+        }
+
+        if($query !== ""){
+            $query .= " and (pd.year_end = '0' or pd.year_end = '".$this_year->lookup_name."') ";
+        }else{
+            $query .= "where (pd.year_end = '0' or pd.year_end = '".$this_year->lookup_name."') ";
+        }
+
+        $beds = [
+			['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER / PASSPORT</b>' , '<b>GENDER</b>' , '<b>STUDENT TYPE</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+		];
+
+        $waitlist = [
+			['<b>RESIDENCE</b>', '<b>ROOM TYPE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER / PASSPORT</b>' , '<b>GENDER</b>' , '<b>STUDENT TYPE</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+		];
+
+        if($property !== "All"){
+            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->where('property', $property)->orderBy('id', 'asc')->get();
+        }else{
+            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->orderBy('id', 'asc')->get();
+        }
+
+        foreach($allBookingsThisYear as $booking){
+            $property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $room = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+            $user = StudentsInfo::where('bookingId', $booking->id)->orderBy('year', 'desc')->first();
+
+            if(!empty($user) && $user->rob_60_cancelled == 0){
+
+                $first_name = $user->userFirstName;
+                $last_name = $user->userLastname;
+                $email = $user->userEmail;
+                $cell = $user->userCellCode.$user->userCell;
+                $nationality = $user->userNationality;
+                $id = $user->userId != "" ? $user->userId : $user->userPassport;
+                $gender = "";
+                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
+                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
+                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
+                $studNumber = $user->studentNo;
+                $yearOfStudy = $user->yearOfStudy;
+                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
+                $kinName = $user->kinFirstName." ".$user->kinLastname;
+                $relationship = $user->kinRelationship;
+                $kinContact = $user->kincellCode.$user->kinCellNo;
+    
+                $list = [$property, $room, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+                array_push($waitlist, $list);
+            }
+        }
+
+        $allBeds = DB::select('SELECT pd.id, p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id '.$query.' ORDER BY pd.residence');
+
+        foreach($allBeds as $bed){
+            if($bed->inventory == '1'){
+                $bed->inventory = "Yes";
+            }else{
+                $bed->inventory = "No";
+            }
+
+            $booking = Booking::where('property_data_id', $bed->id)->where('year',  $this_year->lookup_name)->first();
+
+            if(!empty($booking)){
+                $user = StudentsInfo::where('bookingId', $booking->id)->where('year',  $this_year->lookup_name)->first();
+
+                $booking_ref = $booking->booking_code;
+                $first_name = $user->userFirstName;
+                $last_name = $user->userLastname;
+                $email = $user->userEmail;
+                $cell = $user->userCellCode.$user->userCell;
+                $nationality = $user->userNationality;
+                $id = $user->userId != "" ? $user->userId : $user->userPassport;
+                $gender = "";
+                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
+                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
+                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
+                $studNumber = $user->studentNo;
+                $yearOfStudy = $user->yearOfStudy;
+                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
+                $kinName = $user->kinFirstName." ".$user->kinLastname;
+                $relationship = $user->kinRelationship;
+                $kinContact = $user->kincellCode.$user->kinCellNo;
+                
+            }else{
+                $booking_ref = "";
+                $first_name = "";
+                $last_name = "";
+                $email = "";
+                $cell = "";
+                $nationality = "";
+                $id = "";
+                $gender = "";
+                $studentType = "";
+                $bursarCompany = "";
+                $instit = "";
+                $studNumber = "";
+                $yearOfStudy = "";
+                $faculty = "";
+                $kinName = "";
+                $relationship = "";
+                $kinContact = "";
+            }
+
+            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+            array_push($beds, $bed);
+        }
+
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
+		$xlsx->addSheet( $beds, 'BED CODES');
+        $xlsx->addSheet( $waitlist, 'WAITLIST');
+
+        $prop = Residence::where('id', $property)->pluck('residence')->first();
+
+        // if($year !== "All"){
+
+            $downloadUrl = 'Bed_Allocations_Export_'.$this_year->lookup_name.'_'.$prop.'.xlsx';
+            $xlsx->saveAs('Bed_Allocations_Export_'.$this_year->lookup_name.'_'.$prop.'.xlsx');
+        // }else{
+        //     $downloadUrl = 'System_Bed_Allocations_All_Years.xlsx';
+        //     $xlsx->saveAs('System_Bed_Allocations_All_Years.xlsx');
+        // }
+
+		return $downloadUrl;
+    }
+
+    public function download_mda(Request $request){
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $allApprovedUsers = StudentsInfo::where('year', $this_year)->where('rob_50_approve', '2')->get();
+
+        $mdaInfo = [["Booking Ref", "Lease Status", "Property ID", "Lessee Name", "List Or Trading As Name", "Lessee Salutation", "General Contact Email Nos", "General Contact Telephone Nos", "General Contact Name", "General Contact Mobile Nos", "Property Rentable Unit Id", "Rent Amounts From Date", "Rent Amounts To Date", "Rent Amounts Amount", "Rent Amounts Rate", "Tenant Id", "Lease Start Date", "Occupation Date", "Lease Expiry Date"]];
+
+        foreach($allApprovedUsers as $user){
+            //
+        }
+
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
+		$xlsx->addSheet( $mdaInfo, 'MDA Students');
+        $xlsx->saveAs('MDA download.xlsx');
+    }
     
     
 

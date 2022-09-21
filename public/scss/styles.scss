@@ -1500,6 +1500,7 @@ input:read-only {
 }
 
 #downloadAllDocs,
+#sendMailReminder,
 #addOtherDocument,
 #waiveThisBookingFee,
 #unWaiveThisBookingFee {
@@ -2566,7 +2567,7 @@ input:read-only {
           margin-top:975px !important
       }
 
-      #downloadAllDocs, #waiveThisBookingFee, #addOtherDocument{
+      #downloadAllDocs, #waiveThisBookingFee,#sendMailReminder, #addOtherDocument{
         width:100%;
         margin-top:5px !important;
       }

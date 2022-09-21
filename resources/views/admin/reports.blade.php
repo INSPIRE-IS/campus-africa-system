@@ -5,9 +5,9 @@
 
 <div class="container">
     <br/>
-    <h2>Student Report</h2>
+    <!-- <h2>Student Report</h2> -->
 
-    <div class="appSearchForm" style="margin-top:-35px">
+    <!-- <div class="appSearchForm" style="margin-top:-35px">
         <div class="searchField">
         <label></label><br/>
             <select name="property" id="property" onChange="changeResidence()">
@@ -67,11 +67,32 @@
     <div class="clearSpaceLogin"></div>
     <div class="hidden"><a href="/Student Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
 
-    <hr/><br/>
-    <h2>Other Reports</h2>
+    <hr/><br/> -->
+    <h2>Reports</h2>
 
     <button type="button" class="detailsChange" id="downloadStudents" style="float:left; ">Download NSFAS Approval Types</button>
     <div class="hidden"><a href="/NSFAS Approval Type Export.xlsx" download><button type="button" id="downloadBtnNsfas">Download</button></a></div>
+
+    <br/><br/><br/><br/><hr/><br/>
+    <h2>Building Manager Report</h2>
+    <br/>
+    <select id="propdd" name="propdd">
+        <option value="All">All Properties</option>
+        @foreach($propertyList as $prop)
+            <option value="{{$prop->id}}">{{$prop->residence}}</option>
+        @endforeach
+    </select>
+    <br/>
+
+    <button type="button" class="detailsChange" id="downloadRooms" style="float:left; margin-left:0px;">Download Beds</button>
+    <div class="hidden"><a href="" download id="downloadBedsBtn"><button type="button" id="downloadBtnBeds">Download</button></a></div>
+
+    <br/><br/><br/><br/><hr/><br/>
+    <h2>MDA Report</h2>
+    <br/>
+
+    <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;">Download MDA</button>
+    <div class="hidden"><a href="/MDA download.xlsx" download><button type="button" id="downloadMdaDoc">Download</button></a></div>
 
 </div>
 
@@ -140,6 +161,33 @@
 
             success: function (data) {
                 $("#downloadBtnNsfas").click();
+            },
+        });
+    })
+
+    $("#downloadRooms").on('click', function(){
+        $("#downloadRooms").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "post",
+            url: "/download-beds",
+            data: { property: $("#propdd").val()},
+            success: function (data) {
+                var a = document.getElementById('downloadBedsBtn');
+                a.href = data
+                $("#downloadBtnBeds").click();
+                $("#downloadRooms").empty().append('Download Beds')
+            },
+        });
+    })
+
+    $("#downloadMda").on('click', function(){
+        $("#downloadMda").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "get",
+            url: "/download-mda",
+            success: function (data) {
+                $("#downloadMdaDoc").click();
+                $("#downloadMda").empty().append('Download MDA')
             },
         });
     })

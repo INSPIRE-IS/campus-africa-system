@@ -489,6 +489,7 @@
                         </div>
                     </div>
                     <!-- <a href="/download/docs/{{$user[0]['userInfo']['userUid']}}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
+                    <button type="button" class="appBooking" id="sendMailReminder" onClick="reminderMail('{{$user[0]['userInfo']['userUid']}}')" style="color:#fff; background-color:#e74f26; border:none">Email Reminder</button>
                     <!-- files_to_download -->
                     <button type="button" class="appBooking" id="downloadAllDocs" onClick="downloadZipDocs('{{$user[0]['userInfo']['userUid']}}')">Download All</button>
                     <div class="waitve_btn"></div>
@@ -1528,7 +1529,19 @@
                         && (data['rob_45_other'] == 3 || data['rob_45_other'] == 2))
                     {
                         $(".main_btn").empty().append('<button type="button" class="appBtn" id="approveProfile" onClick="approveApplication(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">APPROVE APPLICATION AND SEND CONFIRMATION</button><br/><br/><br/><button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">REJECT APPLICATION AND SEND NOTIFICATION</button><br/><br/><br/>')
+                        $("#sendMailReminder").addClass('hidden');
                     }
+                }
+
+                if(data['rob_10_fee'] == 2
+                    && data['rob_15_id'] == 2
+                    && data['rob_20_card'] == 2
+                    && data['rob_25_reg'] == 2
+                    && data['rob_30_funds'] == 2
+                    && data['rob_35_info'] == 2
+                    && data['rob_40_bed'] == 2
+                    && (data['rob_45_other'] == 3 || data['rob_45_other'] == 2)){
+                        $("#sendMailReminder").addClass('hidden');
                 }
 
                 if(data['rob_60_cancelled'] == 1){
@@ -3714,6 +3727,25 @@
         })
 
         
+    }
+
+    function reminderMail(userId){
+        $("#sendMailReminder").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "post",
+            url: "/remind/email",
+            data: {
+                userId: userId,
+            },
+            success: function (data) {
+                $("#sendMailReminder").empty().append('EMAIL REMINDER')
+                Swal.fire(
+                    'Sent!',
+                    'Reminder Email was sent successfully',
+                    'success'
+                )
+            },
+        });
     }
 
     function downloadZipDocs(userId){
