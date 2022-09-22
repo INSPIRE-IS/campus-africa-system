@@ -10,6 +10,7 @@ use App\Models\MailerList;
 use App\Models\Booking;
 use App\Models\User;
 use Mail;
+use App\Models\ActionList;
 
 class MailReminder extends Controller
 {
@@ -90,6 +91,15 @@ class MailReminder extends Controller
 
                                     StudentsInfo::where('id', $student->id)->update(["fee_reminder_sent" => date('Y-m-d')]);
 
+                                    ActionList::create([
+                                        "userUid" => $student->userUid,
+                                        "action" => "Reminder Email sent for Booking Fee Proof of Payment",
+                                        "actionUserUid" => '0',
+                                        "actionUserDisplayName" => "System",
+                                        "actionUserRole" => 1,
+                                        "year" => $this_year,
+                                    ]);
+
                                 }
                                 
                             }
@@ -150,6 +160,15 @@ class MailReminder extends Controller
 
                                     StudentsInfo::where('id', $student->id)->update(["fee_reminder_sent" => date('Y-m-d')]);
 
+                                    ActionList::create([
+                                        "userUid" => $student->userUid,
+                                        "action" => "Reminder Email sent for Booking Fee Proof of Payment",
+                                        "actionUserUid" => '0',
+                                        "actionUserDisplayName" => "System",
+                                        "actionUserRole" => 1,
+                                        "year" => $this_year,
+                                    ]);
+
                                 }
                             }
 
@@ -207,6 +226,15 @@ class MailReminder extends Controller
                             });
 
                             StudentsInfo::where('id', $student->id)->update(["fee_reminder_sent" => date('Y-m-d')]);
+
+                            ActionList::create([
+                                "userUid" => $student->userUid,
+                                "action" => "Reminder Email sent for Booking Fee Proof of Payment",
+                                "actionUserUid" => '0',
+                                "actionUserDisplayName" => "System",
+                                "actionUserRole" => 1,
+                                "year" => $this_year,
+                            ]);
 
                         }
                     }
@@ -349,6 +377,17 @@ class MailReminder extends Controller
                                 $message->bcc($mailData['cc']);
                                 $message->from('noreply@campusafrica.co.za','Campus Africa');
                             });
+
+                            StudentsInfo::where('id', $student->id)->update(["general_reminder_sent" => date('Y-m-d')]);
+
+                            ActionList::create([
+                                "userUid" => $student->userUid,
+                                "action" => "Reminder Email sent for Outstanding Documents",
+                                "actionUserUid" => '0',
+                                "actionUserDisplayName" => "System",
+                                "actionUserRole" => 1,
+                                "year" => $this_year,
+                            ]);
                         }
                     }
 
@@ -472,6 +511,17 @@ class MailReminder extends Controller
                                     $message->bcc($mailData['cc']);
                                     $message->from('noreply@campusafrica.co.za','Campus Africa');
                                 });
+
+                                StudentsInfo::where('id', $student->id)->update(["general_reminder_sent" => date('Y-m-d')]);
+
+                                ActionList::create([
+                                    "userUid" => $student->userUid,
+                                    "action" => "Reminder Email sent for Outstanding Documents",
+                                    "actionUserUid" => '0',
+                                    "actionUserDisplayName" => "System",
+                                    "actionUserRole" => 1,
+                                    "year" => $this_year,
+                                ]);
                             }
                         }
                     }
