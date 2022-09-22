@@ -164,6 +164,13 @@
                     <label for="role_approve_waive" style="width:500px">Approve Fee Waiver </label>
                 </li> -->
 
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_bm_report" name="role_bm_report" value="1">
+                    <label for="role_bm_report" style="width:500px">Building Manager Report </label>
+                </li>
+
+                
+
                 
                 
                 <li style="display:inline-flex">

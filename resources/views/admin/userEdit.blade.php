@@ -162,6 +162,13 @@
                     <input type="checkbox" id="role_approve_waive" name="role_approve_waive" value="1" <?php if($user->role_approve_waive == "1"){echo "checked";} ?>>
                     <label for="role_approve_waive" style="width:500px">Approve Fee Waiver</label>
                 </li> -->
+
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_bm_report" name="role_bm_report" value="1" <?php if($user->role_bm_report == "1"){echo "checked";} ?>>
+                    <label for="role_bm_report" style="width:500px">Building Manager Report</label>
+                </li>
+
+                
                 
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_change_building" name="role_change_building" value="1" <?php if($user->role_change_building == "1"){echo "checked";} ?>>

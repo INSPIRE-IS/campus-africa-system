@@ -1908,6 +1908,7 @@ class HomeController extends Controller
             // "role_change_building" => $request->role_change_building,
             "role_waive_fee" => $request->role_waive_fee,
             // "role_approve_waive" => $request->role_approve_waive,
+            "role_bm_report" => $request->role_bm_report,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -2730,6 +2731,7 @@ class HomeController extends Controller
             // "role_change_building" => $request->role_change_building,
             "role_waive_fee" => $request->role_waive_fee,
             // "role_approve_waive" => $request->role_approve_waive,
+            "role_bm_report" => $request->role_bm_report,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -9200,9 +9202,11 @@ class HomeController extends Controller
         }
 
         $outstandingDocsText = "<ol>";
+        $outDocs = "";
 
         foreach($outstanding as $out){
             $outstandingDocsText .= "<li style='color: #000; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+            $outDocs .= " ".$out.",";
         }
 
         $outstandingDocsText .= "</ol>";
@@ -9254,7 +9258,17 @@ class HomeController extends Controller
                 $message->bcc($mailData['cc']);
                 $message->from('noreply@campusafrica.co.za','Campus Africa');
             });
+
+            ActionList::create([
+                "userUid" => $studentInfoForMail->userUid,
+                "action" => "Reminder Email sent for outstanding documents ".$outDocs,
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
         }
+        
     }
 
     public function download_beds(Request $request){

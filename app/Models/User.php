@@ -150,6 +150,7 @@ class User extends Authenticatable
         'b_meeting',
         'app_source',
         'role_approve_waive',
+        'role_bm_report',
     ];
 
     public function files(){

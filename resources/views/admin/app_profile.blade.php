@@ -3744,6 +3744,8 @@
                     'Reminder Email was sent successfully',
                     'success'
                 )
+
+                refreshActions();
             },
         });
     }

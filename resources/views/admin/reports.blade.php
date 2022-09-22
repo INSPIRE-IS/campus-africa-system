@@ -70,22 +70,27 @@
     <hr/><br/> -->
     <h2>Reports</h2>
 
-    <button type="button" class="detailsChange" id="downloadStudents" style="float:left; ">Download NSFAS Approval Types</button>
-    <div class="hidden"><a href="/NSFAS Approval Type Export.xlsx" download><button type="button" id="downloadBtnNsfas">Download</button></a></div>
+    @if(Auth::user()->role_nsfas_approval_upload == 1)
+        <button type="button" class="detailsChange" id="downloadStudents" style="float:left; ">Download NSFAS Approval Types</button>
+        <div class="hidden"><a href="/NSFAS Approval Type Export.xlsx" download><button type="button" id="downloadBtnNsfas">Download</button></a></div>
+    @endif
 
     <br/><br/><br/><br/><hr/><br/>
     <h2>Building Manager Report</h2>
     <br/>
-    <select id="propdd" name="propdd">
-        <option value="All">All Properties</option>
-        @foreach($propertyList as $prop)
-            <option value="{{$prop->id}}">{{$prop->residence}}</option>
-        @endforeach
-    </select>
-    <br/>
 
-    <button type="button" class="detailsChange" id="downloadRooms" style="float:left; margin-left:0px;">Download Beds</button>
-    <div class="hidden"><a href="" download id="downloadBedsBtn"><button type="button" id="downloadBtnBeds">Download</button></a></div>
+    @if(Auth::user()->role_bm_report == 1)
+        <select id="propdd" name="propdd">
+            <option value="All">All Properties</option>
+            @foreach($propertyList as $prop)
+                <option value="{{$prop->id}}">{{$prop->residence}}</option>
+            @endforeach
+        </select>
+        <br/>
+
+        <button type="button" class="detailsChange" id="downloadRooms" style="float:left; margin-left:0px;">Download Beds</button>
+        <div class="hidden"><a href="" download id="downloadBedsBtn"><button type="button" id="downloadBtnBeds">Download</button></a></div>
+    @endif
 
     <br/><br/><br/><br/><hr/><br/>
     <h2>MDA Report</h2>
