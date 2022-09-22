@@ -144,6 +144,13 @@ class LookupsController extends Controller {
                 "nsfas_amount" => $request->nsfas_amount,
                 "actionUserUid" => Auth::user()->id,
             ];
+        }elseif($request->group_id == '12' || $request->group_id == '13'){
+
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->onlineApp_value,
+                "day_from" => $request->day_from,
+            ];
         }else{
             $data = [
                 "group_id" => $request->group_id,

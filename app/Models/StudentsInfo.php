@@ -115,6 +115,8 @@ class StudentsInfo extends Model
         'fee_approved',
         'app_source',
         'mda_tenant_id',
+        'fee_reminder_sent',
+        'general_reminder_sent',
     ];
 
     public function files(){

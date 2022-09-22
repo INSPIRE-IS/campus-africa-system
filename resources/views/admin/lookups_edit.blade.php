@@ -23,11 +23,13 @@
                 <option value="9" <?php if($lookup->group_id == "9"){echo "selected";}?>>Online Applications</option>
                 <option value="10" <?php if($lookup->group_id == "10"){echo "selected";}?>>Email - Restrict to Test Domain(s)</option>
                 <option value="11" <?php if($lookup->group_id == "11"){echo "selected";}?>>Email - BCC Email Addresses</option>
+                <option value="12" <?php if($lookup->group_id == "12"){echo "selected";}?>>Booking Fee Reminder email</option>
+                <option value="13" <?php if($lookup->group_id == "13"){echo "selected";}?>>Outstanding Documents Reminder email</option>
             </select>
             <input type="hidden" name="lookupId" id="lookupId" value="{{$lookup->id}}"/>
         </div>
 
-        <div class="form-field <?php if($lookup->group_id == "7" || $lookup->group_id == "9"){echo "hidden";} ?>" <?php if($lookup->group_id == "10"){echo 'style="height:170px !important;"';}?>>
+        <div class="form-field <?php if($lookup->group_id == "7" || $lookup->group_id == "9"|| $lookup->group_id == "13" || $lookup->group_id == "12"){echo "hidden";} ?>" <?php if($lookup->group_id == "10"){echo 'style="height:170px !important;"';}?>>
             <label>Value</label>
             <input type="text" name="value" id="value" value="<?php echo $lookup->lookup_name;?>">
             <small id="mailWording" class="<?php if($lookup->group_id != "10"){echo "hidden";} ?>">
@@ -45,6 +47,44 @@
                 <li style="display:inline-flex"><input type="checkbox" id="{{$prop->id}}_prop" name="{{$prop->id}}_prop" style="width:27px !important" <?php if(in_array($prop->id, $instProps)){echo "checked";}?> value='1'><label for="{{$prop->id}}_prop">&nbsp; &nbsp;{{$prop->residence}}</label></li><br/>
                 @endforeach
             </ul>
+        </div>
+
+        <div class="form-field <?php if($lookup->group_id != "13" && $lookup->group_id != "12"){echo "hidden";} ?>" id="reminderMails">
+            <label>Days Interval</label>
+            <select name="day_from" id='day_from'>
+                <option value="0" disabled selected>Select one</option>
+                <option value="1" <?php if($lookup->day_from == '1'){ echo "selected";} ?>>01</option>
+                <option value="2" <?php if($lookup->day_from == '2'){ echo "selected";} ?>>02</option>
+                <option value="3" <?php if($lookup->day_from == '3'){ echo "selected";} ?>>03</option>
+                <option value="4" <?php if($lookup->day_from == '4'){ echo "selected";} ?>>04</option>
+                <option value="5" <?php if($lookup->day_from == '5'){ echo "selected";} ?>>05</option>
+                <option value="6" <?php if($lookup->day_from == '6'){ echo "selected";} ?>>06</option>
+                <option value="7" <?php if($lookup->day_from == '7'){ echo "selected";} ?>>07</option>
+                <option value="8" <?php if($lookup->day_from == '8'){ echo "selected";} ?>>08</option>
+                <option value="9" <?php if($lookup->day_from == '9'){ echo "selected";} ?>>09</option>
+                <option value="10" <?php if($lookup->day_from == '10'){ echo "selected";} ?>>10</option>
+                <option value="11" <?php if($lookup->day_from == '11'){ echo "selected";} ?>>11</option>
+                <option value="12" <?php if($lookup->day_from == '12'){ echo "selected";} ?>>12</option>
+                <option value="13" <?php if($lookup->day_from == '13'){ echo "selected";} ?>>13</option>
+                <option value="14" <?php if($lookup->day_from == '14'){ echo "selected";} ?>>14</option>
+                <option value="15" <?php if($lookup->day_from == '15'){ echo "selected";} ?>>15</option>
+                <option value="16" <?php if($lookup->day_from == '16'){ echo "selected";} ?>>16</option>
+                <option value="17" <?php if($lookup->day_from == '17'){ echo "selected";} ?>>17</option>
+                <option value="18" <?php if($lookup->day_from == '18'){ echo "selected";} ?>>18</option>
+                <option value="19" <?php if($lookup->day_from == '19'){ echo "selected";} ?>>19</option>
+                <option value="20" <?php if($lookup->day_from == '20'){ echo "selected";} ?>>20</option>
+                <option value="21" <?php if($lookup->day_from == '21'){ echo "selected";} ?>>21</option>
+                <option value="22" <?php if($lookup->day_from == '22'){ echo "selected";} ?>>22</option>
+                <option value="23" <?php if($lookup->day_from == '23'){ echo "selected";} ?>>23</option>
+                <option value="24" <?php if($lookup->day_from == '24'){ echo "selected";} ?>>24</option>
+                <option value="25" <?php if($lookup->day_from == '25'){ echo "selected";} ?>>25</option>
+                <option value="26" <?php if($lookup->day_from == '26'){ echo "selected";} ?>>26</option>
+                <option value="27" <?php if($lookup->day_from == '27'){ echo "selected";} ?>>27</option>
+                <option value="28" <?php if($lookup->day_from == '28'){ echo "selected";} ?>>28</option>
+                <option value="29" <?php if($lookup->day_from == '29'){ echo "selected";} ?>>29</option>
+                <option value="30" <?php if($lookup->day_from == '30'){ echo "selected";} ?>>30</option>
+                <option value="31" <?php if($lookup->day_from == '31'){ echo "selected";} ?>>31</option>
+            </select>
         </div>
 
         @if($lookup->group_id == "4")
@@ -181,7 +221,7 @@
             </select>
         </div>
 
-        <div class="form-field <?php if($lookup->group_id !== "9"){echo "hidden";} ?>" id="onlineAppValue">
+        <div class="form-field <?php if($lookup->group_id !== "9" && $lookup->group_id !== "12" && $lookup->group_id !== "13"){echo "hidden";} ?>" id="onlineAppValue">
             <label>Value</label>
             <select name="onlineApp_value" id="onlineApp_value">
                 <option value="0" disabled selected>- Select One -</option>
@@ -222,7 +262,8 @@
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
             $("#propertyListNsfas").addClass('hidden');
-        }else if($("#group_id").val() == "9"){
+            $("#reminderMails").addClass('hidden');
+        }else if($("#group_id").val() == "9" || $("#group_id").val() == "12" || $("#group_id").val() == "13"){
             $("#onlineAppValue").removeClass('hidden');
             $("#normalVlaue").addClass('hidden');
             $("#waiverValue").addClass('hidden');
@@ -230,6 +271,12 @@
             $("#nsfas_value").addClass('hidden');
             $("#mailCCWording").addClass('hidden');
             $("#propertyListNsfas").addClass('hidden');
+
+            if($("#group_id").val() == "12" || $("#group_id").val() == "13"){
+                $("#reminderMails").removeClass('hidden');
+            }else{
+                $("#reminderMails").addClass('hidden');
+            }
         }else if($("#group_id").val() == "10"){
             $("#mailWording").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
@@ -238,6 +285,7 @@
 
             $("#mailCCWording").addClass('hidden');
             $("#propertyListNsfas").addClass('hidden');
+            $("#reminderMails").addClass('hidden');
         }else if($("#group_id").val() == "11"){
             $("#mailWording").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
@@ -247,6 +295,7 @@
             $("#mailCCWording").removeClass('hidden');
             $("#nsfas_value").addClass('hidden');
             $("#propertyListNsfas").addClass('hidden');
+            $("#reminderMails").addClass('hidden');
         }else if($("#group_id").val() == "1" ){
             $("#nsfas_value").removeClass('hidden');
             $("#normalVlaue").removeClass('hidden');
@@ -254,6 +303,7 @@
             $("#mailWording").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#propertyListNsfas").removeClass('hidden');
+            $("#reminderMails").addClass('hidden');
         }else{
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
@@ -264,6 +314,7 @@
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
             $("#propertyListNsfas").addClass('hidden');
+            $("#reminderMails").addClass('hidden');
         }
     })
 

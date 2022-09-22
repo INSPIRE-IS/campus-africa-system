@@ -32,13 +32,19 @@
 
         @foreach($lookups as $lookup)
             <tr>
-                <td>@if($lookup->group_id == "1") Institution of Study @elseif($lookup->group_id == "2")Insitution Campus @elseif($lookup->group_id == "3") Faculty @elseif($lookup->group_id == "4") Year @elseif($lookup->group_id == "5") Nationality @elseif($lookup->group_id == "6") Year of study @elseif($lookup->group_id == "7") Waive Booking Fee @elseif($lookup->group_id == "8") Lease Admin Fee @elseif($lookup->group_id == "9") Online Applications @elseif($lookup->group_id == "10") Email - Restrict to Test Domain(s) @elseif($lookup->group_id == "11") Email - BCC Email Addresses @endif</td>
+                <td>@if($lookup->group_id == "1") Institution of Study @elseif($lookup->group_id == "2")Insitution Campus @elseif($lookup->group_id == "3") Faculty @elseif($lookup->group_id == "4") Year @elseif($lookup->group_id == "5") Nationality @elseif($lookup->group_id == "6") Year of study @elseif($lookup->group_id == "7") Waive Booking Fee @elseif($lookup->group_id == "8") Lease Admin Fee @elseif($lookup->group_id == "9") Online Applications @elseif($lookup->group_id == "10") Email - Restrict to Test Domain(s) @elseif($lookup->group_id == "11") Email - BCC Email Addresses @elseif($lookup->group_id == "12") Booking Fee Reminder Email @elseif($lookup->group_id == "13") Outstanding Documents Reminder Email @endif</td>
                 <td>
                     @if($lookup->group_id == "9")
                         @if($lookup->lookup_name == '1') 
                             Online  
                         @else 
                             Offline
+                        @endif
+                    @elseif($lookup->group_id == "12" || $lookup->group_id == "13")
+                        @if($lookup->lookup_name == '1') 
+                            Online - {{$lookup->day_from}} days
+                        @else 
+                            Offline - {{$lookup->day_from}} days
                         @endif
                     @else
                         @if($lookup->lookup_name == '1') 

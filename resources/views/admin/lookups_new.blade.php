@@ -22,6 +22,8 @@
                 <option value="9" >Online Applications</option>
                 <option value="10" >Email - Restrict to Test Domain(s)</option>
                 <option value="11" >Email - BCC Email Addresses</option>
+                <option value="12" >Booking Fee Reminder email</option>
+                <option value="13" >Outstanding Documents Reminder email</option>
             </select>
         </div>
 
@@ -84,7 +86,7 @@
             $("#nsfas_value").addClass('hidden');
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
-        }else if($("#group_id").val() == "9"){
+        }else if($("#group_id").val() == "9" || $("#group_id").val() == "12" || $("#group_id").val() == "13"){
             $("#onlineAppValue").removeClass('hidden');
             $("#normalVlaue").addClass('hidden');
             $("#waiverValue").addClass('hidden');

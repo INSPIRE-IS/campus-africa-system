@@ -14,6 +14,7 @@ use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\OnlinePaymentController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\MailReminder;
 
 /*
 |--------------------------------------------------------------------------
@@ -309,6 +310,9 @@ Route::post("/mda-tenant-save", [LeaseController::class, 'mda_tenant_save']);
 Route::post('/remind/email', [HomeController::class, 'send_reminder_mail']);
 Route::post('/download-beds', [HomeController::class, 'download_beds']);
 Route::get('/download-mda', [HomeController::class, 'download_mda']);
+
+
+Route::get('/mail-reminder', [MailReminder::class, 'mail_reminder']);
 
 
 
