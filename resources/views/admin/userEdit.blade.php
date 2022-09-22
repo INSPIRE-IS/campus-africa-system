@@ -168,6 +168,13 @@
                     <label for="role_bm_report" style="width:500px">Building Manager Report</label>
                 </li>
 
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_mda_report" name="role_mda_report" value="1" <?php if($user->role_mda_report == "1"){echo "checked";} ?>>
+                    <label for="role_mda_report" style="width:500px">MDA Report</label>
+                </li>
+
+                
+
                 
                 
                 <li style="display:inline-flex">

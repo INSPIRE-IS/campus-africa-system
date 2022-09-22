@@ -96,8 +96,10 @@
     <h2>MDA Report</h2>
     <br/>
 
-    <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;">Download MDA</button>
-    <div class="hidden"><a href="/MDA download.xlsx" download><button type="button" id="downloadMdaDoc">Download</button></a></div>
+    @if(Auth::user()->role_mda_report == 1)
+        <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;">Download MDA</button>
+        <div class="hidden"><a href="/MDA download.xlsx" download><button type="button" id="downloadMdaDoc">Download</button></a></div>
+    @endif
 
 </div>
 

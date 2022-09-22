@@ -1909,6 +1909,7 @@ class HomeController extends Controller
             "role_waive_fee" => $request->role_waive_fee,
             // "role_approve_waive" => $request->role_approve_waive,
             "role_bm_report" => $request->role_bm_report,
+            "role_mda_report" => $request->role_mda_report,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -2732,6 +2733,7 @@ class HomeController extends Controller
             "role_waive_fee" => $request->role_waive_fee,
             // "role_approve_waive" => $request->role_approve_waive,
             "role_bm_report" => $request->role_bm_report,
+            "role_mda_report" => $request->role_mda_report,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -9290,11 +9292,11 @@ class HomeController extends Controller
         }
 
         $beds = [
-			['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER / PASSPORT</b>' , '<b>GENDER</b>' , '<b>STUDENT TYPE</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+			['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER / PASSPORT</b>' , '<b>GENDER</b>' , '<b>STUDENT TYPE</b>' , '<b>BURSAR COMPANY</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
 		];
 
         $waitlist = [
-			['<b>RESIDENCE</b>', '<b>ROOM TYPE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER / PASSPORT</b>' , '<b>GENDER</b>' , '<b>STUDENT TYPE</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+			['<b>RESIDENCE</b>', '<b>ROOM TYPE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>' , '<b>LAST NAME</b>' , '<b>EMAIL</b>' , '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>' , '<b>ID NUMBER / PASSPORT</b>' , '<b>GENDER</b>' , '<b>STUDENT TYPE</b>' , '<b>BURSAR COMPANY</b>' , '<b>INSTITUTION</b>' , '<b>STUDENT NUMBER</b>' , '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
 		];
 
         if($property !== "All"){
@@ -9327,7 +9329,7 @@ class HomeController extends Controller
                 $relationship = $user->kinRelationship;
                 $kinContact = $user->kincellCode.$user->kinCellNo;
     
-                $list = [$property, $room, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+                $list = [$property, $room, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
                 array_push($waitlist, $list);
             }
         }
@@ -9384,7 +9386,7 @@ class HomeController extends Controller
                 $kinContact = "";
             }
 
-            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
             array_push($beds, $bed);
         }
 

@@ -151,6 +151,7 @@ class User extends Authenticatable
         'app_source',
         'role_approve_waive',
         'role_bm_report',
+        'role_mda_report',
     ];
 
     public function files(){
