@@ -41,7 +41,7 @@
         </div>
 
         <div class="form-field <?php if($lookup->group_id != "1"){echo "hidden";} ?>" id="propertyListNsfas" style="height:450px !important;">
-            <label>Properties</label>
+            <label>NSFAS Accreditation</label>
             <ul style="list-style-type:none; width:100%">
                 @foreach($allProperties as $prop)
                 <li style="display:inline-flex"><input type="checkbox" id="{{$prop->id}}_prop" name="{{$prop->id}}_prop" style="width:27px !important" <?php if(in_array($prop->id, $instProps)){echo "checked";}?> value='1'><label for="{{$prop->id}}_prop">&nbsp; &nbsp;{{$prop->residence}}</label></li><br/>
