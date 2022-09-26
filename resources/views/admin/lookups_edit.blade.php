@@ -40,7 +40,7 @@
             <small id="mailCCWording" class="<?php if($lookup->group_id != "11"){echo "hidden";} ?>">Specify individual email addresses to BCC, Please seperate email addresses by semicolon</small>
         </div>
 
-        <div class="form-field <?php if($lookup->group_id != "1"){echo "hidden";} ?>" id="propertyListNsfas" style="height:450px !important;">
+        <div class="form-field <?php if($lookup->group_id != "1"){echo "hidden";} ?>" id="propertyListNsfas" style="height:<?php echo 48*count($allProperties);?>px !important;">
             <label>NSFAS Accreditation</label>
             <ul style="list-style-type:none; width:100%">
                 @foreach($allProperties as $prop)

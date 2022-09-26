@@ -4845,57 +4845,59 @@ class HomeController extends Controller
 
             $allProperties = Residence::get();
 
-            $curl = curl_init();
+            // $curl = curl_init();
 
-            curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/token',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_POSTFIELDS => 'grant_type=password&username=mri.api%40conurban.co.za&password=3ub4%5E2t2Y9PhPTEq',
-            CURLOPT_HTTPHEADER => array(
-                'cache-control: no-cache',
-                'Authorization: Basic your-API-key',
-                'Content-Type: application/x-www-form-urlencoded',
-                'Cookie: NSC_ESNS=0a80b654-6595-1303-9678-00505691daed_3897103846_3196003446_00000000000176021283'
-            ),
-            ));
+            // curl_setopt_array($curl, array(
+            // CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/token',
+            // CURLOPT_RETURNTRANSFER => true,
+            // CURLOPT_ENCODING => '',
+            // CURLOPT_MAXREDIRS => 10,
+            // CURLOPT_TIMEOUT => 0,
+            // CURLOPT_FOLLOWLOCATION => true,
+            // CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            // CURLOPT_CUSTOMREQUEST => 'GET',
+            // CURLOPT_POSTFIELDS => 'grant_type=password&username=mri.api%40conurban.co.za&password=3ub4%5E2t2Y9PhPTEq',
+            // CURLOPT_HTTPHEADER => array(
+            //     'cache-control: no-cache',
+            //     'Authorization: Basic your-API-key',
+            //     'Content-Type: application/x-www-form-urlencoded',
+            //     'Cookie: NSC_ESNS=0a80b654-6595-1303-9678-00505691daed_3897103846_3196003446_00000000000176021283'
+            // ),
+            // ));
     
-            $response = curl_exec($curl);
+            // $response = curl_exec($curl);
     
-            curl_close($curl);
+            // curl_close($curl);
 
-            //login Token
-            $loginToken = json_decode($response)->access_token;
+            // //login Token
+            // $loginToken = json_decode($response)->access_token;
 
-            $curl = curl_init();
+            // $curl = curl_init();
 
-            curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/Properties/SearchProperties?PropertySearchFilter=',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'PropertySearchFilter=',
-            CURLOPT_HTTPHEADER => array(
-                'DatabaseIdentifier: CC84465A-301E-4C19-AFA0-1939AB658425',
-                'Authorization: Bearer '.$loginToken,
-                'Cookie: NSC_ESNS=0a82f70c-6ac3-1303-9678-00505691daed_0229467849_1536900378_00000000000176163305'
-            ),
-            ));
+            // curl_setopt_array($curl, array(
+            // CURLOPT_URL => 'https://api.mdapropsys.com/api/v2/Properties/SearchProperties?PropertySearchFilter=',
+            // CURLOPT_RETURNTRANSFER => true,
+            // CURLOPT_ENCODING => '',
+            // CURLOPT_MAXREDIRS => 10,
+            // CURLOPT_TIMEOUT => 0,
+            // CURLOPT_FOLLOWLOCATION => true,
+            // CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            // CURLOPT_CUSTOMREQUEST => 'POST',
+            // CURLOPT_POSTFIELDS => 'PropertySearchFilter=',
+            // CURLOPT_HTTPHEADER => array(
+            //     'DatabaseIdentifier: CC84465A-301E-4C19-AFA0-1939AB658425',
+            //     'Authorization: Bearer '.$loginToken,
+            //     'Cookie: NSC_ESNS=0a82f70c-6ac3-1303-9678-00505691daed_0229467849_1536900378_00000000000176163305'
+            // ),
+            // ));
 
-            $response = curl_exec($curl);
+            // $response = curl_exec($curl);
 
-            curl_close($curl);
+            // curl_close($curl);
 
-            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData, "allProperties" => $allProperties, "mda" => json_decode($response)->ResultSet]);
+            // return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData, "allProperties" => $allProperties, "mda" => json_decode($response)->ResultSet]);
+
+            return view('admin.residence_edit', ["headerTitle" => $head." Residence", "title" => $head." Residence", "propertyData" => $propertyData, "allProperties" => $allProperties]);
         }else{
             return "404 Error";
         }
@@ -4919,7 +4921,7 @@ class HomeController extends Controller
             "account_number" => $request->account_number,
             // "branch" => $request->branch,
             "branch_code" => $request->branch_code,
-            "mda_id" => $request->mda_id,
+            // "mda_id" => $request->mda_id,
             "company_reg" => $request->company_reg,
             'company_vat' => $request->company_vat,
         ];
