@@ -4823,9 +4823,10 @@ class HomeController extends Controller
     public function properties_info(Request $request){
 
         if(Auth::user()->role_lookup == 1){
-            $residences = Residence::get();
+            $residences = Residence::withTrashed()->get();
+            $roomTypes = RoomTypes::groupBy('property_id')->pluck('property_id')->toArray();
 
-            return view('admin.property_address', ["headerTitle" => "Residense Info", "title" => "Residense Info", "residences" => $residences]);
+            return view('admin.property_address', ["headerTitle" => "Residense Info", "title" => "Residense Info", "residences" => $residences, "roomTypes" => $roomTypes]);
         }else{
             return "404 Error";
         }
@@ -9425,6 +9426,16 @@ class HomeController extends Controller
         $xlsx = new \Shuchkin\SimpleXLSXGen();
 		$xlsx->addSheet( $mdaInfo, 'MDA Students');
         $xlsx->saveAs('MDA download.xlsx');
+    }
+
+    public function residence_delete($residence_id){
+        residence::where('id', $residence_id)->delete();
+        return redirect()->back();
+    }
+
+    public function residence_restore($residence_id){
+        residence::withTrashed()->where('id', $residence_id)->restore();
+        return redirect()->back();
     }
     
     

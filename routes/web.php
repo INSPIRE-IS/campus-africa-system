@@ -169,6 +169,8 @@ Route::post('/createLease/{studentId}', [PDFController::class, 'createPDF']);
 Route::get('/properties-info', [HomeController::class, 'properties_info']);
 Route::get('/residence/edit/{residenceId}', [HomeController::class, 'residence_edit']);
 Route::post('/save-residence', [HomeController::class, 'save_residence']);
+Route::get('/residence/delete/{residenceId}', [HomeController::class, 'residence_delete']);
+Route::get('/residence/restore/{residenceId}', [HomeController::class, 'residence_restore']);
 
 Route::post('/action-data', [HomeController::class, 'action_data']);
 Route::post('/approve-app-data', [HomeController::class, 'approve_app_data']);

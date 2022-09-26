@@ -38,6 +38,16 @@
                 <td>{{$residence->building_prefix}}</td>
                 <td>
                     <a href="/residence/edit/{{$residence->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Edit</button></a>
+                    
+                    <?php if(!in_array($residence->id, $roomTypes)){?> 
+                        
+                        <?php if($residence->deleted_at == null){ ?>
+                            <a href="/residence/delete/{{$residence->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Inactivate</button></a> 
+                        <?php }else{ ?>
+                            <a href="/residence/restore/{{$residence->id}}"><button type="button" style="margin:5px;" id="tableBtn" class="detailsChange">Activate</button></a> 
+                        <?php } ?>
+                        
+                    <?php } ?>
                 </td>
             </tr>
         @endforeach
