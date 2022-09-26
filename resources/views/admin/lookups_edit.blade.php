@@ -23,8 +23,8 @@
                 <option value="9" <?php if($lookup->group_id == "9"){echo "selected";}?>>Online Applications</option>
                 <option value="10" <?php if($lookup->group_id == "10"){echo "selected";}?>>Email - Restrict to Test Domain(s)</option>
                 <option value="11" <?php if($lookup->group_id == "11"){echo "selected";}?>>Email - BCC Email Addresses</option>
-                <option value="12" <?php if($lookup->group_id == "12"){echo "selected";}?>>Booking Fee Reminder email</option>
-                <option value="13" <?php if($lookup->group_id == "13"){echo "selected";}?>>Outstanding Documents Reminder email</option>
+                <option value="12" <?php if($lookup->group_id == "12"){echo "selected";}?>>Email - Reminder Booking Fee</option>
+                <option value="13" <?php if($lookup->group_id == "13"){echo "selected";}?>>Email - Reminder Outstanding Documents</option>
             </select>
             <input type="hidden" name="lookupId" id="lookupId" value="{{$lookup->id}}"/>
         </div>
@@ -225,8 +225,12 @@
             <label>Value</label>
             <select name="onlineApp_value" id="onlineApp_value">
                 <option value="0" disabled selected>- Select One -</option>
-                <option value="1" <?php if($lookup->lookup_name == "1"){echo "selected";}?>>Online</option>
-                <option value="2" <?php if($lookup->lookup_name == "2"){echo "selected";}?>>Offline</option>
+                <option value="1" <?php if($lookup->lookup_name == "1"){echo "selected";}?>>
+                    <?php if($lookup->group_id == "9"){echo "Online";}else{echo "On";} ?>
+                </option>
+                <option value="2" <?php if($lookup->lookup_name == "2"){echo "selected";}?>>
+                <?php if($lookup->group_id == "9"){echo "Offline";}else{echo "Off";} ?>
+            </option>
             </select>
         </div>
 

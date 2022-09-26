@@ -44,7 +44,7 @@ class MailReminder extends Controller
                             $nowDte = date('Y-m-d');
 
                             //check if doc rejected more than required amount of days for reminder
-                            if($projectedDte < $nowDte){
+                            if($projectedDte <= $nowDte){
                                 //send reminder mail
 
                                 if($mailerForFeeMessage->status == '1'){
@@ -113,7 +113,7 @@ class MailReminder extends Controller
                             $nowDte = date('Y-m-d');
 
                             //check if account was created more than required amount of days for reminder
-                            if($projectedDte < $nowDte){
+                            if($projectedDte <= $nowDte){
                                 //send reminder mail
 
                                 if($mailerForFeeMessage->status == '1'){
@@ -180,7 +180,7 @@ class MailReminder extends Controller
                     $nowDte = date('Y-m-d');
 
                     //check if last mail was sent more than required amount of days for reminder
-                    if($projectedDte < $nowDte){
+                    if($projectedDte <= $nowDte){
                         //send reminder mail
 
                         if($mailerForFeeMessage->status == '1'){
@@ -397,7 +397,7 @@ class MailReminder extends Controller
                     $projectedDte = date('Y-m-d', strtotime($lastDte. ' + '.$reminderDays.' days'));
                     $nowDte = date('Y-m-d');
 
-                    if($projectedDte < $nowDte){
+                    if($projectedDte <= $nowDte){
                         $all = ['studentCard', 'proofRegistration', 'copyID'];
                         $outstanding = [];
 

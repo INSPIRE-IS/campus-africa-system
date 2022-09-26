@@ -22,8 +22,8 @@
                 <option value="9" >Online Applications</option>
                 <option value="10" >Email - Restrict to Test Domain(s)</option>
                 <option value="11" >Email - BCC Email Addresses</option>
-                <option value="12" >Booking Fee Reminder email</option>
-                <option value="13" >Outstanding Documents Reminder email</option>
+                <option value="12" >Email - Reminder Booking Fee</option>
+                <option value="13" >Email - Reminder Outstanding Documents</option>
             </select>
         </div>
 
