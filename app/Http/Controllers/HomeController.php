@@ -3135,7 +3135,7 @@ class HomeController extends Controller
     public function reports(Request $request){
 
         $allowed = [];
-        $allProp = whereNull('status')->get();
+        $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
