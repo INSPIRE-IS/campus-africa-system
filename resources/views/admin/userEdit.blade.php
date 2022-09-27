@@ -376,6 +376,7 @@
             document.getElementById('role_change_building').checked = true;
             document.getElementById('role_toggle_online_booking').checked = true;
             document.getElementById('role_waive_fee').checked = true;
+            document.getElementById('role_bm_report').checked = true;
             
         }
 
