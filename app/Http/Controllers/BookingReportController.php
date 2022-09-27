@@ -206,7 +206,7 @@ class BookingReportController extends Controller
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://campusafrica.co.za/wp-json/wp/v2/rooms/'.$roomMap,
+                CURLOPT_URL => 'https://campusafrica.whitehart.co.za/wp-json/wp/v2/rooms/'.$roomMap,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
