@@ -9338,7 +9338,7 @@ class HomeController extends Controller
             }
         }
 
-        $allBeds = DB::select('SELECT pd.id, p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id '.$query.' ORDER BY pd.residence ASC, pd.meta_info_1, len(pd.floor), pd.floor, pd.unit, pd.room, pd.bed');
+        $allBeds = DB::select('SELECT pd.id, p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id '.$query.' ORDER BY pd.residence ASC, pd.meta_info_1, pd.floor + 0 ASC, pd.floor, pd.unit, pd.room, pd.bed');
 
         foreach($allBeds as $bed){
             if($bed->inventory == '1'){
