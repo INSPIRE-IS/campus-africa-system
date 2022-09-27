@@ -674,6 +674,8 @@
             }
         })
 
+        ValidCell($("#cell_no").val(), "cell_no", "cell_no_error", $("#userCellCode").val());
+
         if ($('.fieldDuplicate').length > 0) {
             req = 0;
         }
