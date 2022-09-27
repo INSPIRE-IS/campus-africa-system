@@ -24,7 +24,7 @@ class BookingReportController extends Controller
     public function booking_summary(Request $request){
 
         $residences = [];
-        $allProp = Residence::get();
+        $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){

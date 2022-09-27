@@ -161,7 +161,7 @@ class HomeController extends Controller
 
     public function inActiveStudent(){
         
-        $buildingList = Residence::get();
+        $buildingList = Residence::whereNull('status')->get();
         $roomList = RoomTypes::get();
         $filesList = UserFiles::where('userUid', Auth::user()->id)->get();
 
@@ -580,7 +580,7 @@ class HomeController extends Controller
         if(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3" ) {
 
             $allowedResidences = [];
-            $allProp = Residence::get();
+            $allProp = Residence::whereNull('status')->get();
             $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
             foreach($allProp as $prop){
@@ -754,7 +754,7 @@ class HomeController extends Controller
         }
 
         $allowedResidences = [];
-        $allProp = Residence::get();
+        $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
@@ -804,7 +804,7 @@ class HomeController extends Controller
         }
 
         $bookingList = Booking::where('userId', $userId)->orderBy('year', 'desc')->get();
-        $buildingList = Residence::get();
+        $buildingList = Residence::whereNull('status')->get();
         $roomList = RoomTypes::get();
         $filesList = UserFiles::where('userUid', $userId)->get();
 
@@ -2134,7 +2134,7 @@ class HomeController extends Controller
         $lookup = Lookups::get();
 
         $allowed = [];
-        $allProp = Residence::get();
+        $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
@@ -2340,7 +2340,7 @@ class HomeController extends Controller
         $roomTypeData = RoomTypes::where('id', $roomId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
         $deposit = 0;
@@ -2645,7 +2645,7 @@ class HomeController extends Controller
 
     public function new_admin(Request $request){
 
-        $propertyList = Residence::get();
+        $propertyList = Residence::whereNull('status')->get();
 
         return view('admin.userAdd', ["headerTitle" => "Add New System User", "title" => "Add User", "propertyList" => $propertyList]);
     }
@@ -2978,7 +2978,7 @@ class HomeController extends Controller
         $userData = [];
 
         $allowed = [];
-        $allProp = Residence::get();
+        $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
@@ -3135,7 +3135,7 @@ class HomeController extends Controller
     public function reports(Request $request){
 
         $allowed = [];
-        $allProp = Residence::get();
+        $allProp = whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
@@ -3648,7 +3648,7 @@ class HomeController extends Controller
             $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
             $roomTypeId = $roomTypeData->room_map_slug;
 
-            $allResidences = Residence::get();
+            $allResidences = Residence::whereNull('status')->get();
             $allRoomTypes = RoomTypes::get();
             $deposit = 0;
     
@@ -4001,7 +4001,7 @@ class HomeController extends Controller
                 $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
                 $roomTypeId = $roomTypeData->room_map_slug;
     
-                $allResidences = Residence::get();
+                $allResidences = Residence::whereNull('status')->get();
                 $allRoomTypes = RoomTypes::get();
                 $deposit = 0;
         
@@ -4399,7 +4399,7 @@ class HomeController extends Controller
             $this_year = $this_year->lookup_name;
 
             $allowed = [];
-            $allProp = Residence::get();
+            $allProp = Residence::whereNull('status')->get();
             // $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
             foreach($allProp as $prop){
@@ -4442,7 +4442,7 @@ class HomeController extends Controller
                 $bookings = Booking::where('property_data_id', $propertyId)->where('year', $lookup->lookup_name)->with('users')->get();            
             }
 
-            $Residence = Residence::get();
+            $Residence = Residence::whereNull('status')->get();
 
             return view('admin.property_edit', ["headerTitle" => $head." Properties", "title" => $head." Properties", "propertyData" => $propertyData, "bookingData" => $bookings, "this_year" => $this_year, "Residence" => $Residence]);
         }else{
@@ -4844,7 +4844,7 @@ class HomeController extends Controller
                 $propertyData = Residence::where('id', $residenceId)->first();
             }
 
-            $allProperties = Residence::get();
+            $allProperties = Residence::whereNull('status')->get();
 
             // $curl = curl_init();
 
@@ -4925,6 +4925,7 @@ class HomeController extends Controller
             // "mda_id" => $request->mda_id,
             "company_reg" => $request->company_reg,
             'company_vat' => $request->company_vat,
+            "status" => $request->status == 0 ? null : $request->status,
         ];
 
         if($request->nsfas_booking_rate == null){
@@ -5148,7 +5149,7 @@ class HomeController extends Controller
         if(Auth::user()->role_lookup == 1){
 
             $room_types = RoomTypes::get();
-            $residences = Residence::get();
+            $residences = Residence::whereNull('status')->get();
             $property = Property::get();
 
             $roomDetails = [];
@@ -5217,7 +5218,7 @@ class HomeController extends Controller
                 $roomTypeData = RoomTypes::where('id', $id)->first();
             }
 
-            $residence = Residence::get();
+            $residence = Residence::whereNull('status')->get();
 
             $roomDetails = [];
             $propertyDetails = [];
@@ -5646,7 +5647,7 @@ class HomeController extends Controller
             $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
             $roomTypeId = $roomTypeData->room_map_slug;
 
-            $allResidences = Residence::get();
+            $allResidences = Residence::whereNull('status')->get();
             $allRoomTypes = RoomTypes::get();
 
 
@@ -5873,7 +5874,7 @@ class HomeController extends Controller
         $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
 
@@ -5993,7 +5994,7 @@ class HomeController extends Controller
         $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
         $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
@@ -7595,7 +7596,7 @@ class HomeController extends Controller
 
         $allowed = [];
 
-        $allProp = Residence::get();
+        $allProp = Residence::whereNull('status')->get();
         // $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
@@ -7685,7 +7686,7 @@ class HomeController extends Controller
 
     public function check_building_prefix(Request $request){
         $building = $request->building;
-        $allPrefixes = Residence::get();
+        $allPrefixes = Residence::whereNull('status')->get();
 
         $available = "true";
         foreach($allPrefixes as $prefix){
@@ -7889,7 +7890,7 @@ class HomeController extends Controller
         $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
         if($lookup && $lookup->lookup_name == "1"){
@@ -8139,7 +8140,7 @@ class HomeController extends Controller
         $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
         if($lookup && $lookup->lookup_name == "1"){
@@ -8462,7 +8463,7 @@ class HomeController extends Controller
                 /**  Convert Spreadsheet Object to an Array for ease of use  **/
                 $schdeules = $spreadsheet->getActiveSheet()->toArray();
 
-                $residence = Residence::get();
+                $residence = Residence::whereNull('status')->get();
                 $rooms = RoomTypes::get();
 
 
@@ -8544,7 +8545,7 @@ class HomeController extends Controller
         $lookups = Lookups::get();
 
         $allowed = [];
-        $allProp = Residence::get();
+        $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
 
         foreach($allProp as $prop){
@@ -8795,7 +8796,7 @@ class HomeController extends Controller
         // $roomTypeData = RoomTypes::where('id', $roomId)->first();
         // $roomTypeId = $roomTypeData->room_map_slug;
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
         foreach($allResidences as $res){
@@ -9127,13 +9128,13 @@ class HomeController extends Controller
     }
 
     public function all_properties(Request $request){
-        $allRes = Residence::get();
+        $allRes = Residence::whereNull('status')->get();
 
         return $allRes;
     }
 
     public function nsfas_properties(Request $request){
-        $allRes = Residence::get();
+        $allRes = Residence::whereNull('status')->get();
         $inSelected = InstitutionProperties::where("institution_id", $request->institStudy)->pluck('property_id')->toArray();
 
         return [$allRes, $inSelected];
@@ -9428,15 +9429,15 @@ class HomeController extends Controller
         $xlsx->saveAs('MDA download.xlsx');
     }
 
-    public function residence_delete($residence_id){
-        residence::where('id', $residence_id)->delete();
-        return redirect()->back();
-    }
+    // public function residence_delete($residence_id){
+    //     residence::where('id', $residence_id)->delete();
+    //     return redirect()->back();
+    // }
 
-    public function residence_restore($residence_id){
-        residence::withTrashed()->where('id', $residence_id)->restore();
-        return redirect()->back();
-    }
+    // public function residence_restore($residence_id){
+    //     residence::withTrashed()->where('id', $residence_id)->restore();
+    //     return redirect()->back();
+    // }
     
     
 

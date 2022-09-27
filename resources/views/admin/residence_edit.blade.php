@@ -95,6 +95,23 @@
             <input type="text" name="branch_code" id="branch_code" value="<?php if(!empty($propertyData)){echo $propertyData->branch_code;}?>">
         </div>
 
+
+        <div class="form-field" style="height:150px !important;">
+            <br/>
+            <hr/>
+            <br/>
+            <label>Status</label>
+            <select name="status" id='status'>
+                <option value="0" <?php if(!empty($propertyData) && ($propertyData->status == '0' || $propertyData->status == null)){echo "selected";}?>>Active</option>
+                <option value="1" <?php if(!empty($propertyData) && $propertyData->status == '1'){echo "selected";}?>>Inactive</option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <br/>
+            <hr/>
+        </div>
+
         <div class="form-field">
             <br/>
         </div>

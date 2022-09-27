@@ -82,7 +82,7 @@ class LookupsController extends Controller {
 
             $year_lookup = Lookups::where('group_id', '4')->first();
 
-            $allProperties = Residence::get();
+            $allProperties = Residence::whereNull('status')->get();
             $instProps = InstitutionProperties::where('institution_id', $lookupId)->pluck('property_id')->toArray();
 
             return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup, "allProperties" => $allProperties, "instProps" => $instProps]);
@@ -130,7 +130,7 @@ class LookupsController extends Controller {
 
             InstitutionProperties::where('institution_id', $request->lookupId)->delete();
             
-            $allProperties = Residence::get();
+            $allProperties = Residence::whereNull('status')->get();
             foreach($allProperties as $prop){
                 $propName = $prop->id."_prop";
                 if($request->$propName == '1'){
@@ -425,7 +425,7 @@ class LookupsController extends Controller {
 
     public function admin_updates_update_property_id(request $request){
         $allProperties = Property::get();
-        $allResidence = Residence::get();
+        $allResidence = Residence::whereNull('status')->get();
         $allBookings = Booking::get();
 
         foreach($allProperties as $property){
@@ -451,7 +451,7 @@ class LookupsController extends Controller {
     public function admin_updates_update_booking_code(Request $request){
         
         $allBookings = Booking::get();
-        $residence = Residence::get();
+        $residence = Residence::whereNull('status')->get();
 
         foreach($allBookings as $booking){
             

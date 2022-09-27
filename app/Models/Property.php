@@ -26,7 +26,8 @@ class Property extends Model
         'room_available',
         'user_id_room',
         'year',
-        'year_end'
+        'year_end',
+        'status',
     ];
 
     public function roomType(){

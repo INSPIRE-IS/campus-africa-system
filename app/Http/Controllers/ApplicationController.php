@@ -37,7 +37,7 @@ class ApplicationController extends Controller
             //
             $lookups = Lookups::get();
             $agent = new Agent();
-            $residences = Residence::get();
+            $residences = Residence::whereNull('status')->get();
     
     
             return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences]);
@@ -659,7 +659,7 @@ class ApplicationController extends Controller
         $roomTypeInfo = RoomTypes::where('property_id', $booking->property)->where('id', $booking->roomType)->first();
         $propertyTypeInfo = Residence::where('id', $booking->property)->first();
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
         $property = Residence::where('id', $booking->property)->pluck('residence')->first();
@@ -1165,7 +1165,7 @@ class ApplicationController extends Controller
         $this_year = $this_year->lookup_name;
 
         $lookups = Lookups::get();
-        $residences = Residence::get();
+        $residences = Residence::whereNull('status')->get();
         $user = User::where('id', Auth::user()->id)->first();
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
         $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
@@ -1314,7 +1314,7 @@ class ApplicationController extends Controller
         $roomTypeData = RoomTypes::where('id', $roomId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
 
-        $allResidences = Residence::get();
+        $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
 
@@ -1827,13 +1827,13 @@ class ApplicationController extends Controller
     }
 
     public function all_properties_online(Request $request){
-        $allRes = Residence::get();
+        $allRes = Residence::whereNull('status')->get();
 
         return $allRes;
     }
 
     public function nsfas_properties_online(Request $request){
-        $allRes = Residence::get();
+        $allRes = Residence::whereNull('status')->get();
         $inSelected = InstitutionProperties::where("institution_id", $request->institStudy)->pluck('property_id')->toArray();
 
         return [$allRes, $inSelected];
