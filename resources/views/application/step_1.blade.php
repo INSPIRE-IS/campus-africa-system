@@ -473,12 +473,14 @@
         if(isEmail($("#email").val())){
             $("#email").removeClass("fieldError")
             $("#email_error").addClass('hidden')
+
+            cecheckIDEmail();
         }else{
             $("#email").addClass("fieldError")
             $("#email_error").removeClass('hidden')
         }
 
-        cecheckIDEmail();
+        
     })
 
     $("#passportNo").on('keyup blur', function() {
