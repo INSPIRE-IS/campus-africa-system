@@ -2381,6 +2381,10 @@ class HomeController extends Controller
                         // dd($room);
     
                         $appliesTo = $room->acf->booking_fee_applies_to;
+
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                        }
     
                         if($room->slug == $roomName && $roomType == $request->roomType){
     
@@ -3683,6 +3687,10 @@ class HomeController extends Controller
 
                             $appliesTo = $room->acf->booking_fee_applies_to;
                             $deposit = $room->acf->price_from;
+
+                            if($room->acf->booking_fee_override !== ""){
+                                $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                            }
         
                             if($room->slug == $roomName && $roomType == $roomTypeNew){
         
@@ -4035,6 +4043,10 @@ class HomeController extends Controller
                                 $roomName = $room->slug;
                                 $appliesTo = $room->acf->booking_fee_applies_to;
                                 $deposit = $room->acf->price_from;
+
+                                if($room->acf->booking_fee_override !== ""){
+                                    $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                                }
             
                                 if($room->slug == $roomName && $roomType == $roomTypeNew){
             
@@ -5682,6 +5694,10 @@ class HomeController extends Controller
 
                             $appliesTo = $room->acf->booking_fee_applies_to;
 
+                            if($room->acf->booking_fee_override !== ""){
+                                $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                            }
+
                             if($room->slug == $roomName && $roomType == $request->roomType){
 
                                 if($room->acf->booking_fee_override !== ""){
@@ -5908,6 +5924,10 @@ class HomeController extends Controller
 
                         $appliesTo = $room->acf->booking_fee_applies_to;
 
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                        }
+
                         if($room->slug == $roomName && $roomType == $request->roomType){
 
                             if($room->acf->booking_fee_override !== ""){
@@ -6035,6 +6055,10 @@ class HomeController extends Controller
                             $roomName = $room->slug;
 
                             $appliesTo = $room->acf->booking_fee_applies_to;
+
+                            if($room->acf->booking_fee_override !== ""){
+                                $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                            }
 
                             if($room->slug == $roomName && $roomType == $booking->roomType){
 
@@ -7922,6 +7946,10 @@ class HomeController extends Controller
                         $roomName = $room->slug;
 
                         $appliesTo = $room->acf->booking_fee_applies_to;
+
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                        }
     
                         if($room->slug == $roomName && $roomType == $request->roomType){
     
@@ -8193,6 +8221,10 @@ class HomeController extends Controller
                         $roomName = $room->slug;
                         $appliesTo = $room->acf->booking_fee_applies_to;
                         $deposit = $room->acf->price_from;
+
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                        }
     
                         if($room->slug == $roomName && $roomType == $request->roomType){
     
@@ -8846,6 +8878,10 @@ class HomeController extends Controller
                         $deposit = $room->acf->price_from;
     
                         $appliesTo = $room->acf->booking_fee_applies_to;
+
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                        }
     
                         if($room->slug == $roomName && $roomType == $request->roomType){
     

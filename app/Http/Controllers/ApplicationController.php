@@ -709,6 +709,7 @@ class ApplicationController extends Controller
                                         
                     if($room->id == $roomTypeId){
                         $attributes = $room->acf->attributes;
+                        
     
                         foreach($attributes as $attr){
                             if($attr == "436"){
@@ -1349,6 +1350,10 @@ class ApplicationController extends Controller
                         $deposit = $room->acf->price_from;
     
                         $appliesTo = $room->acf->booking_fee_applies_to;
+
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_data['room_rate'] = $room->acf->booking_fee_override;
+                        }
     
                         if($room->slug == $roomName && $roomType == $request->roomType){
     

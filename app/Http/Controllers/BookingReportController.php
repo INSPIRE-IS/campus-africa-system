@@ -23,6 +23,10 @@ class BookingReportController extends Controller
     
     public function booking_summary(Request $request){
 
+        // $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+
+        // dd($jsonDataRooms);
+
         $residences = [];
         $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
