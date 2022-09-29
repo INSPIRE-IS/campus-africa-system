@@ -393,6 +393,30 @@ class RegisterController extends Controller
                 }
             }
 
+            if($bookingPrice == "0"){
+
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+    
+                StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update(["rob_10_fee" => 2]);
+    
+                UserFiles::create([
+                    'userUid'=> $user->id,
+                    'fileId' => 'proof_of_payment',
+                    'status' => 'Approved',
+                    'year' => $this_year,
+                ]);
+    
+                $actionFileData['userUid'] = $user->id;
+                $actionFileData['actionUserUid'] = $user->id;
+                $actionFileData['actionUserDisplayName'] = $userInfo->userFirstName;
+                $actionFileData['actionUserRole'] = 0;
+                $actionFileData['year'] = $this_year;
+                $actionFileData['action'] = "Booking Fee is R0";
+            
+                ActionList::create($actionFileData);
+            }
+
             $diff = 0;
             for($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')){
                 $diff++;
