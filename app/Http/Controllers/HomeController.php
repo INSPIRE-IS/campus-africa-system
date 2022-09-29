@@ -5175,6 +5175,10 @@ class HomeController extends Controller
                 foreach($jsonDataResidence as $res){
                     if($res->id == $room->acf->residence){
                         $booking_fee = $res->acf->booking_fee;
+
+                        if($room->acf->booking_fee_override !== ""){
+                            $booking_fee = $room->acf->booking_fee_override;
+                        }
                     }
                 }
                 array_push($roomDetails, (object)array("id" => $room->acf->residence, "slug" => $room->slug, "title" => $room->title->rendered, "roomId" => $room->id, "booking_fee" => $booking_fee, "price_from" => $room->acf->price_from, "applies_to" => $room->acf->booking_fee_applies_to));
