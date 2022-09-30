@@ -63,9 +63,7 @@
                             number exists - Please contact the building manager at <span id="activeBuildingName"></span> to
                             move this booking OR advise the student that they can login and change the
                             building</small></span>
-                    <span id="idNumber_InUse_old" class="hidden" style="color:red"><small>A previous booking with this ID
-                            number exists - <a href="" id="newBookingLink">click here</a> to create a new
-                            booking</small></span>
+                    <span id="idNumber_InUse_old" class="hidden" style="color:red"><small>A booking for the previous year with this ID number exists - <a href="" id="newBookingLink">click here</a> to create a new booking for the current year</small></span>
                 </label>
                 <input type="text" name="idNumber" id="idNumber" class="required">
             </div>
@@ -80,9 +78,9 @@
                             number exists - Please contact the building manager at <span id="activeBuildingNamePassport"></span> to
                             move this booking OR advise the student that they can login and change the
                             building</small></span>
-                    <span id="passport_InUse_old" class="hidden" style="color:red"><small>A previous booking with this passport
+                    <span id="passport_InUse_old" class="hidden" style="color:red"><small>A booking for the previous year with this Passport
                             number exists - <a href="" id="newBookingLinkPassport">click here</a> to create a new
-                            booking</small></span>
+                            booking for the current year</small></span>
                 </label>
                 <input type="text" name="passportNo" id="passportNo">
             </div>
