@@ -2507,13 +2507,14 @@
     })
 
     $("#changeBuildingType").on('click', function(){
-        if($("#propertyBuilding").val() == ""|| $("#roomTypeBuilding").val() == ""){
-            if($("#propertyBuilding").val() == ""){
+        
+        if($("#propertyBuilding").val() == null || $("#propertyBuilding").val() == "" || $("#roomTypeBuilding").val() == null || $("#roomTypeBuilding").val() == ""){
+            if($("#propertyBuilding").val() == "" || $("#propertyBuilding").val() == null){
                 $("#propertyBuilding").addClass('fieldError')
                 $("#propertyBuilding_error").removeClass('hidden')
             }
 
-            if($("#roomTypeBuilding").val() == ""){
+            if($("#roomTypeBuilding").val() == "" || $("#roomTypeBuilding").val() == null){
                 $("#roomTypeBuilding").addClass('fieldError')
                 $("#roomTypeBuilding_error").removeClass('hidden')
             }

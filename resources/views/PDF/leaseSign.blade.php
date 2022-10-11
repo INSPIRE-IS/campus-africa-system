@@ -37,10 +37,10 @@
         <table style="width:100%; margin-top:-20px; margin-top:-15px;">
             <tr>
                 <td style="text-align:right; padding-right:70px 20px;">
-                    <span style="font-size:20px;">{{$data->userFirstName}} {{$data->userLastname}}</span>
+                    <span style="font-size:20px;"><b>{{$data->userFirstName}} {{$data->userLastname}}</b></span>
                 </td>
                 <td style="text-align:left; padding-left:70px 20px;">
-                    <span style="font-size:20px;">@if($data->userNationality == "South Africa") {{$data->userId}} @else {{$data->userPassport}} @endif</span>
+                    <span style="font-size:20px;"><b>@if($data->userNationality == "South Africa") {{$data->userId}} @else {{$data->userPassport}} @endif</b></span>
                 </td>
             </tr>
             <tr>
@@ -68,7 +68,7 @@
 
                 <br/>
 
-                <li><strong>“Accommodation Period”</strong> means: the period commencing on {{$booking->lease_from_date}} at {{$booking->lease_from_time}} and will terminate on {{$booking->lease_to_date}} at {{$booking->lease_to_time}}, which period shall in all instances not exceed a maximum of 10 months (i.e. a student academic year).</li>
+                <li><strong>“Accommodation Period”</strong> means: the period commencing on <b>{{$booking->lease_from_date}} at {{$booking->lease_from_time}}</b> and will terminate on <b>{{$booking->lease_to_date}} at {{$booking->lease_to_time}}</b>, which period shall in all instances not exceed a maximum of 10 months (i.e. a student academic year).</li>
 
                 <br/>
 
@@ -163,7 +163,7 @@
             <span style="font-weight:bold; font-size:14px;">3. Payment of Accommodation and Student Meal Fees </span>
 
                 <ol type="a" style="text-laign:left; font-size:14px;">
-                    <li>The Student agrees to pay the Owner, the sum of R{{$paymentBooking->monthly_rental}} as a monthly fee for the non-exclusive right to make use of the facilities at the residence and Single / Shared Room.
+                    <li>The Student agrees to pay the Owner, the sum of <b>R{{$paymentBooking->monthly_rental}}</b> as a monthly fee for the non-exclusive right to make use of the facilities at the residence and Single / Shared Room.
                          <!-- and a further R ??? as an optional monthly fee for the provision of Student Meals on a daily basis -->
                         </li>
                     <br/>
@@ -189,16 +189,16 @@
             <span style="font-weight:bold; font-size:14px;">4.	Administration Fee</span>
 
             <ol type="a" style=" text-laign:left; font-size:14px;">
-                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of R
+                <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of <b>R
                 @if($paymentBooking->rob_loan_waived == '2') 0 @else @if(($data->studentType == "Cash / Direct") || ($data->studentType == "Bursary" && $data->nsfas_bursar !== 1)) {{$paymentBooking->loan_admin_fee}} @else 0 @endif @endif
-                    . </li>
+                </b>. </li>
                 <br/>
             </ol>
 
             <span style="font-weight:bold; font-size:14px;">5.	The Security Deposit </span>
 
             <ol type="a" style="text-laign:left; font-size:14px;">
-                <li>The Student agrees to deposit with the Owner the amount of R @if($paymentBooking->rob_deposit_waived == '2') 0 @else @if(($data->studentType == "Cash / Direct") || ($data->studentType == "Bursary" && $data->nsfas_bursar !== 1)) {{$paymentBooking->deposit}} @else 0 @endif @endif month fee as a security deposit, payable to the Owner subsequent to the signature date hereto but prior to the commencement of the accommodation period, which security deposit shall be held by the Owner against any breach or non-performance of this agreement or any part hereof by the Student, including but not limited to the application of the security deposit by the Owner, in whole or part, in meeting any payment due by the Student to the Owner during the Accommodation Period or subsequent to the termination of this agreement, or against any damage to the Accommodation or any part of the Owner’s property which has been caused by the Student or by anyone who the Student allows to access to the Owner’s property. </li>
+                <li>The Student agrees to deposit with the Owner the amount of <b>R @if($paymentBooking->rob_deposit_waived == '2') 0 @else @if(($data->studentType == "Cash / Direct") || ($data->studentType == "Bursary" && $data->nsfas_bursar !== 1)) {{$paymentBooking->deposit}} @else 0 @endif @endif </b>month fee as a security deposit, payable to the Owner subsequent to the signature date hereto but prior to the commencement of the accommodation period, which security deposit shall be held by the Owner against any breach or non-performance of this agreement or any part hereof by the Student, including but not limited to the application of the security deposit by the Owner, in whole or part, in meeting any payment due by the Student to the Owner during the Accommodation Period or subsequent to the termination of this agreement, or against any damage to the Accommodation or any part of the Owner’s property which has been caused by the Student or by anyone who the Student allows to access to the Owner’s property. </li>
                 <br/>
 
                 <li>The Student shall not deduct the security deposit or any part thereof from the accommodation fees payable during any month of the agreement. </li>

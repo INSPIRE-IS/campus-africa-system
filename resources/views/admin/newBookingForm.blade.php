@@ -72,7 +72,7 @@
                 </select>
             </div>
 
-            <div class="form-field" id="idField">
+            <div class="form-field <?php if ($user->userNationality == "International") {echo 'hidden';} ?>" id="idField">
                 <label>I.D Number *
                     <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span>
                     <span id="idNumber_InUse_cancelled" class="hidden" style="color:red"><small>a CANCELLED booking with
@@ -83,13 +83,13 @@
                             move this booking OR advise the student that they can login and change the
                             building</small></span>
                 </label>
-                <input type="text" name="idNumber" id="idNumber" class="required" value="<?php echo $user->userId; ?>">
+                <input type="text" name="idNumber" id="idNumber" class="<?php if ($user->userNationality != "International") {echo 'required';} ?>" value="<?php echo $user->userId; ?>">
             </div>
 
-            <div class="form-field hidden" id="passportField">
+            <div class="form-field <?php if ($user->userNationality != "International") {echo 'hidden';} ?>" id="passportField">
                 <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
-                <input type="text" name="passportNo" id="passportNo" value="<?php echo $user->userPassport; ?>">
+                <input type="text" name="passportNo" id="passportNo" class="<?php if ($user->userNationality == "International") {echo 'required';} ?>" value="<?php echo $user->userPassport; ?>">
             </div>
 
             <div class="form-field">
