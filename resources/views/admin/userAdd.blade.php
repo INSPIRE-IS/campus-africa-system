@@ -356,6 +356,8 @@
             document.getElementById('role_non_funding').checked = true;
             document.getElementById('role_funding').checked = true;
             document.getElementById('role_app_lease').checked = true;
+            document.getElementById('role_view_booking_summary').checked = true;
+            document.getElementById('role_mda_report').checked = true;
             // document.getElementById('role_approve_waive').checked = true;
             
         }

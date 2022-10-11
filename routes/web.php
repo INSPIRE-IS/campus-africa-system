@@ -114,6 +114,7 @@ Route::get('/admin-updates/update-booking-code', [LookupsController::class, 'adm
 Route::get('/admin-updates/update-cancelled', [LookupsController::class, 'admin_updates_update_cancelled']);
 Route::get('/admin-updates/update-new-students', [LookupsController::class, 'admin_updates_update_new_students']);
 Route::get('/admin-updates/payments-update', [LookupsController::class, 'admin_updates_payments_update']);
+Route::get('/admin-updates/name-case-update', [LookupsController::class, 'admin_updates_name_case_update']);
 
 
 

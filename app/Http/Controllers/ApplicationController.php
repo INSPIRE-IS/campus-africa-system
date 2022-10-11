@@ -1184,8 +1184,8 @@ class ApplicationController extends Controller
         $this_year = $this_year->lookup_name;
         
         $updateData = [
-            'First Name|userFirstName' => $request->firstName,
-            'Last Name|userLastname' => $request->lastName,
+            'First Name|userFirstName' => ucwords(strtolower($request->firstName)),
+            'Last Name|userLastname' => ucwords(strtolower($request->lastName)),
             'Title|userTitle' => $request->title,
             'Cellphone Number|userCell' => $request->cell_no,
             'Cellphone Country Code|userCellCode' => $request->userCellCode,
@@ -1228,8 +1228,8 @@ class ApplicationController extends Controller
             'userId' => $userInfo->userId,
             'userNationality' => $userInfo->userNationality,
             'userPassport' => $userInfo->userPassport,
-            'userFirstName' => $request->firstName,
-            'userLastname' => $request->lastName,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
+            'userLastname' => ucwords(strtolower($request->lastName)),
             'userTitle' => $request->title,
             'userCell' => $request->cell_no,
             'userCellCode' => $request->userCellCode,

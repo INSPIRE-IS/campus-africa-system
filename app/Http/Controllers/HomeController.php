@@ -1863,8 +1863,8 @@ class HomeController extends Controller
         }       
 
         User::where('id', $request->userUid)->update([
-            "userFirstName" => $request->firstName,
-            "userLastname" => $request->lastName,
+            "userFirstName" => ucwords(strtolower($request->firstName)),
+            "userLastname" => ucwords(strtolower($request->lastName)),
             // "userTitle" => $request->title,
             // "userDob" => $request->dob,
             // "userCell" => $request->cell_no,
@@ -2016,8 +2016,8 @@ class HomeController extends Controller
         }
 
         User::where('id', $request->userUid)->update([
-            'userFirstName' => $request->firstName,
-            'userLastname' => $request->lastName,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
+            'userLastname' => ucwords(strtolower($request->lastName)),
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,
@@ -2231,8 +2231,8 @@ class HomeController extends Controller
 
         $userInfo = StudentsInfo::create([
             'userUid' => $user->id,
-            'userFirstName' => $request->firstName,
-            'userLastname' => $request->lastName,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
+            'userLastname' => ucwords(strtolower($request->lastName)),
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,
@@ -2690,8 +2690,8 @@ class HomeController extends Controller
 
         $newUser = User::create([
             "name" => $request->firstName,
-            "userFirstName" => $request->firstName,
-            "userLastname" => $request->lastName,
+            "userFirstName" => ucwords(strtolower($request->firstName)),
+            "userLastname" => ucwords(strtolower($request->lastName)),
             // "userTitle" => $request->title,
             // "userDob" => $request->dob,
             // "userCell" => $request->cell_no,
@@ -8606,8 +8606,8 @@ class HomeController extends Controller
     public function new_booking(Request $request){
 
         $updateData = [
-            'First Name|userFirstName' => $request->firstName,
-            'Last Name|userLastname' => $request->lastName,
+            'First Name|userFirstName' => ucwords(strtolower($request->firstName)),
+            'Last Name|userLastname' => ucwords(strtolower($request->lastName)),
             'Title|userTitle' => $request->title,
             'Date of Birth|userDob' => $request->dob,
             'Cellphone Number|userCell' => $request->cell_no,
@@ -8692,8 +8692,8 @@ class HomeController extends Controller
 
         $newStudentData = [
             'userUid' => $request->userUid,
-            'userFirstName' => $request->firstName,
-            'userLastname' => $request->lastName,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
+            'userLastname' => ucwords(strtolower($request->lastName)),
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,

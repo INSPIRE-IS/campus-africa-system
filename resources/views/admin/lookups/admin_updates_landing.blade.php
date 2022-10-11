@@ -11,6 +11,8 @@
             <button style="float: none;" type="button" id="newStudents" class="detailsChange" >New Students Table</button>
 
             <button style="float: none;" type="button" id="newPayments" class="detailsChange" >Payments Update</button>
+
+            <button style="float: none;" type="button" id="nameCase" class="detailsChange" >Name Case Update</button>
         </div>
 
         
@@ -197,6 +199,36 @@
 
                     success: function (data) {
                         $("#updatePropIds").empty().append('Properties ID Update');
+
+                        Swal.fire(
+                            'Success',
+                            'Data update complete',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
+
+    $("#nameCase").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#nameCase").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/admin-updates/name-case-update",
+
+                    success: function (data) {
+                        $("#nameCase").empty().append('Name Case Update');
 
                         Swal.fire(
                             'Success',

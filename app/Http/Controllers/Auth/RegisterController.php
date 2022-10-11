@@ -84,10 +84,10 @@ class RegisterController extends Controller
     {
         return User::create([
             'name' => $data['firstName'],
-            'userFirstName' => $data['firstName'],
+            'userFirstName' => ucwords(strtolower($data['firstName'])),
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'userLastname' => $data['lastName'],
+            'userLastname' => ucwords(strtolower($data['lastName'])),
             'userTitle' => $data['title'],
             'userDob' => $data['dob'],
             'userCell' => $data['cell_no'],
@@ -138,8 +138,8 @@ class RegisterController extends Controller
 
         $userInfo = StudentsInfo::create([
             'userUid' => $user->id,
-            'userFirstName' => $request->firstName,
-            'userLastname' => $request->lastName,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
+            'userLastname' => ucwords(strtolower($request->lastName)),
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,
@@ -466,10 +466,10 @@ class RegisterController extends Controller
     protected function registration_step_one_update(Request $request){
         return User::where('id', $request->userUid)->update([
             'name' => $request->firstName,
-            'userFirstName' => $request->firstName,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'userLastname' => $request->lastName,
+            'userLastname' => ucwords(strtolower($request->lastName)),
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,
