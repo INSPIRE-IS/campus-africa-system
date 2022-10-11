@@ -25,8 +25,8 @@ class ProfileController extends Controller
     public function update(Request $request){
         
         User::where('id', $request->userUid)->update([
-            'userFirstName' => $request->firstName,
-            'userLastname' => $request->lastName,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
+            'userLastname' => ucwords(strtolower($request->lastName)),
             'userTitle' => $request->title,
             'userDob' => $request->dob,
             'userCell' => $request->cell_no,

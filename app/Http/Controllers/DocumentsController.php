@@ -177,8 +177,8 @@ class DocumentsController extends Controller {
             ];
 
             $updateData = [
-                'userFirstName' => $request->userFirstName,
-                'userLastname' => $request->userLastname,
+                'userFirstName' => ucwords(strtolower($request->userFirstName)),
+                'userLastname' => ucwords(strtolower($request->userLastname)),
                 'userDob' => $request->userDob,
                 'userId' => $request->userId,
                 'userNationality' => $request->nationality,

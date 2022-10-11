@@ -715,8 +715,8 @@ class LookupsController extends Controller {
             StudentsInfo::create([
                 'userUid' => $user->id,
                 'bookingId' => $user->bookingRef,
-                'userFirstName' => $user->userFirstName,
-                'userLastname' => $user->userLastname,
+                'userFirstName' => ucwords(strtolower($user->userFirstName)),
+                'userLastname' => ucwords(strtolower($user->userLastname)),
                 'userTitle' => $user->userTitle,
                 'userDob' => $user->userDob,
                 'userCellCode' => $user->userCellCode,
@@ -1024,6 +1024,21 @@ class LookupsController extends Controller {
                 BookingPayment::where('id', $payment->id)->update(["total_funded" => $funded, "funded_monthly" => $monthlyFunded, "total_top_up" => $topup]);
             }
 
+        }
+    }
+
+    public function admin_updates_name_case_update(){
+        
+        $allUser = User::get();
+
+        foreach($allUser as $user){
+            User::where('id', $user->id)->update(['userFirstName' => ucwords(strtolower($user->userFirstName)), 'userLastname' => ucwords(strtolower($user->userLastname))]);
+        }
+
+        $allStudents = StudentsInfo::get();
+
+        foreach($allStudents as $user){
+            StudentsInfo::where('id', $user->id)->update(['userFirstName' => ucwords(strtolower($user->userFirstName)), 'userLastname' => ucwords(strtolower($user->userLastname))]);
         }
     }
 }
