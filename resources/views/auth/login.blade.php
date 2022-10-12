@@ -8,7 +8,7 @@
 
         <nav class="navBar">
             <div class="leftMenu">
-                <img src="/images/logo/Campus_Africa_Logo.png" alt="Campus Africa Logo" width="92" height="91">
+                <a href="https://campusafrica.co.za"><img src="/images/logo/Campus_Africa_Logo.png" alt="Campus Africa Logo" width="92" height="91"></a>
             </div>
 
             <div class="rightMenu">

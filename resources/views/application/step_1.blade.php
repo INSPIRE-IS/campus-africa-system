@@ -219,7 +219,8 @@
 <input type="hidden" id="firstRoom" value="" />
 <!-- <div class="footerClearfix"></div>
 <div class="footerClearfix"></div>
-<div class="footerClearfix"></div> -->
+ -->
+ <div class="footerClearfix"></div>
 
 
 <script>

@@ -29,6 +29,8 @@ use App\Http\Controllers\MailReminder;
 
 Route::get('/', [HomeController::class, 'index']);
 
+Route::get('/terms', [LoginController::class, 'terms']);
+
 // Route::get('/', [LoginController::class, 'login']);
 // Route::post('/login', [LoginController::class, 'login']);
 Route::get('/logout', [LoginController::class, 'logout']);
