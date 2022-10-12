@@ -4,6 +4,7 @@
 
 <div class="container">
     <br/>
+    <a href="/manage-properties"><button style="float: none; margin-left:0px;" type="button" class="detailsChange" >Back to Manage Properties</button></a>
     <h1>Imports</h1>
 
     <br/><br/>
