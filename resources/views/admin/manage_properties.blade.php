@@ -9,7 +9,7 @@
 <div class="container">
     <br/>
     <button style="float: none;" type="button" id="exportAllBeds" class="detailsChange" >Export All beds</button>
-    <div class="hidden"><a href="" download id="downloadLink"><button type="button" id="downloadBtn">Download</button></a></div>
+    <div class="hidden"><a href="" download id="downloadLinkAll"><button type="button" id="downloadBtnAll">Download</button></a></div>
     <button style="float: none;" type="button" id="exportBeds" class="detailsChange" >Export Allocated Bed Codes & waitlist</button>
     <div class="hidden"><a href="" download id="downloadLinkBed"><button type="button" id="downloadBtnBeds">Download</button></a></div>
     <a href="/room-types"><button type="button" class="detailsChange" >Room Types</button></a>
@@ -253,7 +253,7 @@
         
         $.ajax({
             type: "post",
-            url: "/download-beds",
+            url: "/download-beds-all",
             data: {
                 property: $("#property").val(),
                 year: $("#year").val(),
@@ -261,9 +261,9 @@
 
             success: function (data) {
 
-                $("#downloadLink").attr("href", "/"+data)
+                $("#downloadLinkAll").attr("href", "/"+data)
                 $("#exportAllBeds").empty().append('Export All beds')
-                $("#downloadBtn").click();
+                $("#downloadBtnAll").click();
             },
         });
 
