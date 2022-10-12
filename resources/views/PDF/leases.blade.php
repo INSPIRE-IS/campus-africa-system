@@ -128,6 +128,9 @@
                 <li><span style="margin-left:-20px;">l. </span>The expiration or termination of this agreement shall not affect such of the provisions of this agreement as expressly provide that they will operate after any such expiration or termination or that of necessity must continue to have effect after such expiration or termination, notwithstanding that the clauses themselves do not expressly provide for this;  </li>
                 <br/>
 
+                <li><span style="margin-left:-20px;">m. </span><strong>"POPIA”</strong> means the Protection of Personal Information Act, No 4 of 2013; </li>
+                <br/>
+
             </ol>
 
             <span style="font-weight:bold; font-size:14px;">2. Nature of Agreement</span>
@@ -484,6 +487,30 @@
                 <li>No extension of time or indulgence must be interpreted as a waiver of any right in terms of this agreement that one party may have against the other. </li>
                 <br/>
                 <li>The failure of either party to comply with any non-material provision of this lease will not excuse the other party from performing its obligations fully and on time. </li>
+            </ol>
+            <br/>
+            <span style="font-weight:bold; font-size:14px;">15. Protection of Personal Information Act </span>
+            <br/>
+            <ol type="a" style=" text-laign:left; font-size:14px;">
+                <li>The Tenant:</li>
+                <br/>
+                <ol type="i" style="font-size:14px;">
+                    <li>confirms that the Landlord will, in the course of this Agreement, hold “personal information” of the Tenant’s as defined in section 1 of POPIA;</li>
+                    <br/>
+                    <li>grants their express consent under section 27 of POPIA, that the Landlord may have access to the Tenant’s personal information held for the express purpose of:</li>
+                    <ol type="a" style=" text-laign:left; font-size:14px;">
+                        <li>processing their application for student accommodation;</li>
+                        <li>conducting any credit searches against the Tenant with any recognised credit bureau.</li>
+                    </ol>
+                    <br/>
+                    <li>on the expiry of this Agreement, the Tenant expressly requests that:</li>
+                    <ol type="a" style=" text-laign:left; font-size:14px;">
+                        <li>the Landlord releases any personal information pertaining to the Tenant to the Tenant;</li>
+                        <li>stop using, processing or accessing the Tenant’s personal information;</li>
+                        <li>destroy any personal information regarding the Tenant and held by the Landlord, save and to the extent that such information may be required to be held by the Landlord in terms of any law.</li>
+                    </ol>
+                </ol>
+                <br/>
             </ol>
 
             <footer>
