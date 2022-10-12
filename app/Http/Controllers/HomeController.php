@@ -8510,16 +8510,26 @@ class HomeController extends Controller
                     if($i > 0){
                         // $beds[0]
 
+                        $property = [];
+
                         foreach($residence as $res){
                             if(strtoupper($res->residence) == strtoupper($beds[0])){
                                 $property['residence'] = $res->id;
                             }
                         }
 
+                        if(empty($property) || $property['residence'] == null || $property['residence'] == ""){
+                            return ["error", "Residence ".$beds[0]." not found"];
+                        }
+
                         foreach($rooms as $room){
                             if(strtoupper($room->name) == strtoupper($beds[1]) && $room->property_id == $property['residence']){
                                 $property['room_type'] = $room->id;
                             }
+                        }
+
+                        if(empty($property) || !array_key_exists('room_type', $property) || $property['room_type'] == null || $property['room_type'] == ""){
+                            return ["error", "Room Type ".$beds[1]." not found"];
                         }
 
                         $floor = "";

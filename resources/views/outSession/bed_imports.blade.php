@@ -34,9 +34,18 @@
                     this.on("sending", function(file, xhr, formData) {
                         formData.append("_token", "{{ csrf_token() }}")
                     });
-                    this.on("complete", function (file) {
+                    this.on("complete", function (file, response) {
                         if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
                             // location.reload();
+                            let response = JSON.parse(file.xhr.responseText)
+
+                            if(response[0] == "error"){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response[1],
+                                })
+                            }
                         };
                     });
                 }
