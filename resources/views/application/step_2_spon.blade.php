@@ -141,6 +141,8 @@
 
 </div>
 
+<div class="footerClearfix"></div>
+
 
 <script>
 

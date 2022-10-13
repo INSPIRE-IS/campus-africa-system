@@ -2023,6 +2023,8 @@ input:read-only {
 }
 
 @media only screen and (max-width: 1170px) {
+
+    .footerImgs{margin-top:200px;}
     .cards {
         .customWhiteCard {
             .actionItemList,
@@ -2306,6 +2308,8 @@ input:read-only {
 }
 
 @media only screen and (max-width: 850px) {
+    .footerImgs{margin-top:450px;}
+    
     #fullNavbar {
         height: 120px !important;
     }
@@ -2361,6 +2365,9 @@ input:read-only {
       }
     .footerRights{
         margin-top:450px !important;
+    }
+    .thisRight{
+        margin-top:0px !important
     }
     #studentAddOther{
         margin-top:20px;
@@ -2773,6 +2780,11 @@ input:read-only {
 
     .form-card .form-field {
         width: 100%;
+    }
+
+    .footerImgs{
+        margin-top:530px;
+        flex-direction: column;
     }
 }
 
@@ -3245,4 +3257,10 @@ input:read-only {
 .homeSection{
     padding-left:6%; 
     width:19%
+}
+
+.footerImgs{
+    display:flex;
+    align-items: center; 
+    justify-content: center;
 }

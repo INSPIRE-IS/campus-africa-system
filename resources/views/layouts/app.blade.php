@@ -94,7 +94,19 @@
         <div class="footerClearfix"></div>
         <div class="container">
             <br/>
-            <p class="footerRights">Campus Africa - All Right Reserved</p>
+            <div class="footerImgs">
+                <img src="/images/footer/PayGate-Plus-logo.png" alt="Facebook" height="43" style="margin: 5px;">
+                <img src="/images/footer/PayGate-Payment-Method-Logo-SiD-Secure-EFT.png" alt="Facebook" height="43" style="margin: 5px;">
+                <img src="/images/footer/PayGate-Card-Brand-Logo-MasterCard.png" alt="Facebook" height="43" style="margin: 5px;">
+                <img src="/images/footer/MasterCard-SecureCode.png" alt="Facebook" height="43" style="margin: 5px;">
+                <img src="/images/footer/PayGate-Payment-Method-Logo-American-Express.png" alt="Facebook" height="43" style="margin: 5px;">
+                <img src="/images/footer/Visa.png" alt="Facebook" height="43" style="margin: 5px;">
+                <img src="/images/footer/Verified-by-Visa.png" alt="Facebook" height="43" style="margin: 5px;">
+            </div>
+            <div class="flex" style="align-items: center; justify-content: center">
+                <a href="/terms"><small class="footerRights" style="font-size:14px;">Terms and Conditions</small></a>
+            </div>
+            <p class="footerRights thisRight">Campus Africa - All Right Reserved</p>
         </div>
     </footer>
 

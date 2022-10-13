@@ -9,9 +9,11 @@
 <div class="container">
     <br/>
     <button style="float: none;" type="button" id="exportAllBeds" class="detailsChange" >Export All beds</button>
-    <div class="hidden"><a href="" download id="downloadLink"><button type="button" id="downloadBtn">Download</button></a></div>
-    <button style="float: none;" type="button" id="exportBeds" class="detailsChange" >Export Allocated Bed Codes & waitlist</button>
-    <div class="hidden"><a href="" download id="downloadLinkBed"><button type="button" id="downloadBtnBeds">Download</button></a></div>
+    <div class="hidden"><a href="" download id="downloadLinkAll"><button type="button" id="downloadBtnAll">Download</button></a></div>
+
+    <a href="/bed_import"><button style="float: none;" type="button" class="detailsChange" >Import New beds</button></a>
+    <!-- <button style="float: none;" type="button" id="exportBeds" class="detailsChange" >Export Allocated Bed Codes & waitlist</button> -->
+    <!-- <div class="hidden"><a href="" download id="downloadLinkBed"><button type="button" id="downloadBtnBeds">Download</button></a></div> -->
     <a href="/room-types"><button type="button" class="detailsChange" >Room Types</button></a>
     <a href="/properties-info"><button type="button" class="detailsChange" >Residence Info</button></a>
     <a href="/property/edit/0"><button type="button" class="detailsChange" >Add New</button></a>
@@ -253,7 +255,7 @@
         
         $.ajax({
             type: "post",
-            url: "/download-beds",
+            url: "/download-beds-all",
             data: {
                 property: $("#property").val(),
                 year: $("#year").val(),
@@ -261,33 +263,33 @@
 
             success: function (data) {
 
-                $("#downloadLink").attr("href", "/"+data)
+                $("#downloadLinkAll").attr("href", "/"+data)
                 $("#exportAllBeds").empty().append('Export All beds')
-                $("#downloadBtn").click();
+                $("#downloadBtnAll").click();
             },
         });
 
     })
 
-    $("#exportBeds").on('click', function(){
-        $("#exportBeds").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+    // $("#exportBeds").on('click', function(){
+    //     $("#exportBeds").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
         
-        $.ajax({
-            type: "post",
-            url: "/download-bed-codes",
-            data: {
-                property: $("#property").val(),
-                year: $("#year").val(),
-            },
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/download-bed-codes",
+    //         data: {
+    //             property: $("#property").val(),
+    //             year: $("#year").val(),
+    //         },
 
-            success: function (data) {
+    //         success: function (data) {
 
-                $("#downloadLinkBed").attr("href", "/"+data)
-                $("#exportBeds").empty().append('Export Allocated Bed Codes & waitlist')
-                $("#downloadBtnBeds").click();
-            },
-        });
-    })
+    //             $("#downloadLinkBed").attr("href", "/"+data)
+    //             $("#exportBeds").empty().append('Export Allocated Bed Codes & waitlist')
+    //             $("#downloadBtnBeds").click();
+    //         },
+    //     });
+    // })
 </script>
 
 

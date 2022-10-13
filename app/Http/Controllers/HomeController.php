@@ -8510,10 +8510,16 @@ class HomeController extends Controller
                     if($i > 0){
                         // $beds[0]
 
+                        $property = [];
+
                         foreach($residence as $res){
                             if(strtoupper($res->residence) == strtoupper($beds[0])){
                                 $property['residence'] = $res->id;
                             }
+                        }
+
+                        if(empty($property) || $property['residence'] == null || $property['residence'] == ""){
+                            return ["error", "Residence ".$beds[0]." not found"];
                         }
 
                         foreach($rooms as $room){
@@ -8522,16 +8528,34 @@ class HomeController extends Controller
                             }
                         }
 
+                        if(empty($property) || !array_key_exists('room_type', $property) || $property['room_type'] == null || $property['room_type'] == ""){
+                            return ["error", "Room Type ".$beds[1]." not found"];
+                        }
+
+                        $floor = "";
+
+                        if(substr($beds[4], -1) == "1" && (floatval($beds[4]) < 10 || floatval($beds[4]) > 20)){
+                            $floor = $beds[4]."ST";
+                        }else if(substr($beds[4], -1) == "2" && (floatval($beds[4]) < 10 || floatval($beds[4]) > 20)){
+                            $floor = $beds[4]."ND";
+                        }else if(substr($beds[4], -1) == "3" && (floatval($beds[4]) < 10 || floatval($beds[4]) > 20)){
+                            $floor = $beds[4]."RD";
+                        }else if(is_numeric($beds[4])){
+                            $floor = $beds[4]."TH";
+                        }else{
+                            $floor = $beds[4];
+                        }
+
                         $property['meta_info_1'] = $beds[2];
                         $property['meta_info_2'] = $beds[3];
-                        $property['floor'] = $beds[4];
+                        $property['floor'] = $floor;
                         $property['unit'] = $beds[5];
                         $property['room'] = $beds[6];
                         $property['bed'] = $beds[7];
                         $property['bed_code'] = $beds[8];
                         $property['inventory'] = $beds[9];
                         $property['year'] = $beds[10];
-                        $property['year_end'] = $beds[11];
+                        $property['year_end'] = $beds[11] == "" || $beds[11] == null ? "0" : $beds[11];
 
                         Property::create($property);
 
