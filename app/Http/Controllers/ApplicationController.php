@@ -1427,12 +1427,12 @@ class ApplicationController extends Controller
         $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
 
         // $booking = Booking::create($booking_data);
-        $booking_search = Booking::where('userId', $request->userUid)->where('year', $request->year)->first();
+        $booking_search = Booking::where('userId', Auth::user()->id)->where('year', $request->year)->first();
 
         if(empty($booking_search)){
             $booking = Booking::create($booking_data);
         }else{
-            Booking::where('userId', $request->userUid)->where('year', $request->year)->update($booking_data);
+            Booking::where('userId', Auth::user()->id)->where('year', $request->year)->update($booking_data);
             $booking = $booking_search;
         }
 
