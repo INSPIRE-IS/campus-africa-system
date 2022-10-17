@@ -65,7 +65,7 @@
                 <th>Bed Code</th>
                 <th>Inventory</th>
                 <th>Room Type</th>
-                <th>2022 Rate</th>                
+                <!-- <th>2022 Rate</th>                 -->
                 <th style="width: 95px">Year</th>
                 <th>Available</th>
             </tr> 
@@ -102,7 +102,7 @@
                     }
                 },
                 { "data": "room_type" },
-                { "data": "room_rate" },
+                // { "data": "room_rate" },
                 { 
                     "data": "year",
                     "render": function( data, type, row ) {
