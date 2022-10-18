@@ -917,6 +917,11 @@
 
     })
 
+    $("#payment_type").on('change', function(){
+        $("#payment_method_detail").removeClass("required")
+        $("#payment_transaction_id").removeClass("required")
+    })
+
     function runMDA(){
 
         // $("#rerun").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
