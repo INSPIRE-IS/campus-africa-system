@@ -1275,15 +1275,15 @@ class ApplicationController extends Controller
             $user = StudentsInfo::create($newStudentData);
 
             ActionList::create([
-                "userUid" => $request->userUid,
+                "userUid" => Auth::user()->id,
                 "action" => "Created a new Booking ",
                 "actionUserUid" => Auth::user()->id,
-                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserDisplayName" => $request->firstName,
                 "actionUserRole" => Auth::user()->userRole,
                 "year" => $request->year,
             ]);
         }else{
-            $user = StudentsInfo::where('userUid', $request->userUid)->where('year', $request->year)->update($newStudentData);
+            $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $request->year)->update($newStudentData);
         }
 
         User::where('id', $request->userUid)->update([

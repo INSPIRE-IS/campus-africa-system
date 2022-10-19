@@ -58,20 +58,58 @@
                     </td>
                     
                         @if($file->status == 'None')
-                            <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
-                            <td>
-                                <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
-                                    <span class="text">Upload</span>
-                                    @if (!$agent->isMobile())
-                                        <i class="fas fa-file-upload" ></i>
-                                    @endif
-                                    
-                                </label>
-                                </h3>
-                                <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
-                                </td>
+                          @if($file->fileId == 'proof_of_payment')
+                            
+     
+                                <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
+                                <td>
+                                  <div id="paymentSection">
+                                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" onClick="paymentRef()">
+                                        <span class="text">Upload</span>
+                                        @if (!$agent->isMobile())
+                                            <i class="fas fa-file-upload" ></i>
+                                        @endif
+                                        
+                                    </label>
+                                  </div>
+                                    </h3>
+                                    <!-- <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/> -->
+                                    </td>
+                              @else
+                                <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
+                                <td>
+                                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
+                                        <span class="text">Upload</span>
+                                        @if (!$agent->isMobile())
+                                            <i class="fas fa-file-upload" ></i>
+                                        @endif
+                                        
+                                    </label>
+                                    </h3>
+                                    <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                                    </td>
+                                @endif
                         @elseif($file->status == 'Rejected')
-                            <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
+
+                        @if($file->fileId == 'proof_of_payment')
+                            
+     
+                                <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
+                                <td>
+                                  <div id="paymentSection">
+                                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" onClick="paymentRef()">
+                                        <span class="text">Upload</span>
+                                        @if (!$agent->isMobile())
+                                            <i class="fas fa-file-upload" ></i>
+                                        @endif
+                                        
+                                    </label>
+                                  </div>
+                                    </h3>
+                                    <!-- <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/> -->
+                                    </td>
+                              @else
+                              <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
                             <td>
                                 <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
                                     <span class="text">Upload</span>
@@ -83,6 +121,8 @@
                                 </h3>
                                 <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
                                 </td>
+                              @endif
+                            
                         @elseif($file->status == 'Uploaded')
                             <td><span class="flex"><div class="pendingRobot"></div> &nbsp;&nbsp; Pending Approval</span></td>
                             <td>
@@ -156,6 +196,40 @@ $.ajaxSetup({
                 }
             },
         });
+    }
+
+    function paymentRef(){
+        swal.fire({
+                title: 'Please enter the Payment Reference you used:',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+            }).then((result) => {
+                if (result.isConfirmed && result.value !== "") {
+                    $("#booking_payment").empty().append(result.value);
+
+                    $.ajax({
+                        type: "post",
+                        url: "/UpdatePaymentRef",
+                        data: {
+                            bookingId: "{{$user->bookingId}}",
+                            reason: result.value
+                        },
+
+                        success: function (data) {
+
+                            $("#paymentSection").empty().append('<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload">  <span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" hidden onChange="UploadDocument(\'proof_of_payment\')"/>');
+
+                            $("#proof_of_payment").click();
+
+                        },
+                    });
+                }
+            })
     }
   </script>
 
