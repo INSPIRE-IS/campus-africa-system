@@ -31,6 +31,7 @@ use App\Models\BookingPayment;
 use App\Models\StudentsInfo;
 use DateTime;
 use App\Models\InstitutionProperties;
+use PDF;
 
 class HomeController extends Controller
 {
@@ -8480,6 +8481,8 @@ class HomeController extends Controller
         $inputFileName  = $request->file('file')->getClientOriginalName();
 
         $propertyList = [];
+        $errorFound = 0;
+        $errors = ["error"];
 
         if ($request->hasFile('file')) {
             
@@ -8521,17 +8524,21 @@ class HomeController extends Controller
                         }
 
                         if(empty($property) || $property['residence'] == null || $property['residence'] == ""){
-                            return ["error", "Residence ".$beds[0]." not found"];
+                            $errorFound = 1;
+                            array_push($errors, "Residence ".$beds[0]." not found");
+                            // return ["error", "Residence ".$beds[0]." not found"];
                         }
 
                         foreach($rooms as $room){
-                            if(strtoupper($room->name) == strtoupper($beds[1]) && $room->property_id == $property['residence']){
+                            if(strtoupper($room->name) == strtoupper($beds[1]) && array_key_exists('residence', $property) && $room->property_id == $property['residence']){
                                 $property['room_type'] = $room->id;
                             }
                         }
 
                         if(empty($property) || !array_key_exists('room_type', $property) || $property['room_type'] == null || $property['room_type'] == ""){
-                            return ["error", "Room Type ".$beds[1]." not found"];
+                            // return ["error", "Room Type ".$beds[1]." not found"];
+                            $errorFound = 1;
+                            array_push($errors, "Room Type ".$beds[1]." not found");
                         }
 
                         $floor = "";
@@ -8569,9 +8576,13 @@ class HomeController extends Controller
             }
         }
 
-        foreach($propertyList as $list){
-
-            Property::create($list);
+        if($errorFound === 0){
+            foreach($propertyList as $list){
+    
+                Property::create($list);
+            }
+        }else{
+            return $errors;
         }
 
 

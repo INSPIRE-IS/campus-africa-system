@@ -40,10 +40,14 @@
                             let response = JSON.parse(file.xhr.responseText)
 
                             if(response[0] == "error"){
+
+                                response.shift();
+                                response.join();
+
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: response[1],
+                                    text: response,
                                 })
                             }
                         };
