@@ -5550,30 +5550,29 @@ class HomeController extends Controller
             }
         }
 
-        if($userData->userId == ""){
-            $userIdentification = $userData->userPassport;
-        }else{
-            $userIdentification = $userData->userId;
-        }
+        // if($userData->userId == ""){
+        //     $userIdentification = $userData->userPassport;
+        // }else{
+        //     $userIdentification = $userData->userId;
+        // }
 
-        $booking = Booking::where('id', $userData->bookingId)->first();
-        $lookups = Lookups::get();
-        $bookingRes = Residence::where('id', $booking->property)->first();
-        $bookingRoom = RoomTypes::where('id', $booking->roomType)->first();
-        $bookingBed = property::where('id', $booking->property_data_id)->first();
+        // $booking = Booking::where('id', $userData->bookingId)->first();
+        // $lookups = Lookups::get();
+        // $bookingRes = Residence::where('id', $booking->property)->first();
+        // $bookingRoom = RoomTypes::where('id', $booking->roomType)->first();
+        // $bookingBed = property::where('id', $booking->property_data_id)->first();
 
-        //here
+        // //here
 
         
 
-        $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking', 'lookups', 'bookingRes', 'bookingRoom', 'bookingBed'));
-        $fileNameToSave = $userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
-        $content = $pdf->download($fileNameToSave)->getOriginalContent();
-        \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
+        // $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking', 'lookups', 'bookingRes', 'bookingRoom', 'bookingBed'));
+        // $fileNameToSave = $userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
+        // $content = $pdf->download($fileNameToSave)->getOriginalContent();
+        // \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
 
-        array_push($allFilesArr, "storage/files/".$userIdentification."/".$fileNameToSave);
+        // array_push($allFilesArr, "storage/files/".$userIdentification."/".$fileNameToSave);
 
-        //here
 
         $opt = new ArchiveOptions;
         $opt->setSendHttpHeaders(true);

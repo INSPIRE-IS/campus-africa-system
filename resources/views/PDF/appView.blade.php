@@ -60,15 +60,14 @@
         width: 57%;
         padding:10px;
     }
-    .appRow {
-        /* width: 48%; */
+    /* .appRow {
         width: 100%;
         margin-right: 1%;
         float:left;
-    }
+    } */
     .customWhiteCard {
-        width: 100%;
-        float: left;
+        /* width: 100%; */
+        /* float: left; */
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         border-radius: 10px;
         background-color: #f8f8f8;
@@ -87,22 +86,8 @@
         line-height: 28px;
         text-align: left;
     }
-    /* .cardHeader {
-        font-size: 40px;
-        font-weight: 600;
-        color: #464749;
-        line-height: 40px;
-        background-image: linear-gradient(180deg, #f0e020 0%, #e5b219 100%);
-        border-top-right-radius: 10px;
-        border-top-left-radius: 10px;
-        height: 110x;
-        padding: 25px;
-    } */
-    .container {
-        width: 100%;
-        margin: auto;
-        /* margin-left:-50px; */
-    }
+
+
 </style>
 
 <div class="yellowGradientSmall" id="bookingHeaderYellow" style="z-index:1; border-bottom-right-radius:0px;">
@@ -216,46 +201,24 @@
     <div class="appRow">
         <div class="cards">
 
-            <div class="customWhiteCard" style="width:250px; margin-left:-200px;">
-                <div class="flex">                                      
-                    <h2 class="appHeader">Applicant Details</h2>
-                </div>
-                
+            <div class="customWhiteCard" style="width:300px; margin-top:-100px;">
+                <h2 class="appHeader">Applicant Details</h2>
+            
                 <p class="InfoList">
                     {{$userData->userFirstName}} {{$userData->userLastname}}<br/>
                     {{$userData->userDob}}<br/>
                     {{$userData->userNationality}}<br/>
                     @if($userData->userId){{$userData->userId}}<br/>@endif
                     @if($userData->userPassport){{$userData->userPassport}}<br/>@endif
-                </p>
-
-                <p class="InfoList">
+                
                     @foreach($lookups as $lookup) @if($lookup->id == $userData->institutionStudy) {{$lookup->lookup_name}} @endif @endforeach<br/>
                     {{$userData->studentNo}}<br/>
                     @foreach($lookups as $lookup) @if($lookup->id == $userData->faculty) {{$lookup->lookup_name}} @endif @endforeach<br/>
-                    {{$userData->yearOfStudy}}
-                </p>
+                    {{$userData->yearOfStudy}}<br/>
 
-                <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
-                    <p class="InfoList">
-                    <a href="mailto:{{$userData->userEmail}}?subject=Campus Africa Ref {{$booking->booking_code}}">{{$userData->userEmail}}</a>  
-                        @if($userData->email_verified == '1') 
-                            <i class="fas fa-check" style="color:green"></i>
-                            <input type="hidden" id="emailverifiedStatus" value="{{$userData->email_verified}}"/>
-                        @else 
-                            &#10060; 
-                            &nbsp;&nbsp;
-                            @if($mailVerificationEmail->status == '1')
-                                <button type="button" class="unallocateBed" onClick="reVerifyEmail()" id="reVerify">Resend Email verification</button>
-                            @endif
-                            <input type="hidden" id="emailverifiedStatus" value="{{$userData->email_verified}}"/>
-                        @endif
-                        <br/>
-                        
-                        <a href="https://wa.me/<?php echo substr($userData->userCellCode, 1).$userData->userCell;  ?>?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">{{$userData->userCellCode}}{{$userData->userCell}}</a><br/>
-                    </p>
-                    
-                </div>
+                    <a href="mailto:{{$userData->userEmail}}?subject=Campus Africa Ref {{$booking->booking_code}}">{{$userData->userEmail}}</a> <br/>
+                    <a href="https://wa.me/<?php echo substr($userData->userCellCode, 1).$userData->userCell;  ?>?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">{{$userData->userCellCode}}{{$userData->userCell}}</a><br/>
+                </p>
                 
             </div>
 
