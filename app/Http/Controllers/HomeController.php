@@ -8479,6 +8479,8 @@ class HomeController extends Controller
 
         $inputFileName  = $request->file('file')->getClientOriginalName();
 
+        $propertyList = [];
+
         if ($request->hasFile('file')) {
             
             if ($request->file('file')->isValid()) {
@@ -8557,13 +8559,21 @@ class HomeController extends Controller
                         $property['year'] = $beds[10];
                         $property['year_end'] = $beds[11] == "" || $beds[11] == null ? "0" : $beds[11];
 
-                        Property::create($property);
+                        array_push($propertyList, $property);
+
+                        
 
                     }
                     $i++;
                 }
             }
         }
+
+        foreach($propertyList as $list){
+
+            Property::create($list);
+        }
+
 
         echo "done";
     }
