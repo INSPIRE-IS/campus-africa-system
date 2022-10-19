@@ -5550,6 +5550,23 @@ class HomeController extends Controller
             }
         }
 
+        if($userData->userId == ""){
+            $userIdentification = $userData->userPassport;
+        }else{
+            $userIdentification = $userData->userId;
+        }
+
+        $booking = Booking::where('id', $userData->bookingId)->first();
+
+        $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking'));
+        $fileNameToSave = $userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
+        $content = $pdf->download($fileNameToSave)->getOriginalContent();
+        \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
+
+        array_push($allFilesArr, "storage/files/".$userIdentification."/".$fileNameToSave);
+
+        //here
+
         $opt = new ArchiveOptions;
         $opt->setSendHttpHeaders(true);
         
@@ -8525,7 +8542,9 @@ class HomeController extends Controller
 
                         if(empty($property) || $property['residence'] == null || $property['residence'] == ""){
                             $errorFound = 1;
-                            array_push($errors, "Residence ".$beds[0]." not found");
+                            if(!in_array("Residence <b>".$beds[0]."</b> not found", $errors)){
+                                array_push($errors, "Residence <b>".$beds[0]."</b> not found");
+                            }
                             // return ["error", "Residence ".$beds[0]." not found"];
                         }
 
@@ -8538,7 +8557,15 @@ class HomeController extends Controller
                         if(empty($property) || !array_key_exists('room_type', $property) || $property['room_type'] == null || $property['room_type'] == ""){
                             // return ["error", "Room Type ".$beds[1]." not found"];
                             $errorFound = 1;
-                            array_push($errors, "Room Type ".$beds[1]." not found");
+                            if(array_key_exists('residence', $property)){
+                                if(!in_array("Room Type <b>".$beds[1]."</b> not found", $errors)){
+                                    array_push($errors, "Room Type <b>".$beds[1]."</b> not found");
+                                }
+                            }else{
+                                if(!in_array("Room Type <b>".$beds[1]."</b> not found <i>Because property ".$beds[0]." is Missing</i>", $errors)){
+                                    array_push($errors, "Room Type <b>".$beds[1]."</b> not found <i>Because property ".$beds[0]." is Missing</i>");
+                                }
+                            }
                         }
 
                         $floor = "";
