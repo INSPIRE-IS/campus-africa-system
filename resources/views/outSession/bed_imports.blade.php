@@ -40,10 +40,23 @@
                             let response = JSON.parse(file.xhr.responseText)
 
                             if(response[0] == "error"){
+
+                                response.shift();
+                                response.join();
+                                
+                                let text = "<ul>";
+
+                                response.forEach(function (element){
+                                    text += "<li>"+element+"</li>";
+                                });
+
+                                text += "</ul>";
+
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: response[1],
+                                    // text: response,
+                                    html: text
                                 })
                             }
                         };
