@@ -5557,8 +5557,16 @@ class HomeController extends Controller
         }
 
         $booking = Booking::where('id', $userData->bookingId)->first();
+        $lookups = Lookups::get();
+        $bookingRes = Residence::where('id', $booking->property)->first();
+        $bookingRoom = RoomTypes::where('id', $booking->roomType)->first();
+        $bookingBed = property::where('id', $booking->property_data_id)->first();
 
-        $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking'));
+        //here
+
+        
+
+        $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking', 'lookups', 'bookingRes', 'bookingRoom', 'bookingBed'));
         $fileNameToSave = $userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
         $content = $pdf->download($fileNameToSave)->getOriginalContent();
         \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
@@ -8541,9 +8549,11 @@ class HomeController extends Controller
                         }
 
                         if(empty($property) || $property['residence'] == null || $property['residence'] == ""){
-                            $errorFound = 1;
-                            if(!in_array("Residence <b>".$beds[0]."</b> not found", $errors)){
-                                array_push($errors, "Residence <b>".$beds[0]."</b> not found");
+                            if($beds[8] !== "" && $beds[8] !== null){
+                                $errorFound = 1;
+                                if(!in_array("Residence <b>".$beds[0]."</b> not found", $errors)){
+                                    array_push($errors, "Residence <b>".$beds[0]."</b> not found");
+                                }
                             }
                             // return ["error", "Residence ".$beds[0]." not found"];
                         }
@@ -8556,14 +8566,16 @@ class HomeController extends Controller
 
                         if(empty($property) || !array_key_exists('room_type', $property) || $property['room_type'] == null || $property['room_type'] == ""){
                             // return ["error", "Room Type ".$beds[1]." not found"];
-                            $errorFound = 1;
-                            if(array_key_exists('residence', $property)){
-                                if(!in_array("Room Type <b>".$beds[1]."</b> not found", $errors)){
-                                    array_push($errors, "Room Type <b>".$beds[1]."</b> not found");
-                                }
-                            }else{
-                                if(!in_array("Room Type <b>".$beds[1]."</b> not found <i>Because property ".$beds[0]." is Missing</i>", $errors)){
-                                    array_push($errors, "Room Type <b>".$beds[1]."</b> not found <i>Because property ".$beds[0]." is Missing</i>");
+                            if($beds[8] !== "" && $beds[8] !== null){
+                                $errorFound = 1;
+                                if(array_key_exists('residence', $property)){
+                                    if(!in_array("Room Type <b>".$beds[1]."</b> not found", $errors)){
+                                        array_push($errors, "Room Type <b>".$beds[1]."</b> not found");
+                                    }
+                                }else{
+                                    if(!in_array("Room Type <b>".$beds[1]."</b> not found <i>Because property ".$beds[0]." is Missing</i>", $errors)){
+                                        array_push($errors, "Room Type <b>".$beds[1]."</b> not found <i>Because property ".$beds[0]." is Missing</i>");
+                                    }
                                 }
                             }
                         }
@@ -8593,7 +8605,9 @@ class HomeController extends Controller
                         $property['year'] = $beds[10];
                         $property['year_end'] = $beds[11] == "" || $beds[11] == null ? "0" : $beds[11];
 
-                        array_push($propertyList, $property);
+                        if($beds[8] !== "" && $beds[8] !== null){
+                            array_push($propertyList, $property);
+                        }
 
                         
 
