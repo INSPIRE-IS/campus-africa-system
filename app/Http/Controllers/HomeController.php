@@ -3797,6 +3797,7 @@ class HomeController extends Controller
                     if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
+                        $deposit = 0;
                     }else{
                         $funded = $yearly_rent;
                         $monthlyFunded = $deposit;
@@ -3882,6 +3883,7 @@ class HomeController extends Controller
                     if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
+                        $deposit = 0;
                     }else{
                         $funded = $yearly_rent;
                         $monthlyFunded = $deposit;
@@ -4153,6 +4155,7 @@ class HomeController extends Controller
                         if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
                             $monthlyFunded = $institution->nsfas_amount;
+                            $deposit = 0;
                         }else{
                             $funded = $yearly_rent;
                             $monthlyFunded = $deposit;
@@ -4229,6 +4232,7 @@ class HomeController extends Controller
                         if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
                             $monthlyFunded = $institution->nsfas_amount;
+                            $deposit = 0;
                         }else{
                             $funded = $yearly_rent;
                             $monthlyFunded = $deposit;
