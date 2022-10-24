@@ -3797,6 +3797,7 @@ class HomeController extends Controller
                     if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
+                        $deposit = 0;
                     }else{
                         $funded = $yearly_rent;
                         $monthlyFunded = $deposit;
@@ -3882,6 +3883,7 @@ class HomeController extends Controller
                     if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
+                        $deposit = 0;
                     }else{
                         $funded = $yearly_rent;
                         $monthlyFunded = $deposit;
@@ -4153,6 +4155,7 @@ class HomeController extends Controller
                         if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
                             $monthlyFunded = $institution->nsfas_amount;
+                            $deposit = 0;
                         }else{
                             $funded = $yearly_rent;
                             $monthlyFunded = $deposit;
@@ -4229,6 +4232,7 @@ class HomeController extends Controller
                         if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
                             $monthlyFunded = $institution->nsfas_amount;
+                            $deposit = 0;
                         }else{
                             $funded = $yearly_rent;
                             $monthlyFunded = $deposit;
@@ -5283,6 +5287,7 @@ class HomeController extends Controller
         ];
 
         if($roomTypeId == "0"){
+            $data['online'] = 0;
             RoomTypes::create($data);
         }else{
             RoomTypes::where('id', $roomTypeId)->update($data);
@@ -5550,28 +5555,76 @@ class HomeController extends Controller
             }
         }
 
-        // if($userData->userId == ""){
-        //     $userIdentification = $userData->userPassport;
-        // }else{
-        //     $userIdentification = $userData->userId;
-        // }
+        if($userData->userId == ""){
+            $userIdentification = $userData->userPassport;
+        }else{
+            $userIdentification = $userData->userId;
+        }
 
-        // $booking = Booking::where('id', $userData->bookingId)->first();
-        // $lookups = Lookups::get();
-        // $bookingRes = Residence::where('id', $booking->property)->first();
-        // $bookingRoom = RoomTypes::where('id', $booking->roomType)->first();
-        // $bookingBed = property::where('id', $booking->property_data_id)->first();
+        $booking = Booking::where('id', $userData->bookingId)->first();
+        $lookups = Lookups::get();
+        $bookingRes = Residence::where('id', $booking->property)->first();
+        $bookingRoom = RoomTypes::where('id', $booking->roomType)->first();
+        $bookingBed = property::where('id', $booking->property_data_id)->first();
+        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
-        // //here
+        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+        $uploaded = [];
 
+        if($userData->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null){
+            array_push($all, "moveIn");
+        }
+        if($userData->studentType == "Cash / Direct"){
+            array_push($all, "bankStatement");
+        }
+        if($userData->studentType !== "Cash / Direct"){
+            array_push($all, "bursaryApproval");
+        }
+
+        $approvedLease = UserFiles::where('userUid', $userData->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->first();
+        $files = UserFiles::where('userUid', $userData->userUid)->where('year', $this_year)->get();
+
+        $data = [];
+
+        foreach($files as $file){
+            array_push($uploaded, $file->fileId);
+            if($file->status == "Rejected"){
+                $file->status = "Rejected";
+            }
+            if($file->status == "Approved"){
+                $file->status = "XApproved";
+            }
+            if($file->status == "Uploaded"){
+                $file->status = "AUploaded";
+            }
+            array_push($data, ["field" => $file->fileId, "status" => $file->status, "fileName" => $file->fileName, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
+        }
+
+        $left = array_diff($all, $uploaded);
+        foreach($left as $dataLeft){
+            array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
+        }
+
+        usort($data, function($a, $b) {
+            return $a['status'] <=> $b['status'];
+        });
+
+        $comments =  Comments::with('users')->where('user_uid', $userData->userUid)->where('bookingId', $userData->bookingId)->orderBy('created_at', 'desc')->get();
+
+        $previousBookings = Booking::where('userId', $userData->userUid)->where('year', '!=', $this_year)->orderBy('year', 'desc')->get();
+        $actions = ActionList::with('users')->where('userUid', $userId)->where('year', $this_year)->orderBy('created_at', 'DESC')->get();
+
+        // dd($comments[0]['users']['email']);
+
+        //here
         
 
-        // $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking', 'lookups', 'bookingRes', 'bookingRoom', 'bookingBed'));
-        // $fileNameToSave = $userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
-        // $content = $pdf->download($fileNameToSave)->getOriginalContent();
-        // \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
+        $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking', 'lookups', 'bookingRes', 'bookingRoom', 'bookingBed', 'paymentBooking', 'data', 'comments', 'previousBookings', 'actions'));
+        $fileNameToSave = $userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
+        $content = $pdf->download($fileNameToSave)->getOriginalContent();
+        \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
 
-        // array_push($allFilesArr, "storage/files/".$userIdentification."/".$fileNameToSave);
+        array_push($allFilesArr, "storage/files/".$userIdentification."/".$fileNameToSave);
 
 
         $opt = new ArchiveOptions;
