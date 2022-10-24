@@ -5283,6 +5283,7 @@ class HomeController extends Controller
         ];
 
         if($roomTypeId == "0"){
+            $data['online'] = 0;
             RoomTypes::create($data);
         }else{
             RoomTypes::where('id', $roomTypeId)->update($data);
