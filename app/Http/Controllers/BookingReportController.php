@@ -225,7 +225,7 @@ class BookingReportController extends Controller
                     }
                 }',
                 CURLOPT_HTTPHEADER => array(
-                    'Authorization: Basic cm9nZXI6OHlRVVNRUTFHZVJmaHlsMXV1QWZNTHdM',
+                    'Authorization: Basic cm9nZXI6eXdxcENoSVpXUmNUV0o4YVFmNXc2T0Z2',
                     'Content-Type: application/json',
                     'Cookie: wordpress_test_cookie=WP%20Cookie%20check'
                 ),
