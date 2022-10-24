@@ -5285,6 +5285,34 @@ class HomeController extends Controller
         if($roomTypeId == "0"){
             $data['online'] = 0;
             RoomTypes::create($data);
+
+            if(!empty($request->room_map)){
+                $curl = curl_init();
+
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'https://campusafrica.whitehart.co.za/wp-json/wp/v2/rooms/'.$request->room_map,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS =>'{
+                        "acf": {
+                            "offline": 1
+                        }
+                    }',
+                    CURLOPT_HTTPHEADER => array(
+                        'Authorization: Basic cm9nZXI6eXdxcENoSVpXUmNUV0o4YVFmNXc2T0Z2',
+                        'Content-Type: application/json',
+                        'Cookie: wordpress_test_cookie=WP%20Cookie%20check'
+                    ),
+                ));
+
+                $response = curl_exec($curl);
+                curl_close($curl);
+            }
         }else{
             RoomTypes::where('id', $roomTypeId)->update($data);
         }
