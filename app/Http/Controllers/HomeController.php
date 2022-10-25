@@ -3794,7 +3794,7 @@ class HomeController extends Controller
 
                     $institution = Lookups::where('id', $user->institutionStudy)->first();
                     // $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                    if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
+                    if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
                         $deposit = 0;
@@ -3880,7 +3880,7 @@ class HomeController extends Controller
 
                     $institution = Lookups::where('id', $user->institutionStudy)->first();
                     // $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                    if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
+                    if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
                         $deposit = 0;
@@ -4149,10 +4149,10 @@ class HomeController extends Controller
                             $diff++;
                         }
                         $yearly_rent = floatval($deposit) * floatval($diff);
-                        $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+                        $user = StudentsInfo::where('userUid', $booking->userId)->where('year', $this_year)->first();
 
                         $institution = Lookups::where('id', $user->institutionStudy)->first();
-                        if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
+                        if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
                             $monthlyFunded = $institution->nsfas_amount;
                             $deposit = 0;
@@ -4225,11 +4225,11 @@ class HomeController extends Controller
                             $diff++;
                         }
                         $yearly_rent = floatval($deposit) * floatval($diff);
-                        $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+                        $user = StudentsInfo::where('userUid', $booking->userId)->where('year', $this_year)->first();
 
                         $institution = Lookups::where('id', $user->institutionStudy)->first();
                         // $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                        if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
+                        if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
                             $monthlyFunded = $institution->nsfas_amount;
                             $deposit = 0;
@@ -4261,7 +4261,7 @@ class HomeController extends Controller
 
                     //     $institution = Lookups::where('id', $user->institutionStudy)->first();
                     //     // $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                    //     if($user->studenType == "NSFAS" || $user->nsfas_bursar == '1'){
+                    //     if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                     //         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                     //         $monthlyFunded = $institution->nsfas_amount;
                     //     }else{
