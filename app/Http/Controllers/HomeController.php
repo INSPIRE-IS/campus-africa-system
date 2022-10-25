@@ -9501,6 +9501,12 @@ class HomeController extends Controller
                 $nationality = $user->userNationality;
                 $id = $user->userId != "" ? $user->userId : $user->userPassport;
                 $gender = "";
+
+                if($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4){
+                    $gender = "Female";
+                }elseif($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9){
+                    $gender = "Male";
+                }
                 $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
                 $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
                 $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
@@ -9538,6 +9544,11 @@ class HomeController extends Controller
                 $nationality = $user->userNationality;
                 $id = $user->userId != "" ? $user->userId : $user->userPassport;
                 $gender = "";
+                if($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4){
+                    $gender = "Female";
+                }elseif($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9){
+                    $gender = "Male";
+                }
                 $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
                 $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
                 $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
