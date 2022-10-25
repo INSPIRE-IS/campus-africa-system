@@ -1606,7 +1606,7 @@
             type: "get",
             url: "/check-all-rooms/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
-                let properties = data[0];
+                let properties = data[7];
 
                 // console.log(data)
 

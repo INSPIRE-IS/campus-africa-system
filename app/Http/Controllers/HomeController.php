@@ -4661,7 +4661,9 @@ class HomeController extends Controller
         $userInfo = StudentsInfo::where('bookingId', $booking->id)->first();
         $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
 
-        return [$property, $propertyInfo, $booking, $propertyInfoRooms, $userInfo, $inSelected, $propertyInfoRoomsAll];
+        $residenceAll = Residence::get();
+
+        return [$property, $propertyInfo, $booking, $propertyInfoRooms, $userInfo, $inSelected, $propertyInfoRoomsAll, $residenceAll];
     }
 
     public function get_booking_info(Request $request){
