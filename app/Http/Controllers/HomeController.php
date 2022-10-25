@@ -4646,6 +4646,7 @@ class HomeController extends Controller
 
         $propertyInfo = Property::whereNull('room_available')->whereIn('room_type', $allRooms)->groupBy('residence')->get();
         $propertyInfoRooms = Property::with('roomType')->whereNull('room_available')->whereIn('room_type', $allRooms)->groupBy('room_type')->get();
+        $propertyInfoRoomsAll = Property::with('roomType')->whereIn('room_type', $allRooms)->groupBy('room_type')->get();
         $property = [];
 
         foreach($propertyInfo as $pi){
@@ -4660,7 +4661,9 @@ class HomeController extends Controller
         $userInfo = StudentsInfo::where('bookingId', $booking->id)->first();
         $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
 
-        return [$property, $propertyInfo, $booking, $propertyInfoRooms, $userInfo, $inSelected];
+        $residenceAll = Residence::get();
+
+        return [$property, $propertyInfo, $booking, $propertyInfoRooms, $userInfo, $inSelected, $propertyInfoRoomsAll, $residenceAll];
     }
 
     public function get_booking_info(Request $request){
