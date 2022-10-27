@@ -579,17 +579,33 @@ class ApplicationController extends Controller
 
                 $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first());
                 $field_data = $user_status['field_data'];
-                $field_doc = $user_status['field_doc'];                
+                $field_doc = $user_status['field_doc'];             
+                
+                $docExists = UserFiles::where("userUid", $userUid)->where("fileId", $fileType)->where("year", $this_year)->first();
 
-                UserFiles::create([
-                    'fileId' => $fileType,
-                    'userUid' => $userUid,
-                    'fileName' => $fileNameToStore,
-                    'fileUrl' => $fileUrl,
-                    'status' => "Uploaded",
-                    'uploaded_by' => $userInfo->userFirstName,
-                    'year' => $this_year,
-                ]);
+                if(!empty($docExists)){
+                    UserFiles::create([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => "Uploaded",
+                        'uploaded_by' => $userInfo->userFirstName,
+                        'year' => $this_year,
+                    ]);
+                }else{
+                    UserFiles::where("userUid", $userUid)->where("fileId", $fileType)->where("year", $this_year)->update([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => "Uploaded",
+                        'uploaded_by' => $userInfo->userFirstName,
+                        'year' => $this_year,
+                    ]);
+                }
+
+                
 
                 $text = "Uploaded ".$user_status['typeName']." for review";
                 
