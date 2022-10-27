@@ -1041,4 +1041,14 @@ class LookupsController extends Controller {
             StudentsInfo::where('id', $user->id)->update(['userFirstName' => ucwords(strtolower($user->userFirstName)), 'userLastname' => ucwords(strtolower($user->userLastname))]);
         }
     }
+
+    public function admin_updates_update_beds(Request $request){
+        $allStudents = StudentsInfo::get();
+
+        foreach($allStudents as $user){
+            if($user->rob_10_fee == 1 || $user->rob_10_fee == 0){
+                StudentsInfo::where("id", $user->id)->update(["rob_40_bed" => 0]);
+            }
+        }
+    }
 }

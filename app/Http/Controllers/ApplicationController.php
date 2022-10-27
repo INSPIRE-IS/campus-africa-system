@@ -579,17 +579,33 @@ class ApplicationController extends Controller
 
                 $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first());
                 $field_data = $user_status['field_data'];
-                $field_doc = $user_status['field_doc'];                
+                $field_doc = $user_status['field_doc'];             
+                
+                $docExists = UserFiles::where("userUid", $userUid)->where("fileId", $fileType)->where("year", $this_year)->first();
 
-                UserFiles::create([
-                    'fileId' => $fileType,
-                    'userUid' => $userUid,
-                    'fileName' => $fileNameToStore,
-                    'fileUrl' => $fileUrl,
-                    'status' => "Uploaded",
-                    'uploaded_by' => $userInfo->userFirstName,
-                    'year' => $this_year,
-                ]);
+                if(!empty($docExists)){
+                    UserFiles::where("userUid", $userUid)->where("fileId", $fileType)->where("year", $this_year)->update([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => "Uploaded",
+                        'uploaded_by' => $userInfo->userFirstName,
+                        'year' => $this_year,
+                    ]);
+                }else{
+                    UserFiles::create([
+                        'fileId' => $fileType,
+                        'userUid' => $userUid,
+                        'fileName' => $fileNameToStore,
+                        'fileUrl' => $fileUrl,
+                        'status' => "Uploaded",
+                        'uploaded_by' => $userInfo->userFirstName,
+                        'year' => $this_year,
+                    ]);
+                }
+
+                
 
                 $text = "Uploaded ".$user_status['typeName']." for review";
                 
@@ -790,7 +806,7 @@ class ApplicationController extends Controller
 
             if($room_rate == "0"){
     
-                $uploaded = UserFiles::where('userUid', $userInfo->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+                $uploaded = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
     
                 if(!$uploaded){
                     UserFiles::create([
@@ -803,11 +819,22 @@ class ApplicationController extends Controller
                     // User::where('id', $user->id)->update([
                     //     'rob_10_fee' => 2
                     // ]);
+
                     StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
-                        'rob_10_fee' => 2
+                        'rob_10_fee' => 2,
+                        'rob_40_bed' => 1
                     ]);
+
+                    $actionFileData['userUid'] = $user->id;
+                    $actionFileData['action'] = "Booking Fee is R0";
+                    $actionFileData['actionUserUid'] = Auth::user()->id;
+                    $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+                    $actionFileData['actionUserRole'] = Auth::user()->userRole;
+                    $actionFileData['year'] = $this_year;
+                
+                    ActionList::create($actionFileData);
                 }else{
-                    UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
+                    UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                         'status' => 'Approved'
                     ]);
 
@@ -815,20 +842,14 @@ class ApplicationController extends Controller
                     //     'rob_10_fee' => 2
                     // ]);
                     StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
-                        'rob_10_fee' => 2
+                        'rob_10_fee' => 2,
+                        'rob_40_bed' => 1,
                     ]);
                 }
     
                 Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
     
-                $actionFileData['userUid'] = $user->id;
-                $actionFileData['action'] = $actionFileData['action'];
-                $actionFileData['actionUserUid'] = Auth::user()->id;
-                $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
-                $actionFileData['actionUserRole'] = Auth::user()->userRole;
-                $actionFileData['year'] = $this_year;
-            
-                ActionList::create($actionFileData);
+                
             }else{
                Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
             }
@@ -1249,7 +1270,7 @@ class ApplicationController extends Controller
             'rob_25_reg' => 0,
             'rob_30_funds' => 0,
             'rob_35_info' => 0,
-            'rob_40_bed' => 1,
+            'rob_40_bed' => 0,
             'rob_50_approve' => 0,
             'rob_55_lease' => 3,
             'rob_45_other' => 3,
@@ -1469,13 +1490,16 @@ class ApplicationController extends Controller
                     'status' => 'Approved',
                     'year' => $this_year
                 ]);
+                StudentsInfo::where('userUid', Auth::user()->id)->where("year", $this_year)->update(["rob_40_bed" => 1]);
             }else{
                 UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                     'status' => 'Approved',
                 ]);
+                StudentsInfo::where('userUid', Auth::user()->id)->where("year", $this_year)->update(["rob_40_bed" => 1]);
             }
 
             $actionFileData['userUid'] = Auth::user()->id;
+            $actionFileData['action'] ="Booking Fee is R 0";
             $actionFileData['actionUserUid'] = Auth::user()->id;
             $actionFileData['actionUserDisplayName'] = $user->userFirstName;
             $actionFileData['actionUserRole'] = Auth::user()->userRole;

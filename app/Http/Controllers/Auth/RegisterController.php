@@ -164,7 +164,7 @@ class RegisterController extends Controller
             'rob_25_reg' => 0,
             'rob_30_funds' => 0,
             'rob_35_info' => 0,
-            'rob_40_bed' => 1,
+            'rob_40_bed' => 0,
             'rob_50_approve' => 0,
             'rob_60_cancelled' => 0,
             'rob_55_lease' => 3,
