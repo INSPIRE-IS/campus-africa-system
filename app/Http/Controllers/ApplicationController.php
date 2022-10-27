@@ -803,8 +803,10 @@ class ApplicationController extends Controller
                     // User::where('id', $user->id)->update([
                     //     'rob_10_fee' => 2
                     // ]);
+
                     StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
-                        'rob_10_fee' => 2
+                        'rob_10_fee' => 2,
+                        'rob_40_bed' => 1
                     ]);
                 }else{
                     UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
@@ -815,7 +817,8 @@ class ApplicationController extends Controller
                     //     'rob_10_fee' => 2
                     // ]);
                     StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
-                        'rob_10_fee' => 2
+                        'rob_10_fee' => 2,
+                        'rob_40_bed' => 1,
                     ]);
                 }
     
@@ -1249,7 +1252,7 @@ class ApplicationController extends Controller
             'rob_25_reg' => 0,
             'rob_30_funds' => 0,
             'rob_35_info' => 0,
-            'rob_40_bed' => 1,
+            'rob_40_bed' => 0,
             'rob_50_approve' => 0,
             'rob_55_lease' => 3,
             'rob_45_other' => 3,
@@ -1469,10 +1472,12 @@ class ApplicationController extends Controller
                     'status' => 'Approved',
                     'year' => $this_year
                 ]);
+                StudentsInfo::where('userUid', Auth::user()->id)->where("year", $this_year)->update(["rob_40_bed" => 1]);
             }else{
                 UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                     'status' => 'Approved',
                 ]);
+                StudentsInfo::where('userUid', Auth::user()->id)->where("year", $this_year)->update(["rob_40_bed" => 1]);
             }
 
             $actionFileData['userUid'] = Auth::user()->id;

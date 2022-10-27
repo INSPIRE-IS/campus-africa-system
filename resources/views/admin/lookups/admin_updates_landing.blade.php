@@ -6,18 +6,17 @@
     @if(Auth::user()->id == 1 || Auth::user()->email == "roger@whitehart.co.za")
         <h1>New</h1>
         <div>
-            <button style="float: none;" type="button" id="newCancelled" class="detailsChange" >Cancelled on bookings</button>
-
-            <button style="float: none;" type="button" id="newStudents" class="detailsChange" >New Students Table</button>
-
-            <button style="float: none;" type="button" id="newPayments" class="detailsChange" >Payments Update</button>
-
-            <button style="float: none;" type="button" id="nameCase" class="detailsChange" >Name Case Update</button>
+            <button style="float: none;" type="button" id="beds_update" class="detailsChange" >Update Beds</button>
         </div>
 
         
         <h1>Legacy</h1>
         <div>
+            <button style="float: none;" type="button" id="newCancelled" class="detailsChange" >Cancelled on bookings</button>
+            <button style="float: none;" type="button" id="newStudents" class="detailsChange" >New Students Table</button>
+            <button style="float: none;" type="button" id="newPayments" class="detailsChange" >Payments Update</button>
+            <button style="float: none;" type="button" id="nameCase" class="detailsChange" >Name Case Update</button>
+            <br/><br/>
             <button style="float: none;" type="button" id="updateDataNewRobots" class="detailsChange" >New Robots - Data Update</button>
             <button style="float: none;" type="button" id="updateProperties" class="detailsChange" >Properties Update</button>
             <button style="float: none;" type="button" id="updatePropIds" class="detailsChange" >Properties ID Update</button>
@@ -289,6 +288,36 @@
 
                     success: function (data) {
                         $("#newStudents").empty().append('New Students Table');
+
+                        Swal.fire(
+                            'Success',
+                            'Data update complete',
+                            'success'
+                        )
+                    },
+                });
+            }
+        })
+    })
+
+    $("#beds_update").on('click', function(){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#beds_update").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                $.ajax({
+                    type: "get",
+                    url: "/admin-updates/update-beds",
+
+                    success: function (data) {
+                        $("#beds_update").empty().append('Update beds');
 
                         Swal.fire(
                             'Success',
