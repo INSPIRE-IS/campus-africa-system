@@ -806,7 +806,7 @@ class ApplicationController extends Controller
 
             if($room_rate == "0"){
     
-                $uploaded = UserFiles::where('userUid', $userInfo->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+                $uploaded = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
     
                 if(!$uploaded){
                     UserFiles::create([
@@ -824,8 +824,17 @@ class ApplicationController extends Controller
                         'rob_10_fee' => 2,
                         'rob_40_bed' => 1
                     ]);
+
+                    $actionFileData['userUid'] = $user->id;
+                    $actionFileData['action'] = "Booking Fee is R0";
+                    $actionFileData['actionUserUid'] = Auth::user()->id;
+                    $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+                    $actionFileData['actionUserRole'] = Auth::user()->userRole;
+                    $actionFileData['year'] = $this_year;
+                
+                    ActionList::create($actionFileData);
                 }else{
-                    UserFiles::where('userUid', $user->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
+                    UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                         'status' => 'Approved'
                     ]);
 
@@ -840,14 +849,7 @@ class ApplicationController extends Controller
     
                 Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
     
-                $actionFileData['userUid'] = $user->id;
-                $actionFileData['action'] = $actionFileData['action'];
-                $actionFileData['actionUserUid'] = Auth::user()->id;
-                $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
-                $actionFileData['actionUserRole'] = Auth::user()->userRole;
-                $actionFileData['year'] = $this_year;
-            
-                ActionList::create($actionFileData);
+                
             }else{
                Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
             }
@@ -1497,6 +1499,7 @@ class ApplicationController extends Controller
             }
 
             $actionFileData['userUid'] = Auth::user()->id;
+            $actionFileData['action'] ="Booking Fee is R 0";
             $actionFileData['actionUserUid'] = Auth::user()->id;
             $actionFileData['actionUserDisplayName'] = $user->userFirstName;
             $actionFileData['actionUserRole'] = Auth::user()->userRole;

@@ -4665,7 +4665,9 @@ class HomeController extends Controller
         $property = [];
 
         foreach($propertyInfo as $pi){
-            array_push($property, Residence::where('id', $pi->residence)->first());
+            if(Residence::where('id', $pi->residence)->pluck('status')->first() != '1'){
+                array_push($property, Residence::where('id', $pi->residence)->first());
+            }
         }
 
         $this_year = Lookups::where('group_id', '4')->first();
@@ -4701,7 +4703,9 @@ class HomeController extends Controller
         $property = [];
 
         foreach($propertyInfo as $pi){
-            array_push($property, Residence::where('id', $pi->residence)->first());
+            if(Residence::where('id', $pi->residence)->pluck('status')->first() != '1'){
+                array_push($property, Residence::where('id', $pi->residence)->first());
+            }
         }
 
         $this_year = Lookups::where('group_id', '4')->first();
@@ -4712,7 +4716,7 @@ class HomeController extends Controller
         $userInfo = StudentsInfo::where('bookingId', $booking->id)->first();
         $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
 
-        $residenceAll = Residence::get();
+        $residenceAll = Residence::whereNull("status")->get();
 
         return [$property, $propertyInfo, $booking, $propertyInfoRooms, $userInfo, $inSelected, $propertyInfoRoomsAll, $residenceAll];
     }
