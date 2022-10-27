@@ -584,7 +584,7 @@ class ApplicationController extends Controller
                 $docExists = UserFiles::where("userUid", $userUid)->where("fileId", $fileType)->where("year", $this_year)->first();
 
                 if(!empty($docExists)){
-                    UserFiles::create([
+                    UserFiles::where("userUid", $userUid)->where("fileId", $fileType)->where("year", $this_year)->update([
                         'fileId' => $fileType,
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
@@ -594,7 +594,7 @@ class ApplicationController extends Controller
                         'year' => $this_year,
                     ]);
                 }else{
-                    UserFiles::where("userUid", $userUid)->where("fileId", $fileType)->where("year", $this_year)->update([
+                    UserFiles::create([
                         'fileId' => $fileType,
                         'userUid' => $userUid,
                         'fileName' => $fileNameToStore,
