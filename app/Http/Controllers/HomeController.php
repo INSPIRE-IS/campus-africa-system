@@ -8307,7 +8307,7 @@ class HomeController extends Controller
         //Update the User robot
         // User::where('id',  $request->userUid)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
         StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
-
+        Property::where('user_id_room', $request->userUid)->update(["user_id_room" => null, "room_available" => null]);
 
         $lookup = Lookups::where('group_id', '7')->first();
         $booking = Booking::where('userId', $request->userUid)->where('year', $this_year)->first();
