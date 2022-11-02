@@ -58,6 +58,7 @@
                 <option value="15TH" <?php if(!empty($propertyData) && ($propertyData->floor == "15TH" || $propertyData->floor == "15th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>15th</option>
                 <option value="16TH" <?php if(!empty($propertyData) && ($propertyData->floor == "16TH" || $propertyData->floor == "16th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>16th</option>
                 <option value="17TH" <?php if(!empty($propertyData) && ($propertyData->floor == "17TH" || $propertyData->floor == "17th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>17th</option>
+                <option value="18TH" <?php if(!empty($propertyData) && ($propertyData->floor == "18TH" || $propertyData->floor == "18th")){echo "selected";}?>><?php if(!empty($propertyData) && ($propertyData->meta_info_1 !== "" && $propertyData->meta_info_1 !== null)){echo  $propertyData->meta_info_1." | ";}?>18th</option>
             </select>
         </div>
 
