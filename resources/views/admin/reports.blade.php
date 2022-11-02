@@ -101,6 +101,55 @@
         <div class="hidden"><a href="/MDA download.xlsx" download><button type="button" id="downloadMdaDoc">Download</button></a></div>
     @endif
 
+    <br/><br/><br/><br/><hr/><br/>
+    <h2>Buildings Report</h2>
+    <br/>
+    <div class="flex">
+        <div>
+            <label>From Date:</label><br/>
+            <input type="date" name="buildingsFrom" id="buildingsFrom"/>
+        </div>
+        <div style="padding-left:10px;">
+            <label>To Date:</label><br/>
+            <input type="date" name="buildingsTo" id="buildingsTo"/>
+        </div>
+    </div>
+
+    <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;">Run Report</button>
+
+    <div id="PeriodReport" style="margin-top:100px;">
+        <div class="flex">
+            <div>
+                <p style="background-color:#ccc; padding:5px; border-right:1px solid #fff">{{date('j F Y')}}</p>
+                <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc; border-left:1px solid #ccc">Nr Bookings</p>
+            </div>
+
+            {{--@foreach($allProp as $prop)
+                <div>
+                    <p style="background-color:#ccc; padding:5px; border-right:1px solid #fff">{{$prop->residence}}</p>
+                    @foreach($bookingsPerProperty as $booking)
+                        @if($booking->property == $prop->id)
+                            <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">{{$booking->count}}</p>
+                        @endif
+                    @endforeach
+                </div>
+            @endforeach--}}
+
+            <!-- <div>
+                <p style="background-color:#ccc; padding:5px;">Property 1</p>
+                <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">5</p>
+            </div>
+            <div >
+                <p style="background-color:#ccc; padding:5px;">Property 2</p>
+                <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">9</p>
+            </div>
+            <div>
+                <p style="background-color:#ccc; padding:5px;">Property 3</p>
+                <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">7</p>
+            </div> -->
+        </div>
+    </div>
+
 </div>
 
 <script>

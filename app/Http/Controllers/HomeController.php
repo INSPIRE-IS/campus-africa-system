@@ -32,6 +32,7 @@ use App\Models\StudentsInfo;
 use DateTime;
 use App\Models\InstitutionProperties;
 use PDF;
+use App\Models\PropertyCount;
 
 class HomeController extends Controller
 {
@@ -3160,6 +3161,9 @@ class HomeController extends Controller
 
     public function reports(Request $request){
 
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
         $allowed = [];
         $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
@@ -3171,6 +3175,7 @@ class HomeController extends Controller
                 }
             }
         }
+
 
         return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed]);
     }
