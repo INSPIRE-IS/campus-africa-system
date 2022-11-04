@@ -106,7 +106,7 @@
         <div class="form-field">
             <label>Gender * <span id="gender_error" class="hidden" style="color:red"><small>This field is
                         required</small></span></label>
-            <select name="gender" id='gender' class="required">
+            <select name="gender" id='gender' class="required" disabled>
                 <option value="" disabled selected>Please select one</option>
                 <option value="1">Male</option>
                 <option value="2">Female</option>
@@ -466,11 +466,13 @@
             element.value = 1;
         }
 
-        if ($("#studentType").val() == "NSFAS") {
-            nsfasProp()
-        } else {
-            allowAllProp()
-        }
+        // if ($("#studentType").val() == "NSFAS") {
+        //     nsfasProp()
+        // } else {
+        //     allowAllProp()
+        // }
+
+        allowAllProp();
 
         cecheckIDEmail();
     })
@@ -591,6 +593,7 @@
             $("#passportNo").removeClass("required")
             $("#idNumber").addClass("required")
             $("#passportNo").removeClass("fieldError")
+            document.getElementById('gender').disabled = true;
         }else{
             $("#idField").addClass('hidden')
             $("#passportField").removeClass('hidden')
@@ -598,6 +601,7 @@
             $("#passportNo").addClass("required")
             $("#idNumber").removeClass("required")
             $("#idNumber").removeClass("fieldError")
+            document.getElementById('gender').disabled = false;
         }
     })
 
@@ -620,74 +624,36 @@
     })
 
     $("#studentType").on('change', function() {
-        if ($("#studentType").val() == "NSFAS") {
-            nsfasProp()
-        } else {
-            allowAllProp()
-        }
+        // if ($("#studentType").val() == "NSFAS") {
+        //     nsfasProp()
+        // } else {
+        //     allowAllProp()
+        // }
+        allowAllProp();
     })
 
     $("#institStudy").on('change', function(){
-        if ($("#studentType").val() == "NSFAS") {
-            nsfasProp()
-        }
+        // if ($("#studentType").val() == "NSFAS") {
+        //     nsfasProp()
+        // }
+        allowAllProp();
     })
 
     $("#gender").on('change', function(){
-        if($("#studentType").val() !== ""){
-            if ($("#studentType").val() == "NSFAS") {
-                nsfasProp()
-            } else {
-                allowAllProp()
-            }
-        }else{
-            allowAllProp()
-        }
+        // if($("#studentType").val() !== ""){
+        //     if ($("#studentType").val() == "NSFAS") {
+        //         nsfasProp()
+        //     } else {
+        //         allowAllProp()
+        //     }
+        // }else{
+        //     allowAllProp()
+        // }
+
+        allowAllProp();
     })
 
     function allowAllProp(){
-        $("#property").empty().append('<option value="" selected disabled>Loading</option>')
-
-        $.ajax({
-            type: "get",
-            url: "/get-all-properties-online",
-
-            success: function(data) {
-                $("#property").empty().append('<option value="" selected disabled>Select a Residence</option>')
-
-                let text = "";
-                let allow = 1;
-
-                if($("#gender").val() == ""){
-                    text = "(No gender selected)"
-                    allow = 0
-                }
-                data.forEach(function(index) {
-                    if($("#gender").val() == 1 && index.male === null && index.female === 1){
-                        text = "(Female Only)"
-                        allow = 0
-                    }else if($("#gender").val() == 2 && index.male === 1 && index.female === null){
-                        text = "(Male Only)"
-                        allow = 0
-                    }else if(index.male === null && index.female === null){
-                        text = "(Not Allowed)"
-                        allow = 0
-                    }else{
-                        allow = 1
-                        text = "";
-                    }
-
-                    if(allow == 0){
-                        $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
-                    }else{
-                        $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
-                    }
-                })
-            },
-        });
-    }
-
-    function nsfasProp(){
         $("#property").empty().append('<option value="" selected disabled>Loading</option>')
 
         $.ajax({
@@ -698,7 +664,11 @@
             success: function(data) {
 
                 allprops = data[0];
-                allowed = data[1];
+
+                inSelectedCash = data[1];
+                inSelectedBursary = data[2];
+                inSelectedNsfas = data[3];
+
                 $("#property").empty().append('<option value="" selected disabled>Select a Residence</option>')
 
                 let text = "";
@@ -730,7 +700,19 @@
                             text = "";
                         }
 
-                        if(allowed.includes(index.id)){
+                        if($("#studentType").val() == "Cash / Direct" && inSelectedCash.includes(index.id)){
+                            if(allow == 0){
+                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
+                            }else{
+                                $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
+                            }
+                        }else if($("#studentType").val() == "Bursary" && inSelectedBursary.includes(index.id)){
+                            if(allow == 0){
+                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
+                            }else{
+                                $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
+                            }
+                        }else if($("#studentType").val() == "NSFAS" && inSelectedNsfas.includes(index.id)){
                             if(allow == 0){
                                 $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
                             }else{
@@ -739,11 +721,108 @@
                         }else{
                             $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +' (Not Allowed)</option>')
                         }
+
                     })
                 }
             },
         });
+
+        // $.ajax({
+        //     type: "get",
+        //     url: "/get-all-properties-online",
+
+        //     success: function(data) {
+        //         $("#property").empty().append('<option value="" selected disabled>Select a Residence</option>')
+
+        //         let text = "";
+        //         let allow = 1;
+
+        //         if($("#gender").val() == ""){
+        //             text = "(No gender selected)"
+        //             allow = 0
+        //         }
+        //         data.forEach(function(index) {
+        //             if($("#gender").val() == 1 && index.male === null && index.female === 1){
+        //                 text = "(Female Only)"
+        //                 allow = 0
+        //             }else if($("#gender").val() == 2 && index.male === 1 && index.female === null){
+        //                 text = "(Male Only)"
+        //                 allow = 0
+        //             }else if(index.male === null && index.female === null){
+        //                 text = "(Not Allowed)"
+        //                 allow = 0
+        //             }else{
+        //                 allow = 1
+        //                 text = "";
+        //             }
+
+        //             if(allow == 0){
+        //                 $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
+        //             }else{
+        //                 $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
+        //             }
+        //         })
+        //     },
+        // });
     }
+
+    // function nsfasProp(){
+    //     $("#property").empty().append('<option value="" selected disabled>Loading</option>')
+
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/get-nsfas-properties-online",
+    //         data: {institStudy: $("#institStudy").val()},
+
+    //         success: function(data) {
+
+    //             allprops = data[0];
+    //             allowed = data[1];
+    //             $("#property").empty().append('<option value="" selected disabled>Select a Residence</option>')
+
+    //             let text = "";
+    //             let allow = 1;
+
+    //             if($("#gender").val() == ""){
+    //                 text = "(No gender selected)"
+    //                 allow = 0
+    //             }
+
+    //             if($("#institStudy").val() == "" || $("#institStudy").val() == null){
+    //                 allprops.forEach(function(index) {
+    //                     $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +' (No Institution Selected)</option>')
+    //                 })
+    //             }else{
+    //                 allprops.forEach(function(index) {
+
+    //                     if($("#gender").val() == 1 && index.male === null && index.female === 1){
+    //                         text = "(Female Only)"
+    //                         allow = 0
+    //                     }else if($("#gender").val() == 2 && index.male === 1 && index.female === null){
+    //                         text = "(Male Only)"
+    //                         allow = 0
+    //                     }else if(index.male === null && index.female === null){
+    //                         text = "(Not Allowed)"
+    //                         allow = 0
+    //                     }else{
+    //                         allow = 1
+    //                         text = "";
+    //                     }
+
+    //                     if(allowed.includes(index.id)){
+    //                         if(allow == 0){
+    //                             $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
+    //                         }else{
+    //                             $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
+    //                         }
+    //                     }else{
+    //                         $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +' (Not Allowed)</option>')
+    //                     }
+    //                 })
+    //             }
+    //         },
+    //     });
+    // }
 
 
     $("#submitForm").on('click', function() {

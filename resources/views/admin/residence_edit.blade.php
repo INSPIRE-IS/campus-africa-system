@@ -111,7 +111,7 @@
             <br/>
             <hr/>
             <br/>
-            <label>Gender</label>
+            <label>Gender <span id="gender_error" class="hidden" style="color:red"><small>Please select at least one</small></label>
 
 
             <ul style="list-style-type:none; width:100%">
@@ -156,8 +156,13 @@
     
 
     $('#residence').submit(function() {
+        //gender_error
 
-        if($("#building_prefix").hasClass('fieldError')){
+        if($("#building_prefix").hasClass('fieldError') || (document.getElementById('male').checked == false && document.getElementById('female').checked == false)){
+
+            if(document.getElementById('male').checked == false && document.getElementById('female').checked == false){
+                $("#gender_error").removeClass('hidden')
+            }
             return false;
         }else{
             return true;

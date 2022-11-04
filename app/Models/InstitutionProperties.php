@@ -14,5 +14,8 @@ class InstitutionProperties extends Model
     protected $fillable = [
         'institution_id',
         'property_id',
+        'cash',
+        'bursary',
+        'nsfas',
     ];
 }

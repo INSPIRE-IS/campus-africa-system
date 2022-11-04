@@ -1682,19 +1682,32 @@
                 // console.log(data)
 
                 let selProp = data[2].property;
-                let propNsfasAllow = data[5];
+
+                let inSelectedCash = data[5];
+                let inSelectedBursary = data[6];
+                let inSelectedNsfas = data[7];
 
                 properties.sort();
                 $('#property').empty()
 
                 Object.keys(properties).forEach( function(key) {
-                    if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
+
+                    if(data[4].studentType == "NSFAS" && inSelectedNsfas.includes(properties[key].id)){
                         $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
-                    }else if(data[4].studentType != "NSFAS"){
+                    }else if(data[4].studentType == "Bursary" && inSelectedBursary.includes(properties[key].id)){
+                        $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    }else if(data[4].studentType == "Cash / Direct" && inSelectedCash.includes(properties[key].id)){
                         $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
                     }else{
                         $('#property').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
                     }
+                    // if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
+                    //     $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    // }else if(data[4].studentType != "NSFAS"){
+                    //     $('#property').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                    // }else{
+                    //     $('#property').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
+                    // }
                 });
 
                 $('#property').val(selProp);
