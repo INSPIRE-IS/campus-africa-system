@@ -2327,6 +2327,7 @@ class HomeController extends Controller
             'burContactCode' => $request->bContactNumber_code,
             'sponCellCode' => $request->pCell_no_code,
             'app_source' => 0,
+            'gender' => $request->gender,
         ]);
 
         ActionList::create([
@@ -2834,6 +2835,7 @@ class HomeController extends Controller
             Session::put('processingStatus', $request->processingStatus);
             Session::put('show_cancelled', $request->show_cancelled);
             Session::put('applied', $request->applied);
+            Session::put('gender', $request->gender);
 
         } else {
 
@@ -2851,6 +2853,7 @@ class HomeController extends Controller
             $request->processingStatus = Session::get('processingStatus');
             $request->show_cancelled = Session::get('show_cancelled');
             $request->applied = Session::get('applied');
+            $request->gender = Session::get('gender');
 
         }
 
@@ -2910,6 +2913,18 @@ class HomeController extends Controller
                 array_push($search_value, $applied);
             }
         // }
+
+
+        if($request->gender !== "All" && $request->gender !== null){
+            
+            if($request->gender !== "3"){
+                $gender = 'ui.gender = "'.$request->gender.'"';
+            }else{
+                $gender = 'ui.gender is null';
+            }
+            
+            array_push($search_value, $gender);
+        }
 
         if($request->applicant !== "" && !empty($request->applicant)){
             $name = $request->applicant;
@@ -4671,6 +4686,7 @@ class HomeController extends Controller
 
         foreach($propertyInfo as $pi){
             if(Residence::where('id', $pi->residence)->pluck('status')->first() != '1'){
+                
                 array_push($property, Residence::where('id', $pi->residence)->first());
             }
         }
@@ -5006,6 +5022,8 @@ class HomeController extends Controller
             "company_reg" => $request->company_reg,
             'company_vat' => $request->company_vat,
             "status" => $request->status == 0 ? null : $request->status,
+            "female" => $request->female == 0 ? null : $request->female,
+            "male" => $request->male == 0 ? null : $request->male,
         ];
 
         if($request->nsfas_booking_rate == null){
@@ -8914,6 +8932,7 @@ class HomeController extends Controller
             'Next of Kin Telephone Country Code|kinTelCode' => $request->kTeleNo_code,
             'Bursar Contact Country Code|burContactCode' => $request->bContactNumber_code,
             'Sponsor Cellphone Country Code|sponCellCode' => $request->pCell_no_code,
+            'Gender|gender' => $request->gender,
         ];
 
         // $userInfo = User::where('id', $request->userUid)->first();
@@ -8923,6 +8942,20 @@ class HomeController extends Controller
             $info = explode("|", $key);
             $key = $info[1];
             $changedField = $info[0];
+
+            if($changedField === "Gender"){
+                if($userInfo->$key == '1'){
+                    $userInfo->$key = "Male";
+                }elseif($userInfo->$key == '2'){
+                    $userInfo->$key = "Female";
+                }
+
+                if($new == '1'){
+                    $new = "Male";
+                }elseif($new == '2'){
+                    $new = "Female";
+                }
+            }
 
             if($userInfo->$key !== $new){
                 ActionList::create([
@@ -9031,6 +9064,7 @@ class HomeController extends Controller
             'burContactCode' => $request->bContactNumber_code,
             'sponCellCode' => $request->pCell_no_code,
             'app_source' => 0,
+            'gender' => $request->gender,
         ];
 
         // if(empty($checkStudent)){

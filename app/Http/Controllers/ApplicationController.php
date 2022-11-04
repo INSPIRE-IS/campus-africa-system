@@ -1220,6 +1220,7 @@ class ApplicationController extends Controller
             'Postal Code|userAddressPostal' => $request->userAddressPostal,
             'Student Type|studentType' => $request->studentType,
             'Year of Study|yearOfStudy' => $request->yearOfStudy,
+            'Gender|gender' => $request->gender,
         ];
 
         // $userInfo = User::where('id', Auth::user()->id)->first();
@@ -1229,6 +1230,21 @@ class ApplicationController extends Controller
             $info = explode("|", $key);
             $key = $info[1];
             $changedField = $info[0];
+
+            if($changedField == "Gender"){
+
+                if($userInfo->$key == 1){
+                    $userInfo->$key = "Male";
+                }elseif($userInfo->$key == 2){
+                    $userInfo->$key = "Female";
+                }
+
+                if($new == 1){
+                    $new = "Male";
+                }elseif($new = 2){
+                    $new = "Female";
+                }
+            }
 
             if($userInfo->$key !== $new){
                 ActionList::create([
@@ -1290,6 +1306,7 @@ class ApplicationController extends Controller
             'burser_approved' => 0,
             'email_info' => 0,
             'app_source' => 1,
+            'gender' => $request->gender,
         ];
 
         if($userInfo->year !== $request->year){

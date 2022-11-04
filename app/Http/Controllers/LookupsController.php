@@ -1051,4 +1051,19 @@ class LookupsController extends Controller {
             }
         }
     }
+
+    public function admin_updates_update_gender(Request $request){
+        $allStudents = StudentsInfo::get();
+
+        foreach($allStudents as $user){
+            $gender = null;
+            if($user->userId != null && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4){
+                $gender = 2;
+            }elseif($user->userId != null && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9){
+                $gender = 1;
+            }
+
+            StudentsInfo::where('id', $user->id)->update(['gender' => $gender]);
+        }
+    }
 }

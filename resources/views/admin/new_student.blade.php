@@ -86,6 +86,16 @@
             </div>
 
             <div class="form-field">
+                <label>Gender * <span id="gender_error" class="hidden" style="color:red"><small>This field is
+                            required</small></span></label>
+                <select name="gender" id='gender' class="required">
+                    <option value="" disabled selected>Please select one</option>
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+                </select>
+            </div>
+
+            <div class="form-field">
                 <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid
                             cellphone number</small></span><span id="cell_no_duplicate" class="hidden"
                         style="color:red"><small>. Duplicate detected!</small></span></label>
@@ -99,6 +109,10 @@
                     <span id="email_InUse" class="hidden" style="color:red"><small>Email Address already in
                             use</small></span></label>
                 <input type="email" name="email" id="email" class="required">
+            </div>
+
+            <div class="form-field">
+                <br/>
             </div>
 
             <div class="form-field-big">
@@ -723,6 +737,14 @@
                 $("#idNumber_InUse_cancelled").addClass('hidden')
                 $("#idNumber_InUse_active").addClass('hidden')
                 $("#idField").removeClass('idHeight');
+            }
+
+            let element = document.getElementById('gender');
+
+            if(idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 0 && parseFloat(idNumber.substr(6, 1)) <= 4){               
+                element.value = 2;
+            }else if(idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 5 && parseFloat(idNumber.substr(6, 1)) <= 9){
+                element.value = 1;
             }
         })
 

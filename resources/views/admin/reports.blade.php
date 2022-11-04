@@ -101,7 +101,7 @@
         <div class="hidden"><a href="/MDA download.xlsx" download><button type="button" id="downloadMdaDoc">Download</button></a></div>
     @endif
 
-    <br/><br/><br/><br/><hr/><br/>
+    <!-- <br/><br/><br/><br/><hr/><br/>
     <h2>Buildings Report</h2>
     <br/>
     <div class="flex">
@@ -122,7 +122,7 @@
             <div>
                 <p style="background-color:#ccc; padding:5px; border-right:1px solid #fff">{{date('j F Y')}}</p>
                 <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc; border-left:1px solid #ccc">Nr Bookings</p>
-            </div>
+            </div> -->
 
             {{--@foreach($allProp as $prop)
                 <div>
@@ -147,8 +147,8 @@
                 <p style="background-color:#ccc; padding:5px;">Property 3</p>
                 <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">7</p>
             </div> -->
-        </div>
-    </div>
+        <!-- </div>
+    </div> -->
 
 </div>
 

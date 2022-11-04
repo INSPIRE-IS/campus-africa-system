@@ -68,6 +68,7 @@ jQuery(document).ready(function ($) {
                 firstLoad: $("#firstLoad").val(),
                 show_cancelled: JSON.stringify(document.getElementById('show_cancelled').checked),
                 applied: $("#applied").val(),
+                gender: $("#gender").val(),
             },
 
             success: function (data) {
@@ -323,6 +324,7 @@ jQuery(document).ready(function ($) {
         document.getElementById("student_type").value = "All";
         document.getElementById("fieldStatus").value = "All";
         document.getElementById("applied").value = "All";
+        document.getElementById("gender").value = "All";
         $("#date").val("");
         $("#beds").val("");
         $("#processingStatus").val("");

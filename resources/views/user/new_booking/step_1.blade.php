@@ -101,6 +101,20 @@
             <input type="text" name="passportNo" id="passportNo" value="<?php echo $user->userPassport;?>" disabled>
         </div>
 
+        <div class="form-field">
+            <label>Gender * <span id="gender_error" class="hidden" style="color:red"><small>This field is
+                        required</small></span></label>
+            <select name="gender" id='gender' class="required">
+                <option value="" disabled selected>Please select one</option>
+                <option value="1" <?php if($user->gender == "1"){ echo "selected";} ?>>Male</option>
+                <option value="2" <?php if($user->gender == "2"){ echo "selected";} ?>>Female</option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <br/>
+        </div>
+
         <div class="form-field-big">
             <label>Physical Address * <span id="userAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="width:98% " class="required" value="<?php if($cancelled == 0){echo $user->userAddress1;}?>">
@@ -186,10 +200,26 @@
                 <option value="" selected disabled>Select a Residence</option>
                     @foreach($residences as $property)
                         @if($user->studentType != "NSFAS")
-                            <option value="{{$property->id}}">{{$property->residence}}</option>
+                            @if($user->gender == 1 && $property->male === null && $property->female == 1)
+                                <option value="{{$property->id}}" disabled>{{$property->residence}} (Female Only)</option>
+                            @elseif($user->gender == 2 && $property->male == 1 && $property->female === null)
+                                <option value="{{$property->id}}" disabled>{{$property->residence}} (Male Only)</option>
+                            @elseif($property->male === null && $property->female === null)
+                                <option value="{{$property->id}}" disabled>{{$property->residence}} (Not Allowed)</option>
+                            @else
+                                <option value="{{$property->id}}">{{$property->residence}}</option>
+                            @endif
                         @else
                             @if(in_array($property->id, $inSelected))
-                                <option value="{{$property->id}}">{{$property->residence}}</option>
+                                @if($user->gender == 1 && $property->male === null && $property->female == 1)
+                                    <option value="{{$property->id}}" disabled>{{$property->residence}} (Female Only)</option>
+                                @elseif($user->gender == 2 && $property->male == 1 && $property->female === null)
+                                    <option value="{{$property->id}}" disabled>{{$property->residence}} (Male Only)</option>
+                                @elseif($property->male === null && $property->female === null)
+                                    <option value="{{$property->id}}" disabled>{{$property->residence}} (Not Allowed)</option>
+                                @else
+                                    <option value="{{$property->id}}">{{$property->residence}}</option>
+                                @endif
                             @else
                                 <option value="{{$property->id}}" disabled>{{$property->residence}} (Not Allowed)</option>
                             @endif
@@ -368,6 +398,18 @@
         }
     })
 
+    $("#gender").on('change', function(){
+        if($("#studentType").val() !== ""){
+            if ($("#studentType").val() == "NSFAS") {
+                nsfasProp()
+            } else {
+                allowAllProp()
+            }
+        }else{
+            allowAllProp()
+        }
+    })
+
     function allowAllProp(){
         $("#property").empty().append('<option value="" selected disabled>Loading</option>')
 
@@ -376,11 +418,36 @@
             url: "/get-all-properties-online",
 
             success: function(data) {
-                $("#property").empty().append(
-                    '<option value="" selected disabled>Select a Residence</option>')
+                $("#property").empty().append('<option value="" selected disabled>Select a Residence</option>')
+
+                let text = "";
+                let allow = 1;
+
+                if($("#gender").val() == ""){
+                    text = "(No gender selected)"
+                    allow = 0
+                }
+
                 data.forEach(function(index) {
-                    $("#property").append('<option value="' + index.id + '">' + index.residence +
-                        '</option>')
+                    if($("#gender").val() == 1 && index.male === null && index.female === 1){
+                        text = "(Female Only)"
+                        allow = 0
+                    }else if($("#gender").val() == 2 && index.male === 1 && index.female === null){
+                        text = "(Male Only)"
+                        allow = 0
+                    }else if(index.male === null && index.female === null){
+                        text = "(Not Allowed)"
+                        allow = 0
+                    }else{
+                        allow = 1
+                        text = "";
+                    }
+
+                    if(allow == 0){
+                        $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
+                    }else{
+                        $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
+                    }
                 })
             },
         });
@@ -398,25 +465,48 @@
 
                 allprops = data[0];
                 allowed = data[1];
-                $("#property").empty().append(
-                    '<option value="" selected disabled>Select a Residence</option>')
-                    if($("#institStudy").val() == "" || $("#institStudy").val() == null){
-                        allprops.forEach(function(index) {
-                            $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +
-                                ' (No Institution Selected)</option>')
-                        })
-                    }else{
-                        allprops.forEach(function(index) {
-                            if(allowed.includes(index.id)){
-                                $("#property").append('<option value="' + index.id + '">' + index.residence +
-                                    '</option>')
-                            }else{
+                $("#property").empty().append('<option value="" selected disabled>Select a Residence</option>')
 
-                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +
-                                    ' (Not Allowed)</option>')
+                let text = "";
+                let allow = 1;
+
+                if($("#gender").val() == ""){
+                    text = "(No gender selected)"
+                    allow = 0
+                }
+
+                if($("#institStudy").val() == "" || $("#institStudy").val() == null){
+                    allprops.forEach(function(index) {
+                        $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +
+                            ' (No Institution Selected)</option>')
+                    })
+                }else{
+                    allprops.forEach(function(index) {
+                        if($("#gender").val() == 1 && index.male === null && index.female === 1){
+                            text = "(Female Only)"
+                            allow = 0
+                        }else if($("#gender").val() == 2 && index.male === 1 && index.female === null){
+                            text = "(Male Only)"
+                            allow = 0
+                        }else if(index.male === null && index.female === null){
+                            text = "(Not Allowed)"
+                            allow = 0
+                        }else{
+                            allow = 1
+                            text = "";
+                        }
+
+                        if(allowed.includes(index.id)){
+                            if(allow == 0){
+                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
+                            }else{
+                                $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
                             }
-                        })
-                    }
+                        }else{
+                            $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +' (Not Allowed)</option>')
+                        }
+                    })
+                }
             },
         });
     }
@@ -512,6 +602,7 @@
                                 yearOfStudy: $("#yearOfStudy").val(),
                                 property: $("#property").val(),
                                 roomType: $("#roomType").val(),
+                                gender: $("#gender").val(),
                             },
                             success: function (data) {
                                 window.location.replace('/new-booking-step-2')   

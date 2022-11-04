@@ -170,6 +170,7 @@ class RegisterController extends Controller
             'rob_55_lease' => 3,
             'rob_45_other' => 3,
             'app_source' => 1,
+            'gender' => $request->gender,
         ]);
 
         ActionList::create([
@@ -482,6 +483,7 @@ class RegisterController extends Controller
             // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
             'year' => $request->year,
+            'gender' => $request->gender,
         ]);
     }
 

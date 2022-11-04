@@ -293,6 +293,15 @@
                         <div class="form-field">
                             <span style='font-weight:bold'>DOB * <span id="dob_error" class="hidden"><small style="color:red">Not a valid date of birth</small></span> </span><input class="noedit required" name="userDob" id="userDob" disabled type="date" value="{{$user->userDob}}">       
                         </div>
+
+                        <div class="form-field">
+                            <span style='font-weight:bold'>Gender *</span>
+                            <select name="gender" id="gender" class="noedit required" disabled>
+                                <option value="" selected disabled>Please select one</option>
+                                <option value="1" <?php if($user->gender == 1){echo "selected";}?>>Male</option>
+                                <option value="2" <?php if($user->gender == 2){echo "selected";}?>>Female</option>
+                            </select>
+                        </div>
                     @endif
 
                     @if($file->fileId == "studentCard")

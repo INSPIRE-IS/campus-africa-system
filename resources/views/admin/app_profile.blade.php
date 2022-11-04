@@ -113,6 +113,7 @@
                     {{$user[0]['userInfo']['userDob']}}<br/>
                     {{$user[0]['userInfo']['userNationality']}}<br/>
                     @if($user[0]['userInfo']['userId']){{$user[0]['userInfo']['userId']}}<br/>@endif
+                    @if($user[0]['userInfo']['gender'] == 1)Male <br/>@elseif($user[0]['userInfo']['gender'] == 2)Female<br/>@endif
                     @if($user[0]['userInfo']['userPassport']){{$user[0]['userInfo']['userPassport']}}<br/>@endif
                 </p>
 

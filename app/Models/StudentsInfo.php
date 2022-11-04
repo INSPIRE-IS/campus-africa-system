@@ -117,6 +117,7 @@ class StudentsInfo extends Model
         'mda_tenant_id',
         'fee_reminder_sent',
         'general_reminder_sent',
+        'gender',
     ];
 
     public function files(){
