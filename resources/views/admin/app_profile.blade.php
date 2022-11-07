@@ -1607,11 +1607,15 @@
             type: "get",
             url: "/check-all-rooms/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
-                let properties = data[7];
+                let properties = data[6];
 
                 // console.log(data)
 
                 let selProp = data[2].property;
+
+                let inSelectedCash = data[7];
+                let inSelectedBursary = data[8];
+                let inSelectedNsfas = data[9];
 
                 properties.sort();
                 $('#propertyBuilding').empty()
@@ -1625,25 +1629,38 @@
 
                         if("{{$user[0]['userInfo']['rob_60_cancelled']}}" == '1'){
                             if(propArr.includes(properties[key].id)){
-                                if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
-                                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
-                                }else if(data[4].studentType != "NSFAS"){
-                                    $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+
+                                if(data[4].studentType == "Cash / Direct" && inSelectedCash.includes(properties[key].id)){
+                                    $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                                }else if(data[4].studentType == "Bursary" && inSelectedBursary.includes(properties[key].id)){
+                                    $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                                }else if(data[4].studentType == "NSFAS" && inSelectedNsfas.includes(properties[key].id)){
+                                    $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
                                 }else{
-                                    $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
+                                    $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>');
                                 }
                                 
                             }
                         }else{
+
+                            if(data[4].studentType == "Cash / Direct" && inSelectedCash.includes(properties[key].id)){
+                                $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                            }else if(data[4].studentType == "Bursary" && inSelectedBursary.includes(properties[key].id)){
+                                $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                            }else if(data[4].studentType == "NSFAS" && inSelectedNsfas.includes(properties[key].id)){
+                                $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                            }else{
+                                $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>');
+                            }
                             
 
-                            if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
-                                $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
-                            }else if(data[4].studentType != "NSFAS"){
-                                $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
-                            }else{
-                                $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
-                            }
+                            // if(data[4].studentType == "NSFAS" && propNsfasAllow.includes(properties[key].id)){
+                            //     $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                            // }else if(data[4].studentType != "NSFAS"){
+                            //     $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
+                            // }else{
+                            //     $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>')
+                            // }
                         }
 
                         // $('#propertyBuilding').append('<option value="'+properties[key].id+'">'+properties[key].residence+'</option>')
