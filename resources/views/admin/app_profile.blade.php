@@ -2817,7 +2817,7 @@
             type: "get",
             url: "/check-all-rooms/{{$user[0]['userInfo']['userUid']}}",
             success: function (data) {
-                let roomData = data[6]
+                let roomData = data[5]
 
                 // console.log(roomData)
                 // console.log("roomData")
