@@ -105,7 +105,7 @@ class BookingReportController extends Controller
                                         if($user->rob_10_fee == '2' && $user->rob_40_bed == '2'){
                                             $roomSummary['room_allocated']++;
                                             $propSummary['beds_allocated']++;
-                                        }else if($user->rob_10_fee == '2' && $user->rob_40_bed == '1'){
+                                        }else if($user->rob_10_fee == '2' && $user->rob_40_bed != '2'){
                                             $roomSummary['room_waitlisted']++;
                                             $propSummary['beds_waitlisted']++;
                                         }
