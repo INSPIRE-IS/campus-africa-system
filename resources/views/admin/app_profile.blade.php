@@ -1644,13 +1644,13 @@
                         }else{
 
                             if(data[4].studentType == "Cash / Direct" && inSelectedCash.includes(properties[key].id)){
-                                $("#propertyRoom").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                                $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
                             }else if(data[4].studentType == "Bursary" && inSelectedBursary.includes(properties[key].id)){
-                                $("#propertyRoom").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                                $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
                             }else if(data[4].studentType == "NSFAS" && inSelectedNsfas.includes(properties[key].id)){
-                                $("#propertyRoom").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
+                                $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence + '</option>')
                             }else{
-                                $('#propertyRoom').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>');
+                                $('#propertyBuilding').append('<option value="'+properties[key].id+'" disabled>'+properties[key].residence+' (Not Allowed)</option>');
                             }
                             
 
