@@ -30,5 +30,7 @@ class Residence extends Model
         'mda_id',
         'company_reg',
         'company_vat',
+        'male',
+        'female',
     ];
 }

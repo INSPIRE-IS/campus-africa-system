@@ -41,10 +41,27 @@
         </div>
 
         <div class="form-field <?php if($lookup->group_id != "1"){echo "hidden";} ?>" id="propertyListNsfas" style="height:<?php echo 48*count($allProperties);?>px !important;">
-            <label>NSFAS Accreditation</label>
+            <label>Student Types</label>
             <ul style="list-style-type:none; width:100%">
                 @foreach($allProperties as $prop)
-                <li style="display:inline-flex"><input type="checkbox" id="{{$prop->id}}_prop" name="{{$prop->id}}_prop" style="width:27px !important" <?php if(in_array($prop->id, $instProps)){echo "checked";}?> value='1'><label for="{{$prop->id}}_prop">&nbsp; &nbsp;{{$prop->residence}}</label></li><br/>
+                <li style="display:inline-flex"><label for="{{$prop->id}}_prop" style="width:300px;">&nbsp; &nbsp;{{$prop->residence}}</label>
+
+                    <ul style="list-style-type:none; width:100%">
+                        <li style="display:inline-flex">
+                            <input type="checkbox" id="{{$prop->id}}_nsfas" name="{{$prop->id}}_nsfas" style="width:27px !important" <?php if(in_array($prop->id, $instProps) && in_array($prop->id, $instPropsNsfas)){echo "checked";}?> value='1'><label for="{{$prop->id}}_nsfas" style="width:100px;">&nbsp; &nbsp;NSFAS</label>
+                        </li>
+                        <li style="display:inline-flex">
+                            <input type="checkbox" id="{{$prop->id}}_cash" name="{{$prop->id}}_cash" style="width:27px !important" <?php if(in_array($prop->id, $instProps) && in_array($prop->id, $instPropsCash)){echo "checked";}?> value='1'><label for="{{$prop->id}}_cash" style="width:100px;">&nbsp; &nbsp;Cash</label>
+                        </li>
+                        <li style="display:inline-flex">
+                            <input type="checkbox" id="{{$prop->id}}_bursary" name="{{$prop->id}}_bursary" style="width:27px !important" <?php if(in_array($prop->id, $instProps) && in_array($prop->id, $instPropsBursary)){echo "checked";}?> value='1'><label for="{{$prop->id}}_bursary" style="width:100px;">&nbsp; &nbsp;Bursary</label>
+                        </li>
+                        
+                    </ul>
+
+                    </li>
+                
+                <br/>
                 @endforeach
             </ul>
         </div>

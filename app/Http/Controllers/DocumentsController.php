@@ -173,7 +173,8 @@ class DocumentsController extends Controller {
                 'userDob|Date of Birth' => $request->userDob,
                 'userNationality|Nationality' => $request->nationality,
                 'userPassport|Passport Number' => $request->userPassport,
-                'userId|I.D Number' => $request->userId
+                'userId|I.D Number' => $request->userId,
+                'gender|Gender' => $request->gender
             ];
 
             $updateData = [
@@ -182,7 +183,8 @@ class DocumentsController extends Controller {
                 'userDob' => $request->userDob,
                 'userId' => $request->userId,
                 'userNationality' => $request->nationality,
-                'userPassport' => $request->userPassport
+                'userPassport' => $request->userPassport,
+                'gender' => $request->gender,
             ];
 
         } elseif ($request->type == "studentCard") {
@@ -460,6 +462,20 @@ class DocumentsController extends Controller {
                         $new = "No";
                     }
 
+                }
+
+                if($changedField == "Gender"){
+                    if($oldStudentData->$key == 1){
+                        $oldStudentData->$key = "Male";
+                    }elseif($oldStudentData->$key == 2){
+                        $oldStudentData->$key = "Female";
+                    }
+
+                    if($new == 1){
+                        $new = "Male";
+                    }elseif($new == 2){
+                        $new = "Female";
+                    }
                 }
 
 

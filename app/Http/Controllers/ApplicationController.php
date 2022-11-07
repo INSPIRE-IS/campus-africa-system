@@ -1190,13 +1190,17 @@ class ApplicationController extends Controller
         $residences = Residence::whereNull('status')->get();
         $user = User::where('id', Auth::user()->id)->first();
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
-        $inSelected = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->pluck('property_id')->toArray();
+
+        $inSelectedCash = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->where('cash', '1')->pluck('property_id')->toArray();
+        $inSelectedBursary = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->where('bursary', '1')->pluck('property_id')->toArray();
+        $inSelectedNsfas = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->where('nsfas', '1')->pluck('property_id')->toArray();
+
         $cancelled = 0;
 
         if($userInfo->rob_60_cancelled == 1 || $userInfo->year < $this_year - 1){
             $cancelled = 1;
         }
-        return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences, "inSelected" => $inSelected]);
+        return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences, "inSelectedCash" => $inSelectedCash, "inSelectedBursary" => $inSelectedBursary, "inSelectedNsfas" => $inSelectedNsfas]);
     }
 
     public function new_booking_step_1_save(Request $request){
@@ -1220,6 +1224,7 @@ class ApplicationController extends Controller
             'Postal Code|userAddressPostal' => $request->userAddressPostal,
             'Student Type|studentType' => $request->studentType,
             'Year of Study|yearOfStudy' => $request->yearOfStudy,
+            'Gender|gender' => $request->gender,
         ];
 
         // $userInfo = User::where('id', Auth::user()->id)->first();
@@ -1229,6 +1234,21 @@ class ApplicationController extends Controller
             $info = explode("|", $key);
             $key = $info[1];
             $changedField = $info[0];
+
+            if($changedField == "Gender"){
+
+                if($userInfo->$key == 1){
+                    $userInfo->$key = "Male";
+                }elseif($userInfo->$key == 2){
+                    $userInfo->$key = "Female";
+                }
+
+                if($new == 1){
+                    $new = "Male";
+                }elseif($new = 2){
+                    $new = "Female";
+                }
+            }
 
             if($userInfo->$key !== $new){
                 ActionList::create([
@@ -1290,6 +1310,7 @@ class ApplicationController extends Controller
             'burser_approved' => 0,
             'email_info' => 0,
             'app_source' => 1,
+            'gender' => $request->gender,
         ];
 
         if($userInfo->year !== $request->year){
@@ -1863,9 +1884,13 @@ class ApplicationController extends Controller
 
     public function nsfas_properties_online(Request $request){
         $allRes = Residence::whereNull('status')->get();
-        $inSelected = InstitutionProperties::where("institution_id", $request->institStudy)->pluck('property_id')->toArray();
 
-        return [$allRes, $inSelected];
+        $inSelectedCash = InstitutionProperties::where("institution_id", $request->institStudy)->where('cash', '1')->pluck('property_id')->toArray();
+        $inSelectedBursary = InstitutionProperties::where("institution_id", $request->institStudy)->where('bursary', '1')->pluck('property_id')->toArray();
+        $inSelectedNsfas = InstitutionProperties::where("institution_id", $request->institStudy)->where('nsfas', '1')->pluck('property_id')->toArray();
+
+
+        return [$allRes, $inSelectedCash, $inSelectedBursary, $inSelectedNsfas];
     }
 
 }

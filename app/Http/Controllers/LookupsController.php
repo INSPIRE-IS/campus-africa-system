@@ -85,7 +85,11 @@ class LookupsController extends Controller {
             $allProperties = Residence::whereNull('status')->get();
             $instProps = InstitutionProperties::where('institution_id', $lookupId)->pluck('property_id')->toArray();
 
-            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup, "allProperties" => $allProperties, "instProps" => $instProps]);
+            $instPropsCash = InstitutionProperties::where('institution_id', $lookupId)->where('cash', '1')->pluck('property_id')->toArray();
+            $instPropsBursary = InstitutionProperties::where('institution_id', $lookupId)->where('bursary', '1')->pluck('property_id')->toArray();
+            $instPropsNsfas = InstitutionProperties::where('institution_id', $lookupId)->where('nsfas', '1')->pluck('property_id')->toArray();
+
+            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup, "allProperties" => $allProperties, "instProps" => $instProps, "instPropsCash" => $instPropsCash, "instPropsBursary" => $instPropsBursary, "instPropsNsfas" => $instPropsNsfas]);
         }else{
             return "404 Error";
         }
@@ -133,9 +137,29 @@ class LookupsController extends Controller {
             $allProperties = Residence::whereNull('status')->get();
             foreach($allProperties as $prop){
                 $propName = $prop->id."_prop";
-                if($request->$propName == '1'){
-                    InstitutionProperties::create(["institution_id" => $request->lookupId, "property_id" => $prop->id]);
+
+                $propCash = $prop->id."_cash";
+                $propBursary = $prop->id."_bursary";
+                $propNsfas = $prop->id."_nsfas";
+
+                $cash = null;
+                $bursary = null;
+                $nsfas =null;
+
+                if($request->$propCash == '1'){
+                    $cash = 1;
                 }
+
+                if($request->$propBursary == '1'){
+                    $bursary = 1;
+                }
+
+                if($request->$propNsfas == '1'){
+                    $nsfas = 1;
+                }
+
+                InstitutionProperties::create(["institution_id" => $request->lookupId, "property_id" => $prop->id, "cash" => $cash, "bursary"=> $bursary, "nsfas" => $nsfas]);
+                
             }
 
             $data = [
@@ -1049,6 +1073,21 @@ class LookupsController extends Controller {
             if($user->rob_10_fee == 1 || $user->rob_10_fee == 0){
                 StudentsInfo::where("id", $user->id)->update(["rob_40_bed" => 0]);
             }
+        }
+    }
+
+    public function admin_updates_update_gender(Request $request){
+        $allStudents = StudentsInfo::get();
+
+        foreach($allStudents as $user){
+            $gender = null;
+            if($user->userId != null && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4){
+                $gender = 2;
+            }elseif($user->userId != null && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9){
+                $gender = 1;
+            }
+
+            StudentsInfo::where('id', $user->id)->update(['gender' => $gender]);
         }
     }
 }

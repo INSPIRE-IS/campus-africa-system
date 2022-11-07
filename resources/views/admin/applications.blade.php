@@ -133,8 +133,17 @@
             </select>
         </div>
         <div class="searchField" style="height:80px;">
-            <br/>
+            <label>Gender</label><br/>
+            <select name="gender" id='gender'>
+                <option value="All" selected <?php if( Session::get('gender') == "All"){ echo "selected";}?>>All</option>
+                <option value="1" <?php if( Session::get('gender') == "1"){ echo "selected";}?>>Male</option>
+                <option value="2" <?php if( Session::get('gender') == "2"){ echo "selected";}?>>Female</option>
+                <option value="3" <?php if( Session::get('gender') == "3"){ echo "selected";}?>>Unspecified</option>
+            </select>
         </div>
+        <!-- <div class="searchField" style="height:80px;">
+            <br/>
+        </div> -->
         <div class="searchField" style="height:80px;">
             <br/>
         </div>
