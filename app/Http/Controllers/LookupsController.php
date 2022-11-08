@@ -36,7 +36,9 @@ class LookupsController extends Controller {
 
         if(Auth::user()->role_lookup == 1){
 
-            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup"]);
+            $allProperties = Residence::whereNull('status')->get();
+
+            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup", "allProperties" => $allProperties]);
         }else{
             return "404 Error";
         }
@@ -69,7 +71,39 @@ class LookupsController extends Controller {
             $data['actionUserUid'] = Auth::user()->id;
         }
 
-        Lookups::create($data);
+        $lookup = Lookups::create($data);
+
+        if($request->group_id == "1"){
+            InstitutionProperties::where('institution_id', $lookup->id)->delete();
+            
+            $allProperties = Residence::whereNull('status')->get();
+            foreach($allProperties as $prop){
+                $propName = $prop->id."_prop";
+
+                $propCash = $prop->id."_cash";
+                $propBursary = $prop->id."_bursary";
+                $propNsfas = $prop->id."_nsfas";
+
+                $cash = null;
+                $bursary = null;
+                $nsfas =null;
+
+                if($request->$propCash == '1'){
+                    $cash = 1;
+                }
+
+                if($request->$propBursary == '1'){
+                    $bursary = 1;
+                }
+
+                if($request->$propNsfas == '1'){
+                    $nsfas = 1;
+                }
+
+                InstitutionProperties::create(["institution_id" => $lookup->id, "property_id" => $prop->id, "cash" => $cash, "bursary"=> $bursary, "nsfas" => $nsfas]);
+                
+            }
+        }
 
         return redirect()->route('lookups');
     }
