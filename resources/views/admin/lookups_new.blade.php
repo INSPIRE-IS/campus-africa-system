@@ -38,6 +38,32 @@
             <small id="mailCCWording" class="hidden">Specify individual email addresses to BCC, Please seperate email addresses by semicolon</small>
         </div>
 
+        <div class="form-field hidden" id="propertyListNsfas" style="height:<?php echo 48*count($allProperties);?>px !important;">
+            <label>Student Types</label>
+            <ul style="list-style-type:none; width:100%">
+                @foreach($allProperties as $prop)
+                <li style="display:inline-flex"><label for="{{$prop->id}}_prop" style="width:300px;">&nbsp; &nbsp;{{$prop->residence}}</label>
+
+                    <ul style="list-style-type:none; width:100%">
+                        <li style="display:inline-flex">
+                            <input type="checkbox" id="{{$prop->id}}_nsfas" name="{{$prop->id}}_nsfas" style="width:27px !important" value='1'><label for="{{$prop->id}}_nsfas" style="width:100px;">&nbsp; &nbsp;NSFAS</label>
+                        </li>
+                        <li style="display:inline-flex">
+                            <input type="checkbox" id="{{$prop->id}}_cash" name="{{$prop->id}}_cash" style="width:27px !important" value='1'><label for="{{$prop->id}}_cash" style="width:100px;">&nbsp; &nbsp;Cash</label>
+                        </li>
+                        <li style="display:inline-flex">
+                            <input type="checkbox" id="{{$prop->id}}_bursary" name="{{$prop->id}}_bursary" style="width:27px !important" value='1'><label for="{{$prop->id}}_bursary" style="width:100px;">&nbsp; &nbsp;Bursary</label>
+                        </li>
+                        
+                    </ul>
+
+                    </li>
+                
+                <br/>
+                @endforeach
+            </ul>
+        </div>
+
         <div class="form-field hidden" id="waiverValue">
             <label>Value</label>
             <select name="booking_waiver" id="booking_waiver">
@@ -84,6 +110,7 @@
             $("#mailWording").addClass('hidden');
             $("#mailCCWording").addClass('hidden');
             $("#nsfas_value").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
             // $("#waiverDateFrom").removeClass('hidden');
             // $("#waiverDateTo").removeClass('hidden');
         }else if($("#group_id").val() == "9" || $("#group_id").val() == "12" || $("#group_id").val() == "13"){
@@ -93,11 +120,13 @@
             $("#mailWording").addClass('hidden');
             $("#nsfas_value").addClass('hidden');
             $("#mailCCWording").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
         }else if($("#group_id").val() == "10"){
             $("#mailWording").removeClass('hidden');
             $("#onlineAppValue").addClass('hidden');
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
 
             $("#mailCCWording").addClass('hidden');
         }else if($("#group_id").val() == "11"){
@@ -105,12 +134,14 @@
             $("#onlineAppValue").addClass('hidden');
             $("#normalVlaue").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
 
             $("#mailCCWording").removeClass('hidden');
             $("#nsfas_value").addClass('hidden');
         }else if($("#group_id").val() == "1" ){
             $("#nsfas_value").removeClass('hidden');
             $("#normalVlaue").removeClass('hidden');
+            $("#propertyListNsfas").removeClass('hidden');
             $("#waiverValue").addClass('hidden');
             $("#mailWording").addClass('hidden');
             $("#onlineAppValue").addClass('hidden');
@@ -121,6 +152,7 @@
             $("#mailWording").addClass('hidden');
             $("#mailCCWording").addClass('hidden');
             $("#nsfas_value").addClass('hidden');
+            $("#propertyListNsfas").addClass('hidden');
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
         }
