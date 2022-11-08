@@ -9665,7 +9665,7 @@ class HomeController extends Controller
         foreach($allBookingsThisYear as $booking){
             $property = Residence::where('id', $booking->property)->pluck('residence')->first();
             $room = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
-            $user = StudentsInfo::where('bookingId', $booking->id)->orderBy('year', 'desc')->first();
+            $user = StudentsInfo::where('bookingId', $booking->id)->where('rob_10_fee', '2')->orderBy('year', 'desc')->first();
 
             if(!empty($user) && $user->rob_60_cancelled == 0){
 
