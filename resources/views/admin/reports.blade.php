@@ -101,6 +101,25 @@
         <div class="hidden"><a href="/MDA download.xlsx" download><button type="button" id="downloadMdaDoc">Download</button></a></div>
     @endif
 
+    <br/><br/><br/><br/><hr/><br/>
+    <h2>All Applications</h2>
+    <br/>
+
+    @if(Auth::user()->role_all_apps_report == 1)
+
+        <select id="studYear" name="studYear">
+            <option value="All">All Years</option>
+            @foreach($appYears as $year)
+                <option value="{{$year->year}}">{{$year->year}}</option>
+            @endforeach
+        </select>
+        <br/>
+
+        <button type="button" class="detailsChange" id="downloadAllApps" style="float:left; margin-left:0px;">Download Applications</button>
+        <div class="hidden"><a href="" download id="downloadAppsBtn"><button type="button" id="downloadBtnApps">Download</button></a></div>
+
+    @endif
+
     <!-- <br/><br/><br/><br/><hr/><br/>
     <h2>Buildings Report</h2>
     <br/>
@@ -244,6 +263,21 @@
             success: function (data) {
                 $("#downloadMdaDoc").click();
                 $("#downloadMda").empty().append('Download MDA')
+            },
+        });
+    })
+
+    $("#downloadAllApps").on('click', function(){
+        $("#downloadAllApps").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "post",
+            url: "/download-apps",
+            data: { year: $("#studYear").val()},
+            success: function (data) {
+                var a = document.getElementById('downloadAppsBtn');
+                a.href = data
+                $("#downloadBtnApps").click();
+                $("#downloadAllApps").empty().append('Download Applications')
             },
         });
     })

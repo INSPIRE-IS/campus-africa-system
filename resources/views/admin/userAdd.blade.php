@@ -173,17 +173,17 @@
                     <input type="checkbox" id="role_mda_report" name="role_mda_report" value="1">
                     <label for="role_mda_report" style="width:500px">MDA Report </label>
                 </li>
-
-                
-
-                
-
-                
                 
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_change_building" name="role_change_building" value="1">
                     <label for="role_change_building" style="width:500px">Change Building</label>
                 </li>
+
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_all_apps_report" name="role_all_apps_report" value="1">
+                    <label for="role_all_apps_report" style="width:500px">All Application Report </label>
+                </li>
+                
 
                 
                 
