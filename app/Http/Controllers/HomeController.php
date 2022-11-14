@@ -1928,6 +1928,7 @@ class HomeController extends Controller
             // "role_approve_waive" => $request->role_approve_waive,
             "role_bm_report" => $request->role_bm_report,
             "role_mda_report" => $request->role_mda_report,
+            "role_all_apps_report" => $request->role_all_apps_report,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -2762,6 +2763,7 @@ class HomeController extends Controller
             // "role_approve_waive" => $request->role_approve_waive,
             "role_bm_report" => $request->role_bm_report,
             "role_mda_report" => $request->role_mda_report,
+            "role_all_apps_report" => $request->role_all_apps_report,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -3191,8 +3193,10 @@ class HomeController extends Controller
             }
         }
 
+        $appYears = StudentsInfo::groupBy('year')->get();
 
-        return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed]);
+
+        return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed, "appYears" => $appYears]);
     }
 
     public function download_report(Request $request){
@@ -9802,6 +9806,128 @@ class HomeController extends Controller
     //     residence::withTrashed()->where('id', $residence_id)->restore();
     //     return redirect()->back();
     // }
+
+    public function download_apps(Request $request){
+
+        if($request->year !== "All"){
+            $allUsers = StudentsInfo::where('year', $request->year)->get();
+        }else{
+            $allUsers = StudentsInfo::get();
+        }
+
+        $users = [
+			['<b>First Name</b>', '<b>Last Name</b>', '<b>Title</b>', '<b>DOB</b>', '<b>Cell</b>', '<b>Email</b>', '<b>Nationality</b>', '<b>I.D Number</b>', '<b>Passport</b>',  '<b>Student Type</b>', '<b>Year</b>', '<b>Institution of Study</b>', '<b>Student Number</b>', '<b>Year of Study</b>', '<b>Faculty</b>',
+
+            '<b>Booking Fee</b>',
+            '<b>Copy Of ID</b>',
+            '<b>Student Card</b>',
+            '<b>Proof of Registration</b>',
+            '<b>Funds</b>',
+            '<b>Information</b>',
+            '<b>Bed Assigned</b>',
+            '<b>Other</b>',
+            '<b>Application Approved</b>',
+            '<b>Lease Signed</b>',
+            
+            '<b>Burser Company Name</b>', '<b>Burser Registeration Number</b>', '<b>Burser Contact Person</b>', '<b>Burser Contact Number</b>', '<b>Burser Email</b>', '<b>Parent First Name</b>', '<b>Parent Last Name</b>', '<b>Parent Cellphone Number</b>', '<b>Parent Email</b>', '<b>Parent Nationality</b>', '<b>Parent I.D Number</b>', '<b>Parent Passport</b>', '<b>Parent Street No</b>', '<b>Parent Suburb</b>', '<b>Parent City</b>', '<b>Parent Postal Code</b>', '<b>Next of Kin First Name</b>', '<b>Next of Kin Last Name</b>', '<b>Next of Kin Title</b>', '<b>Next of Kin Relationship</b>', '<b>Next of Kin Nationality</b>', '<b>Next of Kin I.D Number</b>', '<b>Next of Kin Passport</b>', '<b>Next of Kin Cellphone Number</b>', '<b>Next of Kin Email</b>', '<b>Next of Kin Work Number</b>', '<b>Next of Kin Telephone Number</b>', '<b>Next of Kin Street No</b>', '<b>Next of Kin Suburb</b>', '<b>Next of Kin City</b>', '<b>Next of Kin Postal Code</b>',]];
+
+            foreach($allUsers as $user){
+
+                $lookupsInstit = Lookups::where('id', $user->institutionStudy)->first();
+                $lookupsFaculty = Lookups::where('id', $user->faculty)->first();
+
+                if($user->rob_10_fee == 1){
+                    $rob_10_fee = "Uploaded";
+                }elseif($user->rob_10_fee == 2){
+                    $rob_10_fee = "Approved";
+                }else{
+                    $rob_10_fee = "";
+                }
+
+                if($user->rob_15_id == 1){
+                    $rob_15_id = "Uploaded";
+                }elseif($user->rob_15_id == 2){
+                    $rob_15_id = "Approved";
+                }else{
+                    $rob_15_id = "";
+                }
+
+                if($user->rob_20_card == 1){
+                    $rob_20_card = "Uploaded";
+                }elseif($user->rob_20_card == 2){
+                    $rob_20_card = "Approved";
+                }else{
+                    $rob_20_card = "";
+                }
+
+                if($user->rob_25_reg == 1){
+                    $rob_25_reg = "Uploaded";
+                }elseif($user->rob_25_reg == 2){
+                    $rob_25_reg = "Approved";
+                }else{
+                    $rob_25_reg = "";
+                }
+
+                if($user->rob_30_funds == 1){
+                    $rob_30_funds = "Uploaded";
+                }elseif($user->rob_30_funds == 2){
+                    $rob_30_funds = "Approved";
+                }else{
+                    $rob_30_funds = "";
+                }
+
+                if($user->rob_35_info == 1){
+                    $rob_35_info = "Uploaded";
+                }elseif($user->rob_35_info == 2){
+                    $rob_35_info = "Approved";
+                }else{
+                    $rob_35_info = "";
+                }
+
+                if($user->rob_40_bed == 1){
+                    $rob_40_bed = "Uploaded";
+                }elseif($user->rob_40_bed == 2){
+                    $rob_40_bed = "Approved";
+                }else{
+                    $rob_40_bed = "";
+                }
+
+                if($user->rob_45_other == 1){
+                    $rob_45_other = "Uploaded";
+                }elseif($user->rob_45_other == 2){
+                    $rob_45_other = "Approved";
+                }else{
+                    $rob_45_other = "";
+                }
+
+                if($user->rob_50_approve == 1){
+                    $rob_50_approve = "Uploaded";
+                }elseif($user->rob_50_approve == 2){
+                    $rob_50_approve = "Approved";
+                }else{
+                    $rob_50_approve = "";
+                }
+
+                if($user->rob_55_lease == 1){
+                    $rob_55_lease = "Uploaded";
+                }elseif($user->rob_55_lease == 2){
+                    $rob_55_lease = "Approved";
+                }else{
+                    $rob_55_lease = "";
+                }
+
+                $studentData = [$user->userFirstName, $user->userLastname, $user->userTitle, $user->userDob, $user->userCell, $user->userEmail, $user->userNationality, $user->userId, $user->userPassport, $user->studentType, $user->year, $lookupsInstit->lookup_name, $user->studentNo, $user->yearOfStudy, $lookupsFaculty->lookup_name, $rob_10_fee, $rob_15_id, $rob_20_card, $rob_25_reg, $rob_30_funds, $rob_35_info, $rob_40_bed, $rob_45_other, $rob_50_approve, $rob_55_lease, $user->burCompanyName, $user->burRegNo, $user->burContactPerson, $user->burContactNo, $user->burEmail, $user->sponFirstName, $user->sponLastName, $user->sponCell, $user->sponEmail, $user->pNationality, $user->sponId, $user->pPassportNo, $user->pAddress1, $user->pAddress2, $user->pAddressCity, $user->pAddressPostal, $user->kinFirstName, $user->kinLastName, $user->kinTitle, $user->kinRelationship, $user->kinNationality, $user->kinId, $user->kinPassportNo, $user->kinCellNo, $user->kinEmail, $user->kinWorkNo, $user->kinTelNo, $user->kinAddressStr, $user->kinAddressSuburb, $user->kinAddressCity, $user->kinAddressPost];
+
+                array_push($users, $studentData);
+            }
+
+
+        $xlsx = new \Shuchkin\SimpleXLSXGen();
+		$xlsx->addSheet( $users, 'Students');
+        $xlsx->saveAs('All_Applications_'.$request->year.'_download.xlsx');
+
+		return 'All_Applications_'.$request->year.'_download.xlsx';
+    }
     
     
 
