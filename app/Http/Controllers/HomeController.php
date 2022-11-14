@@ -9828,6 +9828,9 @@ class HomeController extends Controller
             '<b>Other</b>',
             '<b>Application Approved</b>',
             '<b>Lease Signed</b>',
+            '<b>Cancelled</b>',
+
+            '<b>Residence</b>', '<b>Room Type</b>', '<b>Floor</b>', '<b>Unit</b>', '<b>Room</b>', '<b>Bed Code</b>',
             
             '<b>Burser Company Name</b>', '<b>Burser Registeration Number</b>', '<b>Burser Contact Person</b>', '<b>Burser Contact Number</b>', '<b>Burser Email</b>', '<b>Parent First Name</b>', '<b>Parent Last Name</b>', '<b>Parent Cellphone Number</b>', '<b>Parent Email</b>', '<b>Parent Nationality</b>', '<b>Parent I.D Number</b>', '<b>Parent Passport</b>', '<b>Parent Street No</b>', '<b>Parent Suburb</b>', '<b>Parent City</b>', '<b>Parent Postal Code</b>', '<b>Next of Kin First Name</b>', '<b>Next of Kin Last Name</b>', '<b>Next of Kin Title</b>', '<b>Next of Kin Relationship</b>', '<b>Next of Kin Nationality</b>', '<b>Next of Kin I.D Number</b>', '<b>Next of Kin Passport</b>', '<b>Next of Kin Cellphone Number</b>', '<b>Next of Kin Email</b>', '<b>Next of Kin Work Number</b>', '<b>Next of Kin Telephone Number</b>', '<b>Next of Kin Street No</b>', '<b>Next of Kin Suburb</b>', '<b>Next of Kin City</b>', '<b>Next of Kin Postal Code</b>',]];
 
@@ -9836,87 +9839,118 @@ class HomeController extends Controller
                 $lookupsInstit = Lookups::where('id', $user->institutionStudy)->first();
                 $lookupsFaculty = Lookups::where('id', $user->faculty)->first();
 
-                if($user->rob_10_fee == 1){
+                $booking = Booking::where('id', $user->bookingId)->first();
+
+                if($user->rob_10_fee == 1 && $user->rob_60_cancelled != 1){
                     $rob_10_fee = "Uploaded";
-                }elseif($user->rob_10_fee == 2){
+                }elseif($user->rob_10_fee == 2 && $user->rob_60_cancelled != 1){
                     $rob_10_fee = "Approved";
                 }else{
                     $rob_10_fee = "";
                 }
 
-                if($user->rob_15_id == 1){
+                if($user->rob_15_id == 1 && $user->rob_60_cancelled != 1){
                     $rob_15_id = "Uploaded";
-                }elseif($user->rob_15_id == 2){
+                }elseif($user->rob_15_id == 2 && $user->rob_60_cancelled != 1){
                     $rob_15_id = "Approved";
                 }else{
                     $rob_15_id = "";
                 }
 
-                if($user->rob_20_card == 1){
+                if($user->rob_20_card == 1 && $user->rob_60_cancelled != 1){
                     $rob_20_card = "Uploaded";
-                }elseif($user->rob_20_card == 2){
+                }elseif($user->rob_20_card == 2 && $user->rob_60_cancelled != 1){
                     $rob_20_card = "Approved";
                 }else{
                     $rob_20_card = "";
                 }
 
-                if($user->rob_25_reg == 1){
+                if($user->rob_25_reg == 1 && $user->rob_60_cancelled != 1){
                     $rob_25_reg = "Uploaded";
-                }elseif($user->rob_25_reg == 2){
+                }elseif($user->rob_25_reg == 2 && $user->rob_60_cancelled != 1){
                     $rob_25_reg = "Approved";
                 }else{
                     $rob_25_reg = "";
                 }
 
-                if($user->rob_30_funds == 1){
+                if($user->rob_30_funds == 1 && $user->rob_60_cancelled != 1){
                     $rob_30_funds = "Uploaded";
-                }elseif($user->rob_30_funds == 2){
+                }elseif($user->rob_30_funds == 2 && $user->rob_60_cancelled != 1){
                     $rob_30_funds = "Approved";
                 }else{
                     $rob_30_funds = "";
                 }
 
-                if($user->rob_35_info == 1){
+                if($user->rob_35_info == 1 && $user->rob_60_cancelled != 1){
                     $rob_35_info = "Uploaded";
-                }elseif($user->rob_35_info == 2){
+                }elseif($user->rob_35_info == 2 && $user->rob_60_cancelled != 1){
                     $rob_35_info = "Approved";
                 }else{
                     $rob_35_info = "";
                 }
 
-                if($user->rob_40_bed == 1){
+                if($user->rob_40_bed == 1 && $user->rob_60_cancelled != 1){
                     $rob_40_bed = "Uploaded";
-                }elseif($user->rob_40_bed == 2){
+                }elseif($user->rob_40_bed == 2 && $user->rob_60_cancelled != 1){
                     $rob_40_bed = "Approved";
                 }else{
                     $rob_40_bed = "";
                 }
 
-                if($user->rob_45_other == 1){
+                if($user->rob_45_other == 1 && $user->rob_60_cancelled != 1){
                     $rob_45_other = "Uploaded";
-                }elseif($user->rob_45_other == 2){
+                }elseif($user->rob_45_other == 2 && $user->rob_60_cancelled != 1){
                     $rob_45_other = "Approved";
                 }else{
                     $rob_45_other = "";
                 }
 
-                if($user->rob_50_approve == 1){
+                if($user->rob_50_approve == 1 && $user->rob_60_cancelled != 1){
                     $rob_50_approve = "Uploaded";
-                }elseif($user->rob_50_approve == 2){
+                }elseif($user->rob_50_approve == 2 && $user->rob_60_cancelled != 1){
                     $rob_50_approve = "Approved";
                 }else{
                     $rob_50_approve = "";
                 }
 
-                if($user->rob_55_lease == 1){
+                if($user->rob_55_lease == 1 && $user->rob_60_cancelled != 1){
                     $rob_55_lease = "Uploaded";
-                }elseif($user->rob_55_lease == 2){
+                }elseif($user->rob_55_lease == 2 && $user->rob_60_cancelled != 1){
                     $rob_55_lease = "Approved";
                 }else{
                     $rob_55_lease = "";
                 }
 
-                $studentData = [$user->userFirstName, $user->userLastname, $user->userTitle, $user->userDob, $user->userCell, $user->userEmail, $user->userNationality, $user->userId, $user->userPassport, $user->studentType, $user->year, $lookupsInstit->lookup_name, $user->studentNo, $user->yearOfStudy, $lookupsFaculty->lookup_name, $rob_10_fee, $rob_15_id, $rob_20_card, $rob_25_reg, $rob_30_funds, $rob_35_info, $rob_40_bed, $rob_45_other, $rob_50_approve, $rob_55_lease, $user->burCompanyName, $user->burRegNo, $user->burContactPerson, $user->burContactNo, $user->burEmail, $user->sponFirstName, $user->sponLastName, $user->sponCell, $user->sponEmail, $user->pNationality, $user->sponId, $user->pPassportNo, $user->pAddress1, $user->pAddress2, $user->pAddressCity, $user->pAddressPostal, $user->kinFirstName, $user->kinLastName, $user->kinTitle, $user->kinRelationship, $user->kinNationality, $user->kinId, $user->kinPassportNo, $user->kinCellNo, $user->kinEmail, $user->kinWorkNo, $user->kinTelNo, $user->kinAddressStr, $user->kinAddressSuburb, $user->kinAddressCity, $user->kinAddressPost];
+                if($user->rob_60_cancelled != 1){
+                    $cancelled = "No";
+                }else{
+                    $cancelled = "Yes";
+                }
+
+                if($booking){
+                    $residence = Residence::where('id', $booking->property)->pluck('residence')->first();
+                    $roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+
+                    $floor = $booking->floor;
+                    $unit = $booking->unit;
+                    $room = $booking->room;
+                    $bed_code = $booking->bed_code;
+
+                }else{
+                    $residence = "";
+                    $roomType = "";
+                    $floor = "";
+                    $unit = "";
+                    $room = "";
+                    $bed_code = "";
+                }
+                
+
+                $studentData = [$user->userFirstName, $user->userLastname, $user->userTitle, $user->userDob, $user->userCell, $user->userEmail, $user->userNationality, $user->userId, $user->userPassport, $user->studentType, $user->year, $lookupsInstit->lookup_name, $user->studentNo, $user->yearOfStudy, $lookupsFaculty->lookup_name, $rob_10_fee, $rob_15_id, $rob_20_card, $rob_25_reg, $rob_30_funds, $rob_35_info, $rob_40_bed, $rob_45_other, $rob_50_approve, $rob_55_lease, $cancelled,
+
+                $residence, $roomType, $floor, $unit, $room, $bed_code,
+                
+                $user->burCompanyName, $user->burRegNo, $user->burContactPerson, $user->burContactNo, $user->burEmail, $user->sponFirstName, $user->sponLastName, $user->sponCell, $user->sponEmail, $user->pNationality, $user->sponId, $user->pPassportNo, $user->pAddress1, $user->pAddress2, $user->pAddressCity, $user->pAddressPostal, $user->kinFirstName, $user->kinLastName, $user->kinTitle, $user->kinRelationship, $user->kinNationality, $user->kinId, $user->kinPassportNo, $user->kinCellNo, $user->kinEmail, $user->kinWorkNo, $user->kinTelNo, $user->kinAddressStr, $user->kinAddressSuburb, $user->kinAddressCity, $user->kinAddressPost];
 
                 array_push($users, $studentData);
             }
