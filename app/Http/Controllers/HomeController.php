@@ -9913,7 +9913,7 @@ class HomeController extends Controller
                     $rob_50_approve = "";
                 }
 
-                if($user->rob_55_lease == 1 && $user->rob_60_cancelled != 1){
+                if($user->rob_55_lease == 1 && $user->rob_60_cancelled != 1){ 
                     $rob_55_lease = "Uploaded";
                 }elseif($user->rob_55_lease == 2 && $user->rob_60_cancelled != 1){
                     $rob_55_lease = "Approved";
@@ -9961,6 +9961,15 @@ class HomeController extends Controller
         $xlsx->saveAs('All_Applications_'.$request->year.'_download.xlsx');
 
 		return 'All_Applications_'.$request->year.'_download.xlsx';
+    }
+
+    public function get_actions(Request $request){
+
+        $allActions = ActionList::where('action', 'like', '%Updated Property%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
+
+        $allActionsCancelled = ActionList::where('action', 'like', '%Cancelled%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
+
+        return [$allActions, $allActionsCancelled];
     }
     
     

@@ -118,6 +118,30 @@
         <button type="button" class="detailsChange" id="downloadAllApps" style="float:left; margin-left:0px;">Download Applications</button>
         <div class="hidden"><a href="" download id="downloadAppsBtn"><button type="button" id="downloadBtnApps">Download</button></a></div>
 
+        <br/><br/><br/><br/><br/>
+
+        <h2>Actions</h2>
+
+        <br/>
+        <div class="flex">
+            <div>
+                <label>From Date:<label><br/>
+                <input type="date" name="fromDate" id="fromDate"/>
+            </div>
+            <div style="padding-left:10px;">
+                <label>To Date:<label><br/>
+                <input type="date" name="toDate" id="toDate"/>
+            </div>
+            <div style="padding-left:10px;">
+                <button type="button" id="actionBtn" class="detailsChange">Filter</button>
+            </div>
+        </div>
+
+        <div class="flex">
+            <div id="propertyData"></div>
+            <div id="cancelledData" style="margin-left:50px;"></div>
+        </div>
+
     @endif
 
     <!-- <br/><br/><br/><br/><hr/><br/>
@@ -177,6 +201,42 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $("#actionBtn").on('click', function(){
+        $("#actionBtn").empty().append('<option value="" selected disabled>Loading</option>')
+        $.ajax({
+            type: "post",
+            url: "/get-actions",
+            data: {fromDate: $("#fromDate").val(), toDate: $("#toDate").val()},
+
+            success: function (data) {      
+                $("#actionBtn").empty().append('Filter')
+
+                let data1 = data[0];
+                let data2 = data[1];
+
+                $("#propertyData").empty().append('<table>')
+                $("#propertyData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
+
+                data1.forEach(function(index){
+                    $("#propertyData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
+                    
+                })
+
+                $("#propertyData").append('</table>')
+
+                $("#cancelledData").empty().append('<table>')
+                $("#cancelledData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
+
+                data2.forEach(function(index){
+                    $("#cancelledData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
+                    
+                })
+
+                $("#cancelledData").append('</table>')
+            },
+        });
+    })
 
     function changeResidence(){
         if($("#property").val() !== "All"){
