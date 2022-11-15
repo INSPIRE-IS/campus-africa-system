@@ -322,6 +322,8 @@ Route::post('/download-apps', [HomeController::class, 'download_apps']);
 
 Route::get('/mail-reminder', [MailReminder::class, 'mail_reminder']);
 
+Route::post('/get-actions', [HomeController::class, 'get_actions']);
+
 
 
 

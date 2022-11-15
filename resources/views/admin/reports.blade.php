@@ -118,6 +118,32 @@
         <button type="button" class="detailsChange" id="downloadAllApps" style="float:left; margin-left:0px;">Download Applications</button>
         <div class="hidden"><a href="" download id="downloadAppsBtn"><button type="button" id="downloadBtnApps">Download</button></a></div>
 
+        <br/><br/><br/><br/><br/>
+
+        <h2>Actions</h2>
+
+        <br/>
+        <div class="flex">
+            <div>
+                <label>From Date:<label><br/>
+                <input type="date" name="fromDate" id="fromDate"/>
+            </div>
+            <div style="padding-left:10px;">
+                <label>To Date:<label><br/>
+                <input type="date" name="toDate" id="toDate"/>
+            </div>
+            <div style="padding-left:10px;">
+                <button type="button" id="actionBtn" class="detailsChange">Filter</button>
+            </div>
+        </div>
+
+        <div id="propertyCountData" style="margin-bottom:20px;"></div>
+
+        <div class="flex">
+            <div id="propertyData"></div>
+            <div id="cancelledData" style="margin-left:50px;"></div>
+        </div>
+
     @endif
 
     <!-- <br/><br/><br/><br/><hr/><br/>
@@ -177,6 +203,84 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $("#actionBtn").on('click', function(){
+        $("#actionBtn").empty().append('<option value="" selected disabled>Loading</option>')
+        $.ajax({
+            type: "post",
+            url: "/get-actions",
+            data: {fromDate: $("#fromDate").val(), toDate: $("#toDate").val()},
+
+            success: function (data) {      
+                $("#actionBtn").empty().append('Filter')
+
+                let data1 = data[0];
+                let data2 = data[1];
+
+                $("#propertyData").empty().append('<table>')
+                $("#propertyData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
+
+                
+                let allPropsFrom = [];
+                let allPropsTo = [];
+
+                data1.forEach(function(index){
+                    $("#propertyData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
+                    
+                    let removeFirst = (index.action).replace('Updated Property From ', '');
+                    let removeSecond = removeFirst.replace('Updated Property from ', '');
+                    let myArray = removeSecond.split(" to ");
+
+                    allPropsFrom.push(myArray[0])
+                    allPropsTo.push(myArray[1])
+                })
+
+                
+
+                $("#propertyData").append('</table>')
+
+                $("#cancelledData").empty().append('<table>')
+                $("#cancelledData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
+
+                data2.forEach(function(index){
+                    $("#cancelledData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
+                    
+                })
+
+                $("#cancelledData").append('</table>')
+
+
+                $("#propertyCountData").empty().append('<table>')
+                $("#propertyCountData").append('<tr><th style="padding:5px;">Property Name</th><th style="padding:5px;">Moved From</th><th style="padding:5px;">Moved To</th></tr>')
+
+                const allProps = allPropsFrom.concat(allPropsTo);
+                var unique_from = allProps.filter((v, i, a) => a.indexOf(v) === i);
+
+                unique_from.forEach(function(item){
+
+                    let target = item;
+
+                    let counter_from = 0;
+                    for (from of allPropsFrom) {
+                        if (from == target) {
+                            counter_from++;
+                        }
+                    };
+
+                    let counter_to = 0;
+                    for (to of allPropsTo) {
+                        if (to == target) {
+                            counter_to++;
+                        }
+                    };
+
+                    $("#propertyCountData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+item+'</td><td style="padding:5px; border:1px solid #ccc; color:red"> - '+counter_from+'</td><td style="padding:5px; border:1px solid #ccc; color:green"> + '+counter_to+'</td></tr>')
+                })
+
+                
+            },
+        });
+    })
 
     function changeResidence(){
         if($("#property").val() !== "All"){

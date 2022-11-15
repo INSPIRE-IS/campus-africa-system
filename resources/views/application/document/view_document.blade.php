@@ -1060,7 +1060,8 @@
                         title: 'Select file',
                         input: 'file',
                         inputAttributes: {
-                            'aria-label': 'Upload your file'
+                            'aria-label': 'Upload your file',
+                            'accept': 'image/*, application/pdf'
                         }
                     })
 
@@ -1237,7 +1238,7 @@
                     //Add back upload button
                     if (type == "Rejected" && fileForApproval.substring(0, 5) == "other") {
                         @if(Auth::user()->role_upload_docs == 1)
-                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/> <button type="button" style="margin-left:5px;" onClick="deleteFile(\'{{$file->fileId}}\')">Delete</button>';
+                            let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" accept="image/*, application/pdf" hidden/> <button type="button" style="margin-left:5px;" onClick="deleteFile(\'{{$file->fileId}}\')">Delete</button>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                         @endif
                     }else if(type == "Rejected" && fileForApproval !== "moveIn" ){
@@ -1250,7 +1251,7 @@
                         }else{
 
                             @if(Auth::user()->role_upload_docs == 1)
-                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
+                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" accept="image/*, application/pdf" hidden/>';
                                 $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                             @endif
                         }
@@ -1262,7 +1263,7 @@
                             uploadbtn += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
                         }
                         
-                        uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
+                        uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" accept="image/*, application/pdf" hidden/>';
                         $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
 
                         var pDoc = document.getElementById("MDAStatus");
@@ -1316,7 +1317,7 @@
                         //Add back upload button
                         if (fileForApproval !== "moveIn") {
                             @if(Auth::user()->role_upload_docs == 1)
-                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
+                                let uploadbtn = '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" accept="image/*, application/pdf" hidden/>';
                                 $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                             @endif
                         }else if(fileForApproval == "moveIn"){
@@ -1327,7 +1328,7 @@
                                 uploadbtn += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
                             }
                             
-                            uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" hidden/>';
+                            uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" accept="image/*, application/pdf" hidden/>';
                             $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
 
                         }

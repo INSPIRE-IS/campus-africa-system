@@ -86,7 +86,7 @@
                                         
                                     </label>
                                     </h3>
-                                    <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                                    <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf" />
                                     </td>
                                 @endif
                         @elseif($file->status == 'Rejected')
@@ -119,7 +119,7 @@
                                     
                                 </label>
                                 </h3>
-                                <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                                <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf" />
                                 </td>
                               @endif
                             
@@ -222,7 +222,7 @@ $.ajaxSetup({
 
                         success: function (data) {
 
-                            $("#paymentSection").empty().append('<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload">  <span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" hidden onChange="UploadDocument(\'proof_of_payment\')"/>');
+                            $("#paymentSection").empty().append('<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload">  <span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" hidden onChange="UploadDocument(\'proof_of_payment\')" accept="image/*, application/pdf"/>');
 
                             $("#proof_of_payment").click();
 

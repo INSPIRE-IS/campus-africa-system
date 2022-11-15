@@ -246,7 +246,7 @@
                                                 '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a>'+
                                                 regen+
                                                 '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label>'+
-                                                '<input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')"  hidden>'+
+                                                '<input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" accept="image/*, application/pdf"  hidden>'+
                                             '</div>'+
                                         '</div>')
                                     checkUserStatus();

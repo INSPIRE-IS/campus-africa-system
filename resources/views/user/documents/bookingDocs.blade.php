@@ -66,7 +66,7 @@
                               <i class="fas fa-exclamation-circle"></i>
                             </label>
                             </h3>
-                            <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                            <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
 
                             <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
                             @endif
@@ -98,7 +98,7 @@
                               <i class="fas fa-exclamation-circle"></i>
                             </label>
                             </h3>
-                            <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                            <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
 
                             @endif
                           @elseif($file->status == "Uploaded")
@@ -192,7 +192,7 @@
 
                         success: function (data) {
 
-                            $("#paymentSection").empty().append('<label for="proof_of_payment" id="proof_of_paymentSection" class="outstanding">  <span class="text">Outstanding</span><i class="fas fa-file-upload" ></i><i class="fas fa-exclamation-circle"></i></label><input type="file" id="proof_of_payment" hidden onChange="UploadDocument(\'proof_of_payment\')"/>');
+                            $("#paymentSection").empty().append('<label for="proof_of_payment" id="proof_of_paymentSection" class="outstanding">  <span class="text">Outstanding</span><i class="fas fa-file-upload" ></i><i class="fas fa-exclamation-circle"></i></label><input type="file" id="proof_of_payment" hidden onChange="UploadDocument(\'proof_of_payment\')" accept="image/*, application/pdf"/>');
 
                             $("#proof_of_payment").click();
 

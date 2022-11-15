@@ -695,7 +695,7 @@
                                                         <span class="text">Upload</span>
                                                         <i class="fas fa-file-upload" ></i>
                                                     </label>
-                                                    <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" hidden/>
+                                                    <input type="file" id="{{$file['field']}}" onChange="UploadDocument('{{$file['field']}}')" accept="image/*, application/pdf" hidden/>
                                                 @endif
                                     
 
@@ -1126,7 +1126,7 @@
                         success: function (data) {
 
                             $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
-                                let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
+                                let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" accept="image/*, application/pdf" hidden/>';
                                 $("#proof_of_paymentBanner").empty().append(uploadbtn);
                                 $("#proof_of_paymentSection").click();
 
@@ -2627,7 +2627,7 @@
                                         uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> '
                                     }
                                     
-                                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" accept="image/*, application/pdf" hidden/>';
                                     $("#moveInBanner").empty().append(uploadbtn);
                                     $("#moveInStatus").empty().append('<div class="button rejected"></div>');
 
@@ -2660,7 +2660,7 @@
                                 $("#proof_of_paymentBanner").empty().append(button);
                             }else{
                                 $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
-                                let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
+                                let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" accept="image/*, application/pdf" hidden/>';
                                 $("#proof_of_paymentBanner").empty().append(uploadbtn);
                             }
                         }
@@ -3371,7 +3371,7 @@
                         $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
 
                         <?php if(Auth::user()->role_upload_docs == 1){ ?>
-                            let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" hidden/>';
+                            let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" accept="image/*, application/pdf" hidden/>';
                             $("#proof_of_paymentBanner").empty().append(uploadbtn);
                         <?php } ?>
 
@@ -3924,7 +3924,7 @@
                         uploadbtn += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
                     }
                     
-                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" hidden/>';
+                    uploadbtn += '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" accept="image/*, application/pdf" hidden/>';
                     $("#moveInBanner").empty().append(uploadbtn);
                     $("#moveInStatus").empty().append('<div class="button rejected"></div>');
                 // }      
@@ -4391,7 +4391,7 @@
                                         '<span class="text">Upload</span>'+
                                         '<i class="fas fa-file-upload"></i>'+
                                     '</label>'+
-                                    '<input type="file" id="'+data+'" onChange="UploadDocument(\''+data+'\')" hidden>'+
+                                    '<input type="file" id="'+data+'" onChange="UploadDocument(\''+data+'\')" accept="image/*, application/pdf" hidden>'+
                                     '<button type="button" style="margin-left:5px;" onClick="deleteFile(\''+data+'\')">Delete</button>'+
                                 '</div>'+
                             '</div>'
