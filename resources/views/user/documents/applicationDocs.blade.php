@@ -50,7 +50,7 @@
                           <i class="fas fa-exclamation-circle"></i>
                       </label>
                       </h3>
-                      <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                      <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
 
                       <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
                       
@@ -61,7 +61,7 @@
                           <i class="fas fa-exclamation-circle"></i>
                       </label>
                       </h3>
-                      <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/>
+                      <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
                     @elseif($file->status == "Uploaded")
                       <label id="registrationPending" class="pending">
                           <span class="text">Pending Approval</span>

@@ -58,7 +58,7 @@
                           <i class="fas fa-file-upload" ></i>
                       </label>
                       </h3>
-                      <input type="file" id="{{$file}}" hidden/>
+                      <input type="file" id="{{$file}}" accept="image/*, application/pdf" hidden/>
                     </td>
                 </tr>
             @endforeach
@@ -90,7 +90,7 @@
                           
                       </label>
                       </h3>
-                      <input type="file" id="{{$file['fileId']}}" hidden/>
+                      <input type="file" id="{{$file['fileId']}}" accept="image/*, application/pdf" hidden/>
                     </td>
                 </tr>
             @endforeach

@@ -366,7 +366,7 @@
                                                                     
                                                                         <i class="fas fa-file-upload" ></i>
                                                                     
-                                                                    <input type="file" id="copyID" hidden/>
+                                                                    <input type="file" id="copyID" accept="image/*, application/pdf" hidden/>
                                                                     <label id="copyIdSucess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
                                                                         
                                                                     </div>
@@ -399,7 +399,7 @@
                                                                         
                                                                             <i class="fas fa-file-upload" ></i>
                                                                         
-                                                                        <input type="file" id="studentCard" hidden/>
+                                                                        <input type="file" id="studentCard" accept="image/*, application/pdf" hidden/>
                                                                         <label id="copyStudCardSucess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
                                                                         
                                                                     </div>
@@ -415,7 +415,7 @@
                                                                         
                                                                             <i class="fas fa-file-upload" ></i>
                                                                         
-                                                                        <input type="file" id="bankStatement" hidden/>
+                                                                        <input type="file" id="bankStatement" accept="image/*, application/pdf" hidden/>
                                                                         <label id="bankStatementSuccess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
                                                                         
                                                                     </div>
@@ -431,7 +431,7 @@
                                                                         
                                                                             <i class="fas fa-file-upload" ></i>
                                                                         
-                                                                        <input type="file" id="proofRegistration" hidden/>
+                                                                        <input type="file" id="proofRegistration" accept="image/*, application/pdf" hidden/>
                                                                         <label id="proofRegistrationSuccess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
                                                                         
                                                                     </div>
@@ -550,7 +550,7 @@
                                                 <br/><br/>
 
                                                 <label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label>
-                                                <input type="file" id="proof_of_payment" hidden/>
+                                                <input type="file" id="proof_of_payment" accept="image/*, application/pdf" hidden/>
 
                                                 <div class="clearSpaceLogin"></div>
                                         <!-- <div class="footerClearfix"></div> --><br/><br/><br/><br/><br/><br/><br/><br/>

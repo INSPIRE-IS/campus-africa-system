@@ -76,7 +76,7 @@
                                     }elseif($IdCopy && $IdCopy->status == "Approved"){
                                         echo '<label id="copyIdSucess" class="successLabel">Approved</label>';
                                     }else{ 
-                                        echo ' <input type="file" id="copyID" onChange="UploadDocument(\'copyID\')" hidden/>';
+                                        echo ' <input type="file" id="copyID" onChange="UploadDocument(\'copyID\')" accept="image/*, application/pdf" hidden/>';
                                     }
                                 ?>
                                     
@@ -126,7 +126,7 @@
                                     }elseif($StudentCopy && $StudentCopy->status == "Approved"){
                                         echo '<label id="copyStudCardSucess" class="successLabel">Approved</label>';
                                     }else{ 
-                                        echo ' <input type="file" id="studentCard" onChange="UploadDocument(\'studentCard\')" hidden/>';
+                                        echo ' <input type="file" id="studentCard" onChange="UploadDocument(\'studentCard\')" accept="image/*, application/pdf" hidden/>';
                                     }
                                     ?>
                                     
@@ -163,7 +163,7 @@
                                             }elseif($BankCopy && $BankCopy->status == "Approved"){
                                                 echo '<label id="bankStatementSuccess" class="successLabel">Approved</label>';
                                             }else{ 
-                                                echo '<input type="file" id="bankStatement" onChange="UploadDocument(\'bankStatement\')" hidden/>';
+                                                echo '<input type="file" id="bankStatement" onChange="UploadDocument(\'bankStatement\')" accept="image/*, application/pdf" hidden/>';
                                             }
                                         ?>
                                         
@@ -196,7 +196,7 @@
                                             }elseif($BursaryCopy && $BursaryCopy->status == "Approved"){
                                                 echo '<label id="bursaryApprovalSuccess" class="successLabel">Approved</label>';
                                             }else{ 
-                                                echo '<input type="file" id="bursaryApproval" onChange="UploadDocument(\'bursaryApproval\')" hidden/>';
+                                                echo '<input type="file" id="bursaryApproval" onChange="UploadDocument(\'bursaryApproval\')" accept="image/*, application/pdf" hidden/>';
                                             }
                                         ?>
                                         
@@ -233,7 +233,7 @@
                                             }elseif($RegistrationCopy && $RegistrationCopy->status == "Approved"){
                                                 echo '<label id="proofRegistrationSuccess" class="successLabel">Approved</label>';
                                             }else{ 
-                                                echo '<input type="file" id="proofRegistration" onChange="UploadDocument(\'proofRegistration\')" hidden/>';
+                                                echo '<input type="file" id="proofRegistration" onChange="UploadDocument(\'proofRegistration\')" accept="image/*, application/pdf" hidden/>';
                                             }
                                         ?>
                                     

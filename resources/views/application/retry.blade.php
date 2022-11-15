@@ -127,7 +127,7 @@
 
                     success: function (data) {
 
-                        $("#paymentSection").empty().append('<label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label><input type="file" id="proof_of_payment" hidden/>');
+                        $("#paymentSection").empty().append('<label for="proof_of_payment" class="PaymentLabel"> UPLOAD PROOF OF PAYMENT</label><input type="file" id="proof_of_payment" accept="image/*, application/pdf" hidden/>');
 
                         $("#proof_of_payment").click();
 

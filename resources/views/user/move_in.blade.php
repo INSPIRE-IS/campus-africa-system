@@ -12,7 +12,7 @@
             <label for="moveIn" id="moveInUpload">
                 <i class="fas fa-file-upload" ></i>
             </label>
-            <input type="file" id="moveIn" hidden/>
+            <input type="file" id="moveIn" hidden accept="image/*, application/pdf" />
             <label id="moveInSucess" style="cursor: pointer" class="successLabel hidden">UPLOADED</label>
             
         </div>
