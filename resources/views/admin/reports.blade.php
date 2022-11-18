@@ -214,68 +214,159 @@
             success: function (data) {      
                 $("#actionBtn").empty().append('Filter')
 
-                let data1 = data[0];
-                let data2 = data[1];
+                console.log(data)
+
+                let properties = data[0];
+                let registered = data[1];
+                let cancelled = data[2];
+                let restored = data[3];
+                let moves = data[4];
 
                 $("#propertyData").empty().append('<table>')
-                $("#propertyData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
+                $("#propertyData").append('<tr><th style="padding:5px;">Property</th><th style="padding:5px;">New</th><th style="padding:5px;">Cancelled</th><th style="padding:5px;">Restored</th><th style="padding:5px;">Moved From</th><th style="padding:5px;">Moved To</th></tr>')
 
-                
-                let allPropsFrom = [];
-                let allPropsTo = [];
+                properties.forEach(function(index){
+                   
+                    let register = 0;
+                    let target = index.residence;
+                    for (reg of registered) {
+                        if (reg.registered_building == target) {
+                            register++;
+                        }
+                    };
 
-                data1.forEach(function(index){
-                    $("#propertyData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
+                    let cancel = 0;
+                    for (can of cancelled) {
+                        if (can.registered_building == target) {
+                            cancel++;
+                        }
+                    };
+
+                    let restore = 0;
+                    for (res of restored) {
+                        if (res.registered_building == target) {
+                            restore++;
+                        }
+                    };
+
+                    let propIn = 0;
+                    let propOut = 0;
+
+                    for( mov of moves){
+                        if(mov.building == target){
+                            propIn = mov.In
+                            propOut = mov.Out
+                        }
+                    }
+
+                    $string = '<tr>';
+
+                    if(index.residence > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+index.residence+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;">'+index.residence+'</td>'
+                    }
+
+                    if(register > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+register+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }
+
+                    if(cancel > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red">'+cancel+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }
+
+                    if(restore > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+restore+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }
+
+                    if(propOut > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red">'+propOut+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }
+
+                    if(propIn > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+propIn+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }
+
+                    $string += '</tr>'
+
+
+                    $("#propertyData").append($string)
+
+
                     
-                    let removeFirst = (index.action).replace('Updated Property From ', '');
-                    let removeSecond = removeFirst.replace('Updated Property from ', '');
-                    let myArray = removeSecond.split(" to ");
-
-                    allPropsFrom.push(myArray[0])
-                    allPropsTo.push(myArray[1])
                 })
-
-                
 
                 $("#propertyData").append('</table>')
 
-                $("#cancelledData").empty().append('<table>')
-                $("#cancelledData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
+                // // $("#propertyData").empty().append('<table>')
+                // // $("#propertyData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
 
-                data2.forEach(function(index){
-                    $("#cancelledData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
+                
+                // let allPropsFrom = [];
+                // let allPropsTo = [];
+
+                // data1.forEach(function(index){
+                //     // $("#propertyData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
                     
-                })
+                //     let removeFirst = (index.action).replace('Updated Property From ', '');
+                //     let removeSecond = removeFirst.replace('Updated Property from ', '');
+                //     let myArray = removeSecond.split(" to ");
 
-                $("#cancelledData").append('</table>')
+                //     allPropsFrom.push(myArray[0])
+                //     allPropsTo.push(myArray[1])
+                // })
+
+                
+
+                // // $("#propertyData").append('</table>')
+
+                // // $("#cancelledData").empty().append('<table>')
+                // // $("#cancelledData").append('<tr><th>User ID</th><th>Action</th><th>Date</th></tr>')
+
+                // // data2.forEach(function(index){
+                // //     $("#cancelledData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+index.userUid+'</td><td style="padding:5px; border:1px solid #ccc">'+index.action+'</td><td style="padding:5px; border:1px solid #ccc">'+index.created_at+'</td></tr>')
+                    
+                // // })
+
+                // // $("#cancelledData").append('</table>')
 
 
-                $("#propertyCountData").empty().append('<table>')
-                $("#propertyCountData").append('<tr><th style="padding:5px;">Property Name</th><th style="padding:5px;">Moved From</th><th style="padding:5px;">Moved To</th></tr>')
+                // $("#propertyCountData").empty().append('<table>')
+                // $("#propertyCountData").append('<tr><th style="padding:5px;">Property Name</th><th style="padding:5px;">Moved From</th><th style="padding:5px;">Moved To</th></tr>')
 
-                const allProps = allPropsFrom.concat(allPropsTo);
-                var unique_from = allProps.filter((v, i, a) => a.indexOf(v) === i);
+                // const allProps = allPropsFrom.concat(allPropsTo);
+                // var unique_from = allProps.filter((v, i, a) => a.indexOf(v) === i);
 
-                unique_from.forEach(function(item){
+                // unique_from.forEach(function(item){
 
-                    let target = item;
+                //     let target = item;
 
-                    let counter_from = 0;
-                    for (from of allPropsFrom) {
-                        if (from == target) {
-                            counter_from++;
-                        }
-                    };
+                //     let counter_from = 0;
+                //     for (from of allPropsFrom) {
+                //         if (from == target) {
+                //             counter_from++;
+                //         }
+                //     };
 
-                    let counter_to = 0;
-                    for (to of allPropsTo) {
-                        if (to == target) {
-                            counter_to++;
-                        }
-                    };
+                //     let counter_to = 0;
+                //     for (to of allPropsTo) {
+                //         if (to == target) {
+                //             counter_to++;
+                //         }
+                //     };
 
-                    $("#propertyCountData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+item+'</td><td style="padding:5px; border:1px solid #ccc; color:red"> - '+counter_from+'</td><td style="padding:5px; border:1px solid #ccc; color:green"> + '+counter_to+'</td></tr>')
-                })
+                //     $("#propertyCountData").append('<tr><td style="padding:5px; border:1px solid #ccc">'+item+'</td><td style="padding:5px; border:1px solid #ccc; color:red"> - '+counter_from+'</td><td style="padding:5px; border:1px solid #ccc; color:green"> + '+counter_to+'</td></tr>')
+                // })
 
                 
             },

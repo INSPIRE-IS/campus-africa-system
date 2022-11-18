@@ -9965,11 +9965,279 @@ class HomeController extends Controller
 
     public function get_actions(Request $request){
 
-        $allActions = ActionList::where('action', 'like', '%Updated Property%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
 
-        $allActionsCancelled = ActionList::where('action', 'like', '%Cancelled%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
+        // $allActions = ActionList::where('action', 'like', '%Updated Property%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
 
-        return [$allActions, $allActionsCancelled];
+        // // $allActionsCancelled = ActionList::where('action', 'like', '%Cancelled%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
+
+        // $allPropsFrom = [];
+        // $allPropsTo = [];
+
+        // foreach($allActions as $action){
+
+        //     $removeFirst = str_replace('Updated Property From ', '', $action->action);
+        //     $removeSecond = str_replace('Updated Property from ', '', $removeFirst);
+        //     $myArray = explode(" to ", $removeSecond);
+
+        //     $outputFrom = (object) array(
+        //         "property" => $myArray[0],
+        //         "userUid" => $action->userUid,
+        //         "role" => $action->actionUserRole,
+        //         "action_id" => $action->id,
+        //     );
+        //     array_push($allPropsFrom, $outputFrom);
+
+        //     $outputTo = (object) array(
+        //         "property" => $myArray[1],
+        //         "userUid" => $action->userUid,
+        //         "role" => $action->actionUserRole,
+        //         "action_id" => $action->id,
+        //     );
+        //     array_push($allPropsTo, $outputTo);
+
+        // }
+
+        // foreach($allPropsFrom as $from){
+        //     $allUserActionList = ActionList::where('userUid', $from->userUid)->get();
+
+        //     $fee_non = false;
+
+        //     foreach($allUserActionList as $action){
+
+        //         if($action->action == "Booking Fee is R0" || $action->action == "Fee Waiver approved for Booking fee" || $action->action == "Online Payment Status: Approved"){
+        //             $fee_non = true;
+        //         }
+                
+        //     }
+        // }
+        
+
+        // return [$allPropsFrom, $allPropsTo];
+
+        $allBuildings = Residence::get();
+
+        //get all registrations in time frame
+        $allActionsRegistered = DB::select("SELECT * FROM action_lists where action like '%Registered%' and created_at >= '".$request->fromDate." 00:00:00' and created_at <= '".$request->toDate." 23:59:59' group by userUid");
+
+        $registeredUsers = [];
+
+        foreach($allActionsRegistered as $registered){
+            //get all actions from user
+            $allActionsInTime = DB::select("SELECT * FROM action_lists where userUid = '".$registered->userUid."'");
+
+            $registered_building = 0;
+
+            $moved = false;
+            $first_move = 0;
+
+            //Check to see if property was updated to get first moved property for accurate first property
+            foreach($allActionsInTime as $action){
+                $explode_action = explode(" ", $action->action);
+                if($explode_action[0] == "Updated" && $explode_action[1] == "Property"){
+                    $moved = true;
+                    $first_move++;
+
+                    //Get from property of first move to set where property was registered at
+                    if($first_move == 1){
+                        $removeFirst = str_replace('Updated Property From ', '', $action->action);
+                        $removeSecond = str_replace('Updated Property from ', '', $removeFirst);
+                        $myArray = explode(" to ", $removeSecond);
+
+                        $registered_building = $myArray[0];
+                    }
+                }
+            }
+
+            //if property wasn't changed get current property
+            if($moved === false){
+                $booking = Booking::where('userId', $registered->userUid)->where('year', $this_year)->first();
+                $building = Residence::where('id', $booking->property)->first();
+                $registered_building = $building->residence;
+            }
+
+            $outputRegister = (object) array(
+                "type" => "registered",
+                "userUid" => $registered->userUid,
+                "role" => $registered->actionUserRole,
+                "registered_building" => $registered_building,
+            );
+            array_push($registeredUsers, $outputRegister);
+        }
+
+        $allActionsCancelled = DB::select("SELECT * FROM action_lists where action like '%cancelled%' and created_at >= '".$request->fromDate." 00:00:00' and created_at <= '".$request->toDate." 23:59:59' group by userUid");
+
+        $cancelled_arr = [];
+        $restored_arr = [];
+
+        $cancelled_id_arr = [];
+        $restored_id_arr = [];
+
+        foreach($allActionsCancelled as $cancelled){
+
+            //Get all Cancelled / restored in this time frame
+            $allActionsInTime = DB::select("SELECT * FROM action_lists where userUid = '".$cancelled->userUid."' and created_at >= '".$request->fromDate." 00:00:00' and created_at <= '".$request->toDate." 23:59:59'");
+
+            $mainActionId = 0;
+            $lastAction = "";
+            
+            foreach($allActionsInTime as $action){
+                $explode_action = explode(" ", $action->action);
+
+                //if action is cancelled application
+                if($explode_action[0] == "Application" && $explode_action[1] == "Cancelled"){
+                    array_push($cancelled_id_arr, $action->userUid);
+                    $mainActionId = $action->id;
+                    $lastAction = "Cancelled";
+
+                    //if application was restored remove ID from restored
+                    if(in_array($action->userUid, $restored_id_arr)){
+                        if (($key = array_search($action->userUid, $restored_id_arr)) !== false) {
+                            unset($restored_id_arr[$key]);
+                        }
+                    }
+                }
+
+                //if action is restored application
+                if($explode_action[0] == "Restored" && $explode_action[1] == "Cancelled" && $explode_action[2] == "Application"){
+                    array_push($restored_id_arr, $action->userUid);
+                    $mainActionId = $action->id;
+                    $lastAction = "Restored";
+
+                    //if application was cancelled remove ID from cancelled
+                    if(in_array($action->userUid, $cancelled_id_arr)){
+                        if (($key = array_search($action->userUid, $cancelled_id_arr)) !== false) {
+                            unset($cancelled_id_arr[$key]);
+                        }
+                    }
+                }
+            }
+
+            //get All the action from user
+            $allActionsNoTime = ActionList::where('userUid', $cancelled->userUid)->get();
+            $registered_building = "";
+
+            //Check if building moved before last action, if so grab name of last building before action
+            foreach($allActionsNoTime as $action){
+                if($action->id < $mainActionId){
+                    $explode_action = explode(" ", $action->action);
+                    if($explode_action[0] == "Updated" && $explode_action[1] == "Property"){
+                        
+                        $removeFirst = str_replace('Updated Property From ', '', $action->action);
+                        $removeSecond = str_replace('Updated Property from ', '', $removeFirst);
+                        $myArray = explode(" to ", $removeSecond);
+
+                        $registered_building = $myArray[1];
+                    }
+                }
+
+                //Check if building was moved after action to get from building
+                if($action->id > $mainActionId && $registered_building == ""){
+                    $explode_action = explode(" ", $action->action);
+                    if($explode_action[0] == "Updated" && $explode_action[1] == "Property"){
+                        
+                        $removeFirst = str_replace('Updated Property From ', '', $action->action);
+                        $removeSecond = str_replace('Updated Property from ', '', $removeFirst);
+                        $myArray = explode(" to ", $removeSecond);
+
+                        $registered_building = $myArray[0];
+                    }
+                }
+            }
+
+            //If building wasnt moved - get building from location
+            if($registered_building == ""){
+                $booking = Booking::where('userId', $cancelled->userUid)->where('year', $this_year)->first();
+                $building = Residence::where('id', $booking->property)->first();
+                $registered_building = $building->residence;
+            }
+
+            $outputCancelled = (object) array(
+                "type" => $lastAction,
+                "userUid" => $cancelled->userUid,
+                "role" => $cancelled->actionUserRole,
+                "registered_building" => $registered_building,
+            );
+
+            if($lastAction == "Cancelled"){
+                array_push($cancelled_arr, $outputCancelled);
+            }else{
+                array_push($restored_arr, $outputCancelled);
+            }
+
+        }
+
+        //get all moved properties for period
+        $allActionsMoved = DB::select("SELECT * FROM action_lists where action like '%Updated property%' and created_at >= '".$request->fromDate." 00:00:00' and created_at <= '".$request->toDate." 23:59:59' group by userUid");
+
+        $movedFrom_arr = [];
+        $movedTo_arr = [];
+
+        $movedFrom_id_arr = [];
+        $movedTo_id_arr = [];
+
+        $allBuildings_data = [];
+
+        foreach($allBuildings as $building){
+            array_push($allBuildings_data, (object) array(
+                "building" => $building->residence,
+                "In" => 0,
+                "Out" => 0,
+                "userUidIn" => [],
+                "userUidOut" => [],
+            ));
+        }
+
+        foreach($allActionsMoved as $moved){
+
+            //get all moves for student in period
+            $allActionsInTime = DB::select("SELECT * FROM action_lists where userUid = '".$moved->userUid."' and action like '%Updated property%' and created_at >= '".$request->fromDate." 00:00:00' and created_at <= '".$request->toDate." 23:59:59'");
+
+            $mainActionId = 0;
+            $lastAction = "";
+            $registered_building = "";
+
+            foreach($allActionsInTime as $action){
+                $removeFirst = str_replace('Updated Property From ', '', $action->action);
+                $removeSecond = str_replace('Updated Property from ', '', $removeFirst);
+                $myProperty = explode(" to ", $removeSecond);
+
+                foreach($allBuildings_data as $building){
+                    if($building->building == $myProperty[0]){
+                        if($myProperty[0] !== $myProperty[1] && $myProperty[0] != "" && $myProperty[1] != ""){
+                            //add to moved from count
+                            array_push($building->userUidOut, $moved->userUid);
+                            $building->Out = $building->Out + 1;
+                            //check if in moved in count & remove
+                            if(in_array($moved->userUid, $building->userUidIn)){
+                                if (($key = array_search($moved->userUid, $building->userUidIn)) !== false) {
+                                    unset($building->userUidIn[$key]);
+                                    $building->In = $building->In - 1;
+                                }
+                            }
+                        }
+                    }
+
+                    if($building->building == $myProperty[1]){
+                        if($myProperty[0] !== $myProperty[1] && $myProperty[0] != "" && $myProperty[1] != ""){
+                            //add to moved to count
+                            array_push($building->userUidIn, $moved->userUid);
+                            $building->In = $building->In + 1;
+                            //check if in moved out count & remove
+                            if(in_array($moved->userUid, $building->userUidOut)){
+                                if (($key = array_search($moved->userUid, $building->userUidOut)) !== false) {
+                                    unset($building->userUidOut[$key]);
+                                    $building->Out = $building->Out - 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return [$allBuildings, $registeredUsers, $cancelled_arr, $restored_arr, $allBuildings_data];
     }
     
     
