@@ -223,7 +223,9 @@
                 let moves = data[4];
 
                 $("#propertyData").empty().append('<table>')
-                $("#propertyData").append('<tr><th style="padding:5px;">Property</th><th style="padding:5px;">New</th><th style="padding:5px;">Cancelled</th><th style="padding:5px;">Restored</th><th style="padding:5px;">Moved From</th><th style="padding:5px;">Moved To</th></tr>')
+                // $("#propertyData").append('<tr><th style="padding:5px;">Property</th><th style="padding:5px;">New</th><th style="padding:5px;">Cancelled</th><th style="padding:5px;">Restored</th><th style="padding:5px;">Moved From</th><th style="padding:5px;">Moved To</th></tr>')
+
+                $("#propertyData").append('<tr><th style="padding:5px;">Property</th><th style="padding:5px;">New</th><th style="padding:5px;">Restored</th><th style="padding:5px;">Moved To</th><th style="padding:5px;">Moved From</th><th style="padding:5px;">Cancelled</th><th style="padding:5px;">Total</th></tr>')
 
                 properties.forEach(function(index){
                    
@@ -273,20 +275,8 @@
                         $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
                     }
 
-                    if(cancel > 0){
-                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red">'+cancel+'</td>'
-                    }else{
-                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
-                    }
-
                     if(restore > 0){
                         $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+restore+'</td>'
-                    }else{
-                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
-                    }
-
-                    if(propOut > 0){
-                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red">'+propOut+'</td>'
                     }else{
                         $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
                     }
@@ -295,7 +285,30 @@
                         $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+propIn+'</td>'
                     }else{
                         $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }             
+
+                    if(propOut > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red"> - '+propOut+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
                     }
+
+                    if(cancel > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red"> - '+cancel+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }
+
+                    let total = parseFloat(register) + parseFloat(restore) + parseFloat(propIn) - parseFloat(propOut) - parseFloat(cancel);
+
+                    if(total > 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+total+'</td>'
+                    }else if(total < 0){
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red"> - '+total+'</td>'
+                    }else{
+                        $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
+                    }
+
 
                     $string += '</tr>'
 
@@ -305,6 +318,18 @@
 
                     
                 })
+
+                let allIn = 0;
+                let allOut = 0;
+
+                for( mov of moves){
+                    allIn += mov.In
+                    allOut += mov.Out
+                }
+
+                let allTotal = parseFloat(registered.length) + parseFloat(restored.length) + parseFloat(allIn) - parseFloat(allOut) - parseFloat(cancelled.length);
+
+                $("#propertyData").append('<tr><td><b>Totals</b></td><td style="padding:5px; border:1px solid #ccc; color:green">'+registered.length+'</td><td style="padding:5px; border:1px solid #ccc; color:green">'+restored.length+'</td><td style="padding:5px; border:1px solid #ccc; color:green">'+allIn+'</td><td style="padding:5px; border:1px solid #ccc; color:red"> - '+allOut+'</td><td style="padding:5px; border:1px solid #ccc; color:red"> - '+cancelled.length+'</td><td style="padding:5px; border:1px solid #ccc;"><b>'+allTotal+'</b></td></tr>')
 
                 $("#propertyData").append('</table>')
 
