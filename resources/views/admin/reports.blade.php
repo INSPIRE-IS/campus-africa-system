@@ -304,7 +304,7 @@
                     if(total > 0){
                         $string += '<td style="padding:5px; border:1px solid #ccc; color:green">'+total+'</td>'
                     }else if(total < 0){
-                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red"> - '+total+'</td>'
+                        $string += '<td style="padding:5px; border:1px solid #ccc; color:red">'+total+'</td>'
                     }else{
                         $string += '<td style="padding:5px; border:1px solid #ccc;"></td>'
                     }
