@@ -250,8 +250,8 @@ jQuery(document).ready(function ($) {
                                 arrayItem["userFirstName"] +
                                 " " +
                                 arrayItem["userLastname"] +
-                                "</span> "+verified+"<br/> " +
-                                arrayItem["userEmail"]+"<br/> " +
+                                "</span><br/> " +
+                                arrayItem["userEmail"]+ " " +verified+"<br/> " +
                                 arrayItem["property_residence"] +
                                 " | " +
                                 arrayItem["roomTypeName"],
