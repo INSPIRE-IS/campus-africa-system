@@ -69,6 +69,7 @@ jQuery(document).ready(function ($) {
                 show_cancelled: JSON.stringify(document.getElementById('show_cancelled').checked),
                 applied: $("#applied").val(),
                 gender: $("#gender").val(),
+                email: $("#email").val(),
             },
 
             success: function (data) {
@@ -249,7 +250,8 @@ jQuery(document).ready(function ($) {
                                 arrayItem["userFirstName"] +
                                 " " +
                                 arrayItem["userLastname"] +
-                                "</span> "+verified+"<br/> " +
+                                "</span><br/> " +
+                                arrayItem["userEmail"]+ " " +verified+"<br/> " +
                                 arrayItem["property_residence"] +
                                 " | " +
                                 arrayItem["roomTypeName"],
@@ -321,6 +323,7 @@ jQuery(document).ready(function ($) {
         $("#studentNo").val("");
         $("#idPassport").val("");
         $("#bookingRef").val("");
+        $("#email").val("");
         document.getElementById("student_type").value = "All";
         document.getElementById("fieldStatus").value = "All";
         document.getElementById("applied").value = "All";
