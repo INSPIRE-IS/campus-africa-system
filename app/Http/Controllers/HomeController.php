@@ -2838,6 +2838,7 @@ class HomeController extends Controller
             Session::put('show_cancelled', $request->show_cancelled);
             Session::put('applied', $request->applied);
             Session::put('gender', $request->gender);
+            Session::put('email', $request->email);
 
         } else {
 
@@ -2856,6 +2857,7 @@ class HomeController extends Controller
             $request->show_cancelled = Session::get('show_cancelled');
             $request->applied = Session::get('applied');
             $request->gender = Session::get('gender');
+            $request->email = Session::get('email');
 
         }
 
@@ -2945,6 +2947,11 @@ class HomeController extends Controller
                 // array_push($search_value, $applicantSurname);
             }
             
+        }
+
+        if($request->email !== "" && !empty($request->email)){
+            $email = 'ui.userEmail LIKE "%'.$request->email.'%"';
+            array_push($search_value, $email);
         }
 
         if($request->show_cancelled !== 'true'){
@@ -5713,7 +5720,7 @@ class HomeController extends Controller
         
 
         $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking', 'lookups', 'bookingRes', 'bookingRoom', 'bookingBed', 'paymentBooking', 'data', 'comments', 'previousBookings', 'actions'));
-        $fileNameToSave = $userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
+        $fileNameToSave = $booking->booking_code."_".$userData->userLastname."_".$userData->userFirstName."_Application_".$userData->year.".pdf";
         $content = $pdf->download($fileNameToSave)->getOriginalContent();
         \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
 
@@ -9816,7 +9823,7 @@ class HomeController extends Controller
         }
 
         $users = [
-			['<b>First Name</b>', '<b>Last Name</b>', '<b>Title</b>', '<b>DOB</b>', '<b>Cell</b>', '<b>Email</b>', '<b>Nationality</b>', '<b>I.D Number</b>', '<b>Passport</b>',  '<b>Student Type</b>', '<b>Year</b>', '<b>Institution of Study</b>', '<b>Student Number</b>', '<b>Year of Study</b>', '<b>Faculty</b>',
+			['<b>Booking Ref</b>','<b>First Name</b>', '<b>Last Name</b>', '<b>Title</b>', '<b>DOB</b>', '<b>Cell</b>', '<b>Email</b>', '<b>Nationality</b>', '<b>I.D Number</b>', '<b>Passport</b>',  '<b>Student Type</b>', '<b>Year</b>', '<b>Institution of Study</b>', '<b>Student Number</b>', '<b>Year of Study</b>', '<b>Faculty</b>',
 
             '<b>Booking Fee</b>',
             '<b>Copy Of ID</b>',
@@ -9936,6 +9943,8 @@ class HomeController extends Controller
                     $room = $booking->room;
                     $bed_code = $booking->bed_code;
 
+                    $booking_ref = $booking->booking_code;
+
                 }else{
                     $residence = "";
                     $roomType = "";
@@ -9943,10 +9952,11 @@ class HomeController extends Controller
                     $unit = "";
                     $room = "";
                     $bed_code = "";
+                    $booking_ref = "";
                 }
                 
 
-                $studentData = [$user->userFirstName, $user->userLastname, $user->userTitle, $user->userDob, $user->userCell, $user->userEmail, $user->userNationality, $user->userId, $user->userPassport, $user->studentType, $user->year, $lookupsInstit->lookup_name, $user->studentNo, $user->yearOfStudy, $lookupsFaculty->lookup_name, $rob_10_fee, $rob_15_id, $rob_20_card, $rob_25_reg, $rob_30_funds, $rob_35_info, $rob_40_bed, $rob_45_other, $rob_50_approve, $rob_55_lease, $cancelled,
+                $studentData = [$booking_ref, $user->userFirstName, $user->userLastname, $user->userTitle, $user->userDob, $user->userCell, $user->userEmail, $user->userNationality, $user->userId, $user->userPassport, $user->studentType, $user->year, $lookupsInstit->lookup_name, $user->studentNo, $user->yearOfStudy, $lookupsFaculty->lookup_name, $rob_10_fee, $rob_15_id, $rob_20_card, $rob_25_reg, $rob_30_funds, $rob_35_info, $rob_40_bed, $rob_45_other, $rob_50_approve, $rob_55_lease, $cancelled,
 
                 $residence, $roomType, $floor, $unit, $room, $bed_code,
                 

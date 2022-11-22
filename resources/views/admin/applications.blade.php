@@ -141,12 +141,16 @@
                 <option value="3" <?php if( Session::get('gender') == "3"){ echo "selected";}?>>Unspecified</option>
             </select>
         </div>
+        <div class="searchField" style="height:80px;">
+            <label>Email</label><br/>
+            <input type="text" name="email" id="email" value="<?php echo Session::get('email');?>"/>
+        </div>
         <!-- <div class="searchField" style="height:80px;">
             <br/>
         </div> -->
-        <div class="searchField" style="height:80px;">
+        <!-- <div class="searchField" style="height:80px;">
             <br/>
-        </div>
+        </div> -->
         
 
         <div class="searchTab" >
