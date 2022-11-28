@@ -125,6 +125,10 @@ class RegisterController extends Controller
 
     protected function registration_step_one(Request $request){
 
+        $validated = $request->validate([
+            'email' => 'email|required|unique:users',
+        ]);
+
         $user = User::create([
             'name' => $request->firstName,
             'userDob' => $request->dob,
