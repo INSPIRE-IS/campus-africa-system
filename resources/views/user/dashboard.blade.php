@@ -630,6 +630,8 @@
 
     function UploadDocument(field){
 
+      if(document.getElementById(field).files[0].type == "application/pdf" || document.getElementById(field).files[0].type.split("/")[0] == "image"){
+
         $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
         let userId = "<?php echo Auth::user()->id;?>";
@@ -663,6 +665,13 @@
                 }
             },
         });
+      }else{
+            Swal.fire(
+                'Error',
+                'Only PDF and Images are allowed',
+                'error'
+            )
+        }
     }
 
  

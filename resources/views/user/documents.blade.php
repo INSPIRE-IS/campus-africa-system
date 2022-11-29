@@ -161,41 +161,50 @@ $.ajaxSetup({
     } );
 
     function UploadDocument(field){
-        console.log("JG")
+        // console.log("JG")
 
-        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        if(document.getElementById(field).files[0].type == "application/pdf" || document.getElementById(field).files[0].type.split("/")[0] == "image"){
 
-        let userId = "<?php echo Auth::user()->id;?>";
+          $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById(field).files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", field);
-        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
+          let userId = "<?php echo Auth::user()->id;?>";
 
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
+          var form_data = new FormData();
+          form_data.append("file", document.getElementById(field).files[0]);
+          form_data.append("userUid", userId);
+          form_data.append("fileType", field);
+          form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
-            success: function (data) {
-                if (data[0]> 0) {
-                    
-                    window.location.reload();
+          $.ajax({
+              type: "post",
+              url: "/move-in-form-admin",
+              data: form_data,
+              cache: false,
+              contentType: false,
+              processData: false,
 
-                } else {
-                    Swal.fire(
-                        'Error',
-                        data[0],
-                        'error'
-                    )
-                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
+              success: function (data) {
+                  if (data[0]> 0) {
+                      
+                      window.location.reload();
+
+                  } else {
+                      Swal.fire(
+                          'Error',
+                          data[0],
+                          'error'
+                      )
+                      $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
+                  }
+              },
+          });
+        }else{
+            Swal.fire(
+                'Error',
+                'Only PDF and Images are allowed',
+                'error'
+            )
+        }
     }
 
     function paymentRef(){

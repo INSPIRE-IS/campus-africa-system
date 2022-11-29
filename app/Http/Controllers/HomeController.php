@@ -3200,7 +3200,7 @@ class HomeController extends Controller
             }
         }
 
-        $appYears = StudentsInfo::groupBy('year')->get();
+        $appYears = StudentsInfo::groupBy('year')->orderBy('year', 'desc')->get();
 
 
         return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed, "appYears" => $appYears]);

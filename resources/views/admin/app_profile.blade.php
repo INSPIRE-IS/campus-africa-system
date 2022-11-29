@@ -3243,56 +3243,66 @@
         // let field = $(this).attr('id');
         // console.log(field);
 
-        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        if(document.getElementById(field).files[0].type == "application/pdf" || document.getElementById(field).files[0].type.split("/")[0] == "image"){
+            $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        let userId = <?php echo $user[0]['userInfo']['userUid'];?>
+            let userId = <?php echo $user[0]['userInfo']['userUid'];?>
 
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById(field).files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", field);
-        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
+            var form_data = new FormData();
+            form_data.append("file", document.getElementById(field).files[0]);
+            form_data.append("userUid", userId);
+            form_data.append("fileType", field);
+            form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
+            $.ajax({
+                type: "post",
+                url: "/move-in-form-admin",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
 
-            success: function (data) {
-                if (data[0]> 0) {
-                    
-                    $("#" + field + "Status").empty().append('<div class="button action"></div>');
-
-                    var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
-
-                    if(field == "moveIn"){
-                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[2]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+                success: function (data) {
+                    if (data[0]> 0) {
                         
-                        if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
-                            button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
-                            // button += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                        $("#" + field + "Status").empty().append('<div class="button action"></div>');
+
+                        var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
+
+                        if(field == "moveIn"){
+                            var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[2]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+                            
+                            if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                                // button += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                            }
+                            
+                            button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
                         }
-                        
-                        button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
+
+                        $("#" + field + "Banner").empty().append(button);
+
+                        refreshActions();
+
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            data[0],
+                            'error'
+                        )
+                        $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                     }
+                },
+            });
+        }else{
+            Swal.fire(
+                'Error',
+                'Only PDF and Images are allowed',
+                'error'
+            )
+        }
 
-                    $("#" + field + "Banner").empty().append(button);
-
-                    refreshActions();
-
-                } else {
-                    Swal.fire(
-                        'Error',
-                        data[0],
-                        'error'
-                    )
-                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
+        
     }
 
 

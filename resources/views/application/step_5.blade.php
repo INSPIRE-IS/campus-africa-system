@@ -424,32 +424,41 @@ function paymentRef(){
 
     $(document).off('change').on('change', '#proof_of_payment', function(e) {
     // $("#proof_of_payment").on('change', function(){
-        $(".PaymentLabel").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById('proof_of_payment').files[0]);
-        form_data.append("userUid", "<?php echo $user->userUid; ?>");
-        form_data.append("fileType", "proof_of_payment");
+        if(document.getElementById('proof_of_payment').files[0].type == "application/pdf" || document.getElementById('proof_of_payment').files[0].type.split("/")[0] == "image"){
+            $(".PaymentLabel").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        $.ajax({
-            type: "post",
-            url: "/application-file-upload",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
+            var form_data = new FormData();
+            form_data.append("file", document.getElementById('proof_of_payment').files[0]);
+            form_data.append("userUid", "<?php echo $user->userUid; ?>");
+            form_data.append("fileType", "proof_of_payment");
 
-            success: function (data) {
-                if (data[0] > 0) {
-                    $(".PaymentLabel").empty().append('UPLOADED')
-                    $("#proofRegistrationSuccess").removeClass('hidden')
-                    $(".PaymentLabel").addClass('greenPayment')
+            $.ajax({
+                type: "post",
+                url: "/application-file-upload",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
 
-                    // $("#homeStep").removeClass('hidden')
-                    window.location.replace('/complete/online-application')
-                }
-            },
-        });
+                success: function (data) {
+                    if (data[0] > 0) {
+                        $(".PaymentLabel").empty().append('UPLOADED')
+                        $("#proofRegistrationSuccess").removeClass('hidden')
+                        $(".PaymentLabel").addClass('greenPayment')
+
+                        // $("#homeStep").removeClass('hidden')
+                        window.location.replace('/complete/online-application')
+                    }
+                },
+            });
+        }else{
+            Swal.fire(
+                'Error',
+                'Only PDF and Images are allowed',
+                'error'
+            )
+        }
     })
 
 

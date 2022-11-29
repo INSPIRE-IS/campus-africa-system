@@ -322,43 +322,52 @@
 
     function UploadDocument(field){
 
-        $("#"+field+"Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        if(document.getElementById(field).files[0].type == "application/pdf" || document.getElementById(field).files[0].type.split("/")[0] == "image"){
 
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById(field).files[0]);
-        form_data.append("userUid", "<?php echo $user->userUid; ?>");
-        form_data.append("fileType", field);
+            $("#"+field+"Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        $.ajax({
-            type: "post",
-            url: "/application-file-upload",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
+            var form_data = new FormData();
+            form_data.append("file", document.getElementById(field).files[0]);
+            form_data.append("userUid", "<?php echo $user->userUid; ?>");
+            form_data.append("fileType", field);
 
-            success: function (data) {
-                if (data[0]> 0) {
-                    
-                    // $("#"+field+"Section").empty().append('<i class="fas fa-file successful"></i>')
-                    $("#"+field+"Section").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
-                    // $("#"+field+"Sucess").removeClass('hidden')
-                    $("#"+field+"UploadSection").append('<label id="'+field+'Section" class="toUploadLabel">UPLOADED</label>')
-                    // $("#"+field+"Upload").addClass('greenBorder')
-                    $("#"+field+"Upload").addClass('yellowBorder')
-                    $("#"+field+"Upload").removeClass('redBorder')
-                    
+            $.ajax({
+                type: "post",
+                url: "/application-file-upload",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
 
-                } else {
-                    Swal.fire(
-                        'Error',
-                        data[0],
-                        'error'
-                    )
-                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
+                success: function (data) {
+                    if (data[0]> 0) {
+                        
+                        // $("#"+field+"Section").empty().append('<i class="fas fa-file successful"></i>')
+                        $("#"+field+"Section").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                        // $("#"+field+"Sucess").removeClass('hidden')
+                        $("#"+field+"UploadSection").append('<label id="'+field+'Section" class="toUploadLabel">UPLOADED</label>')
+                        // $("#"+field+"Upload").addClass('greenBorder')
+                        $("#"+field+"Upload").addClass('yellowBorder')
+                        $("#"+field+"Upload").removeClass('redBorder')
+                        
+
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            data[0],
+                            'error'
+                        )
+                        $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
+                    }
+                },
+            });
+        }else{
+            Swal.fire(
+                'Error',
+                'Only PDF and Images are allowed',
+                'error'
+            )
+        }
     }
 
 </script>
