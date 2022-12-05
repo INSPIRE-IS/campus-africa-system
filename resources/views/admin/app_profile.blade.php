@@ -444,7 +444,11 @@
                         <td id="topupAmnt">@if($paymentBooking->total_top_up != '0') R {{$paymentBooking->total_top_up}} @else - @endif</td>
                     </tr>
                 </table>
-                <button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Generate Pro Forma Invoice</button>
+                <br/>
+                <div class="flex">
+                    <div><h2 id="nsfas_wording">@if($paymentBooking->nsfas_rate) NSFAS Rate Applies @endif</h2></div>
+                    <div style="flex-grow:2"><button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Generate Pro Forma Invoice</button></div>
+                </div>
                 @endif
                         
 
@@ -3417,6 +3421,11 @@
 
                 var totalFunded = data.total_funded == '0' ? '-' : "R "+data.total_funded
                 var MonthlyTotalFunded = data.funded_monthly == '0' ? '-' : 'R '+data.funded_monthly
+
+                $("#nsfas_wording").empty();
+                if(data.nsfas_rate == 1){
+                    $("#nsfas_wording").append("NSFAS Rate Applies")
+                }
 
                 $("#booking_info").empty().append(bookingPrice)
                 if(bookingPrice != '-'){
