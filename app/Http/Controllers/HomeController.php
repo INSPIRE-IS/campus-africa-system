@@ -10472,19 +10472,19 @@ class HomeController extends Controller
             $room_rate = $roomTypeData->booking_price;
             $deposit = $roomTypeData->rent_price;
 
-            if($user->studentType == "NSFAS"){
+            if($userInfo->studentType == "NSFAS"){
                 if($roomTypeData->apply_nsfas == null){
                     $room_rate = "0";
                 }
             }
 
-            if($user->studentType == "Bursary"){
+            if($userInfo->studentType == "Bursary"){
                 if($roomTypeData->apply_bursary == null){
                     $room_rate = "0";
                 }
             }
 
-            if($user->studentType == "Cash / Direct"){
+            if($userInfo->studentType == "Cash / Direct"){
                 if($roomTypeData->apply_cash == null){
                     $room_rate = "0";
                 }
