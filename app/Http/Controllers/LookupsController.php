@@ -1124,4 +1124,20 @@ class LookupsController extends Controller {
             StudentsInfo::where('id', $user->id)->update(['gender' => $gender]);
         }
     }
+
+    public function admin_updates_update_nsfas_rate(Request $request){
+
+        $allNsfasRooms = RoomTypes::where('use_nsfas', 1)->get();
+        $nsfas_room_ids = [];
+
+        foreach($allNsfasRooms as $room){
+            array_push($nsfas_room_ids, $room->id);
+        }
+
+        $allBookings = Booking::whereIn('roomType', $nsfas_room_ids)->get();
+
+        foreach($allBookings as $booking){
+            app('App\Http\Controllers\HomeController')->paymentDeatilsInternal($booking->userId);
+        }
+    }
 }
