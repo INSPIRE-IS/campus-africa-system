@@ -9956,6 +9956,8 @@ class HomeController extends Controller
 			['<b>Booking Ref</b>','<b>First Name</b>', '<b>Last Name</b>', '<b>Title</b>', '<b>DOB</b>', '<b>Cell</b>', '<b>Email</b>', '<b>Nationality</b>', '<b>I.D Number</b>', '<b>Passport</b>',  '<b>Student Type</b>', '<b>Year</b>', '<b>Institution of Study</b>', '<b>Student Number</b>', '<b>Year of Study</b>', '<b>Faculty</b>',
 
             '<b>Booking Fee</b>',
+            '<b>Payment Type</b>',
+            '<b>Payment Reference</b>',
             '<b>Copy Of ID</b>',
             '<b>Student Card</b>',
             '<b>Proof of Registration</b>',
@@ -10075,6 +10077,9 @@ class HomeController extends Controller
 
                     $booking_ref = $booking->booking_code;
 
+                    $booking_payment_type = $booking->payment_type;
+                    $booking_payment_ref = $booking->booking_payment_ref;
+                    
                 }else{
                     $residence = "";
                     $roomType = "";
@@ -10083,10 +10088,12 @@ class HomeController extends Controller
                     $room = "";
                     $bed_code = "";
                     $booking_ref = "";
+                    $booking_payment_type = "";
+                    $booking_payment_ref = "";
                 }
                 
 
-                $studentData = [$booking_ref, $user->userFirstName, $user->userLastname, $user->userTitle, $user->userDob, $user->userCell, $user->userEmail, $user->userNationality, $user->userId, $user->userPassport, $user->studentType, $user->year, $lookupsInstit->lookup_name, $user->studentNo, $user->yearOfStudy, $lookupsFaculty->lookup_name, $rob_10_fee, $rob_15_id, $rob_20_card, $rob_25_reg, $rob_30_funds, $rob_35_info, $rob_40_bed, $rob_45_other, $rob_50_approve, $rob_55_lease, $cancelled,
+                $studentData = [$booking_ref, $user->userFirstName, $user->userLastname, $user->userTitle, $user->userDob, $user->userCell, $user->userEmail, $user->userNationality, $user->userId, $user->userPassport, $user->studentType, $user->year, $lookupsInstit->lookup_name, $user->studentNo, $user->yearOfStudy, $lookupsFaculty->lookup_name, $rob_10_fee, $booking_payment_type, $booking_payment_ref, $rob_15_id, $rob_20_card, $rob_25_reg, $rob_30_funds, $rob_35_info, $rob_40_bed, $rob_45_other, $rob_50_approve, $rob_55_lease, $cancelled,
 
                 $residence, $roomType, $floor, $unit, $room, $bed_code,
                 
