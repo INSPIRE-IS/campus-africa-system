@@ -2359,6 +2359,11 @@ class HomeController extends Controller
 
         $roomTypeData = RoomTypes::where('id', $roomId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
+        $is_nsfas = false;
+
+        if($roomTypeData->use_nsfas == 1){
+            $is_nsfas = true;
+        }
 
         $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
@@ -2497,6 +2502,7 @@ class HomeController extends Controller
 
         $topup = floatval($yearly_rent) - floatval($funded);
         $monthlyFunded = $institution->nsfas_amount;
+        $nsfas_rate = null;
 
         if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
             $admin_fee = $admin_fee->lookup_name;
@@ -2508,9 +2514,18 @@ class HomeController extends Controller
             $monthly = $deposit;
             $deposit = 0;
             $admin_fee = 0;
+
+            if($is_nsfas === true){
+                $monthly = $monthlyFunded;
+                $deposit = 0;
+                $admin_fee = 0;
+                $yearly_rent = $funded;
+                $topup = 0;
+                $nsfas_rate = 1;
+            }
         }
 
-        BookingPayment::create(["bookingId" => $booking->id, "booking_fee" => $booking_data['room_rate'], "booking_fee_waived" => 0, "rob_b_waived" => 0, "loan_admin_fee" => $admin_fee, "loan_admin_fee_waived" => 0, "rob_loan_waived" => 0, "deposit" => floatval($deposit), "deposit_waived" => 0, "rob_deposit_waived" => 0, "monthly_rental" => $monthly, "monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup, "funded_monthly" => $monthlyFunded]);
+        BookingPayment::create(["bookingId" => $booking->id, "booking_fee" => $booking_data['room_rate'], "booking_fee_waived" => 0, "rob_b_waived" => 0, "loan_admin_fee" => $admin_fee, "loan_admin_fee_waived" => 0, "rob_loan_waived" => 0, "deposit" => floatval($deposit), "deposit_waived" => 0, "rob_deposit_waived" => 0, "monthly_rental" => $monthly, "monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup, "funded_monthly" => $monthlyFunded, "nsfas_rate" => $nsfas_rate]);
 
         $bookingYear = substr($request->year, -2);
         $bookingPrefix = Residence::where('id', $oldPropReq)->pluck('building_prefix')->first();
@@ -3200,7 +3215,7 @@ class HomeController extends Controller
             }
         }
 
-        $appYears = StudentsInfo::groupBy('year')->get();
+        $appYears = StudentsInfo::groupBy('year')->orderBy('year', 'desc')->get();
 
 
         return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed, "appYears" => $appYears]);
@@ -3704,6 +3719,10 @@ class HomeController extends Controller
             
             $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
             $roomTypeId = $roomTypeData->room_map_slug;
+            $is_nsfas = false;
+            if($roomTypeData->use_nsfas == 1){
+                $is_nsfas = true;
+            }
 
             $allResidences = Residence::whereNull('status')->get();
             $allRoomTypes = RoomTypes::get();
@@ -3852,12 +3871,25 @@ class HomeController extends Controller
                     $yearly_rent = floatval($deposit) * floatval($diff);
                     $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
 
+                    $monthly_rental = $deposit;
+                    $nsfas_rate = null;
+
                     $institution = Lookups::where('id', $user->institutionStudy)->first();
                     // $funded = floatval($institution->nsfas_amount) * floatval($diff);
                     if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
                         $deposit = 0;
+
+                        if($is_nsfas === true){
+                            $monthly = $monthlyFunded;
+                            $deposit = 0;
+                            $admin_fee = 0;
+                            $yearly_rent = $funded;
+                            $topup = 0;
+                            $monthly_rental = $monthlyFunded;
+                            $nsfas_rate = 1;
+                        }
                     }else{
                         $funded = $yearly_rent;
                         $monthlyFunded = $deposit;
@@ -3865,7 +3897,7 @@ class HomeController extends Controller
     
                     $payment = BookingPayment::where('bookingId', $booking->id)->first();
     
-                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded ]);
+                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $monthly_rental, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded, 'nsfas_rate' => $nsfas_rate ]);
                 }
 
     
@@ -3932,7 +3964,7 @@ class HomeController extends Controller
     
                 Booking::where('userId', $bookingId)->where('year', $this_year)->update(['room_rate' => $booking_data['room_rate']]);
 
-                if($booking_data['room_rate'] != $booking->room_rate){
+                // if($booking_data['room_rate'] != $booking->room_rate){
 
                     // $ts1 = strtotime($booking->lease_from_date);
                     // $ts2 = strtotime($booking->lease_to_date);
@@ -3946,6 +3978,8 @@ class HomeController extends Controller
                     }
                     $yearly_rent = floatval($deposit) * floatval($diff);
                     $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+                    $nsfas_rate = null;
+                    $monthly_rental = $deposit;
 
                     $institution = Lookups::where('id', $user->institutionStudy)->first();
                     // $funded = floatval($institution->nsfas_amount) * floatval($diff);
@@ -3953,15 +3987,25 @@ class HomeController extends Controller
                         $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         $monthlyFunded = $institution->nsfas_amount;
                         $deposit = 0;
+
+                        if($is_nsfas === true){
+                            $monthly = $monthly_rental = $monthlyFunded;
+                            $deposit = 0;
+                            $admin_fee = 0;
+                            $nsfas_rate = 1;
+                            $yearly_rent = $funded;
+                            $topup = 0;
+                            $nsfas_rate = 1;
+                        }
                     }else{
                         $funded = $yearly_rent;
-                        $monthlyFunded = $deposit;
+                        $monthlyFunded = $monthly_rental = $deposit;
                     }
 
                     $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
-                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded]);
-                }
+                    BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $monthly_rental, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded, 'nsfas_rate' => $nsfas_rate]);
+                // }
     
                 $actionFileData['userUid'] = $bookingId;
                 $actionFileData['action'] = "Booking Fee updated to R".$booking_data['room_rate'];
@@ -4080,6 +4124,10 @@ class HomeController extends Controller
 
                 $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
                 $roomTypeId = $roomTypeData->room_map_slug;
+                $is_nsfas = false;
+                if($roomTypeData->use_nsfas == 1){
+                    $is_nsfas = true;
+                }
     
                 $allResidences = Residence::whereNull('status')->get();
                 $allRoomTypes = RoomTypes::get();
@@ -4228,20 +4276,30 @@ class HomeController extends Controller
                         }
                         $yearly_rent = floatval($deposit) * floatval($diff);
                         $user = StudentsInfo::where('userUid', $booking->userId)->where('year', $this_year)->first();
+                        $nsfas_rate = null;
 
                         $institution = Lookups::where('id', $user->institutionStudy)->first();
                         if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                            $monthlyFunded = $institution->nsfas_amount;
+                            $monthlyFunded = $monthly = $institution->nsfas_amount;
                             $deposit = 0;
+
+                            if($is_nsfas === true){
+                                $monthly = $monthlyFunded;
+                                $deposit = 0;
+                                $admin_fee = 0;
+                                $yearly_rent = $funded;
+                                $topup = 0;
+                                $nsfas_rate = 1;
+                            }
                         }else{
                             $funded = $yearly_rent;
-                            $monthlyFunded = $deposit;
+                            $monthlyFunded = $monthly = $deposit;
                         }
 
                         $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
-                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded]);
+                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $monthly, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded, 'nsfas_rate' => $nsfas_rate]);
                     // }
         
                     $actionFileData['userUid'] = $bookingId;
@@ -4308,21 +4366,32 @@ class HomeController extends Controller
                         }
                         $yearly_rent = floatval($deposit) * floatval($diff);
                         $user = StudentsInfo::where('userUid', $booking->userId)->where('year', $this_year)->first();
+                        $nsfas_rate = null;
 
                         $institution = Lookups::where('id', $user->institutionStudy)->first();
                         // $funded = floatval($institution->nsfas_amount) * floatval($diff);
                         if($user->studentType == "NSFAS" || $user->nsfas_bursar == '1'){
                             $funded = floatval($institution->nsfas_amount) * floatval($diff);
                             $monthlyFunded = $institution->nsfas_amount;
+                            $monthly = $deposit;
                             $deposit = 0;
+
+                            if($is_nsfas === true){
+                                $monthly = $monthlyFunded;
+                                $deposit = 0;
+                                $admin_fee = 0;
+                                $yearly_rent = $funded;
+                                $topup = 0;
+                                $nsfas_rate = 1;
+                            }
                         }else{
                             $funded = $yearly_rent;
-                            $monthlyFunded = $deposit;
+                            $monthlyFunded = $monthly = $deposit;
                         }
 
                         $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
-                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $deposit, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded]);
+                        BookingPayment::where('bookingId', $booking->id)->update(['booking_fee' => $booking_data['room_rate'], 'booking_fee_waived' => 0, 'rob_b_waived' => 0, 'deposit' => $deposit, 'deposit_waived' => 0, 'rob_deposit_waived' => 0, 'monthly_rental' => $monthly, 'monthly_rental_total' => $yearly_rent, 'total_top_up' => $yearly_rent - $funded, 'funded_monthly' => $monthlyFunded, 'total_funded' => $funded, 'nsfas_rate' => $nsfas_rate]);
                     // }
         
                     // if($booking_data['room_rate'] != $booking->room_rate){
@@ -4434,6 +4503,12 @@ class HomeController extends Controller
 
         Booking::where('userId', $bookingId)->where('year', $this_year)->update(["lease_from_date" => $lease_from_date, "lease_from_time"=>$lease_from_time, "lease_to_date"=>$lease_to_date, "lease_to_time"=>$lease_to_time, "lease_unique" => "1"]);
 
+        $roomTypeData = RoomTypes::where('id', $oldData->roomType)->first();
+        $is_nsfas = false;
+        if($roomTypeData->use_nsfas == 1){
+            $is_nsfas = true;
+        }
+
         foreach($newData as $key => $new){
             
             $info = explode("|", $key);
@@ -4483,6 +4558,9 @@ class HomeController extends Controller
         }else{
             $funded = $funded;
             $topup = $topup;
+            if($is_nsfas === true){
+                $topup = 0;
+            }
         }
 
         BookingPayment::where('bookingId', $oldData->id)->update(["monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup, "funded_monthly" => $monthlyFunded]);
@@ -5379,6 +5457,7 @@ class HomeController extends Controller
             "room_map_slug" => $request->room_map,
             // "room_map_price" => $request->room_map_price,
             "pull_price" => $request->pull_price,
+            "use_nsfas" => $request->use_nsfas,
             "booking_price" => $request->booking_price,
             "rent_price" => $request->rent_price,
             "apply_nsfas" => $request->apply_nsfas,
@@ -6522,6 +6601,12 @@ class HomeController extends Controller
 
                         Booking::where('id', $booking->id)->update($updatedDates);
 
+                        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+                        $is_nsfas = false;
+                        if($roomTypeData->use_nsfas == 1){
+                            $is_nsfas = true;
+                        }
+
                         $paymentBooking = BookingPayment::where('bookingId', $user->bookingId)->first();
 
                         $diff = 0;
@@ -6544,6 +6629,10 @@ class HomeController extends Controller
                         }else{
                             $funded = $funded;
                             $topup = $topup;
+
+                            if($is_nsfas === true){
+                                $topup = 0;
+                            }
                         }
 
                         BookingPayment::where('bookingId', $user->bookingId)->update(["monthly_rental_total" => $yearly_rent, "total_funded" => $funded, "total_top_up" => $topup, "funded_monthly" => $monthlyFunded]);
@@ -7398,29 +7487,29 @@ class HomeController extends Controller
 
             $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
 
-            if($request->studentType == "NSFAS"){
-                $booking = Booking::where('id', $userInfo->bookingId)->first();
-                // $ts1 = strtotime($booking->lease_from_date);
-                // $ts2 = strtotime($booking->lease_to_date);
-                // $month1 = date('m', $ts1);
-                // $month2 = date('m', $ts2);
-                // $diff = $month2 - $month1;
-                $diff = 0;
-                for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
-                    $diff++;
-                }
+            // if($request->studentType == "NSFAS"){
+            //     $booking = Booking::where('id', $userInfo->bookingId)->first();
+            //     // $ts1 = strtotime($booking->lease_from_date);
+            //     // $ts2 = strtotime($booking->lease_to_date);
+            //     // $month1 = date('m', $ts1);
+            //     // $month2 = date('m', $ts2);
+            //     // $diff = $month2 - $month1;
+            //     $diff = 0;
+            //     for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+            //         $diff++;
+            //     }
 
-                $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
-                $funded = floatval($institution->nsfas_amount) * floatval($diff);
-                $thisBookingPayment = BookingPayment::where('bookingId', $userInfo->bookingId)->first();
-                BookingPayment::where('bookingId', $userInfo->bookingId)->update([
-                    'deposit' => '0',
-                    'loan_admin_fee' => '0',
-                    'total_funded' => $funded,
-                    'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded),
-                    'funded_monthly' => $institution->nsfas_amount
-                ]);
-            }
+            //     $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
+            //     $funded = floatval($institution->nsfas_amount) * floatval($diff);
+            //     $thisBookingPayment = BookingPayment::where('bookingId', $userInfo->bookingId)->first();
+            //     BookingPayment::where('bookingId', $userInfo->bookingId)->update([
+            //         'deposit' => '0',
+            //         'loan_admin_fee' => '0',
+            //         'total_funded' => $funded,
+            //         'total_top_up' => floatval($thisBookingPayment->monthly_rental_total) - floatval($funded),
+            //         'funded_monthly' => $institution->nsfas_amount
+            //     ]);
+            // }
         } elseif ($request->task == "inline_edit_kin") {
             $newData = [
                 'kinTitle|Title' => $request->kinTitle,
@@ -7583,6 +7672,10 @@ class HomeController extends Controller
 
             StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update($updateData);
             
+        }
+
+        if($request->task == 'inline_edit_student_type'){
+            $this->paymentDeatilsInternal($request->userUid);
         }
 
         echo "done";
@@ -7973,27 +8066,29 @@ class HomeController extends Controller
             }
         }
 
-        $booking = Booking::where('id', $userCurr->bookingId)->first();
-        // $ts1 = strtotime($booking->lease_from_date);
-        // $ts2 = strtotime($booking->lease_to_date);
-        // $month1 = date('m', $ts1);
-        // $month2 = date('m', $ts2);
-        // $diff = $month2 - $month1;
-        $diff = 0;
-        for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
-            $diff++;
-        }
+        // $booking = Booking::where('id', $userCurr->bookingId)->first();
+        // // $ts1 = strtotime($booking->lease_from_date);
+        // // $ts2 = strtotime($booking->lease_to_date);
+        // // $month1 = date('m', $ts1);
+        // // $month2 = date('m', $ts2);
+        // // $diff = $month2 - $month1;
+        // $diff = 0;
+        // for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+        //     $diff++;
+        // }
 
-        $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
-        $admin_fee = Lookups::where('group_id', '8')->first();
-        $funded = floatval($institution->nsfas_amount) * floatval($diff);
-        $thisBookingPayment = BookingPayment::where('bookingId', $userCurr->bookingId)->first();
-        BookingPayment::where('bookingId', $userCurr->bookingId)->update([
-            'deposit' => $thisBookingPayment->monthly_rental,
-            'loan_admin_fee' => $admin_fee->lookup_name,
-            'total_funded' => $thisBookingPayment->monthly_rental_total,
-            'total_top_up' => '0',
-        ]);
+        // $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
+        // $admin_fee = Lookups::where('group_id', '8')->first();
+        // $funded = floatval($institution->nsfas_amount) * floatval($diff);
+        // $thisBookingPayment = BookingPayment::where('bookingId', $userCurr->bookingId)->first();
+        // BookingPayment::where('bookingId', $userCurr->bookingId)->update([
+        //     'deposit' => $thisBookingPayment->monthly_rental,
+        //     'loan_admin_fee' => $admin_fee->lookup_name,
+        //     'total_funded' => $thisBookingPayment->monthly_rental_total,
+        //     'total_top_up' => '0',
+        // ]);
+
+        $this->paymentDeatilsInternal($request->userId);
 
 
     }
@@ -8041,27 +8136,29 @@ class HomeController extends Controller
             }
         }
 
-        $booking = Booking::where('id', $userCurr->bookingId)->first();
-        // $ts1 = strtotime($booking->lease_from_date);
-        // $ts2 = strtotime($booking->lease_to_date);
-        // $month1 = date('m', $ts1);
-        // $month2 = date('m', $ts2);
-        // $diff = $month2 - $month1;
-        $diff = 0;
-        for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
-            $diff++;
-        }
+        // $booking = Booking::where('id', $userCurr->bookingId)->first();
+        // // $ts1 = strtotime($booking->lease_from_date);
+        // // $ts2 = strtotime($booking->lease_to_date);
+        // // $month1 = date('m', $ts1);
+        // // $month2 = date('m', $ts2);
+        // // $diff = $month2 - $month1;
+        // $diff = 0;
+        // for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){
+        //     $diff++;
+        // }
 
-        $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
-        $admin_fee = Lookups::where('group_id', '8')->first();
-        $funded = floatval($institution->nsfas_amount) * floatval($diff);
-        $thisBookingPayment = BookingPayment::where('bookingId', $userCurr->bookingId)->first();
-        BookingPayment::where('bookingId', $userCurr->bookingId)->update([
-            'deposit' => $thisBookingPayment->monthly_rental,
-            'loan_admin_fee' => $admin_fee->lookup_name,
-            'total_funded' => $thisBookingPayment->monthly_rental_total,
-            'total_top_up' => '0',
-        ]);
+        // $institution = Lookups::where('id', $userCurr->institutionStudy)->first();
+        // $admin_fee = Lookups::where('group_id', '8')->first();
+        // $funded = floatval($institution->nsfas_amount) * floatval($diff);
+        // $thisBookingPayment = BookingPayment::where('bookingId', $userCurr->bookingId)->first();
+        // BookingPayment::where('bookingId', $userCurr->bookingId)->update([
+        //     'deposit' => $thisBookingPayment->monthly_rental,
+        //     'loan_admin_fee' => $admin_fee->lookup_name,
+        //     'total_funded' => $thisBookingPayment->monthly_rental_total,
+        //     'total_top_up' => '0',
+        // ]);
+
+        $this->paymentDeatilsInternal($request->userId);
     }
 
     public function restore_student_booking(Request $request){
@@ -8380,6 +8477,11 @@ class HomeController extends Controller
 
         $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
         $roomTypeId = $roomTypeData->room_map_slug;
+        
+        $is_nsfas = false;
+        if($roomTypeData->use_nsfas == 1){
+            $is_nsfas = true;
+        }
 
         $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
@@ -8656,6 +8758,7 @@ class HomeController extends Controller
     
                 $topup = floatval($yearly_rent) - floatval($funded);
                 $monthlyFunded = $institution->nsfas_amount;
+                $nsfas_rate = null;
 
     
                 if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
@@ -8667,6 +8770,15 @@ class HomeController extends Controller
                     $monthly = $deposit;
                     $deposit = 0;
                     $admin_fee = 0;
+
+                    if($is_nsfas === true){
+                        $monthly = $monthlyFunded;
+                        $deposit = 0;
+                        $admin_fee = 0;
+                        $yearly_rent = $funded;
+                        $topup = 0;
+                        $nsfas_rate = 1;
+                    }
                 }
 
                 BookingPayment::where("bookingId", $booking->id)->update([
@@ -8684,7 +8796,8 @@ class HomeController extends Controller
                     "monthly_rental_total" => $yearly_rent, 
                     "total_funded" => $funded, 
                     "total_top_up" => $topup,
-                    "funded_monthly" => $monthlyFunded
+                    "funded_monthly" => $monthlyFunded,
+                    "nsfas_rate" => $nsfas_rate
                 ]);
             }
 
@@ -9422,6 +9535,11 @@ class HomeController extends Controller
             $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
             $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
 
+            $is_nsfas = false;
+            if($roomTypeData->use_nsfas == 1){
+                $is_nsfas = true;
+            }
+
             $userInfo = StudentsInfo::where('bookingId', $booking->id)->orderBy('year', 'desc')->first();
 
             if(!empty($userInfo)){
@@ -9438,6 +9556,8 @@ class HomeController extends Controller
                 $topup = floatval($yearly_rent) - floatval($funded);
                 $monthlyFunded = $institution->nsfas_amount;
 
+                $nsfas_rate = null;
+
     
                 if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
                     $admin_fee = '1000';
@@ -9448,6 +9568,15 @@ class HomeController extends Controller
                     $monthly = $deposit;
                     $deposit = 0;
                     $admin_fee = 0;
+
+                    if($is_nsfas === true){
+                        $monthly = $monthlyFunded;
+                        $deposit = 0;
+                        $admin_fee = 0;
+                        $yearly_rent = $funded;
+                        $topup = 0;
+                        $nsfas_rate = 1;
+                    }
                 }
 
                     BookingPayment::create([
@@ -9465,7 +9594,8 @@ class HomeController extends Controller
                         "monthly_rental_total" => $yearly_rent, 
                         "total_funded" => $funded, 
                         "total_top_up" => $topup,
-                        "funded_monthly" => $monthlyFunded
+                        "funded_monthly" => $monthlyFunded,
+                        "nsfas_rate" => $nsfas_rate
                     ]);
                 
             }
@@ -10248,6 +10378,187 @@ class HomeController extends Controller
         }
 
         return [$allBuildings, $registeredUsers, $cancelled_arr, $restored_arr, $allBuildings_data];
+    }
+
+    public function paymentDeatilsInternal($user_id){
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $userInfo = StudentsInfo::where('userUid', $user_id)->where('year', $this_year)->first();
+
+        if($userInfo){
+
+            $booking_new = Booking::where('id', $userInfo->bookingId)->where('year', $this_year)->first();
+    
+            $lookup = Lookups::where('group_id', '7')->first();
+    
+            $roomTypeData = RoomTypes::where('id', $booking_new->roomType)->first();
+            $roomTypeId = $roomTypeData->room_map_slug;
+    
+            $res = Residence::where('id', $booking_new->property)->first();
+    
+            $room_rate = 0;
+            $deposit = 0;
+    
+            $is_nsfas = false;
+            if($roomTypeData->use_nsfas == 1){
+                $is_nsfas = true;
+            }
+    
+            if($lookup && $lookup->lookup_name == "1"){
+                $room_rate = "0";
+            }else{
+                //Get residences from WP
+                $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+                $residenceId = "";
+    
+                foreach($jsonDataResidence as $residence){
+                    if($residence->title->rendered == $res->residence){
+                        //get room booking fee from residence (WP)
+                        $room_rate = $residence->acf->booking_fee;
+                        //get residence ID (WP)
+                        $residenceId = $residence->id;
+                    }
+                }
+    
+                $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+    
+                $roomType = "";
+                $roomName = "";
+    
+                foreach($jsonDataRooms as $room){
+                    if($residenceId == $room->acf->residence){
+    
+                        if($room->id == $roomTypeId){
+                            $roomType = $booking_new->roomType;
+                            $roomName = $room->slug;
+                            $deposit = $room->acf->price_from;
+        
+                            $appliesTo = $room->acf->booking_fee_applies_to;
+    
+                            if($room->acf->booking_fee_override !== ""){
+                                $room_rate = $room->acf->booking_fee_override;
+                            }
+        
+                            if($room->slug == $roomName && $roomType == $booking_new->roomType){
+        
+                                if($room->acf->booking_fee_override !== ""){
+                                    $room_rate = $room->acf->booking_fee_override;
+                                }
+        
+                                if($userInfo->studentType === "NSFAS"){
+                                    if(!in_array("NSFAS Students", $appliesTo)){
+                                        $room_rate = "0";
+                                    }
+                                }
+        
+                                if($userInfo->studentType === "Bursary"){
+                                    if(!in_array("Bursary Students", $appliesTo)){
+                                        $room_rate = "0";
+                                    }
+                                }
+        
+                                if($userInfo->studentType === "Cash / Direct"){
+                                    if(!in_array("Cash Students", $appliesTo)){
+                                        $room_rate = "0";
+                                    }
+                                }
+                            } 
+                        }
+    
+                    }
+                }
+            }
+    
+            if($roomTypeData && $roomTypeData->pull_price == null){
+                $room_rate = $roomTypeData->booking_price;
+                $deposit = $roomTypeData->rent_price;
+    
+                if($userInfo->studentType == "NSFAS"){
+                    if($roomTypeData->apply_nsfas == null){
+                        $room_rate = "0";
+                    }
+                }
+    
+                if($userInfo->studentType == "Bursary"){
+                    if($roomTypeData->apply_bursary == null){
+                        $room_rate = "0";
+                    }
+                }
+    
+                if($userInfo->studentType == "Cash / Direct"){
+                    if($roomTypeData->apply_cash == null){
+                        $room_rate = "0";
+                    }
+                }
+            }
+    
+            $bookingPrice = $room_rate;
+    
+            //Get default lease data for the booking
+            $lookup_lease_dates = Lookups::where('group_id', '4')->first();
+    
+            $booking_data['lease_from_date'] = $lookup_lease_dates['lease_from_date'];
+            $booking_data['lease_from_time'] = $lookup_lease_dates['lease_from_time'];
+            $booking_data['lease_to_date'] = $lookup_lease_dates['lease_to_date'];
+            $booking_data['lease_to_time'] = $lookup_lease_dates['lease_to_time'];
+    
+    
+            $diff = 0;
+            for($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')){
+                $diff++;
+            }
+            $yearly_rent = floatval($deposit) * floatval($diff);
+    
+            $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
+            $funded = floatval($institution->nsfas_amount) * floatval($diff);
+    
+            $topup = floatval($yearly_rent) - floatval($funded);
+            $monthlyFunded = $institution->nsfas_amount;
+    
+            $nsfas_rate = null;
+    
+    
+            if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
+                $admin_fee = '1000';
+                $deposit = $monthly = $monthlyFunded = $deposit;
+                $funded = $yearly_rent;
+                $topup = '0';
+            }else{
+                $monthly = $deposit;
+                $deposit = 0;
+                $admin_fee = 0;
+    
+                if($is_nsfas === true){
+                    $monthly = $monthlyFunded;
+                    $deposit = 0;
+                    $admin_fee = 0;
+                    $yearly_rent = $funded;
+                    $topup = 0;
+                    $nsfas_rate = 1;
+                }
+            }
+    
+            BookingPayment::where('bookingId', $booking_new->id)->update([
+                "bookingId" => $booking_new->id, 
+                "booking_fee" => $bookingPrice, 
+                "booking_fee_waived" => 0, 
+                "rob_b_waived" => 0, 
+                "loan_admin_fee" => $admin_fee, 
+                "loan_admin_fee_waived" => 0, 
+                "rob_loan_waived" => 0, 
+                "deposit" => floatval($deposit), 
+                "deposit_waived" => 0, 
+                "rob_deposit_waived" => 0, 
+                "monthly_rental" => $monthly, 
+                "monthly_rental_total" => $yearly_rent, 
+                "total_funded" => $funded, 
+                "total_top_up" => $topup,
+                "funded_monthly" => $monthlyFunded,
+                "nsfas_rate" => $nsfas_rate
+            ]);
+        }
     }
     
     

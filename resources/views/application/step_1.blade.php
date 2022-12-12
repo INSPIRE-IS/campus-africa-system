@@ -925,6 +925,20 @@
                             success: function (data) {
                                 window.location.replace('/online-application-verify/'+data)   
                             },
+                            error: function (textStatus, errorThrown) {
+
+                                let response = JSON.parse(textStatus.responseText)
+
+                                $("#submitForm").empty().append('Proceed to next step');
+
+                                if(errorThrown == "error"){
+                                    Swal.fire(
+                                        'invalid Email',
+                                        response.errors.email[0],
+                                        'error'
+                                    )
+                                }
+                            }
                         });
                     }else{
                         $("#submitForm").empty().append('Proceed to next step');

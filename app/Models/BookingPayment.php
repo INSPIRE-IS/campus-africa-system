@@ -32,7 +32,8 @@ class BookingPayment extends Model
         'reason_booking_fee_reject',
         'reason_admin_fee_reject',
         'reason_deposit_reject',
-        'funded_monthly'
+        'funded_monthly',
+        'nsfas_rate'
     ];
 
     public function booking(){

@@ -125,6 +125,10 @@ class RegisterController extends Controller
 
     protected function registration_step_one(Request $request){
 
+        $validated = $request->validate([
+            'email' => 'email|required|unique:users',
+        ]);
+
         $user = User::create([
             'name' => $request->firstName,
             'userDob' => $request->dob,
@@ -323,10 +327,14 @@ class RegisterController extends Controller
         $roomTypeData = RoomTypes::where('id', $bookinfRefNo->roomType)->first();
         $bookinfRefNo->property = Residence::where('id', $bookinfRefNo->property)->pluck('residence')->first();
         $roomTypeId = ""; 
+        $is_nsfas = false;
 
         if($roomTypeData && $roomTypeData->room_map_slug){
             //
             $roomTypeId = $roomTypeData->room_map_slug;
+        }
+        if($roomTypeData->use_nsfas == 1){
+            $is_nsfas = true;
         }
         $deposit = 0;
         $userInfo = StudentsInfo::where('userUid', $bookinfRefNo->userId)->orderBy('year', 'desc')->first();
@@ -429,6 +437,7 @@ class RegisterController extends Controller
 
             $topup = floatval($yearly_rent) - floatval($funded);
             $monthlyFunded = $institution->nsfas_amount;
+            $nsfas_rate = null;
 
 
             if(($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)){
@@ -440,6 +449,16 @@ class RegisterController extends Controller
                 $monthly = $deposit;
                 $deposit = 0;
                 $admin_fee = 0;
+
+                if($is_nsfas === true){
+                    $monthly = $monthlyFunded;
+                    $deposit = 0;
+                    $admin_fee = 0;
+                    $nsfas_rate = 1;
+                    $yearly_rent = $funded;
+                    $topup = 0;
+                    $nsfas_rate = 1;
+                }
             }
 
             BookingPayment::create([
@@ -457,7 +476,8 @@ class RegisterController extends Controller
                 "monthly_rental_total" => $yearly_rent, 
                 "total_funded" => $funded, 
                 "total_top_up" => $topup,
-                "funded_monthly" => $monthlyFunded
+                "funded_monthly" => $monthlyFunded,
+                "nsfas_rate" => $nsfas_rate,
             ]);
         }
 

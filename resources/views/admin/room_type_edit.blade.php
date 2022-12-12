@@ -46,6 +46,12 @@
 
         <div class="form-field">
             <br/>
+            <ul style="list-style-type:none;" id="use_nsfas_rate_box">
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="use_nsfas" name="use_nsfas" value="1" style="width:40px !important" <?php if(!empty($roomTypeData) && $roomTypeData->use_nsfas == '1'){echo "checked";}?>>
+                    <label for="use_nsfas" style="width:500px; padding-left:10px;">NSFAS Rate Applies</label>
+                </li>
+            </ul>
         </div>
 
         <div class="form-field">

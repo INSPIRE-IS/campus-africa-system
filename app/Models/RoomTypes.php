@@ -25,5 +25,6 @@ class RoomTypes extends Model
         'apply_nsfas',
         'apply_bursary',
         'apply_cash',
+        'use_nsfas',
     ];
 }

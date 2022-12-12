@@ -119,6 +119,7 @@ Route::get('/admin-updates/payments-update', [LookupsController::class, 'admin_u
 Route::get('/admin-updates/name-case-update', [LookupsController::class, 'admin_updates_name_case_update']);
 Route::get('/admin-updates/update-beds', [LookupsController::class, 'admin_updates_update_beds']);
 Route::get('/admin-updates/update-gender', [LookupsController::class, 'admin_updates_update_gender']);
+Route::get('/admin-updates/update-nsfas-rate', [LookupsController::class, 'admin_updates_update_nsfas_rate']);
 
 
 

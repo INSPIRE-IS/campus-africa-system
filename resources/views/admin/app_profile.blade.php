@@ -444,7 +444,11 @@
                         <td id="topupAmnt">@if($paymentBooking->total_top_up != '0') R {{$paymentBooking->total_top_up}} @else - @endif</td>
                     </tr>
                 </table>
-                <button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Generate Pro Forma Invoice</button>
+                <br/>
+                <div class="flex">
+                    <div><h2 id="nsfas_wording">@if($paymentBooking->nsfas_rate) NSFAS Rate Applies @endif</h2></div>
+                    <div style="flex-grow:2"><button type="button" class="generatePdf" onClick="generateInvoice('{{$paymentBooking->id}}', '{{$booking->id}}', '{{$user[0]['userInfo']['userUid']}}')">Generate Pro Forma Invoice</button></div>
+                </div>
                 @endif
                         
 
@@ -1101,41 +1105,98 @@
         }
     });
 
-    function paymentRef(){
-        swal.fire({
-                title: 'Please enter the Payment Reference:',
-                input: 'text',
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Submit',
-                showLoaderOnConfirm: true,
-            }).then((result) => {
-                if (result.isConfirmed && result.value !== "") {
-                    $("#booking_payment").empty().append(result.value);
+    async function paymentRef(){
+      const steps=["1","2"];
+      const firstStep = swal.mixin({
+        confirmButtonText:'Next',
+        cancelButtonText:'Cancel',
+        progressSteps: steps,
+        title:"Please enter the Payment Reference:",
+        input: 'text',
+        inputAttributes: {
+          required: true
+        },
+      reverseButtons: true,
+      validationMessage: 'This field is required'
+      })
+      const secondStep = swal.mixin({
+        confirmButtonText:'Submit',
+        cancelButtonText:'Back',
+        progressSteps: steps,
+        title: "Please upload your Proof of Payment (image or PDF)",
+        input: 'file',
+        inputAttributes: {
+          'accept':"image/*, application/pdf",
+          required: true
+        },
+      reverseButtons: true,
+      validationMessage: 'This field is required'
+      })
 
-                    $.ajax({
-                        type: "post",
-                        url: "/UpdatePaymentRef",
-                        data: {
-                            bookingId: "{{$booking->id}}",
-                            reason: result.value
-                        },
+    const values=[]
+    let currentStep
+    const mixins=[firstStep,secondStep]
 
-                        success: function (data) {
+    for(currentStep=0;currentStep<steps.length;) {
+      const result = await mixins[currentStep].fire({
+        inputValue:values[currentStep],
+        showCancelButton:true,
+        currentProgressStep: currentStep
+      })
 
-                            $("#proof_of_paymentStatus").empty().append('<div class="button rejected"></div>');
-                                let uploadbtn = '<label for="proof_of_payment" id="proof_of_paymentSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="proof_of_payment" onChange="UploadDocument(\'proof_of_payment\')" accept="image/*, application/pdf" hidden/>';
-                                $("#proof_of_paymentBanner").empty().append(uploadbtn);
-                                $("#proof_of_paymentSection").click();
+      if (result.value) {
+        values[currentStep] = result.value
+        currentStep++
+      } else if (result.dismiss === swal.DismissReason.cancel) {
+        currentStep --
+      } else {
+        break
+      }
+    }
 
-                            refreshActions();  
-                            checkUserStatus();
-                        },
-                    });
+    if (currentStep === steps.length) {
+      console.log("Values", values)
+      $.ajax({
+        type:"post",
+        url: "/UpdatePaymentRef",
+        data: {
+          bookingId: "{{$booking->id}}",
+          reason: values[0]
+        }
+      })
+
+      let userId = "{{$user[0]['userInfo']['userUid']}}";
+
+      var form_data = new FormData();
+        form_data.append("file", values[1]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", 'proof_of_payment');
+        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0]> 0) {
+                    
+                    window.location.reload();
+
+                } else {
+                    Swal.fire(
+                        'Error',
+                        data[0],
+                        'error'
+                    )
+                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                 }
-            })
+            },
+        });
+    }
     }
 
     function generateInvoice(paymentId, bookingId, userId){
@@ -3243,56 +3304,66 @@
         // let field = $(this).attr('id');
         // console.log(field);
 
-        $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        if(document.getElementById(field).files[0].type == "application/pdf" || document.getElementById(field).files[0].type.split("/")[0] == "image"){
+            $("#" + field + "Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
-        let userId = <?php echo $user[0]['userInfo']['userUid'];?>
+            let userId = <?php echo $user[0]['userInfo']['userUid'];?>
 
-        var form_data = new FormData();
-        form_data.append("file", document.getElementById(field).files[0]);
-        form_data.append("userUid", userId);
-        form_data.append("fileType", field);
-        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
+            var form_data = new FormData();
+            form_data.append("file", document.getElementById(field).files[0]);
+            form_data.append("userUid", userId);
+            form_data.append("fileType", field);
+            form_data.append("adminName", "{{Auth::user()->userFirstName}}");
 
-        $.ajax({
-            type: "post",
-            url: "/move-in-form-admin",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
+            $.ajax({
+                type: "post",
+                url: "/move-in-form-admin",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
 
-            success: function (data) {
-                if (data[0]> 0) {
-                    
-                    $("#" + field + "Status").empty().append('<div class="button action"></div>');
-
-                    var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
-
-                    if(field == "moveIn"){
-                        var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[2]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+                success: function (data) {
+                    if (data[0]> 0) {
                         
-                        if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
-                            button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
-                            // button += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                        $("#" + field + "Status").empty().append('<div class="button action"></div>');
+
+                        var button = '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>';
+
+                        if(field == "moveIn"){
+                            var button = '<a href="/storage/'+data[2]['fileUrl']+'" download="'+data[2]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+                            
+                            if("<?php echo Auth::user()->role_lease_regen;?>" == "1"){
+                                button += '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button>'
+                                // button += '<button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                            }
+                            
+                            button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
                         }
-                        
-                        button += '<button type="button" onClick="btn_view_document_ajax('+data[2]['id']+')">View Document</button>'
+
+                        $("#" + field + "Banner").empty().append(button);
+
+                        refreshActions();
+
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            data[0],
+                            'error'
+                        )
+                        $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
                     }
+                },
+            });
+        }else{
+            Swal.fire(
+                'Error',
+                'Only PDF and Images are allowed',
+                'error'
+            )
+        }
 
-                    $("#" + field + "Banner").empty().append(button);
-
-                    refreshActions();
-
-                } else {
-                    Swal.fire(
-                        'Error',
-                        data[0],
-                        'error'
-                    )
-                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
-                }
-            },
-        });
+        
     }
 
 
@@ -3407,6 +3478,11 @@
 
                 var totalFunded = data.total_funded == '0' ? '-' : "R "+data.total_funded
                 var MonthlyTotalFunded = data.funded_monthly == '0' ? '-' : 'R '+data.funded_monthly
+
+                $("#nsfas_wording").empty();
+                if(data.nsfas_rate == 1){
+                    $("#nsfas_wording").append("NSFAS Rate Applies")
+                }
 
                 $("#booking_info").empty().append(bookingPrice)
                 if(bookingPrice != '-'){
