@@ -203,7 +203,7 @@
     for(currentStep=0;currentStep<steps.length;) {
       const result = await mixins[currentStep].fire({
         inputValue:values[currentStep],
-        showCancelButton:currentStep>0,
+        showCancelButton:true,
         currentProgressStep: currentStep
       })
 

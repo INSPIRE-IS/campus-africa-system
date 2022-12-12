@@ -1123,7 +1123,7 @@
         confirmButtonText:'Submit',
         cancelButtonText:'Back',
         progressSteps: steps,
-        title: "Please upload you Proof of Payment (image or PDF)",
+        title: "Please upload your Proof of Payment (image or PDF)",
         input: 'file',
         inputAttributes: {
           'accept':"image/*, application/pdf",
@@ -1140,7 +1140,7 @@
     for(currentStep=0;currentStep<steps.length;) {
       const result = await mixins[currentStep].fire({
         inputValue:values[currentStep],
-        showCancelButton:currentStep>0,
+        showCancelButton:true,
         currentProgressStep: currentStep
       })
 
@@ -1165,7 +1165,7 @@
         }
       })
 
-      let userId = "<?php echo Auth::user()->id;?>";
+      let userId = "{{$user[0]['userInfo']['userUid']}}";
 
       var form_data = new FormData();
         form_data.append("file", values[1]);

@@ -225,7 +225,7 @@ $.ajaxSetup({
         confirmButtonText:'Submit',
         cancelButtonText:'Back',
         progressSteps: steps,
-        title: "Please upload you Proof of Payment (image or PDF)",
+        title: "Please upload your Proof of Payment (image or PDF)",
         input: 'file',
         inputAttributes: {
           'accept':"image/*, application/pdf",
@@ -242,7 +242,7 @@ $.ajaxSetup({
     for(currentStep=0;currentStep<steps.length;) {
       const result = await mixins[currentStep].fire({
         inputValue:values[currentStep],
-        showCancelButton:currentStep>0,
+        showCancelButton:true,
         currentProgressStep: currentStep
       })
 
