@@ -45,7 +45,7 @@
                             
                           <div id="paymentSection">
                                 <label onClick="paymentRef()" id="{{$file->fileId}}Section" class="outstanding">
-                                  <span class="text">Outstanding</span>
+                                  <span class="text">Upload Proof of Payment</span>
                                   <i class="fas fa-file-upload" ></i>
                                   <i class="fas fa-exclamation-circle"></i>
                                 </label>
@@ -168,37 +168,97 @@
     
   }
 
-  function paymentRef(){
-        swal.fire({
-                title: 'Please enter the Payment Reference you used:',
-                input: 'text',
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Submit',
-                showLoaderOnConfirm: true,
-            }).then((result) => {
-                if (result.isConfirmed && result.value !== "") {
-                    $("#booking_payment").empty().append(result.value);
+    async function paymentRef(){
+      const steps=["1","2"];
+      const firstStep = swal.mixin({
+        confirmButtonText:'Next',
+        cancelButtonText:'Cancel',
+        progressSteps: steps,
+        title:"Please enter the Payment Reference you used:",
+        input: 'text',
+        inputAttributes: {
+          required: true
+        },
+      reverseButtons: true,
+      validationMessage: 'This field is required'
+      })
+      const secondStep = swal.mixin({
+        confirmButtonText:'Submit',
+        cancelButtonText:'Back',
+        progressSteps: steps,
+        title: "Please upload you Proof of Payment (image or PDF)",
+        input: 'file',
+        inputAttributes: {
+          'accept':"image/*, application/pdf",
+          required: true
+        },
+      reverseButtons: true,
+      validationMessage: 'This field is required'
+      })
 
-                    $.ajax({
-                        type: "post",
-                        url: "/UpdatePaymentRef",
-                        data: {
-                            bookingId: "{{$booking->id}}",
-                            reason: result.value
-                        },
+    const values=[]
+    let currentStep
+    const mixins=[firstStep,secondStep]
 
-                        success: function (data) {
+    for(currentStep=0;currentStep<steps.length;) {
+      const result = await mixins[currentStep].fire({
+        inputValue:values[currentStep],
+        showCancelButton:currentStep>0,
+        currentProgressStep: currentStep
+      })
 
-                            $("#paymentSection").empty().append('<label for="proof_of_payment" id="proof_of_paymentSection" class="outstanding">  <span class="text">Outstanding</span><i class="fas fa-file-upload" ></i><i class="fas fa-exclamation-circle"></i></label><input type="file" id="proof_of_payment" hidden onChange="UploadDocument(\'proof_of_payment\')" accept="image/*, application/pdf"/>');
-
-                            $("#proof_of_payment").click();
-
-                        },
-                    });
-                }
-            })
+      if (result.value) {
+        values[currentStep] = result.value
+        currentStep++
+      } else if (result.dismiss === swal.DismissReason.cancel) {
+        currentStep --
+      } else {
+        break
+      }
     }
+
+    if (currentStep === steps.length) {
+      $.ajax({
+        type:"post",
+        url: "/UpdatePaymentRef",
+        data: {
+          bookingId: "{{$booking->id}}",
+          reason: values[0]
+        }
+      })
+
+      let userId = "<?php echo Auth::user()->id;?>";
+
+      var form_data = new FormData();
+        form_data.append("file", values[1]);
+        form_data.append("userUid", userId);
+        form_data.append("fileType", 'proof_of_payment');
+        form_data.append("adminName", "{{Auth::user()->userFirstName}}");
+
+        $.ajax({
+            type: "post",
+            url: "/move-in-form-admin",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                if (data[0]> 0) {
+                    
+                    window.location.reload();
+
+                } else {
+                    Swal.fire(
+                        'Error',
+                        data[0],
+                        'error'
+                    )
+                    $("#" + field + "Section").empty().append('<span class="text">Upload</span>  <i class="fas fa-file-upload" ></i>');
+                }
+            },
+        });
+    }
+  }
+    
 </script>
