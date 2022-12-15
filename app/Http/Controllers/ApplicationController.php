@@ -25,6 +25,8 @@ use App\Models\ImportNSFASApproval;
 use App\Models\BookingPayment;
 use DateTime;
 use App\Models\InstitutionProperties;
+use App\Jobs\SendNewBookingMail;
+use App\Jobs\SendStudentVerifyMailByAdminMail;
 
 class ApplicationController extends Controller
 {
@@ -1109,58 +1111,64 @@ class ApplicationController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
-        $user = User::where('id', $request->userUid)->first();
+        // $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
+        // $user = User::where('id', $request->userUid)->first();
         $booking = Booking::where('userId', $request->userUid)->where('year', $this_year)->first();
+
+        $user = User::where('id', $request->userUid)->first();
 
         $generator = new LoginUrl($user);
         $generator->setRedirectUrl('/verify-new-email-account');
         $url = $generator->generate();
 
-        $message_replace['bookingRef'] = $booking->booking_code;
-        $message_replace['name'] = $userInfo->userFirstName;
-        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $userUidData = User::where('id', $request->userUid)->first();
+        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url));
 
-        $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
-        $mailerMessage = $mailerForMessage->message;
 
-        $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-        $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-        $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-        $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+        // $message_replace['bookingRef'] = $booking->booking_code;
+        // $message_replace['name'] = $userInfo->userFirstName;
+        // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        // $message_replace['close_application_link']="</a>";
 
-        $data['name'] = $userInfo->userFirstName;
-        $data['email'] = $userInfo->userEmail;
-        $data['messageForMail'] = $newMessage;
-        $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+        // $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+        // $mailerMessage = $mailerForMessage->message;
 
-        $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-        $data['cc'] = explode(";", $allowedMailsCC);
+        // $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+        // $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        // $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+        // $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
 
-        $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+        // $data['name'] = $userInfo->userFirstName;
+        // $data['email'] = $userInfo->userEmail;
+        // $data['messageForMail'] = $newMessage;
+        // $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-        if(!empty($allowedMails)){
+        // $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+        // $data['cc'] = explode(";", $allowedMailsCC);
 
-            $mailArr = explode(";", $allowedMails);
+        // $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+        // if(!empty($allowedMails)){
+
+        //     $mailArr = explode(";", $allowedMails);
     
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $userInfo->userEmail;
-            }else{
-                $data['email'] = "conurbandigital@gmail.com";
-            }
-        }else{
-            $data['email'] = $userInfo->userEmail;
-        }
+        //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
+        //         $data['email'] = $userInfo->userEmail;
+        //     }else{
+        //         $data['email'] = "conurbandigital@gmail.com";
+        //     }
+        // }else{
+        //     $data['email'] = $userInfo->userEmail;
+        // }
 
 
-        Mail::send('email.yellow_back', $data, function($message) use ($data) {
-            // $message->to($data['email'], $data['name'])->subject
-            //     ('Campus Africa User Application');
-            $message->to($data['email'])->subject($data['subject']);
-            $message->bcc($data['cc']);
-            $message->from('noreply@campusafrica.co.za','Campus Africa');
-        });
+        // Mail::send('email.yellow_back', $data, function($message) use ($data) {
+        //     // $message->to($data['email'], $data['name'])->subject
+        //     //     ('Campus Africa User Application');
+        //     $message->to($data['email'])->subject($data['subject']);
+        //     $message->bcc($data['cc']);
+        //     $message->from('noreply@campusafrica.co.za','Campus Africa');
+        // });
     }
 
     public function retry_payment(Request $request){
@@ -1584,51 +1592,54 @@ class ApplicationController extends Controller
         $generator->setRedirectUrl('/verify-email-account');
         $url = $generator->generate();
 
-        $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
-        $message_replace['name'] = $request->firstName;
-        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $userUidData = User::where('id', Auth::user()->id)->first();
+        $this->dispatch(new SendNewBookingMail($userUidData, $url));
 
-        $mailerForMessage = MailerList::where("mailer_name", "New Booking")->first();
+        // $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
+        // $message_replace['name'] = $request->firstName;
+        // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        // $message_replace['close_application_link']="</a>";
 
-        if($mailerForMessage->status == '1'){
+        // $mailerForMessage = MailerList::where("mailer_name", "New Booking")->first();
 
-            $mailerMessage = $mailerForMessage->message;
+        // if($mailerForMessage->status == '1'){
+
+        //     $mailerMessage = $mailerForMessage->message;
     
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+        //     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+        //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        //     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+        //     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
-            $data['name'] = $request->firstName;
-            $data['email'] = $user->email;
-            $data['messageForMail'] = $newMessage;
-            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+        //     $data['name'] = $request->firstName;
+        //     $data['email'] = $user->email;
+        //     $data['messageForMail'] = $newMessage;
+        //     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $data['cc'] = explode(";", $allowedMailsCC);
+        //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+        //     $data['cc'] = explode(";", $allowedMailsCC);
 
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+        //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
-                $mailArr = explode(";", $allowedMails);
+        //     if(!empty($allowedMails)){
+        //         $mailArr = explode(";", $allowedMails);
     
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                    $data['email'] = $user->email;
-                }else{
-                    $data['email'] = "conurbandigital@gmail.com";
-                }
-            }else{
-                $data['email'] = $user->email;
-            }
+        //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
+        //             $data['email'] = $user->email;
+        //         }else{
+        //             $data['email'] = "conurbandigital@gmail.com";
+        //         }
+        //     }else{
+        //         $data['email'] = $user->email;
+        //     }
     
-            Mail::send('email.yellow_back', $data, function($message) use ($data) {
-                $message->to($data['email'])->subject($data['subject']);
-                $message->bcc($data['cc']);
-                $message->from('noreply@campusafrica.co.za','Campus Africa');
-            });
-        }
+        //     Mail::send('email.yellow_back', $data, function($message) use ($data) {
+        //         $message->to($data['email'])->subject($data['subject']);
+        //         $message->bcc($data['cc']);
+        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+        //     });
+        // }
 
 
         $admin_fee = Lookups::where('group_id', '8')->first();

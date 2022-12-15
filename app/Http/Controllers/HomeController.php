@@ -34,6 +34,14 @@ use App\Models\InstitutionProperties;
 use PDF;
 use App\Models\PropertyCount;
 
+use App\Jobs\SendApproveDocMail;
+use App\Jobs\SendDeclinedDocMail;
+use App\Jobs\SendBookingConfirmationMail;
+use App\Jobs\SendStudentVerifyMailByAdminMail;
+use App\Jobs\SendLeaseApprovedMail;
+use App\Jobs\SendNewBookingMail;
+use App\Jobs\SendReminderMail;
+
 class HomeController extends Controller
 {
     /**
@@ -932,202 +940,210 @@ class HomeController extends Controller
         if(!empty($idCheck) && !empty($popCheck)){
             if($idCheck->status == "Approved" && $popCheck->status == "Approved"){
 
-                $all = ['studentCard', 'proofRegistration'];
-                $outstanding = [];
-
-                if($user->studentType == "Cash / Direct"){
-                    array_push($all, "bankStatement");
-                }
-                if($user->studentType !== "Cash / Direct"){
-                    array_push($all, "bursaryApproval");
-                }
-
-                $allSearchable = UserFiles::where("userUid", $user->userUid)->where('year', $this_year)->get();
-
-                foreach($allSearchable as $search){
-                    if(explode("_", $search->fileId)[0] == "other"){
-                        array_push($all, $search->fileId);
-                    }
-                }
-    
-                foreach($all as $file){
-                    $file_search = UserFiles::where("userUid", $user->userUid)->where('fileId', $file)->where('year', $this_year)->first();
-
-                    if(($user->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $user->studentType != "Cash / Direct" && $file !== 'bankStatement'){
-
-                        if($file == "studentCard"){
-                            $fileName = "Student Card";
-                        }elseif($file == "proofRegistration"){
-                            $fileName = "Proof of Registration";
-                        }elseif($file == "bankStatement"){
-                            $fileName = "Bank Statements";
-                        }elseif($file == "bursaryApproval"){
-                            if($user->studentType != "NSFAS"){
-                                $fileName = "Bursary Approval";
-                            }else{
-                                $fileName = "NSFAS Approval";
-                            }
-                        }elseif(explode("_", $file)[0] == "other"){
-                            $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
-                        }
-
-                        if($file_search && !empty($file_search)){
-                            if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
-                                array_push($outstanding, $fileName);
-                            }
-                        }else{
-                            array_push($outstanding, $fileName);
-                        }
-
-                    }
-
-                }
-
-                $outstandingDocsText = "<ol>";
-
-                foreach($outstanding as $out){
-                    $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
-                }
-
-                $outstandingDocsText .= "</ol>";
-
                 $genUser = User::where('id', $userUid)->first();
                 $generator = new LoginUrl($genUser);
                 $generator->setRedirectUrl('/dashboard');
                 $url = $generator->generate();
 
-                $message_replace['bookingRef'] = $booking->booking_code;
-                $message_replace['name'] = $user->userFirstName;
-                $message_replace['approvedDocs'] = "<ol><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Copy of ID Document</li><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Booking Fee Proof of Payment</li></ol>";
-                $message_replace['missing'] = $outstandingDocsText;
-                $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-                $message_replace['close_application_link']="</a>";
+                $userUidData = User::where('id', $user->userUid)->first();
+                $this->dispatch(new SendBookingConfirmationMail($userUidData, $url));
 
-                $mailerForMessage = MailerList::where("mailer_name", "Booking Confirmation")->first();
+                // $all = ['studentCard', 'proofRegistration'];
+                // $outstanding = [];
 
-                if($mailerForMessage->status == '1'){
+                // if($user->studentType == "Cash / Direct"){
+                //     array_push($all, "bankStatement");
+                // }
+                // if($user->studentType !== "Cash / Direct"){
+                //     array_push($all, "bursaryApproval");
+                // }
 
-                    $mailerMessage = $mailerForMessage->message;
+                // $allSearchable = UserFiles::where("userUid", $user->userUid)->where('year', $this_year)->get();
+
+                // foreach($allSearchable as $search){
+                //     if(explode("_", $search->fileId)[0] == "other"){
+                //         array_push($all, $search->fileId);
+                //     }
+                // }
     
-                    $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-                    $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-                    $newMessage = str_replace("[approved_document_list]", $message_replace['approvedDocs'], $newMessage);
-                    $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
-                    $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-                    $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
-    
-                    $data['name'] = $user->userFirstName;
-                    $data['email'] = $genUser->email;
-                    $data['messageForMail'] = $newMessage;
-                    $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+                // foreach($all as $file){
+                //     $file_search = UserFiles::where("userUid", $user->userUid)->where('fileId', $file)->where('year', $this_year)->first();
 
-                    $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-                    $data['cc'] = explode(";", $allowedMailsCC);
+                //     if(($user->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $user->studentType != "Cash / Direct" && $file !== 'bankStatement'){
 
-                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+                //         if($file == "studentCard"){
+                //             $fileName = "Student Card";
+                //         }elseif($file == "proofRegistration"){
+                //             $fileName = "Proof of Registration";
+                //         }elseif($file == "bankStatement"){
+                //             $fileName = "Bank Statements";
+                //         }elseif($file == "bursaryApproval"){
+                //             if($user->studentType != "NSFAS"){
+                //                 $fileName = "Bursary Approval";
+                //             }else{
+                //                 $fileName = "NSFAS Approval";
+                //             }
+                //         }elseif(explode("_", $file)[0] == "other"){
+                //             $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
+                //         }
 
-                    if(!empty($allowedMails)){
-                        $mailArr = explode(";", $allowedMails);
+                //         if($file_search && !empty($file_search)){
+                //             if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+                //                 array_push($outstanding, $fileName);
+                //             }
+                //         }else{
+                //             array_push($outstanding, $fileName);
+                //         }
+
+                //     }
+
+                // }
+
+                // $outstandingDocsText = "<ol>";
+
+                // foreach($outstanding as $out){
+                //     $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+                // }
+
+                // $outstandingDocsText .= "</ol>";
+
+                // $genUser = User::where('id', $userUid)->first();
+                // $generator = new LoginUrl($genUser);
+                // $generator->setRedirectUrl('/dashboard');
+                // $url = $generator->generate();
+
+                // $message_replace['bookingRef'] = $booking->booking_code;
+                // $message_replace['name'] = $user->userFirstName;
+                // $message_replace['approvedDocs'] = "<ol><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Copy of ID Document</li><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Booking Fee Proof of Payment</li></ol>";
+                // $message_replace['missing'] = $outstandingDocsText;
+                // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+                // $message_replace['close_application_link']="</a>";
+
+                // $mailerForMessage = MailerList::where("mailer_name", "Booking Confirmation")->first();
+
+                // if($mailerForMessage->status == '1'){
+
+                //     $mailerMessage = $mailerForMessage->message;
     
-                        if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                            $data['email'] = $genUser->email;
-                        }else{
-                            $data['email'] = "conurbandigital@gmail.com";
-                        }
-                    }else{
-                        $data['email'] = $genUser->email;
-                    }
+                //     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                //     $newMessage = str_replace("[approved_document_list]", $message_replace['approvedDocs'], $newMessage);
+                //     $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
+                //     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                //     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
-                    // if(explode("@", $data['email'])[1] == "conurban.co.za"){
-                    //     $data['email'] = $user->email;
-                    // }else{
-                    //     $data['email'] = "conurbandigital@gmail.com";
-                    // }
+                //     $data['name'] = $user->userFirstName;
+                //     $data['email'] = $genUser->email;
+                //     $data['messageForMail'] = $newMessage;
+                //     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+
+                //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+                //     $data['cc'] = explode(";", $allowedMailsCC);
+
+                //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                //     if(!empty($allowedMails)){
+                //         $mailArr = explode(";", $allowedMails);
     
-                    Mail::send('email.green_back', $data, function($message) use ($data) {
-                        // $message->to($data['email'], $data['name'])->subject
-                        //     ('Campus Africa User Application');
-                        $message->to($data['email'])->subject($data['subject']);
-                        $message->bcc($data['cc']);
-                        // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-                        $message->from('noreply@campusafrica.co.za','Campus Africa');
-                    });
-                }
+                //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                //             $data['email'] = $genUser->email;
+                //         }else{
+                //             $data['email'] = "conurbandigital@gmail.com";
+                //         }
+                //     }else{
+                //         $data['email'] = $genUser->email;
+                //     }
+    
+                //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
+                //     //     $data['email'] = $user->email;
+                //     // }else{
+                //     //     $data['email'] = "conurbandigital@gmail.com";
+                //     // }
+    
+                //     Mail::send('email.green_back', $data, function($message) use ($data) {
+                //         // $message->to($data['email'], $data['name'])->subject
+                //         //     ('Campus Africa User Application');
+                //         $message->to($data['email'])->subject($data['subject']);
+                //         $message->bcc($data['cc']);
+                //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+                //     });
+                // }
 
             }
         }
     }
 
-    public function rejectMail($typeName, $reason, $userId){
+    // public function rejectMail($typeName, $reason, $userId){
         
-            //Send email notification about rejected document
+    //         //Send email notification about rejected document
 
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
+    //         $this_year = Lookups::where('group_id', '4')->first();
+    //         $this_year = $this_year->lookup_name;
 
-            $booking = Booking::where('userid', $userId)->where('year', $this_year)->first();
-            $user = User::where('id', $userId)->first();
-            $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+    //         $booking = Booking::where('userid', $userId)->where('year', $this_year)->first();
+    //         $user = User::where('id', $userId)->first();
+    //         $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
-            $generator = new LoginUrl($user);
-            $generator->setRedirectUrl('/dashboard');
-            $url = $generator->generate();
+    //         $generator = new LoginUrl($user);
+    //         $generator->setRedirectUrl('/dashboard');
+    //         $url = $generator->generate();
 
-            $message_replace['bookingRef'] = $booking->booking_code;
-            $message_replace['name'] = $userInfo->userFirstName;
-            $message_replace['document_name'] = $typeName;
-            $message_replace['decline_reason'] = $reason;
-            $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-            $message_replace['close_application_link']="</a>";
+    //         $message_replace['bookingRef'] = $booking->booking_code;
+    //         $message_replace['name'] = $userInfo->userFirstName;
+    //         $message_replace['document_name'] = $typeName;
+    //         $message_replace['decline_reason'] = $reason;
+    //         $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+    //         $message_replace['close_application_link']="</a>";
 
-            $mailerForMessage = MailerList::where("mailer_name", "Document Declined")->first();
+    //         $mailerForMessage = MailerList::where("mailer_name", "Document Declined")->first();
 
-            if($mailerForMessage->status == '1'){
+    //         if($mailerForMessage->status == '1'){
 
-                $mailerMessage = $mailerForMessage->message;
+    //             $mailerMessage = $mailerForMessage->message;
 
-                $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-                $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
-                $newMessage = str_replace("[decline_reason]", $message_replace['decline_reason'], $newMessage);
-                $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-                $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+    //             $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+    //             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+    //             $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
+    //             $newMessage = str_replace("[decline_reason]", $message_replace['decline_reason'], $newMessage);
+    //             $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+    //             $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
 
-                $newSubject = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
-                $newSubject = str_replace("[document_name]", $message_replace['document_name'], $newSubject);
+    //             $newSubject = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+    //             $newSubject = str_replace("[document_name]", $message_replace['document_name'], $newSubject);
 
-                $data['name'] = $userInfo->userFirstName;
-                $data['email'] = $user->email;
-                $data['messageForMail'] = $newMessage;
-                $data['subject'] = $newSubject;
+    //             $data['name'] = $userInfo->userFirstName;
+    //             $data['email'] = $user->email;
+    //             $data['messageForMail'] = $newMessage;
+    //             $data['subject'] = $newSubject;
 
                 
-                $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-                $data['cc'] = explode(";", $allowedMailsCC);
+    //             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+    //             $data['cc'] = explode(";", $allowedMailsCC);
 
-                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+    //             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-                if(!empty($allowedMails)){
+    //             if(!empty($allowedMails)){
 
-                    $mailArr = explode(";", $allowedMails);
+    //                 $mailArr = explode(";", $allowedMails);
     
-                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                        $data['email'] = $user->email;
-                    }else{
-                        $data['email'] = "conurbandigital@gmail.com";
-                    }
-                }else{
-                    $data['email'] = $user->email;
-                }
+    //                 if(in_array(explode("@", $data['email'])[1], $mailArr)){
+    //                     $data['email'] = $user->email;
+    //                 }else{
+    //                     $data['email'] = "conurbandigital@gmail.com";
+    //                 }
+    //             }else{
+    //                 $data['email'] = $user->email;
+    //             }
 
-                Mail::send('email.red_back', $data, function($message) use ($data) {
-                    $message->to($data['email'])->subject($data['subject']);
-                    $message->bcc($data['cc']);
-                    $message->from('noreply@campusafrica.co.za','Campus Africa');
-                });
-            }
+    //             Mail::send('email.red_back', $data, function($message) use ($data) {
+    //                 $message->to($data['email'])->subject($data['subject']);
+    //                 $message->bcc($data['cc']);
+    //                 $message->from('noreply@campusafrica.co.za','Campus Africa');
+    //             });
+    //         }
         
-    }
+    // }
 
     public function action_file(Request $request){
 
@@ -1203,7 +1219,15 @@ class HomeController extends Controller
 
                 }
 
-                $this->rejectMail($user_status['typeName'], $reason, $userFile->userUid);
+                // $this->rejectMail($user_status['typeName'], $reason, $userFile->userUid);
+
+                $userMain = User::where('id', $userFile->userUid)->first();
+                $generator = new LoginUrl($userMain);
+                $generator->setRedirectUrl('/dashboard');
+                $url = $generator->generate();
+
+                $userUidData = User::where('id', $userFile->userUid)->first();
+                $this->dispatch(new SendDeclinedDocMail($userUidData, $user_status['typeName'], $reason, $url));
                 
 
             } else {
@@ -1270,54 +1294,57 @@ class HomeController extends Controller
             if($userFile['fileId'] == "moveIn" && $action == "Approved"){
                 // User::where('id', $userFile->userUid)->update(['overall_status' => "Approved"]);
                 StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update(['overall_status' => "Approved"]);
+
+                $userUidData = User::where('id', $userFile->userUid)->first();
+                $this->dispatch(new SendLeaseApprovedMail($userUidData));
                 
-                // $userForLease = User::where('id', $userFile->userUid)->first();
-                $userForLease = StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->first();
-                $booking = Booking::where('userId', $userFile->userUid)->where('year', $this_year)->first();
+                // // $userForLease = User::where('id', $userFile->userUid)->first();
+                // $userForLease = StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->first();
+                // $booking = Booking::where('userId', $userFile->userUid)->where('year', $this_year)->first();
 
-                $message_replace['booking_application'] = "#".$booking->booking_code;
-                $message_replace['name'] = $userForLease->userFirstName;
+                // $message_replace['booking_application'] = "#".$booking->booking_code;
+                // $message_replace['name'] = $userForLease->userFirstName;
 
-                $mailerForMessage = MailerList::where("mailer_name", "Lease Approved")->first();
+                // $mailerForMessage = MailerList::where("mailer_name", "Lease Approved")->first();
 
-                $mailerMessage = $mailerForMessage->message;
+                // $mailerMessage = $mailerForMessage->message;
 
-                $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
-                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                // $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+                // $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
 
-                $fileForUser = UserFiles::where('userUid', $userFile->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->first();
+                // $fileForUser = UserFiles::where('userUid', $userFile->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->first();
 
-                $data['messageForMail'] = $newMessage;
-                $data['email'] = $userForLease->userEmail;
-                $data['name'] = $userForLease->userFirstName;
-                // $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
-                $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
+                // $data['messageForMail'] = $newMessage;
+                // $data['email'] = $userForLease->userEmail;
+                // $data['name'] = $userForLease->userFirstName;
+                // // $data['file'] = "https://$_SERVER[HTTP_HOST]/storage/".$fileForUser->fileUrl;
+                // $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
-                $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-                $data['cc'] = explode(";", $allowedMailsCC);
+                // $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+                // $data['cc'] = explode(";", $allowedMailsCC);
 
-                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+                // $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-                if(!empty($allowedMails)){
+                // if(!empty($allowedMails)){
 
-                    $mailArr = explode(";", $allowedMails);
+                //     $mailArr = explode(";", $allowedMails);
     
-                    if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                        $data['email'] = $userForLease->userEmail;
-                    }else{
-                        $data['email'] = "conurbandigital@gmail.com";
-                    }
-                }else{
-                    $data['email'] = $userForLease->userEmail;
-                }
+                //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                //         $data['email'] = $userForLease->userEmail;
+                //     }else{
+                //         $data['email'] = "conurbandigital@gmail.com";
+                //     }
+                // }else{
+                //     $data['email'] = $userForLease->userEmail;
+                // }
 
-                Mail::send('email.green_back', $data, function($message) use ($data) {
-                    // $message->to($data['email'], $data['name'])->subject('Application Approved');
-                    $message->to($data['email'])->subject($data['subject']);
-                    $message->bcc($data['cc']);
-                    $message->from('noreply@campusafrica.co.za','Campus Africa');
-                    // $message->attach($data['file']);
-                });
+                // Mail::send('email.green_back', $data, function($message) use ($data) {
+                //     // $message->to($data['email'], $data['name'])->subject('Application Approved');
+                //     $message->to($data['email'])->subject($data['subject']);
+                //     $message->bcc($data['cc']);
+                //     $message->from('noreply@campusafrica.co.za','Campus Africa');
+                //     // $message->attach($data['file']);
+                // });
             }
 
             if($request->userName !== "" && !empty($request->userName)){
@@ -1352,143 +1379,153 @@ class HomeController extends Controller
 
             if($userFile['fileId'] != "moveIn" && $action != "Rejected"){
 
+                // $user = User::where('id', $userFile->userUid)->first();
+                // $studentInfoForMail = StudentsInfo::where('userUid',  $userFile->userUid)->where('year', $this_year)->first();
+                // $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
+
+                // $generator = new LoginUrl($user);
+                // $generator->setRedirectUrl('/dashboard');
+                // $url = $generator->generate();
+
+                // // $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
+                // // $outstanding = [];
+                // // $approved = [];
+
+                // // if($studentInfoForMail->studentType == "Cash / Direct"){
+                // //     array_push($all, "bankStatement");
+                // // }
+                // // if($studentInfoForMail->studentType !== "Cash / Direct"){
+                // //     array_push($all, "bursaryApproval");
+                // // }
+
+                // // $allSearchable = UserFiles::where("userUid", $userFile->userUid)->where('year', $this_year)->get();
+
+                // // foreach($allSearchable as $search){
+                // //     if(explode("_", $search->fileId)[0] == "other"){
+                // //         array_push($all, $search->fileId);
+                // //     }
+                // // }
+    
+                // // foreach($all as $file){
+                // //     $file_search = UserFiles::where("userUid", $userFile->userUid)->where('fileId', $file)->where('year', $this_year)->first();
+
+                // //     if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+
+                // //         if($file == "studentCard"){
+                // //             $fileName = "Student Card";
+                // //         }elseif($file == "copyID"){
+                // //             $fileName = "ID Document";
+                // //         }elseif($file == "proof_of_payment"){
+                // //             $fileName = "Proof of Payment";
+                // //         }elseif($file == "proofRegistration"){
+                // //             $fileName = "Proof of Registration";
+                // //         }elseif($file == "bankStatement"){
+                // //             $fileName = "Bank Statements";
+                // //         }elseif($file == "bursaryApproval"){
+                // //             if($studentInfoForMail->studentType != "NSFAS"){
+                // //                 $fileName = "Bursary Approval";
+                // //             }else{
+                // //                 $fileName = "NSFAS Approval";
+                // //             }
+                // //         }elseif(explode("_", $file)[0] == "other"){
+                // //             $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
+                // //         }
+
+                // //         if($file_search && !empty($file_search)){
+                // //             if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+                // //                 array_push($outstanding, $fileName);
+                // //             }
+
+                // //             if($file_search->status == "Approved"){
+                // //                 array_push($approved, $fileName);
+                // //             }
+                // //         }else{
+                // //             array_push($outstanding, $fileName);
+                // //         }
+
+                // //     }
+
+                // // }
+
+                // // $outstandingDocsText = "<ol>";
+
+                // // foreach($outstanding as $out){
+                // //     $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+                // // }
+
+                // // $outstandingDocsText .= "</ol>";
+
+                // // $approvedDocsText = "<ol>";
+
+                // // foreach($approved as $apprv){
+                // //     $approvedDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$apprv."</li>";
+                // // }
+
+                // // $approvedDocsText .= "</ol>";
+
+
+                // $message_replace['bookingRef'] = $booking->booking_code;
+                // $message_replace['name'] = $studentInfoForMail->userFirstName;
+                // $message_replace['document_name'] = $user_status['typeName'];
+                // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+                // $message_replace['close_application_link']="</a>";
+                // // $message_replace['missing'] = $outstandingDocsText;
+                // // $message_replace['apprved'] = $approvedDocsText;
+
+                // $mailerForMessage = MailerList::where("mailer_name", "Document Approved")->first();
+
+                // if($mailerForMessage->status == '1'){
+
+                //     $mailerMessage = $mailerForMessage->message;
+
+                //     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                //     $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
+                //     $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
+                //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                //     // $newMessage = str_replace("[approved_document_list]", $message_replace['apprved'], $newMessage);
+                //     // $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
+                //     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                //     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+    
+                //     $mailData['name'] = $studentInfoForMail->userFirstName;
+                //     $mailData['email'] = $user->email;
+                //     $mailData['messageForMail'] = $newMessage;
+                //     $mailData['subject'] = str_replace("[document_name]", $user_status['typeName'], str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject));
+                    
+                //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+                //     $mailData['cc'] = explode(";", $allowedMailsCC);
+    
+                //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+    
+                //     if(!empty($allowedMails)){
+    
+                //         $mailArr = explode(";", $allowedMails);
+        
+                //         if(in_array(explode("@", $mailData['email'])[1], $mailArr)){
+                //             $mailData['email'] = $studentInfoForMail->userEmail;
+                //         }else{
+                //             $mailData['email'] = "conurbandigital@gmail.com";
+                //         }
+                //     }else{
+                //         $mailData['email'] = $studentInfoForMail->userEmail;
+                //     }
+    
+                //     Mail::send('email.green_back', $mailData, function($message) use ($mailData) {
+                //         $message->to($mailData['email'])->subject($mailData['subject']);
+                //         $message->bcc($mailData['cc']);
+                //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+                //     });
+                // }
+
                 $user = User::where('id', $userFile->userUid)->first();
-                $studentInfoForMail = StudentsInfo::where('userUid',  $userFile->userUid)->where('year', $this_year)->first();
-                $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
 
                 $generator = new LoginUrl($user);
                 $generator->setRedirectUrl('/dashboard');
                 $url = $generator->generate();
 
-                // $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
-                // $outstanding = [];
-                // $approved = [];
 
-                // if($studentInfoForMail->studentType == "Cash / Direct"){
-                //     array_push($all, "bankStatement");
-                // }
-                // if($studentInfoForMail->studentType !== "Cash / Direct"){
-                //     array_push($all, "bursaryApproval");
-                // }
-
-                // $allSearchable = UserFiles::where("userUid", $userFile->userUid)->where('year', $this_year)->get();
-
-                // foreach($allSearchable as $search){
-                //     if(explode("_", $search->fileId)[0] == "other"){
-                //         array_push($all, $search->fileId);
-                //     }
-                // }
-    
-                // foreach($all as $file){
-                //     $file_search = UserFiles::where("userUid", $userFile->userUid)->where('fileId', $file)->where('year', $this_year)->first();
-
-                //     if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
-
-                //         if($file == "studentCard"){
-                //             $fileName = "Student Card";
-                //         }elseif($file == "copyID"){
-                //             $fileName = "ID Document";
-                //         }elseif($file == "proof_of_payment"){
-                //             $fileName = "Proof of Payment";
-                //         }elseif($file == "proofRegistration"){
-                //             $fileName = "Proof of Registration";
-                //         }elseif($file == "bankStatement"){
-                //             $fileName = "Bank Statements";
-                //         }elseif($file == "bursaryApproval"){
-                //             if($studentInfoForMail->studentType != "NSFAS"){
-                //                 $fileName = "Bursary Approval";
-                //             }else{
-                //                 $fileName = "NSFAS Approval";
-                //             }
-                //         }elseif(explode("_", $file)[0] == "other"){
-                //             $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
-                //         }
-
-                //         if($file_search && !empty($file_search)){
-                //             if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
-                //                 array_push($outstanding, $fileName);
-                //             }
-
-                //             if($file_search->status == "Approved"){
-                //                 array_push($approved, $fileName);
-                //             }
-                //         }else{
-                //             array_push($outstanding, $fileName);
-                //         }
-
-                //     }
-
-                // }
-
-                // $outstandingDocsText = "<ol>";
-
-                // foreach($outstanding as $out){
-                //     $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
-                // }
-
-                // $outstandingDocsText .= "</ol>";
-
-                // $approvedDocsText = "<ol>";
-
-                // foreach($approved as $apprv){
-                //     $approvedDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$apprv."</li>";
-                // }
-
-                // $approvedDocsText .= "</ol>";
-
-
-                $message_replace['bookingRef'] = $booking->booking_code;
-                $message_replace['name'] = $studentInfoForMail->userFirstName;
-                $message_replace['document_name'] = $user_status['typeName'];
-                $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-                $message_replace['close_application_link']="</a>";
-                // $message_replace['missing'] = $outstandingDocsText;
-                // $message_replace['apprved'] = $approvedDocsText;
-
-                $mailerForMessage = MailerList::where("mailer_name", "Document Approved")->first();
-
-                if($mailerForMessage->status == '1'){
-
-                    $mailerMessage = $mailerForMessage->message;
-
-                    $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-                    $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
-                    $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
-                    $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-                    // $newMessage = str_replace("[approved_document_list]", $message_replace['apprved'], $newMessage);
-                    // $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
-                    $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-                    $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
-    
-                    $mailData['name'] = $studentInfoForMail->userFirstName;
-                    $mailData['email'] = $user->email;
-                    $mailData['messageForMail'] = $newMessage;
-                    $mailData['subject'] = str_replace("[document_name]", $user_status['typeName'], str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject));
-                    
-                    $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-                    $mailData['cc'] = explode(";", $allowedMailsCC);
-    
-                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-    
-                    if(!empty($allowedMails)){
-    
-                        $mailArr = explode(";", $allowedMails);
-        
-                        if(in_array(explode("@", $mailData['email'])[1], $mailArr)){
-                            $mailData['email'] = $studentInfoForMail->userEmail;
-                        }else{
-                            $mailData['email'] = "conurbandigital@gmail.com";
-                        }
-                    }else{
-                        $mailData['email'] = $studentInfoForMail->userEmail;
-                    }
-    
-                    Mail::send('email.green_back', $mailData, function($message) use ($mailData) {
-                        $message->to($mailData['email'])->subject($mailData['subject']);
-                        $message->bcc($mailData['cc']);
-                        $message->from('noreply@campusafrica.co.za','Campus Africa');
-                    });
-                }
+                $userUidData = User::where('id', $userFile->userUid)->first();
+                $this->dispatch(new SendApproveDocMail($userUidData, $user_status['typeName'], $url));
 
             }
 
@@ -2611,77 +2648,80 @@ class HomeController extends Controller
         $generator->setRedirectUrl('/verify-email-account');
         $url = $generator->generate();
 
-        $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
-        $message_replace['name'] = $user->userFirstName;
-        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $userUidData = User::where('id', $userInfo->userUid)->first();
+        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $bookingYear.$bookingPrefix.$bookingID, $url));
 
-        $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+        // $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
+        // $message_replace['name'] = $user->userFirstName;
+        // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        // $message_replace['close_application_link']="</a>";
 
-        if($mailerForMessage->status == '1'){
+        // $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
 
-            $mailerMessage = $mailerForMessage->message;
+        // if($mailerForMessage->status == '1'){
+
+        //     $mailerMessage = $mailerForMessage->message;
     
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+        //     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+        //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        //     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+        //     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
-            $data['name'] = $user->userFirstName;
-            $data['email'] = $user->email;
-            $data['messageForMail'] = $newMessage;
-            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+        //     $data['name'] = $user->userFirstName;
+        //     $data['email'] = $user->email;
+        //     $data['messageForMail'] = $newMessage;
+        //     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
-            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $data['cc'] = explode(";", $allowedMailsCC);
+        //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+        //     $data['cc'] = explode(";", $allowedMailsCC);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+        //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
-                $mailArr = explode(";", $allowedMails);
+        //     if(!empty($allowedMails)){
+        //         $mailArr = explode(";", $allowedMails);
     
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                    $data['email'] = $user->email;
-                }else{
-                    $data['email'] = "conurbandigital@gmail.com";
-                }
-            }else{
-                $data['email'] = $user->email;
-            }
+        //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
+        //             $data['email'] = $user->email;
+        //         }else{
+        //             $data['email'] = "conurbandigital@gmail.com";
+        //         }
+        //     }else{
+        //         $data['email'] = $user->email;
+        //     }
             
     
-            // if(explode("@", $data['email'])[1] == "conurban.co.za"){
-            //     $data['email'] = $user->email;
-            // }else{
-            //     $data['email'] = "conurbandigital@gmail.com";
-            // }
+        //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
+        //     //     $data['email'] = $user->email;
+        //     // }else{
+        //     //     $data['email'] = "conurbandigital@gmail.com";
+        //     // }
     
-            Mail::send('email.yellow_back', $data, function($message) use ($data) {
-                // $message->to($data['email'], $data['name'])->subject
-                //     ('Campus Africa User Application');
-                $message->to($data['email'])->subject($data['subject']);
-                // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-                $message->bcc($data['cc']);
-                $message->from('noreply@campusafrica.co.za','Campus Africa');
-            });
-        }
-
-        // if(($request->studentType == "NSFAS" && ($residence->nsfas_booking_rate == "0" || $residence->nsfas_booking_rate == "")) || ($request->studentType == "Bursary" && ($residence->bursary_booking_rate == "0" || $residence->bursary_booking_rate == "")) || ($request->studentType == "Cash / Direct" && ($residence->booking_rate == "0" || $residence->booking_rate == ""))){
-            
-        //     UserFiles::create([
-        //         'userUid'=> $user->id,
-        //         'fileId' => 'proof_of_payment',
-        //         'status' => 'Approved'
-        //     ]);
-        
-        //     ActionList::create([
-        //         "userUid" => $user->id,
-        //         "action" => "Booking Fee Waived",
-        //         "actionUserUid" => Auth::user()->id,
-        //         "actionUserDisplayName" => Auth::user()->userFirstName,
-        //         "actionUserRole" => Auth::user()->userRole,
-        //     ]);
+        //     Mail::send('email.yellow_back', $data, function($message) use ($data) {
+        //         // $message->to($data['email'], $data['name'])->subject
+        //         //     ('Campus Africa User Application');
+        //         $message->to($data['email'])->subject($data['subject']);
+        //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+        //         $message->bcc($data['cc']);
+        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+        //     });
         // }
+
+        // // if(($request->studentType == "NSFAS" && ($residence->nsfas_booking_rate == "0" || $residence->nsfas_booking_rate == "")) || ($request->studentType == "Bursary" && ($residence->bursary_booking_rate == "0" || $residence->bursary_booking_rate == "")) || ($request->studentType == "Cash / Direct" && ($residence->booking_rate == "0" || $residence->booking_rate == ""))){
+            
+        // //     UserFiles::create([
+        // //         'userUid'=> $user->id,
+        // //         'fileId' => 'proof_of_payment',
+        // //         'status' => 'Approved'
+        // //     ]);
+        
+        // //     ActionList::create([
+        // //         "userUid" => $user->id,
+        // //         "action" => "Booking Fee Waived",
+        // //         "actionUserUid" => Auth::user()->id,
+        // //         "actionUserDisplayName" => Auth::user()->userFirstName,
+        // //         "actionUserRole" => Auth::user()->userRole,
+        // //     ]);
+        // // }
 
         // return redirect()->route('users');
         return redirect('/application-profile/'.$user->id);
@@ -7584,66 +7624,69 @@ class HomeController extends Controller
                 $generator->setRedirectUrl('/verify-new-email-account');
                 $url = $generator->generate();
 
-                $message_replace['bookingRef'] = $booking->booking_code;
-                $message_replace['name'] = $userInfo->userFirstName;
-                $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-                $message_replace['close_application_link']="</a>";
+                $userUidData = User::where('id', $request->userUid)->first();
+                $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url));
 
-                $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
+                // $message_replace['bookingRef'] = $booking->booking_code;
+                // $message_replace['name'] = $userInfo->userFirstName;
+                // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+                // $message_replace['close_application_link']="</a>";
 
-                if($mailerForMessage->status == '1'){
+                // $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
 
-                    $mailerMessage = $mailerForMessage->message;
+                // if($mailerForMessage->status == '1'){
+
+                //     $mailerMessage = $mailerForMessage->message;
     
-                    $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-                    $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-                    $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-                    $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+                //     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+                //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                //     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+                //     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
-                    $data['name'] = $userInfo->userFirstName;
-                    $data['email'] = $request->userEmail;
-                    $data['messageForMail'] = $newMessage;
-                    $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+                //     $data['name'] = $userInfo->userFirstName;
+                //     $data['email'] = $request->userEmail;
+                //     $data['messageForMail'] = $newMessage;
+                //     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
                     
 
-                    $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-                    $data['cc'] = explode(";", $allowedMailsCC);
+                //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+                //     $data['cc'] = explode(";", $allowedMailsCC);
 
-                    $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+                //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-                    if(!empty($allowedMails)){
+                //     if(!empty($allowedMails)){
 
-                        $mailArr = explode(";", $allowedMails);
+                //         $mailArr = explode(";", $allowedMails);
     
-                        if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                            $data['email'] = $request->userEmail;
-                        }else{
-                            $data['email'] = "conurbandigital@gmail.com";
-                        }
-                    }else{
-                        $data['email'] = $request->userEmail;
-                    }
+                //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                //             $data['email'] = $request->userEmail;
+                //         }else{
+                //             $data['email'] = "conurbandigital@gmail.com";
+                //         }
+                //     }else{
+                //         $data['email'] = $request->userEmail;
+                //     }
                     
                     
                     
                     
     
-                    // if(explode("@", $data['email'])[1] == "conurban.co.za"){
-                    //     $data['email'] = $request->userEmail;
-                    // }else{
-                    //     $data['email'] = "conurbandigital@gmail.com";
-                    // }
+                //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
+                //     //     $data['email'] = $request->userEmail;
+                //     // }else{
+                //     //     $data['email'] = "conurbandigital@gmail.com";
+                //     // }
     
-                    Mail::send('email.yellow_back', $data, function($message) use ($data) {
-                        // $message->to($data['email'], $data['name'])->subject
-                        //     ('Campus Africa User Application');
-                        $message->to($data['email'])->subject($data['subject']);
-                        $message->bcc($data['cc']);
-                        // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-                        $message->from('noreply@campusafrica.co.za','Campus Africa');
-                    });
-                }
+                //     Mail::send('email.yellow_back', $data, function($message) use ($data) {
+                //         // $message->to($data['email'], $data['name'])->subject
+                //         //     ('Campus Africa User Application');
+                //         $message->to($data['email'])->subject($data['subject']);
+                //         $message->bcc($data['cc']);
+                //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+                //     });
+                // }
             }
         }
 
@@ -9471,55 +9514,58 @@ class HomeController extends Controller
         $generator->setRedirectUrl('/verify-email-account');
         $url = $generator->generate();
 
-        $newBooking = Booking::where('id', $booking->id)->first();
+        $userUidData = User::where('id', $request->userUid)->first();
+        $this->dispatch(new SendNewBookingMail($userUidData, $url));
 
-        $message_replace['bookingRef'] = $newBooking->booking_code;
-        $message_replace['name'] = $request->firstName;
-        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        // $newBooking = Booking::where('id', $booking->id)->first();
 
-        $mailerForMessage = MailerList::where("mailer_name", "New Booking")->first();
+        // $message_replace['bookingRef'] = $newBooking->booking_code;
+        // $message_replace['name'] = $request->firstName;
+        // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        // $message_replace['close_application_link']="</a>";
 
-        if($mailerForMessage->status == '1'){
+        // $mailerForMessage = MailerList::where("mailer_name", "New Booking")->first();
 
-            $mailerMessage = $mailerForMessage->message;
+        // if($mailerForMessage->status == '1'){
+
+        //     $mailerMessage = $mailerForMessage->message;
     
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+        //     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+        //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        //     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
+        //     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
     
-            $data['name'] = $request->firstName;
-            $data['email'] = $genUser->email;
-            $data['messageForMail'] = $newMessage;
-            $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
+        //     $data['name'] = $request->firstName;
+        //     $data['email'] = $genUser->email;
+        //     $data['messageForMail'] = $newMessage;
+        //     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
             
 
-            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $data['cc'] = explode(";", $allowedMailsCC);
+        //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+        //     $data['cc'] = explode(";", $allowedMailsCC);
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+        //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
+        //     if(!empty($allowedMails)){
 
-                $mailArr = explode(";", $allowedMails);
+        //         $mailArr = explode(";", $allowedMails);
     
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                    $data['email'] = $genUser->email;
-                }else{
-                    $data['email'] = "conurbandigital@gmail.com";
-                }
-            }else{
-                $data['email'] = $genUser->email;
-            }
+        //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
+        //             $data['email'] = $genUser->email;
+        //         }else{
+        //             $data['email'] = "conurbandigital@gmail.com";
+        //         }
+        //     }else{
+        //         $data['email'] = $genUser->email;
+        //     }
     
-            Mail::send('email.yellow_back', $data, function($message) use ($data) {
-                $message->to($data['email'])->subject($data['subject']);
-                $message->bcc($data['cc']);
-                $message->from('noreply@campusafrica.co.za','Campus Africa');
-            });
-        }
+        //     Mail::send('email.yellow_back', $data, function($message) use ($data) {
+        //         $message->to($data['email'])->subject($data['subject']);
+        //         $message->bcc($data['cc']);
+        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+        //     });
+        // }
 
         $admin_fee = Lookups::where('group_id', '8')->first();
         $lookup_lease_dates = Lookups::where('group_id', '4')->first();
@@ -9635,132 +9681,164 @@ class HomeController extends Controller
     }
 
     public function send_reminder_mail(Request $request){
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        // $this_year = Lookups::where('group_id', '4')->first();
+        // $this_year = $this_year->lookup_name;
 
         $user = User::where('id', $request->userId)->first();
-        $studentInfoForMail = StudentsInfo::where('userUid',  $request->userId)->where('year', $this_year)->first();
-        $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
+        // $studentInfoForMail = StudentsInfo::where('userUid',  $request->userId)->where('year', $this_year)->first();
+        // $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
 
         $generator = new LoginUrl($user);
         $generator->setRedirectUrl('/dashboard');
         $url = $generator->generate();
 
-        $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
-        $outstanding = [];
+        // $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
+        // $outstanding = [];
 
-        if($studentInfoForMail->studentType == "Cash / Direct"){
-            array_push($all, "bankStatement");
-        }
-        if($studentInfoForMail->studentType !== "Cash / Direct"){
-            array_push($all, "bursaryApproval");
-        }
+        // if($studentInfoForMail->studentType == "Cash / Direct"){
+        //     array_push($all, "bankStatement");
+        // }
+        // if($studentInfoForMail->studentType !== "Cash / Direct"){
+        //     array_push($all, "bursaryApproval");
+        // }
 
-        $allSearchable = UserFiles::where("userUid", $request->userId)->where('year', $this_year)->get();
+        // $allSearchable = UserFiles::where("userUid", $request->userId)->where('year', $this_year)->get();
 
-        foreach($allSearchable as $search){
-            if(explode("_", $search->fileId)[0] == "other"){
-                array_push($all, $search->fileId);
-            }
-        }
+        // foreach($allSearchable as $search){
+        //     if(explode("_", $search->fileId)[0] == "other"){
+        //         array_push($all, $search->fileId);
+        //     }
+        // }
 
-        foreach($all as $file){
-            $file_search = UserFiles::where("userUid", $request->userId)->where('fileId', $file)->where('year', $this_year)->first();
+        // foreach($all as $file){
+        //     $file_search = UserFiles::where("userUid", $request->userId)->where('fileId', $file)->where('year', $this_year)->first();
 
-            if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+        //     if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
 
-                if($file == "studentCard"){
-                    $fileName = "Student Card";
-                }elseif($file == "copyID"){
-                    $fileName = "ID Document";
-                }elseif($file == "proof_of_payment"){
-                    $fileName = "Proof of Payment";
-                }elseif($file == "proofRegistration"){
-                    $fileName = "Proof of Registration";
-                }elseif($file == "bankStatement"){
-                    $fileName = "Bank Statements";
-                }elseif($file == "bursaryApproval"){
-                    if($studentInfoForMail->studentType != "NSFAS"){
-                        $fileName = "Bursary Approval";
-                    }else{
-                        $fileName = "NSFAS Approval";
-                    }
-                }elseif(explode("_", $file)[0] == "other"){
-                    $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
-                }
+        //         if($file == "studentCard"){
+        //             $fileName = "Student Card";
+        //         }elseif($file == "copyID"){
+        //             $fileName = "ID Document";
+        //         }elseif($file == "proof_of_payment"){
+        //             $fileName = "Proof of Payment";
+        //         }elseif($file == "proofRegistration"){
+        //             $fileName = "Proof of Registration";
+        //         }elseif($file == "bankStatement"){
+        //             $fileName = "Bank Statements";
+        //         }elseif($file == "bursaryApproval"){
+        //             if($studentInfoForMail->studentType != "NSFAS"){
+        //                 $fileName = "Bursary Approval";
+        //             }else{
+        //                 $fileName = "NSFAS Approval";
+        //             }
+        //         }elseif(explode("_", $file)[0] == "other"){
+        //             $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
+        //         }
 
-                if($file_search && !empty($file_search)){
-                    if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
-                        array_push($outstanding, $fileName);
-                    }
-                }else{
-                    array_push($outstanding, $fileName);
-                }
+        //         if($file_search && !empty($file_search)){
+        //             if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+        //                 array_push($outstanding, $fileName);
+        //             }
+        //         }else{
+        //             array_push($outstanding, $fileName);
+        //         }
 
-            }
+        //     }
 
-        }
+        // }
 
-        $outstandingDocsText = "<ol>";
-        $outDocs = "";
+        // $outstandingDocsText = "<ol>";
+        // $outDocs = "";
 
-        foreach($outstanding as $out){
-            $outstandingDocsText .= "<li style='color: #000; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
-            $outDocs .= " ".$out.",";
-        }
+        // foreach($outstanding as $out){
+        //     $outstandingDocsText .= "<li style='color: #000; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+        //     $outDocs .= " ".$out.",";
+        // }
 
-        $outstandingDocsText .= "</ol>";
+        // $outstandingDocsText .= "</ol>";
 
 
-        $message_replace['bookingRef'] = $booking->booking_code;
-        $message_replace['name'] = $studentInfoForMail->userFirstName;
-        $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
-        $message_replace['missing'] = $outstandingDocsText;
+        // $message_replace['bookingRef'] = $booking->booking_code;
+        // $message_replace['name'] = $studentInfoForMail->userFirstName;
+        // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
+        // $message_replace['close_application_link']="</a>";
+        // $message_replace['missing'] = $outstandingDocsText;
+
+        $userUidData = User::where('id', $request->userId)->first();
+        $this->dispatch(new SendReminderMail($userUidData, $url));
 
         $mailerForMessage = MailerList::where("mailer_name", "Reminder Mail")->first();
 
         if($mailerForMessage->status == '1'){
 
-            $mailerMessage = $mailerForMessage->message;
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
 
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-            $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
-            $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-            $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
+            $studentInfoForMail = StudentsInfo::where('userUid',  $request->userId)->where('year', $this_year)->first();
 
-            $mailData['name'] = $studentInfoForMail->userFirstName;
-            $mailData['email'] = $user->email;
-            $mailData['messageForMail'] = $newMessage;
-            $mailData['subject'] =str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
-            
-            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $mailData['cc'] = explode(";", $allowedMailsCC);
+            $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
+            $outstanding = [];
 
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-
-            if(!empty($allowedMails)){
-
-                $mailArr = explode(";", $allowedMails);
-
-                if(in_array(explode("@", $mailData['email'])[1], $mailArr)){
-                    $mailData['email'] = $studentInfoForMail->userEmail;
-                }else{
-                    $mailData['email'] = "conurbandigital@gmail.com";
-                }
-            }else{
-                $mailData['email'] = $studentInfoForMail->userEmail;
+            if($studentInfoForMail->studentType == "Cash / Direct"){
+                array_push($all, "bankStatement");
+            }
+            if($studentInfoForMail->studentType !== "Cash / Direct"){
+                array_push($all, "bursaryApproval");
             }
 
-            Mail::send('email.yellow_back', $mailData, function($message) use ($mailData) {
-                $message->to($mailData['email'])->subject($mailData['subject']);
-                $message->bcc($mailData['cc']);
-                $message->from('noreply@campusafrica.co.za','Campus Africa');
-            });
+            $allSearchable = UserFiles::where("userUid", $request->userId)->where('year', $this_year)->get();
+
+            foreach($allSearchable as $search){
+                if(explode("_", $search->fileId)[0] == "other"){
+                    array_push($all, $search->fileId);
+                }
+            }
+    
+            foreach($all as $file){
+                $file_search = UserFiles::where("userUid", $request->userId)->where('fileId', $file)->where('year', $this_year)->first();
+    
+                if(($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+    
+                    if($file == "studentCard"){
+                        $fileName = "Student Card";
+                    }elseif($file == "copyID"){
+                        $fileName = "ID Document";
+                    }elseif($file == "proof_of_payment"){
+                        $fileName = "Proof of Payment";
+                    }elseif($file == "proofRegistration"){
+                        $fileName = "Proof of Registration";
+                    }elseif($file == "bankStatement"){
+                        $fileName = "Bank Statements";
+                    }elseif($file == "bursaryApproval"){
+                        if($studentInfoForMail->studentType != "NSFAS"){
+                            $fileName = "Bursary Approval";
+                        }else{
+                            $fileName = "NSFAS Approval";
+                        }
+                    }elseif(explode("_", $file)[0] == "other"){
+                        $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
+                    }
+    
+                    if($file_search && !empty($file_search)){
+                        if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+                            array_push($outstanding, $fileName);
+                        }
+                    }else{
+                        array_push($outstanding, $fileName);
+                    }
+    
+                }
+    
+            }
+    
+            $outDocs = "";
+    
+            foreach($outstanding as $out){
+                $outDocs .= " ".$out.",";
+            }
 
             ActionList::create([
-                "userUid" => $studentInfoForMail->userUid,
+                "userUid" => $request->userId,
                 "action" => "Reminder Email sent for outstanding documents ".$outDocs,
                 "actionUserUid" => Auth::user()->id,
                 "actionUserDisplayName" => Auth::user()->userFirstName,

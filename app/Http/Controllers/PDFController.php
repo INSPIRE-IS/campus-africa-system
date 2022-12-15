@@ -18,6 +18,7 @@ use Mail;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
+use App\Jobs\SendResendLeaseMail;
 
 class PDFController extends Controller
 {
@@ -162,59 +163,63 @@ class PDFController extends Controller
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
         // $userForLease = User::where('id', $studentId)->first();
-        $userForLease = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
+        // $userForLease = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
 
-        $message_replace['booking_application'] = "#".$booking->booking_code;
-        $message_replace['name'] = $userForLease->userFirstName;
-        $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
-        $message_replace['close_lease_link']="</a>";
+        $leaseOpenTag = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
+        $userUidData = User::where('id', $studentId)->first();
+        $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
 
-        $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
+        // $message_replace['booking_application'] = "#".$booking->booking_code;
+        // $message_replace['name'] = $userForLease->userFirstName;
+        // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
+        // $message_replace['close_lease_link']="</a>";
 
-        if($mailerForMessage->status == '1'){
+        // $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
 
-          $mailerMessage = $mailerForMessage->message;
+        // if($mailerForMessage->status == '1'){
+
+        //   $mailerMessage = $mailerForMessage->message;
   
-          $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
-          $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-          $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
-          $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
+        //   $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+        //   $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+        //   $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
+        //   $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
   
-          $data['messageForMail'] = $newMessage;
-          $data['email'] = $userForLease->userEmail;
-          $data['name'] = $userForLease->userFirstName;
-          $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
+        //   $data['messageForMail'] = $newMessage;
+        //   $data['email'] = $userForLease->userEmail;
+        //   $data['name'] = $userForLease->userFirstName;
+        //   $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
           
 
-          $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-          $data['cc'] = explode(";", $allowedMailsCC);
+        //   $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+        //   $data['cc'] = explode(";", $allowedMailsCC);
 
-          $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+        //   $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-          if(!empty($allowedMails)){
+        //   if(!empty($allowedMails)){
 
-            $mailArr = explode(";", $allowedMails);
+        //     $mailArr = explode(";", $allowedMails);
   
-            if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                $data['email'] = $userForLease->userEmail;
-            }else{
-                $data['email'] = "conurbandigital@gmail.com";
-            }
-          }else{
-            $data['email'] = $userForLease->userEmail;
-          }
+        //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
+        //         $data['email'] = $userForLease->userEmail;
+        //     }else{
+        //         $data['email'] = "conurbandigital@gmail.com";
+        //     }
+        //   }else{
+        //     $data['email'] = $userForLease->userEmail;
+        //   }
   
-          Mail::send('email.green_back', $data, function($message) use ($data) {
-              // $message->to($data['email'], $data['name'])->subject('Application Approved');
-              // $message->to($data['email'])->subject($data['subject']);
-              // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
-              $message->to($data['email'])->subject($data['subject']);
-                $message->bcc($data['cc']);
-                $message->from('noreply@campusafrica.co.za','Campus Africa');
-              // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
-          });
-        }
+        //   Mail::send('email.green_back', $data, function($message) use ($data) {
+        //       // $message->to($data['email'], $data['name'])->subject('Application Approved');
+        //       // $message->to($data['email'])->subject($data['subject']);
+        //       // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
+        //       $message->to($data['email'])->subject($data['subject']);
+        //         $message->bcc($data['cc']);
+        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+        //       // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
+        //   });
+        // }
 
 
       }
