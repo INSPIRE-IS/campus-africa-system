@@ -7777,7 +7777,7 @@ class HomeController extends Controller
         // $checkData = User::find($request->userUid);
         $checkData = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
         
-        if ($checkData->address_approved == 1 && $checkData->kin_approved == 1 && $checkData->email_data_approved == 1) {
+        if ($checkData->address_approved == "1" && $checkData->kin_approved == "1" && $checkData->email_data_approved == "1") {
             $rob_35_info = 2;
         } else {
             $rob_35_info = 1;
