@@ -3,7 +3,7 @@
         <table width="100%">
             <tr width="100%">
                 <td style="padding: 30px 6% 30px 6%; margin: 0;">
-                    <img src='<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/images/logo/Campus_Africa_Logo.png' alt="Logo">
+                    <img src='https://apply.campusafrica.co.za/images/logo/Campus_Africa_Logo.png' alt="Logo">
                 </td>
             </tr>
             <tr width="100%" style="background-color: #50b63a;">
