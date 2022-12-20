@@ -5848,8 +5848,14 @@ class HomeController extends Controller
 
         $opt = new ArchiveOptions;
         $opt->setSendHttpHeaders(true);
+
+        if($booking->bed_code != null){
+            $bed_code = $booking->bed_code.'_';
+        }else{
+            $bed_code = "";
+        }
         
-        $zip = new ZipStream($userData->userFirstName.' '.$userData->userLastname.' Approved Docs.zip', $opt);
+        $zip = new ZipStream($booking->booking_code.'_'.$bed_code.$userData->userFirstName.'_'.$userData->userLastname.'.zip', $opt);
 
         foreach ($allFilesArr as $file) {
             if (true === file_exists($file)) {
