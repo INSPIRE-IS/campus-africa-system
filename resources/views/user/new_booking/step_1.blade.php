@@ -63,7 +63,7 @@
 
         <div class="form-field">
             <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of birth</small></span></label>
-            <input type="date" name="dob" id="dob" class="required" max="<?php echo date('Y-m-d'); ?>" value="<?php if($cancelled == 0){echo $user->userDob;}?>" disabled>
+            <input type="date" name="dob" id="dob" class="required" max="<?php echo date('Y-m-d'); ?>" value="<?php if($cancelled == 0 || !empty($user->userDob)){echo $user->userDob;}?>" disabled>
         </div>
 
         <div class="form-field">
@@ -75,7 +75,7 @@
         <div class="form-field">
             <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid email</small></span>
             <span id="email_InUse" class="hidden" style="color:red"><small>Email Address already in use</small></span></label>
-            <input type="email" name="email" id="email" value="<?php if($cancelled == 0){echo $user->userEmail;}?>" disabled>
+            <input type="email" name="email" id="email" value="<?php if($cancelled == 0 || !empty($user->userEmail)){echo $user->userEmail;}?>" disabled>
         </div>
 
         <div class="form-field">
