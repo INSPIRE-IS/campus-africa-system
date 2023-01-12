@@ -841,7 +841,17 @@ class HomeController extends Controller
                 $returnInfo = $this->oldBooking($userId);
             }
 
+            
+
             if($returnInfo['Info'] == '1'){
+
+                $paymentBooking = BookingPayment::where('bookingId', $bookingCurr->id)->first();
+
+                if(empty($paymentBooking)){
+                    BookingPayment::create(['bookingId' => $bookingCurr->id]);
+                    $this->paymentDeatilsInternal($request->userId);
+                }
+
                 return view('admin.app_profile', ["headerTitle" => $returnInfo['headerTitle'], "appProfile" => "true", "user" => $returnInfo['user'], "actions" => $returnInfo['actions'], "completed" => $returnInfo['completed'], "lookups" => $returnInfo['lookups'], "title" => "Student Profile", "booking" => $returnInfo['booking'], "residence" => $returnInfo['residence'], "bookingPropData" => $returnInfo['bookingPropData'], "files_to_download" => $returnInfo['files_to_download'], "booking_paid" => $returnInfo['booking_paid'], 'booking_waived' => $returnInfo['booking_waived'], 'comments' => $returnInfo['comments'], 'leaseApproved' => $returnInfo['leaseApproved'], 'allowedResidences' => $returnInfo['allowedResidences'], "mailVerificationEmail" => $returnInfo['mailVerificationEmail'], "previousBookings" => $returnInfo['previousBookings'], "paymentBooking" => $returnInfo['paymentBooking'], "this_year" => $this_year]);
             }elseif($returnInfo['Info'] == '0'){
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
