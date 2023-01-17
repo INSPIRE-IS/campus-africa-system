@@ -71,8 +71,11 @@ class SendLeaseApprovedMail implements ShouldQueue
             $data['name'] = $userForLease->userFirstName;
             $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
     
+            $data['cc'] = "";
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $data['cc'] = explode(";", $allowedMailsCC);
+            if (!empty($allowedMailsCC)) {
+                $data['cc'] = explode(";", $allowedMailsCC);
+            }
     
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
     

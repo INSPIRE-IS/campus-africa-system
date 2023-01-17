@@ -34,11 +34,18 @@ class RedBackMail extends Mailable
      * @return $this
      */
     public function build()
-    {
-
-        return $this->from($this->fromMail, $this->fromName)
+    {        
+        if (empty($this->mailCc) || $this->mailCc == "") {
+            $email = $this->from($this->fromMail, $this->fromName)
+            ->subject($this->subject)
+            ->view('email.red_back', [ 'messageForMail' => $this->messageForMail]);
+        } else {
+            $email = $this->from($this->fromMail, $this->fromName)
             ->subject($this->subject)
             ->bcc($this->mailCc)
             ->view('email.red_back', [ 'messageForMail' => $this->messageForMail]);
+        }
+
+        return $email;
     }
 }

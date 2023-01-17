@@ -87,10 +87,11 @@ class SendDeclinedDocMail implements ShouldQueue
             $mailData['subject'] = $newSubject;
 
             
-
-            
+            $mailData['cc'] = "";
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $mailData['cc'] = explode(";", $allowedMailsCC);
+            if (!empty($allowedMailsCC)) {
+                $mailData['cc'] = explode(";", $allowedMailsCC);
+            }
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
@@ -108,14 +109,7 @@ class SendDeclinedDocMail implements ShouldQueue
             }
 
             $email = new RedBackMail($newMessage, $mailData['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $mailData['cc']);
-
-            try {
-                Mail::to($mailData['email'])->send($email);
-            } catch (\Exception $exception) {
-                Log::error($exception->getMessage());
-                Log::error($mailData);
-            }
-
+            Mail::to($mailData['email'])->send($email);
         }
     }
 }

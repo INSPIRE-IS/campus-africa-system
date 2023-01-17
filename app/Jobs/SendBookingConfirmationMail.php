@@ -137,12 +137,15 @@ class SendBookingConfirmationMail implements ShouldQueue
             $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
 
             $data['name'] = $userInfo->userFirstName;
-            $data['email'] = $genUser->email;
+            $data['email'] = $userInfo->email;
             $data['messageForMail'] = $newMessage;
             $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
 
+            $data['cc'] = "";
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $data['cc'] = explode(";", $allowedMailsCC);
+            if (!empty($allowedMailsCC)) {
+                $data['cc'] = explode(";", $allowedMailsCC);
+            }
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
@@ -150,12 +153,12 @@ class SendBookingConfirmationMail implements ShouldQueue
                 $mailArr = explode(";", $allowedMails);
 
                 if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                    $data['email'] = $genUser->email;
+                    $data['email'] = $userInfo->email;
                 }else{
                     $data['email'] = "conurbandigital@gmail.com";
                 }
             }else{
-                $data['email'] = $genUser->email;
+                $data['email'] = $userInfo->email;
             }
 
             $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);

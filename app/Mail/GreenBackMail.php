@@ -35,10 +35,17 @@ class GreenBackMail extends Mailable
      */
     public function build()
     {
-        
-        return $this->from($this->fromMail, $this->fromName)
-            ->subject($this->subject)
-            ->bcc($this->mailCc)
-            ->view('email.green_back', [ 'messageForMail' => $this->messageForMail]);
+        if (empty($this->mailCc) || $this->mailCc == "") {
+            $email = $this->from($this->fromMail, $this->fromName)
+                ->subject($this->subject)
+                ->view('email.green_back', [ 'messageForMail' => $this->messageForMail]);
+        } else {
+            $email = $this->from($this->fromMail, $this->fromName)
+                ->subject($this->subject)
+                ->bcc($this->mailCc)
+                ->view('email.green_back', [ 'messageForMail' => $this->messageForMail]);
+        }
+
+        return $email;
     }
 }

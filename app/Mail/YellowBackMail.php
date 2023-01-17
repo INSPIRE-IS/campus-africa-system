@@ -35,9 +35,18 @@ class YellowBackMail extends Mailable
      */
     public function build()
     {
-        return $this->from($this->fromMail, $this->fromName)
+        if (empty($this->mailCc)) {
+            $email = $this->from($this->fromMail, $this->fromName)
             ->subject($this->subject)
-            ->bcc($this->mailCc)
             ->view('email.yellow_back', [ 'messageForMail' => $this->messageForMail]);
+            
+        } else {
+            $email = $this->from($this->fromMail, $this->fromName)
+                ->subject($this->subject)
+                ->bcc($this->mailCc)
+                ->view('email.yellow_back', [ 'messageForMail' => $this->messageForMail]);
+        }
+
+        return $email;
     }
 }

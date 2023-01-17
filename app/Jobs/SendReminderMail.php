@@ -141,8 +141,11 @@ class SendReminderMail implements ShouldQueue
             $mailData['messageForMail'] = $newMessage;
             $mailData['subject'] =str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
             
+            $mailData['cc'] = "";
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            $mailData['cc'] = explode(";", $allowedMailsCC);
+            if (!empty($allowedMailsCC)) {
+                $mailData['cc'] = explode(";", $allowedMailsCC);
+            }
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
