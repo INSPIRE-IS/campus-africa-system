@@ -108,7 +108,13 @@ class SendDeclinedDocMail implements ShouldQueue
             }
 
             $email = new RedBackMail($newMessage, $mailData['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $mailData['cc']);
-            Mail::to($mailData['email'])->send($email);
+
+            try {
+                Mail::to($mailData['email'])->send($email);
+            } catch (\Exception $exception) {
+                Log::error($exception->getMessage());
+                Log::error($mailData);
+            }
 
         }
     }
