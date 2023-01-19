@@ -10,113 +10,115 @@
                 
             <div class="cardBody">
 
-            @foreach ($allFiles as $file)
+            @if($user->rob_60_cancelled==0)
+              @foreach ($allFiles as $file)
 
-                @if($file->fileId == 'copyID' || $file->fileId == 'proof_of_payment')
+                  @if($file->fileId == 'copyID' || $file->fileId == 'proof_of_payment')
 
-                <div class="appAwait" id="idCopySection">
-                        <h3 class="uploadName">
-
-                        
-
-                          @if($file->fileId == 'copyID')
-                            I.D COPY
-                          @elseif($file->fileId == 'studentCard')
-                            STUDENT CARD
-                          @elseif($file->fileId == 'bankStatement')
-                            BANK STATEMENT
-                          @elseif($file->fileId == 'proofRegistration')
-                            REGISTRATION
-                          @elseif($file->fileId == 'proof_of_payment')
-                            BOOKING FEE <br/>PROOF OF PAYMENT
-                          @elseif($file->fileId == 'moveIn')
-                            LEASE
-                          @else
-                            <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file->fileId))); ?>
-                          @endif
-                            
-
-                          @if($file->status == "Rejected")
-
+                  <div class="appAwait" id="idCopySection">
+                          <h3 class="uploadName">
 
                           
 
-                          @if($file->fileId == 'proof_of_payment')
-                            
-                          <div id="paymentSection">
-                                <label onClick="paymentRef()" id="{{$file->fileId}}Section" class="outstanding">
-                                  <span class="text">Upload Proof of Payment</span>
-                                  <i class="fas fa-file-upload" ></i>
-                                  <i class="fas fa-exclamation-circle"></i>
-                                </label>
-                            </div>
-                            <br/>
-                            <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
-
-
-                              <button types="button" class="paymentBtn" onClick="createpayment()" style="width:100%">Pay Online Now</button>
-                              <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
-                                  <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
-                                  <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
-                              </form>
+                            @if($file->fileId == 'copyID')
+                              I.D COPY
+                            @elseif($file->fileId == 'studentCard')
+                              STUDENT CARD
+                            @elseif($file->fileId == 'bankStatement')
+                              BANK STATEMENT
+                            @elseif($file->fileId == 'proofRegistration')
+                              REGISTRATION
+                            @elseif($file->fileId == 'proof_of_payment')
+                              BOOKING FEE <br/>PROOF OF PAYMENT
+                            @elseif($file->fileId == 'moveIn')
+                              LEASE
                             @else
-                              <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                              <span class="text">Outstanding</span>
-                              <i class="fas fa-file-upload" ></i>
-                              <i class="fas fa-exclamation-circle"></i>
-                            </label>
-                            </h3>
-                            <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
-
-                            <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
+                              <?php echo strtoupper(str_replace("_", " ", str_replace("other", "other |", $file->fileId))); ?>
                             @endif
+                              
 
-                          @elseif($file->status == "None")
-                           
-                          
-                          @if($file->fileId == 'proof_of_payment')
-                          <div id="paymentSection">
-                                <label onClick="paymentRef()" id="{{$file->fileId}}Section" class="outstanding">
+                            @if($file->status == "Rejected")
+
+
+                            
+
+                            @if($file->fileId == 'proof_of_payment')
+                              
+                            <div id="paymentSection">
+                                  <label onClick="paymentRef()" id="{{$file->fileId}}Section" class="outstanding">
+                                    <span class="text">Upload Proof of Payment</span>
+                                    <i class="fas fa-file-upload" ></i>
+                                    <i class="fas fa-exclamation-circle"></i>
+                                  </label>
+                              </div>
+                              <br/>
+                              <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
+
+
+                                <button types="button" class="paymentBtn" onClick="createpayment()" style="width:100%">Pay Online Now</button>
+                                <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
+                                    <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
+                                    <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
+                                </form>
+                              @else
+                                <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
                                 <span class="text">Outstanding</span>
                                 <i class="fas fa-file-upload" ></i>
                                 <i class="fas fa-exclamation-circle"></i>
                               </label>
-                            </div>
+                              </h3>
+                              <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
+
+                              <div class="invalid" id="studentCardInvalid">INVALID DOCUMENT - PLEASE REUPLOAD <i class="fas fa-exclamation-circle"></i></div>
+                              @endif
+
+                            @elseif($file->status == "None")
                             
-                              <button types="button" class="paymentBtn" onClick="createpayment()" style="width:100%">Pay Online Now</button>
-                              <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
-                                  <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
-                                  <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
-                              </form>
-                            @else
                             
+                            @if($file->fileId == 'proof_of_payment')
+                            <div id="paymentSection">
+                                  <label onClick="paymentRef()" id="{{$file->fileId}}Section" class="outstanding">
+                                  <span class="text">Outstanding</span>
+                                  <i class="fas fa-file-upload" ></i>
+                                  <i class="fas fa-exclamation-circle"></i>
+                                </label>
+                              </div>
+                              
+                                <button types="button" class="paymentBtn" onClick="createpayment()" style="width:100%">Pay Online Now</button>
+                                <form action="https://secure.paygate.co.za/payweb3/process.trans" method="POST" id="paygateForm">
+                                    <input type="hidden" name="PAY_REQUEST_ID" id="PAY_REQUEST_ID" value="">
+                                    <input type="hidden" name="CHECKSUM" id="CHECKSUM" value="">
+                                </form>
+                              @else
+                              
 
 
-                            <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
-                              <span class="text">Outstanding</span>
-                              <i class="fas fa-file-upload" ></i>
-                              <i class="fas fa-exclamation-circle"></i>
+                              <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstanding">
+                                <span class="text">Outstanding</span>
+                                <i class="fas fa-file-upload" ></i>
+                                <i class="fas fa-exclamation-circle"></i>
+                              </label>
+                              </h3>
+                              <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
+
+                              @endif
+                            @elseif($file->status == "Uploaded")
+                            <label id="registrationPending" class="pending">
+                              <span class="text">Pending Approval</span>
+                              <i class="fad fa-clock"></i>
                             </label>
-                            </h3>
-                            <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf"/>
-
+                            @elseif($file->status == "Approved")
+                            <label class="approved">
+                                <span class="text">Approved</span>
+                                <i class="fas fa-check-circle"></i>
+                            </label>
                             @endif
-                          @elseif($file->status == "Uploaded")
-                          <label id="registrationPending" class="pending">
-                            <span class="text">Pending Approval</span>
-                            <i class="fad fa-clock"></i>
-                          </label>
-                          @elseif($file->status == "Approved")
-                          <label class="approved">
-                              <span class="text">Approved</span>
-                              <i class="fas fa-check-circle"></i>
-                          </label>
-                          @endif
-                        </h3>
-                    </div>
-                @endif
+                          </h3>
+                      </div>
+                  @endif
 
-            @endforeach
+              @endforeach
+            @endif
 
             </div>
         </div>

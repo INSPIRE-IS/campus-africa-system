@@ -62,21 +62,25 @@
                             
      
                                 <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
-                                <td>
-                                  <div id="paymentSection">
-                                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" onClick="paymentRef()">
-                                        <span class="text">Upload</span>
-                                        @if (!$agent->isMobile())
-                                            <i class="fas fa-file-upload" ></i>
-                                        @endif
-                                        
-                                    </label>
-                                  </div>
-                                    </h3>
-                                    <!-- <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/> -->
-                                    </td>
+                                @if($user->rob_60_cancelled==0)
+                                  <td>
+                                    <div id="paymentSection">
+                                      <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" onClick="paymentRef()">
+                                          <span class="text">Upload</span>
+                                          @if (!$agent->isMobile())
+                                              <i class="fas fa-file-upload" ></i>
+                                          @endif
+                                          
+                                      </label>
+                                    </div>
+                                      </h3>
+                                      <!-- <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/> -->
+                                      </td>
+                                  @endif
+
                               @else
                                 <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Outstanding</span></td>
+                                @if($user->rob_60_cancelled==0)
                                 <td>
                                     <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
                                         <span class="text">Upload</span>
@@ -88,6 +92,7 @@
                                     </h3>
                                     <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf" />
                                     </td>
+                                    @endif
                                 @endif
                         @elseif($file->status == 'Rejected')
 
@@ -95,6 +100,7 @@
                             
      
                                 <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
+                                @if($user->rob_60_cancelled==0)
                                 <td>
                                   <div id="paymentSection">
                                     <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" onClick="paymentRef()">
@@ -108,19 +114,22 @@
                                     </h3>
                                     <!-- <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')"/> -->
                                     </td>
+                                    @endif
                               @else
                               <td><span class="flex"><div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload</span></td>
-                            <td>
-                                <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
-                                    <span class="text">Upload</span>
-                                    @if (!$agent->isMobile())
-                                        <i class="fas fa-file-upload" ></i>
-                                    @endif
-                                    
-                                </label>
-                                </h3>
-                                <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf" />
-                                </td>
+                                @if($user->rob_60_cancelled==0)
+                                  <td>
+                                    <label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload">
+                                        <span class="text">Upload</span>
+                                        @if (!$agent->isMobile())
+                                            <i class="fas fa-file-upload" ></i>
+                                        @endif
+                                        
+                                    </label>
+                                    </h3>
+                                    <input type="file" id="{{$file->fileId}}" hidden onChange="UploadDocument('{{$file->fileId}}')" accept="image/*, application/pdf" />
+                                  </td>
+                                @endif
                               @endif
                             
                         @elseif($file->status == 'Uploaded')
@@ -140,7 +149,7 @@
                 </tr>
             @endforeach
 
-           
+
         </tbody>
     </table>
     <br/>

@@ -57,7 +57,7 @@
                 <a class="active" href="/dashboard">Dashboard</a>
                 
                 <!-- <a href="/room-booking">My Room</a> -->
-                @if($active == 1)
+                @if($active == 1 && $user->rob_60_cancelled==0)
                     <a href="/my-documents">My Documents</a>
                 @endif
                 <a href="https://campusafrica.co.za/residences/" target="_blank">Residences</a>

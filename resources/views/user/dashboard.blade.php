@@ -47,7 +47,6 @@
         @else
           @include('user.documents.applicationDocs')
         @endif
-
         
     </div>
 
@@ -59,7 +58,7 @@
               <h4 class="cardSubHeaderGreyTxt">Student Type</h4>
               <h2 class="cardHeaderBlck" >
                 <?php if($user->studentType == "Cash / Direct"){echo "Cash";}else{echo $user->studentType;}?> 
-                @if($user->rob_55_lease != '2')
+                @if($user->rob_55_lease != '2' && $user->rob_60_cancelled==0)
                   <br/> 
                   <a href="/change-student-type"><button type="button" class="detailsChange" id="studentChangeType" style="margin-top:-40px;">Change Student Type</button></a></h2>
                 @else
@@ -100,10 +99,12 @@
             </div> 
         </div>
 
-        @if($bookHeader == '0')
-          @include('user.documents.bookingDocs')
-        @else
-          @include('user.documents.applicationDocs')
+        @if($user->rob_60_cancelled==0)
+          @if($bookHeader == '0')
+            @include('user.documents.bookingDocs')
+          @else
+            @include('user.documents.applicationDocs')
+          @endif
         @endif
     </div>
 </div>
