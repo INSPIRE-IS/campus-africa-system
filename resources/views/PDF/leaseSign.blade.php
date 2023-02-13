@@ -753,7 +753,7 @@
             <br/>
             <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;'/></span>
             <br/><br/><br/>
-            <span style="font-size:14px;">Sign (Owner)  ………………………………………………….</span>
+            <span style="font-size:14px;">Sign (Owner) <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/></span>
 
             <footer>
                 Page | 10
