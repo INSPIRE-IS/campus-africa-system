@@ -5616,7 +5616,7 @@ class HomeController extends Controller
 
                             foreach($allStudents as $thisStudent){
                                 $booking = Booking::where('userId', $thisStudent->id)->where('year', $this_year->lookup_name)->first();
-                                if($this_year->lookup_name == $booking->year){
+                                if(!empty($booking) && $this_year->lookup_name == $booking->year){
                                     //
                                     if($thisStudent->studentNo == $user[0]){
                                         $idFound++;

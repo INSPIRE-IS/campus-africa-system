@@ -745,7 +745,7 @@
             <br/>
             <span style="font-size:14px;">Sign (Lodger) ………………………………………………….</span>
             <br/><br/>
-            <span style="font-size:14px;">Sign (Owner)  ………………………………………………….</span>
+            <span style="font-size:14px;">Sign (Owner)  <img src="{{url('/images/lease/kim_degenaar.jpeg')}}" alt="Kim Degenaar" style='width:200px;'/></span>
 
             <footer>
                 Page | 10
