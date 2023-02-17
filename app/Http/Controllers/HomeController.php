@@ -7114,7 +7114,7 @@ class HomeController extends Controller
         
         $user = User::with('files')->where('id', $user_id)->first();
 
-        if($userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed"){
+        if(!empty($userInfo) && $userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed"){
 
             $booking = "Rejected";
             $files_for_booking = [];
@@ -7208,7 +7208,7 @@ class HomeController extends Controller
             StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->update(['bookingStatus' => $booking, 'applicationStatus' => $application, 'overall_status' => $overall]);
         }
 
-        if($userInfo->applicationStatus == "Approved Confirmed"){
+        if(!empty($userInfo) && $userInfo->applicationStatus == "Approved Confirmed"){
             //lease
             $lease = "na";
     
