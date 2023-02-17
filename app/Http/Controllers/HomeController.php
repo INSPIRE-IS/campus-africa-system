@@ -5618,12 +5618,17 @@ class HomeController extends Controller
 
                             $idFound = 0;
 
-                            foreach($allStudents as $thisStudent){
-                                $booking = Booking::where('userId', $thisStudent->id)->where('year', $this_year)->first();
-                                if(!empty($booking) && $this_year == $booking->year){
+                            $thisStudent = StudentsInfo::where('year', $this_year)->where('studentNo', $user[0])->first();
+
+                            if(!empty($thisStudent)){
+
+                            // foreach($allStudents as $thisStudent){
+                                // $booking = Booking::where('userId', $thisStudent->id)->where('year', $this_year)->first();
+                                // if(!empty($booking) && $this_year == $booking->year){
                                     //
                                     if($thisStudent->studentNo == $user[0]){
                                         $idFound++;
+                                        
                                         $this->update_user_status($thisStudent->id);
                                         if($thisStudent->studentType == "NSFAS"){
                                             $files = $thisStudent->files;
@@ -5642,6 +5647,8 @@ class HomeController extends Controller
                                                     }
                                                 }
                                             }
+
+                                            
     
                                             if($approvalFound == 0){
                                                 // $this_year = Lookups::where('group_id', '4')->first();
@@ -5655,8 +5662,9 @@ class HomeController extends Controller
                                             StudentsInfo::where('userUid', $thisStudent->id)->where('year', $this_year)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                         }
                                     }
-                                }
+                                // }
 
+                            // }
                             }
 
                             if($idFound == "0"){
@@ -5677,9 +5685,9 @@ class HomeController extends Controller
         UserFiles::insert($fileList);
         ActionList::insert($actionLogList);
 
-        foreach($allStudents as $thisStudent){
-            $this->update_user_status($thisStudent->id);
-        }
+        // foreach($allStudents as $thisStudent){
+        //     $this->update_user_status($thisStudent->id);
+        // }
 
         ImportNSFASApproval::where('status', '1')->update(["status" => 0]);
 
