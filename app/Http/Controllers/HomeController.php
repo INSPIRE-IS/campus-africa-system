@@ -5619,8 +5619,8 @@ class HomeController extends Controller
                             $idFound = 0;
 
                             foreach($allStudents as $thisStudent){
-                                $booking = Booking::where('userId', $thisStudent->id)->where('year', $this_year->lookup_name)->first();
-                                if(!empty($booking) && $this_year->lookup_name == $booking->year){
+                                $booking = Booking::where('userId', $thisStudent->id)->where('year', $this_year)->first();
+                                if(!empty($booking) && $this_year == $booking->year){
                                     //
                                     if($thisStudent->studentNo == $user[0]){
                                         $idFound++;
@@ -5652,7 +5652,7 @@ class HomeController extends Controller
     
                                             //Update robots
                                             // User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
-                                            StudentsInfo::where('userUid', $thisStudent->id)->where('year', $this_year->lookup_name)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
+                                            StudentsInfo::where('userUid', $thisStudent->id)->where('year', $this_year)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                         }
                                     }
                                 }
