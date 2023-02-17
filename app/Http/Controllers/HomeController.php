@@ -5562,7 +5562,7 @@ class HomeController extends Controller
 
     public function import_nsfas_approval(Request $request){
 
-        set_time_limit(0);
+        // set_time_limit(0);
 
         $files = $request->file('file');
 
