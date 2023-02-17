@@ -5618,7 +5618,7 @@ class HomeController extends Controller
 
                             $idFound = 0;
 
-                            $thisStudent = StudentsInfo::where('year', $this_year)->where('studentNo', $user[0])->first();
+                            $thisStudent = StudentsInfo::where('year', $this_year)->where('studentNo', $user[0])->with('files')->first();
 
                             if(!empty($thisStudent)){
 
