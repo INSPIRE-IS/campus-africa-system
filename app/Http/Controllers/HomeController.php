@@ -5633,7 +5633,7 @@ class HomeController extends Controller
                                                     $approvalFound++;
     
                                                     if($file->status !== "Approved"){
-                                                        $this_year = Lookups::where('group_id', '4')->first();
+                                                        // $this_year = Lookups::where('group_id', '4')->first();
                                                         $this_year = $this_year->lookup_name;
 
                                                         UserFiles::where('userUid', $thisStudent->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->update(['status' => 'Approved', 'fileName' => null, 'fileUrl' => null, 'uploaded_by' => 'Import']);
@@ -5643,7 +5643,7 @@ class HomeController extends Controller
                                             }
     
                                             if($approvalFound == 0){
-                                                $this_year = Lookups::where('group_id', '4')->first();
+                                                // $this_year = Lookups::where('group_id', '4')->first();
                                                 $this_year = $this_year->lookup_name;
                                                 array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import', 'year' => $this_year]);
                                                 array_push($actionLogList, ["userUid" => $thisStudent->id, "year" => $this_year, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
@@ -5682,7 +5682,7 @@ class HomeController extends Controller
 
         ImportNSFASApproval::where('status', '1')->update(["status" => 0]);
 
-        $this_year = Lookups::where('group_id', '4')->first();
+        // $this_year = Lookups::where('group_id', '4')->first();
         $newImport = ImportNSFASApproval::create([ 'file_name' => $inputFileName, 'actionUserId' => Auth::user()->id, "matched" => $matched, "unmatched" => $unmatched, "total_records" => $totalStudents, "status" => 1, 'year' => $this_year->lookup_name]);
 
         $newStudentForImport = [];
