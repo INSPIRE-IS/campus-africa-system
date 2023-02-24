@@ -42,6 +42,8 @@ use App\Jobs\SendLeaseApprovedMail;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendReminderMail;
 
+use Illuminate\Support\Facades\Log;
+
 class HomeController extends Controller
 {
     /**
@@ -5618,7 +5620,8 @@ class HomeController extends Controller
 
                             $idFound = 0;
 
-                            $thisStudent = StudentsInfo::where('year', $this_year)->where('studentNo', $user[0])->with('files')->first();
+                            // $thisStudent = StudentsInfo::where('year', $this_year)->where('studentNo', $user[0])->with('files')->first();
+                            $thisStudent = StudentsInfo::where('year', $this_year)->where('studentNo', $user[0])->first();
 
                             if(!empty($thisStudent)){
 
@@ -5629,7 +5632,7 @@ class HomeController extends Controller
                                     if($thisStudent->studentNo == $user[0]){
                                         $idFound++;
                                         
-                                        $this->update_user_status($thisStudent->id);
+                                        $this->update_user_status($thisStudent->userUid);
                                         if($thisStudent->studentType == "NSFAS"){
                                             $files = $thisStudent->files;
                                             $approvalFound = 0;
@@ -5642,8 +5645,8 @@ class HomeController extends Controller
                                                         // $this_year = Lookups::where('group_id', '4')->first();
                                                         // $this_year = $this_year->lookup_name;
 
-                                                        UserFiles::where('userUid', $thisStudent->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->update(['status' => 'Approved', 'fileName' => null, 'fileUrl' => null, 'uploaded_by' => 'Import']);
-                                                        array_push($actionLogList, ["userUid" => $thisStudent->id, "year" => $this_year, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
+                                                        UserFiles::where('userUid', $thisStudent->userUid)->where('fileId', 'bursaryApproval')->where('year', $this_year)->update(['status' => 'Approved', 'fileName' => null, 'fileUrl' => null, 'uploaded_by' => 'Import']);
+                                                        array_push($actionLogList, ["userUid" => $thisStudent->userUid, "year" => $this_year, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                                     }
                                                 }
                                             }
@@ -5653,13 +5656,13 @@ class HomeController extends Controller
                                             if($approvalFound == 0){
                                                 // $this_year = Lookups::where('group_id', '4')->first();
                                                 // $this_year = $this_year->lookup_name;
-                                                array_push($fileList, ['userUid'=> $thisStudent->id, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import', 'year' => $this_year]);
-                                                array_push($actionLogList, ["userUid" => $thisStudent->id, "year" => $this_year, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
+                                                array_push($fileList, ['userUid'=> $thisStudent->userUid, 'fileId' => 'bursaryApproval', 'status' => 'Approved', 'uploaded_by' => 'Import', 'year' => $this_year]);
+                                                array_push($actionLogList, ["userUid" => $thisStudent->userUid, "year" => $this_year, "action" => "NSFAS Approval has been Approved via import", "actionUserUid" => Auth::user()->id, "actionUserDisplayName" => Auth::user()->userFirstName." ".Auth::user()->userLastname, "actionUserRole" => Auth::user()->userRole, "created_at" => date('Y-m-d H:i:s'), "updated_at" => date('Y-m-d H:i:s')]);
                                             }
     
                                             //Update robots
                                             // User::where('id', $thisStudent->id)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
-                                            StudentsInfo::where('userUid', $thisStudent->id)->where('year', $this_year)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
+                                            StudentsInfo::where('userUid', $thisStudent->userUid)->where('year', $this_year)->update(['rob_30_funds' => 2, 'bursary_approved' => 1]);
                                         }
                                     }
                                 // }
