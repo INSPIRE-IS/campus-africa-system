@@ -610,6 +610,16 @@ class HomeController extends Controller
     public function activeBooking($userId, $this_year){
         $user = User::where('id', $userId)->first();
         $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+        
+        if ($studentInfo->address_approved == "1" && $studentInfo->kin_approved == "1" && $studentInfo->email_data_approved == "1") {
+            $rob_35_info = 2;
+        } else {
+            $rob_35_info = 1;
+        }
+
+        StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update([
+            "rob_35_info" => $rob_35_info
+        ]);
 
         $name = $studentInfo->userFirstName." ".$studentInfo->userLastname;
 
