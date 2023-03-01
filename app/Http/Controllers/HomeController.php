@@ -617,9 +617,15 @@ class HomeController extends Controller
             $rob_35_info = 1;
         }
 
-        StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update([
-            "rob_35_info" => $rob_35_info
-        ]);
+        $updateData = ["rob_35_info" => $rob_35_info];
+
+        if($studentInfo->rob_10_fee == 2 && $studentInfo->rob_15_id == 2 && $studentInfo->rob_20_card == 2 && $studentInfo->rob_25_reg == 2 && $studentInfo->rob_30_funds == 2 && $rob_35_info == 2 && $studentInfo->rob_40_bed == 2 && ($studentInfo->rob_45_other == 3 || $studentInfo->rob_45_other == 2) && $studentInfo->rob_50_approve == 0 && ($studentInfo->rob_60_cancelled == 0 || $studentInfo->rob_60_cancelled == null)){
+            $updateData['rob_50_approve'] = 1;
+        }
+
+
+        StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update($updateData);
+        
 
         $name = $studentInfo->userFirstName." ".$studentInfo->userLastname;
 
