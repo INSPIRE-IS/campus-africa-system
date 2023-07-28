@@ -106,7 +106,7 @@
         <div class="form-field">
             <label>Gender * <span id="gender_error" class="hidden" style="color:red"><small>This field is
                         required</small></span></label>
-            <select name="gender" id='gender' class="required" disabled>
+            <select name="gender" id='gender' class="required">
                 <option value="" disabled selected>Please select one</option>
                 <option value="1">Male</option>
                 <option value="2">Female</option>
@@ -593,7 +593,7 @@
             $("#passportNo").removeClass("required")
             $("#idNumber").addClass("required")
             $("#passportNo").removeClass("fieldError")
-            document.getElementById('gender').disabled = true;
+            // document.getElementById('gender').disabled = true;
         }else{
             $("#idField").addClass('hidden')
             $("#passportField").removeClass('hidden')
@@ -601,7 +601,7 @@
             $("#passportNo").addClass("required")
             $("#idNumber").removeClass("required")
             $("#idNumber").removeClass("fieldError")
-            document.getElementById('gender').disabled = false;
+            // document.getElementById('gender').disabled = false;
         }
     })
 
