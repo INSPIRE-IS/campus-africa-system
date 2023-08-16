@@ -36,6 +36,7 @@
         </table>
         <p style="text-align: center">{{$property->account_name}} t/a<br/>
         <span style="text-transform:uppercase">{{$property->residence}}</span> - CAMPUS AFRICA<br/>
+        <span style="text-transform:uppercase">{{$property->address}}</span><br/>
         TEL: 011 0256257 | Email: accounts@conurban.co.za | Fax: 0865587632</p>
         <br/>
         <table style="width:100%">
