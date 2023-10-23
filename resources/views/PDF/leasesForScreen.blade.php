@@ -736,11 +736,11 @@
             <ul>
                 <li>Consolidated Urban Acquisitions 3 (Pty) Ltd</li>
                 <li>Little Swift Investments 450 (Pty) Ltd</li>
-                <li>Pontei Investments (Pty) Ltd</li>
-                <li>Jirac Projectst (Pty) Ltd</li>
                 <li>Braamby Trading (Pty) Ltd & The Truzen 130 Trust</li>
                 <li>126 Siemert Rd CC</li>
-                <li>K2014106883 (South Africa) (Pty) Ltd</li>
+                <li>80 Jorissen Student investments</li>
+                <li>Braamlofts Student Investments</li>
+                <li>Ymca student Investments</li>
             </ul>
             <br/><br/><br/>
 
