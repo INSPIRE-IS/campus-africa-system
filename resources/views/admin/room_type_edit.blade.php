@@ -69,7 +69,7 @@
             <br/>
             <ul style="list-style-type:none;">
                 <li style="display:inline-flex">
-                    <input type="checkbox" id="apply_nsfas" name="apply_nsfas" value="1" style="width:40px !important" <?php if(!empty($roomTypeData) && $roomTypeData->rent_price == '1'){echo "checked";}?>>
+                    <input type="checkbox" id="apply_nsfas" name="apply_nsfas" value="1" style="width:40px !important" <?php if(!empty($roomTypeData) && $roomTypeData->apply_nsfas == '1'){echo "checked";}?>>
                     <label for="apply_nsfas" style="width:200px; padding-left:10px;">NSFAS</label>
                 </li>
                 <li style="display:inline-flex">
