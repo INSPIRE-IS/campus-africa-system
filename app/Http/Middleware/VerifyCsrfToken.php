@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         '/online-application-payment/*',
         '/online-application-payment-on-screen/*',
         '/notify-data',
+        '/veryfiy-user',
     ];
 }

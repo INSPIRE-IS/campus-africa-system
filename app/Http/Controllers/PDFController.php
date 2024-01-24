@@ -24,220 +24,220 @@ class PDFController extends Controller
 {
 
 
-    public function createPDF(Request $request, $studentId) {
+  public function createPDF(Request $request, $studentId)
+  {
 
-        $bookingId = $request->bookingId;
-        $property = $request->property;
-        $roomType = $request->roomType;
+    $bookingId = $request->bookingId;
+    $property = $request->property;
+    $roomType = $request->roomType;
 
-      if(!$request->type){
-        
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
-        $oldData = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
-        $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "room|Room" => $request->room, "bed|Bed" => $request->bed, "bed_code|Bed Code"=> $request->bed_code, "lease_from_date|Lease From Date" => $request->lease_from_date, "lease_from_time|Lease From Time" => $request->lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
-
-        $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
-
-        Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room"=>$bookingId]);
-
-        if($roomType == "Single"){
-          $roomType = "Single Room";
-        }
-
-        $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->first();
-
-        $leaseAdminFee = Lookups::where('group_id', '8')->first();
-        
-
-
-        foreach($newData as $key => $new){
-            
-            $info = explode("|", $key);
-            $key = $info[0];
-            $changedField = $info[1];
-
-            if($oldData->$key !== $new){
-                if($oldData->$key == "" || $oldData->$key == null){
-                    $oldData->$key = "Unassigned";
-                }
-                ActionList::create([
-                    "userUid" => $request->bookingId,
-                    "action" => "Updated ".$changedField." From ".$oldData->$key." to ".$new,
-                    "actionUserUid" => Auth::user()->id,
-                    "actionUserDisplayName" => Auth::user()->userFirstName,
-                    "actionUserRole" => Auth::user()->userRole,
-                    "year" => $this_year,
-                ]);
-            }
-        }
-
-        ActionList::create([
-          "userUid" => $request->bookingId,
-          "action" => "Generated a Lease",
-          "actionUserUid" => Auth::user()->id,
-          "actionUserDisplayName" => Auth::user()->userFirstName,
-          "actionUserRole" => Auth::user()->userRole,
-          "year" => $this_year,
-        ]);
-
-        Booking::where('userId', $bookingId)->where('year', $this_year)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code"=> $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time"=> $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time, "leaseAdminFee" => $leaseAdminFee]);
-
-      }else{
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
-        // retreive all records from db
-        // $data = User::where('id', $studentId)->first();
-        $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
-
-        $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
-        $propertyData = Property::where('id', $booking->property_data_id)->first();
-        $residence = Residence::where('id', $propertyData->residence)->first();
-        $leaseAdminFee = Lookups::where('group_id', '8')->first();
-        $owner = storage_path().'/leases/kim_degenaar.jpeg';
-
-        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
-
-        // share data to view
-        $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking'));
-  
-        // download PDF file with download method
-        // return $pdf->download('lease.pdf');
-
-        if($data->userId == ""){
-            $userIdentification = $data->userPassport;
-        }else{
-            $userIdentification = $data->userId;
-        }
-
-        $bookingYear = substr($booking->year, -2);
-        $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
-
-        $fileNameToSave = $bookingYear.$bookingPrefix."_".$booking->bed_code."_".$data->userLastname."_".$data->userFirstName.".pdf";
-        // $fileNameToSave = 'lease.pdf';
-
-        $content = $pdf->download($fileNameToSave)->getOriginalContent();
-        // $user = User::where('id', $studentId)->first();
-
-        \Storage::put('public/files/'.$userIdentification.'/'.$fileNameToSave, $content);
-
-        //Check if there is an existing lease to overwrite
-        $lease = UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first();        
-
-        $data = array(
-            'userUid' => $studentId,
-            'fileName' => $fileNameToSave,
-            'fileUrl' => 'files/'.$userIdentification.'/'.$fileNameToSave,
-            'status' => 'Rejected',
-            'uploaded_by' => Auth::user()->name,
-            'created_at' => date('Y-m-d h:m:s'),
-            'year' => $this_year,
-        );
-
-        if (!empty($lease)) {
-          UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->update($data);
-          $action_type = "Regenerated Lease";
-          
-        } else {
-            $data['fileId'] = 'moveIn';    
-            UserFiles::insert($data);
-            $action_type = "Generated Lease";
-        }
-
-        ActionList::create([
-          "userUid" => $studentId,
-          "action" => $action_type,
-          "actionUserUid" => Auth::user()->id,
-          "actionUserDisplayName" => Auth::user()->userFirstName,
-          "actionUserRole" => Auth::user()->userRole,
-          "year" => $this_year,
-      ]);
-
-        // User::where('id', $studentId)->update(['rob_55_lease' => 0]);
-        StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_55_lease' => 0]);
-
-
-        // Create Lease Link
-        $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
-        // $userForLease = User::where('id', $studentId)->first();
-        // $userForLease = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
-
-        $leaseOpenTag = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
-        $userUidData = User::where('id', $studentId)->first();
-        $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
-
-        // $message_replace['booking_application'] = "#".$booking->booking_code;
-        // $message_replace['name'] = $userForLease->userFirstName;
-        // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
-        // $message_replace['close_lease_link']="</a>";
-
-        // $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
-
-        // if($mailerForMessage->status == '1'){
-
-        //   $mailerMessage = $mailerForMessage->message;
-  
-        //   $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
-        //   $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-        //   $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
-        //   $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
-  
-        //   $data['messageForMail'] = $newMessage;
-        //   $data['email'] = $userForLease->userEmail;
-        //   $data['name'] = $userForLease->userFirstName;
-        //   $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
-
-          
-
-        //   $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-        //   $data['cc'] = explode(";", $allowedMailsCC);
-
-        //   $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-
-        //   if(!empty($allowedMails)){
-
-        //     $mailArr = explode(";", $allowedMails);
-  
-        //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
-        //         $data['email'] = $userForLease->userEmail;
-        //     }else{
-        //         $data['email'] = "conurbandigital@gmail.com";
-        //     }
-        //   }else{
-        //     $data['email'] = $userForLease->userEmail;
-        //   }
-  
-        //   Mail::send('email.green_back', $data, function($message) use ($data) {
-        //       // $message->to($data['email'], $data['name'])->subject('Application Approved');
-        //       // $message->to($data['email'])->subject($data['subject']);
-        //       // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
-        //       $message->to($data['email'])->subject($data['subject']);
-        //         $message->bcc($data['cc']);
-        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
-        //       // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
-        //   });
-        // }
-
-
-      }
+    if (!$request->type) {
 
       $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-        
+      $this_year = $this_year->lookup_name;
 
-        return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
+      $oldData = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
+      $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "room|Room" => $request->room, "bed|Bed" => $request->bed, "bed_code|Bed Code" => $request->bed_code, "lease_from_date|Lease From Date" => $request->lease_from_date, "lease_from_time|Lease From Time" => $request->lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
+
+      $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
+
+      Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->update(["room_available" => "1", "user_id_room" => $bookingId]);
+
+      if ($roomType == "Single") {
+        $roomType = "Single Room";
       }
 
-      public function generateRandomLongString($length = 24) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
+      $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->first();
+
+      $leaseAdminFee = Lookups::where('group_id', '8')->first();
+
+
+
+      foreach ($newData as $key => $new) {
+
+        $info = explode("|", $key);
+        $key = $info[0];
+        $changedField = $info[1];
+
+        if ($oldData->$key !== $new) {
+          if ($oldData->$key == "" || $oldData->$key == null) {
+            $oldData->$key = "Unassigned";
+          }
+          ActionList::create([
+            "userUid" => $request->bookingId,
+            "action" => "Updated " . $changedField . " From " . $oldData->$key . " to " . $new,
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
+          ]);
         }
-        return $randomString;
+      }
+
+      ActionList::create([
+        "userUid" => $request->bookingId,
+        "action" => "Generated a Lease",
+        "actionUserUid" => Auth::user()->id,
+        "actionUserDisplayName" => Auth::user()->userFirstName,
+        "actionUserRole" => Auth::user()->userRole,
+        "year" => $this_year,
+      ]);
+
+      Booking::where('userId', $bookingId)->where('year', $this_year)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code" => $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time" => $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time, "leaseAdminFee" => $leaseAdminFee]);
+    } else {
+
+      $this_year = Lookups::where('group_id', '4')->first();
+      $this_year = $this_year->lookup_name;
+
+      // retreive all records from db
+      // $data = User::where('id', $studentId)->first();
+      $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
+
+      $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
+      $propertyData = Property::where('id', $booking->property_data_id)->first();
+      $residence = Residence::where('id', $propertyData->residence)->first();
+      $leaseAdminFee = Lookups::where('group_id', '8')->first();
+      $owner = storage_path() . '/leases/juanita-cronje.jpg';
+
+      $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
+      // share data to view
+      $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking'));
+
+      // download PDF file with download method
+      // return $pdf->download('lease.pdf');
+
+      if ($data->userId == "") {
+        $userIdentification = $data->userPassport;
+      } else {
+        $userIdentification = $data->userId;
+      }
+
+      $bookingYear = substr($booking->year, -2);
+      $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
+
+      $fileNameToSave = $bookingYear . $bookingPrefix . "_" . $booking->bed_code . "_" . $data->userLastname . "_" . $data->userFirstName . ".pdf";
+      // $fileNameToSave = 'lease.pdf';
+
+      $content = $pdf->download($fileNameToSave)->getOriginalContent();
+      // $user = User::where('id', $studentId)->first();
+
+      \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
+
+      //Check if there is an existing lease to overwrite
+      $lease = UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first();
+
+      $data = array(
+        'userUid' => $studentId,
+        'fileName' => $fileNameToSave,
+        'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
+        'status' => 'Rejected',
+        'uploaded_by' => Auth::user()->name,
+        'created_at' => date('Y-m-d h:m:s'),
+        'year' => $this_year,
+      );
+
+      if (!empty($lease)) {
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->update($data);
+        $action_type = "Regenerated Lease";
+      } else {
+        $data['fileId'] = 'moveIn';
+        UserFiles::insert($data);
+        $action_type = "Generated Lease";
+      }
+
+      ActionList::create([
+        "userUid" => $studentId,
+        "action" => $action_type,
+        "actionUserUid" => Auth::user()->id,
+        "actionUserDisplayName" => Auth::user()->userFirstName,
+        "actionUserRole" => Auth::user()->userRole,
+        "year" => $this_year,
+      ]);
+
+      // User::where('id', $studentId)->update(['rob_55_lease' => 0]);
+      StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_55_lease' => 0]);
+
+
+      // Create Lease Link
+      $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
+      // $userForLease = User::where('id', $studentId)->first();
+      // $userForLease = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
+
+      $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
+      $userUidData = User::where('id', $studentId)->first();
+      $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+
+      // $message_replace['booking_application'] = "#".$booking->booking_code;
+      // $message_replace['name'] = $userForLease->userFirstName;
+      // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
+      // $message_replace['close_lease_link']="</a>";
+
+      // $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
+
+      // if($mailerForMessage->status == '1'){
+
+      //   $mailerMessage = $mailerForMessage->message;
+
+      //   $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+      //   $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+      //   $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
+      //   $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
+
+      //   $data['messageForMail'] = $newMessage;
+      //   $data['email'] = $userForLease->userEmail;
+      //   $data['name'] = $userForLease->userFirstName;
+      //   $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
+
+
+
+      //   $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+      //   $data['cc'] = explode(";", $allowedMailsCC);
+
+      //   $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+      //   if(!empty($allowedMails)){
+
+      //     $mailArr = explode(";", $allowedMails);
+
+      //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
+      //         $data['email'] = $userForLease->userEmail;
+      //     }else{
+      //         $data['email'] = "conurbandigital@gmail.com";
+      //     }
+      //   }else{
+      //     $data['email'] = $userForLease->userEmail;
+      //   }
+
+      //   Mail::send('email.green_back', $data, function($message) use ($data) {
+      //       // $message->to($data['email'], $data['name'])->subject('Application Approved');
+      //       // $message->to($data['email'])->subject($data['subject']);
+      //       // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
+      //       $message->to($data['email'])->subject($data['subject']);
+      //         $message->bcc($data['cc']);
+      //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+      //       // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
+      //   });
+      // }
+
+
     }
+
+    $this_year = Lookups::where('group_id', '4')->first();
+    $this_year = $this_year->lookup_name;
+
+
+    return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
+  }
+
+  public function generateRandomLongString($length = 24)
+  {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+      $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+  }
 }

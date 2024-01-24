@@ -59,12 +59,6 @@
 
 <script>
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     $("#submitForm").on('click', function() {
 
         var req = 1;
@@ -119,18 +113,21 @@
                 $("#submitForm").empty().append("LOading")
 
                 $.ajax({
-                        type: "post",
-                        url: "/veryfiy-user",
-                        data: {
-                            security_code: $("#security_code").val(), 
-                            applicationToken: "{{$applicationToken}}",
-                        },
+                    type: "post",
+                    url: "/veryfiy-user",
+                    data: {
+                        security_code: $("#security_code").val(), 
+                        applicationToken: "{{$applicationToken}}",
+                    },
 
-                        success: function (data) {
+                    success: function (data) {
+                        if (data[0] == 'success') {
                             window.location.replace(data[1])
-                            
-                        },
-                    });
+                        } else {
+                            alert('Error, something went wrong!');
+                        }                        
+                    },
+                });
             }
         }
 
