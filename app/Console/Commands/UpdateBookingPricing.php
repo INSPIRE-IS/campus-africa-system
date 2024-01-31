@@ -43,11 +43,12 @@ class UpdateBookingPricing extends Command
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $allBookings = Booking::where('year', $this_year)->get();
+        // $allBookings = Booking::where('year', $this_year)->where('userId', 9256)->get();
+        $allBookings = Booking::where('year', $this_year)->where('id', '>', 8782)->get();
 
-        foreach($allBookings as $booking){
-            app('App\Http\Controllers\HomeController')->paymentDeatilsInternal($booking->userId);
-            echo "Booking id ".$booking->id." updated \n";
+        foreach ($allBookings as $booking) {
+            app('App\Http\Controllers\HomeController')->paymentDeatilsInternal($booking->userId, true);
+            echo "Booking id " . $booking->id . " updated \n";
         }
 
         echo "Done";
