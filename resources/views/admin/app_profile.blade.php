@@ -4444,12 +4444,15 @@
             showLoaderOnConfirm: true,
         }).then((result) => {
             if (result.isConfirmed) {
+                let value = result.value;
+                value = value.replace("'", "");
+                value = value.replace('"', '');
                 $.ajax({
                     type: "post",
                     url: "/add-other-document",
                     data: {
                         userId: "{{$user[0]['userInfo']['userUid']}}",
-                        docName: result.value
+                        docName: value
                     },
 
                     success: function (data) {
