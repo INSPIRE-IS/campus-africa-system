@@ -9995,28 +9995,48 @@ class HomeController extends Controller
             if (!empty($booking)) {
                 $user = StudentsInfo::where('bookingId', $booking->id)->where('year',  $this_year->lookup_name)->first();
 
-                $booking_ref = $booking->booking_code;
-                $first_name = $user->userFirstName;
-                $last_name = $user->userLastname;
-                $email = $user->userEmail;
-                $cell = $user->userCellCode . $user->userCell;
-                $nationality = $user->userNationality;
-                $id = $user->userId != "" ? $user->userId : $user->userPassport;
-                $gender = "";
-                if ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4) {
-                    $gender = "Female";
-                } elseif ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9) {
-                    $gender = "Male";
+                if (!empty($user)) {
+                    $booking_ref = $booking->booking_code;
+                    $first_name = $user->userFirstName;
+                    $last_name = $user->userLastname;
+                    $email = $user->userEmail;
+                    $cell = $user->userCellCode . $user->userCell;
+                    $nationality = $user->userNationality;
+                    $id = $user->userId != "" ? $user->userId : $user->userPassport;
+                    $gender = "";
+                    if ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4) {
+                        $gender = "Female";
+                    } elseif ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9) {
+                        $gender = "Male";
+                    }
+                    $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
+                    $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
+                    $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
+                    $studNumber = $user->studentNo;
+                    $yearOfStudy = $user->yearOfStudy;
+                    $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
+                    $kinName = $user->kinFirstName . " " . $user->kinLastname;
+                    $relationship = $user->kinRelationship;
+                    $kinContact = $user->kincellCode . $user->kinCellNo;
+                } else {
+                    $booking_ref = "";
+                    $first_name = "";
+                    $last_name = "";
+                    $email = "";
+                    $cell = "";
+                    $nationality = "";
+                    $id = "";
+                    $gender = "";
+                    $studentType = "";
+                    $bursarCompany = "";
+                    $instit = "";
+                    $studNumber = "";
+                    $yearOfStudy = "";
+                    $faculty = "";
+                    $kinName = "";
+                    $relationship = "";
+                    $kinContact = "";
                 }
-                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
-                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
-                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
-                $studNumber = $user->studentNo;
-                $yearOfStudy = $user->yearOfStudy;
-                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
-                $kinName = $user->kinFirstName . " " . $user->kinLastname;
-                $relationship = $user->kinRelationship;
-                $kinContact = $user->kincellCode . $user->kinCellNo;
             } else {
                 $booking_ref = "";
                 $first_name = "";
