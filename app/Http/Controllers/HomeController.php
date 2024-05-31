@@ -41,6 +41,7 @@ use App\Jobs\SendStudentVerifyMailByAdminMail;
 use App\Jobs\SendLeaseApprovedMail;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendReminderMail;
+use Illuminate\Support\Facades\Artisan;
 
 use Illuminate\Support\Facades\Log;
 
@@ -5821,7 +5822,7 @@ class HomeController extends Controller
 
         foreach ($files as $file) {
             if ($file->fileUrl !== '' && $file->fileUrl !== null) {
-                array_push($allFilesArr, "storage/" . $file->fileUrl);
+                array_push($allFilesArr, "storage/app/" . $file->fileUrl);
             }
         }
 
@@ -5923,6 +5924,20 @@ class HomeController extends Controller
         }
 
         $zip->finish();
+    }
+
+    public function download_docs_all(Request $request)
+    {
+        $yearId = $request->year;
+        $prop = $request->prop;
+
+        $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop]);
+
+        if ($exitCode === 0) {
+            echo "done";
+        } else {
+            echo "failed";
+        }
     }
 
     public function waive_action(Request $request)

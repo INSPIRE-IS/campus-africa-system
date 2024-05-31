@@ -195,6 +195,32 @@
         <!-- </div>
     </div> -->
 
+    <br/><br/><br/><br/><hr/><br/>
+    <h2>All Documents</h2>
+    <br/>
+
+    @if(Auth::user()->role_all_apps_report == 1)
+
+        <select id="studYear" name="studYear">
+            <option value="All">All Years</option>
+            @foreach($appYears as $year)
+                <option value="{{$year->year}}">{{$year->year}}</option>
+            @endforeach
+        </select>
+
+        <select id="propdd2" name="propdd2">
+            <option value="All">All Properties</option>
+            @foreach($propertyList as $prop)
+                <option value="{{$prop->id}}">{{$prop->residence}}</option>
+            @endforeach
+        </select>
+        <br/>
+
+        <button type="button" class="detailsChange" id="downloadAllAppDocs" style="float:left; margin-left:0px;">Download Documents</button>
+        <div class="hidden"><a href="/all_user_files.zip" download id="downloadAppDocsBtn"></a></div>
+
+    @endif
+
 </div>
 
 <script>
@@ -213,8 +239,6 @@
 
             success: function (data) {      
                 $("#actionBtn").empty().append('Filter')
-
-                console.log(data)
 
                 let properties = data[0];
                 let registered = data[1];
@@ -498,6 +522,19 @@
                 a.href = data
                 $("#downloadBtnApps").click();
                 $("#downloadAllApps").empty().append('Download Applications')
+            },
+        });
+    })
+
+    $("#downloadAllAppDocs").on('click', function(){
+        $("#downloadAllAppDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+        $.ajax({
+            type: "post",
+            url: "/download-app-docs",
+            data: { year: $("#studYear").val(), prop: $("#propdd2").val()},
+            success: function (data) {
+                $("#downloadAppDocsBtn").click();
+                $("#downloadAllAppDocs").empty().append('Download Documents')
             },
         });
     })

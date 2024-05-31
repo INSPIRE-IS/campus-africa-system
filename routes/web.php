@@ -319,13 +319,9 @@ Route::post('/remind/email', [HomeController::class, 'send_reminder_mail']);
 Route::post('/download-beds', [HomeController::class, 'download_beds']);
 Route::get('/download-mda', [HomeController::class, 'download_mda']);
 Route::post('/download-apps', [HomeController::class, 'download_apps']);
+Route::post('/download-app-docs', [HomeController::class, 'download_docs_all']);
 
 
 Route::get('/mail-reminder', [MailReminder::class, 'mail_reminder']);
 
 Route::post('/get-actions', [HomeController::class, 'get_actions']);
-
-
-
-
-
