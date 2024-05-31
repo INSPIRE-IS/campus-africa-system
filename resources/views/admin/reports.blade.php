@@ -201,7 +201,7 @@
 
     @if(Auth::user()->role_all_apps_report == 1)
 
-        <select id="studYear" name="studYear">
+        <select id="studYear2" name="studYear2">
             <option value="All">All Years</option>
             @foreach($appYears as $year)
                 <option value="{{$year->year}}">{{$year->year}}</option>
@@ -217,7 +217,7 @@
         <br/>
 
         <button type="button" class="detailsChange" id="downloadAllAppDocs" style="float:left; margin-left:0px;">Download Documents</button>
-        <div class="hidden"><a href="/all_user_files.zip" download id="downloadAppDocsBtn"></a></div>
+        <a style="display: none;" href="/all_user_files.zip" download id="downloadAppDocsBtn">Download ZIP</a>
 
     @endif
 
@@ -531,9 +531,9 @@
         $.ajax({
             type: "post",
             url: "/download-app-docs",
-            data: { year: $("#studYear").val(), prop: $("#propdd2").val()},
+            data: { year: $("#studYear2").val(), prop: $("#propdd2").val()},
             success: function (data) {
-                $("#downloadAppDocsBtn").click();
+                $("#downloadAppDocsBtn").show();
                 $("#downloadAllAppDocs").empty().append('Download Documents')
             },
         });
