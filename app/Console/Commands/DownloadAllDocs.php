@@ -48,8 +48,12 @@ class DownloadAllDocs extends Command
         $year = $this->argument('year');
         $prop = $this->argument('prop');
 
-        $users = User::where("year", $year)
+        $bookings = Booking::where("year", $year)
+            ->where("property", $prop)
             ->get();
+
+        // $users = User::where("year", $year)
+        //     ->get();
         $zipFileName = "all_user_files.zip";
 
         $password = "12345678";
@@ -59,13 +63,10 @@ class DownloadAllDocs extends Command
 
         $userZipFilesToDelete = []; // Array to store user ZIP file names
 
-        foreach ($users as $u) {
-            $booking = Booking::where("userId", $u->id)
-                ->where("year", $year)
-                ->where("property", $prop)
-                ->first();
+        foreach ($bookings as $booking) {
+            $u = User::find($booking->userId);
 
-            if ($booking) {
+            if ($u) {
                 $code = $booking->booking_code . " " . $booking->bed_code . " " . $u->name;
 
                 $files = UserFiles::where("userUid", $u->id)->where("year", $year)->get();
