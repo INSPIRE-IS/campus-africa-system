@@ -216,8 +216,10 @@
         </select>
 
         <select id="lease_filter" name="lease_filter">
+            <option value="0">No Lease</option>    
+            <option value="1">Lease Uploaded</option>    
             <option value="2">Lease Approved</option>
-            <option value="1">Lease Uploaded</option>
+            
         </select>
         <br/>
 
@@ -543,7 +545,7 @@
             },
             error: function (data) {
                 $("#downloadAllAppDocs").empty().append('Download Documents');
-                alert('Something went wrong!');
+                alert('Either something went wrong or no documents found');
             }
         });
     })
