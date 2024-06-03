@@ -47,6 +47,7 @@ class DownloadAllDocs extends Command
 
         $year = $this->argument('year');
         $prop = $this->argument('prop');
+        $lease_filter = $this->argument('lease_filter');
 
         $bookings = Booking::where("year", $year)
             ->where("property", $prop)
@@ -66,7 +67,18 @@ class DownloadAllDocs extends Command
         foreach ($bookings as $booking) {
             $u = User::find($booking->userId);
 
-            if (isset($u->id) && $u->rob_55_lease == $this->argument('lease_filter')) {
+            $file_ok = false;
+            if ($lease_filter > 0) {
+                $lease_file = UserFiles::where("userUid", $u->id)->where("year", $year)->where('status', $lease_filter == 2 ? 'Approved' : "Uploaded")->first();
+
+                if (isset($lease_file)) {
+                    $file_ok = true;
+                }
+            } else {
+                $lease_file = true;
+            }
+
+            if (isset($u->id) && $file_ok == true) {
                 $code = $booking->booking_code . " " . $booking->bed_code . " " . $u->name;
 
                 $files = UserFiles::where("userUid", $u->id)->where("year", $year)->get();
