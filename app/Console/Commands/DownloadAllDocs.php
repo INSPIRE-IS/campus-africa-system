@@ -49,7 +49,6 @@ class DownloadAllDocs extends Command
         $prop = $this->argument('prop');
 
         $users = User::where("year", $year)
-            ->limit(10)
             ->get();
         $zipFileName = "all_user_files.zip";
 
@@ -69,7 +68,7 @@ class DownloadAllDocs extends Command
             if ($booking) {
                 $code = $booking->booking_code . " " . $booking->bed_code . " " . $u->name;
 
-                $files = UserFiles::where("userUid", $u->id)->get();
+                $files = UserFiles::where("userUid", $u->id)->where("year", $year)->get();
                 $userZipFileName = $code . ".zip";
 
                 $filesToAdd = $files->filter(function ($file) {
