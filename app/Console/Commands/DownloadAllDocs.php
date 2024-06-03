@@ -69,7 +69,11 @@ class DownloadAllDocs extends Command
 
             $file_ok = false;
             if ($lease_filter > 0) {
-                $lease_file = UserFiles::where("userUid", $u->id)->where("year", $year)->where('status', $lease_filter == 2 ? 'Approved' : "Uploaded")->first();
+                $lease_file = UserFiles::where("userUid", $u->id)
+                    ->where("year", $year)
+                    ->where('status', $lease_filter == 2 ? 'Approved' : "Uploaded")
+                    ->where('fileId', 'moveIn')
+                    ->first();
 
                 if (isset($lease_file)) {
                     $file_ok = true;
