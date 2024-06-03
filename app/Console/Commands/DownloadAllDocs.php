@@ -17,7 +17,7 @@ class DownloadAllDocs extends Command
      *
      * @var string
      */
-    protected $signature = 'download:docs {year} {prop}';
+    protected $signature = 'download:docs {year} {prop} {lease_filter}';
 
     /**
      * The console command description.
@@ -66,7 +66,7 @@ class DownloadAllDocs extends Command
         foreach ($bookings as $booking) {
             $u = User::find($booking->userId);
 
-            if ($u) {
+            if (isset($u->id) && $u->rob_55_lease == $this->argument('lease_filter')) {
                 $code = $booking->booking_code . " " . $booking->bed_code . " " . $u->name;
 
                 $files = UserFiles::where("userUid", $u->id)->where("year", $year)->get();

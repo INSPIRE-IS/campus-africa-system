@@ -5930,8 +5930,9 @@ class HomeController extends Controller
     {
         $yearId = $request->year;
         $prop = $request->prop;
+        $lease_filter = $request->lease_filter;
 
-        $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop]);
+        $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop, 'lease_filter' => $lease_filter]);
 
         if ($exitCode === 0) {
             echo "done";

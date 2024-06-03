@@ -214,6 +214,11 @@
                 <option value="{{$prop->id}}">{{$prop->residence}}</option>
             @endforeach
         </select>
+
+        <select id="lease_filter" name="lease_filter">
+            <option value="2">Lease Approved</option>
+            <option value="1">Lease Uploaded</option>
+        </select>
         <br/>
 
         <button type="button" class="detailsChange" id="downloadAllAppDocs" style="float:left; margin-left:0px;">Download Documents</button>
@@ -531,11 +536,15 @@
         $.ajax({
             type: "post",
             url: "/download-app-docs",
-            data: { year: $("#studYear2").val(), prop: $("#propdd2").val()},
+            data: { year: $("#studYear2").val(), prop: $("#propdd2").val(), lease_filter: $('#lease_filter').val()},
             success: function (data) {
                 $("#downloadAppDocsBtn").show();
                 $("#downloadAllAppDocs").empty().append('Download Documents')
             },
+            error: function (data) {
+                $("#downloadAllAppDocs").empty().append('Download Documents');
+                alert('Something went wrong!');
+            }
         });
     })
 </script>
