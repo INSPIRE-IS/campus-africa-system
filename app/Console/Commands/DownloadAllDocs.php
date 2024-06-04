@@ -168,7 +168,6 @@ class DownloadAllDocs extends Command
 
         //Email result to user
         $email = $this->argument('email');
-        $email = 'roger@whitehart.co.za';
 
         // Send email without template
         \Mail::raw('Zip file created - https://apply.campusafrica.co.za/all_user_files.zip', function ($message) use ($email) {

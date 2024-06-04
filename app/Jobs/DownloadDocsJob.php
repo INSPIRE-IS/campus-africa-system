@@ -74,7 +74,6 @@ class DownloadDocsJob implements ShouldQueue
     {
         //Email result to user
         $email = $this->email;
-        $email = 'roger@whitehart.co.za';
 
         // Send email without template
         \Mail::raw($exception->getMessage(), function ($message) use ($email) {
