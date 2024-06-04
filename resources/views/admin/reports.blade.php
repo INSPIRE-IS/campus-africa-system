@@ -541,7 +541,7 @@
             success: function (data) {
                 $("#downloadAllAppDocs").empty().append('Download Documents')
 
-                alert('Check your email for a link once generated.');
+                alert('A link will be emailed to you once the documents have been generated.');
             },
             error: function (data) {
                 $("#downloadAllAppDocs").empty().append('Download Documents');

@@ -63,7 +63,7 @@ class DownloadDocsJob implements ShouldQueue
         $email = 'roger@whitehart.co.za';
 
         // Send email without template
-        \Mail::raw('Something went wrong in job', function ($message) use ($email) {
+        \Mail::raw($exception->getMessage(), function ($message) use ($email) {
             $message->to($email)
                 ->subject('Test Email');
         });
