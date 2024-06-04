@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DownloadDocsJob;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFiles;
@@ -5932,13 +5933,15 @@ class HomeController extends Controller
         $prop = $request->prop;
         $lease_filter = $request->lease_filter;
 
-        $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop, 'lease_filter' => $lease_filter]);
+        DownloadDocsJob::dispatch($yearId, $prop, $lease_filter, $request->user()->email);
 
-        if ($exitCode === 0) {
-            echo "done";
-        } else {
-            echo "failed";
-        }
+        // $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop, 'lease_filter' => $lease_filter]);
+
+        // if ($exitCode === 0) {
+        //     echo "done";
+        // } else {
+        //     echo "failed";
+        // }
     }
 
     public function waive_action(Request $request)

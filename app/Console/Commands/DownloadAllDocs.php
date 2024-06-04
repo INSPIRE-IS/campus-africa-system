@@ -17,7 +17,7 @@ class DownloadAllDocs extends Command
      *
      * @var string
      */
-    protected $signature = 'download:docs {year} {prop} {lease_filter}';
+    protected $signature = 'download:docs {year} {prop} {lease_filter} {email}';
 
     /**
      * The console command description.
@@ -130,7 +130,20 @@ class DownloadAllDocs extends Command
             $zip->setEncryptionName($stat["name"], ZipArchive::EM_AES_256, $password);
         }
 
-        $zip->close();
+        try {
+            // Check if the file exists and is writable before trying to remove it
+            if (file_exists($zipFileName) && is_writable($zipFileName)) {
+                $zip->close();
+            } else {
+                // Handle the error
+                throw new \Exception("Can't remove file: No such file or directory");
+            }
+        } catch (\Exception $e) {
+            // You can perform some error handling here if necessary
+
+            // Rethrow the exception so that the command fails and the error is propagated to the job
+            throw $e;
+        }
 
         $sourcePath = $zipFileName;
         $destinationPath = public_path($zipFileName); // Path in the public directory
@@ -154,5 +167,15 @@ class DownloadAllDocs extends Command
         foreach ($userZipFilesToDelete as $zipToDelete) {
             @unlink($zipToDelete);
         }
+
+        //Email result to user
+        $email = $this->argument('email');
+        $email = 'roger@whitehart.co.za';
+
+        // Send email without template
+        \Mail::raw('A test mail', function ($message) use ($email) {
+            $message->to($email)
+                ->subject('Test Email');
+        });
     }
 }

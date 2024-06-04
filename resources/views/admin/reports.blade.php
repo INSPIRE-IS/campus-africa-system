@@ -224,7 +224,6 @@
         <br/>
 
         <button type="button" class="detailsChange" id="downloadAllAppDocs" style="float:left; margin-left:0px;">Download Documents</button>
-        <a style="display: none;" href="/all_user_files.zip" download id="downloadAppDocsBtn">Download ZIP</a>
 
     @endif
 
@@ -540,12 +539,13 @@
             url: "/download-app-docs",
             data: { year: $("#studYear2").val(), prop: $("#propdd2").val(), lease_filter: $('#lease_filter').val()},
             success: function (data) {
-                $("#downloadAppDocsBtn").show();
                 $("#downloadAllAppDocs").empty().append('Download Documents')
+
+                alert('Check your email for a link once generated.');
             },
             error: function (data) {
                 $("#downloadAllAppDocs").empty().append('Download Documents');
-                alert('Either something went wrong or no documents found');
+                alert('Something went wrong!');
             }
         });
     })
