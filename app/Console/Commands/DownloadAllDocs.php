@@ -131,12 +131,8 @@ class DownloadAllDocs extends Command
         }
 
         try {
-            // Check if the file exists and is writable before trying to remove it
-            if (file_exists($zipFileName) && is_writable($zipFileName)) {
-                $zip->close();
-            } else {
-                // Handle the error
-                throw new \Exception("Can't remove file: No such file or directory");
+            if (!$zip->close()) {
+                throw new \Exception("Failed to close zip file");
             }
         } catch (\Exception $e) {
             // You can perform some error handling here if necessary
@@ -165,7 +161,9 @@ class DownloadAllDocs extends Command
 
         // Delete any remaining user ZIP files
         foreach ($userZipFilesToDelete as $zipToDelete) {
-            @unlink($zipToDelete);
+            if (file_exists($zipToDelete) && is_writable($zipToDelete)) {
+                unlink($zipToDelete);
+            }
         }
 
         //Email result to user
