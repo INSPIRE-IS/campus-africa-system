@@ -415,7 +415,7 @@
                         <br/>
                         <span style="font-weight:bold">Fax Number:</span> 086 558 7632
                         <br/>
-                        <span style="font-weight:bold">Email:</span> accounts@conurban.co.za
+                        <span style="font-weight:bold">Email:</span> students@conurban.co.za
                     </li>
                     <br/>
                     <li>The Student:
