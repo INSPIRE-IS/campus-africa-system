@@ -118,13 +118,16 @@ class StudentsInfo extends Model
         'fee_reminder_sent',
         'general_reminder_sent',
         'gender',
+        'userEmailAlt',
     ];
 
-    public function files(){
+    public function files()
+    {
         return $this->hasMany("App\Models\UserFiles", "userUid", "userUid");
     }
 
-    public function users(){
+    public function users()
+    {
         return $this->hasOne("App\Models\User", "id", "userUid");
     }
 }

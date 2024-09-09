@@ -179,6 +179,7 @@ class RegisterController extends Controller
             'rob_45_other' => 3,
             'app_source' => 1,
             'gender' => $request->gender,
+            'userEmailAlt' => $request->email_alt,
         ]);
 
         ActionList::create([

@@ -13,7 +13,7 @@
             </div>
 
             <div class="rightMenu">
-                
+
                 <a href="https://campusafrica.co.za/contact-us/" target="_blank"><button type="button" class="contactButton">contact us</button></a>
                 <!-- <button type="button" class="menuButton">Menu <i class="fa fa-bars"></i></button> -->
             </div>
@@ -22,7 +22,7 @@
         <div class="loginHeader">
             <h1 class="booking">Online Application</h1>
         </div>
-    
+
     </div>
 </div>
 
@@ -34,11 +34,11 @@
         <div class="tab">4: Upload Documents</div>
         <div class="tab">5: Pay Booking Fee</div>
     </div>
-    
+
     <form id="newStudent" class="form onlineForm" autocomplete="off">
-        <br/>
+        <br />
         <h1 class="formHeading">Applicant Details</h1>
-        <br/>
+        <br />
 
         <div class="form-field">
             <label>First Name * <span id="firstName_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
@@ -54,10 +54,10 @@
             <label>Title * <span id="title_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="title" id='title' class="required">
                 <option value="" disabled selected>Please select one</option>
-                <option value="Mr" >Mr</option>
-                <option value="Ms" >Ms</option>
-                <option value="Mrs" >Mrs</option>
-                <option value="Miss" >Miss</option>
+                <option value="Mr">Mr</option>
+                <option value="Ms">Ms</option>
+                <option value="Mrs">Mrs</option>
+                <option value="Miss">Miss</option>
             </select>
         </div>
 
@@ -74,8 +74,14 @@
 
         <div class="form-field">
             <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid email</small></span>
-            <span id="email_InUse" class="hidden" style="color:red"><small>Email Address already in use</small></span></label>
-            <input type="email" name="email" id="email" class="required" >
+                <span id="email_InUse" class="hidden" style="color:red"><small>Email Address already in use</small></span></label>
+            <input type="email" name="email" id="email" class="required">
+        </div>
+
+        <div class="form-field">
+            <label>Alternative Email Address * <span id="email_alt_error" class="hidden" style="color:red"><small>Not a valid email</small></span>
+                <span id="email_alt_InUse" class="hidden" style="color:red"><small>Email Address already in use</small></span></label>
+            <input type="email" name="email_alt" id="email_alt" class="required">
         </div>
 
         <div class="form-field">
@@ -83,24 +89,24 @@
             <select name="nationality" id='nationality' class="required">
                 <option value="" selected disabled>Please select one</option>
                 @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "5")
-                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
-                    @endif
+                @if($lookup->group_id == "5")
+                <option value="{{$lookup->lookup_name}}">{{$lookup->lookup_name}}</option>
+                @endif
                 @endforeach
             </select>
         </div>
 
         <div class="form-field" id="idField">
             <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span>
-            <span id="idNumber_InUse" class="hidden" style="color:red"><small>ID Number already in use - please <a href="<?php echo "https://$_SERVER[HTTP_HOST]/login"; ?>">login to your account</a> or email us at <a href="mailto:info@campusafrica.co.za">info@campusafrica.co.za</a></small></span></label>
+                <span id="idNumber_InUse" class="hidden" style="color:red"><small>ID Number already in use - please <a href="<?php echo "https://$_SERVER[HTTP_HOST]/login"; ?>">login to your account</a> or email us at <a href="mailto:info@campusafrica.co.za">info@campusafrica.co.za</a></small></span></label>
             <input type="text" name="idNumber" id="idNumber" class="required">
         </div>
 
         <div class="form-field hidden" id="passportField">
             <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <span id="passport_InUse" class="hidden" style="color:red"><small>Passport Number already in use - please <a href="<?php echo "https://$_SERVER[HTTP_HOST]/login"; ?>">login to your account</a> or email us at <a href="mailto:info@campusafrica.co.za">info@campusafrica.co.za</a></small></span>
-        </label>
-            <input type="text" name="passportNo" id="passportNo" >
+                <span id="passport_InUse" class="hidden" style="color:red"><small>Passport Number already in use - please <a href="<?php echo "https://$_SERVER[HTTP_HOST]/login"; ?>">login to your account</a> or email us at <a href="mailto:info@campusafrica.co.za">info@campusafrica.co.za</a></small></span>
+            </label>
+            <input type="text" name="passportNo" id="passportNo">
         </div>
 
         <div class="form-field">
@@ -114,23 +120,23 @@
         </div>
 
         <div class="form-field">
-                <br/>
-            </div>
+            <br />
+        </div>
 
         <div class="form-field-big">
             <label>Physical Address * <span id="userAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="width:98% " class="required">
         </div>
         <div class="form-field-big" style="height:77px !important">
-        <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
+            <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is required</small></span>
             <input type="text" placeholder="Suburb" name="userAddress2" id="userAddress2" style=" width:98%" class="required">
         </div>
         <div class="form-field" style="margin-top:-15px; height:60px !important">
-        <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
-            <input type="text" placeholder="City" name="userAddressCity" id='userAddressCity' class="required" >
+            <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is required</small></span>
+            <input type="text" placeholder="City" name="userAddressCity" id='userAddressCity' class="required">
         </div>
         <div class="form-field" style="margin-top:-5px; height:60px !important">
-        <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
+            <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal code</small></span>
             <input type="number" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal" class="required">
         </div>
 
@@ -145,12 +151,12 @@
         </div>
 
         <div class="form-field">
-            <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>                
+            <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="year" id="year" class="required">
                 @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "4")
-                        <option value="{{$lookup->lookup_name}}" selected>{{$lookup->lookup_name}}</option>
-                    @endif
+                @if($lookup->group_id == "4")
+                <option value="{{$lookup->lookup_name}}" selected>{{$lookup->lookup_name}}</option>
+                @endif
                 @endforeach
             </select>
         </div>
@@ -160,16 +166,16 @@
             <select name="institStudy" id="institStudy" class="required">
                 <option value="" selected disabled>Choose one</option>
                 @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "1")
-                        <option value="{{$lookup->id}}" >{{$lookup->lookup_name}}</option>
-                    @endif
+                @if($lookup->group_id == "1")
+                <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
+                @endif
                 @endforeach
             </select>
         </div>
 
         <div class="form-field">
             <label>Student Number * <span id="studNumber_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-            <input type="text" name="studNumber" id="studNumber" class="required" >
+            <input type="text" name="studNumber" id="studNumber" class="required">
         </div>
 
         <div class="form-field">
@@ -177,9 +183,9 @@
             <select name="yearOfStudy" id="yearOfStudy" class="required">
                 <option value="" selected disabled>Please select one</option>
                 @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "6")
-                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
-                    @endif
+                @if($lookup->group_id == "6")
+                <option value="{{$lookup->lookup_name}}">{{$lookup->lookup_name}}</option>
+                @endif
                 @endforeach
             </select>
         </div>
@@ -189,9 +195,9 @@
             <select name="faculty" id="faculty" class="required">
                 <option value="" disabled selected>Choose one</option>
                 @foreach($lookups as $lookup)
-                    @if($lookup->group_id == "3")
-                        <option value="{{$lookup->id}}" >{{$lookup->lookup_name}}</option>
-                    @endif
+                @if($lookup->group_id == "3")
+                <option value="{{$lookup->id}}">{{$lookup->lookup_name}}</option>
+                @endif
                 @endforeach
             </select>
         </div>
@@ -200,9 +206,9 @@
             <label>Residence * <span id="property_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
             <select name="property" id='property' class="required">
                 <option value="" selected disabled>Select a Residence</option>
-                    @foreach($residences as $property)
-                        <option value="{{$property->id}}">{{$property->residence}}</option>
-                    @endforeach
+                @foreach($residences as $property)
+                <option value="{{$property->id}}">{{$property->residence}}</option>
+                @endforeach
             </select>
         </div>
 
@@ -234,25 +240,24 @@
 <!-- <div class="footerClearfix"></div>
 <div class="footerClearfix"></div>
  -->
- <div class="footerClearfix"></div>
+<div class="footerClearfix"></div>
 
 
 <script>
-
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    function match(){
+    function match() {
         let password = $("#password").val()
         let confirmed = $("#confirm_password").val();
 
-        if(password !== confirmed){
+        if (password !== confirmed) {
             $("#confirm_password_match_error").removeClass('hidden');
             $("#confirm_password").addClass('fieldError')
-        }else{
+        } else {
             $("#confirm_password_match_error").addClass('hidden')
             $("#confirm_password").removeClass('fieldError')
         }
@@ -260,134 +265,139 @@
 
     var d = new Date()
     month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    yearBack =(d.getFullYear() - 100);
+        day = '' + d.getDate(),
+        yearBack = (d.getFullYear() - 100);
 
-    document.getElementById("dob").setAttribute("min", yearBack+"-"+month+"-"+day);
+    document.getElementById("dob").setAttribute("min", yearBack + "-" + month + "-" + day);
 
-    if("{{$propertyID}}" !== "0"){
+    if ("{{$propertyID}}" !== "0") {
 
         //Find Room to map Property & Room
         $.ajax({
             type: "post",
             url: "/get-room-maps",
-            data: {residence: "{{$propertyID}}", roomType: "{{$roomType}}"},
+            data: {
+                residence: "{{$propertyID}}",
+                roomType: "{{$roomType}}"
+            },
 
-            success: function (data) {         
-                console.log(data[1]) 
+            success: function(data) {
+                console.log(data[1])
                 $("#firstRoom").val(data[1]);
                 $("#property").val(data[0]).trigger("change")
             },
         });
     }
 
-    $("#property").on('change', function(){
+    $("#property").on('change', function() {
         $("#roomType").empty().append('<option value="" selected disabled>Loading</option>')
 
-            $.ajax({
-                type: "post",
-                url: "/get-room-ids",
-                data: {residence: $("#property").val()},
+        $.ajax({
+            type: "post",
+            url: "/get-room-ids",
+            data: {
+                residence: $("#property").val()
+            },
 
-                success: function (data) {          
-                    $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
-                    data.forEach(function(index){
+            success: function(data) {
+                $("#roomType").empty().append('<option value="" selected disabled>Select a Room Type</option>')
+                data.forEach(function(index) {
+                    var selected = ""
+                    var disabled = ""
+                    var disabledRoom = ""
+
+                    if ($("#firstRoom").val() !== "") {
+                        var selected = $("#firstRoom").val() == index.id ? "selected" : ""
+                    }
+
+                    if (index.online == '0') {
+                        var disabled = "disabled"
+                        var disabledRoom = "(Fully Booked)"
                         var selected = ""
-                        var disabled = ""
-                        var disabledRoom = ""
+                    }
 
-                        if($("#firstRoom").val() !== ""){
-                            var selected = $("#firstRoom").val() == index.id ? "selected" : ""
-                        }
 
-                        if(index.online == '0'){
-                            var disabled ="disabled"
-                            var disabledRoom = "(Fully Booked)"
-                            var selected = ""
-                        }
+                    $("#roomType").append('<option value="' + index.id + '" ' + selected + ' ' + disabled + '>' + index.name + ' ' + disabledRoom + '</option>')
+                })
 
-                                                
-                        $("#roomType").append('<option value="'+index.id+'" '+selected+' '+disabled+'>'+index.name+' '+disabledRoom+'</option>')
-                    })
-
-                    $("#firstRoom").val('');
-                },
-            });
+                $("#firstRoom").val('');
+            },
+        });
     })
 
-    $("input").blur(function(){
+    $("input").blur(function() {
         let fieldId = $(this)[0]["id"]
 
         // var required = document.getElementById(fieldId).required
-        var required = $("#"+fieldId).hasClass('required')
+        var required = $("#" + fieldId).hasClass('required')
 
-        if($("#"+fieldId).val() == "" && required == true){
-            $("#"+$(this)[0]["id"]).addClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
-        }else{
-            $("#"+$(this)[0]["id"]).removeClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        if ($("#" + fieldId).val() == "" && required == true) {
+            $("#" + $(this)[0]["id"]).addClass('fieldError')
+            $("#" + $(this)[0]["id"] + "_error").removeClass('hidden')
+        } else {
+            $("#" + $(this)[0]["id"]).removeClass('fieldError')
+            $("#" + $(this)[0]["id"] + "_error").addClass('hidden')
         }
 
     });
 
-    $("select").blur(function(){
+    $("select").blur(function() {
         let fieldId = $(this)[0]["id"]
 
-        var required = $("#"+fieldId).hasClass('required')
+        var required = $("#" + fieldId).hasClass('required')
 
-        if(($("#"+fieldId).val() == null || $("#"+fieldId).val() == "") && required == true){
-            $("#"+$(this)[0]["id"]).addClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").removeClass('hidden')
-        }else{
-            $("#"+$(this)[0]["id"]).removeClass('fieldError')
-            $("#"+$(this)[0]["id"]+"_error").addClass('hidden')
+        if (($("#" + fieldId).val() == null || $("#" + fieldId).val() == "") && required == true) {
+            $("#" + $(this)[0]["id"]).addClass('fieldError')
+            $("#" + $(this)[0]["id"] + "_error").removeClass('hidden')
+        } else {
+            $("#" + $(this)[0]["id"]).removeClass('fieldError')
+            $("#" + $(this)[0]["id"] + "_error").addClass('hidden')
         }
     });
 
-    $("#cell_no").on('keyup blur', function(){
+    $("#cell_no").on('keyup blur', function() {
         cell = $("#cell_no").val()
         ValidCell(cell, "cell_no", "cell_no_error", $("#userCellCode").val());
     })
-    $("#userCellCode").on('keyup blur', function(){
+    $("#userCellCode").on('keyup blur', function() {
         cell = $("#cell_no").val()
         ValidCell(cell, "cell_no", "cell_no_error", $("#userCellCode").val());
     })
 
-    $("#userAddressPostal").on('keyup blur', function(){
+    $("#userAddressPostal").on('keyup blur', function() {
         postal = $("#userAddressPostal").val()
 
-        if(/\b\d{4}\b/g.test(postal)){
+        if (/\b\d{4}\b/g.test(postal)) {
             $("#userAddressPostal").removeClass("fieldError")
             $("#userAddressPostal_error").addClass('hidden')
-        }else{
+        } else {
             $("#userAddressPostal").addClass("fieldError")
             $("#userAddressPostal_error").removeClass('hidden')
-        } 
+        }
     })
 
-    function ValidCell(cell, fieldId, fieldError, code){
+    function ValidCell(cell, fieldId, fieldError, code) {
 
-        if(code === "+27"){
+        if (code === "+27") {
             if (/^[1-9][0-9]{8}$/.test(cell)) {
-                $("#"+fieldId).removeClass("fieldError")
-                $("#"+fieldError).addClass('hidden')
-            }else{
-                $("#"+fieldId).addClass("fieldError")
-                $("#"+fieldError).removeClass('hidden')
+                $("#" + fieldId).removeClass("fieldError")
+                $("#" + fieldError).addClass('hidden')
+            } else {
+                $("#" + fieldId).addClass("fieldError")
+                $("#" + fieldError).removeClass('hidden')
             }
-        }else{
-            if(/^[+][0-9]{1,3}$/.test(code)){
-                if(/^(0|[1-9][0-9]*)$/.test(cell)){
-                    $("#"+fieldId).removeClass("fieldError")
-                    $("#"+fieldError).addClass('hidden')
-                }else{
-                    $("#"+fieldId).addClass("fieldError")
-                    $("#"+fieldError).removeClass('hidden')
+        } else {
+            if (/^[+][0-9]{1,3}$/.test(code)) {
+                if (/^(0|[1-9][0-9]*)$/.test(cell)) {
+                    $("#" + fieldId).removeClass("fieldError")
+                    $("#" + fieldError).addClass('hidden')
+                } else {
+                    $("#" + fieldId).addClass("fieldError")
+                    $("#" + fieldError).removeClass('hidden')
                 }
-            }else{
-                $("#"+fieldId).addClass("fieldError")
-                $("#"+fieldError).removeClass('hidden')
+            } else {
+                $("#" + fieldId).addClass("fieldError")
+                $("#" + fieldError).removeClass('hidden')
             }
         }
 
@@ -410,22 +420,22 @@
         // }
     }
 
-    function ValidID(idNumber, idField, errorField){
+    function ValidID(idNumber, idField, errorField) {
         let idArr = Array.from(idNumber);
         idArr.reverse()
         let newArr = [];
 
         for (let i = 0; i < idArr.length; i++) {
-            if((i % 2) !== 0){
-                let newValue = idArr[i]*2
-                if(newValue > 9){
-                    value1 = (newValue.toString()).substr(0,1)
+            if ((i % 2) !== 0) {
+                let newValue = idArr[i] * 2
+                if (newValue > 9) {
+                    value1 = (newValue.toString()).substr(0, 1)
                     value2 = (newValue.toString()).substr(1, 2)
                     newValue = parseInt(value1) + parseInt(value2)
 
                 }
                 newArr.push(newValue)
-            }else{
+            } else {
                 newArr.push(idArr[i])
             }
         }
@@ -436,33 +446,33 @@
             sum += parseInt(newArr[i]);
         }
 
-        let finalSum = sum/10
+        let finalSum = sum / 10
 
         console.log(Number.isInteger(finalSum) && idNumber !== "")
 
-        if(Number.isInteger(finalSum) && idNumber !== ""){
-            $("#"+idField).removeClass("fieldError")
-            $("#"+errorField).addClass('hidden')
-        }else{
-            $("#"+idField).addClass("fieldError")
-            $("#"+errorField).removeClass('hidden')
+        if (Number.isInteger(finalSum) && idNumber !== "") {
+            $("#" + idField).removeClass("fieldError")
+            $("#" + errorField).addClass('hidden')
+        } else {
+            $("#" + idField).addClass("fieldError")
+            $("#" + errorField).removeClass('hidden')
         }
     }
 
-    $("#idNumber").on('keyup blur', function(){
+    $("#idNumber").on('keyup blur', function() {
         let idNumber = $("#idNumber").val();
-        if(idNumber.length == 13){
+        if (idNumber.length == 13) {
             ValidID(idNumber, "idNumber", "idNumber_error")
-        }else{
+        } else {
             $("#idNumber").addClass("fieldError")
             $("#idNumber_error").removeClass('hidden')
-        }  
+        }
 
         let element = document.getElementById('gender');
 
-        if(idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 0 && parseFloat(idNumber.substr(6, 1)) <= 4){               
+        if (idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 0 && parseFloat(idNumber.substr(6, 1)) <= 4) {
             element.value = 2;
-        }else if(idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 5 && parseFloat(idNumber.substr(6, 1)) <= 9){
+        } else if (idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 5 && parseFloat(idNumber.substr(6, 1)) <= 9) {
             element.value = 1;
         }
 
@@ -477,19 +487,19 @@
         cecheckIDEmail();
     })
 
-    $("#dob").on('keyup blur', function(){
+    $("#dob").on('keyup blur', function() {
         let dob = $("#dob").val();
 
         var d = new Date()
         month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-        yearBack =(d.getFullYear() - 100);
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+        yearBack = (d.getFullYear() - 100);
 
-        if(dob < yearBack+"-01-01" || dob > year+"-"+month+"-"+day){
+        if (dob < yearBack + "-01-01" || dob > year + "-" + month + "-" + day) {
             $("#dob").addClass("fieldError")
             $("#dob_error").removeClass('hidden')
-        }else{
+        } else {
             $("#dob").removeClass("fieldError")
             $("#dob_error").addClass('hidden')
         }
@@ -500,18 +510,32 @@
         return regex.test(email);
     }
 
-    $("#email").on('keyup blur', function(){
-        if(isEmail($("#email").val())){
+    $("#email").on('keyup blur', function() {
+        if (isEmail($("#email").val())) {
             $("#email").removeClass("fieldError")
             $("#email_error").addClass('hidden')
 
             cecheckIDEmail();
-        }else{
+        } else {
             $("#email").addClass("fieldError")
             $("#email_error").removeClass('hidden')
         }
 
-        
+
+    })
+
+    $("#email_alt").on('keyup blur', function() {
+        if (isEmail($("#email_alt").val())) {
+            $("#email_alt").removeClass("fieldError")
+            $("#email_alt_error").addClass('hidden')
+
+            cecheckIDEmail();
+        } else {
+            $("#email_alt").addClass("fieldError")
+            $("#email_alt_error").removeClass('hidden')
+        }
+
+
     })
 
     $("#passportNo").on('keyup blur', function() {
@@ -525,20 +549,20 @@
             success: function(data) {
 
                 if ($("#passportNo").val() !== "") {
-                        if (data[1] == false) {
-                            $("#passport_InUse").removeClass('hidden')
-                            $("#passportNo").addClass('fieldError')
-                        } else {
-                            $("#passport_InUse").addClass('hidden')
-                            $("#passportNo").removeClass('fieldError')
-                            $("#passportField").removeClass('idHeight');
-                        }
+                    if (data[1] == false) {
+                        $("#passport_InUse").removeClass('hidden')
+                        $("#passportNo").addClass('fieldError')
+                    } else {
+                        $("#passport_InUse").addClass('hidden')
+                        $("#passportNo").removeClass('fieldError')
+                        $("#passportField").removeClass('idHeight');
                     }
+                }
             }
         });
     });
 
-    function cecheckIDEmail(){
+    function cecheckIDEmail() {
         $.ajax({
             type: "post",
             url: "/email-check-idNo",
@@ -547,13 +571,13 @@
                 idNumber: $("#idNumber").val(),
             },
 
-            success: function (data) {
+            success: function(data) {
                 console.log(data)
-                
+
                 if (data[0] == "done") {
 
-                    if($("#email").val() !== ""){
-                        if(data[1] == false){
+                    if ($("#email").val() !== "") {
+                        if (data[1] == false) {
                             $("#email_InUse").removeClass('hidden')
                             $("#email").addClass('fieldError')
 
@@ -563,17 +587,17 @@
                                 'error'
                             )
 
-                        }else{
+                        } else {
                             $("#email_InUse").addClass('hidden')
                             $("#email").removeClass('fieldError')
                         }
                     }
 
-                    if($("#idNumber").val() !== ""){
-                        if(data[2] == false){
+                    if ($("#idNumber").val() !== "") {
+                        if (data[2] == false) {
                             $("#idNumber_InUse").removeClass('hidden')
                             $("#idNumber").addClass('fieldError')
-                        }else{
+                        } else {
                             $("#idNumber_InUse").addClass('hidden')
                             $("#idNumber").removeClass('fieldError')
                         }
@@ -585,8 +609,8 @@
         });
     }
 
-    $("#nationality").on('change', function(){
-        if($("#nationality").val() == "South Africa"){
+    $("#nationality").on('change', function() {
+        if ($("#nationality").val() == "South Africa") {
             $("#passportField").addClass('hidden')
             $("#idField").removeClass('hidden')
 
@@ -594,7 +618,7 @@
             $("#idNumber").addClass("required")
             $("#passportNo").removeClass("fieldError")
             // document.getElementById('gender').disabled = true;
-        }else{
+        } else {
             $("#idField").addClass('hidden')
             $("#passportField").removeClass('hidden')
 
@@ -605,7 +629,7 @@
         }
     })
 
-    $("#togglePassword").on('click', function(){
+    $("#togglePassword").on('click', function() {
         var x = document.getElementById("password");
         if (x.type === "password") {
             x.type = "text";
@@ -614,7 +638,7 @@
         }
     })
 
-    $("#togglePasswordConfirm").on('click', function(){
+    $("#togglePasswordConfirm").on('click', function() {
         var x = document.getElementById("confirm_password");
         if (x.type === "password") {
             x.type = "text";
@@ -632,14 +656,14 @@
         allowAllProp();
     })
 
-    $("#institStudy").on('change', function(){
+    $("#institStudy").on('change', function() {
         // if ($("#studentType").val() == "NSFAS") {
         //     nsfasProp()
         // }
         allowAllProp();
     })
 
-    $("#gender").on('change', function(){
+    $("#gender").on('change', function() {
         // if($("#studentType").val() !== ""){
         //     if ($("#studentType").val() == "NSFAS") {
         //         nsfasProp()
@@ -653,13 +677,15 @@
         allowAllProp();
     })
 
-    function allowAllProp(){
+    function allowAllProp() {
         $("#property").empty().append('<option value="" selected disabled>Loading</option>')
 
         $.ajax({
             type: "post",
             url: "/get-nsfas-properties-online",
-            data: {institStudy: $("#institStudy").val()},
+            data: {
+                institStudy: $("#institStudy").val()
+            },
 
             success: function(data) {
 
@@ -674,52 +700,52 @@
                 let text = "";
                 let allow = 1;
 
-                if($("#gender").val() == ""){
+                if ($("#gender").val() == "") {
                     text = "(No gender selected)"
                     allow = 0
                 }
 
-                if($("#institStudy").val() == "" || $("#institStudy").val() == null){
+                if ($("#institStudy").val() == "" || $("#institStudy").val() == null) {
                     allprops.forEach(function(index) {
-                        $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +' (No Institution Selected)</option>')
+                        $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' (No Institution Selected)</option>')
                     })
-                }else{
+                } else {
                     allprops.forEach(function(index) {
 
-                        if($("#gender").val() == 1 && index.male === null && index.female === 1){
+                        if ($("#gender").val() == 1 && index.male === null && index.female === 1) {
                             text = "(Female Only)"
                             allow = 0
-                        }else if($("#gender").val() == 2 && index.male === 1 && index.female === null){
+                        } else if ($("#gender").val() == 2 && index.male === 1 && index.female === null) {
                             text = "(Male Only)"
                             allow = 0
-                        }else if(index.male === null && index.female === null){
+                        } else if (index.male === null && index.female === null) {
                             text = "(Not Allowed)"
                             allow = 0
-                        }else{
+                        } else {
                             allow = 1
                             text = "";
                         }
 
-                        if($("#studentType").val() == "Cash / Direct" && inSelectedCash.includes(index.id)){
-                            if(allow == 0){
-                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
-                            }else{
+                        if ($("#studentType").val() == "Cash / Direct" && inSelectedCash.includes(index.id)) {
+                            if (allow == 0) {
+                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' ' + text + '</option>')
+                            } else {
                                 $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
                             }
-                        }else if($("#studentType").val() == "Bursary" && inSelectedBursary.includes(index.id)){
-                            if(allow == 0){
-                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
-                            }else{
+                        } else if ($("#studentType").val() == "Bursary" && inSelectedBursary.includes(index.id)) {
+                            if (allow == 0) {
+                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' ' + text + '</option>')
+                            } else {
                                 $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
                             }
-                        }else if($("#studentType").val() == "NSFAS" && inSelectedNsfas.includes(index.id)){
-                            if(allow == 0){
-                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' '+text+'</option>')
-                            }else{
+                        } else if ($("#studentType").val() == "NSFAS" && inSelectedNsfas.includes(index.id)) {
+                            if (allow == 0) {
+                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' ' + text + '</option>')
+                            } else {
                                 $("#property").append('<option value="' + index.id + '">' + index.residence + '</option>')
                             }
-                        }else{
-                            $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +' (Not Allowed)</option>')
+                        } else {
+                            $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' (Not Allowed)</option>')
                         }
 
                     })
@@ -833,13 +859,13 @@
         var req = 1;
 
 
-        $('.required').each( function(){
-            if($(this).val() === "" || $(this).val() === null){
+        $('.required').each(function() {
+            if ($(this).val() === "" || $(this).val() === null) {
                 req = 0
 
                 $(this).addClass("fieldError")
                 id = $(this)[0]["id"]
-                $("#"+id+"_error").removeClass("hidden")
+                $("#" + id + "_error").removeClass("hidden")
             }
         })
 
@@ -853,33 +879,33 @@
             req = 0;
         }
 
-        if(req == 0){
+        if (req == 0) {
             Swal.fire(
                 'Blank Fields',
                 'Please fill in all Required Fields!',
                 'error'
             )
 
-        }else{
+        } else {
             let total = 1
-            $('.fieldError').each( function(){
-                if($(this).val() === ""){
+            $('.fieldError').each(function() {
+                if ($(this).val() === "") {
                     total = 0
 
                     $(this).addClass("fieldError")
                     id = $(this)[0]["id"]
-                    $("#"+id+"_error").removeClass("hidden")
+                    $("#" + id + "_error").removeClass("hidden")
                 }
             })
 
-            if(total == 0){
+            if (total == 0) {
                 Swal.fire(
                     'Blank Fields',
                     'Please fill in all Required Fields!',
                     'error'
                 )
 
-            }else{
+            } else {
 
                 $("#submitForm").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -897,19 +923,20 @@
                             type: "post",
                             url: "/registration_step_one",
                             data: {
-                                firstName: $("#firstName").val(), 
-                                lastName: $("#lastName").val(), 
-                                title: $("#title").val(), 
-                                dob: $("#dob").val(), 
-                                cell_no: $("#cell_no").val(), 
+                                firstName: $("#firstName").val(),
+                                lastName: $("#lastName").val(),
+                                title: $("#title").val(),
+                                dob: $("#dob").val(),
+                                cell_no: $("#cell_no").val(),
                                 userCellCode: $("#userCellCode").val(),
-                                email: $("#email").val(), 
-                                idNumber: $("#idNumber").val(), 
+                                email: $("#email").val(),
+                                email_alt: $("#email_alt").val(),
+                                idNumber: $("#idNumber").val(),
                                 nationality: $("#nationality").val(),
-                                passportNo: $("#passportNo").val(), 
-                                institStudy: $("#institStudy").val(), 
-                                studNumber: $("#studNumber").val(), 
-                                faculty: $("#faculty").val(), 
+                                passportNo: $("#passportNo").val(),
+                                institStudy: $("#institStudy").val(),
+                                studNumber: $("#studNumber").val(),
+                                faculty: $("#faculty").val(),
                                 year: $("#year").val(),
                                 userAddress1: $("#userAddress1").val(),
                                 userAddress2: $("#userAddress2").val(),
@@ -922,16 +949,16 @@
                                 password: $("#password").val(),
                                 gender: $("#gender").val(),
                             },
-                            success: function (data) {
-                                window.location.replace('/online-application-verify/'+data)   
+                            success: function(data) {
+                                window.location.replace('/online-application-verify/' + data)
                             },
-                            error: function (textStatus, errorThrown) {
+                            error: function(textStatus, errorThrown) {
 
                                 let response = JSON.parse(textStatus.responseText)
 
                                 $("#submitForm").empty().append('Proceed to next step');
 
-                                if(errorThrown == "error"){
+                                if (errorThrown == "error") {
                                     Swal.fire(
                                         'invalid Email',
                                         response.errors.email[0],
@@ -940,17 +967,16 @@
                                 }
                             }
                         });
-                    }else{
+                    } else {
                         $("#submitForm").empty().append('Proceed to next step');
                     }
                 });
 
-                
+
             }
         }
 
     });
-
 </script>
 
 

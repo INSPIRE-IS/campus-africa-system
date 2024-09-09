@@ -126,7 +126,9 @@
 
                 <div class="form" id="inline_app_details" style="margin-top: 20px;font-size: 21px;font-weight: 300;line-height: 26px;">
                     <p class="InfoList">
-                    <a href="mailto:{{$user[0]['userInfo']['userEmail']}}?subject=Campus Africa Ref {{$booking->booking_code}}">{{$user[0]['userInfo']['userEmail']}}</a>  
+                        <a href="mailto:{{$user[0]['userInfo']['userEmail']}}?subject=Campus Africa Ref {{$booking->booking_code}}">{{$user[0]['userInfo']['userEmail']}}</a> 
+                        
+
                         @if($user[0]['userInfo']['email_verified'] == '1') 
                             <i class="fas fa-check" style="color:green"></i>
                             <input type="hidden" id="emailverifiedStatus" value="{{$user[0]['userInfo']['email_verified']}}"/>
@@ -139,15 +141,25 @@
                             <input type="hidden" id="emailverifiedStatus" value="{{$user[0]['userInfo']['email_verified']}}"/>
                         @endif
                         <br/>
+
+                        @if(!empty($user[0]['userInfo']['userEmailAlt']))
+                            <a href="mailto:{{$user[0]['userInfo']['userEmailAlt']}}?subject=Campus Africa Ref {{$booking->booking_code}}">{{$user[0]['userInfo']['userEmailAlt']}}</a>
+                        @else
+                            <span>No Alt Email</span> 
+                        @endif
+                        <br />
                         
                         <a href="https://wa.me/<?php echo substr($user[0]['userInfo']['userCellCode'], 1).$user[0]['userInfo']['userCell'];  ?>?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">{{$user[0]['userInfo']['userCellCode']}}{{$user[0]['userInfo']['userCell']}}</a><br/>
                     </p>
+
+                    
 
                     @if(in_array($booking->property, $allowedResidences))
                         @if($mailVerificationEmail->status == '1')
                             <div class="app_details_btn"></div>
                         @endif
                     @endif
+                    
                     
                 </div>
                 
