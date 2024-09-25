@@ -113,10 +113,9 @@
             <br/>
             <label>Gender <span id="gender_error" class="hidden" style="color:red"><small>Please select at least one</small></label>
 
-
             <ul style="list-style-type:none; width:100%">
-                <li style="display:inline-flex"><input type="checkbox" id="male" name="male" style="width:27px !important" <?php if($propertyData->male == 1){echo "checked";}?> value='1'><label for="male">&nbsp; &nbsp;Male</label></li>
-                <li style="display:inline-flex; margin-left:30px;"><input type="checkbox" id="female" name="female" style="width:27px !important" <?php if($propertyData->female == 1){echo "checked";}?> value='1'><label for="female">&nbsp; &nbsp;Female</label></li>
+                <li style="display:inline-flex"><input type="checkbox" id="male" name="male" style="width:27px !important" <?php if(isset($propertyData->male) && $propertyData->male == 1){echo "checked";}?> value='1'><label for="male">&nbsp; &nbsp;Male</label></li>
+                <li style="display:inline-flex; margin-left:30px;"><input type="checkbox" id="female" name="female" style="width:27px !important" <?php if(isset($propertyData->female) && $propertyData->female == 1){echo "checked";}?> value='1'><label for="female">&nbsp; &nbsp;Female</label></li>
             </ul>
 
         </div>
