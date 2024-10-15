@@ -55,6 +55,23 @@
         .form-field input, .form-field select {
             width: 60%;
         }
+
+        .view-document-container {
+            margin-top: 16px;
+            padding: 0 6px;
+        }
+
+        .view-pdf-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+        }
         
     </style>
 
@@ -554,13 +571,9 @@
                     <?php if((!$agent->isMobile())){ ?>
                         <embed id="pdfView" src="/storage/{{$file->fileUrl}}"  width="100%" height="800px" />
                     <?php }else{ ?>
-                        <div style="margin:20px 0px 20px 0px">
-                            <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-                            <br/><br/>
-                            <button id="prev">Previous</button>
-                            <button id="next">Next</button>
+                        <div class="view-document-container">
+                            <a href="/storage/{{$file->fileUrl}}" target="_blank" class="view-pdf-btn">VIEW DOCUMENT</a>
                         </div>
-                        <canvas id="the-canvas" style="width:100%"></canvas>
                     <?php } ?>
                         
                     @else
