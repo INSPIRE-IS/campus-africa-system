@@ -1778,7 +1778,9 @@ class HomeController extends Controller
 
         $leases = UserFiles::with('users')->with('booking')->whereHas('booking', function ($q) use ($this_year) {
             $q->where('year', $this_year->lookup_name);
-        })->where('fileId', 'moveIn')->where('year', $this_year)->get();
+        })->where('fileId', 'moveIn')->where('year', $this_year->lookup_name)->get();
+
+
 
         return view('admin.leases', ["headerTitle" => "Leases", "leases" => $leases, "title" => "Leases"]);
     }
@@ -1896,10 +1898,10 @@ class HomeController extends Controller
 
     public function users(Request $request)
     {
-
+        //dd('here');
         $systemUsers = User::where("userRole", "!=", "0")->get();
         $students = User::where("userRole", "0")->get();
-
+        //dd(Auth::user()->role_manage_users);
         if (Auth::user()->role_manage_users == "1") {
             return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students, "title" => "User Management"]);
         } else {
