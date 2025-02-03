@@ -42,6 +42,7 @@ use App\Jobs\SendStudentVerifyMailByAdminMail;
 use App\Jobs\SendLeaseApprovedMail;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendReminderMail;
+use Exception;
 use Illuminate\Support\Facades\Artisan;
 
 use Illuminate\Support\Facades\Log;
@@ -865,7 +866,32 @@ class HomeController extends Controller
                     $this->paymentDeatilsInternal($request->userId);
                 }
 
-                return view('admin.app_profile', ["headerTitle" => $returnInfo['headerTitle'], "appProfile" => "true", "user" => $returnInfo['user'], "actions" => $returnInfo['actions'], "completed" => $returnInfo['completed'], "lookups" => $returnInfo['lookups'], "title" => "Student Profile", "booking" => $returnInfo['booking'], "residence" => $returnInfo['residence'], "bookingPropData" => $returnInfo['bookingPropData'], "files_to_download" => $returnInfo['files_to_download'], "booking_paid" => $returnInfo['booking_paid'], 'booking_waived' => $returnInfo['booking_waived'], 'comments' => $returnInfo['comments'], 'leaseApproved' => $returnInfo['leaseApproved'], 'allowedResidences' => $returnInfo['allowedResidences'], "mailVerificationEmail" => $returnInfo['mailVerificationEmail'], "previousBookings" => $returnInfo['previousBookings'], "paymentBooking" => $returnInfo['paymentBooking'], "this_year" => $this_year]);
+
+
+
+
+                return view('admin.app_profile', [
+                    "headerTitle" => $returnInfo['headerTitle'],
+                    "appProfile" => "true",
+                    "user" => $returnInfo['user'],
+                    "actions" => $returnInfo['actions'],
+                    "completed" => $returnInfo['completed'],
+                    "lookups" => $returnInfo['lookups'],
+                    "title" => "Student Profile",
+                    "booking" => $returnInfo['booking'],
+                    "residence" => $returnInfo['residence'],
+                    "bookingPropData" => $returnInfo['bookingPropData'],
+                    "files_to_download" => $returnInfo['files_to_download'],
+                    "booking_paid" => $returnInfo['booking_paid'],
+                    'booking_waived' => $returnInfo['booking_waived'],
+                    'comments' => $returnInfo['comments'],
+                    'leaseApproved' => $returnInfo['leaseApproved'],
+                    'allowedResidences' => $returnInfo['allowedResidences'],
+                    "mailVerificationEmail" => $returnInfo['mailVerificationEmail'],
+                    "previousBookings" => $returnInfo['previousBookings'],
+                    "paymentBooking" => $returnInfo['paymentBooking'],
+                    "this_year" => $this_year
+                ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
             } elseif ($returnInfo['Info'] == '2') {
@@ -1627,6 +1653,7 @@ class HomeController extends Controller
 
     protected function approve_application(Request $request)
     {
+
         $userId = $request->userId;
 
         $this_year = Lookups::where('group_id', '4')->first();
@@ -1648,8 +1675,8 @@ class HomeController extends Controller
         // });
 
         // User::where('id', $userId)->update(['rob_50_approve' => 2, 'rob_55_lease' => 0]);
-        StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_50_approve' => 2, 'rob_55_lease' => 0]);
-
+        $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_50_approve' => 2, 'rob_55_lease' => 0]);
+        dd($studentInfo);
         ActionList::create([
             "userUid" => $userId,
             "action" => "Approved application and sent confirmation email",
@@ -5912,119 +5939,143 @@ class HomeController extends Controller
 
     public function download_docs(Request $request, $userId)
     {
+        try {
+            $this_year = Lookups::where('group_id', '4')->value('lookup_name') ?? date('Y');
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+            $allFilesArr = [];
+            $files = UserFiles::where('userUid', $userId)
+                ->where('year', $this_year)
+                ->where('status', 'Approved')
+                ->get();
 
-        $allFilesArr = [];
-        $files = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('status', 'Approved')->get();
-        // $userData = User::where('id', $userId)->first();
-        $userData = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+            $userData = StudentsInfo::where('userUid', $userId)
+                ->where('year', $this_year)
+                ->first();
 
-        foreach ($files as $file) {
-            if ($file->fileUrl !== '' && $file->fileUrl !== null) {
-                array_push($allFilesArr, "storage/app/" . $file->fileUrl);
+            if (!$userData) {
+                return response()->json(['message' => 'User data not found'], 404);
             }
-        }
 
-        if ($userData->userId == "") {
-            $userIdentification = $userData->userPassport;
-        } else {
-            $userIdentification = $userData->userId;
-        }
-
-        $booking = Booking::where('id', $userData->bookingId)->first();
-        $lookups = Lookups::get();
-        $bookingRes = Residence::where('id', $booking->property)->first();
-        $bookingRoom = RoomTypes::where('id', $booking->roomType)->first();
-        $bookingBed = property::where('id', $booking->property_data_id)->first();
-        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
-
-        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
-        $uploaded = [];
-
-        if ($userData->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null) {
-            array_push($all, "moveIn");
-        }
-        if ($userData->studentType == "Cash / Direct") {
-            array_push($all, "bankStatement");
-        }
-        if ($userData->studentType !== "Cash / Direct") {
-            array_push($all, "bursaryApproval");
-        }
-
-        $approvedLease = UserFiles::where('userUid', $userData->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->first();
-        $files = UserFiles::where('userUid', $userData->userUid)->where('year', $this_year)->get();
-
-        $data = [];
-
-        foreach ($files as $file) {
-            array_push($uploaded, $file->fileId);
-            if ($file->status == "Rejected") {
-                $file->status = "Rejected";
-            }
-            if ($file->status == "Approved") {
-                $file->status = "XApproved";
-            }
-            if ($file->status == "Uploaded") {
-                $file->status = "AUploaded";
-            }
-            array_push($data, ["field" => $file->fileId, "status" => $file->status, "fileName" => $file->fileName, "url" => $file->fileUrl, "uploaded_by" => $file->uploaded_by, "created_at" => $file->created_at, "id" => $file->id]);
-        }
-
-        $left = array_diff($all, $uploaded);
-        foreach ($left as $dataLeft) {
-            array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
-        }
-
-        usort($data, function ($a, $b) {
-            return $a['status'] <=> $b['status'];
-        });
-
-        $comments =  Comments::with('users')->where('user_uid', $userData->userUid)->where('bookingId', $userData->bookingId)->orderBy('created_at', 'desc')->get();
-
-        $previousBookings = Booking::where('userId', $userData->userUid)->where('year', '!=', $this_year)->orderBy('year', 'desc')->get();
-        $actions = ActionList::with('users')->where('userUid', $userId)->where('year', $this_year)->orderBy('created_at', 'DESC')->get();
-
-        // dd($comments[0]['users']['email']);
-
-        //here
-
-
-        $pdf = PDF::loadView('PDF.appView', compact('userData', 'booking', 'lookups', 'bookingRes', 'bookingRoom', 'bookingBed', 'paymentBooking', 'data', 'comments', 'previousBookings', 'actions'));
-        $fileNameToSave = $booking->booking_code . "_" . $userData->userLastname . "_" . $userData->userFirstName . "_Application_" . $userData->year . ".pdf";
-        $content = $pdf->download($fileNameToSave)->getOriginalContent();
-        \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
-
-        array_push($allFilesArr, "storage/files/" . $userIdentification . "/" . $fileNameToSave);
-
-
-        $opt = new ArchiveOptions;
-        $opt->setSendHttpHeaders(true);
-
-        if ($booking->bed_code != null) {
-            $bed_code = $booking->bed_code . '_';
-        } else {
-            $bed_code = "";
-        }
-
-        $zip = new ZipStream($booking->booking_code . '_' . $bed_code . $userData->userFirstName . '_' . $userData->userLastname . '.zip', $opt);
-
-        foreach ($allFilesArr as $file) {
-            if (true === file_exists($file)) {
-                try {
-                    $str_arr = explode("/", $file);
-                    $fileName = end($str_arr);
-                    $zip->addFile($fileName, file_get_contents($file));
-                } catch (\Exception $exception) {
-                    print_r($exception->getMessage());
+            foreach ($files as $file) {
+                if (!empty($file->fileUrl)) {
+                    array_push($allFilesArr, storage_path('app/public/' . $file->fileUrl));
                 }
-            } else {
-                print_r(sprintf('File %s does not exist.', $file));
             }
-        }
 
-        $zip->finish();
+            $userIdentification = !empty($userData->userId) ? $userData->userId : $userData->userPassport;
+
+            $booking = Booking::find($userData->bookingId);
+            $lookups = Lookups::all();
+            $bookingRes = Residence::find($booking->property ?? null);
+            $bookingRoom = RoomTypes::find($booking->roomType ?? null);
+            $bookingBed = Property::find($booking->property_data_id ?? null);
+            $paymentBooking = BookingPayment::where('bookingId', $booking->id ?? null)->first();
+
+            $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+            $uploaded = [];
+
+            if ($userData->rob_50_approve == 2 && $booking && $booking->lease_from_date && $booking->lease_from_time && $booking->lease_to_date && $booking->lease_to_time) {
+                $all[] = "moveIn";
+            }
+            if ($userData->studentType == "Cash / Direct") {
+                $all[] = "bankStatement";
+            } else {
+                $all[] = "bursaryApproval";
+            }
+
+            $files = UserFiles::where('userUid', $userData->userUid)
+                ->where('year', $this_year)
+                ->get();
+
+            $data = [];
+            foreach ($files as $file) {
+                $uploaded[] = $file->fileId;
+                $statusMapping = [
+                    "Rejected" => "Rejected",
+                    "Approved" => "XApproved",
+                    "Uploaded" => "AUploaded"
+                ];
+                array_push($data, [
+                    "field" => $file->fileId,
+                    "status" => $statusMapping[$file->status] ?? $file->status,
+                    "fileName" => $file->fileName,
+                    "url" => $file->fileUrl,
+                    "uploaded_by" => $file->uploaded_by,
+                    "created_at" => $file->created_at,
+                    "id" => $file->id
+                ]);
+            }
+
+            $left = array_diff($all, $uploaded);
+            foreach ($left as $dataLeft) {
+                array_push($data, ["field" => $dataLeft, "status" => "Rejected"]);
+            }
+
+            usort($data, function ($a, $b) {
+                return ($a['status'] ?? '') <=> ($b['status'] ?? '');
+            });
+
+            $comments = Comments::with('users')
+                ->where('user_uid', $userData->userUid)
+                ->where('bookingId', $userData->bookingId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $previousBookings = Booking::where('userId', $userData->userUid)
+                ->where('year', '!=', $this_year)
+                ->orderBy('year', 'desc')
+                ->get();
+
+            $actions = ActionList::with('users')
+                ->where('userUid', $userId)
+                ->where('year', $this_year)
+                ->orderBy('created_at', 'DESC')
+                ->get();
+
+            $pdf = PDF::loadView('PDF.appView', compact(
+                'userData',
+                'booking',
+                'lookups',
+                'bookingRes',
+                'bookingRoom',
+                'bookingBed',
+                'paymentBooking',
+                'data',
+                'comments',
+                'previousBookings',
+                'actions'
+            ));
+
+            $fileNameToSave = $booking->booking_code . "_" . $userData->userLastname . "_" . $userData->userFirstName . "_Application_" . $userData->year . ".pdf";
+            $content = $pdf->download($fileNameToSave)->getOriginalContent();
+            \Storage::disk('public')->put('files/' . $userIdentification . '/' . $fileNameToSave, $content);
+
+            array_push($allFilesArr, storage_path('app/public/files/' . $userIdentification . '/' . $fileNameToSave));
+
+            $opt = new ArchiveOptions;
+            $opt->setSendHttpHeaders(true);
+
+            $bed_code = $booking->bed_code ? $booking->bed_code . '_' : "";
+            $zipFileName = $booking->booking_code . '_' . $bed_code . $userData->userFirstName . '_' . $userData->userLastname . '.zip';
+            $zip = new ZipStream($zipFileName, $opt);
+
+            foreach ($allFilesArr as $file) {
+                if (file_exists($file)) {
+                    try {
+                        $zip->addFile(basename($file), file_get_contents($file));
+                    } catch (\Exception $exception) {
+                        Log::error('Zip error: ' . $exception->getMessage());
+                    }
+                } else {
+                    Log::warning('File does not exist: ' . $file);
+                }
+            }
+
+            $zip->finish();
+        } catch (Exception $e) {
+            Log::error('Error generating ZIP: ' . $e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
     }
 
     public function download_docs_all(Request $request)
@@ -7162,9 +7213,25 @@ class HomeController extends Controller
 
         // $user = User::where('id', $student_id)->first();
         $user = StudentsInfo::where('userUid', $student_id)->where('year', $this_year)->first();
-
+        //dd($user);
         if (!empty($user)) {
-            return ["rob_10_fee" => $user->rob_10_fee, "rob_15_id" => $user->rob_15_id, "rob_20_card" => $user->rob_20_card, "rob_25_reg" => $user->rob_25_reg, "rob_30_funds" => $user->rob_30_funds, "rob_35_info" => $user->rob_35_info, "rob_40_bed" => $user->rob_40_bed, "rob_45_other" => $user->rob_45_other,  "rob_50_approve" => $user->rob_50_approve, "rob_60_cancelled" => $user->rob_60_cancelled, 'parent_approved' => $user->parent_approved, 'burser_approved' => $user->burser_approved, 'burCompanyName' => $user->burCompanyName, 'sponFirstName' => $user->sponFirstName, 'kinFirstName' => $user->kinFirstName];
+            return [
+                "rob_10_fee" => $user->rob_10_fee,
+                "rob_15_id" => $user->rob_15_id,
+                "rob_20_card" => $user->rob_20_card,
+                "rob_25_reg" => $user->rob_25_reg,
+                "rob_30_funds" => $user->rob_30_funds,
+                "rob_35_info" => $user->rob_35_info,
+                "rob_40_bed" => $user->rob_40_bed,
+                "rob_45_other" => $user->rob_45_other,
+                "rob_50_approve" => $user->rob_50_approve,
+                "rob_60_cancelled" => $user->rob_60_cancelled,
+                'parent_approved' => $user->parent_approved,
+                'burser_approved' => $user->burser_approved,
+                'burCompanyName' => $user->burCompanyName,
+                'sponFirstName' => $user->sponFirstName,
+                'kinFirstName' => $user->kinFirstName
+            ];
         } else {
             return false;
         }
