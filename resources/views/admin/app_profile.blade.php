@@ -71,12 +71,12 @@
                         <!-- <span id="approvedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] != '1') {
                             echo 'hidden';
                         } ?>">&#128994;</span>
-                                                    <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
-                                                        echo 'hidden';
-                                                    } ?>">&#128993;</span>
-                                                    <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
-                                                        echo 'hidden';
-                                                    } ?>">&#128308;</span> -->
+                                                                                <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
+                                                                                    echo 'hidden';
+                                                                                } ?>">&#128993;</span>
+                                                                                <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
+                                                                                    echo 'hidden';
+                                                                                } ?>">&#128308;</span> -->
                         <span id="approvedBur" class="hidden">&#128994;</span>
                         <span id="rejectedBur" class="hidden">&#128993;</span>
                         <span id="notLoadBur" class="hidden">&#128308;</span>
@@ -597,19 +597,19 @@
 
 
                     <!-- <p class="appSubHeader">
-                                                    <div class="burPaymentDetails"></div>
-                                                </p>
-                                                <br/> -->
+                                                                                <div class="burPaymentDetails"></div>
+                                                                            </p>
+                                                                            <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">BOOKING FEE</h2> -->
                     <!-- <p class="appSubHeader"> -->
                     <!-- @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'NSFAS')
     R {{ $residence->nsfas_booking_rate }}
     @endif
-                                                    @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
+                                                                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
     R {{ $residence->bursary_booking_rate }}
     @endif
-                                                    @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
+                                                                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
     R {{ $residence->booking_rate }}
     @endif -->
                     <!-- R {{ $booking->room_rate }} -->
@@ -617,8 +617,8 @@
                     <!-- <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">PAID</h2>
-                                                <p class="appSubHeader" id="paidOption">
-                                                <div class="waived_paid_wording"></div> -->
+                                                                            <p class="appSubHeader" id="paidOption">
+                                                                            <div class="waived_paid_wording"></div> -->
 
 
 
@@ -1160,9 +1160,9 @@
 
 
                 <!-- <div class="form-field-big">
-                                                    <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
-                                                </div> -->
+                                                                                <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                                                                <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                                                                            </div> -->
                 <div class="form-field-big" style="height:50px !important">
                     <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This
                                 field is required</small></span></label>
@@ -1746,6 +1746,7 @@
                     url: "/check-user-status/{{ $user[0]['userInfo']['userUid'] }}",
 
                     success: function(data) {
+                        //console.log(data)
 
                         $(".address_btn").empty()
 
@@ -1934,23 +1935,33 @@
                         }
 
                         $(".appSection").empty()
+                        const date = new Date();
+                        const currentMonth = date.getMonth() + 1; // JavaScript months are 0-based (0 = Jan)
+                        const currentDay = date.getDate();
+                        const isBeforeFeb15 = (currentMonth === 2 && currentDay < 15) || (currentMonth < 2);
 
                         if ((data['rob_50_approve'] == 0 || data['rob_50_approve'] == 1) && (data[
                                 'rob_60_cancelled'] == 0 || data['rob_60_cancelled'] == null)) {
+
                             $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
 
-                            if ("<?php echo Auth::user()->role_app_lease; ?>" == 1 &&
+                            let allowLease = (
+                                "<?php echo Auth::user()->role_app_lease; ?>" == 1 &&
                                 data['rob_10_fee'] == 2 &&
                                 data['rob_15_id'] == 2 &&
                                 data['rob_20_card'] == 2 &&
                                 data['rob_25_reg'] == 2 &&
-                                data['rob_30_funds'] == 2 &&
+                                (data['student_type'] === "NSFAS" ? isBeforeFeb15 : data['rob_30_funds'] ==
+                                    2) &&
                                 data['rob_35_info'] == 2 &&
                                 data['rob_40_bed'] == 2 &&
-                                (data['rob_45_other'] == 3 || data['rob_45_other'] == 2)) {
+                                (data['rob_45_other'] == 3 || data['rob_45_other'] == 2)
+                            );
+
+                            if (allowLease) {
                                 $(".main_btn").empty().append(
                                     '<button type="button" class="appBtn" id="approveProfile" onClick="approveApplication(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">APPROVE APPLICATION AND SEND CONFIRMATION</button><br/><br/><br/><button type="button" class="appBtn" id="rejectApplication" onClick="rejectApplication(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">REJECT APPLICATION AND SEND NOTIFICATION</button><br/><br/><br/>'
-                                )
+                                );
                                 $("#sendMailReminder").addClass('hidden');
                             }
                         }

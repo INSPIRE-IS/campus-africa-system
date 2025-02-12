@@ -7216,6 +7216,7 @@ class HomeController extends Controller
         //dd($user);
         if (!empty($user)) {
             return [
+                "student_type" => $user->studentType,
                 "rob_10_fee" => $user->rob_10_fee,
                 "rob_15_id" => $user->rob_15_id,
                 "rob_20_card" => $user->rob_20_card,
