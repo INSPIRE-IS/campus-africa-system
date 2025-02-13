@@ -1925,9 +1925,24 @@ class HomeController extends Controller
 
     public function users(Request $request)
     {
-        //dd('here');
-        $systemUsers = User::where("userRole", "!=", "0")->get();
-        $students = User::where("userRole", "0")->get();
+
+        $systemUsers = User::select(
+            'id',
+            'userFirstName',
+            'userLastname',
+            'email',
+            'user_role_name',
+        )->where("userRole", "!=", "0")->get();
+
+        $students = User::select(
+            'id',
+            'userFirstName',
+            'userLastname',
+            'email',
+            'userId',
+        )->where('userRole', '=', '0')->get();
+        //dd($students);
+        //dd(auth()->user()->role_manage_users);
         //dd(Auth::user()->role_manage_users);
         if (Auth::user()->role_manage_users == "1") {
             return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students, "title" => "User Management"]);
