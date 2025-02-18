@@ -1821,7 +1821,7 @@ class HomeController extends Controller
 
             $MailerList = MailerList::all();
 
-            return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000", "MailerList" => $MailerList, "title" => "Mailers"]);
+            return view('admin.mailing', ["headerTitle" => "Mailers", "bookingRef" => "00000", "name" => "Johan", "roomNo" => "000", "MailerList" => $MailerList, "title" => "Mailers", 'tinymceKey' => config('app.tinymce_key')]);
         } else {
             return "404 Error";
         }

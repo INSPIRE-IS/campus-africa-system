@@ -233,5 +233,5 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],
-
+    'tinymce_key' => env('TINYMCE_API_KEY', ''),
 ];
