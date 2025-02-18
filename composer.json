@@ -22,7 +22,9 @@
         "laravel/ui": "^3.3",
         "maennchen/zipstream-php": "^2.1",
         "phpoffice/phpspreadsheet": "^1.21",
-        "shuchkin/simplexlsxgen": "^1.0"
+        "shuchkin/simplexlsxgen": "^1.0",
+        "symfony/http-client": "^6.2",
+        "symfony/mailer": "^6.1"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
