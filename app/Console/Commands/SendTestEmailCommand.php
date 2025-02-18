@@ -31,5 +31,9 @@ class SendTestEmailCommand extends Command
         $email = $this->argument('email');
         $result = $this->sendTestEmail($email);
         $this->info($result);
+
+        $email = $this->argument('email');
+        $result = $this->sendTestEmailAttachement($email);
+        $this->info($result);
     }
 }
