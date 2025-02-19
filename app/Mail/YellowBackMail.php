@@ -12,17 +12,18 @@ class YellowBackMail extends Mailable
     use Queueable, SerializesModels;
 
     public $messageForMail;
+    protected $subjectLine;
+    protected $fromMail;
+    protected $fromName;
+    protected $mailCc;
 
     /**
      * Create a new message instance.
-     *
-     * @return void
      */
-    public function __construct($messageForMail, $subject, $fromMail, $fromName, $mailCc)
+    public function __construct($messageForMail, $subject, $fromMail, $fromName, $mailCc = null)
     {
-        //
         $this->messageForMail = $messageForMail;
-        $this->subject = $subject;
+        $this->subjectLine = $subject;
         $this->fromMail = $fromMail;
         $this->fromName = $fromName;
         $this->mailCc = $mailCc;
@@ -30,21 +31,17 @@ class YellowBackMail extends Mailable
 
     /**
      * Build the message.
-     *
-     * @return $this
      */
     public function build()
     {
-        if (empty($this->mailCc)) {
-            $email = $this->from($this->fromMail, $this->fromName)
-            ->subject($this->subject)
-            ->view('email.yellow_back', [ 'messageForMail' => $this->messageForMail]);
-            
-        } else {
-            $email = $this->from($this->fromMail, $this->fromName)
-                ->subject($this->subject)
-                ->bcc($this->mailCc)
-                ->view('email.yellow_back', [ 'messageForMail' => $this->messageForMail]);
+        $email = $this->from($this->fromMail, $this->fromName)
+            ->subject($this->subjectLine)
+            ->view('email.yellow_back')
+            ->with(['messageForMail' => $this->messageForMail]);
+
+        // Apply CC if it's not empty
+        if (!empty($this->mailCc)) {
+            $email->bcc($this->mailCc);
         }
 
         return $email;

@@ -16,7 +16,7 @@ use App\Models\Booking;
 use App\Models\MailerList;
 use App\Models\UserFiles;
 
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\YellowBackMail;
 
 class SendApplicationThankYouMail implements ShouldQueue
@@ -60,21 +60,21 @@ class SendApplicationThankYouMail implements ShouldQueue
         $message_replace['bookingRef'] = $bookinfRefNo->booking_code;
         $message_replace['name'] = $userForBooking->userFirstName;
         $message_replace['security_token'] = $this->securityToken;
-        $message_replace['application_link'] = "<a href='".$this->returnUrl."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $message_replace['application_link'] = "<a href='" . $this->returnUrl . "' target='_blank'>";
+        $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Application Thank You")->first();
 
-        if($mailerForMessage->status == '1'){
-            
+        if ($mailerForMessage->status == '1') {
+
             $mailerMessage = $mailerForMessage->message;
-    
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+
+            $newMessage = str_replace("[application_number]", "#" . $message_replace['bookingRef'], $mailerMessage);
             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
             $newMessage = str_replace("[security_code]", $message_replace['security_token'], $newMessage);
             $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
             $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
-    
+
             $data['name'] = $userForBooking->userFirstName;
             $data['email'] = $userForBooking->userEmail;
             $data['messageForMail'] = $newMessage;
@@ -88,21 +88,21 @@ class SendApplicationThankYouMail implements ShouldQueue
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
+            if (!empty($allowedMails)) {
 
                 $mailArr = explode(";", $allowedMails);
-    
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+
+                if (in_array(explode("@", $data['email'])[1], $mailArr)) {
                     $data['email'] = $userForBooking->userEmail;
-                }else{
+                } else {
                     $data['email'] = "conurbandigital@gmail.com";
                 }
-            }else{
+            } else {
                 $data['email'] = $userForBooking->userEmail;
             }
-    
+
             $email = new YellowBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
-            Mail::to($data['email'])->send($email);
+            Mail::mailer('smtp')->to($data['email'])->send($email);
         }
     }
 }

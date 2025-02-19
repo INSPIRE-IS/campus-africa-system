@@ -15,7 +15,7 @@ use App\Models\StudentsInfo;
 use App\Models\Booking;
 use App\Models\MailerList;
 
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\RedBackMail;
 
 class SendDeclinedDocMail implements ShouldQueue
@@ -57,21 +57,21 @@ class SendDeclinedDocMail implements ShouldQueue
         $userInfo = StudentsInfo::where('userUid', $userId->id)->where('year', $this_year)->first();
         $booking = Booking::where('id', $userInfo->bookingId)->first();
 
-        
+
         $message_replace['bookingRef'] = $booking->booking_code;
         $message_replace['name'] = $userInfo->userFirstName;
         $message_replace['document_name'] = $this->typeName;
         $message_replace['decline_reason'] = $this->reason;
-        $message_replace['application_link'] = "<a href='".$this->redirectUrl."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $message_replace['application_link'] = "<a href='" . $this->redirectUrl . "' target='_blank'>";
+        $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Document Declined")->first();
 
-        if($mailerForMessage->status == '1'){
+        if ($mailerForMessage->status == '1') {
 
             $mailerMessage = $mailerForMessage->message;
 
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+            $newMessage = str_replace("[application_number]", "#" . $message_replace['bookingRef'], $mailerMessage);
             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
             $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
             $newMessage = str_replace("[decline_reason]", $message_replace['decline_reason'], $newMessage);
@@ -86,7 +86,7 @@ class SendDeclinedDocMail implements ShouldQueue
             $mailData['messageForMail'] = $newMessage;
             $mailData['subject'] = $newSubject;
 
-            
+
             $mailData['cc'] = "";
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             if (!empty($allowedMailsCC)) {
@@ -95,21 +95,21 @@ class SendDeclinedDocMail implements ShouldQueue
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
+            if (!empty($allowedMails)) {
 
                 $mailArr = explode(";", $allowedMails);
 
-                if(in_array(explode("@", $mailData['email'])[1], $mailArr)){
+                if (in_array(explode("@", $mailData['email'])[1], $mailArr)) {
                     $mailData['email'] = $userInfo->userEmail;
-                }else{
+                } else {
                     $mailData['email'] = "conurbandigital@gmail.com";
                 }
-            }else{
+            } else {
                 $mailData['email'] = $userInfo->userEmail;
             }
 
             $email = new RedBackMail($newMessage, $mailData['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $mailData['cc']);
-            Mail::to($mailData['email'])->send($email);
+            Mail::mailer('smtp')->to($mailData['email'])->send($email);
         }
     }
 }

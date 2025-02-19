@@ -16,7 +16,7 @@ use App\Models\Booking;
 use App\Models\MailerList;
 use App\Models\UserFiles;
 
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
 
 class SendLeaseApprovedMail implements ShouldQueue
@@ -52,50 +52,48 @@ class SendLeaseApprovedMail implements ShouldQueue
         $booking = Booking::where('id', $userForLease->bookingId)->first();
 
 
-        $message_replace['booking_application'] = "#".$booking->booking_code;
+        $message_replace['booking_application'] = "#" . $booking->booking_code;
         $message_replace['name'] = $userForLease->userFirstName;
 
         $mailerForMessage = MailerList::where("mailer_name", "Lease Approved")->first();
 
-        if($mailerForMessage->status == '1'){
-            
+        if ($mailerForMessage->status == '1') {
+
             $mailerMessage = $mailerForMessage->message;
-    
+
             $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-    
+
             $fileForUser = UserFiles::where('userUid', $userMain->id)->where('year', $this_year)->where('fileId', 'moveIn')->first();
-    
+
             $data['messageForMail'] = $newMessage;
             $data['email'] = $userForLease->userEmail;
             $data['name'] = $userForLease->userFirstName;
             $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
-    
+
             $data['cc'] = "";
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             if (!empty($allowedMailsCC)) {
                 $data['cc'] = explode(";", $allowedMailsCC);
             }
-    
+
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-    
-            if(!empty($allowedMails)){
-    
+
+            if (!empty($allowedMails)) {
+
                 $mailArr = explode(";", $allowedMails);
-    
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+
+                if (in_array(explode("@", $data['email'])[1], $mailArr)) {
                     $data['email'] = $userForLease->userEmail;
-                }else{
+                } else {
                     $data['email'] = "conurbandigital@gmail.com";
                 }
-            }else{
+            } else {
                 $data['email'] = $userForLease->userEmail;
             }
 
             $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
-            Mail::to($data['email'])->send($email);
-    
+            Mail::mailer('smtp')->to($data['email'])->send($email);
         }
-
     }
 }

@@ -16,7 +16,7 @@ use App\Models\StudentsInfo;
 use App\Models\Booking;
 use App\Models\MailerList;
 
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
 
 class SendApproveDocMail implements ShouldQueue
@@ -60,16 +60,16 @@ class SendApproveDocMail implements ShouldQueue
         $message_replace['bookingRef'] = $booking->booking_code;
         $message_replace['name'] = $studentInfoForMail->userFirstName;
         $message_replace['document_name'] =  $this->typeName;
-        $message_replace['application_link'] = "<a href='".$this->returnUrl."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $message_replace['application_link'] = "<a href='" . $this->returnUrl . "' target='_blank'>";
+        $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Document Approved")->first();
 
-        if($mailerForMessage->status == '1'){
-            
+        if ($mailerForMessage->status == '1') {
+
             $mailerMessage = $mailerForMessage->message;
 
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+            $newMessage = str_replace("[application_number]", "#" . $message_replace['bookingRef'], $mailerMessage);
             $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
             $newMessage = str_replace("[document_name]", $message_replace['document_name'], $newMessage);
             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
@@ -80,7 +80,7 @@ class SendApproveDocMail implements ShouldQueue
             $mailData['email'] = $studentInfoForMail->userEmail;
             $mailData['messageForMail'] = $newMessage;
             $mailData['subject'] = str_replace("[document_name]", $this->typeName, str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject));
-            
+
             $mailData['cc'] = "";
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             if (!empty($allowedMailsCC)) {
@@ -89,22 +89,22 @@ class SendApproveDocMail implements ShouldQueue
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
+            if (!empty($allowedMails)) {
 
                 $mailArr = explode(";", $allowedMails);
 
-                if(in_array(explode("@", $mailData['email'])[1], $mailArr)){
+                if (in_array(explode("@", $mailData['email'])[1], $mailArr)) {
                     $mailData['email'] = $studentInfoForMail->userEmail;
-                }else{
+                } else {
                     $mailData['email'] = "conurbandigital@gmail.com";
                 }
-            }else{
+            } else {
                 $mailData['email'] = $studentInfoForMail->userEmail;
             }
 
             $email = new GreenBackMail($newMessage, $mailData['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $mailData['cc']);
 
-            Mail::to($mailData['email'])->send($email);
+            Mail::mailer('smtp')->to($mailData['email'])->send($email);
         }
     }
 }

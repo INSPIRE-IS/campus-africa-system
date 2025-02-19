@@ -14,7 +14,7 @@ use App\Models\User;
 use App\Models\StudentsInfo;
 use App\Models\MailerList;
 
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\YellowBackMail;
 
 class SendStudentVerifyMailByAdminMail implements ShouldQueue
@@ -55,20 +55,20 @@ class SendStudentVerifyMailByAdminMail implements ShouldQueue
 
         $message_replace['bookingRef'] = $this->bookingGenRef;
         $message_replace['name'] = $userInfo->userFirstName;
-        $message_replace['application_link'] = "<a href='".$this->url."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $message_replace['application_link'] = "<a href='" . $this->url . "' target='_blank'>";
+        $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Password Validation From Admin")->first();
 
-        if($mailerForMessage->status == '1'){
+        if ($mailerForMessage->status == '1') {
 
             $mailerMessage = $mailerForMessage->message;
-    
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+
+            $newMessage = str_replace("[application_number]", "#" . $message_replace['bookingRef'], $mailerMessage);
             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
             $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
             $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
-    
+
             $data['name'] = $userInfo->userFirstName;
             $data['email'] = $userInfo->userEmail;
             $data['messageForMail'] = $newMessage;
@@ -82,21 +82,20 @@ class SendStudentVerifyMailByAdminMail implements ShouldQueue
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
+            if (!empty($allowedMails)) {
                 $mailArr = explode(";", $allowedMails);
-    
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+
+                if (in_array(explode("@", $data['email'])[1], $mailArr)) {
                     $data['email'] = $user->email;
-                }else{
+                } else {
                     $data['email'] = "conurbandigital@gmail.com";
                 }
-            }else{
+            } else {
                 $data['email'] = $user->email;
             }
 
             $email = new YellowBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
-            Mail::to($data['email'])->send($email);
-
+            Mail::mailer('smtp')->to($data['email'])->send($email);
         }
     }
 }

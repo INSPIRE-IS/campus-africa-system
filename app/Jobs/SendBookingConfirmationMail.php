@@ -16,7 +16,7 @@ use App\Models\Booking;
 use App\Models\MailerList;
 use App\Models\UserFiles;
 
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
 
 class SendBookingConfirmationMail implements ShouldQueue
@@ -58,58 +58,56 @@ class SendBookingConfirmationMail implements ShouldQueue
         $all = ['studentCard', 'proofRegistration'];
         $outstanding = [];
 
-        if($userInfo->studentType == "Cash / Direct"){
+        if ($userInfo->studentType == "Cash / Direct") {
             array_push($all, "bankStatement");
         }
-        if($userInfo->studentType !== "Cash / Direct"){
+        if ($userInfo->studentType !== "Cash / Direct") {
             array_push($all, "bursaryApproval");
         }
 
         $allSearchable = UserFiles::where("userUid", $userMain->id)->where('year', $this_year)->get();
 
-        foreach($allSearchable as $search){
-            if(explode("_", $search->fileId)[0] == "other"){
+        foreach ($allSearchable as $search) {
+            if (explode("_", $search->fileId)[0] == "other") {
                 array_push($all, $search->fileId);
             }
         }
 
-        foreach($all as $file){
+        foreach ($all as $file) {
             $file_search = UserFiles::where("userUid", $userMain->id)->where('fileId', $file)->where('year', $this_year)->first();
 
-            if(($userInfo->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $userInfo->studentType != "Cash / Direct" && $file !== 'bankStatement'){
+            if (($userInfo->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $userInfo->studentType != "Cash / Direct" && $file !== 'bankStatement') {
 
-                if($file == "studentCard"){
+                if ($file == "studentCard") {
                     $fileName = "Student Card";
-                }elseif($file == "proofRegistration"){
+                } elseif ($file == "proofRegistration") {
                     $fileName = "Proof of Registration";
-                }elseif($file == "bankStatement"){
+                } elseif ($file == "bankStatement") {
                     $fileName = "Bank Statements";
-                }elseif($file == "bursaryApproval"){
-                    if($userInfo->studentType != "NSFAS"){
+                } elseif ($file == "bursaryApproval") {
+                    if ($userInfo->studentType != "NSFAS") {
                         $fileName = "Bursary Approval";
-                    }else{
+                    } else {
                         $fileName = "NSFAS Approval";
                     }
-                }elseif(explode("_", $file)[0] == "other"){
+                } elseif (explode("_", $file)[0] == "other") {
                     $fileName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $file)));
                 }
 
-                if($file_search && !empty($file_search)){
-                    if($file_search->status !== "Approved" && $file_search->status !== "Uploaded"){
+                if ($file_search && !empty($file_search)) {
+                    if ($file_search->status !== "Approved" && $file_search->status !== "Uploaded") {
                         array_push($outstanding, $fileName);
                     }
-                }else{
+                } else {
                     array_push($outstanding, $fileName);
                 }
-
             }
-
         }
 
         $outstandingDocsText = "<ol>";
 
-        foreach($outstanding as $out){
-            $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>".$out."</li>";
+        foreach ($outstanding as $out) {
+            $outstandingDocsText .= "<li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>" . $out . "</li>";
         }
 
         $outstandingDocsText .= "</ol>";
@@ -120,16 +118,16 @@ class SendBookingConfirmationMail implements ShouldQueue
         $message_replace['name'] = $userInfo->userFirstName;
         $message_replace['approvedDocs'] = "<ol><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Copy of ID Document</li><li style='color: #fff; font-size: 21px; font-weight: 400; line-height: 30px;'>Booking Fee Proof of Payment</li></ol>";
         $message_replace['missing'] = $outstandingDocsText;
-        $message_replace['application_link'] = "<a href='".$this->returnUrl."' target='_blank'>";
-        $message_replace['close_application_link']="</a>";
+        $message_replace['application_link'] = "<a href='" . $this->returnUrl . "' target='_blank'>";
+        $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Booking Confirmation")->first();
 
-        if($mailerForMessage->status == '1'){
+        if ($mailerForMessage->status == '1') {
 
             $mailerMessage = $mailerForMessage->message;
 
-            $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
+            $newMessage = str_replace("[application_number]", "#" . $message_replace['bookingRef'], $mailerMessage);
             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
             $newMessage = str_replace("[approved_document_list]", $message_replace['approvedDocs'], $newMessage);
             $newMessage = str_replace("[outstanding_document_list]", $message_replace['missing'], $newMessage);
@@ -149,21 +147,20 @@ class SendBookingConfirmationMail implements ShouldQueue
 
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
-            if(!empty($allowedMails)){
+            if (!empty($allowedMails)) {
                 $mailArr = explode(";", $allowedMails);
 
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
+                if (in_array(explode("@", $data['email'])[1], $mailArr)) {
                     $data['email'] = $userInfo->email;
-                }else{
+                } else {
                     $data['email'] = "conurbandigital@gmail.com";
                 }
-            }else{
+            } else {
                 $data['email'] = $userInfo->email;
             }
 
             $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
-            Mail::to($data['email'])->send($email);
-     
+            Mail::mailer('smtp')->to($data['email'])->send($email);
         }
     }
 }

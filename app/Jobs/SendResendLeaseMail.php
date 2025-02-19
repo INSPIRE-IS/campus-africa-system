@@ -15,8 +15,9 @@ use App\Models\StudentsInfo;
 use App\Models\Booking;
 use App\Models\MailerList;
 
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
+use Illuminate\Support\Facades\Log;
 
 class SendResendLeaseMail implements ShouldQueue
 {
@@ -45,60 +46,67 @@ class SendResendLeaseMail implements ShouldQueue
      */
     public function handle()
     {
+        try {
+            Log::info('SendResendLeaseMail job started for user: ' . $this->userUid->id);
+            $userMain = $this->userUid;
 
-        $userMain = $this->userUid;
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+            $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+            $booking = Booking::where('id', $userForLease->bookingId)->first();
 
-        $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
-        $booking = Booking::where('id', $userForLease->bookingId)->first();
+            $message_replace['booking_application'] = "#" . $booking->booking_code;
+            $message_replace['name'] = $userForLease->userFirstName;
+            $message_replace['lease_link'] = $this->leaseOpenTag;
+            $message_replace['close_lease_link'] = "</a>";
 
-        $message_replace['booking_application'] = "#".$booking->booking_code;
-        $message_replace['name'] = $userForLease->userFirstName;
-        $message_replace['lease_link'] = $this->leaseOpenTag;
-        $message_replace['close_lease_link']="</a>";
+            $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
 
-        $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
+            if ($mailerForMessage->status == '1') {
 
-        if($mailerForMessage->status == '1'){
+                $mailerMessage = $mailerForMessage->message;
 
-            $mailerMessage = $mailerForMessage->message;
-    
-            $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
-            $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-            $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
-            $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
-    
-            $data['messageForMail'] = $newMessage;
-            $data['email'] = $userForLease->userEmail;
-            $data['name'] = $userForLease->userFirstName;
-            $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
+                $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+                $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+                $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
+                $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
 
-            $data['cc'] = "";
-            $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-            if (!empty($allowedMailsCC)) {
-                $data['cc'] = explode(";", $allowedMailsCC);
-            }
-
-            $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-
-            if(!empty($allowedMails)){
-
-                $mailArr = explode(";", $allowedMails);
-    
-                if(in_array(explode("@", $data['email'])[1], $mailArr)){
-                    $data['email'] = $userForLease->userEmail;
-                }else{
-                    $data['email'] = "conurbandigital@gmail.com";
-                }
-            }else{
+                $data['messageForMail'] = $newMessage;
                 $data['email'] = $userForLease->userEmail;
-            }
-    
+                $data['name'] = $userForLease->userFirstName;
+                $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
-            $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
-            Mail::to($data['email'])->send($email);
+                $data['cc'] = "";
+                $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+                if (!empty($allowedMailsCC)) {
+                    $data['cc'] = explode(";", $allowedMailsCC);
+                }
+
+                $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+                if (!empty($allowedMails)) {
+
+                    $mailArr = explode(";", $allowedMails);
+
+                    if (in_array(explode("@", $data['email'])[1], $mailArr)) {
+                        $data['email'] = $userForLease->userEmail;
+                    } else {
+                        $data['email'] = "conurbandigital@gmail.com";
+                    }
+                } else {
+                    $data['email'] = $userForLease->userEmail;
+                }
+
+                Log::info('Sending email to ' . $data['email']);
+                $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
+                Mail::mailer('smtp')->to($data['email'])->send($email);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in SendResendLeaseMail job', [
+                'error' => $e->getMessage(),
+                'user_id' => $this->userUid->id ?? null,
+            ]);
         }
     }
 }

@@ -22,6 +22,7 @@ use DateTime;
 use App\Models\ActionList;
 use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
+use Illuminate\Support\Facades\Log;
 
 class LeaseController extends Controller
 {
@@ -168,9 +169,20 @@ class LeaseController extends Controller
 
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
+
         $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
+
         $userUidData = User::where('id', $request->userId)->first();
-        $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+        try {
+            Log::info('Sending email to ');
+            $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+        } catch (\Exception $e) {
+            Log::error('Failed to dispatch SendResendLeaseMail job', [
+                'error' => $e->getMessage(),
+                'userUidData' => $userUidData,
+            ]);
+        }
+
 
         // $userForLease = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
         // $booking = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
