@@ -6115,12 +6115,13 @@ class HomeController extends Controller
     public function download_selected_docs(Request $request)
     {
         $yearId = $request->year;
+        $prop = $request->prop;
         $institution = $request->institution;
         $student_type = $request->student_type;
         $lease_filter = $request->lease_filter;
         $email = $request->user()->email;
 
-        DownloadSelectedDocsJob::dispatch($yearId, $institution, $student_type, $lease_filter, $email);
+        DownloadSelectedDocsJob::dispatch($yearId, $prop, $institution, $student_type, $lease_filter, $email);
 
         // $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop, 'lease_filter' => $lease_filter]);
 

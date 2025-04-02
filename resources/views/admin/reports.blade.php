@@ -8,66 +8,66 @@
         <!-- <h2>Student Report</h2> -->
 
         <!-- <div class="appSearchForm" style="margin-top:-35px">
-                                            <div class="searchField">
-                                            <label></label><br/>
-                                                <select name="property" id="property" onChange="changeResidence()">
-                                                    <option value="All" selected>All Residences</option>
-                                                    @foreach ($propertyList as $residence)
+                                                <div class="searchField">
+                                                <label></label><br/>
+                                                    <select name="property" id="property" onChange="changeResidence()">
+                                                        <option value="All" selected>All Residences</option>
+                                                        @foreach ($propertyList as $residence)
     <option value="{{ $residence->id }}" >{{ $residence->residence }}</option>
     @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="searchField">
-                                            <label></label><br/>
-                                                <select name="room_type" id="room_type">
-                                                    <option value="" selected>Select One</option>
-                                                </select>
-                                            </div>
-                                            <div class="searchField">
-                                                <label>Applicant</label><br/>
-                                                <input type="text" name="applicant" id="applicant"/>
+                                                    </select>
+                                                </div>
+                                                <div class="searchField">
+                                                <label></label><br/>
+                                                    <select name="room_type" id="room_type">
+                                                        <option value="" selected>Select One</option>
+                                                    </select>
+                                                </div>
+                                                <div class="searchField">
+                                                    <label>Applicant</label><br/>
+                                                    <input type="text" name="applicant" id="applicant"/>
+                                                </div>
+
+                                                <div class="searchField">
+                                                <label></label><br/>
+                                                    <select name="student_type" id='student_type'>
+                                                        <option value="All" selected>All Student Types</option>
+                                                        <option value="NSFAS">NSFAS</option>
+                                                        <option value="Bursary">Bursary</option>
+                                                        <option value="Cash / Direct">Cash / Direct</option>
+                                                    </select>
+                                                </div>
+                                                <div class="searchField">
+                                                <label></label><br/>
+                                                    <select name="bookingStatus" id='bookingStatus' style="width:45%">
+                                                        <option value="All" selected>All Bookings</option>
+                                                        <option value="Approved">&#128994; Valid Booking</option>
+                                                        <option value="Action">&#128993; Pending Booking</option>
+                                                        <option value="Empty">&#128308; Invalid Booking</option>
+                                                    </select>
+                                                    <select name="applicationStatus" id='applicationStatus' style="width:45%">
+                                                        <option value="All" selected>All Applications</option>
+                                                        <option value="Approved">&#128994; Valid Application</option>
+                                                        <option value="Action">&#128993; Pending Application</option>
+                                                        <option value="Empty">&#128308; Invalid Application</option>
+                                                    </select>
+                                                </div>
+                                                <div class="searchField">
+                                                    <label>Date</label><br/>
+                                                    <input type="date" name="date" id="date"/>
+                                                    <br/><br/><br/>
+                                                </div>
+
+                                                <div class="searchTab">
+                                                    <button type="button" id="searchButton">Download</button>
+                                                </div>
+                                                
                                             </div>
 
-                                            <div class="searchField">
-                                            <label></label><br/>
-                                                <select name="student_type" id='student_type'>
-                                                    <option value="All" selected>All Student Types</option>
-                                                    <option value="NSFAS">NSFAS</option>
-                                                    <option value="Bursary">Bursary</option>
-                                                    <option value="Cash / Direct">Cash / Direct</option>
-                                                </select>
-                                            </div>
-                                            <div class="searchField">
-                                            <label></label><br/>
-                                                <select name="bookingStatus" id='bookingStatus' style="width:45%">
-                                                    <option value="All" selected>All Bookings</option>
-                                                    <option value="Approved">&#128994; Valid Booking</option>
-                                                    <option value="Action">&#128993; Pending Booking</option>
-                                                    <option value="Empty">&#128308; Invalid Booking</option>
-                                                </select>
-                                                <select name="applicationStatus" id='applicationStatus' style="width:45%">
-                                                    <option value="All" selected>All Applications</option>
-                                                    <option value="Approved">&#128994; Valid Application</option>
-                                                    <option value="Action">&#128993; Pending Application</option>
-                                                    <option value="Empty">&#128308; Invalid Application</option>
-                                                </select>
-                                            </div>
-                                            <div class="searchField">
-                                                <label>Date</label><br/>
-                                                <input type="date" name="date" id="date"/>
-                                                <br/><br/><br/>
-                                            </div>
+                                            <div class="clearSpaceLogin"></div>
+                                            <div class="hidden"><a href="/Student Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
 
-                                            <div class="searchTab">
-                                                <button type="button" id="searchButton">Download</button>
-                                            </div>
-                                            
-                                        </div>
-
-                                        <div class="clearSpaceLogin"></div>
-                                        <div class="hidden"><a href="/Student Export.xlsx" download><button type="button" id="downloadBtn">Download</button></a></div>
-
-                                        <hr/><br/> -->
+                                            <hr/><br/> -->
         <h2>Reports</h2>
 
         @if (Auth::user()->role_nsfas_approval_upload == 1)
@@ -156,27 +156,27 @@
         @endif
 
         <!-- <br/><br/><br/><br/><hr/><br/>
-                                        <h2>Buildings Report</h2>
-                                        <br/>
-                                        <div class="flex">
-                                            <div>
-                                                <label>From Date:</label><br/>
-                                                <input type="date" name="buildingsFrom" id="buildingsFrom"/>
-                                            </div>
-                                            <div style="padding-left:10px;">
-                                                <label>To Date:</label><br/>
-                                                <input type="date" name="buildingsTo" id="buildingsTo"/>
-                                            </div>
-                                        </div>
-
-                                        <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;">Run Report</button>
-
-                                        <div id="PeriodReport" style="margin-top:100px;">
+                                            <h2>Buildings Report</h2>
+                                            <br/>
                                             <div class="flex">
                                                 <div>
-                                                    <p style="background-color:#ccc; padding:5px; border-right:1px solid #fff">{{ date('j F Y') }}</p>
-                                                    <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc; border-left:1px solid #ccc">Nr Bookings</p>
-                                                </div> -->
+                                                    <label>From Date:</label><br/>
+                                                    <input type="date" name="buildingsFrom" id="buildingsFrom"/>
+                                                </div>
+                                                <div style="padding-left:10px;">
+                                                    <label>To Date:</label><br/>
+                                                    <input type="date" name="buildingsTo" id="buildingsTo"/>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;">Run Report</button>
+
+                                            <div id="PeriodReport" style="margin-top:100px;">
+                                                <div class="flex">
+                                                    <div>
+                                                        <p style="background-color:#ccc; padding:5px; border-right:1px solid #fff">{{ date('j F Y') }}</p>
+                                                        <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc; border-left:1px solid #ccc">Nr Bookings</p>
+                                                    </div> -->
 
         {{-- @foreach ($allProp as $prop)
                 <div>
@@ -190,19 +190,19 @@
             @endforeach --}}
 
         <!-- <div>
-                                                    <p style="background-color:#ccc; padding:5px;">Property 1</p>
-                                                    <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">5</p>
-                                                </div>
-                                                <div >
-                                                    <p style="background-color:#ccc; padding:5px;">Property 2</p>
-                                                    <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">9</p>
-                                                </div>
-                                                <div>
-                                                    <p style="background-color:#ccc; padding:5px;">Property 3</p>
-                                                    <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">7</p>
-                                                </div> -->
+                                                        <p style="background-color:#ccc; padding:5px;">Property 1</p>
+                                                        <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">5</p>
+                                                    </div>
+                                                    <div >
+                                                        <p style="background-color:#ccc; padding:5px;">Property 2</p>
+                                                        <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">9</p>
+                                                    </div>
+                                                    <div>
+                                                        <p style="background-color:#ccc; padding:5px;">Property 3</p>
+                                                        <p style="padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc">7</p>
+                                                    </div> -->
         <!-- </div>
-                                        </div> -->
+                                            </div> -->
 
         <br /><br /><br /><br />
         <hr /><br />
@@ -246,6 +246,13 @@
                 <option value="All">All Years</option>
                 @foreach ($appYears as $year)
                     <option value="{{ $year->year }}">{{ $year->year }}</option>
+                @endforeach
+            </select>
+
+            <select id="prop3" name="prop3">
+                <option value="All">All Properties</option>
+                @foreach ($propertyList as $prop)
+                    <option value="{{ $prop->id }}">{{ $prop->residence }}</option>
                 @endforeach
             </select>
 
@@ -669,6 +676,7 @@
                 url: "/download-selected-docs",
                 data: {
                     year: $("#studYear3").val(),
+                    prop: $("#prop3").val(),
                     institution: $("#institution3").val(),
                     student_type: $("#student_type3").val(),
                     lease_filter: $('#lease_filter3').val()

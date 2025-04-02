@@ -16,6 +16,7 @@ class DownloadSelectedDocsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $year;
+    protected $prop;
     protected $institution;
     protected $student_type;
     protected $lease_filter;
@@ -40,9 +41,10 @@ class DownloadSelectedDocsJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($year, $institution, $student_type, $lease_filter, $email)
+    public function __construct($year,  $prop, $institution, $student_type, $lease_filter, $email)
     {
         $this->year = $year;
+        $this->prop = $prop;
         $this->institution = $institution;
         $this->student_type = $student_type;
         $this->lease_filter = $lease_filter;
@@ -57,7 +59,7 @@ class DownloadSelectedDocsJob implements ShouldQueue
     public function handle()
     {
         try {
-            Artisan::call('download:selected_docs', ['year' => $this->year, 'institution' => $this->institution, 'student_type' => $this->student_type, 'lease_filter' => $this->lease_filter, 'email' => $this->email]);
+            Artisan::call('download:selected_docs', ['year' => $this->year, 'prop' => $this->prop, 'institution' => $this->institution, 'student_type' => $this->student_type, 'lease_filter' => $this->lease_filter, 'email' => $this->email]);
         } catch (\Exception $e) {
             // You can perform some error handling here if necessary
 

@@ -21,6 +21,7 @@ class DownloadSelectedDocs extends Command
     public function handle()
     {
         $year = $this->argument('year');
+        $prop = $this->argument('prop');
         $institution = $this->argument('institution');
         $student_type = $this->argument('student_type');
         $lease_filter = $this->argument('lease_filter');
@@ -37,6 +38,7 @@ class DownloadSelectedDocs extends Command
         $users = DB::table('bookings_data as bd')
             ->join('students_info as si', 'si.bookingId', '=', 'bd.id')
             ->join('user_files as uf', 'uf.userUid', '=', 'si.userUid')
+            ->where("bd.property", $prop)
             ->where('bd.year', $year)
             ->where('si.institutionStudy', $institution)
             ->where('si.studentType', $student_type)
