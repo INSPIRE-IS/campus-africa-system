@@ -320,6 +320,7 @@ Route::post('/download-beds', [HomeController::class, 'download_beds']);
 Route::get('/download-mda', [HomeController::class, 'download_mda']);
 Route::post('/download-apps', [HomeController::class, 'download_apps']);
 Route::post('/download-app-docs', [HomeController::class, 'download_docs_all']);
+Route::post('/download-selected-docs', [HomeController::class, 'download_selected_docs']);
 
 
 Route::get('/mail-reminder', [MailReminder::class, 'mail_reminder']);

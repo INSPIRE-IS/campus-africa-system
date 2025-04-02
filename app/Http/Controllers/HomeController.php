@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\DownloadDocsJob;
+use App\Jobs\DownloadSelectedDocsJob;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFiles;
@@ -3333,9 +3334,10 @@ class HomeController extends Controller
         }
 
         $appYears = StudentsInfo::groupBy('year')->orderBy('year', 'desc')->get();
+        $institution = Lookups::where('group_id', '1')->get();
+        //student_type
 
-
-        return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed, "appYears" => $appYears]);
+        return view('admin.reports', ["headerTitle" => "Reports", "title" => "Reports", "propertyList" => $allowed, "institutionList" => $institution, "appYears" => $appYears]);
     }
 
     public function download_report(Request $request)
@@ -6100,6 +6102,25 @@ class HomeController extends Controller
         $lease_filter = $request->lease_filter;
 
         DownloadDocsJob::dispatch($yearId, $prop, $lease_filter, $request->user()->email);
+
+        // $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop, 'lease_filter' => $lease_filter]);
+
+        // if ($exitCode === 0) {
+        //     echo "done";
+        // } else {
+        //     echo "failed";
+        // }
+    }
+
+    public function download_selected_docs(Request $request)
+    {
+        $yearId = $request->year;
+        $institution = $request->institution;
+        $student_type = $request->student_type;
+        $lease_filter = $request->lease_filter;
+        $email = 'jason@whitehart.co.za'; // $request->user()->email;
+
+        DownloadSelectedDocsJob::dispatch($yearId, $institution, $student_type, $lease_filter, $email);
 
         // $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop, 'lease_filter' => $lease_filter]);
 
