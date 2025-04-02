@@ -6118,7 +6118,7 @@ class HomeController extends Controller
         $institution = $request->institution;
         $student_type = $request->student_type;
         $lease_filter = $request->lease_filter;
-        $email = 'jason@whitehart.co.za'; // $request->user()->email;
+        $email = $request->user()->email;
 
         DownloadSelectedDocsJob::dispatch($yearId, $institution, $student_type, $lease_filter, $email);
 
