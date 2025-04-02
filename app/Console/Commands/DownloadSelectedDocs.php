@@ -10,7 +10,7 @@ use ZipArchive;
 
 class DownloadSelectedDocs extends Command
 {
-    protected $signature = 'download:selected_docs {year} {institution} {student_type} {lease_filter} {email}';
+    protected $signature = 'download:selected_docs {year} {prop} {institution} {student_type} {lease_filter} {email}';
     protected $description = 'Download selected user documents based on criteria';
 
     public function __construct()
@@ -20,20 +20,21 @@ class DownloadSelectedDocs extends Command
 
     public function handle()
     {
-        $year = $this->argument('year');
-        $prop = $this->argument('prop');
-        $institution = $this->argument('institution');
-        $student_type = $this->argument('student_type');
-        $lease_filter = $this->argument('lease_filter');
-        $email = $this->argument('email');
-        $zipFileName = "selected_user_files.zip";
-        $password = "12345678";
+        $year = (int) $this->argument('year');
+        $prop = trim($this->argument('prop'));
+        $institution = trim($this->argument('institution'));
+        $student_type = trim($this->argument('student_type'));
+        $lease_filter = (int) $this->argument('lease_filter');
+        $email = filter_var($this->argument('email'), FILTER_VALIDATE_EMAIL);
 
-        $zip = new ZipArchive();
-        if ($zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            $this->error("Failed to create ZIP file.");
+        if (!$email) {
+            $this->error("Invalid email address.");
             return 1;
         }
+
+        $zipFileName = "selected_user_files.zip";
+        $password = "12345678";
+        $destinationPath = public_path($zipFileName);
 
         $users = DB::table('bookings_data as bd')
             ->join('students_info as si', 'si.bookingId', '=', 'bd.id')
@@ -47,10 +48,24 @@ class DownloadSelectedDocs extends Command
             ->select('bd.userId', 'uf.fileName', 'si.userTitle', 'si.userFirstName', 'si.userLastname', 'uf.fileUrl')
             ->get();
 
+        if ($users->isEmpty()) {
+            Mail::raw("No documents found for the given criteria.", function ($message) use ($email) {
+                $message->to($email)->subject('No Documents Available');
+            });
+            $this->info("No documents found. Email sent to: {$email}");
+            return 0;
+        }
+
+        $zip = new ZipArchive();
+        if ($zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            $this->error("Failed to create ZIP file.");
+            return 1;
+        }
+
         foreach ($users as $user) {
-            $filePath = storage_path("app/public/" . $user->fileUrl);
+            $filePath = Storage::path("public/" . $user->fileUrl);
             if (file_exists($filePath)) {
-                $fileNameInZip = $user->userTitle . "_" . $user->userFirstName . "_" . $user->userLastname . "_" . basename($filePath);
+                $fileNameInZip = "{$user->userTitle}_{$user->userFirstName}_{$user->userLastname}_" . basename($filePath);
                 $zip->addFile($filePath, $fileNameInZip);
             }
         }
@@ -62,7 +77,11 @@ class DownloadSelectedDocs extends Command
 
         $zip->close();
 
-        $destinationPath = public_path($zipFileName);
+        if (!is_writable(public_path())) {
+            $this->error("Public directory is not writable.");
+            return 1;
+        }
+
         if (!rename($zipFileName, $destinationPath)) {
             $this->error("Error moving ZIP file to public directory.");
             return 1;
