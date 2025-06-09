@@ -41,9 +41,11 @@ class ApplicationController extends Controller
             $lookups = Lookups::get();
             $agent = new Agent();
             $residences = Residence::whereNull('status')->get();
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+            //dd($this_year);
 
-
-            return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences]);
+            return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences, "application_year" => $this_year]);
         } else {
             return view('errors.onlineAppOffline');
         }
@@ -1202,7 +1204,7 @@ class ApplicationController extends Controller
 
     public function new_booking_step_1(Request $request)
     {
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
@@ -1225,10 +1227,10 @@ class ApplicationController extends Controller
 
     public function new_booking_step_1_save(Request $request)
     {
-
+        //dd($request);
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
-
+        //dd($this_year);
         $updateData = [
             'First Name|userFirstName' => ucwords(strtolower($request->firstName)),
             'Last Name|userLastname' => ucwords(strtolower($request->lastName)),
@@ -1255,7 +1257,7 @@ class ApplicationController extends Controller
             $info = explode("|", $key);
             $key = $info[1];
             $changedField = $info[0];
-
+            //dd($userInfo->$key);
             if ($changedField == "Gender") {
 
                 if ($userInfo->$key == 1) {
@@ -1266,7 +1268,7 @@ class ApplicationController extends Controller
 
                 if ($new == 1) {
                     $new = "Male";
-                } elseif ($new = 2) {
+                } elseif ($new == 2) {
                     $new = "Female";
                 }
             }
@@ -1455,7 +1457,7 @@ class ApplicationController extends Controller
         }
 
         $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-
+        //dd($user);
         if ($roomTypeData && $roomTypeData->pull_price == null) {
             $booking_data['room_rate'] = $roomTypeData->booking_price;
             $deposit = $roomTypeData->rent_price;

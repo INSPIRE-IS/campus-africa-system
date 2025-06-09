@@ -46,12 +46,14 @@ jQuery(document).ready(function ($) {
 
         var datatable = $("#application_table").DataTable();
 
-        console.log(JSON.stringify(document.getElementById('show_cancelled').checked))
+        console.log('show_cancelled', JSON.stringify(document.getElementById('show_cancelled').checked))
+        console.log('year', $("#year").val())
 
         $.ajax({
             type: "post",
             url: "/applications/filter",
             data: {
+                year: $("#year").val(),
                 property: $("#property").val(),
                 room_type: $("#room_type").val(),
                 applicant: $("#applicant").val(),

@@ -8,13 +8,15 @@
         <form action="/update-student" method="post" id="newUser" autocomplete="off">
             @csrf
             <br />
-            <h1 class="header fs-title">Student: {{ $user->userFirstName }} {{ $user->userLastname }}</h2>
+            <h1 class="header fs-title">Student: {{ $studentInfo->userFirstName }} {{ $studentInfo->userLastname }}
+                <small>Year of
+                    study: {{ $studentInfo->year }}</small></h2>
                 <br />
 
                 <div class="form-field">
                     <label>First Name * <span id="firstName_error" class="hidden" style="color:red"><small>This field is
                                 required</small></span></label>
-                    <input type="text" name="firstName" id="firstName" value="{{ $user->userFirstName }}"
+                    <input type="text" name="firstName" id="firstName" value="{{ $studentInfo->userFirstName }}"
                         class="required">
                     <input type="hidden" name="userUid" id="userUid" value="{{ $user->id }}">
                 </div>
@@ -22,7 +24,8 @@
                 <div class="form-field">
                     <label>Last Name * <span id="lastName_error" class="hidden" style="color:red"><small>This field is
                                 required</small></span></label>
-                    <input type="text" name="lastName" id="lastName" value="{{ $user->userLastname }}" class="required">
+                    <input type="text" name="lastName" id="lastName" value="{{ $studentInfo->userLastname }}"
+                        class="required">
                 </div>
 
                 <div class="form-field">
@@ -30,16 +33,16 @@
                                 required</small></span></label>
                     <select name="title" id='title' class="required">
                         <option value="" disabled selected>Select one</option>
-                        <option value="Mr" <?php if ($user->userTitle == 'Mr') {
+                        <option value="Mr" <?php if ($studentInfo->userTitle == 'Mr') {
                             echo 'selected';
                         } ?>>Mr</option>
-                        <option value="Ms" <?php if ($user->userTitle == 'Ms') {
+                        <option value="Ms" <?php if ($studentInfo->userTitle == 'Ms') {
                             echo 'selected';
                         } ?>>Ms</option>
-                        <option value="Mrs" <?php if ($user->userTitle == 'Mrs') {
+                        <option value="Mrs" <?php if ($studentInfo->userTitle == 'Mrs') {
                             echo 'selected';
                         } ?>>Mrs</option>
-                        <option value="Miss" <?php if ($user->userTitle == 'Miss') {
+                        <option value="Miss" <?php if ($studentInfo->userTitle == 'Miss') {
                             echo 'selected';
                         } ?>>Miss</option>
                     </select>
@@ -48,7 +51,7 @@
                 <div class="form-field">
                     <label>Date of Birth * <span id="dob_error" class="hidden" style="color:red"><small>Not a valid date of
                                 birth</small></span></label>
-                    <input type="date" name="dob" id="dob" value="{{ $user->userDob }}"
+                    <input type="date" name="dob" id="dob" value="{{ $studentInfo->userDob }}"
                         max="<?php echo date('Y-m-d'); ?>" class="required">
                 </div>
 
@@ -59,7 +62,7 @@
                         <option value="" selected disabled>Please select one</option>
                         @foreach ($lookups as $lookup)
                             @if ($lookup->group_id == '5')
-                                <option value="{{ $lookup->lookup_name }}" <?php if ($user->userNationality == $lookup->lookup_name) {
+                                <option value="{{ $lookup->lookup_name }}" <?php if ($studentInfo->userNationality == $lookup->lookup_name) {
                                     echo 'selected';
                                 } ?>>{{ $lookup->lookup_name }}
                                 </option>
@@ -68,7 +71,7 @@
                     </select>
                 </div>
 
-                <div class="form-field <?php if ($user->userNationality !== 'South Africa') {
+                <div class="form-field <?php if ($studentInfo->userNationality !== 'South Africa') {
                     echo 'hidden';
                 } ?>" id="idField">
                     <label>I.D Number * <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID
@@ -78,13 +81,13 @@
                     } ?>>
                 </div>
 
-                <div class="form-field <?php if ($user->userNationality == 'South Africa') {
+                <div class="form-field <?php if ($studentInfo->userNationality == 'South Africa') {
                     echo 'hidden';
                 } ?>" id="passportField">
                     <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is
                                 required</small></span></label>
-                    <input type="text" name="passportNo" id="passportNo" value="{{ $user->userPassport }}"
-                        <?php if ($user->userNationality !== 'South Africa') {
+                    <input type="text" name="passportNo" id="passportNo" value="{{ $studentInfo->userPassport }}"
+                        <?php if ($studentInfo->userNationality !== 'South Africa') {
                             echo 'class="required"';
                         } ?>>
                 </div>
@@ -93,38 +96,40 @@
                     <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid
                                 cellphone number</small></span><span id="cell_no_duplicate" class="hidden"
                             style="color:red"><small>. Duplicate detected!</small></span></label>
-                    <input type="text" name="cell_no" id="cell_no" value="{{ $user->userCell }}" class="required">
+                    <input type="text" name="cell_no" id="cell_no" value="{{ $studentInfo->userCell }}"
+                        class="required">
                 </div>
 
                 <div class="form-field">
                     <label>Email Address * <span id="email_error" class="hidden" style="color:red"><small>Not a valid
                                 email</small></span></label>
-                    <input type="email" name="email" id="email" value="{{ $user->userEmail }}" class="required">
+                    <input type="email" name="email" id="email" value="{{ $studentInfo->userEmail }}"
+                        class="required">
                 </div>
 
                 <div class="form-field-big">
                     <label>Physical Address * <span id="userAddress1_error" class="hidden" style="color:red"><small>This
                                 field is required</small></span></label>
                     <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1"
-                        style="width:98% !important" class="required" value="{{ $user->userAddress1 }}">
+                        style="width:98% !important" class="required" value="{{ $studentInfo->userAddress1 }}">
                 </div>
                 <div class="form-field-big" style="height:77px !important">
                     <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is
                             required</small></span>
                     <input type="text" placeholder="Suburb" name="userAddress2" id="userAddress2"
-                        style="width:98% !important" class="required" value="{{ $user->userAddress2 }}">
+                        style="width:98% !important" class="required" value="{{ $studentInfo->userAddress2 }}">
                 </div>
                 <div class="form-field" style="margin-top:-15px; height:60px !important">
                     <span id="userAddressCity_error" class="hidden" style="color:red"><small>This field is
                             required</small></span>
                     <input type="text" placeholder="City" name="userAddressCity" id='userAddressCity'
-                        class="required" value="{{ $user->userAddressCity }}">
+                        class="required" value="{{ $studentInfo->userAddressCity }}">
                 </div>
                 <div class="form-field" style="margin-top:-15px; height:60px !important">
                     <span id="userAddressPostal_error" class="hidden" style="color:red"><small>Not a valid postal
                             code</small></span>
                     <input type="text" placeholder="Postal Code" name="userAddressPostal" id="userAddressPostal"
-                        class="required" value="{{ $user->userAddressPostal }}">
+                        class="required" value="{{ $studentInfo->userAddressPostal }}">
                 </div>
 
                 <div class="form-field">
@@ -132,13 +137,13 @@
                                 is required</small></span></label>
                     <select name="studentType" id='studentType' class="required">
                         <option value="" selected disabled>Select a Student Type</option>
-                        <option value="NSFAS" <?php if ($user->studentType == 'NSFAS') {
+                        <option value="NSFAS" <?php if ($studentInfo->studentType == 'NSFAS') {
                             echo 'selected';
                         } ?>>NSFAS</option>
-                        <option value="Bursary" <?php if ($user->studentType == 'Bursary') {
+                        <option value="Bursary" <?php if ($studentInfo->studentType == 'Bursary') {
                             echo 'selected';
                         } ?>>Bursary</option>
-                        <option value="Cash / Direct" <?php if ($user->studentType == 'Cash / Direct') {
+                        <option value="Cash / Direct" <?php if ($studentInfo->studentType == 'Cash / Direct') {
                             echo 'selected';
                         } ?>>Cash</option>
                     </select>
@@ -148,12 +153,18 @@
                     <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is
                                 required</small></span></label>
                     <select name="year" id="year" class="required">
-                        @foreach ($lookups as $lookup)
+                        @foreach ($lookups->where('group_id', 4)->sortByDesc('lookup_name') as $lookup)
                             @if ($lookup->group_id == '4')
-                                <option value="{{ $lookup->lookup_name }}" selected>{{ $lookup->lookup_name }}</option>
+                                <option value="{{ $lookup->lookup_name }}" <?php if ($studentInfo->year == $lookup->lookup_name) {
+                                    echo 'selected';
+                                } ?>>
+                                    {{ $lookup->lookup_name }}
+                                </option>
                             @endif
                         @endforeach
                     </select>
+
+
                 </div>
 
                 <div class="form-field">
@@ -163,7 +174,7 @@
                         <option value="Choose one" selected disabled>Choose one</option>
                         @foreach ($lookups as $lookup)
                             @if ($lookup->group_id == '1')
-                                <option value="{{ $lookup->id }}" <?php if ($user->institutionStudy == $lookup->id) {
+                                <option value="{{ $lookup->id }}" <?php if ($studentInfo->institutionStudy == $lookup->id) {
                                     echo 'selected';
                                 } ?>>{{ $lookup->lookup_name }}
                                 </option>
@@ -175,7 +186,7 @@
                 <div class="form-field">
                     <label>Student Number * <span id="studNumber_error" class="hidden" style="color:red"><small>This
                                 field is required</small></span></label>
-                    <input type="text" name="studNumber" id="studNumber" value="{{ $user->studentNo }}"
+                    <input type="text" name="studNumber" id="studNumber" value="{{ $studentInfo->studentNo }}"
                         class="required">
                 </div>
 
@@ -186,7 +197,7 @@
                         <option value="" selected disabled>Please select one</option>
                         @foreach ($lookups as $lookup)
                             @if ($lookup->group_id == '6')
-                                <option value="{{ $lookup->lookup_name }}" <?php if ($user->yearOfStudy == $lookup->lookup_name) {
+                                <option value="{{ $lookup->lookup_name }}" <?php if ($studentInfo->yearOfStudy == $lookup->lookup_name) {
                                     echo 'selected';
                                 } ?>>
                                     {{ $lookup->lookup_name }}</option>
@@ -202,7 +213,7 @@
                         <option value="" disabled selected>Select One</option>
                         @foreach ($lookups as $lookup)
                             @if ($lookup->group_id == '3')
-                                <option value="{{ $lookup->id }}" <?php if ($user->faculty == $lookup->id) {
+                                <option value="{{ $lookup->id }}" <?php if ($studentInfo->faculty == $lookup->id) {
                                     echo 'selected';
                                 } ?>>{{ $lookup->lookup_name }}
                                 </option>
@@ -210,7 +221,7 @@
                         @endforeach
                     </select>
                 </div>
-
+                <!-- test -->
                 <div id="sponsorDetails" class="<?php if ($user->studentType !== 'Cash / Direct') {
                     echo 'hidden';
                 } ?>">
@@ -291,9 +302,9 @@
                             </div>
 
                             <!-- <div class="form-field-big">
-                    <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" value="{{ $user->pAddress1 }}">
-                </div> -->
+                                                                                                                <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                                                                                                <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important" value="{{ $user->pAddress1 }}">
+                                                                                                            </div> -->
                             <div class="form-field-big" style="height:50px !important">
                                 <label>Physical Address * <span id="pAddress1_error" class="hidden"
                                         style="color:red"><small>This field is required</small></span></label>
@@ -346,7 +357,7 @@
                     <div class="form-field">
                         <br />
                     </div>
-
+                    <!-- ------------------------------------------------------------------------ -->
                     <h1 class="fs-title">Bursar Details</h1>
                     <br />
 
@@ -386,16 +397,16 @@
 
                     <div class="form-field">
                         <!-- <ul style="list-style-type:none">
-                        <li style="display:inline-flex; margin-top:30px;">
-                            <input type="checkbox" id="nsfas_bursar" name="nsfas_bursar" value="1" style="width:50px !important" <?php if ($user->nsfas_bursar == '1') {
-                                echo 'checked';
-                            } ?>>
-                            <label for="nsfas_bursar" style="width:500px">NSFAS bursar?</label>
-                        </li>
-                    </ul> -->
+                                    <li style="display:inline-flex; margin-top:30px;">
+                                        <input type="checkbox" id="nsfas_bursar" name="nsfas_bursar" value="1" style="width:50px !important" <?php if ($user->nsfas_bursar == '1') {
+                                            echo 'checked';
+                                        } ?>>
+                                        <label for="nsfas_bursar" style="width:500px">NSFAS bursar?</label>
+                                    </li>
+                                </ul> -->
                         <br />
                     </div>
-
+                    <!-- ------------------------------------------------------------------------ -->
                     <div class="form-field-big">
                         <label>Physical Address * <span id="bAddress1_error" class="hidden" style="color:red"><small>This
                                     field is required</small></span></label>
@@ -420,7 +431,7 @@
                         <input type="text" placeholder="Postal Code" name="bAddressPostal" id="bAddressPostal"
                             value="{{ $user->bAddressPostal }}">
                     </div>
-
+                    <!-- ------------------------------------------------------------------------ -->
                     <div class="form-field">
                         <label>How Is the Bursary Paid? * <span id="bPayment_error" class="hidden"
                                 style="color:red"><small>This field is required</small></span></label>
@@ -439,13 +450,13 @@
                         </select>
                     </div>
 
-                    <div class="form-field <?php if ($user->bPayment == 'Via an INTERMEDIARY') {
+                    <div class="form-field <?php if ($studentInfo->bPayment == 'Via an INTERMEDIARY') {
                         echo 'hidden';
                     } ?>" id="placeholder">
                         <br />
                     </div>
 
-                    <div id="viaInt" class="<?php if ($user->bPayment !== 'Via an INTERMEDIARY') {
+                    <div id="viaInt" class="<?php if ($studentInfo->bPayment !== 'Via an INTERMEDIARY') {
                         echo 'hidden';
                     } ?>">
 
@@ -490,36 +501,36 @@
                 <div class="form-field">
                     <br />
                 </div>
-
+                <!-- -----------------------------Next of Kin------------------------------------------- -->
                 <h1 class="fs-title">Next of Kin</h2>
 
-                    <div class="form-field-big <?php if ($user->studentType !== 'Cash / Direct') {
+                    <div class="form-field-big <?php if ($studentInfo->studentType !== 'Cash / Direct') {
                         echo 'hidden';
                     } ?>" style="height:60px !important" id="parentSameInfo">
                         <li style="display:inline-flex">
                             <input type="checkbox" id="app_parent_kin" name="app_parent_kin" value="1"
-                                style="width:50px !important;" <?php if ($user->app_parent_kin == 1) {
+                                style="width:50px !important;" <?php if ($studentInfo->app_parent_kin == 1) {
                                     echo 'checked';
                                 } ?>>
                             <label for="app_parent_kin" style="width:400px">Same as Parent / Sponsor</label>
                         </li>
                     </div>
 
-                    <div class="nameFields <?php if ($user->app_parent_kin == 1) {
+                    <div class="nameFields <?php if ($studentInfo->app_parent_kin == 1) {
                         echo 'hidden';
                     } ?>">
 
                         <div class="form-field">
                             <label>First Name * <span id="kFirstName_error" class="hidden" style="color:red"><small>This
                                         field is required</small></span></label>
-                            <input type="text" name="kFirstName" id="kFirstName" value="{{ $user->kinFirstName }}"
-                                class="required">
+                            <input type="text" name="kFirstName" id="kFirstName"
+                                value="{{ $studentInfo->kinFirstName }}" class="required">
                         </div>
                         <div class="form-field">
                             <label>Last Name * <span id="kLastName_error" class="hidden" style="color:red"><small>This
                                         field is required</small></span></label>
-                            <input type="text" name="kLastName" id="kLastName" value="{{ $user->kinLastName }}"
-                                class="required">
+                            <input type="text" name="kLastName" id="kLastName"
+                                value="{{ $studentInfo->kinLastName }}" class="required">
                         </div>
                     </div>
 
@@ -527,16 +538,16 @@
                         <label>Title * <span id="kTitle_error" class="hidden" style="color:red"><small>This field is
                                     required</small></span></label>
                         <select name="kTitle" id='kTitle' class="required">
-                            <option value="Mr" <?php if ($user->kinTitle == 'Mr') {
+                            <option value="Mr" <?php if ($studentInfo->kinTitle == 'Mr') {
                                 echo 'selected';
                             } ?>>Mr</option>
-                            <option value="Ms" <?php if ($user->kinTitle == 'Ms') {
+                            <option value="Ms" <?php if ($studentInfo->kinTitle == 'Ms') {
                                 echo 'selected';
                             } ?>>Ms</option>
-                            <option value="Mrs" <?php if ($user->kinTitle == 'Mrs') {
+                            <option value="Mrs" <?php if ($studentInfo->kinTitle == 'Mrs') {
                                 echo 'selected';
                             } ?>>Mrs</option>
-                            <option value="Miss" <?php if ($user->kinTitle == 'Miss') {
+                            <option value="Miss" <?php if ($studentInfo->kinTitle == 'Miss') {
                                 echo 'selected';
                             } ?>>Miss</option>
                         </select>
@@ -546,10 +557,10 @@
                         <label>Relationship * <span id="kRelationship_error" class="hidden" style="color:red"><small>This
                                     field is required</small></span></label>
                         <input type="text" name="kRelationship" id="kRelationship"
-                            value="{{ $user->kinRelationship }}" class="required">
+                            value="{{ $studentInfo->kinRelationship }}" class="required">
                     </div>
 
-                    <div class="generalInfo <?php if ($user->app_parent_kin == 1) {
+                    <div class="generalInfo <?php if ($studentInfo->app_parent_kin == 1) {
                         echo 'hidden';
                     } ?>">
 
@@ -559,7 +570,7 @@
                     <option value="" selected disabled>Please select one</option>
                     @foreach ($lookups as $lookup)
                         @if ($lookup->group_id == '5')
-                            <option value="{{$lookup->lookup_name}}" <?php if ($user->kinNationality == $lookup->lookup_name) {
+                            <option value="{{$lookup->lookup_name}}" <?php if ($studentInfo->kinNationality == $lookup->lookup_name) {
                                 echo 'selected';
                             } ?>>{{$lookup->lookup_name}}</option>
                         @endif
@@ -567,16 +578,16 @@
                 </select>
             </div>
 
-            <div class="form-field <?php if ($user->kinNationality !== 'South Africa') {
+            <div class="form-field <?php if ($studentInfo->kinNationality !== 'South Africa') {
                 echo 'hidden';
             } ?>" id="kinIdField">
                 <label>I.D Number * <span id="kIdNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span></label>
-                <input type="text" name="kIdNumber" id="kIdNumber" value="{{$user->kinId}}" <?php if ($user->kinNationality == 'South Africa') {
+                <input type="text" name="kIdNumber" id="kIdNumber" value="{{$user->kinId}}" <?php if ($studentInfo->kinNationality == 'South Africa') {
                     echo "class='required'";
                 } ?>>
             </div>
 
-            <div class="form-field <?php if ($user->kinNationality == 'South Africa') {
+            <div class="form-field <?php if ($studentInfo->kinNationality == 'South Africa') {
                 echo 'hidden';
             } ?>" id="kinPassportField">
                 <label>Passport Number * <span id="kinPassportNo_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
@@ -590,34 +601,34 @@
                                     style="color:red"><small>Not a valid cellphone number</small></span><span
                                     id="kCellNo_duplicate" class="hidden" style="color:red"><small>. Duplicate
                                         detected!</small></span></label>
-                            <input type="text" name="kCellNo" id='kCellNo' value="{{ $user->kinCellNo }}"
+                            <input type="text" name="kCellNo" id='kCellNo' value="{{ $studentInfo->kinCellNo }}"
                                 class="required">
                         </div>
 
                         <div class="form-field">
                             <label>Email Address</label>
-                            <input type="email" name="kEmail" id="kEmail" value="{{ $user->kinEmail }}">
+                            <input type="email" name="kEmail" id="kEmail" value="{{ $studentInfo->kinEmail }}">
                         </div>
                     </div>
 
                     <div class="form-field">
                         <label>Work Number <span id="kWorkNo_error" class="hidden" style="color:red"><small>Not a valid
                                     cellphone number</small></span></label>
-                        <input type="text" name="kWorkNo" id="kWorkNo" value="{{ $user->kinWorkNo }}">
+                        <input type="text" name="kWorkNo" id="kWorkNo" value="{{ $studentInfo->kinWorkNo }}">
                     </div>
 
                     <div class="form-field">
                         <label>Telephone Number <span id="kTeleNo_error" class="hidden" style="color:red"><small>Not a
                                     valid telephone number</small></span></label>
-                        <input type="text" name="kTeleNo" id='kTeleNo' value="{{ $user->kinTelNo }}">
+                        <input type="text" name="kTeleNo" id='kTeleNo' value="{{ $studentInfo->kinTelNo }}">
                     </div>
 
                     <!-- <div class="form-field-big">
-                <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" value="{{ $user->kinAddressStr }}" class="required">
-            </div> -->
+                                        <label>Physical Address * <span id="kAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                        <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1" style="width:98% !important" value="{{ $user->kinAddressStr }}" class="required">
+                                    </div> -->
 
-                    <div class="addressSection <?php if ($user->app_parent_kin == 1) {
+                    <div class="addressSection <?php if ($studentInfo->app_parent_kin == 1) {
                         echo 'hidden';
                     } ?>">
                         <div class="form-field-big" style="height:50px !important">
@@ -627,36 +638,38 @@
                         <div class="form-field-big" style="height:60px !important">
                             <li style="display:inline-flex">
                                 <input type="checkbox" id="app_address" name="app_address" value="1"
-                                    style="width:50px !important;" <?php if ($user->app_address == 1) {
+                                    style="width:50px !important;" <?php if ($studentInfo->app_address == 1) {
                                         echo 'checked';
                                     } ?>>
                                 <label for="app_address" style="width:400px">Same as Applicant's Home Address</label>
                             </li>
                         </div>
-                        <div class="kinAddress <?php if ($user->app_address == 1) {
+                        <div class="kinAddress <?php if ($studentInfo->app_address == 1) {
                             echo 'hidden';
                         } ?>">
                             <div class="form-field-big" style="height:60px !important">
                                 <input type="text" placeholder="Street No" name="kAddress1" id="kAddress1"
-                                    style="width:98% !important" value="{{ $user->kinAddressStr }}" class="required">
+                                    style="width:98% !important" value="{{ $studentInfo->kinAddressStr }}"
+                                    class="required">
                             </div>
                             <div class="form-field-big" style="height:60px !important">
                                 <span id="kAddress2_error" class="hidden" style="color:red"><small>This field is
                                         required</small></span>
                                 <input type="text" placeholder="Suburb" name="kAddress2" id="kAddress2"
-                                    style="width:98% !important" value="{{ $user->kinAddressSuburb }}" class="required">
+                                    style="width:98% !important" value="{{ $studentInfo->kinAddressSuburb }}"
+                                    class="required">
                             </div>
                             <div class="form-field" style="height:60px !important">
                                 <span id="kAddressCity_error" class="hidden" style="color:red"><small>This field is
                                         required</small></span>
                                 <input type="text" placeholder="City" name="kAddressCity" id='kAddressCity'
-                                    value="{{ $user->kinAddressCity }}" class="required">
+                                    value="{{ $studentInfo->kinAddressCity }}" class="required">
                             </div>
                             <div class="form-field" style="height:60px !important">
                                 <span id="kAddressPostal_error" class="hidden" style="color:red"><small>Not a valid
                                         postal code</small></span>
                                 <input type="text" placeholder="Postal Code" name="kAddressPostal"
-                                    id="kAddressPostal" value="{{ $user->kinAddressPost }}" class="required">
+                                    id="kAddressPostal" value="{{ $studentInfo->kinAddressPost }}" class="required">
                             </div>
                         </div>
                     </div>
@@ -1141,31 +1154,31 @@
             if (propValue == "Braamlofts") {
                 $("#roomType").empty().append(
                     '<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option><option value="3 Sharing">3 Sharing</option>'
-                    )
+                )
             } else if (propValue == "80 Jorissen") {
                 $("#roomType").empty().append(
                     '<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>'
-                    )
+                )
             } else if (propValue == "49 Jorissen") {
                 $("#roomType").empty().append(
                     '<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="Single">Single</option><option value="Single 2 bedroom">Single | 2 Bedroom</option><option value="Single 3 bedroom">Single | 3 Bedroom</option><option value="Single 4 bedroom">Single | 4 Bedroom</option>'
-                    )
+                )
             } else if (propValue == "Dunvista Mansions") {
                 $("#roomType").empty().append(
                     '<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>'
-                    )
+                )
             } else if (propValue == "Wynton Joy") {
                 $("#roomType").empty().append(
                     '<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>'
-                    )
+                )
             } else if (propValue == "126 Siemert") {
                 $("#roomType").empty().append(
                     '<option value="">Select One</option><option value="Single">Single</option><option value="2 Sharing">2 Sharing</option>'
-                    )
+                )
             } else if (propValue == "YMCA") {
                 $("#roomType").empty().append(
                     '<option value="">Select One</option><option value="2 Sharing">2 Sharing</option><option value="2 Sharing 2 Bedroom">2 Sharing | 2 Bedroom</option><option value="2 Sharing 3 Bedroom">2 Sharing | 3 Bedroom</option><option value="3 Sharing">3 Sharing</option><option value="Single Small">Single | Small</option><option value="Single Medium">Single | Medium</option><option value="Single Large">Single | Large</option><option value="Single 3 Bedroom">Single | 3 Bedroom</option>'
-                    )
+                )
             }
         })
 

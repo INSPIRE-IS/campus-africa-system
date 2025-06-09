@@ -155,14 +155,16 @@ class User extends Authenticatable
         'role_all_apps_report',
     ];
 
-    public function files(){
+    public function files()
+    {
         return $this->hasMany("App\Models\UserFiles", "userUid", "id");
     }
 
-    public function info(){
+    public function info()
+    {
         return $this->hasMany("App\Models\StudentsInfo", "userUid", "id");
     }
-    
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -186,5 +188,16 @@ class User extends Authenticatable
     public function getLoginRouteExpiresInAttribute(): int
     {
         return config('laravel-passwordless-login.login_route_expires');
+    }
+
+
+    public function latestStudentInfo()
+    {
+        return $this->hasOne(StudentsInfo::class, 'userUid', 'id')->latestOfMany('year');
+    }
+
+    public function getResolvedFirstNameAttribute()
+    {
+        return $this->userFirstName ?: $this->latestStudentInfo?->firstName;
     }
 }

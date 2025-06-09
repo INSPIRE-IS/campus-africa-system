@@ -587,11 +587,18 @@ class HomeController extends Controller
     public function applications(Request $request)
     {
 
+
         if (Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3") {
+
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+            Session::put('year', $this_year);
+            //dd(Session::get('year'));
 
             $allowedResidences = [];
             $allProp = Residence::whereNull('status')->get();
             $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+            $lookups = Lookups::get();
 
             foreach ($allProp as $prop) {
                 foreach ($permissionProp as $permission) {
@@ -601,12 +608,13 @@ class HomeController extends Controller
                 }
             }
             $agent = new Agent();
-            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "allowedResidences" => $allowedResidences, "agent" => $agent]);
+            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "allowedResidences" => $allowedResidences, "agent" => $agent, "lookups" => $lookups, "this_year" => $this_year]);
         }
     }
 
     public function activeBooking($userId, $this_year)
     {
+        //dd($this_year);
         $user = User::where('id', $userId)->first();
         $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
@@ -842,7 +850,8 @@ class HomeController extends Controller
         if (Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3") {
 
             //get current year
-            $this_year = Lookups::where('group_id', '4')->first();
+            $year = Session::get('year');
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
             $this_year = $this_year->lookup_name;
 
             //See if there is an active booking
@@ -866,10 +875,6 @@ class HomeController extends Controller
                     BookingPayment::create(['bookingId' => $bookingCurr->id]);
                     $this->paymentDeatilsInternal($request->userId);
                 }
-
-
-
-
 
                 return view('admin.app_profile', [
                     "headerTitle" => $returnInfo['headerTitle'],
@@ -1942,11 +1947,31 @@ class HomeController extends Controller
             'email',
             'userId',
         )->where('userRole', '=', '0')->get();
+        // $students = DB::table('users as u')
+        //     ->join('students_info as si', 'si.userUid', '=', 'u.id')
+        //     ->where('u.userRole', 0)
+        //     ->select(
+        //         'u.id',
+        //         DB::raw('COALESCE(NULLIF(u.userFirstName, ""), si.userFirstName) as userFirstname'),
+        //         DB::raw('COALESCE(NULLIF(u.userLastname, ""), si.userLastname) as userLastname'),
+        //         'u.email',
+        //         'u.userId'
+        //     )
+        //     ->distinct()
+        //     ->limit(10)
+        //     ->get();
         //dd($students);
         //dd(auth()->user()->role_manage_users);
         //dd(Auth::user()->role_manage_users);
+        $showLoginAs = false;
+        if (Auth::user()->email == 'mirichea@whitehart.co.za' || Auth::user()->email == 'roger1@whitehart.co.za') {
+            $showLoginAs = true;
+        }
+
+
+
         if (Auth::user()->role_manage_users == "1") {
-            return view('admin.user_management', ["headerTitle" => "User management", "systemUsers" => $systemUsers, "students" => $students, "title" => "User Management"]);
+            return view('admin.user_management', ["headerTitle" => "User management", 'showLoginAs' => $showLoginAs, "systemUsers" => $systemUsers, "students" => $students, "title" => "User Management"]);
         } else {
             return "404 Error";
         }
@@ -2092,17 +2117,79 @@ class HomeController extends Controller
     public function student_edit(Request $request, $studentId)
     {
         $user = User::where('id', $studentId)->first();
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+
+        $studentInfo = StudentsInfo::where('userUid', $user->id)->orderBy('year', 'desc')->first();
+        //dd($user);
         $booking = Booking::where('userId', $studentId)->first();
         $lookup = Lookups::get();
 
-        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user, "lookups" => $lookup, "booking" => $booking, "title" => "Edit Student"]);
+        return view('admin.studentEdit', ["headerTitle" => "Student Edit", "user" => $user, "lookups" => $lookup, "booking" => $booking, "title" => "Edit Student", "studentInfo" => $studentInfo]);
     }
 
     public function edit_student(Request $request)
     {
 
         $oldData = User::where("id", $request->userUid)->first();
-        $newData = ['userFirstName|First Name' => $request->firstName, 'userLastname|Last Name' => $request->lastName, 'userTitle|Title' => $request->title, 'userDob|Date of Birth' => $request->dob, 'userCell|Cellphone Number' => $request->cell_no, 'userEmail|Email' => $request->email, 'userId|I.D Number' => $request->idNumber, 'userNationality|Nationality' => $request->nationality, 'userPassport|Passport Number' => $request->passportNo, 'institutionStudy|Institution of Study' => $request->institStudy, 'studentNo|Student Number' => $request->studNumber, 'studentType|Student Type' => $request->studentType, 'faculty|Faculty' => $request->faculty, 'year|Year' => "2022", 'sponFirstName|Parent / Sponser First Name' => $request->pFirstName, 'sponLastName| Parent / Sponser Last Name' => $request->pLastName, 'sponCell|Parent / Sponser Cellphone Number' => $request->pCell_no, 'sponEmail|Parent / Sponser Email' => $request->pEmail, 'sponId|Parent / Sponser I.D Number' => $request->pIdNumber, 'burCompanyName|Burser Company Name' => $request->bCompanyName, 'burRegNo|Burser Registration Number' => $request->bRegistrationNo, 'burContactPerson|Burser Contact Person' => $request->bContactPerson, 'burContactNo|Burser Contact Number' => $request->bContactNumber, 'burEmail|Burser Email' => $request->bEmail, 'kinFirstName|Next of Kin First Name' => $request->kFirstName, 'kinLastName|Next of Kin Last Name' => $request->kLastName, 'kinTitle|Next of Kin Title' => $request->kTitle, 'kinId|Next of Kin I.D Number' => $request->kIdNumber, 'kinAddressStr|Next of Kin Street Number' => $request->kAddress1, 'kinAddressSuburb|Next of Kin Suburb' => $request->kAddress2, 'kinAddressCity|Next of Kin City' => $request->kAddressCity, 'kinAddressPost|Next of Kin Postal Code' => $request->kAddressPostal, 'kinRelationship|Next of Kin Relationship' => $request->kRelationship, 'kinTelNo|Next of Kin Telephone Number' => $request->kTeleNo, 'kinCellNo|Next of Kin Cellphone Number' => $request->kCellNo, 'kinWorkNo|Next of Kin Work Number' => $request->kWorkNo, 'kinEmail|Next of Kin Email' => $request->kEmail, 'kinNationality|Next of Kin Nationality' => $request->kinNationality, 'kinPassportNo|Next of Kin Passport Number' => $request->kinPassportNo, 'pNationality|Parent / Sponser Nationality' => $request->pNationality, 'pPassportNo|Parent / Sponser Passport Number' => $request->pPassportNo, 'pAddress1|Parent / Sponser Street Number' => $request->pAddress1, 'pAddress2|Parent / Sponser Suburb' => $request->pAddress2, 'pAddressCity|Parent / Sponser City' => $request->pAddressCity, 'pAddressPostal|Parent / Sponser Postal Code' => $request->pAddressPostal, 'userAddress1|Street Number' => $request->userAddress1, 'userAddress2|Suburb' => $request->userAddress2, 'userAddressCity|City' => $request->userAddressCity, 'userAddressPostal|PostalCode' => $request->userAddressPostal, 'bAddress1|Burser Street Number' => $request->bAddress1, 'bAddress2|Burser Suburb' => $request->bAddress2, 'bAddressCity|Burser City' => $request->bAddressCity, 'bAddressPostal|Burser Postal Code' => $request->bAddressPostal, 'bPayment|Burser Payment' => $request->bPayment, 'bint|Burser Intermediary' => $request->bint, 'bIntName|Burser Intermediary Name' => $request->bIntName,];
+        $newData = [
+            'userFirstName|First Name' => $request->firstName,
+            'userLastname|Last Name' => $request->lastName,
+            'userTitle|Title' => $request->title,
+            'userDob|Date of Birth' => $request->dob,
+            'userCell|Cellphone Number' => $request->cell_no,
+            'userEmail|Email' => $request->email,
+            'userId|I.D Number' => $request->idNumber,
+            'userNationality|Nationality' => $request->nationality,
+            'userPassport|Passport Number' => $request->passportNo,
+            'institutionStudy|Institution of Study' => $request->institStudy,
+            'studentNo|Student Number' => $request->studNumber,
+            'studentType|Student Type' => $request->studentType,
+            'faculty|Faculty' => $request->faculty,
+            'year|Year' => $request->year,
+            'sponFirstName|Parent / Sponser First Name' => $request->pFirstName,
+            'sponLastName| Parent / Sponser Last Name' => $request->pLastName,
+            'sponCell|Parent / Sponser Cellphone Number' => $request->pCell_no,
+            'sponEmail|Parent / Sponser Email' => $request->pEmail,
+            'sponId|Parent / Sponser I.D Number' => $request->pIdNumber,
+            'burCompanyName|Burser Company Name' => $request->bCompanyName,
+            'burRegNo|Burser Registration Number' => $request->bRegistrationNo,
+            'burContactPerson|Burser Contact Person' => $request->bContactPerson,
+            'burContactNo|Burser Contact Number' => $request->bContactNumber,
+            'burEmail|Burser Email' => $request->bEmail,
+            'kinFirstName|Next of Kin First Name' => $request->kFirstName,
+            'kinLastName|Next of Kin Last Name' => $request->kLastName,
+            'kinTitle|Next of Kin Title' => $request->kTitle,
+            'kinId|Next of Kin I.D Number' => $request->kIdNumber,
+            'kinAddressStr|Next of Kin Street Number' => $request->kAddress1,
+            'kinAddressSuburb|Next of Kin Suburb' => $request->kAddress2,
+            'kinAddressCity|Next of Kin City' => $request->kAddressCity,
+            'kinAddressPost|Next of Kin Postal Code' => $request->kAddressPostal,
+            'kinRelationship|Next of Kin Relationship' => $request->kRelationship,
+            'kinTelNo|Next of Kin Telephone Number' => $request->kTeleNo,
+            'kinCellNo|Next of Kin Cellphone Number' => $request->kCellNo,
+            'kinWorkNo|Next of Kin Work Number' => $request->kWorkNo,
+            'kinEmail|Next of Kin Email' => $request->kEmail,
+            'kinNationality|Next of Kin Nationality' => $request->kinNationality,
+            'kinPassportNo|Next of Kin Passport Number' => $request->kinPassportNo,
+            'pNationality|Parent / Sponser Nationality' => $request->pNationality,
+            'pPassportNo|Parent / Sponser Passport Number' => $request->pPassportNo,
+            'pAddress1|Parent / Sponser Street Number' => $request->pAddress1,
+            'pAddress2|Parent / Sponser Suburb' => $request->pAddress2,
+            'pAddressCity|Parent / Sponser City' => $request->pAddressCity,
+            'pAddressPostal|Parent / Sponser Postal Code' => $request->pAddressPostal,
+            'userAddress1|Street Number' => $request->userAddress1,
+            'userAddress2|Suburb' => $request->userAddress2,
+            'userAddressCity|City' => $request->userAddressCity,
+            'userAddressPostal|PostalCode' => $request->userAddressPostal,
+            'bAddress1|Burser Street Number' => $request->bAddress1,
+            'bAddress2|Burser Suburb' => $request->bAddress2,
+            'bAddressCity|Burser City' => $request->bAddressCity,
+            'bAddressPostal|Burser Postal Code' => $request->bAddressPostal,
+            'bPayment|Burser Payment' => $request->bPayment,
+            'bint|Burser Intermediary' => $request->bint,
+            'bIntName|Burser Intermediary Name' => $request->bIntName,
+        ];
 
         foreach ($newData as $key => $new) {
 
@@ -2127,12 +2214,12 @@ class HomeController extends Controller
 
 
             if ($oldData->$key !== $new) {
-                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', $request->year)->first();
                 $this_year = $this_year->lookup_name;
 
                 ActionList::create([
                     "userUid" => $request->userUid,
-                    "action" => "Updated " . $changedField . " From " . $oldData->$key . " to " . $new,
+                    "action" => "User Updated " . $changedField . " From " . $oldData->$key . " to " . $new,
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => Auth::user()->userFirstName,
                     "actionUserRole" => Auth::user()->userRole,
@@ -2156,7 +2243,7 @@ class HomeController extends Controller
             'studentType' => $request->studentType,
             // 'institutionCampus' => $request->institCampus,
             'faculty' => $request->faculty,
-            'year' => "2022",
+            'year' => $request->year,
             'sponFirstName' => $request->pFirstName,
             'sponLastName' => $request->pLastName,
             'sponCell' => $request->pCell_no,
@@ -2167,6 +2254,7 @@ class HomeController extends Controller
             'burContactPerson' => $request->bContactPerson,
             'burContactNo' => $request->bContactNumber,
             'burEmail' => $request->bEmail,
+
             'kinFirstName' => $request->kFirstName,
             'kinLastName' => $request->kLastName,
             'kinTitle' => $request->kTitle,
@@ -2182,16 +2270,19 @@ class HomeController extends Controller
             'kinEmail' => $request->kEmail,
             'kinNationality' => $request->kinNationality,
             'kinPassportNo' => $request->kinPassportNo,
+
             'pNationality' => $request->pNationality,
             'pPassportNo' => $request->pPassportNo,
             'pAddress1' => $request->pAddress1,
             'pAddress2' => $request->pAddress2,
             'pAddressCity' => $request->pAddressCity,
             'pAddressPostal' => $request->pAddressPostal,
+
             'userAddress1' => $request->userAddress1,
             'userAddress2' => $request->userAddress2,
             'userAddressCity' => $request->userAddressCity,
             'userAddressPostal' => $request->userAddressPostal,
+
             'app_address' => $request->app_address,
             'app_address_p' => $request->app_address_p,
             'app_parent_kin' => $request->app_parent_kin,
@@ -2205,15 +2296,226 @@ class HomeController extends Controller
             // 'nsfas_bursar' => $request->nsfas_bursar,
         ]);
 
-        // ActionList::create([
-        //     "userUid" => $request->userUid,
-        //     "action" => "Updated Profile",
-        //     "actionUserUid" => Auth::user()->id,
-        //     "actionUserDisplayName" => Auth::user()->userFirstName,
-        //     "actionUserRole" => Auth::user()->userRole,
-        // ]);
+        $oldstudInfo = StudentsInfo::where("userUid", $request->userUid)->first();
+
+        $newstudData = [
+            'userFirstName|First Name' => $request->firstName,
+            'userLastname|Last Name' => $request->lastName,
+            'userTitle|Title' => $request->title,
+            'userDob|Date of Birth' => $request->dob,
+            'userCell|Cellphone Number' => $request->cell_no,
+            'userEmail|Email' => $request->email,
+            'userId|I.D Number' => $request->idNumber,
+            'userNationality|Nationality' => $request->nationality,
+            'userPassport|Passport Number' => $request->passportNo,
+            'institutionStudy|Institution of Study' => $request->institStudy,
+            'studentNo|Student Number' => $request->studNumber,
+            'studentType|Student Type' => $request->studentType,
+            'faculty|Faculty' => $request->faculty,
+            'year|Year' => $request->year,
+            'sponFirstName|Parent / Sponser First Name' => $request->pFirstName,
+            'sponLastName| Parent / Sponser Last Name' => $request->pLastName,
+            'sponCell|Parent / Sponser Cellphone Number' => $request->pCell_no,
+            'sponEmail|Parent / Sponser Email' => $request->pEmail,
+            'sponId|Parent / Sponser I.D Number' => $request->pIdNumber,
+            'burCompanyName|Burser Company Name' => $request->bCompanyName,
+            'burRegNo|Burser Registration Number' => $request->bRegistrationNo,
+            'burContactPerson|Burser Contact Person' => $request->bContactPerson,
+            'burContactNo|Burser Contact Number' => $request->bContactNumber,
+            'burEmail|Burser Email' => $request->bEmail,
+            'kinFirstName|Next of Kin First Name' => $request->kFirstName,
+            'kinLastName|Next of Kin Last Name' => $request->kLastName,
+            'kinTitle|Next of Kin Title' => $request->kTitle,
+            'kinId|Next of Kin I.D Number' => $request->kIdNumber,
+            'kinAddressStr|Next of Kin Street Number' => $request->kAddress1,
+            'kinAddressSuburb|Next of Kin Suburb' => $request->kAddress2,
+            'kinAddressCity|Next of Kin City' => $request->kAddressCity,
+            'kinAddressPost|Next of Kin Postal Code' => $request->kAddressPostal,
+            'kinRelationship|Next of Kin Relationship' => $request->kRelationship,
+            'kinTelNo|Next of Kin Telephone Number' => $request->kTeleNo,
+            'kinCellNo|Next of Kin Cellphone Number' => $request->kCellNo,
+            'kinWorkNo|Next of Kin Work Number' => $request->kWorkNo,
+            'kinEmail|Next of Kin Email' => $request->kEmail,
+            'kinNationality|Next of Kin Nationality' => $request->kinNationality,
+            'kinPassportNo|Next of Kin Passport Number' => $request->kinPassportNo,
+            'pNationality|Parent / Sponser Nationality' => $request->pNationality,
+            'pPassportNo|Parent / Sponser Passport Number' => $request->pPassportNo,
+            'pAddress1|Parent / Sponser Street Number' => $request->pAddress1,
+            'pAddress2|Parent / Sponser Suburb' => $request->pAddress2,
+            'pAddressCity|Parent / Sponser City' => $request->pAddressCity,
+            'pAddressPostal|Parent / Sponser Postal Code' => $request->pAddressPostal,
+            'userAddress1|Street Number' => $request->userAddress1,
+            'userAddress2|Suburb' => $request->userAddress2,
+            'userAddressCity|City' => $request->userAddressCity,
+            'userAddressPostal|PostalCode' => $request->userAddressPostal,
+            'bAddress1|Burser Street Number' => $request->bAddress1,
+            'bAddress2|Burser Suburb' => $request->bAddress2,
+            'bAddressCity|Burser City' => $request->bAddressCity,
+            'bAddressPostal|Burser Postal Code' => $request->bAddressPostal,
+            'bPayment|Burser Payment' => $request->bPayment,
+            'bint|Burser Intermediary' => $request->bint,
+            'bIntName|Burser Intermediary Name' => $request->bIntName,
+        ];
+
+        foreach ($newstudData as $key => $new) {
+            $info = explode("|", $key);
+            $fieldKey = $info[0];
+            $changedField = $info[1];
+
+            if (!isset($oldInfo->$fieldKey)) {
+                continue; // skip non-existent fields
+            }
+
+            if ($oldInfo->$fieldKey != $new) {
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', $request->year)->first();
+                $this_year = $this_year->lookup_name ?? now()->year;
+
+                ActionList::create([
+                    "userUid" => $request->userUid,
+                    "action" => "Student Info Updated {$changedField} From {$oldInfo->$fieldKey} to {$new}",
+                    "actionUserUid" => Auth::id(),
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year
+                ]);
+            }
+        }
+
+        // Now update the actual StudentInfo model
+        // StudentsInfo::updateOrCreate(['userUid' => $request->userUid],[
+        StudentsInfo::where('userUid', $request->userUid)->update([
+            // Basic user info
+            //'bookingId' => $request->bookingId,
+            //'bookingRef' => $request->bookingRef,
+            'userFirstName' => ucwords(strtolower($request->firstName)),
+            'userLastname' => ucwords(strtolower($request->lastName)),
+            'userTitle' => $request->title,
+            'userDob' => $request->dob,
+            //'gender' => $request->gender,
+            //'userCellCode' => $request->userCellCode,
+            'userCell' => $request->cell_no,
+            'userEmail' => $request->email,
+            //'userEmailAlt' => $request->email_alt,
+            'userId' => $request->idNumber,
+            'userNationality' => $request->nationality,
+            'userPassport' => $request->passportNo,
+
+            // Student academic info
+            'institutionStudy' => $request->institStudy,
+            // 'institutionCampus' => $request->institutionCampus,
+            'studentNo' => $request->studNumber,
+            'faculty' => $request->faculty,
+            'year' => $request->year,
+            //  'yearOfStudy' => $request->yearOfStudy,
+            'studentType' => $request->studentType,
+
+            // Address info
+            'userAddress1' => $request->userAddress1,
+            'userAddress2' => $request->userAddress2,
+            'userAddressCity' => $request->userAddressCity,
+            'userAddressPostal' => $request->userAddressPostal,
+
+            // 'bookingStatus' => $request->bookingStatus,
+            //  'applicationStatus' => $request->applicationStatus,
+
+            // Sponsor info
+            'sponFirstName' => $request->pFirstName,
+            'sponLastName' => $request->pLastName,
+            //'sponCellCode' => $request->sponCellCode,
+            'sponCell' => $request->pCell_no,
+            'sponEmail' => $request->pEmail,
+            'sponId' => $request->pIdNumber,
+
+            'pNationality' => $request->pNationality,
+            'pPassportNo' => $request->pPassportNo,
+            'pAddress1' => $request->pAddress1,
+            'pAddress2' => $request->pAddress2,
+            'pAddressCity' => $request->pAddressCity,
+            'pAddressPostal' => $request->pAddressPostal,
+            //  'c_credit_risk' => $request->c_credit_risk,
+            //  'c_credit_check' => $request->c_credit_check,
+            // Bursary info
+            'burCompanyName' => $request->bCompanyName,
+            'burRegNo' => $request->bRegistrationNo,
+            'burContactPerson' => $request->bContactPerson,
+            // 'burContactCode' => $request->burContactCode,
+            'burContactNo' => $request->bContactNumber,
+            'burEmail' => $request->bEmail,
+            //'b_meeting' => $request->b_meeting,
+            'bAddress1' => $request->bAddress1,
+            'bAddress2' => $request->bAddress2,
+            'bAddressCity' => $request->bAddressCity,
+            'bAddressPostal' => $request->bAddressPostal,
+            'bPayment' => $request->bPayment,
+            'bint' => $request->bint,
+            'bIntName' => $request->bIntName,
+
+            // Next of kin
+            'kinFirstName' => $request->kFirstName,
+            'kinLastName' => $request->kLastName,
+            'kinTitle' => $request->kTitle,
+            //'kinId' => $request->kIdNumber,
+            'kinAddressStr' => $request->kAddress1,
+            'kinAddressSuburb' => $request->kAddress2,
+            'kinAddressCity' => $request->kAddressCity,
+            'kinAddressPost' => $request->kAddressPostal,
+            'kinRelationship' => $request->kRelationship,
+            //'kinTelCode' => $request->kinTelCode,
+            'kinTelNo' => $request->kTeleNo,
+            'kinCellNo' => $request->kCellNo,
+            'kinWorkNo' => $request->kWorkNo,
+            'kinEmail' => $request->kEmail,
+            'kinNationality' => $request->kinNationality,
+            'kinPassportNo' => $request->kinPassportNo,
+
+            // Approval statuses
+            'app_address' => $request->app_address,
+            'app_address_p' => $request->app_address_p,
+            'app_parent_kin' => $request->app_parent_kin,
+            // 'id_data_approved' => $request->id_data_approved,
+            // 'student_card_approved' => $request->student_card_approved,
+            // 'registration_approved' => $request->registration_approved,
+            // 'bursary_approved' => $request->bursary_approved,
+            // 'bank_approved' => $request->bank_approved,
+            // 'address_approved' => $request->address_approved,
+            // 'kin_approved' => $request->kin_approved,
+            // 'parent_approved' => $request->parent_approved,
+            // 'burser_approved' => $request->burser_approved,
+
+            //  'overall_status' => $request->overall_status,
+            //  'email_info' => $request->email_info,
+            //'nsfas_bursar' => $request->nsfas_bursar,
+
+            // documents / step-based approvals
+            // 'rob_10_fee' => $request->rob_10_fee,
+            // 'rob_15_id' => $request->rob_15_id,
+            // 'rob_20_card' => $request->rob_20_card,
+            // 'rob_25_reg' => $request->rob_25_reg,
+            // 'rob_30_funds' => $request->rob_30_funds,
+            // 'rob_35_info' => $request->rob_35_info,
+            // 'rob_40_bed' => $request->rob_40_bed,
+            // 'rob_45_other' => $request->rob_45_other,
+            // 'rob_50_approve' => $request->rob_50_approve,
+            // 'rob_55_lease' => $request->rob_55_lease,
+            // 'email_data_approved' => $request->email_data_approved,            
+            // 'rob_60_cancelled' => $request->rob_60_cancelled,
+            // 'onboard_complete' => $request->onboard_complete,
+
+            // 'email_verified' => $request->email_verified,
+            // 'fee_approved' => $request->fee_approved,
+            // 'overall_status' => $request->overall_status,
+
+            // Optional fields
+            // 'app_source' => $request->app_source,
+            // 'fee_reminder_sent' => $request->fee_reminder_sent,
+            // 'general_reminder_sent' => $request->general_reminder_sent,
+            // 'mda_tenant_id' => $request->mda_tenant_id,
+            // 'userEmailAlt' => $request->userEmailAlt,
+        ]);
 
         // return redirect()->back();
+        // ensure we set the chosen year for the student
+        Session::put('year', $request->year);
         return redirect("/application-profile/" . $request->userUid);
     }
 
@@ -2258,13 +2560,14 @@ class HomeController extends Controller
 
     public function new_student(Request $request)
     {
-
+        // basiccally show all the lookups set on lookup table
         $lookup = Lookups::get();
 
         $allowed = [];
         $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
-
+        //dd($lookup);
+        // basically if the user is allowed to see the property, then show it
         foreach ($allProp as $prop) {
             foreach ($permissionProp as $permission) {
                 if ($permission->property == $prop->id) {
@@ -2654,13 +2957,14 @@ class HomeController extends Controller
 
         if ($booking_data['room_rate'] == "0") {
 
-            $this_year = Lookups::where('group_id', '4')->first();
+            //$this_year = Lookups::where('group_id', '4')->first();
+            $this_year = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
             $this_year = $this_year->lookup_name;
 
             // User::where('id', $user->id)->update(["rob_10_fee" => 2]);
             StudentsInfo::where('id', $userInfo->id)->update(["rob_10_fee" => 2]);
 
-            $userData = StudentsInfo::where('userUid', $userInfo->id)->where('year', $this_year)->first();
+            $userData = StudentsInfo::where('id', $userInfo->id)->where('year', $this_year)->first();
             if ($userData->rob_40_bed != 2) {
                 StudentsInfo::where('id', $userInfo->id)->update(["rob_40_bed" => 1]);
             }
@@ -2689,7 +2993,8 @@ class HomeController extends Controller
 
                 $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
 
-                $this_year = Lookups::where('group_id', '4')->first();
+                // $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
                 $this_year = $this_year->lookup_name;
 
                 if (!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year) {
@@ -2953,11 +3258,11 @@ class HomeController extends Controller
 
     public function app_filter(Request $request)
     {
-
         $search_value = [];
 
         if ($request->firstLoad !== "1") {
 
+            Session::put('year', $request->year);
             Session::put('property', $request->property);
             Session::put('room_type', $request->room_type);
             Session::put('applicant', $request->applicant);
@@ -2976,6 +3281,7 @@ class HomeController extends Controller
             Session::put('email', $request->email);
         } else {
 
+            $request->year = Session::get('year');
             $request->property = Session::get('property');
             $request->room_type = Session::get('room_type');
             $request->applicant = Session::get('applicant');
@@ -3125,7 +3431,9 @@ class HomeController extends Controller
         }
 
         //Get current booking year
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $request->year)->first();
+
+        //dd($this_year);
         array_push($search_value, "bookings_data.year = '" . $this_year->lookup_name . "'");
 
         if ($request->date !== "" && !empty($request->date)) {
@@ -3152,7 +3460,7 @@ class HomeController extends Controller
                 LEFT OUTER JOIN room_types r on r.id = bookings_data.roomType
             WHERE u.userRole = 0 ' . implode($query);
 
-        // dd($sql);
+        //dd($sql);
 
         //Get all of our students
         $searched_students = DB::select($sql);
