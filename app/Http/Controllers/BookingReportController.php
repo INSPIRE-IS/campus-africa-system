@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Lookups;
 use App\Models\PropertyPermission;
 use App\Models\StudentsInfo;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 
 class BookingReportController extends Controller
@@ -31,6 +32,7 @@ class BookingReportController extends Controller
         $residences = [];
         $allProp = Residence::whereNull('status')->get();
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
+        $lookups = Lookups::get();
 
         foreach ($allProp as $prop) {
             foreach ($permissionProp as $permission) {
@@ -40,11 +42,16 @@ class BookingReportController extends Controller
             }
         }
 
-
         // $residences = Residence::get();
-        $lookupYear = Lookups::where('group_id', '4')->first();
+        $year = Session::get('year');
+        if ($year == null) {
+            $lookupYear = Lookups::where('group_id', '4')->first();
+            $year = $lookupYear->lookup_name;
+            session(['year' => $year]);
+        }
+
         $propertyData = Property::where('inventory', '1')->get();
-        $allBookings = Booking::where('year', $lookupYear->lookup_name)->get();
+        $allBookings = Booking::where('year', $year)->get();
         $allRoomTypes = RoomTypes::where('name', '!=', 'Building Manager')->get();
 
 
@@ -62,8 +69,8 @@ class BookingReportController extends Controller
             // foreach($propertyData as $prop){
             //     if($prop->residence == $res->id){
 
-            //         if($prop->year == $lookupYear->lookup_name || $prop->year < $lookupYear->lookup_name){
-            //             if($prop->year_end == '0' || $prop->year_end == $lookupYear->lookup_name){
+            //         if($prop->year == $year || $prop->year < $year){
+            //             if($prop->year_end == '0' || $prop->year_end == $year){
             //                 $propSummary['total_beds']++;
             //             }
             //         }
@@ -83,8 +90,8 @@ class BookingReportController extends Controller
 
                     foreach ($propertyData as $prop) {
                         if ($prop->residence == $res->id && $room->id == $prop->room_type) {
-                            if ($prop->year == $lookupYear->lookup_name || $prop->year < $lookupYear->lookup_name) {
-                                if ($prop->year_end == 0 || $prop->year_end == $lookupYear->lookup_name) {
+                            if ($prop->year == $year || $prop->year < $year) {
+                                if ($prop->year_end == 0 || $prop->year_end == $year) {
                                     $roomSummary['room_beds']++;
                                     $propSummary['total_beds']++;
                                 }
@@ -97,7 +104,7 @@ class BookingReportController extends Controller
 
                             if ($booking->property == $res->id && $booking->roomType == $room->id) {
                                 // $user = User::where('id', $booking->userId)->where('rob_60_cancelled', '0')->first();
-                                $user = StudentsInfo::where('userUid', $booking->userId)->where('year', $lookupYear->lookup_name)->first();
+                                $user = StudentsInfo::where('userUid', $booking->userId)->where('year', $year)->first();
 
 
                                 if (!empty($user)) {
@@ -167,7 +174,20 @@ class BookingReportController extends Controller
 
         $total['percent'] =  round($total['bookings'] / $total['beds'] * 100);
 
-        return view('admin.report.booking_summary', ["headerTitle" => "Booking Summary", "title" => "Booking Summary", "summaryData" => $summaryData, "total" => $total]);
+
+        return view('admin.report.booking_summary', ["headerTitle" => "Booking Summary", "title" => "Booking Summary", "lookups" => $lookups, "year" => $year, "summaryData" => $summaryData, "total" => $total]);
+    }
+
+    public function setYear(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|integer',
+        ]);
+
+        session(['year' => $request->year]);
+
+        //return redirect()->back(); // redirect back to summary or index
+        return redirect()->route('booking.summary');
     }
 
     public function room_activation(Request $request)
