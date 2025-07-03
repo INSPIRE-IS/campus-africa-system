@@ -118,7 +118,7 @@ class HomeController extends Controller
                 // $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
                 $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
                 //dd($studentInfo);
-                if ($studentInfo->year == $selected_year) {
+                if ($studentInfo && $studentInfo->year == $selected_year) {
                     $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
                 } else {
                     $student = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
