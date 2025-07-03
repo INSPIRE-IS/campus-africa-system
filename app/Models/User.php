@@ -183,6 +183,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'role_super' => 'boolean',
     ];
 
     public function getLoginRouteExpiresInAttribute(): int

@@ -2049,7 +2049,7 @@ class HomeController extends Controller
         //dd(auth()->user()->role_manage_users);
         //dd(Auth::user()->role_manage_users);
         $showLoginAs = false;
-        if (Auth::user()->email == 'mirichea@whitehart.co.za' || Auth::user()->email == 'roger@whitehart.co.za') {
+        if (Auth::user()->role_super) {
             $showLoginAs = true;
         }
 
