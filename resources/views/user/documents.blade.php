@@ -128,7 +128,7 @@
                                         <div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload
                                     </span></td>
                                 @if ($user->rob_60_cancelled == 0)
-                                    <td>
+                                    <td style="width:33%; text-align:center;">
                                         <div id="paymentSection">
                                             <label for="{{ $file->fileId }}" id="{{ $file->fileId }}Section"
                                                 class="outstandingUpload" onClick="paymentRef()">
@@ -148,7 +148,7 @@
                                         <div class="rejectedRobot"></div> &nbsp;&nbsp; Invalid Document Please re-upload
                                     </span></td>
                                 @if ($user->rob_60_cancelled == 0)
-                                    <td>
+                                    <td style="width:33%; text-align:center;">
                                         <label for="{{ $file->fileId }}" id="{{ $file->fileId }}Section"
                                             class="outstandingUpload">
                                             <span class="text">Upload</span>
