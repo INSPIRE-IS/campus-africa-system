@@ -33,9 +33,9 @@
                 style="display: flex;align-items: center;justify-content: center;font-size: 16px;font-weight: 600;color: #333333;width: 60px;height: 40px;">
                 Year *
             </label>
-            <form action="{{ route('booking.setYear') }}" method="POST">
+            <form id="yearForm" action="{{ route('booking.setYear') }}" method="POST">
                 @csrf
-                <select name="year" id="year" class="required" onchange="this.form.submit()"
+                <select name="year" id="year" class="required" onchange="showLoadingAndSubmit()"
                     style="border-radius: 7px;background-color: #f0f0f0;border: none;width: 90%;padding: 10px;font-size: 16px;color: #000;width: 300px;">
                     @foreach ($lookups->where('group_id', 4)->sortByDesc('lookup_name') as $lookup)
                         <option value="{{ $lookup->lookup_name }}" {{ $year == $lookup->lookup_name ? 'selected' : '' }}
@@ -128,12 +128,31 @@
                 <?php } ?>
             </tr>
         </table>
-
+        <div id="loadingModalll"
+            style="display:flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 20px 40px; border-radius: 10px; font-size: 18px;">
+                Loading...
+            </div>
+        </div>
         <br /><br />
 
     </div>
 
-    <script>
+    <script defer>
+        // Safety timeout: hide modal after 5 seconds if page hasn't changed
+        document.getElementById('loadingModalll').style.display = 'none';
+
+        function showLoadingAndSubmit() {
+            console.log('inn it');
+            document.getElementById('loadingModalll').style.display = 'flex';
+            // setTimeout(() => {
+            //     document.getElementById('loadingModalll').style.display = 'none';
+            // }, 5000);
+
+            document.getElementById('yearForm').submit();
+        }
+
         function showData(buildingName) {
 
             let displayData = $('#' + buildingName + "_up").hasClass('hidden')

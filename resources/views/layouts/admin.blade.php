@@ -52,19 +52,6 @@
     <div id="fullNavbar">
 
         <div class="topnav" id="myTopnav">
-            <span
-                style="
-                display: inline-block;
-                color: #000;
-                text-align: center;
-                padding: 14px 16px;
-                text-decoration: none;
-                font-size: 18px;
-                font-weight: 700;
-                line-height: 18px;
-                font-family: source-sans-pro, sans-serif;
-                vertical-align: middle;
-                ">{{ session('year', '') }}</span>
             <a class="active" href="/dashboard">Dashboard</a>
             <a href="/applications">Applications</a>
             <a href="/leases">Leases</a>
