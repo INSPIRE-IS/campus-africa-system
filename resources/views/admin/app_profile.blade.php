@@ -71,12 +71,12 @@
                         <!-- <span id="approvedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] != '1') {
                             echo 'hidden';
                         } ?>">&#128994;</span>
-                                                                                        <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
-                                                                                            echo 'hidden';
-                                                                                        } ?>">&#128993;</span>
-                                                                                        <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
-                                                                                            echo 'hidden';
-                                                                                        } ?>">&#128308;</span> -->
+                                                                                                        <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
+                                                                                                            echo 'hidden';
+                                                                                                        } ?>">&#128993;</span>
+                                                                                                        <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
+                                                                                                            echo 'hidden';
+                                                                                                        } ?>">&#128308;</span> -->
                         <span id="approvedBur" class="hidden">&#128994;</span>
                         <span id="rejectedBur" class="hidden">&#128993;</span>
                         <span id="notLoadBur" class="hidden">&#128308;</span>
@@ -597,19 +597,19 @@
 
 
                     <!-- <p class="appSubHeader">
-                                                                                        <div class="burPaymentDetails"></div>
-                                                                                    </p>
-                                                                                    <br/> -->
+                                                                                                        <div class="burPaymentDetails"></div>
+                                                                                                    </p>
+                                                                                                    <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">BOOKING FEE</h2> -->
                     <!-- <p class="appSubHeader"> -->
                     <!-- @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'NSFAS')
     R {{ $residence->nsfas_booking_rate }}
     @endif
-                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
+                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
     R {{ $residence->bursary_booking_rate }}
     @endif
-                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
+                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
     R {{ $residence->booking_rate }}
     @endif -->
                     <!-- R {{ $booking->room_rate }} -->
@@ -617,8 +617,8 @@
                     <!-- <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">PAID</h2>
-                                                                                    <p class="appSubHeader" id="paidOption">
-                                                                                    <div class="waived_paid_wording"></div> -->
+                                                                                                    <p class="appSubHeader" id="paidOption">
+                                                                                                    <div class="waived_paid_wording"></div> -->
 
 
 
@@ -834,8 +834,9 @@
 
                                         @if ($file['field'] === 'moveIn' && $file['status'] !== 'XApproved')
                                             @if (Auth::user()->role_lease_regen == '1')
-                                                <a href="#"><button type="button" id="myBtn_regen_lease">Regen
-                                                        Lease</button></a>
+                                                <a href="#">
+                                                    <button type="button" id="myBtn_regen_lease">Regen Lease</button>
+                                                </a>
                                                 @if ($file['status'] !== 'AUploaded')
                                                     <button type="button" id="myBtn_resend_lease"
                                                         onClick="resendLease()">Resend Lease</button>
@@ -1160,9 +1161,9 @@
 
 
                 <!-- <div class="form-field-big">
-                                                                                        <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                                                                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
-                                                                                    </div> -->
+                                                                                                        <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                                                                                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                                                                                                    </div> -->
                 <div class="form-field-big" style="height:50px !important">
                     <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This
                                 field is required</small></span></label>
