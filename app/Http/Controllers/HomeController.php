@@ -614,9 +614,13 @@ class HomeController extends Controller
 
     public function activeBooking($userId, $this_year)
     {
-        //dd($this_year);
+
         $user = User::where('id', $userId)->first();
         $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+        if (!$studentInfo) {
+            // if student is null return back
+            return ["Info" => 0, "headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => " student not found year " . $this_year . " id " . $userId];
+        }
 
         if ($studentInfo->address_approved == "1" && $studentInfo->kin_approved == "1" && $studentInfo->email_data_approved == "1") {
             $rob_35_info = 2;
@@ -10256,36 +10260,51 @@ class HomeController extends Controller
 
     public function updateBookingPayment(Request $request)
     {
+        //dd($request->all());
         $validated = $request->validate([
-            'booking_id' => 'required|integer|exists:bookings,id',
-            'booking_fee' => 'nullable|numeric',
-            'loan_admin_fee' => 'nullable|numeric',
-            'deposit' => 'nullable|numeric',
+            'booking_payment_id' => 'required|integer|exists:booking_payments,id',
             'monthly_rental' => 'nullable|numeric',
+            'monthly_rental_total' => 'nullable|numeric',
+            'funded_monthly' => 'nullable|numeric',
             'total_funded' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+            'total_top_up' => 'nullable|numeric',
         ]);
 
         BookingPayment::updateOrCreate(
-            ['bookingId' => $validated['booking_id']],
+            ['id' => $validated['booking_payment_id']],
             [
-                'bookingId' => $validated['booking_id'],
-                'booking_fee' => $validated['booking_fee'] ?? 0,
-                'booking_fee_waived' => 0,
-                'rob_b_waived' => 0,
-                'loan_admin_fee' => $validated['loan_admin_fee'] ?? 0,
-                'loan_admin_fee_waived' => 0,
-                'rob_loan_waived' => 0,
+                // 'booking_fee' => $validated['booking_fee'] ?? 0,
+                // 'booking_fee_waived' => 0,
+                // 'rob_b_waived' => 0,
+                // 'loan_admin_fee' => $validated['loan_admin_fee'] ?? 0,
+                // 'loan_admin_fee_waived' => 0,
+                // 'rob_loan_waived' => 0,
                 'deposit' => $validated['deposit'] ?? 0,
-                'deposit_waived' => 0,
-                'rob_deposit_waived' => 0,
+                // 'deposit_waived' => 0,
+                // 'rob_deposit_waived' => 0,
                 'monthly_rental' => $validated['monthly_rental'] ?? 0,
-                'monthly_rental_total' => $validated['monthly_rental'] ?? 0 * 12, // Adjust if needed
+                'monthly_rental_total' => $validated['monthly_rental_total'] ?? 0, // Adjust if needed
+                'funded_monthly' => $validated['funded_monthly'] ?? 0,
                 'total_funded' => $validated['total_funded'] ?? 0,
-                'total_top_up' => 0,
-                'funded_monthly' => 0,
-                'nsfas_rate' => 0
+                'total_top_up' => $validated['total_top_up'] ?? 0,
+                //'nsfas_rate' => 0
             ]
         );
+        $this_year = Lookups::where('group_id', '4')->first();
+        if (!Session::get('year')) {
+            $year = Session::get('year');
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+        }
+        $this_year = $this_year->lookup_name;
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Booking Payment Updated",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
+        ]);
 
         return redirect()->back()->with('success', 'Booking payment updated.');
     }
