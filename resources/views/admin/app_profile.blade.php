@@ -71,12 +71,12 @@
                         <!-- <span id="approvedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] != '1') {
                             echo 'hidden';
                         } ?>">&#128994;</span>
-                            <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
-                                echo 'hidden';
-                            } ?>">&#128993;</span>
-                            <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
-                                echo 'hidden';
-                            } ?>">&#128308;</span> -->
+                                                                                                                <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
+                                                                                                                    echo 'hidden';
+                                                                                                                } ?>">&#128993;</span>
+                                                                                                                <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
+                                                                                                                    echo 'hidden';
+                                                                                                                } ?>">&#128308;</span> -->
                         <span id="approvedBur" class="hidden">&#128994;</span>
                         <span id="rejectedBur" class="hidden">&#128993;</span>
                         <span id="notLoadBur" class="hidden">&#128308;</span>
@@ -589,14 +589,14 @@
                                 </h2>
                             </div>
                             <div style="flex-grow:2">
+                                <button type="button" id="openPaymentModal" class="profileSubmit"
+                                    style="width:98%; border:none; padding:12px; border-radius:10px; background-color:#4CAF50; color:white;">
+                                    Update Payment
+                                </button>
                                 <button type="button" class="generatePdf"
                                     onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
-                                    open de modal do not try this yet</button>
-
-
-                                <button type="button" class="generatePdf"
-                                    onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
-                                    Generate Pro Forma Invoice</button>
+                                    Generate Pro Forma Invoice
+                                </button>
                             </div>
                         </div>
                     @endif
@@ -604,19 +604,19 @@
 
 
                     <!-- <p class="appSubHeader">
-                            <div class="burPaymentDetails"></div>
-                        </p>
-                        <br/> -->
+                                                                                                                <div class="burPaymentDetails"></div>
+                                                                                                            </p>
+                                                                                                            <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">BOOKING FEE</h2> -->
                     <!-- <p class="appSubHeader"> -->
                     <!-- @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'NSFAS')
     R {{ $residence->nsfas_booking_rate }}
     @endif
-                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
+                                                                                                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
     R {{ $residence->bursary_booking_rate }}
     @endif
-                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
+                                                                                                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
     R {{ $residence->booking_rate }}
     @endif -->
                     <!-- R {{ $booking->room_rate }} -->
@@ -624,8 +624,8 @@
                     <!-- <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">PAID</h2>
-                        <p class="appSubHeader" id="paidOption">
-                        <div class="waived_paid_wording"></div> -->
+                                                                                                            <p class="appSubHeader" id="paidOption">
+                                                                                                            <div class="waived_paid_wording"></div> -->
 
 
 
@@ -669,8 +669,8 @@
                                     $user[0]['userInfo']['rob_50_approve'] == 0)
                                 @if (Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                                     <button type="button" class="appBooking" id="addOtherDocument"
-                                        onClick="addOtherDoc('{{ $user[0]['userInfo']['userUid'] }}')">
-                                        Add Document</button>
+                                        onClick="addOtherDoc('{{ $user[0]['userInfo']['userUid'] }}')">Add
+                                        Document</button>
                                 @endif
                             @endif
                         @endif
@@ -1167,9 +1167,9 @@
 
 
                 <!-- <div class="form-field-big">
-                                                                                            <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                                                                            <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
-                                                                                        </div> -->
+                                                                                                                <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                                                                                                <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                                                                                                            </div> -->
                 <div class="form-field-big" style="height:50px !important">
                     <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This
                                 field is required</small></span></label>
@@ -1358,6 +1358,72 @@
         </div>
     </div>
 
+
+    <div id="paymentModal" class="modal">
+        <div class="modal-content"
+            style="height:400px; max-width: 500px; background-color: #fff; border-radius: 10px; padding: 20px; margin: 10px auto; box-shadow: 0 0 10px rgba(0, 0, 0, .2); text-align: center;">
+            <span class="closePaymentModal" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+            <div class="form-card">
+                <h2>Update Booking Payment</h2>
+
+                <form method="POST" action="{{ route('update.booking.payment') }}">
+                    @csrf
+                    <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+
+                    <div class="form-field">
+                        <label>Booking Fee</label>
+                        <input type="number" step="0.01" name="booking_fee"
+                            value="{{ $booking->payment->booking_fee ?? 0 }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Admin Fee</label>
+                        <input type="number" step="0.01" name="loan_admin_fee"
+                            value="{{ $booking->payment->loan_admin_fee ?? 0 }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Deposit</label>
+                        <input type="number" step="0.01" name="deposit"
+                            value="{{ $booking->payment->deposit ?? 0 }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Monthly Rental</label>
+                        <input type="number" step="0.01" name="monthly_rental"
+                            value="{{ $booking->payment->monthly_rental ?? 0 }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Total Funded</label>
+                        <input type="number" step="0.01" name="total_funded"
+                            value="{{ $booking->payment->total_funded ?? 0 }}">
+                    </div>
+
+                    <div class="form-field-big">
+                        <button type="submit" class="profileSubmit"
+                            style="width:98%; border:none; padding:12px; border-radius:10px;">Save Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script defer>
+        document.getElementById('openPaymentModal').onclick = function() {
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        document.querySelector('.closePaymentModal').onclick = function() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('paymentModal')) {
+                document.getElementById('paymentModal').style.display = 'none';
+            }
+        }
+    </script>
     <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>

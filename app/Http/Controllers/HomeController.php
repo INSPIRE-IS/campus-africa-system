@@ -10254,6 +10254,42 @@ class HomeController extends Controller
         return $payments;
     }
 
+    public function updateBookingPayment(Request $request)
+    {
+        $validated = $request->validate([
+            'booking_id' => 'required|integer|exists:bookings,id',
+            'booking_fee' => 'nullable|numeric',
+            'loan_admin_fee' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+            'monthly_rental' => 'nullable|numeric',
+            'total_funded' => 'nullable|numeric',
+        ]);
+
+        BookingPayment::updateOrCreate(
+            ['bookingId' => $validated['booking_id']],
+            [
+                'bookingId' => $validated['booking_id'],
+                'booking_fee' => $validated['booking_fee'] ?? 0,
+                'booking_fee_waived' => 0,
+                'rob_b_waived' => 0,
+                'loan_admin_fee' => $validated['loan_admin_fee'] ?? 0,
+                'loan_admin_fee_waived' => 0,
+                'rob_loan_waived' => 0,
+                'deposit' => $validated['deposit'] ?? 0,
+                'deposit_waived' => 0,
+                'rob_deposit_waived' => 0,
+                'monthly_rental' => $validated['monthly_rental'] ?? 0,
+                'monthly_rental_total' => $validated['monthly_rental'] ?? 0 * 12, // Adjust if needed
+                'total_funded' => $validated['total_funded'] ?? 0,
+                'total_top_up' => 0,
+                'funded_monthly' => 0,
+                'nsfas_rate' => 0
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Booking payment updated.');
+    }
+
     public function all_properties(Request $request)
     {
         $allRes = Residence::whereNull('status')->get();
