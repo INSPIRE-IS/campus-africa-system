@@ -71,12 +71,12 @@
                         <!-- <span id="approvedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] != '1') {
                             echo 'hidden';
                         } ?>">&#128994;</span>
-                                                                                                        <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
-                                                                                                            echo 'hidden';
-                                                                                                        } ?>">&#128993;</span>
-                                                                                                        <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
-                                                                                                            echo 'hidden';
-                                                                                                        } ?>">&#128308;</span> -->
+                                                                                                                                                                                                                        <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
+                                                                                                                                                                                                                            echo 'hidden';
+                                                                                                                                                                                                                        } ?>">&#128993;</span>
+                                                                                                                                                                                                                        <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
+                                                                                                                                                                                                                            echo 'hidden';
+                                                                                                                                                                                                                        } ?>">&#128308;</span> -->
                         <span id="approvedBur" class="hidden">&#128994;</span>
                         <span id="rejectedBur" class="hidden">&#128993;</span>
                         <span id="notLoadBur" class="hidden">&#128308;</span>
@@ -588,28 +588,35 @@
                                     @endif
                                 </h2>
                             </div>
-                            <div style="flex-grow:2"><button type="button" class="generatePdf"
-                                    onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">Generate
-                                    Pro Forma Invoice</button></div>
+                            <div style="flex-grow:2">
+                                <button type="button" id="openPaymentModal" class="profileSubmit"
+                                    style="padding: 10px;margin-top: 30px;background-color: #ffbb3c;border: none;color: #fff;border-radius: 10px;">
+                                    Update Rates
+                                </button>
+                                <button type="button" class="generatePdf"
+                                    onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
+                                    Generate Pro Forma Invoice
+                                </button>
+                            </div>
                         </div>
                     @endif
 
 
 
                     <!-- <p class="appSubHeader">
-                                                                                                        <div class="burPaymentDetails"></div>
-                                                                                                    </p>
-                                                                                                    <br/> -->
+                                                                                                                                                                                                                        <div class="burPaymentDetails"></div>
+                                                                                                                                                                                                                    </p>
+                                                                                                                                                                                                                    <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">BOOKING FEE</h2> -->
                     <!-- <p class="appSubHeader"> -->
                     <!-- @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'NSFAS')
     R {{ $residence->nsfas_booking_rate }}
     @endif
-                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
+                                                                                                                                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
     R {{ $residence->bursary_booking_rate }}
     @endif
-                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
+                                                                                                                                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
     R {{ $residence->booking_rate }}
     @endif -->
                     <!-- R {{ $booking->room_rate }} -->
@@ -617,8 +624,8 @@
                     <!-- <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">PAID</h2>
-                                                                                                    <p class="appSubHeader" id="paidOption">
-                                                                                                    <div class="waived_paid_wording"></div> -->
+                                                                                                                                                                                                                    <p class="appSubHeader" id="paidOption">
+                                                                                                                                                                                                                    <div class="waived_paid_wording"></div> -->
 
 
 
@@ -1161,9 +1168,9 @@
 
 
                 <!-- <div class="form-field-big">
-                                                                                                        <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                                                                                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
-                                                                                                    </div> -->
+                                                                                                                                                                                                                        <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                                                                                                                                                                                                        <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                                                                                                                                                                                                                    </div> -->
                 <div class="form-field-big" style="height:50px !important">
                     <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This
                                 field is required</small></span></label>
@@ -1352,6 +1359,84 @@
         </div>
     </div>
 
+
+    <div id="paymentModal" class="modal">
+        <div class="modal-content"
+            style="height:400px; max-width: 500px; background-color: #fff; border-radius: 10px; padding: 20px; margin: 10px auto; box-shadow: 0 0 10px rgba(0, 0, 0, .2); text-align: center;">
+            <span class="closePaymentModal" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+            <div class="form-card">
+                <h2>Update Booking Payment {{ $paymentBooking->id }}</h2>
+
+                <form method="POST" action="{{ route('update.booking.payment') }}">
+                    @csrf
+                    <input type="hidden" name="booking_payment_id" value="{{ $paymentBooking->id }}">
+                    <input type="hidden" name="userId" value="{{ $user[0]['userInfo']['userUid'] }}">
+
+                    <div
+                        style="width: auto; flex-direction: row; display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: #666; margin-top: 10px;">
+                        <span>Booking Fee R {{ $paymentBooking->booking_fee ?? 0 }}</span>
+                        <span>Admin Fee R {{ $paymentBooking->loan_admin_fee ?? 0 }}</span>
+                        <span>NSFAS Rate {{ $paymentBooking->nsfas_rate ? 'Yes' : 'No' }}</span>
+                    </div>
+                    {{-- <p>Freska</p> 
+                    <p style="width: 300px">{{ $paymentBooking ?? '-----Freska------' }}</p> --}}
+                    <div class="form-field">
+                        <label>Monthly Rental</label>
+                        <input type="number" step="0.01" name="monthly_rental"
+                            value="{{ $paymentBooking->monthly_rental ?? 0 }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Total Monthly</label>
+                        <input type="number" step="0.01" name="monthly_rental_total"
+                            value="{{ $paymentBooking->monthly_rental_total ?? 0 }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Monthly Funded</label>
+                        <input type="number" step="0.01" name="funded_monthly"
+                            value="{{ $paymentBooking->funded_monthly ?? 0 }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Total Funded</label>
+                        <input type="number" step="0.01" name="total_funded"
+                            value="{{ $paymentBooking->total_funded ?? 0 }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Deposit</label>
+                        <input type="number" step="0.01" name="deposit"
+                            value="{{ $paymentBooking->deposit ?? 0 }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Top-up Total</label>
+                        <input type="number" step="0.01" name="total_top_up"
+                            value="{{ $paymentBooking->total_top_up ?? 0 }}">
+                    </div>
+
+
+
+                    <div class="form-field-big">
+                        <button type="submit" class="profileSubmit"
+                            style="width:98%; border:none; padding:12px; border-radius:10px;">Save Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script defer>
+        document.getElementById('openPaymentModal').onclick = function() {
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        document.querySelector('.closePaymentModal').onclick = function() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('paymentModal')) {
+                document.getElementById('paymentModal').style.display = 'none';
+            }
+        }
+    </script>
     <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>
