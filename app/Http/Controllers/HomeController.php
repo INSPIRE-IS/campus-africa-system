@@ -128,7 +128,7 @@ class HomeController extends Controller
                     return view('user.dashNoBooking', [
                         "active" => 0,
                         "headerTitle" => "Dashboard",
-                        "this_year" => $selected_year,
+                        "this_year" => $years[0]->lookup_name,
                         "bookingList" => $returnInfo['bookingList'],
                         "buildingList" => $returnInfo['buildingList'],
                         "roomList" => $returnInfo['roomList'],
@@ -2052,7 +2052,7 @@ class HomeController extends Controller
         if (Auth::user()->email == 'mirichea@whitehart.co.za' || Auth::user()->email == 'roger@whitehart.co.za') {
             $showLoginAs = true;
         }
-
+        //dd('test', $showLoginAs);
 
 
         if (Auth::user()->role_manage_users == "1") {
