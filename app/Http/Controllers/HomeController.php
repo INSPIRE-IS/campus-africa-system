@@ -6269,7 +6269,13 @@ class HomeController extends Controller
     public function download_docs(Request $request, $userId)
     {
         try {
+
             $this_year = Lookups::where('group_id', '4')->value('lookup_name') ?? date('Y');
+            if (Session::has('year')) {
+                $year = Session::get('year');
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+                $this_year = $this_year->lookup_name;
+            }
 
             $allFilesArr = [];
             $files = UserFiles::where('userUid', $userId)
