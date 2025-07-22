@@ -88,7 +88,7 @@ class HomeController extends Controller
             ->where('lookup_name', '>=', $currentYear) // only current year or later
             ->orderByDesc('lookup_name')
             ->get();
-
+        // dd($years);
         if ($request->has('year')) {
             $selected_year = $request->input('year');
             Session::put('year', $selected_year);
@@ -125,11 +125,13 @@ class HomeController extends Controller
                 // If not found, fall back to the first available one
                 if (!$studentInfo) {
                     $studentInfo = $studentInfos->first(); // or choose a specific fallback strategy
-                    Session::put('year', $studentInfo->year);
-                    return redirect()->route('home', ['year' => $studentInfo->year]);
+                    if ($studentInfo && $studentInfo->year == $years->first()->lookup_name) {
+                        Session::put('year', $studentInfo->year);
+                        return redirect()->route('home', ['year' => $studentInfo->year]);
+                    }
                 }
                 //dd($studentInfo->year);
-                if ($studentInfo->year == $selected_year) {
+                if ($studentInfo && $studentInfo->year == $selected_year) {
                     $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
                 } else {
                     $student = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
