@@ -15,6 +15,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\OnlinePaymentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MailReminder;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -247,7 +248,9 @@ Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::get('/check-all-rooms/{id}', [HomeController::class, 'check_all_rooms']);
 Route::post("/check-building-prefix", [HomeController::class, 'check_building_prefix']);
 
-Route::get('/booking-summary', [BookingReportController::class, 'booking_summary']);
+
+Route::post('/booking/set-year', [BookingReportController::class, 'setYear'])->name('booking.setYear');
+Route::get('/booking-summary', [BookingReportController::class, 'booking_summary'])->name('booking.summary');
 Route::post('/update/room-activation', [BookingReportController::class, 'room_activation']);
 
 Route::post('/get-room-ids', [ApplicationController::class, 'get_room_ids']);
