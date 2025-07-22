@@ -1385,31 +1385,31 @@
                         <input type="number" step="0.01" name="monthly_rental"
                             value="{{ $paymentBooking->monthly_rental ?? 0 }}">
                     </div>
-                    <div class="form-field">
+                    {{-- <div class="form-field">
                         <label>Total Monthly</label>
                         <input type="number" step="0.01" name="monthly_rental_total"
                             value="{{ $paymentBooking->monthly_rental_total ?? 0 }}">
-                    </div>
+                    </div> --}}
                     <div class="form-field">
                         <label>Monthly Funded</label>
                         <input type="number" step="0.01" name="funded_monthly"
                             value="{{ $paymentBooking->funded_monthly ?? 0 }}">
                     </div>
-                    <div class="form-field">
+                    {{-- <div class="form-field">
                         <label>Total Funded</label>
                         <input type="number" step="0.01" name="total_funded"
                             value="{{ $paymentBooking->total_funded ?? 0 }}">
-                    </div>
-                    <div class="form-field">
+                    </div> --}}
+                    {{-- <div class="form-field">
                         <label>Deposit</label>
                         <input type="number" step="0.01" name="deposit"
                             value="{{ $paymentBooking->deposit ?? 0 }}">
-                    </div>
-                    <div class="form-field">
+                    </div> --}}
+                    {{-- <div class="form-field">
                         <label>Top-up Total</label>
                         <input type="number" step="0.01" name="total_top_up"
                             value="{{ $paymentBooking->total_top_up ?? 0 }}">
-                    </div>
+                    </div> --}}
 
 
 

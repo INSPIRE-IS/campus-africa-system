@@ -10355,11 +10355,11 @@ class HomeController extends Controller
         $validated = $request->validate([
             'booking_payment_id' => 'required|integer|exists:booking_payments,id',
             'monthly_rental' => 'nullable|numeric',
-            'monthly_rental_total' => 'nullable|numeric',
+            //'monthly_rental_total' => 'nullable|numeric',
             'funded_monthly' => 'nullable|numeric',
-            'total_funded' => 'nullable|numeric',
-            'deposit' => 'nullable|numeric',
-            'total_top_up' => 'nullable|numeric',
+            //'total_funded' => 'nullable|numeric',
+            //'deposit' => 'nullable|numeric',
+            //'total_top_up' => 'nullable|numeric',
         ]);
 
         BookingPayment::updateOrCreate(
@@ -10371,14 +10371,14 @@ class HomeController extends Controller
                 // 'loan_admin_fee' => $validated['loan_admin_fee'] ?? 0,
                 // 'loan_admin_fee_waived' => 0,
                 // 'rob_loan_waived' => 0,
-                'deposit' => $validated['deposit'] ?? 0,
+                //'deposit' => $validated['deposit'] ?? 0,
                 // 'deposit_waived' => 0,
                 // 'rob_deposit_waived' => 0,
                 'monthly_rental' => $validated['monthly_rental'] ?? 0,
-                'monthly_rental_total' => $validated['monthly_rental_total'] ?? 0, // Adjust if needed
+                'monthly_rental_total' => $validated['monthly_rental'] * 10 ?? 0, // Adjust if needed
                 'funded_monthly' => $validated['funded_monthly'] ?? 0,
-                'total_funded' => $validated['total_funded'] ?? 0,
-                'total_top_up' => $validated['total_top_up'] ?? 0,
+                'total_funded' => $validated['funded_monthly'] * 10 ?? 0,
+                // 'total_top_up' => $validated['total_top_up'] ?? 0,
                 //'nsfas_rate' => 0
             ]
         );
