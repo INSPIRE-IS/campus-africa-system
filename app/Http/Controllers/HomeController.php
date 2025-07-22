@@ -116,8 +116,19 @@ class HomeController extends Controller
 
                 // $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
                 // $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
-                $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
-                //dd($studentInfo);
+                //$studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
+                $studentInfos = StudentsInfo::where('userUid', Auth::user()->id)->get();
+
+                // Try to find the selected year
+                $studentInfo = $studentInfos->firstWhere('year', $selected_year);
+
+                // If not found, fall back to the first available one
+                if (!$studentInfo) {
+                    $studentInfo = $studentInfos->first(); // or choose a specific fallback strategy
+                    Session::put('year', $studentInfo->year);
+                    return redirect()->route('home', ['year' => $studentInfo->year]);
+                }
+                //dd($studentInfo->year);
                 if ($studentInfo->year == $selected_year) {
                     $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
                 } else {
