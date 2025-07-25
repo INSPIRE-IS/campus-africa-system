@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Booking extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'bookings_data';
 
@@ -36,15 +37,18 @@ class Booking extends Model
         'cancelled',
     ];
 
-    public function users(){
+    public function users()
+    {
         return $this->hasOne("App\Models\User", "id", "userId");
     }
 
-    public function residence(){
+    public function residence()
+    {
         return $this->hasOne("App\Models\Residence", "id", "property");
     }
 
-    public function roomType(){
+    public function roomType()
+    {
         return $this->hasOne("App\Models\RoomTypes", "id", "roomType");
     }
 }
