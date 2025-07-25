@@ -88,7 +88,7 @@ class HomeController extends Controller
             ->where('lookup_name', '>=', $currentYear) // only current year or later
             ->orderByDesc('lookup_name')
             ->get();
-
+        // dd($years);
         if ($request->has('year')) {
             $selected_year = $request->input('year');
             Session::put('year', $selected_year);
@@ -116,8 +116,21 @@ class HomeController extends Controller
 
                 // $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
                 // $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
-                $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
-                //dd($studentInfo);
+                //$studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
+                $studentInfos = StudentsInfo::where('userUid', Auth::user()->id)->get();
+
+                // Try to find the selected year
+                $studentInfo = $studentInfos->firstWhere('year', $selected_year);
+
+                // If not found, fall back to the first available one
+                if (!$studentInfo) {
+                    $studentInfo = $studentInfos->first(); // or choose a specific fallback strategy
+                    if ($studentInfo && $studentInfo->year == $years->first()->lookup_name) {
+                        Session::put('year', $studentInfo->year);
+                        return redirect()->route('home', ['year' => $studentInfo->year]);
+                    }
+                }
+                //dd($studentInfo->year);
                 if ($studentInfo && $studentInfo->year == $selected_year) {
                     $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
                 } else {
@@ -10787,16 +10800,29 @@ class HomeController extends Controller
 
     public function download_apps(Request $request)
     {
+        // fiddle
+        $userId = Auth::user()->id;
+        $user = User::where('id', $userId)->first();
 
-        if ($request->year !== "All") {
-            $allUsers = StudentsInfo::where('year', $request->year)->get();
-        } else {
-            $allUsers = StudentsInfo::get();
-        }
+        $accessArray = PropertyPermission::where('userUid', $userId)
+            ->pluck('property') // assuming this is the booking.property
+            ->toArray();
+
+        $allUsers = StudentsInfo::with('booking')
+            ->when($request->year !== 'All', fn($q) => $q->where('year', $request->year))
+            ->whereHas('booking', fn($q) => $q->whereIn('property', $accessArray))
+            ->get();
+        //dd($allUsers);
+        // if ($request->year !== "All") {
+        //     $allUsers = StudentsInfo::with('booking')->where('year', $request->year)->get();
+        // } else {
+        //     $allUsers = StudentsInfo::with('booking')->get();
+        // }
 
         $users = [
             [
                 '<b>Booking Ref</b>',
+                '<b>Application Date</b>',
                 '<b>First Name</b>',
                 '<b>Last Name</b>',
                 '<b>Title</b>',
@@ -10989,6 +11015,7 @@ class HomeController extends Controller
 
             $studentData = [
                 $booking_ref,
+                $user->created_at,
                 $user->userFirstName,
                 $user->userLastname,
                 $user->userTitle,
@@ -11074,7 +11101,6 @@ class HomeController extends Controller
 
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
-
         // $allActions = ActionList::where('action', 'like', '%Updated Property%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
 
         // // $allActionsCancelled = ActionList::where('action', 'like', '%Cancelled%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
@@ -11160,6 +11186,9 @@ class HomeController extends Controller
             //if property wasn't changed get current property
             if ($moved === false) {
                 $booking = Booking::where('userId', $registered->userUid)->where('year', $this_year)->first();
+                if ($booking == null) {
+                    continue;
+                }
                 $building = Residence::where('id', $booking->property)->first();
                 $registered_building = $building->residence;
             }
@@ -11256,6 +11285,9 @@ class HomeController extends Controller
             //If building wasnt moved - get building from location
             if ($registered_building == "") {
                 $booking = Booking::where('userId', $cancelled->userUid)->where('year', $this_year)->first();
+                if ($booking == null) {
+                    continue;
+                }
                 $building = Residence::where('id', $booking->property)->first();
                 $registered_building = $building->residence;
             }

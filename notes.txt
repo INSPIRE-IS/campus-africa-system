@@ -14,7 +14,9 @@ php artisan make:model MaintenanceLog --migration
 php artisan make:controller Admin/MaintenanceController -r -mMaintenanceLog
 
 
-
+php artisan make:migration add_soft_deletes_to_user_files_table
+php artisan make:migration add_soft_deletes_to_bookings_data_table
+php artisan make:migration add_soft_deletes_to_bookings_payments_table
 
 array:11 [
   0 => array:4 [

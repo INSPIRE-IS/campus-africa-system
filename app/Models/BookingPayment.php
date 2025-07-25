@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BookingPayment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'booking_payments';
 
@@ -36,7 +37,8 @@ class BookingPayment extends Model
         'nsfas_rate'
     ];
 
-    public function booking(){
+    public function booking()
+    {
         return $this->hasOne("App\Models\Booking", "id", "bookingId");
     }
 }
