@@ -553,8 +553,14 @@ class DocumentsController extends Controller
         $userUid = $request->userUid;
         $fileType = $request->fileType;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $fileUrlBack = "";
 
@@ -659,8 +665,14 @@ class DocumentsController extends Controller
     public function update_user_status($user_id)
     {
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $user = User::with('files')->where('id', $user_id)->first();
         $userInfo = StudentsInfo::where('userUid', $user_id)->where('year', $this_year)->first();

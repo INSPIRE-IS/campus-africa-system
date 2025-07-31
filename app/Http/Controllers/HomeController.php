@@ -917,23 +917,34 @@ class HomeController extends Controller
 
         if (Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3") {
 
-            //get current year
-            $year = Session::get('year');
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
+            //get current year
+            $session_year = Session::get('year');
+            $show_booking = false;
+            if (!empty($session_year)) {
+                $new_year =  $this_year != $session_year ? true : false;
+                if ($new_year) {
+                    $bookingNext = Booking::where('userId', $userId)->where('year', $this_year)->first();
+                    $show_booking = $bookingNext ? false : true;
+                }
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+                $this_year = $this_year->lookup_name;
+            }
 
             //See if there is an active booking
             $bookingCurr = Booking::where('userId', $userId)->where('year', $this_year)->first();
-
+            // dd($bookingCurr);
 
             $returnInfo = [];
-
+            // TODO : this is still pushing to the old booking page if the session is not correct we need to just go back to the application page
             if (!empty($bookingCurr)) {
                 $returnInfo = $this->activeBooking($userId, $this_year);
             } else {
                 $returnInfo = $this->oldBooking($userId);
             }
-
+            Log::info('returnInfo' . $returnInfo['Info']);
+            Log::info('show_booking' . $show_booking);
 
             if ($returnInfo['Info'] == '1') {
 
@@ -964,7 +975,8 @@ class HomeController extends Controller
                     "mailVerificationEmail" => $returnInfo['mailVerificationEmail'],
                     "previousBookings" => $returnInfo['previousBookings'],
                     "paymentBooking" => $returnInfo['paymentBooking'],
-                    "this_year" => $this_year
+                    "this_year" => $this_year,
+                    'bookingNext' => $show_booking,
                 ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
@@ -4146,10 +4158,15 @@ class HomeController extends Controller
 
     public function get_booking_details(Request $request)
     {
-        //
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
 
         $booking = Booking::with('residence')->with('roomType')->where('userId', $request->userId)->where('year', $this_year)->first();
         // $user = User::with('files')->where('id', $request->userId)->first();
@@ -5850,8 +5867,14 @@ class HomeController extends Controller
 
     public function action_data(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $student = User::where('id', $request->userId)->first();
         $studentInfo = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();

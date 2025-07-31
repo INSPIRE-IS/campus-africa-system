@@ -5,7 +5,18 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <div class="greyAppSection  @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
+        @if ($bookingNext)
+            <div style="width: 100%;padding: 0 15px;margin: 0 auto;">
+                <div style="display: flex;justify-content: flex-end;padding-top: 5px;">
+                    <a href="/create-new-booking/{{ $user[0]['userInfo']['userUid'] }}" class="btn btn-warning mt-4"
+                        style="padding: 10px 20px;background-color: #e74f26;color: #fff;border: none;border-radius: 10px;text-decoration: none;font-weight: 500;transition: background-color 0.3s ease;">
+                        Create a new booking for {{ $this_year + 1 }}
+                    </a>
+                </div>
+            </div>
+        @endif
         <div class="container">
+
             <div class="col-3" id="col1">
                 <div class="flex">
                     <span id="approvedAddr" class="hidden">&#128994;</span><span id="rejectedAddr">&#128993;</span>
@@ -71,12 +82,12 @@
                         <!-- <span id="approvedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] != '1') {
                             echo 'hidden';
                         } ?>">&#128994;</span>
-                                                                                                            <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
-                                                                                                                echo 'hidden';
-                                                                                                            } ?>">&#128993;</span>
-                                                                                                            <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
-                                                                                                                echo 'hidden';
-                                                                                                            } ?>">&#128308;</span> -->
+                                                                                                                                                                                                                                                <span id="rejectedBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] !== '') {
+                                                                                                                                                                                                                                                    echo 'hidden';
+                                                                                                                                                                                                                                                } ?>">&#128993;</span>
+                                                                                                                                                                                                                                                <span id="notLoadBur" class="<?php if ($user[0]['userInfo']['burser_approved'] == '1' && $user[0]['userInfo']['burCompanyName'] == null) {
+                                                                                                                                                                                                                                                    echo 'hidden';
+                                                                                                                                                                                                                                                } ?>">&#128308;</span> -->
                         <span id="approvedBur" class="hidden">&#128994;</span>
                         <span id="rejectedBur" class="hidden">&#128993;</span>
                         <span id="notLoadBur" class="hidden">&#128308;</span>
@@ -604,19 +615,19 @@
 
 
                     <!-- <p class="appSubHeader">
-                                                                                                            <div class="burPaymentDetails"></div>
-                                                                                                        </p>
-                                                                                                        <br/> -->
+                                                                                                                                                                                                                                                <div class="burPaymentDetails"></div>
+                                                                                                                                                                                                                                            </p>
+                                                                                                                                                                                                                                            <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">BOOKING FEE</h2> -->
                     <!-- <p class="appSubHeader"> -->
                     <!-- @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'NSFAS')
     R {{ $residence->nsfas_booking_rate }}
     @endif
-                                                                                                            @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
+                                                                                                                                                                                                                                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
     R {{ $residence->bursary_booking_rate }}
     @endif
-                                                                                                            @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
+                                                                                                                                                                                                                                                @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
     R {{ $residence->booking_rate }}
     @endif -->
                     <!-- R {{ $booking->room_rate }} -->
@@ -624,8 +635,8 @@
                     <!-- <br/> -->
 
                     <!-- <h2 class="appSubHeader bold">PAID</h2>
-                                                                                                        <p class="appSubHeader" id="paidOption">
-                                                                                                        <div class="waived_paid_wording"></div> -->
+                                                                                                                                                                                                                                            <p class="appSubHeader" id="paidOption">
+                                                                                                                                                                                                                                            <div class="waived_paid_wording"></div> -->
 
 
 
@@ -1168,9 +1179,9 @@
 
 
                 <!-- <div class="form-field-big">
-                                                                                                            <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                                                                                            <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
-                                                                                                        </div> -->
+                                                                                                                                                                                                                                                <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                                                                                                                                                                                                                                <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                                                                                                                                                                                                                                            </div> -->
                 <div class="form-field-big" style="height:50px !important">
                     <label>Physical Address * <span id="pAddress1_error" class="hidden" style="color:red"><small>This
                                 field is required</small></span></label>
