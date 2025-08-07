@@ -15,8 +15,8 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\OnlinePaymentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MailReminder;
-use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\MaintenanceController;
 
 /*
 |--------------------------------------------------------------------------
