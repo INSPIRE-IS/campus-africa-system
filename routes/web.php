@@ -15,6 +15,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\OnlinePaymentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MailReminder;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
 
 /*
@@ -70,7 +71,7 @@ Route::get('/check-user-payment/{userId}', [HomeController::class, 'check_user_p
 Route::get('/my-profile', [ProfileController::class, 'index'])->name('my-profile');
 Route::post('/update-profile', [ProfileController::class, 'update']);
 
-Route::get('/my-documents', [HomeController::class, 'documents']);
+Route::get('/my-documents', [HomeController::class, 'documents'])->name('my-documents');
 
 Route::get('/leases', [HomeController::class, 'leases']);
 Route::get('/mailing', [HomeController::class, 'mailing']);
@@ -159,6 +160,7 @@ Route::post('/change-lease', [HomeController::class, 'change_lease']);
 Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 
 Route::post('/getPaymentInfo', [HomeController::class, 'getPaymentInfo']);
+Route::post('/update-booking-payment', [HomeController::class, 'updateBookingPayment'])->name('update.booking.payment');
 
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::post("/manage-properties-filter", [HomeController::class, 'properties_filter']);
@@ -247,7 +249,9 @@ Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::get('/check-all-rooms/{id}', [HomeController::class, 'check_all_rooms']);
 Route::post("/check-building-prefix", [HomeController::class, 'check_building_prefix']);
 
-Route::get('/booking-summary', [BookingReportController::class, 'booking_summary']);
+
+Route::post('/booking/set-year', [BookingReportController::class, 'setYear'])->name('booking.setYear');
+Route::get('/booking-summary', [BookingReportController::class, 'booking_summary'])->name('booking.summary');
 Route::post('/update/room-activation', [BookingReportController::class, 'room_activation']);
 
 Route::post('/get-room-ids', [ApplicationController::class, 'get_room_ids']);

@@ -23,7 +23,6 @@ use App\Models\ImportNSFASStudentAuditLog;
 use ZipStream\ZipStream;
 use ZipStream\Option\Archive as ArchiveOptions;
 use App\Models\Comments;
-use Session;
 use App\Models\UserResetToken;
 use App\Models\UserLeaseToken;
 use App\Models\PropertyPermission;
@@ -47,6 +46,7 @@ use Exception;
 use Illuminate\Support\Facades\Artisan;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
@@ -75,12 +75,38 @@ class HomeController extends Controller
         }
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        // dd(Auth::user()->rob_60_cancelled);
+        //Session::put('year', $request->year);
+        //$request->year = Session::get('year');
+        //Session::put('year', '2026');
+        //Session::forget('year'); // Clear specific
+        //dd(Session::get('year'));
+        $currentYear = now()->year;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $years = Lookups::where('group_id', '4')
+            ->where('lookup_name', '>=', $currentYear) // only current year or later
+            ->orderByDesc('lookup_name')
+            ->get();
+        // dd($years);
+        if ($request->has('year')) {
+            $selected_year = $request->input('year');
+            Session::put('year', $selected_year);
+        } elseif (Session::has('year')) {
+            $selected_year = Session::get('year');
+        } else {
+            $selected_year = $years->first()->lookup_name;
+            Session::put('year', $selected_year);
+        }
+        $availableYears = $years->pluck('lookup_name')->toArray();
+
+        if (!in_array($selected_year, $availableYears)) {
+            $selected_year = $years->first()->lookup_name;
+            Session::put('year', $selected_year);
+
+            return redirect()->route('home', ['year' => $selected_year]);
+        }
+
 
         if (Auth::user()->userRole == "0") {
 
@@ -89,16 +115,42 @@ class HomeController extends Controller
             if ($appOnline->lookup_name == '1') {
 
                 // $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-                $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
+                // $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
+                //$studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
+                $studentInfos = StudentsInfo::where('userUid', Auth::user()->id)->get();
 
-                if ($studentInfo->year == $this_year) {
-                    $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+                // Try to find the selected year
+                $studentInfo = $studentInfos->firstWhere('year', $selected_year);
+
+                // If not found, fall back to the first available one
+                if (!$studentInfo) {
+                    $studentInfo = $studentInfos->first(); // or choose a specific fallback strategy
+                    if ($studentInfo && $studentInfo->year == $years->first()->lookup_name) {
+                        Session::put('year', $studentInfo->year);
+                        return redirect()->route('home', ['year' => $studentInfo->year]);
+                    }
+                }
+                //dd($studentInfo->year);
+                if ($studentInfo && $studentInfo->year == $selected_year) {
+                    $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
                 } else {
                     $student = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
-                    $returnInfo = $this->inActiveStudent();
+                    $returnInfo = $this->inActiveStudent($selected_year);
 
                     $agent = new Agent();
-                    return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student, "agent" => $agent]);
+                    return view('user.dashNoBooking', [
+                        "active" => 0,
+                        "headerTitle" => "Dashboard",
+                        "this_year" => $years[0]->lookup_name,
+                        "bookingList" => $returnInfo['bookingList'],
+                        "buildingList" => $returnInfo['buildingList'],
+                        "roomList" => $returnInfo['roomList'],
+                        "filesList" => $returnInfo['filesList'],
+                        "user" => $student,
+                        "agent" => $agent,
+                        "years" => $years,
+                        "selected_year" => $selected_year
+                    ]);
                 }
 
 
@@ -110,10 +162,10 @@ class HomeController extends Controller
                 if ($student->onboard_complete != '2') {
 
                     // User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
-                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 1]);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->update(['onboard_complete' => 1]);
 
                     // $currUser = User::where('id', Auth::user()->id)->first();
-                    $currUser = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+                    $currUser = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
 
                     if ($currUser->studentType == "NSFAS") {
                         $varToCheck = 'kinFirstName';
@@ -131,7 +183,7 @@ class HomeController extends Controller
                         if (($currUser->studentType == "Bursary" || $currUser->studentType == "Cash / Direct") && $currUser->kinFirstName == null) {
                             return redirect('/step-3/online-application');
                         } else {
-                            $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+                            $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $selected_year)->first();
 
                             if (!empty($userFileProofOfPayment)) {
                                 return redirect('/complete/online-application');
@@ -146,21 +198,46 @@ class HomeController extends Controller
                     $this_year = $this_year->lookup_name;
 
                     //See if there is an active booking
-                    $bookingCurr = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+                    $bookingCurr = Booking::where('userId', Auth::user()->id)->where('year', $selected_year)->first();
 
                     $returnInfo = [];
 
                     if (!empty($bookingCurr)) {
-                        $returnInfo = $this->studentActive();
+                        $returnInfo = $this->studentActive($selected_year);
                     } else {
-                        $returnInfo = $this->inActiveStudent();
+                        $returnInfo = $this->inActiveStudent($selected_year);
                     }
 
                     if ($returnInfo['Status'] == '1') {
-                        return view('user.dashboard', ["active" => 1, "headerTitle" => $returnInfo['headerTitle'], "booking" => $returnInfo['booking'], "allFiles" => $returnInfo['allFiles'], "bookHeader" => $returnInfo['bookHeader'], "appHeader" => $returnInfo['appHeader'], "propertyData" => $returnInfo['propertyData'], "roomData" => $returnInfo['roomData'], "bookingPaid" => $returnInfo['bookingPaid'], "user" => $student]);
+                        return view('user.dashboard', [
+                            "active" => 1,
+                            "headerTitle" => $returnInfo['headerTitle'],
+                            "booking" => $returnInfo['booking'],
+                            "allFiles" => $returnInfo['allFiles'],
+                            "bookHeader" => $returnInfo['bookHeader'],
+                            "appHeader" => $returnInfo['appHeader'],
+                            "propertyData" => $returnInfo['propertyData'],
+                            "roomData" => $returnInfo['roomData'],
+                            "bookingPaid" => $returnInfo['bookingPaid'],
+                            "user" => $student,
+                            "years" => $years,
+                            "selected_year" => $selected_year
+                        ]);
                     } else {
                         $agent = new Agent();
-                        return view('user.dashNoBooking', ["active" => 0, "headerTitle" => "Dashboard", "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "user" => $student, "agent" => $agent]);
+                        return view('user.dashNoBooking', [
+                            "active" => 0,
+                            "headerTitle" => "Dashboard",
+                            "this_year" => $this_year,
+                            "bookingList" => $returnInfo['bookingList'],
+                            "buildingList" => $returnInfo['buildingList'],
+                            "roomList" => $returnInfo['roomList'],
+                            "filesList" => $returnInfo['filesList'],
+                            "user" => $student,
+                            "agent" => $agent,
+                            "years" => $years,
+                            "selected_year" => $selected_year
+                        ]);
                     }
                 }
             } else {
@@ -172,38 +249,25 @@ class HomeController extends Controller
         }
     }
 
-    public function inActiveStudent()
+    public function inActiveStudent($selected_year)
     {
 
         $buildingList = Residence::whereNull('status')->get();
         $roomList = RoomTypes::get();
         $filesList = UserFiles::where('userUid', Auth::user()->id)->get();
 
-        $bookingsIds = [];
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
 
-        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
+        $bookingList = [];
 
-        // foreach($userInfo as $info){
-        //     if($info->rob_50_approve == '2'){
-        //         array_push($bookingsIds, $info->bookingId);
-        //     }
-        // }
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
-        $bookingList = Booking::where('userId', Auth::user()->id)->where('id', $userInfo->bookingId)->get();
-
-        if (($userInfo->year < $this_year - 1) || $userInfo->rob_50_approve != '2') {
-            $bookingList = [];
+        if ($userInfo && $userInfo->rob_50_approve == '2') {
+            $bookingList = Booking::where('userId', Auth::user()->id)->where('id', $userInfo->bookingId)->get();
         }
-
-
 
         return ["Status" => 0, "bookingList" => $bookingList, "buildingList" => $buildingList, "roomList" => $roomList, "filesList" => $filesList];
     }
 
-    public function studentActive()
+    public function studentActive($selected_year)
     {
         $allFiles = [];
         $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
@@ -211,7 +275,7 @@ class HomeController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $currUser = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        $currUser = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
 
         if ($currUser->rob_60_cancelled == "0" && $currUser->rob_50_approve == '2') {
             array_push($all, "moveIn");
@@ -223,7 +287,7 @@ class HomeController extends Controller
             array_push($all, "bursaryApproval");
         }
 
-        $allSearchable = UserFiles::where("userUid", Auth::user()->id)->where('year', $this_year)->get();
+        $allSearchable = UserFiles::where("userUid", Auth::user()->id)->where('year', $selected_year)->get();
 
         foreach ($allSearchable as $search) {
             if (!in_array($search->fileId, $all)) {
@@ -235,7 +299,7 @@ class HomeController extends Controller
         $bookHeader = 0;
 
         foreach ($all as $file) {
-            $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->where('year', $this_year)->first();
+            $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->where('year', $selected_year)->first();
 
             if ($file || ($file_search && (($file_search->fileId !== "moveIn") || ($file_search->fileId == "moveIn" && $currUser->rob_50_approve == '2')))) {
                 //
@@ -323,7 +387,7 @@ class HomeController extends Controller
         }
 
 
-        $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+        $booking = Booking::where('userId', Auth::user()->id)->where('year', $selected_year)->first();
 
         $propertyData = Residence::where('id', $booking->property)->first();
         $roomData = RoomTypes::where('id', $booking->roomType)->first();
@@ -333,7 +397,7 @@ class HomeController extends Controller
         });
 
         $bookingPaid = 1;
-        $findBookingPaid = UserFiles::where("userUid", Auth::user()->id)->where('year', $this_year)->where('fileId', 'proof_of_payment')->first();
+        $findBookingPaid = UserFiles::where("userUid", Auth::user()->id)->where('year', $selected_year)->where('fileId', 'proof_of_payment')->first();
 
         if (empty($findBookingPaid) || $findBookingPaid->status == "Rejected") {
             $bookingPaid = 0;
@@ -614,9 +678,13 @@ class HomeController extends Controller
 
     public function activeBooking($userId, $this_year)
     {
-        //dd($this_year);
+
         $user = User::where('id', $userId)->first();
         $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+        if (!$studentInfo) {
+            // if student is null return back
+            return ["Info" => 0, "headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => " student not found year " . $this_year . " id " . $userId];
+        }
 
         if ($studentInfo->address_approved == "1" && $studentInfo->kin_approved == "1" && $studentInfo->email_data_approved == "1") {
             $rob_35_info = 2;
@@ -849,23 +917,34 @@ class HomeController extends Controller
 
         if (Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3") {
 
-            //get current year
-            $year = Session::get('year');
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
+            //get current year
+            $session_year = Session::get('year');
+            $show_booking = false;
+            if (!empty($session_year)) {
+                $new_year =  $this_year != $session_year ? true : false;
+                if ($new_year) {
+                    $bookingNext = Booking::where('userId', $userId)->where('year', $this_year)->first();
+                    $show_booking = $bookingNext ? false : true;
+                }
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+                $this_year = $this_year->lookup_name;
+            }
 
             //See if there is an active booking
             $bookingCurr = Booking::where('userId', $userId)->where('year', $this_year)->first();
-
+            // dd($bookingCurr);
 
             $returnInfo = [];
-
+            // TODO : this is still pushing to the old booking page if the session is not correct we need to just go back to the application page
             if (!empty($bookingCurr)) {
                 $returnInfo = $this->activeBooking($userId, $this_year);
             } else {
                 $returnInfo = $this->oldBooking($userId);
             }
-
+            Log::info('returnInfo' . $returnInfo['Info']);
+            Log::info('show_booking' . $show_booking);
 
             if ($returnInfo['Info'] == '1') {
 
@@ -896,7 +975,8 @@ class HomeController extends Controller
                     "mailVerificationEmail" => $returnInfo['mailVerificationEmail'],
                     "previousBookings" => $returnInfo['previousBookings'],
                     "paymentBooking" => $returnInfo['paymentBooking'],
-                    "this_year" => $this_year
+                    "this_year" => $this_year,
+                    'bookingNext' => $show_booking,
                 ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
@@ -1739,26 +1819,53 @@ class HomeController extends Controller
 
     public function documents(Request $request)
     {
+        $currentYear = now()->year;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $years = Lookups::where('group_id', '4')
+            ->where('lookup_name', '>=', $currentYear) // only current year or later
+            ->orderByDesc('lookup_name')
+            ->get();
 
-        $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        if ($request->has('year')) {
+            $selected_year = $request->input('year');
+            Session::put('year', $selected_year);
+        } elseif (Session::has('year')) {
+            $selected_year = Session::get('year');
+        } else {
+            $selected_year = $years->first()->lookup_name;
+            Session::put('year', $selected_year);
+        }
+        $availableYears = $years->pluck('lookup_name')->toArray();
 
+        if (!in_array($selected_year, $availableYears)) {
+            $selected_year = $years->first()->lookup_name;
+            Session::put('year', $selected_year);
+
+            return redirect()->route('home', ['year' => $selected_year]);
+        }
+
+
+
+        // $this_year = Lookups::where('group_id', '4')->first();
+        // $this_year = $this_year->lookup_name;
+
+        $studentInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
+        //dd($studentInfo);
         $allFiles = [];
         $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+        if ($studentInfo) {
+            if ($studentInfo->rob_60_cancelled == "0" && $studentInfo->rob_50_approve == '2') {
+                array_push($all, "moveIn");
+            }
+            if ($studentInfo->studentType === "Cash / Direct") {
+                array_push($all, "bankStatement");
+            }
+            if ($studentInfo->studentType !== "Cash / Direct") {
+                array_push($all, "bursaryApproval");
+            }
+        }
 
-        if ($studentInfo->rob_60_cancelled == "0" && $studentInfo->rob_50_approve == '2') {
-            array_push($all, "moveIn");
-        }
-        if ($studentInfo->studentType === "Cash / Direct") {
-            array_push($all, "bankStatement");
-        }
-        if ($studentInfo->studentType !== "Cash / Direct") {
-            array_push($all, "bursaryApproval");
-        }
-
-        $allSearchable = UserFiles::where("userUid", Auth::user()->id)->where('year', $this_year)->get();
+        $allSearchable = UserFiles::where("userUid", Auth::user()->id)->where('year', $selected_year)->get();
 
         foreach ($allSearchable as $search) {
             if (!in_array($search->fileId, $all)) {
@@ -1767,7 +1874,7 @@ class HomeController extends Controller
         }
 
         foreach ($all as $file) {
-            $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->where('year', $this_year)->first();
+            $file_search = UserFiles::where("userUid", Auth::user()->id)->where('fileId', $file)->where('year', $selected_year)->first();
 
             if ($file_search && !empty($file_search)) {
                 if ($file_search->status == "Approved") {
@@ -1799,9 +1906,16 @@ class HomeController extends Controller
             return $b->important - $a->important;
         });
 
-        $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
 
-        return view('user.documents', ["headerTitle" => "My Documents", "allFiles" => $allFiles, "active" => 1, "user" => $user]);
+        return view('user.documents', [
+            "headerTitle" => "My Documents",
+            "allFiles" => $allFiles,
+            "active" => 1,
+            "user" => $user,
+            "selected_year" => $selected_year,
+            "years" => $years
+        ]);
     }
 
     public function leases(Request $request)
@@ -1964,10 +2078,10 @@ class HomeController extends Controller
         //dd(auth()->user()->role_manage_users);
         //dd(Auth::user()->role_manage_users);
         $showLoginAs = false;
-        if (Auth::user()->email == 'mirichea@whitehart.co.za' || Auth::user()->email == 'roger1@whitehart.co.za') {
+        if (Auth::user()->email == 'mirichea@whitehart.co.za' || Auth::user()->email == 'roger@whitehart.co.za') {
             $showLoginAs = true;
         }
-
+        //dd('test', $showLoginAs);
 
 
         if (Auth::user()->role_manage_users == "1") {
@@ -4044,10 +4158,15 @@ class HomeController extends Controller
 
     public function get_booking_details(Request $request)
     {
-        //
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
 
         $booking = Booking::with('residence')->with('roomType')->where('userId', $request->userId)->where('year', $this_year)->first();
         // $user = User::with('files')->where('id', $request->userId)->first();
@@ -5748,8 +5867,14 @@ class HomeController extends Controller
 
     public function action_data(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $student = User::where('id', $request->userId)->first();
         $studentInfo = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
@@ -6265,7 +6390,13 @@ class HomeController extends Controller
     public function download_docs(Request $request, $userId)
     {
         try {
+
             $this_year = Lookups::where('group_id', '4')->value('lookup_name') ?? date('Y');
+            if (Session::has('year')) {
+                $year = Session::get('year');
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+                $this_year = $this_year->lookup_name;
+            }
 
             $allFilesArr = [];
             $files = UserFiles::where('userUid', $userId)
@@ -10254,6 +10385,57 @@ class HomeController extends Controller
         return $payments;
     }
 
+    public function updateBookingPayment(Request $request)
+    {
+        //dd($request->all());
+        $validated = $request->validate([
+            'booking_payment_id' => 'required|integer|exists:booking_payments,id',
+            'monthly_rental' => 'nullable|numeric',
+            //'monthly_rental_total' => 'nullable|numeric',
+            'funded_monthly' => 'nullable|numeric',
+            //'total_funded' => 'nullable|numeric',
+            //'deposit' => 'nullable|numeric',
+            //'total_top_up' => 'nullable|numeric',
+        ]);
+
+        BookingPayment::updateOrCreate(
+            ['id' => $validated['booking_payment_id']],
+            [
+                // 'booking_fee' => $validated['booking_fee'] ?? 0,
+                // 'booking_fee_waived' => 0,
+                // 'rob_b_waived' => 0,
+                // 'loan_admin_fee' => $validated['loan_admin_fee'] ?? 0,
+                // 'loan_admin_fee_waived' => 0,
+                // 'rob_loan_waived' => 0,
+                //'deposit' => $validated['deposit'] ?? 0,
+                // 'deposit_waived' => 0,
+                // 'rob_deposit_waived' => 0,
+                'monthly_rental' => $validated['monthly_rental'] ?? 0,
+                'monthly_rental_total' => $validated['monthly_rental'] * 10 ?? 0, // Adjust if needed
+                'funded_monthly' => $validated['funded_monthly'] ?? 0,
+                'total_funded' => $validated['funded_monthly'] * 10 ?? 0,
+                // 'total_top_up' => $validated['total_top_up'] ?? 0,
+                //'nsfas_rate' => 0
+            ]
+        );
+        $this_year = Lookups::where('group_id', '4')->first();
+        if (!Session::get('year')) {
+            $year = Session::get('year');
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+        }
+        $this_year = $this_year->lookup_name;
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Booking Payment Updated",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
+        ]);
+
+        return redirect()->back()->with('success', 'Booking payment updated.');
+    }
+
     public function all_properties(Request $request)
     {
         $allRes = Residence::whereNull('status')->get();
@@ -10641,16 +10823,29 @@ class HomeController extends Controller
 
     public function download_apps(Request $request)
     {
+        // fiddle
+        $userId = Auth::user()->id;
+        $user = User::where('id', $userId)->first();
 
-        if ($request->year !== "All") {
-            $allUsers = StudentsInfo::where('year', $request->year)->get();
-        } else {
-            $allUsers = StudentsInfo::get();
-        }
+        $accessArray = PropertyPermission::where('userUid', $userId)
+            ->pluck('property') // assuming this is the booking.property
+            ->toArray();
+
+        $allUsers = StudentsInfo::with('booking')
+            ->when($request->year !== 'All', fn($q) => $q->where('year', $request->year))
+            ->whereHas('booking', fn($q) => $q->whereIn('property', $accessArray))
+            ->get();
+        //dd($allUsers);
+        // if ($request->year !== "All") {
+        //     $allUsers = StudentsInfo::with('booking')->where('year', $request->year)->get();
+        // } else {
+        //     $allUsers = StudentsInfo::with('booking')->get();
+        // }
 
         $users = [
             [
                 '<b>Booking Ref</b>',
+                '<b>Application Date</b>',
                 '<b>First Name</b>',
                 '<b>Last Name</b>',
                 '<b>Title</b>',
@@ -10843,6 +11038,7 @@ class HomeController extends Controller
 
             $studentData = [
                 $booking_ref,
+                $user->created_at,
                 $user->userFirstName,
                 $user->userLastname,
                 $user->userTitle,
@@ -10928,7 +11124,6 @@ class HomeController extends Controller
 
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
-
         // $allActions = ActionList::where('action', 'like', '%Updated Property%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
 
         // // $allActionsCancelled = ActionList::where('action', 'like', '%Cancelled%')->where('created_at', '>=', $request->fromDate)->where('created_at', '<=', $request->toDate)->get();
@@ -11014,6 +11209,9 @@ class HomeController extends Controller
             //if property wasn't changed get current property
             if ($moved === false) {
                 $booking = Booking::where('userId', $registered->userUid)->where('year', $this_year)->first();
+                if ($booking == null) {
+                    continue;
+                }
                 $building = Residence::where('id', $booking->property)->first();
                 $registered_building = $building->residence;
             }
@@ -11110,6 +11308,9 @@ class HomeController extends Controller
             //If building wasnt moved - get building from location
             if ($registered_building == "") {
                 $booking = Booking::where('userId', $cancelled->userUid)->where('year', $this_year)->first();
+                if ($booking == null) {
+                    continue;
+                }
                 $building = Residence::where('id', $booking->property)->first();
                 $registered_building = $building->residence;
             }

@@ -27,6 +27,10 @@
                 } ?>">
             </div>
 
+
+
+
+
             <div class="form-field">
                 <label>Title * <span id="title_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
@@ -72,7 +76,9 @@
                 </select>
             </div>
 
-            <div class="form-field <?php if ($user->userNationality == "International") {echo 'hidden';} ?>" id="idField">
+            <div class="form-field <?php if ($user->userNationality == 'International') {
+                echo 'hidden';
+            } ?>" id="idField">
                 <label>I.D Number *
                     <span id="idNumber_error" class="hidden" style="color:red"><small>Not a valid ID number</small></span>
                     <span id="idNumber_InUse_cancelled" class="hidden" style="color:red"><small>a CANCELLED booking with
@@ -83,13 +89,21 @@
                             move this booking OR advise the student that they can login and change the
                             building</small></span>
                 </label>
-                <input type="text" name="idNumber" id="idNumber" class="<?php if ($user->userNationality != "International") {echo 'required';} ?>" value="<?php echo $user->userId; ?>">
+                <input type="text" name="idNumber" id="idNumber" class="<?php if ($user->userNationality != 'International') {
+                    echo 'required';
+                } ?>"
+                    value="<?php echo $user->userId; ?>">
             </div>
 
-            <div class="form-field <?php if ($user->userNationality != "International") {echo 'hidden';} ?>" id="passportField">
+            <div class="form-field <?php if ($user->userNationality != 'International') {
+                echo 'hidden';
+            } ?>" id="passportField">
                 <label>Passport Number * <span id="passport_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
-                <input type="text" name="passportNo" id="passportNo" class="<?php if ($user->userNationality == "International") {echo 'required';} ?>" value="<?php echo $user->userPassport; ?>">
+                <input type="text" name="passportNo" id="passportNo" class="<?php if ($user->userNationality == 'International') {
+                    echo 'required';
+                } ?>"
+                    value="<?php echo $user->userPassport; ?>">
             </div>
 
             <div class="form-field">
@@ -97,8 +111,12 @@
                             required</small></span></label>
                 <select name="gender" id='gender' class="required">
                     <option value="" disabled selected>Please select one</option>
-                    <option value="1" <?php if($user->gender == "1"){ echo "selected";} ?>>Male</option>
-                    <option value="2" <?php if($user->gender == "2"){ echo "selected";} ?>>Female</option>
+                    <option value="1" <?php if ($user->gender == '1') {
+                        echo 'selected';
+                    } ?>>Male</option>
+                    <option value="2" <?php if ($user->gender == '2') {
+                        echo 'selected';
+                    } ?>>Female</option>
                 </select>
             </div>
 
@@ -106,7 +124,8 @@
                 <label>Cellphone Number * <span id="cell_no_error" class="hidden" style="color:red"><small>Not a valid
                             cellphone number</small></span><span id="cell_no_duplicate" class="hidden"
                         style="color:red"><small>. Duplicate detected!</small></span></label>
-                <input type="text" name="cell_no_code" id="cell_no_code" style="width:10% !important;" value="+27">
+                <input type="text" name="cell_no_code" id="cell_no_code" style="width:10% !important;"
+                    value="+27">
                 <input type="text" name="cell_no" style="width:85% !important" id="cell_no" class="required"
                     value="<?php if ($cancelled == '0') {
                         echo $user->userCell;
@@ -122,7 +141,7 @@
             </div>
 
             <div class="form-field">
-                <br/>
+                <br />
             </div>
 
             <div class="form-field-big">
@@ -174,14 +193,18 @@
                     } ?>>Cash</option>
                 </select>
             </div>
-
+            @php
+                $nextYear = now()->addYear()->year;
+            @endphp
             <div class="form-field">
                 <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
                 <select name="year" id="year" class="required">
                     @foreach ($lookups as $lookup)
-                        @if ($lookup->group_id == '4')
-                            <option value="{{ $lookup->lookup_name }}" selected>{{ $lookup->lookup_name }}</option>
+                        @if ($lookup->group_id == '4' && (int) $lookup->lookup_name == $nextYear)
+                            <option value="{{ $lookup->lookup_name }}">
+                                {{ $lookup->lookup_name }}
+                            </option>
                         @endif
                     @endforeach
                 </select>
@@ -248,18 +271,18 @@
                 <select name="property" id='property' class="required">
                     <option value="" selected disabled>Select a Residence</option>
                     @foreach ($PropertyList as $property)
-
-                            @if($user->studentType == "Cash / Direct" && in_array($property->id, $inSelectedCash))
-                                <option value="{{$property->id}}">{{$property->residence}}</option>
-                            @elseif($user->studentType == "Bursary" && in_array($property->id, $inSelectedBursary))
-                                <option value="{{$property->id}}">{{$property->residence}}</option>
-                            @elseif($user->studentType == "NSFAS" && in_array($property->id, $inSelectedNsfas))
-                                <option value="{{$property->id}}">{{$property->residence}}</option>
-                            @else
-                                <option value="{{$property->id}}" disabled>{{$property->residence}} (Not Allowed)</option>
-                            @endif
+                        @if ($user->studentType == 'Cash / Direct' && in_array($property->id, $inSelectedCash))
+                            <option value="{{ $property->id }}">{{ $property->residence }}</option>
+                        @elseif($user->studentType == 'Bursary' && in_array($property->id, $inSelectedBursary))
+                            <option value="{{ $property->id }}">{{ $property->residence }}</option>
+                        @elseif($user->studentType == 'NSFAS' && in_array($property->id, $inSelectedNsfas))
+                            <option value="{{ $property->id }}">{{ $property->residence }}</option>
+                        @else
+                            <option value="{{ $property->id }}" disabled>{{ $property->residence }} (Not Allowed)
+                            </option>
+                        @endif
                     @endforeach
-                    
+
                 </select>
             </div>
 
@@ -371,9 +394,9 @@
 
 
                         <!-- <div class="form-field-big">
-                                    <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
-                                    <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
-                                </div> -->
+                                            <label>Physical Address* <span id="pAddress1_error" class="hidden" style="color:red"><small>This field is required</small></span></label>
+                                            <input type="text" placeholder="Street No" name="pAddress1" id="pAddress1" style="width:98% !important">
+                                        </div> -->
                         <div class="form-field-big" style="height:50px !important">
                             <label>Physical Address * <span id="pAddress1_error" class="hidden"
                                     style="color:red"><small>This field is required</small></span></label>
@@ -497,11 +520,11 @@
 
                     <div class="form-field">
                         <!-- <ul style="list-style-type:none">
-                                        <li style="display:inline-flex; margin-top:30px;">
-                                            <input type="checkbox" id="nsfas_bursar" name="nsfas_bursar" value="1" style="width:50px !important">
-                                            <label for="nsfas_bursar" style="width:500px">NSFAS bursar?</label>
-                                        </li>
-                                    </ul> -->
+                                                <li style="display:inline-flex; margin-top:30px;">
+                                                    <input type="checkbox" id="nsfas_bursar" name="nsfas_bursar" value="1" style="width:50px !important">
+                                                    <label for="nsfas_bursar" style="width:500px">NSFAS bursar?</label>
+                                                </li>
+                                            </ul> -->
                         <br />
                     </div>
 
@@ -912,9 +935,11 @@
 
             let element = document.getElementById('gender');
 
-            if(idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 0 && parseFloat(idNumber.substr(6, 1)) <= 4){               
+            if (idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 0 && parseFloat(idNumber.substr(6, 1)) <=
+                4) {
                 element.value = 2;
-            }else if(idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 5 && parseFloat(idNumber.substr(6, 1)) <= 9){
+            } else if (idNumber != "" && parseFloat(idNumber.substr(6, 1)) >= 5 && parseFloat(idNumber.substr(6,
+                    1)) <= 9) {
                 element.value = 1;
             }
         })
@@ -1364,20 +1389,22 @@
             }
         })
 
-        $("#institStudy").on('change', function(){
+        $("#institStudy").on('change', function() {
             // if ($("#studentType").val() == "NSFAS") {
-                // nsfasProp()
-                allowAllProp()
+            // nsfasProp()
+            allowAllProp()
             // }
         })
 
-        function allowAllProp(){
+        function allowAllProp() {
             $("#property").empty().append('<option value="" selected disabled>Loading</option>')
 
             $.ajax({
                 type: "post",
                 url: "/get-nsfas-properties",
-                data: {institStudy: $("#institStudy").val()},
+                data: {
+                    institStudy: $("#institStudy").val()
+                },
 
                 success: function(data) {
 
@@ -1387,26 +1414,35 @@
                     inSelectedBursary = data[2];
                     inSelectedNsfas = data[3];
 
-                    $("#property").empty().append('<option value="" selected disabled>Select a Residence</option>')
+                    $("#property").empty().append(
+                        '<option value="" selected disabled>Select a Residence</option>')
 
-                    if($("#institStudy").val() == "" || $("#institStudy").val() == null){
+                    if ($("#institStudy").val() == "" || $("#institStudy").val() == null) {
                         allprops.forEach(function(index) {
-                            $("#property").append('<option value="' + index.id + '" disabled>' + index.residence + ' (No Institution Selected)</option>')
+                            $("#property").append('<option value="' + index.id + '" disabled>' + index
+                                .residence + ' (No Institution Selected)</option>')
                         })
-                    }else{
+                    } else {
                         allprops.forEach(function(index) {
-                            if($("#studentType").val() == "Cash / Direct" && inSelectedCash.includes(index.id)){
-                                $("#property").append('<option value="' + index.id + '">' + index.residence +
+                            if ($("#studentType").val() == "Cash / Direct" && inSelectedCash.includes(
+                                    index.id)) {
+                                $("#property").append('<option value="' + index.id + '">' + index
+                                    .residence +
                                     '</option>')
-                            }else if($("#studentType").val() == "Bursary" && inSelectedBursary.includes(index.id)){
-                                $("#property").append('<option value="' + index.id + '">' + index.residence +
+                            } else if ($("#studentType").val() == "Bursary" && inSelectedBursary
+                                .includes(index.id)) {
+                                $("#property").append('<option value="' + index.id + '">' + index
+                                    .residence +
                                     '</option>')
-                            }else if($("#studentType").val() == "NSFAS" && inSelectedNsfas.includes(index.id)){
-                                $("#property").append('<option value="' + index.id + '">' + index.residence +
+                            } else if ($("#studentType").val() == "NSFAS" && inSelectedNsfas.includes(
+                                    index.id)) {
+                                $("#property").append('<option value="' + index.id + '">' + index
+                                    .residence +
                                     '</option>')
-                            }else{
+                            } else {
 
-                                $("#property").append('<option value="' + index.id + '" disabled>' + index.residence +
+                                $("#property").append('<option value="' + index.id + '" disabled>' +
+                                    index.residence +
                                     ' (Not Allowed)</option>')
                             }
                         })

@@ -130,4 +130,9 @@ class StudentsInfo extends Model
     {
         return $this->hasOne("App\Models\User", "id", "userUid");
     }
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class, 'bookingId', 'id');
+    }
 }
