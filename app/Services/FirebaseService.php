@@ -23,6 +23,11 @@ class FirebaseService
         $firestore = new FirestoreClient(['projectId' => 'campus-africa-bda4b', 'credentials' => storage_path('app/firebase/serviceAccountKey.json')]);
     }
 
+    public function getAuth(): \Kreait\Firebase\Auth
+    {
+        return $this->auth;
+    }
+
     // ✅ 1. View Firestore Structure Recursively
     public function getFirestoreStructure($limit = 5)
     {
@@ -113,6 +118,32 @@ class FirebaseService
     {
         return $this->auth->getUserByEmail($email);
     }
+
+    public function getUser($value)
+    {
+        return $this->auth->getUser($value);
+    }
+
+    public function getUserByEmailOrUid($value)
+    {
+        if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            return $this->auth->getUserByEmail($value);
+        }
+
+        return $this->auth->getUser($value);
+    }
+
+    public function getUserProfileByUid(string $uid): ?array
+    {
+        $doc = $this->firestore->collection('users')->document($uid)->snapshot();
+
+        if ($doc->exists()) {
+            return $doc->data();
+        }
+
+        return null;
+    }
+
 
     // ✅ 2. Register a User
     public function registerUser(string $email, string $password, array $extra = [])
