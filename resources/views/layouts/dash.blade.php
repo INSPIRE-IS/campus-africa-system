@@ -68,7 +68,7 @@
                 <a class="active" href="/dashboard">Dashboard</a>
 
                 <!-- <a href="/room-booking">My Room</a> -->
-                @if ($active == 1)
+                @if ($bedCode)
                     <a href="/firebase/register">Maintenance</a>
                 @endif
 
@@ -81,7 +81,7 @@
 
                 <a href="/logout">
                     @if (!$agent->isMobile() && isset($user->userFirstName))
-                        <span class="name">Hi {{ $user->userFirstName }} {{ $user->userLastname }},</span>
+                        <span class="name">Hi {{ $user->userFirstName }} {{ $user->userLastname }}, </span>
                     @endif Log out
                 </a>
 
@@ -110,9 +110,9 @@
 
                 <div class="loginHeader">
                     @if ($headerTitle == 'Congratulations!')
-                        <h1 class="booking" style="font-size:41px">{{ $headerTitle }}</h1>
+                        <h1 class="booking" style="font-size:41px">{{ $headerTitle }} {{ $sessionYear }}</h1>
                     @else
-                        <h1 class="booking">{{ $headerTitle }}</h1>
+                        <h1 class="booking">{{ $headerTitle }} {{ $sessionYear }}</h1>
                     @endif
 
 

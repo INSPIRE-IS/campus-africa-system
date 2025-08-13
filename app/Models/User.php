@@ -197,6 +197,12 @@ class User extends Authenticatable
             ->where('year', $year);
     }
 
+    public function studentInfo()
+    {
+        return $this->hasOne(StudentsInfo::class, 'userUid', 'id')
+            ->where('year', (new \DateTime())->format('Y')); // optional: constrain by year
+    }
+
     public function latestStudentInfo()
     {
         return $this->hasOne(StudentsInfo::class, 'userUid', 'id')->latestOfMany('year');

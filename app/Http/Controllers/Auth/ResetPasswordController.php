@@ -63,17 +63,34 @@ class ResetPasswordController extends Controller
         if ($password === $password_confirmation) {
             $userToken = UserResetToken::where('userToken', $userCustomId)->where('active', '1')->first();
 
-            $user = User::where('id', $userToken->userUid)->update(['password' => Hash::make($password)]);
+            User::where('id', $userToken->userUid)->update(['password' => Hash::make($password)]);
             UserResetToken::where('userToken', $userCustomId)->where('active', '1')->update(['active' => 0]);
 
-            try {
-                // If you don't store uid, fall back to getUserByEmail
-                $firebaseUser = $this->firebase->getUserByEmail($user->email);
-                $this->firebase->updatePassword($firebaseUser->uid, $password);
-            } catch (\Throwable $e) {
-                logger()->error('Firebase password update failed: ' . $e->getMessage());
-            }
+            $user = User::with([
+                "studentInfo.booking" => function ($query) {
+                    $query->whereNotNull("bed_code"); // ensure bed_code exists
+                }
+            ])
+                ->whereHas("studentInfo.booking", function ($query) {
+                    $query->whereNotNull("bed_code"); // filter users that actually have a booking with bed_code
+                })
+                ->where("id", $userToken->userUid)
+                ->first();
 
+            if ($user->studentInfoForCurrentYear && $user->studentInfoForCurrentYear->booking) {
+                $bedCode = $user->studentInfoForCurrentYear->booking->bed_code;
+                $bookingCode = $user->studentInfoForCurrentYear->booking->booking_code;
+                try {
+                    // If you don't store uid, fall back to getUserByEmail
+                    $firebaseUser = $this->firebase->getUserByEmail($user->email);
+                    $this->firebase->updatePassword($firebaseUser->uid, $password);
+                } catch (\Throwable $e) {
+                    logger()->error('Firebase password update failed: ' . $e->getMessage());
+                }
+                //return ["bed_code" => $bedCode,"booking_code" => $bookingCode];
+            } else {
+                logger()->info("No booking found for user {$user->id}");
+            }
             return redirect()->route('login');
         } else {
             return redirect()->back()->with('error', 'Passwords must match');

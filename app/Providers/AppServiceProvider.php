@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Jenssegers\Agent\Agent;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +29,34 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        View::composer('*', function ($view) {
+            $agent = new Agent();
+            $sessionYear = Session::get('year', now()->year);
+            $bedCode = null;
+
+            if (Auth::check()) {
+                $userId = Auth::user()->id;
+                $user = User::find($userId);
+
+                logger()->info('checking bed code ', [$user]);
+                if ($user && $user->userRole != 1) {
+                    // Only check bed code if not userRole 1
+                    $thisYear = now()->year;
+                    /** @disregard P1013 */
+                    $studentInfo = $user->studentInfoForYear($thisYear)->first();
+                    Log::info("Bed Code: ", [$studentInfo->booking]);
+                    if ($studentInfo && $studentInfo->booking) {
+                        $bedCode = $studentInfo->booking->bed_code;
+                    }
+                    Log::info("Bed Code: " . $bedCode);
+                }
+            }
+
+            $view->with([
+                'agent'       => $agent,
+                'sessionYear' => $sessionYear,
+                'bedCode'     => $bedCode
+            ]);
+        });
     }
 }
