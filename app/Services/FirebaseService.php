@@ -8,6 +8,7 @@ use Kreait\Firebase\Exception\Auth\EmailExists;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\AuthException;
 use Google\Cloud\Firestore\FirestoreClient;
+use Illuminate\Support\Facades\Log;
 
 class FirebaseService
 {
@@ -119,7 +120,7 @@ class FirebaseService
         return $this->auth->getUserByEmail($email);
     }
 
-    public function getUser($value)
+    public function getUserByUid($value)
     {
         return $this->auth->getUser($value);
     }
@@ -146,26 +147,70 @@ class FirebaseService
 
 
     // ✅ 2. Register a User
-    public function registerUser(string $email, string $password, array $extra = [])
+    public function registerUser(array $details = [], array $extra = [])
     {
-        return $this->auth->createUser(array_merge([
-            'email' => $email,
-            'password' => $password,
+        // 1. Register in Firebase Auth
+        $user = $this->auth->createUser(array_merge([
+            'email' => $details['email'],
+            'password' => $details['password'],
         ], $extra));
 
+        // 2. Prepare additional Firestore fields
         $this->firestore->collection('users')->document($user->uid)->set([
             'uid' => $user->uid,
-            'email' => $email,
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'residence' => $residence,
-            'bed_code' => $bedCode,
-            'role' => $role,
-            'groups' => $groups,
+            'email' => $details['email'],
+            'first_name' => $details['first_name'] ?? null,
+            'last_name' => $details['last_name'] ?? null,
+            'bed_code' => $details['bed_code'] ?? null,
+            'role' => $details['role'] ?? null,
+            'groups' => $details['groups'] ?? [],
             'created_time' => now()->toDateTimeString(),
         ]);
+
+        // 3. Return the created Firebase Auth user
         return $user;
     }
+
+
+    public function registerOrUpdateUser(array $details = [], array $extra = [])
+    {
+        try {
+            // Check if user exists
+            $existingUser = $this->auth->getUserByEmail($details['email']);
+            Log::info('✅ User exists. ' . $existingUser->uid);
+            // 🔁 Update Auth user
+            $user = $this->auth->updateUser($existingUser->uid, array_merge([
+                'password' => $details['password'],
+            ], $extra));
+        } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
+            // 👤 Create new Auth user
+            $user = $this->auth->createUser(array_merge([
+                'email' => $details['email'],
+                'password' => $details['password'],
+            ], $extra));
+        }
+
+        // 📝 Create/update Firestore user document
+        $this->firestore->collection('users')->document($user->uid)->set([
+            'uid' => $user->uid,
+            'email' => $details['email'],
+            'first_name' => $details['first_name'] ?? null,
+            'last_name' => $details['last_name'] ?? null,
+            'bed_code' => $details['bed_code'] ?? null,
+            'role' => $details['role'] ?? null,
+            'groups' => $details['groups'] ?? [],
+            'created_time' => now()->toDateTimeString(),
+        ]);
+        Log::info('✅ User exists. ' . $user->uid);
+        return $user;
+    }
+
+    // ✅ 3. Update User Email
+    public function updateEmail(string $uid, string $newEmail)
+    {
+        return $this->auth->updateUser($uid, ['email' => $newEmail]);
+    }
+
 
     // ✅ 3. Update User Password
     public function updatePassword(string $uid, string $newPassword)
@@ -174,11 +219,11 @@ class FirebaseService
     }
 
     // ✅ 4. Get "maintenance_items" collection (paginated)
-    public function getMaintenanceItems(int $limit = 10, string $startAfter = null)
+    public function getMaintenanceItems(int $limit = 10, string $startAfter)
     {
         $collection = $this->firestore->collection('maintenance_items')->orderBy('created_at', 'DESC')->limit($limit);
 
-        if ($startAfter) {
+        if ($startAfter !== null && $startAfter !== '') {
             $snapshot = $this->firestore->collection('maintenance_items')->document($startAfter)->snapshot();
             $collection = $collection->startAfter($snapshot);
         }

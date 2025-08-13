@@ -334,14 +334,16 @@ Route::post('/get-actions', [HomeController::class, 'get_actions']);
 
 
 Route::prefix('firebase')->name('firebase.')->group(function () {
+
+
+    Route::get('register', [MaintenanceController::class, 'create'])->name('register.form');
+    Route::post('register', [MaintenanceController::class, 'store'])->name('register');
+
+    Route::get('password', [MaintenanceController::class, 'showPasswordForm'])->name('password.form');
+    Route::post('password', [MaintenanceController::class, 'updatePassword'])->name('password.update');
+
     Route::get('/structure', [MaintenanceController::class, 'showStructure']);
     Route::post('/register-user', [MaintenanceController::class, 'registerUser']);
     Route::post('/update-password', [MaintenanceController::class, 'updatePassword']);
     Route::get('/maintenance-items', [MaintenanceController::class, 'viewMaintenanceItems']);
-
-    Route::get('register', [MaintenanceController::class, 'showRegister'])->name('register.form');
-    Route::post('register', [MaintenanceController::class, 'register'])->name('register');
-
-    Route::get('password', [MaintenanceController::class, 'showPasswordForm'])->name('password.form');
-    Route::post('password', [MaintenanceController::class, 'updatePassword'])->name('password.update');
 });

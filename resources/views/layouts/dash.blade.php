@@ -68,11 +68,16 @@
                 <a class="active" href="/dashboard">Dashboard</a>
 
                 <!-- <a href="/room-booking">My Room</a> -->
+                @if ($active == 1)
+                    <a href="/firebase/register">Maintenance</a>
+                @endif
+
                 @if ($active == 1 && isset($user->rob_60_cancelled) && $user->rob_60_cancelled == 0)
                     <a href="/my-documents">My Documents</a>
                 @endif
+
                 <a href="https://campusafrica.co.za/residences/" target="_blank">Residences</a>
-                <!-- <a href="/my-profile">My Profile</a> -->
+                {{-- <a href="/my-profile">My Profile</a> --}}
 
                 <a href="/logout">
                     @if (!$agent->isMobile() && isset($user->userFirstName))
@@ -205,7 +210,8 @@
         // })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
         // @endif
     </script>
-
+    <!-- Scripts -->
+    @yield('scripts') {{-- Simple method --}}
 </body>
 
 </html>

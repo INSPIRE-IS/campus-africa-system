@@ -191,6 +191,11 @@ class User extends Authenticatable
         return config('laravel-passwordless-login.login_route_expires');
     }
 
+    public function studentInfoForYear($year)
+    {
+        return $this->hasOne(StudentsInfo::class, 'userUid', 'id')
+            ->where('year', $year);
+    }
 
     public function latestStudentInfo()
     {
