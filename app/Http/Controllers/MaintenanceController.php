@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Services\FirebaseService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,7 +32,7 @@ class MaintenanceController extends Controller
     }
 
 
-    public function showRegister()
+    public function create()
     {
         $userId = Auth::user()->id;
         //get current year
@@ -46,37 +48,18 @@ class MaintenanceController extends Controller
         $booking = Booking::select('id', 'bed_code', 'property', 'booking_code')->find($studInfo->bookingId);
         $property = Residence::select('residence', 'id')->where('id', $booking->property ?? null)->first();
         //dd($studInfo->userEmail);
-        $uid = null;
+
         try {
-            $existing = $this->firebase->getUserByEmail("nkosilusanda73@gmail.com");
+            $existing = $this->firebase->getUserByEmail($studInfo->userEmail);
             if (!empty($existing)) {
-                foreach ($existing as $exist) {
-                    if ($exist == "2520" . $booking->id) {
-                        $uid = $exist->uid;
-                    }
-                }
+                $uid = $existing->uid;
             }
         } catch (Exception $e) {
             $uid = null;
         }
-        if ($uid == null) {
-            try {
-                $uid = null;
-                $existing = $this->firebase->getUserByUid($booking->booking_code);
-                if (!empty($existing)) {
-                    foreach ($existing as $exist) {
-                        if ($exist == "2520" . $booking->id) {
-                            $uid = $exist->uid;
-                        }
-                    }
-                }
-            } catch (Exception $e) {
-                $uid = null;
-            }
-        }
-        dd($uid);
+
         $user = [
-            "id" => $booking->booking_code ?? null,
+            "id" => $booking->booking_code,
             "bed_code" => $booking->bed_code,
             "email" => $studInfo->userEmail,
             "first_name" => $studInfo->userFirstName,
@@ -92,12 +75,13 @@ class MaintenanceController extends Controller
         return view('user.firebase.register', compact('user', 'headerTitle', 'active'));
     }
 
-    public function register(Request $request)
+    public function store(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|min:6',
+            'confirm_password' => 'required|same:password',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'phone_number' => 'required|string',
@@ -125,34 +109,27 @@ class MaintenanceController extends Controller
         $booking = Booking::select('id', 'bed_code', 'property', 'booking_code')->find($studInfo->bookingId);
         $property = Residence::select('residence', 'id')->where('id', $booking->property ?? null)->first();
 
-        $uid = null;
+
         try {
-            $existing = $this->firebase->getUserByEmailOrUid($studInfo->userEmail);
+            $existing = $this->firebase->getUserByEmail($studInfo->userEmail);
             if (!empty($existing)) {
-                foreach ($existing as $exist) {
-                    if ($exist == "2520" . $booking->id) {
-                        $uid = $exist->uid;
-                    }
-                }
+                $uid = $existing->uid;
             }
         } catch (Exception $e) {
             $uid = null;
         }
-        if ($uid == null) {
-            try {
-                $uid = null;
-                $existing = $this->firebase->getUserByEmailOrUid($booking->booking_code);
-                if (!empty($existing)) {
-                    foreach ($existing as $exist) {
-                        if ($exist == "2520" . $booking->id) {
-                            $uid = $exist->uid;
-                        }
-                    }
-                }
-            } catch (Exception $e) {
-                $uid = null;
-            }
-        }
+
+        // $user = [
+        //     "id" => $booking->booking_code,
+        //     "bed_code" => $booking->bed_code,
+        //     "email" => $studInfo->userEmail,
+        //     "first_name" => $studInfo->userFirstName,
+        //     "residence" =>  $property->residence ?? null,
+        //     "last_name" => $studInfo->userLastname,
+        //     "phone_number" => $studInfo->userCellCode . $studInfo->userCell,
+        //     "role" => "Tenant",
+        //     "uid" => $uid,
+        // ];
 
         $details = [
             "id" => $booking->booking_code ?? null,
@@ -167,9 +144,28 @@ class MaintenanceController extends Controller
         ];
         // dd($details);
         try {
+            $userId = Auth::user()->id;
+            if (!$userId) {
+                $this->error('User not found.');
+                return;
+            }
+            Log::info("Updating local user password");
+            //Log::info($user->uid);
+            $localUser = User::find($userId);
+            //User::where('id', $userId)->update(['password' => Hash::make($request->input('password'))]);
+            Log::info('✅ Password. ' . $localUser->password);
+            $localUser->password = Hash::make($request->input('password'));
+            $localUser->save();
+            Log::info('✅ Password updated. ' . $localUser->password);
+            Log::info("Updating firebase user and password");
             $user = $this->firebase->registerOrUpdateUser($details);
+            // Also update local Laravel user's password
+
+
             return back()->with('success', 'User registered: ' . $user->uid);
         } catch (\Throwable $e) {
+            logger()->error('errrooorrr');
+            Log::info($e->getMessage());
             return back()->with('error', $e->getMessage());
         }
     }
@@ -201,7 +197,7 @@ class MaintenanceController extends Controller
 
     public function viewMaintenanceItems(Request $request)
     {
-        $items = $this->firebase->getMaintenanceItems(20);
+        $items = $this->firebase->getMaintenanceItems(20, $request->startAfter);
         return view('firebase.maintenance', compact('items'));
     }
 }

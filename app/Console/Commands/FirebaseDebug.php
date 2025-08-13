@@ -139,7 +139,7 @@ class FirebaseDebug extends Command
         // List maintenance items
         if ($this->option('list-maintenance')) {
             $this->info('Listing maintenance items...');
-            $items = $this->firebase->getMaintenanceItems(10);
+            $items = $this->firebase->getMaintenanceItems(10, '');
             foreach ($items as $item) {
                 $this->line("ID: {$item->id()} | Data: " . json_encode($item->data()));
             }

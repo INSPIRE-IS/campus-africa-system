@@ -210,7 +210,8 @@
         // })(document, 'script', '//projects.whitehart.co.za/?p=11203&ph_apikey=1cc52d1e7e06bd85d6efc4a38794058a');
         // @endif
     </script>
-
+    <!-- Scripts -->
+    @yield('scripts') {{-- Simple method --}}
 </body>
 
 </html>

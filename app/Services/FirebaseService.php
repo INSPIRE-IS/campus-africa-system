@@ -8,6 +8,7 @@ use Kreait\Firebase\Exception\Auth\EmailExists;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\AuthException;
 use Google\Cloud\Firestore\FirestoreClient;
+use Illuminate\Support\Facades\Log;
 
 class FirebaseService
 {
@@ -176,7 +177,7 @@ class FirebaseService
         try {
             // Check if user exists
             $existingUser = $this->auth->getUserByEmail($details['email']);
-
+            Log::info('✅ User exists. ' . $existingUser->uid);
             // 🔁 Update Auth user
             $user = $this->auth->updateUser($existingUser->uid, array_merge([
                 'password' => $details['password'],
@@ -200,7 +201,7 @@ class FirebaseService
             'groups' => $details['groups'] ?? [],
             'created_time' => now()->toDateTimeString(),
         ]);
-
+        Log::info('✅ User exists. ' . $user->uid);
         return $user;
     }
 
@@ -218,11 +219,11 @@ class FirebaseService
     }
 
     // ✅ 4. Get "maintenance_items" collection (paginated)
-    public function getMaintenanceItems(int $limit = 10, string $startAfter = null)
+    public function getMaintenanceItems(int $limit = 10, string $startAfter)
     {
         $collection = $this->firestore->collection('maintenance_items')->orderBy('created_at', 'DESC')->limit($limit);
 
-        if ($startAfter) {
+        if ($startAfter !== null && $startAfter !== '') {
             $snapshot = $this->firestore->collection('maintenance_items')->document($startAfter)->snapshot();
             $collection = $collection->startAfter($snapshot);
         }
