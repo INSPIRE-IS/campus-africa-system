@@ -37,6 +37,7 @@ class MaintenanceController extends Controller
         $userId = Auth::user()->id;
         //get current year
         $session_year = Session::get('year');
+        $thisYear = (new \DateTime())->format("Y");
         if (!empty($session_year)) {
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
             $this_year = $this_year->lookup_name;
@@ -44,7 +45,9 @@ class MaintenanceController extends Controller
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
         }
-        $studInfo = StudentsInfo::select('bookingId', 'userFirstName', 'userLastname', 'userEmail', 'userCellCode', 'userCell', 'year', 'id')->where('userUid', $userId)->where('year', $this_year)->first();
+        $studInfo = StudentsInfo::select('bookingId', 'userFirstName', 'userLastname', 'userEmail', 'userCellCode', 'userCell', 'year', 'id')
+            ->where('userUid', $userId)
+            ->where('year', $thisYear)->first();
         $booking = Booking::select('id', 'bed_code', 'property', 'booking_code')->find($studInfo->bookingId);
         $property = Residence::select('residence', 'id')->where('id', $booking->property ?? null)->first();
         //dd($studInfo->userEmail);
@@ -69,7 +72,8 @@ class MaintenanceController extends Controller
             "role" => "Tenant",
             "uid" => $uid,
         ];
-        $headerTitle = "Maintenance App";
+        Session::put('year', $thisYear);
+        $headerTitle = "Maintenance App for ";
         $active = 1;
 
         return view('user.firebase.register', compact('user', 'headerTitle', 'active'));
