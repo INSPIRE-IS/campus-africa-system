@@ -17,11 +17,23 @@ class FirebaseService
 
     public function __construct()
     {
-        $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/serviceAccountKey.json'));
+        // $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/serviceAccountKey.json'));
+        // $this->auth = $factory->createAuth();
+        // $this->firestore = $factory->createFirestore()->database();
+        // $firestore = new FirestoreClient(['projectId' => 'campus-africa-bda4b', 'credentials' => storage_path('app/firebase/serviceAccountKey.json')]);
+        $firebaseConfig = json_decode(env('FIREBASE_CREDENTIALS'), true);
+        Log::info('firebaseConfig', $firebaseConfig);
+
+        $factory = (new Factory)->withServiceAccount($firebaseConfig);
 
         $this->auth = $factory->createAuth();
         $this->firestore = $factory->createFirestore()->database();
-        $firestore = new FirestoreClient(['projectId' => 'campus-africa-bda4b', 'credentials' => storage_path('app/firebase/serviceAccountKey.json')]);
+
+        // Optional direct FirestoreClient
+        $firestore = new FirestoreClient([
+            'projectId' => $firebaseConfig['project_id'],
+            'credentials' => $firebaseConfig
+        ]);
     }
 
     public function getAuth(): \Kreait\Firebase\Auth
