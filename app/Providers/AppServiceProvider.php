@@ -38,14 +38,15 @@ class AppServiceProvider extends ServiceProvider
                 $userId = Auth::user()->id;
                 $user = User::find($userId);
 
-                logger()->info('checking bed code ', [$user]);
+                Log::info('checking bed code ', [$user]);
                 if ($user && $user->userRole != 1) {
                     // Only check bed code if not userRole 1
                     $thisYear = now()->year;
                     /** @disregard P1013 */
                     $studentInfo = $user->studentInfoForYear($thisYear)->first();
-                    Log::info("Bed Code: ", [$studentInfo->booking]);
+                    Log::info("Bed Code: " . $thisYear);
                     if ($studentInfo && $studentInfo->booking) {
+                        Log::info("Bed Code: ", [$studentInfo->booking]);
                         $bedCode = $studentInfo->booking->bed_code;
                     }
                     Log::info("Bed Code: " . $bedCode);

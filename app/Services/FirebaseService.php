@@ -22,7 +22,7 @@ class FirebaseService
         // $this->firestore = $factory->createFirestore()->database();
         // $firestore = new FirestoreClient(['projectId' => 'campus-africa-bda4b', 'credentials' => storage_path('app/firebase/serviceAccountKey.json')]);
         $firebaseConfig = json_decode(env('FIREBASE_CREDENTIALS'), true);
-        Log::info('firebaseConfig', $firebaseConfig);
+        //Log::info('firebaseConfig', $firebaseConfig);
 
         $factory = (new Factory)->withServiceAccount($firebaseConfig);
 
