@@ -48,7 +48,7 @@
                         </h4>
 
                         <br /><br /><br />
-                        @if ($user->rob_60_cancelled != '1')
+                        @if (!$bedCode)
                             <button type="button" class="roomContactBtn" onClick="changeRoom()">Want to change your
                                 residence?</button>
                         @endif
@@ -149,8 +149,8 @@
     </div>
 
     <!-- <div class="clearSpaceLogin"></div>
-                                                <div class="clearSpaceLogin"></div>
-                                                <div class="clearSpaceLogin"></div> -->
+                                                            <div class="clearSpaceLogin"></div>
+                                                            <div class="clearSpaceLogin"></div> -->
 
     <div class="container">
         <div class="otherProperties">
