@@ -4335,9 +4335,14 @@ class HomeController extends Controller
 
         // $userLeaseStatus = User::where('id', $bookingId)->pluck('rob_55_lease')->first();
         // $useApproveStatus = User::where('id', $bookingId)->pluck('rob_50_approve')->first();
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $userInfo = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
 
@@ -4524,9 +4529,6 @@ class HomeController extends Controller
 
             if ($booking_data['room_rate'] == "0") {
 
-                $this_year = Lookups::where('group_id', '4')->first();
-                $this_year = $this_year->lookup_name;
-
                 $uploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
                 $userData = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
@@ -4610,9 +4612,6 @@ class HomeController extends Controller
                 // UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
                 //     'status' => 'Rejected'
                 // ]);
-
-                $this_year = Lookups::where('group_id', '4')->first();
-                $this_year = $this_year->lookup_name;
 
                 $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
@@ -4712,8 +4711,6 @@ class HomeController extends Controller
             }
 
             if ($studentInfo->rob_60_cancelled == '1') {
-                $this_year = Lookups::where('group_id', '4')->first();
-                $this_year = $this_year->lookup_name;
 
                 // User::where('id', $bookingId)->update(['rob_60_cancelled' => 0]);
                 StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->update(['rob_60_cancelled' => 0]);
@@ -4734,12 +4731,11 @@ class HomeController extends Controller
         } else {
 
             //Get current booking year
-            $this_year = Lookups::where('group_id', '4')->first();
 
             $newProperty = Residence::where('id', $property)->pluck('residence')->first();
             $newRoom = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
 
-            $oldData = Booking::where('userId', $bookingId)->where('year', $this_year->lookup_name)->first();
+            $oldData = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
             $oldData->roomId = $oldData->roomType;
             $oldData->roomType = RoomTypes::where('id', $oldData->roomType)->pluck('name')->first();
             $oldData->property = Residence::where('id', $oldData->property)->pluck('residence')->first();
@@ -4922,9 +4918,6 @@ class HomeController extends Controller
 
                 if ($booking_data['room_rate'] == "0") {
 
-                    $this_year = Lookups::where('group_id', '4')->first();
-                    $this_year = $this_year->lookup_name;
-
                     $uploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
                     $userData = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
@@ -5006,9 +4999,6 @@ class HomeController extends Controller
                     // UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->update([
                     //     'status' => 'Rejected'
                     // ]);
-
-                    $this_year = Lookups::where('group_id', '4')->first();
-                    $this_year = $this_year->lookup_name;
 
                     $fileUploaded = UserFiles::where('userUid', $bookingId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
@@ -5129,9 +5119,6 @@ class HomeController extends Controller
             }
         }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $status_data = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
 
         if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0) {
@@ -5141,9 +5128,6 @@ class HomeController extends Controller
 
 
         if ($request->change_bed_type == "cancel") {
-
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
 
             // User::where('id', $bookingId)->update(['rob_55_lease' => '0']);
             StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->update(['rob_55_lease' => '0']);
@@ -5164,12 +5148,6 @@ class HomeController extends Controller
                 "year" => $this_year,
             ]);
         }
-
-
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
 
 
         $this->update_user_status($bookingId);
