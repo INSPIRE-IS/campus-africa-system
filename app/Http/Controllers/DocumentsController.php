@@ -810,8 +810,16 @@ class DocumentsController extends Controller
         $userUid = $request->userId;
         $documentNewName = $request->docName;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+
+        //get current year
+        $session_year = Session::get('year');
+        if (!empty($session_year)) {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         UserFiles::create([
             'fileId' => 'other_' . str_replace(" ", "_", $documentNewName),
@@ -830,8 +838,6 @@ class DocumentsController extends Controller
         } else {
             StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update(['rob_45_other' => '1']);
         }
-
-
 
         return 'other_' . str_replace(" ", "_", $documentNewName);
     }
