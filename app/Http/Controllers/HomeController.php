@@ -7901,8 +7901,14 @@ class HomeController extends Controller
     public function update_user_status($user_id)
     {
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $userInfo = StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->first();
         $userFiles = UserFiles::where('userUid',  $user_id)->where('year', $this_year)->get();
