@@ -4682,8 +4682,6 @@ class HomeController extends Controller
             $this->update_user_status($bookingId);
         } else {
 
-            //Get current booking year
-
             $newProperty = Residence::where('id', $property)->pluck('residence')->first();
             $newRoom = RoomTypes::where('id', $roomTypeNew)->pluck('name')->first();
 
@@ -4704,7 +4702,7 @@ class HomeController extends Controller
             //Find the correct bed
             foreach ($propertyDataAll as $pi) {
                 if ($pi->year <= $pi->year_end || $pi->year_end == 0) {
-                    if (($this_year->lookup_name >= $pi->year && $this_year->lookup_name <= $pi->year_end) || ($this_year->lookup_name >= $pi->year && $pi->year_end == 0)) {
+                    if (($this_year >= $pi->year && $this_year <= $pi->year_end) || ($this_year >= $pi->year && $pi->year_end == 0)) {
                         $propertyData = $pi;
                     }
                 }
@@ -4726,7 +4724,7 @@ class HomeController extends Controller
                         "actionUserUid" => Auth::user()->id,
                         "actionUserDisplayName" => Auth::user()->userFirstName,
                         "actionUserRole" => Auth::user()->userRole,
-                        "year" => $this_year->lookup_name,
+                        "year" => $this_year,
                     ]);
                 }
             }
@@ -4742,20 +4740,20 @@ class HomeController extends Controller
 
             $bookingID = $placeholder . $id_booking;
 
-            Booking::where('userId', $bookingId)->where('year', $this_year->lookup_name)->update(["property" => $property, "roomType" => $roomTypeNew, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code" => $request->bed_code, "property_data_id" => $propertyData->id, 'booking_code' => $bookingYear . $bookingPrefix . $bookingID]);
+            Booking::where('userId', $bookingId)->where('year', $this_year)->update(["property" => $property, "roomType" => $roomTypeNew, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code" => $request->bed_code, "property_data_id" => $propertyData->id, 'booking_code' => $bookingYear . $bookingPrefix . $bookingID]);
 
             //Update the User robot
             // User::where('id', $bookingId)->update(['rob_40_bed' => 2]);
-            StudentsInfo::where('userUid', $bookingId)->where('year', $this_year->lookup_name)->update(['rob_40_bed' => 2]);
-            $booking = Booking::where('userId', $bookingId)->where('year', $this_year->lookup_name)->first();
+            StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->update(['rob_40_bed' => 2]);
+            $booking = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
 
-            $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year->lookup_name)->first();
+            $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
 
 
             if ($oldData->roomId !== $booking->roomType) {
 
                 $lookup = Lookups::where('group_id', '7')->first();
-                $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year->lookup_name)->first();
+                $user = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
                 $booking_data = [];
 
                 $roomTypeNewId = $roomTypeNew;
