@@ -6,7 +6,7 @@
     <div class="container">
         <br />
         <h2>Reports</h2>
-
+        {{-- Student Report --}}
         @if (Auth::user()->role_super == 1)
             <h2>Student Report</h2>
 
@@ -73,7 +73,7 @@
             <hr /><br />
         @endif
 
-
+        {{-- NSFAS Approval Types --}}
         @if (Auth::user()->role_nsfas_approval_upload == 1)
             <br /><br /><br /><br />
             <hr /><br />
@@ -84,7 +84,7 @@
             <div class="hidden"><a href="/NSFAS Approval Type Export.xlsx" download><button type="button"
                         id="downloadBtnNsfas">Download</button></a></div>
         @endif
-
+        {{-- Building Manager Report --}}
         @if (Auth::user()->role_bm_report == 1)
             <br /><br /><br /><br />
             <hr /><br />
@@ -103,7 +103,7 @@
             <div class="hidden"><a href="" download id="downloadBedsBtn"><button type="button"
                         id="downloadBtnBeds">Download</button></a></div>
         @endif
-
+        {{-- MDA Report --}}
         @if (Auth::user()->role_mda_report == 1)
             <br /><br /><br /><br />
             <hr /><br />
