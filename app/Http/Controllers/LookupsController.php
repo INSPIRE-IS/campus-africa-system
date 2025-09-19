@@ -18,6 +18,7 @@ use App\Models\Comments;
 use App\Models\BookingPayment;
 use DateTime;
 use App\Models\InstitutionProperties;
+use Illuminate\Support\Facades\Session;
 
 class LookupsController extends Controller
 {
@@ -1059,6 +1060,10 @@ class LookupsController extends Controller
 
         foreach ($allStudentInfo as $student) {
             $booking = Booking::where('id', $student->bookingId)->first();
+            if ($booking == null) {
+                logger()->info('No booking found for update nsfas rate student userid ' . $student->userUid);
+                continue;
+            }
             $payment = BookingPayment::where('bookingId', $booking->id)->first();
 
             if (!empty($payment)) {
