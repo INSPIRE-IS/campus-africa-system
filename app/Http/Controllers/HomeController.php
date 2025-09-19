@@ -7748,8 +7748,14 @@ class HomeController extends Controller
     {
         $userId = $request->userId;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $booking_old = Booking::where('userId', $userId)->where('year', $this_year)->first();
 
@@ -7788,8 +7794,14 @@ class HomeController extends Controller
     {
 
         // $user = User::where('id', $request->userId)->first();
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $user = StudentsInfo::where('userUid',  $request->userId)->where('year', $this_year)->first();
 
