@@ -5114,8 +5114,14 @@ class HomeController extends Controller
         $lease_to_date = $request->lease_to_date;
         $lease_to_time = $request->lease_to_time;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $oldData = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
         $newData = ['lease_from_date|Lease From Date' => $lease_from_date, 'lease_from_time|Lease From Time' => $lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
@@ -5192,8 +5198,14 @@ class HomeController extends Controller
 
         if (Auth::user()->role_lookup == 1) {
             //Get current booking year
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
+            $year = Session::get('year');
+            if (empty($year)) {
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+            } else {
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+                $this_year = $this_year->lookup_name;
+            }
 
             $allowed = [];
             $allProp = Residence::whereNull('status')->get();
@@ -5219,8 +5231,14 @@ class HomeController extends Controller
 
         if (Auth::user()->role_lookup == 1) {
             //Get current booking year
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
+            $year = Session::get('year');
+            if (empty($year)) {
+                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = $this_year->lookup_name;
+            } else {
+                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+                $this_year = $this_year->lookup_name;
+            }
 
             if ($propertyId == "0") {
                 $head = "Add";
@@ -5231,10 +5249,8 @@ class HomeController extends Controller
                 $head = "Edit";
                 $propertyData = Property::where('id', $propertyId)->first();
 
-                $lookup = Lookups::where('group_id', '4')->first();
-
                 //Get bookings tied to this bed
-                $bookings = Booking::where('property_data_id', $propertyId)->where('year', $lookup->lookup_name)->with('users')->get();
+                $bookings = Booking::where('property_data_id', $propertyId)->where('year', $this_year)->with('users')->get();
             }
 
             $Residence = Residence::whereNull('status')->get();
@@ -5248,8 +5264,14 @@ class HomeController extends Controller
     public function save_property(Request $request)
     {
         //Get current booking year
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $propertyId = $request->propertyId;
 
@@ -5353,8 +5375,14 @@ class HomeController extends Controller
     public function delete_bed(Request $request)
     {
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         $property = Property::where('id', $request->propertyId)->first();
 
@@ -5372,7 +5400,12 @@ class HomeController extends Controller
     {
 
         $property = Property::get();
-        $this_year = Lookups::where('group_id', '4')->first();
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+        }
         $searchable_rooms = [];
 
         foreach ($property as $prop) {
@@ -5398,7 +5431,6 @@ class HomeController extends Controller
             }
         }
 
-        $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
         $booking = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
@@ -5417,7 +5449,12 @@ class HomeController extends Controller
     {
 
         $property = Property::get();
-        $this_year = Lookups::where('group_id', '4')->first();
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+        }
         $searchable_rooms = [];
 
         foreach ($property as $prop) {
@@ -5441,7 +5478,6 @@ class HomeController extends Controller
             }
         }
 
-        $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
         $booking = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
@@ -5461,15 +5497,17 @@ class HomeController extends Controller
     public function get_booking_info(Request $request)
     {
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+        }
 
-        $bookingData = Booking::where('userId', $request->bookingId)->where('year', $this_year)->first();
+        $bookingData = Booking::where('userId', $request->bookingId)->where('year', $this_year->lookup_name)->first();
 
         $property = Property::where('user_id_room', $request->bookingId)->first();
 
-        //Get current booking year
-        $this_year = Lookups::where('group_id', '4')->first();
 
         if (!empty($property)) {
             $selected = $property;
