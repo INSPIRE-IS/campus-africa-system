@@ -19,6 +19,7 @@ use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
+use Illuminate\Support\Facades\Session;
 
 class PDFController extends Controller
 {
@@ -30,13 +31,18 @@ class PDFController extends Controller
     $bookingId = $request->bookingId;
     $property = $request->property;
     $roomType = $request->roomType;
-
+    $this_year = Lookups::where('group_id', '4')->first();
+    $this_year = $this_year->lookup_name;
+    //get current year
+    $session_year = Session::get('year');
+    if (!empty($session_year)) {
+      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+      $this_year = $this_year->lookup_name;
+    }
     if (!$request->type) {
 
-      $this_year = Lookups::where('group_id', '4')->first();
-      $this_year = $this_year->lookup_name;
-
       $oldData = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
+
       $newData = ['property|Property' => $property, 'roomType|Room Type' => $roomType, "floor|Floor" => $request->floor, "unit|Unit" => $request->unit, "room|Room" => $request->room, "bed|Bed" => $request->bed, "bed_code|Bed Code" => $request->bed_code, "lease_from_date|Lease From Date" => $request->lease_from_date, "lease_from_time|Lease From Time" => $request->lease_from_time, "lease_to_date|Lease To Date" => $request->lease_to_date, "lease_to_time|Lease To Time" => $request->lease_to_time];
 
       $propertyOld = Property::where('user_id_room', $bookingId)->update(["user_id_room" => null, "room_available" => null]);
@@ -86,13 +92,10 @@ class PDFController extends Controller
       Booking::where('userId', $bookingId)->where('year', $this_year)->update(["property" => $property, "roomType" => $roomType, "floor" => $request->floor, "unit" => $request->unit, "room" => $request->room, "bed" => $request->bed, "bed_code" => $request->bed_code, "property_data_id" => $propertyData->id, "lease_from_date" => $request->lease_from_date, "lease_from_time" => $request->lease_from_time, "lease_to_date" => $request->lease_to_date, "lease_to_time" => $request->lease_to_time, "leaseAdminFee" => $leaseAdminFee]);
     } else {
 
-      $this_year = Lookups::where('group_id', '4')->first();
-      $this_year = $this_year->lookup_name;
-
       // retreive all records from db
       // $data = User::where('id', $studentId)->first();
       $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
-
+      //dd($studentId);
       $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
       $propertyData = Property::where('id', $booking->property_data_id)->first();
       $residence = Residence::where('id', $propertyData->residence)->first();
@@ -222,10 +225,6 @@ class PDFController extends Controller
 
 
     }
-
-    $this_year = Lookups::where('group_id', '4')->first();
-    $this_year = $this_year->lookup_name;
-
 
     return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
   }
