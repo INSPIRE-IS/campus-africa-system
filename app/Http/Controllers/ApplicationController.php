@@ -1227,7 +1227,7 @@ class ApplicationController extends Controller
 
     public function new_booking_step_1_save(Request $request)
     {
-        //dd($request);
+        // dd($request);
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
         //dd($this_year);
