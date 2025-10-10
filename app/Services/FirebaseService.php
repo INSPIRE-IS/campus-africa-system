@@ -104,7 +104,6 @@ class FirebaseService
         return $structure;
     }
 
-
     private function mapCollection($collection): array
     {
         $results = [];
@@ -157,7 +156,6 @@ class FirebaseService
         return null;
     }
 
-
     // ✅ 2. Register a User
     public function registerUser(array $details = [], array $extra = [])
     {
@@ -182,7 +180,6 @@ class FirebaseService
         // 3. Return the created Firebase Auth user
         return $user;
     }
-
 
     public function registerOrUpdateUser(array $details = [], array $extra = [])
     {
@@ -222,7 +219,6 @@ class FirebaseService
     {
         return $this->auth->updateUser($uid, ['email' => $newEmail]);
     }
-
 
     // ✅ 3. Update User Password
     public function updatePassword(string $uid, string $newPassword)
