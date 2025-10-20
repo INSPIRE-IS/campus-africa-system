@@ -15,10 +15,12 @@ use App\Models\Lookups;
 use App\Models\UserLeaseToken;
 use App\Models\MailerList;
 use Mail;
-use Grosv\LaravelPasswordlessLogin\LoginUrl;
+// use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
+use Illuminate\Support\Facades\Log;
+// use GPBMetadata\Google\Api\Log;
 use Illuminate\Support\Facades\Session;
 
 class PDFController extends Controller
@@ -27,7 +29,6 @@ class PDFController extends Controller
 
   public function createPDF(Request $request, $studentId)
   {
-
     $bookingId = $request->bookingId;
     $property = $request->property;
     $roomType = $request->roomType;
@@ -160,16 +161,23 @@ class PDFController extends Controller
 
       // User::where('id', $studentId)->update(['rob_55_lease' => 0]);
       StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_55_lease' => 0]);
+      $prevLeaseToken = UserLeaseToken::where("userUid", $studentId)->get(); // ->where("active", 1)->where("signed", 0)
 
-
+      if (!empty($prevLeaseToken)) {
+        foreach ($prevLeaseToken as $token) {
+          // UserLeaseToken::where('id', $token->id)->update(["active" => 0]);
+          $token->delete();
+        }
+      }
       // Create Lease Link
-      $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
+      $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0, "signature_url" => null, "role" => "student", "year" => $this_year]);
       // $userForLease = User::where('id', $studentId)->first();
       // $userForLease = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
 
       $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
+      Log::info('Sending email to ' . $leaseOpenTag);
       $userUidData = User::where('id', $studentId)->first();
-      $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+      $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag, $this_year));
 
       // $message_replace['booking_application'] = "#".$booking->booking_code;
       // $message_replace['name'] = $userForLease->userFirstName;

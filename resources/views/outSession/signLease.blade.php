@@ -30,6 +30,8 @@
     <div class="row justify-content-center">
         <form class="form" id="sign_lease" method="post">
             @csrf
+            <input type="hidden" id="role" value="{{ $role }}">
+            <input type="hidden" id="userCustomId" value="{{ $userCustomId }}">
             <div class="scrollable">
                 <div class="pdfSection" style="margin-top: 0; height:80vh; overflow-y:scroll; border:1px solid #000; margin-top:50px;">
                         {!!$pdf!!}
@@ -74,10 +76,31 @@
         </form>
     </div>
 </div>
-
 <script>
+    // const userRole = @json($role);
+    // const userCustomId = @json($userCustomId);
+</script>
+<script defer>
+
+
     jQuery(document).ready( function($) {
-        
+let role = $("#role").val();
+let userCustomId = $("#userCustomId").val();
+console.log('here');
+
+let postUrl = (role === "student") 
+    ? "/save-signed-lease/" + userCustomId 
+    : "/save-parent-signed-lease/" + userCustomId;
+
+        // let postUrl = '';
+
+        // if (userRole === 'student') {
+        //     postUrl = '/student/save-signed-lease/' + userCustomId;
+        // } else if (userRole === 'admin') {
+        //     postUrl = '/admin/save-signed-lease/' + userCustomId;
+        // } else {
+        //     postUrl = '/save-signed-lease/' + userCustomId;
+        // }        
         var sigdiv = $(".signature").jSignature({
             'background-color': 'transparent',
             'decor-color': 'transparent',
@@ -106,7 +129,7 @@
 
                 $.ajax({
                     type: "post",
-                    url: '/save-signed-lease/{{$userCustomId}}',
+                    url: postUrl, // '/save-signed-lease/{{$userCustomId}}',
                     data: $('#sign_lease').serialize(),
 
                     success: function(data) {
@@ -155,6 +178,7 @@
                     },
 
                     error: function(data) {
+                        console.log(data?.responseText);
                         Swal.fire({
                             title: 'Error!',
                             html: data,

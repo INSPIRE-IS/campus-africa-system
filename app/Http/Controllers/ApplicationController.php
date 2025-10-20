@@ -1133,7 +1133,7 @@ class ApplicationController extends Controller
         $url = $generator->generate();
 
         $userUidData = User::where('id', $request->userUid)->first();
-        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url));
+        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url, $this_year));
 
 
         // $message_replace['bookingRef'] = $booking->booking_code;
@@ -1605,7 +1605,7 @@ class ApplicationController extends Controller
         $url = $generator->generate();
 
         $userUidData = User::where('id', Auth::user()->id)->first();
-        $this->dispatch(new SendNewBookingMail($userUidData, $url));
+        $this->dispatch(new SendNewBookingMail($userUidData, $url, $this_year));
 
         // $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
         // $message_replace['name'] = $request->firstName;

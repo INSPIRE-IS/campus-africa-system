@@ -1092,7 +1092,7 @@ class HomeController extends Controller
                 $url = $generator->generate();
 
                 $userUidData = User::where('id', $user->userUid)->first();
-                $this->dispatch(new SendBookingConfirmationMail($userUidData, $url));
+                $this->dispatch(new SendBookingConfirmationMail($userUidData, $url, $this_year));
 
                 // $all = ['studentCard', 'proofRegistration'];
                 // $outstanding = [];
@@ -1379,7 +1379,7 @@ class HomeController extends Controller
                 $url = $generator->generate();
 
                 $userUidData = User::where('id', $userFile->userUid)->first();
-                $this->dispatch(new SendDeclinedDocMail($userUidData, $user_status['typeName'], $reason, $url));
+                $this->dispatch(new SendDeclinedDocMail($userUidData, $user_status['typeName'], $reason, $url, $this_year));
             } else {
 
                 $text = "Approved " . $user_status['typeName'];
@@ -1444,7 +1444,7 @@ class HomeController extends Controller
                 StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update(['overall_status' => "Approved"]);
 
                 $userUidData = User::where('id', $userFile->userUid)->first();
-                $this->dispatch(new SendLeaseApprovedMail($userUidData));
+                $this->dispatch(new SendLeaseApprovedMail($userUidData, $this_year));
 
                 // // $userForLease = User::where('id', $userFile->userUid)->first();
                 // $userForLease = StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->first();
@@ -1673,7 +1673,7 @@ class HomeController extends Controller
 
 
                 $userUidData = User::where('id', $userFile->userUid)->first();
-                $this->dispatch(new SendApproveDocMail($userUidData, $user_status['typeName'], $url));
+                $this->dispatch(new SendApproveDocMail($userUidData, $user_status['typeName'], $url, $this_year));
             }
 
             return [$userFile, StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->first()];
@@ -3188,7 +3188,7 @@ class HomeController extends Controller
         $url = $generator->generate();
 
         $userUidData = User::where('id', $userInfo->userUid)->first();
-        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $bookingYear . $bookingPrefix . $bookingID, $url));
+        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $bookingYear . $bookingPrefix . $bookingID, $url, $this_year));
 
         // $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
         // $message_replace['name'] = $user->userFirstName;
@@ -8478,7 +8478,7 @@ class HomeController extends Controller
                 $url = $generator->generate();
 
                 $userUidData = User::where('id', $request->userUid)->first();
-                $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url));
+                $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url, $this_year));
 
                 // $message_replace['bookingRef'] = $booking->booking_code;
                 // $message_replace['name'] = $userInfo->userFirstName;
@@ -10357,7 +10357,7 @@ class HomeController extends Controller
         $url = $generator->generate();
 
         $userUidData = User::where('id', $request->userUid)->first();
-        $this->dispatch(new SendNewBookingMail($userUidData, $url));
+        $this->dispatch(new SendNewBookingMail($userUidData, $url, $request->year));
 
         // $newBooking = Booking::where('id', $booking->id)->first();
 
@@ -10659,7 +10659,7 @@ class HomeController extends Controller
         // $message_replace['missing'] = $outstandingDocsText;
 
         $userUidData = User::where('id', $request->userId)->first();
-        $this->dispatch(new SendReminderMail($userUidData, $url));
+        $this->dispatch(new SendReminderMail($userUidData, $url, $this_year));
 
         $mailerForMessage = MailerList::where("mailer_name", "Reminder Mail")->first();
 

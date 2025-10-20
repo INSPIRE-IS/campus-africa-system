@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Mail;
 
 class DownloadDocsJob implements ShouldQueue
 {
@@ -76,7 +77,7 @@ class DownloadDocsJob implements ShouldQueue
         $email = $this->email;
 
         // Send email without template
-        \Mail::raw($exception->getMessage(), function ($message) use ($email) {
+        Mail::raw($exception->getMessage(), function ($message) use ($email) {
             $message->to($email)
                 ->subject('Test Email');
         });

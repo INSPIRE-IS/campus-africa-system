@@ -41,7 +41,7 @@ class TestApplicationMailCommand extends Command
         $this->info("sending");
 
         // Dispatch the email job
-        dispatch(new SendApplicationThankYouMail($user, $userToken->security_token, $url));
+        dispatch(new SendApplicationThankYouMail($user, $userToken->security_token, $url, '2026'));
 
         $this->info("Test email dispatched successfully for User ID: {$userId}");
     }

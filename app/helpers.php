@@ -1,48 +1,42 @@
 <?php
 
 if (!function_exists('get_user_status')) {
-    function get_user_status($fileType, $user, $student) {
+    function get_user_status($fileType, $user, $student)
+    {
 
-        if($fileType == "proof_of_payment"){
+        if ($fileType == "proof_of_payment") {
             $typeName = "Booking Fee Proof of Payment";
             $field_data = "fee_approved";
             $field_doc = "rob_10_fee";
-            
-
-        } elseif($fileType == "copyID"){
+        } elseif ($fileType == "copyID") {
             $typeName = "Copy of ID Document";
             $field_data = "id_data_approved";
-            $field_doc = "rob_15_id";            
-
-        }elseif($fileType == "studentCard"){
+            $field_doc = "rob_15_id";
+        } elseif ($fileType == "studentCard") {
             $typeName = "Copy of Student Card";
             $field_data = "student_card_approved";
             $field_doc = "rob_20_card";
-
-        }elseif($fileType == "proofRegistration"){
+        } elseif ($fileType == "proofRegistration") {
             $typeName = "Proof of Registration";
             $field_data = "registration_approved";
             $field_doc = "rob_25_reg";
-
-        }elseif($fileType == "bursaryApproval"){
-            if($student->studentType == "NSFAS"){
+        } elseif ($fileType == "bursaryApproval") {
+            if ($student->studentType == "NSFAS") {
                 $typeName = "NSFAS Approval";
-            }else{
+            } else {
                 $typeName = "Bursary Approval";
             }
             $field_data = "bursary_approved";
             $field_doc = "rob_30_funds";
-
-        }elseif($fileType == "bankStatement"){
+        } elseif ($fileType == "bankStatement") {
             $typeName = "Bank Statements";
             $field_data = "bank_approved";
-            $field_doc = "rob_30_funds";                
-
-        }elseif($fileType == "moveIn"){
+            $field_doc = "rob_30_funds";
+        } elseif ($fileType == "moveIn") {
             $typeName = "Lease";
             $field_data = "";
             $field_doc = "rob_55_lease";
-        }else{
+        } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;
             $field_doc = "rob_45_other";
@@ -62,14 +56,22 @@ if (!function_exists('get_user_status')) {
         }
 
         return [
-            'typeName' => $typeName, 
+            'typeName' => $typeName,
 
-            'field_data' => $field_data, 
+            'field_data' => $field_data,
             'field_doc' => $field_doc,
 
             'data_approved' => $data_approved,
             'doc_approved' => $doc_approved
         ];
+    }
+}
 
+if (!function_exists('pdfImagePath')) {
+    function pdfImagePath($relativePath)
+    {
+        return app()->runningInConsole()
+            ? public_path($relativePath) // PDF needs absolute file path
+            : asset($relativePath);      // Browser needs URL
     }
 }

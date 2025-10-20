@@ -42,6 +42,59 @@ Route::post('/registration_step_one_update', [RegisterController::class, 'regist
 Route::post('/registration_step_two', [RegisterController::class, 'registration_step_two']);
 Route::post('/registration_step_three', [RegisterController::class, 'registration_step_three']);
 Route::post('/register/fileUpload', [RegisterController::class, 'fileUpload']);
+// Route::get('/test-mail', function () {
+//     \Mail::raw('This is a test email from Postmark.', function ($message) {
+//         $message->to('your.email@example.com')
+//             ->subject('Postmark Test');
+//     });
+
+//     return 'Mail sent!';
+// });
+
+Route::get('/test-lease/{userId}/{year}', function ($userId, $year) {
+
+    $lease_link = \App\Models\UserLeaseToken::where('userUid', $userId)
+        ->where('active', 0)
+        ->where('signed', 1)
+        ->where('role', 'student')
+        ->where('year', $year)
+        ->orderBy('created_at', 'desc')
+        ->first();
+    $signed_at = 'Regenerated via CLI';
+    $this_year = \App\Models\Lookups::where('group_id', '4')->value('lookup_name');
+
+
+    $user = \App\Models\User::where('id', $lease_link->userUid)->first();
+    $data = \App\Models\StudentsInfo::where('userUid', $userId)->where('year', $year)->first();
+    $booking = \App\Models\Booking::where('userId', $userId)->where('year', $year)->first();
+    $propertyData = \App\Models\Property::find($booking->property_data_id);
+    $residence = \App\Models\Residence::find($propertyData->residence);
+    $leaseAdminFee = \App\Models\Lookups::where('group_id', '8')->first();
+    // $owner = storage_path() . '/leases/juanita-cronje.jpg';
+    $paymentBooking = \App\Models\BookingPayment::where('bookingId', $booking->id)->first();
+    $userIdentification = !empty($user->userId) ? $user->userId : $user->userPassport;
+    // $signature = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
+    // ✅ Use helper
+    $signature = pdfImagePath('storage/files/' . $userIdentification . '/' . $lease_link->signature_url);
+    $owner     = pdfImagePath('/images/lease/juanita-cronje.jpg');
+
+    // 👇 just return the blade
+    $baseUrl = config('app.url') ?? 'https://campusafrica.co.za';
+    return view('PDF.leaseSign', compact(
+        'data',
+        'user',
+        'propertyData',
+        'residence',
+        'booking',
+        'leaseAdminFee',
+        'signed_at',
+        'signature',
+        'owner',
+        'paymentBooking',
+        'baseUrl'
+    ));
+});
+
 
 Auth::routes();
 
@@ -245,6 +298,7 @@ Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePas
 //Students to sign lease
 Route::get('/sign-lease/{id}', [LeaseController::class, 'view_sign_lease']);
 Route::post('/save-signed-lease/{id}', [LeaseController::class, 'save_signed_lease']);
+Route::post('/save-parent-signed-lease/{token}', [LeaseController::class, 'save_parent_signed_lease'])->name('parent.sign.lease');
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::get('/check-all-rooms/{id}', [HomeController::class, 'check_all_rooms']);
 Route::post("/check-building-prefix", [HomeController::class, 'check_building_prefix']);
