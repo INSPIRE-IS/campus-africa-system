@@ -18,6 +18,7 @@ use App\Models\UserFiles;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\YellowBackMail;
+use Illuminate\Support\Facades\Session;
 
 class SendApplicationThankYouMail implements ShouldQueue
 {
@@ -26,17 +27,19 @@ class SendApplicationThankYouMail implements ShouldQueue
     public $userUid;
     public $securityToken;
     public $returnUrl;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $securityToken, $returnUrl)
+    public function __construct(User $userUid, $securityToken, $returnUrl, $year)
     {
         $this->userUid = $userUid;
         $this->securityToken = $securityToken;
         $this->returnUrl = $returnUrl;
+        $this->year = $year;
     }
 
     /**
@@ -49,11 +52,8 @@ class SendApplicationThankYouMail implements ShouldQueue
 
         $userMain = $this->userUid;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $user = User::where('id', $userMain->id)->first();
-        $userForBooking = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        $userForBooking = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
 
         $bookinfRefNo = Booking::where('id', $userForBooking->bookingId)->first();
 

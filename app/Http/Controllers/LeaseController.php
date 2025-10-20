@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendParentLeaseMail;
 use Illuminate\Http\Request;
 use App\Models\UserLeaseToken;
 use App\Models\User;
@@ -23,35 +24,74 @@ use App\Models\ActionList;
 use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class LeaseController extends Controller
 {
     public function view_sign_lease(Request $request, $lease_link_url)
     {
-
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link_url)->where('active', '1')->first();
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
 
         if ($lease_link && !empty($lease_link)) {
             // $user = User::where('id', $lease_link->userUid)->first();
-            $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
-            $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->where('year', $this_year)->first();
+            $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+            $file = UserFiles::where('userUid', $lease_link->userUid)->where('fileId', 'moveIn')->where('year', $lease_link->year)->first();
 
             // $data = User::where('id', $lease_link->userUid)->first();
-            $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
-            $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
+            $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+            $booking = Booking::where('userId', $lease_link->userUid)->where('year', $lease_link->year)->first();
             $propertyData = Property::where('id', $booking->property_data_id)->first();
             $residence = Residence::where('id', $propertyData->residence)->first();
             $leaseAdminFee = Lookups::where('group_id', '8')->first();
             $owner = storage_path() . '/leases/juanita-cronje.jpg';
 
             $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+            // === Determine role (student or parent) ===
+            $role = $lease_link->role ?? 'student';  // default for backwards compatibility
 
-            $pdf = view('PDF.leasesForScreen', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking'));
+            // Student signature (if already signed)
+            $studentSignature = null;
+            if ($role === 'parent') {
+                $studentToken = UserLeaseToken::where('userUid', $lease_link->userUid)
+                    ->where('role', 'student')
+                    ->where('signed', 1)
+                    ->latest()
+                    ->first();
 
-            return view('outSession.signLease', ["headerTitle" => "Sign Your Lease", "userCustomId" => $lease_link_url, "user" => $user, "file" => $file, "pdf" => $pdf, "active" => 0]);
+                if ($studentToken && $studentToken->signature_url) {
+                    $signature = 'storage/files/' . ($user->userId ?: $user->userPassport) . '/' . $studentToken->signature_url;
+                }
+                $signed_at = $studentToken->signed_at;
+                // Build preview PDF view
+                $pdf = view('PDF.leasesForParentScreen', compact(
+                    'data',
+                    'propertyData',
+                    'residence',
+                    'booking',
+                    'leaseAdminFee',
+                    'owner',
+                    'paymentBooking',
+                    'signature',
+                    'signed_at',
+                    'role'
+                ));
+            } else {
+                // Build preview PDF view
+                $pdf = view('PDF.leasesForScreen', compact(
+                    'data',
+                    'propertyData',
+                    'residence',
+                    'booking',
+                    'leaseAdminFee',
+                    'owner',
+                    'paymentBooking',
+                    'studentSignature',
+                    'role'
+                ));
+            }
+
+
+            return view('outSession.signLease', ["headerTitle" => "Sign Your Lease", "userCustomId" => $lease_link_url, "user" => $user, "file" => $file, "pdf" => $pdf, "active" => 0, "role" => $role, "studentSignature" => $studentSignature]);
         } else {
             return redirect('/dashboard');
         }
@@ -60,13 +100,10 @@ class LeaseController extends Controller
     public function save_signed_lease(Request $request, $lease_link)
     {
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', '1')->first();
         // $user = User::where('id', $lease_link->userUid)->first();
-        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
-        $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
+        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+        $booking = Booking::where('userId', $lease_link->userUid)->where('year', $lease_link->year)->first();
 
         // get the base64 string
         $data = $request->signature_string;
@@ -96,14 +133,21 @@ class LeaseController extends Controller
 
         // retreive all records from db
         // $data = User::where('id', $user->userUid)->first();
-        $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
-        $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
+        $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+        $booking = Booking::where('userId', $user->userUid)->where('year', $lease_link->year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
         $signed_at = $request->signed_at;
-        $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
-        $owner = 'storage/leases/juanita-cronje.jpg';
+        // $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
+        // $owner = 'storage/leases/juanita-cronje.jpg';
+        $signatureRelative  = 'storage/files/' . $userIdentification . '/' . $new_name;
+        $ownerRelative      = 'storage/leases/juanita-cronje.jpg';
+        $signature = pdfImagePath($signatureRelative);
+        $owner     = pdfImagePath($ownerRelative);
+        Log::info('Sending email to ' . $signature);
+        Log::info('Sending email to ' . $owner);
+
 
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
@@ -120,7 +164,7 @@ class LeaseController extends Controller
 
         $content = $pdf->download($fileNameToSave)->getOriginalContent();
         // $user = User::where('id', $user->id)->first();
-        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
+        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
 
         \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
 
@@ -131,16 +175,125 @@ class LeaseController extends Controller
             'status' => 'Uploaded',
         );
 
-        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->userUid)->where('year', $this_year)->update($data);
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->userUid)->where('year', $lease_link->year)->update($data);
 
         // User::where('id', $user->id)->update(['rob_55_lease' => 1]);
-        StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->update(['rob_55_lease' => 1]);
+        $studentInfo = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->update(['rob_55_lease' => 1]);
 
         //Update Token to signed & inactive
         UserLeaseToken::where('leaseToken', $lease_link->leaseToken)->update(['active' => 0, 'signed' => 1, 'signature_url' => $new_name]);
 
+
+        // Create Parent Lease Token
+        $parentLeaseToken = UserLeaseToken::create([
+            "userUid"   => $user->userUid,
+            "leaseToken" => $this->generateRandomLongString(),
+            "active"    => 1,
+            "signed"    => 0,
+            "role"      => "parent", // you may want to add a column to distinguish tokens
+            "year" => $lease_link->year
+        ]);
+
+        // Build link for parent
+        $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
+        Log::info('Sending parent signing link: ' . $leaseOpenTag);
+
+        // Find parent email (assuming in StudentsInfo or related table)
+        $parentEmail = $studentInfo->sponEmail ?? null;
+
+        if ($parentEmail && $parentEmail !== "") {
+            try {
+                Log::info('Sending parent signing link: ' . $leaseOpenTag);
+                $this->dispatch(new SendParentLeaseMail($user, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
+            } catch (\Exception $e) {
+                Log::error('Failed to dispatch SendParentLeaseMail job', [
+                    'error' => $e->getMessage(),
+                    'user'  => $user,
+                ]);
+            }
+        } else {
+            Log::error('Failed to dispatch SendParentLeaseMail job', [
+                'error' => 'Parent email not found',
+                'user'  => $user,
+                'leaseOpenTag'  => $leaseOpenTag,
+            ]);
+        }
+
         return 'Completed';
     }
+
+    public function save_parent_signed_lease(Request $request, $lease_link)
+    {
+        // dd($request->all());
+        $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', 1)->where('role', 'parent')->firstOrFail();
+
+        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+
+        // === Decode parent signature ===
+        $data = $request->signature_string;
+        list($type, $data) = explode(';', $data);
+        list(, $extension) = explode('/', $type);
+        list(, $data) = explode(',', $data);
+        $data = base64_decode($data);
+
+        $userIdentification = $user->userId ?: $user->userPassport;
+
+        $new_name = $userIdentification . '_parent_' . strtotime("now") . '.' . $extension;
+        file_put_contents(storage_path() . '/app/public/files/' . $userIdentification . '/' . $new_name, $data);
+
+        $parentSignaturePath = 'storage/files/' . $userIdentification . '/' . $new_name;
+
+        // Student signature (previously saved)
+        $studentSignature = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
+
+        $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+        $booking = Booking::where('userId', $user->userUid)->where('year', $lease_link->year)->first();
+        $propertyData = Property::where('id', $booking->property_data_id)->first();
+        $residence = Residence::where('id', $propertyData->residence)->first();
+        $leaseAdminFee = Lookups::where('group_id', '8')->first();
+        $signed_at = $request->signed_at;
+        $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
+        $owner = 'storage/leases/juanita-cronje.jpg';
+
+        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
+        $pdf = PDF::loadView('PDF.leaseSignParent', compact(
+            'data',
+            'propertyData',
+            'residence',
+            'booking',
+            'leaseAdminFee',
+            'signed_at',
+            'studentSignature',
+            'parentSignaturePath',
+            'signature',
+            'owner',
+            'paymentBooking'
+        ));
+
+        $fileNameToSave = $booking->year . "_" . $booking->bed_code . "_" . $user->userLastname . "_" . $user->userFirstName . "_final.pdf";
+
+        $content = $pdf->download($fileNameToSave)->getOriginalContent();
+        \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
+
+        // Update user file
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->userUid)->where('year', $lease_link->year)
+            ->update([
+                'fileName' => $fileNameToSave,
+                'fileUrl'  => 'files/' . $userIdentification . '/' . $fileNameToSave,
+                'status'   => 'Fully Signed',
+            ]);
+
+        // Mark parent token signed
+        UserLeaseToken::where('id', $lease_link->id)->update([
+            'active' => 0,
+            'signed' => 1,
+            'signature_url' => $new_name
+        ]);
+
+        return 'Parent Signing Completed';
+    }
+
 
     public function generateRandomLongString($length = 24)
     {
@@ -155,93 +308,30 @@ class LeaseController extends Controller
 
     public function resendLease(Request $request)
     {
-
-        $prevLeaseToken = UserLeaseToken::where("userUid", $request->userId)->where("active", 1)->where("signed", 0)->get();
-
-        if (!empty($prevLeaseToken)) {
-            foreach ($prevLeaseToken as $token) {
-                UserLeaseToken::where('id', $token->id)->update(["active" => 0]);
-            }
-        }
-
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
+        $session_year = Session::get('year');
+        if (!empty($session_year)) {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+            $this_year = $this_year->lookup_name;
+        }
+
 
         // Create Lease Link
-        $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
+        $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0, "role" => 'student', "year" => $this_year]);
 
         $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
 
         $userUidData = User::where('id', $request->userId)->first();
         try {
-            Log::info('Sending email to ');
-            $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+            Log::info('Sending email to ' . $leaseOpenTag);
+            $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag, $this_year));
         } catch (\Exception $e) {
             Log::error('Failed to dispatch SendResendLeaseMail job', [
                 'error' => $e->getMessage(),
                 'userUidData' => $userUidData,
             ]);
         }
-
-
-        // $userForLease = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
-        // $booking = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
-
-        // $message_replace['booking_application'] = "#".$booking->booking_code;
-        // $message_replace['name'] = $userForLease->userFirstName;
-        // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
-        // $message_replace['close_lease_link']="</a>";
-
-        // $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
-
-        // if($mailerForMessage->status == '1'){
-
-        //     $mailerMessage = $mailerForMessage->message;
-
-        //     $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
-        //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-        //     $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
-        //     $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
-
-        //     $data['messageForMail'] = $newMessage;
-        //     $data['email'] = $userForLease->userEmail;
-        //     $data['name'] = $userForLease->userFirstName;
-        //     $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
-
-
-
-        //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-        //     $data['cc'] = explode(";", $allowedMailsCC);
-
-        //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-
-        //     if(!empty($allowedMails)){
-
-        //         $mailArr = explode(";", $allowedMails);
-
-        //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
-        //             $data['email'] = $userForLease->userEmail;
-        //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
-        //         }
-        //     }else{
-        //         $data['email'] = $userForLease->userEmail;
-        //     }
-
-        //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
-        //     //     $data['email'] = $userForLease->userEmail;
-        //     // }else{
-        //     //     $data['email'] = "conurbandigital@gmail.com";
-        //     // }
-
-        //     Mail::send('email.green_back', $data, function($message) use ($data) {
-        //         $message->to($data['email'])->subject($data['subject']);
-        //         $message->bcc($data['cc']);
-        //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
-        //     });
-        // }
-
     }
 
     public function mda_tenant_save(Request $request)
