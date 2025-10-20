@@ -20,6 +20,7 @@ use App\Models\UserFiles;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\YellowBackMail;
+use Illuminate\Support\Facades\Session;
 
 class SendNewBookingMail implements ShouldQueue
 {
@@ -27,16 +28,18 @@ class SendNewBookingMail implements ShouldQueue
 
     public $userUid;
     public $returnUrl;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $returnUrl)
+    public function __construct(User $userUid, $returnUrl, $year)
     {
         $this->userUid = $userUid;
         $this->returnUrl = $returnUrl;
+        $this->year = $year;
     }
 
     /**
@@ -48,11 +51,8 @@ class SendNewBookingMail implements ShouldQueue
     {
         $userMain = $this->userUid;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $genUser = User::where('id', $userMain->id)->first();
-        $userForBooking = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        $userForBooking = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
         $newBooking = Booking::where('id', $userForBooking->bookingId)->first();
 
         $message_replace['bookingRef'] = $newBooking->booking_code;

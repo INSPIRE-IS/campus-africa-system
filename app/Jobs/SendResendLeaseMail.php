@@ -18,6 +18,7 @@ use App\Models\MailerList;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class SendResendLeaseMail implements ShouldQueue
 {
@@ -26,17 +27,19 @@ class SendResendLeaseMail implements ShouldQueue
     public $userUid;
     public $randomString;
     public $leaseOpenTag;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $randomString, $leaseOpenTag)
+    public function __construct(User $userUid, $randomString, $leaseOpenTag, $year)
     {
         $this->userUid = $userUid;
         $this->randomString = $randomString;
         $this->leaseOpenTag = $leaseOpenTag;
+        $this->year = $year;
     }
 
     /**
@@ -47,13 +50,11 @@ class SendResendLeaseMail implements ShouldQueue
     public function handle()
     {
         try {
+            $now = date('Y-m-d h:m:s');
             Log::info('SendResendLeaseMail job started for user: ' . $this->userUid->id);
+            Log::info('SendResendLeaseMail job started for at ' . $now);
             $userMain = $this->userUid;
-
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-
-            $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+            $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
             $booking = Booking::where('id', $userForLease->bookingId)->first();
 
             $message_replace['booking_application'] = "#" . $booking->booking_code;
@@ -105,7 +106,10 @@ class SendResendLeaseMail implements ShouldQueue
         } catch (\Exception $e) {
             Log::error('Error in SendResendLeaseMail job', [
                 'error' => $e->getMessage(),
-                'user_id' => $this->userUid->id ?? null,
+                'user_id' => $this->userUid->id ?? 'not set user id',
+                'stud_id' => $userForLease->id ?? 'not set student id',
+                'year' => $this_year ?? 'not set year',
+                'bookingId' => $booking?->id ?? 'not set booking id',
             ]);
         }
     }

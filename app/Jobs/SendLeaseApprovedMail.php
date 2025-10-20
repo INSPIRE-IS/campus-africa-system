@@ -18,21 +18,24 @@ use App\Models\UserFiles;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
+use Illuminate\Support\Facades\Session;
 
 class SendLeaseApprovedMail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $userUid;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid)
+    public function __construct(User $userUid, $year)
     {
         $this->userUid = $userUid;
+        $this->year = $year;
     }
 
     /**
@@ -45,10 +48,7 @@ class SendLeaseApprovedMail implements ShouldQueue
 
         $userMain = $this->userUid;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
-        $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
         $booking = Booking::where('id', $userForLease->bookingId)->first();
 
 
@@ -64,7 +64,7 @@ class SendLeaseApprovedMail implements ShouldQueue
             $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
             $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
 
-            $fileForUser = UserFiles::where('userUid', $userMain->id)->where('year', $this_year)->where('fileId', 'moveIn')->first();
+            $fileForUser = UserFiles::where('userUid', $userMain->id)->where('year', $this->year)->where('fileId', 'moveIn')->first();
 
             $data['messageForMail'] = $newMessage;
             $data['email'] = $userForLease->userEmail;

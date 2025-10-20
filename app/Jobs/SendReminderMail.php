@@ -18,6 +18,7 @@ use App\Models\UserFiles;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\YellowBackMail;
+use Illuminate\Support\Facades\Session;
 
 class SendReminderMail implements ShouldQueue
 {
@@ -25,16 +26,18 @@ class SendReminderMail implements ShouldQueue
 
     public $userUid;
     public $returnUrl;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $returnUrl)
+    public function __construct(User $userUid, $returnUrl, $year)
     {
         $this->userUid = $userUid;
         $this->returnUrl = $returnUrl;
+        $this->year = $year;
     }
 
     /**
@@ -47,11 +50,8 @@ class SendReminderMail implements ShouldQueue
 
         $userMain = $this->userUid;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $user = User::where('id', $userMain->id)->first();
-        $studentInfoForMail = StudentsInfo::where('userUid',  $userMain->id)->where('year', $this_year)->first();
+        $studentInfoForMail = StudentsInfo::where('userUid',  $userMain->id)->where('year', $this->year)->first();
         $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
 
 
@@ -65,7 +65,7 @@ class SendReminderMail implements ShouldQueue
             array_push($all, "bursaryApproval");
         }
 
-        $allSearchable = UserFiles::where("userUid", $userMain->id)->where('year', $this_year)->get();
+        $allSearchable = UserFiles::where("userUid", $userMain->id)->where('year', $this->year)->get();
 
         foreach ($allSearchable as $search) {
             if (explode("_", $search->fileId)[0] == "other") {
@@ -74,7 +74,7 @@ class SendReminderMail implements ShouldQueue
         }
 
         foreach ($all as $file) {
-            $file_search = UserFiles::where("userUid", $userMain->id)->where('fileId', $file)->where('year', $this_year)->first();
+            $file_search = UserFiles::where("userUid", $userMain->id)->where('fileId', $file)->where('year', $this->year)->first();
 
             if (($studentInfoForMail->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $studentInfoForMail->studentType != "Cash / Direct" && $file !== 'bankStatement') {
 

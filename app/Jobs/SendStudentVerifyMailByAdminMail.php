@@ -16,6 +16,7 @@ use App\Models\MailerList;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\YellowBackMail;
+use Illuminate\Support\Facades\Session;
 
 class SendStudentVerifyMailByAdminMail implements ShouldQueue
 {
@@ -24,17 +25,19 @@ class SendStudentVerifyMailByAdminMail implements ShouldQueue
     public $userUid;
     public $bookingGenRef;
     public $url;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $bookingGenRef, $url)
+    public function __construct(User $userUid, $bookingGenRef, $url, $year)
     {
         $this->userUid = $userUid;
         $this->bookingGenRef = $bookingGenRef;
         $this->url = $url;
+        $this->year = $year;
     }
 
     /**
@@ -47,11 +50,8 @@ class SendStudentVerifyMailByAdminMail implements ShouldQueue
 
         $userMain = $this->userUid;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $user = User::where('id', $userMain->id)->first();
-        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
 
         $message_replace['bookingRef'] = $this->bookingGenRef;
         $message_replace['name'] = $userInfo->userFirstName;

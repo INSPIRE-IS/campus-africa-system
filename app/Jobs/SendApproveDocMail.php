@@ -18,6 +18,7 @@ use App\Models\MailerList;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
+use Illuminate\Support\Facades\Session;
 
 class SendApproveDocMail implements ShouldQueue
 {
@@ -26,6 +27,7 @@ class SendApproveDocMail implements ShouldQueue
     public $userUid;
     public $typeName;
     public $returnUrl;
+    public $year;
 
     /**
      * Create a new job instance.
@@ -33,12 +35,13 @@ class SendApproveDocMail implements ShouldQueue
      * @param App\Models\User $userUid
      * @return void
      */
-    public function __construct(User $userUid, $typeName, $returnUrl)
+    public function __construct(User $userUid, $typeName, $returnUrl, $year)
     {
         //
         $this->userUid = $userUid;
         $this->typeName = $typeName;
         $this->returnUrl = $returnUrl;
+        $this->year = $year;
     }
 
     /**
@@ -48,13 +51,11 @@ class SendApproveDocMail implements ShouldQueue
      */
     public function handle()
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
 
         $userId = $this->userUid;
 
         $user = User::where('id', $userId->id)->first();
-        $studentInfoForMail = StudentsInfo::where('userUid',  $userId->id)->where('year', $this_year)->first();
+        $studentInfoForMail = StudentsInfo::where('userUid',  $userId->id)->where('year', $this->year)->first();
         $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
 
         $message_replace['bookingRef'] = $booking->booking_code;

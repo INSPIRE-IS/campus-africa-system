@@ -18,6 +18,7 @@ use App\Models\UserFiles;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GreenBackMail;
+use Illuminate\Support\Facades\Session;
 
 class SendBookingConfirmationMail implements ShouldQueue
 {
@@ -25,16 +26,18 @@ class SendBookingConfirmationMail implements ShouldQueue
 
     public $userUid;
     public $returnUrl;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $returnUrl)
+    public function __construct(User $userUid, $returnUrl, $year)
     {
         $this->userUid = $userUid;
         $this->returnUrl = $returnUrl;
+        $this->year = $year;
     }
 
     /**
@@ -45,12 +48,9 @@ class SendBookingConfirmationMail implements ShouldQueue
     public function handle()
     {
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $userMain = $this->userUid;
 
-        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
         $user = User::where('id', $userMain->id)->first();
         $booking = Booking::where('id', $userInfo->bookingId)->first();
 
@@ -65,7 +65,7 @@ class SendBookingConfirmationMail implements ShouldQueue
             array_push($all, "bursaryApproval");
         }
 
-        $allSearchable = UserFiles::where("userUid", $userMain->id)->where('year', $this_year)->get();
+        $allSearchable = UserFiles::where("userUid", $userMain->id)->where('year', $this->year)->get();
 
         foreach ($allSearchable as $search) {
             if (explode("_", $search->fileId)[0] == "other") {
@@ -74,7 +74,7 @@ class SendBookingConfirmationMail implements ShouldQueue
         }
 
         foreach ($all as $file) {
-            $file_search = UserFiles::where("userUid", $userMain->id)->where('fileId', $file)->where('year', $this_year)->first();
+            $file_search = UserFiles::where("userUid", $userMain->id)->where('fileId', $file)->where('year', $this->year)->first();
 
             if (($userInfo->studentType == "Cash / Direct" && $file !== 'bursaryApproval') || $userInfo->studentType != "Cash / Direct" && $file !== 'bankStatement') {
 
