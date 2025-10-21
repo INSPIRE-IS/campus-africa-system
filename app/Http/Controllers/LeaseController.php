@@ -214,20 +214,21 @@ class LeaseController extends Controller
         $parentEmail = $studentInfo->sponEmail ?? null;
 
         if ($parentEmail && $parentEmail !== "") {
-            // Create Parent Lease Token
-            $parentLeaseToken = UserLeaseToken::create([
-                "userUid"   => $studentInfo->userUid,
-                "leaseToken" => $this->generateRandomLongString(),
-                "active"    => 1,
-                "signed"    => 0,
-                "role"      => "parent", // you may want to add a column to distinguish tokens
-                "year" => $lease_link->year
-            ]);
-
-            // Build link for parent
-            $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
-            Log::info('Sending parent signing link: ' . $leaseOpenTag);
             try {
+                // Create Parent Lease Token
+                $parentLeaseToken = UserLeaseToken::create([
+                    "userUid"   => $studentInfo->userUid,
+                    "leaseToken" => $this->generateRandomLongString(),
+                    "active"    => 1,
+                    "signed"    => 0,
+                    "role"      => "parent", // you may want to add a column to distinguish tokens
+                    "year" => $lease_link->year
+                ]);
+
+                // Build link for parent
+                $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
+                Log::info('Sending parent signing link: ' . $leaseOpenTag);
+
                 $this->dispatch(new SendParentLeaseMail($user, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
 
                 ActionList::create([
@@ -296,13 +297,13 @@ class LeaseController extends Controller
         $signed_at = $request->signed_at;
         // $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
         // $owner = 'storage/leases/juanita-cronje.jpg';
-        $signatureRelative  = 'storage/files/' . $userIdentification . '/' . $new_name;
+
         $ownerRelative      = 'storage/leases/juanita-cronje.jpg';
-        $signature = pdfImagePath($signatureRelative);
+        $signature = pdfImagePath($studentSignature);
         $owner     = pdfImagePath($ownerRelative);
         $parent     = pdfImagePath($parentSignaturePath);
-        Log::info('Sending email to ' . $signature);
-        Log::info('Sending email to ' . $owner);
+        // Log::info('Sending email to ' . $signature);
+        // Log::info('Sending email to ' . $owner);
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
         $pdf = PDF::loadView('PDF.leaseSignParent', compact(
@@ -312,7 +313,6 @@ class LeaseController extends Controller
             'booking',
             'leaseAdminFee',
             'signed_at',
-            'studentSignature',
             'parent',
             'signature',
             'owner',
@@ -349,18 +349,6 @@ class LeaseController extends Controller
         return 'Parent Signing Completed';
     }
 
-
-    public function generateRandomLongString($length = 24)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
-    }
-
     public function resendLease(Request $request)
     {
         $this_year = Lookups::where('group_id', '4')->first();
@@ -387,6 +375,17 @@ class LeaseController extends Controller
                 'userUidData' => $userUidData,
             ]);
         }
+    }
+
+    public function generateRandomLongString($length = 24)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 
     public function mda_tenant_save(Request $request)
