@@ -101,7 +101,7 @@ class LeaseController extends Controller
     {
 
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', '1')->first();
-        $user = User::where('id', $lease_link->userUid)->first();
+        $student = User::where('id', $lease_link->userUid)->first();
         $studentInfo = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
         $booking = Booking::where('userId', $lease_link->userUid)->where('year', $lease_link->year)->first();
 
@@ -229,7 +229,7 @@ class LeaseController extends Controller
                 $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
                 Log::info('Sending parent signing link: ' . $leaseOpenTag);
 
-                $this->dispatch(new SendParentLeaseMail($user, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
+                $this->dispatch(new SendParentLeaseMail($student, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
 
                 ActionList::create([
                     "userUid" => $studentInfo->userUid,
@@ -242,7 +242,7 @@ class LeaseController extends Controller
             } catch (\Exception $e) {
                 Log::error('Failed to dispatch SendParentLeaseMail job', [
                     'error' => $e->getMessage(),
-                    'user'  => $user,
+                    'user'  => $student,
                 ]);
                 ActionList::create([
                     "userUid" => $studentInfo->userUid,
@@ -269,7 +269,7 @@ class LeaseController extends Controller
     {
         // dd($request->all());
         $lease_link_parent = UserLeaseToken::where('leaseToken', $lease_link)->where('active', 1)->where('role', 'parent')->firstOrFail();
-        $lease_link_student = UserLeaseToken::where('leaseToken', $lease_link)->where('signed', 1)->where('role', 'student')->firstOrFail();
+        $lease_link_student = UserLeaseToken::where('userUid', $lease_link_parent->userUid)->where('signed', 1)->where('role', 'student')->firstOrFail();
 
         $user = StudentsInfo::where('userUid', $lease_link_parent->userUid)->where('year', $lease_link_parent->year)->first();
 
