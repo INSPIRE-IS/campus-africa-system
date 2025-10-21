@@ -20,7 +20,7 @@ trait EmailTrait
     public function sendTestEmailAttachement($email)
     {
         // Path to the test.pdf file
-        $filePath = public_path('test\test.pdf');
+        $filePath = public_path('test/test.pdf');
         $this->info("filePath {$filePath}");
 
         // Check if the file exists
