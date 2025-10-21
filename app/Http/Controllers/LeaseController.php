@@ -227,10 +227,7 @@ class LeaseController extends Controller
             // Build link for parent
             $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
             Log::info('Sending parent signing link: ' . $leaseOpenTag);
-
-
             try {
-                Log::info('Sending parent signing link: ' . $leaseOpenTag);
                 $this->dispatch(new SendParentLeaseMail($user, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
 
                 ActionList::create([
@@ -297,9 +294,15 @@ class LeaseController extends Controller
         $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
         $signed_at = $request->signed_at;
-        $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
-        $owner = 'storage/leases/juanita-cronje.jpg';
-
+        // $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
+        // $owner = 'storage/leases/juanita-cronje.jpg';
+        $signatureRelative  = 'storage/files/' . $userIdentification . '/' . $new_name;
+        $ownerRelative      = 'storage/leases/juanita-cronje.jpg';
+        $signature = pdfImagePath($signatureRelative);
+        $owner     = pdfImagePath($ownerRelative);
+        $parent     = pdfImagePath($parentSignaturePath);
+        Log::info('Sending email to ' . $signature);
+        Log::info('Sending email to ' . $owner);
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
         $pdf = PDF::loadView('PDF.leaseSignParent', compact(
@@ -310,7 +313,7 @@ class LeaseController extends Controller
             'leaseAdminFee',
             'signed_at',
             'studentSignature',
-            'parentSignaturePath',
+            'parent',
             'signature',
             'owner',
             'paymentBooking'
