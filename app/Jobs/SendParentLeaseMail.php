@@ -24,7 +24,7 @@ class SendParentLeaseMail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $userUid;
+    public $user;
     public $randomString;
     public $leaseOpenTag;
     public $year;
@@ -34,9 +34,9 @@ class SendParentLeaseMail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $userUid, $randomString, $leaseOpenTag, $year)
+    public function __construct(User $user, $randomString, $leaseOpenTag, $year)
     {
-        $this->userUid = $userUid;
+        $this->user = $user;
         $this->randomString = $randomString;
         $this->leaseOpenTag = $leaseOpenTag;
         $this->year = $year;
@@ -50,24 +50,24 @@ class SendParentLeaseMail implements ShouldQueue
     public function handle()
     {
         try {
-            Log::info('SendResendLeaseMail job started for user: ' . $this->userUid->id);
-            $userMain = $this->userUid;
+            Log::info('SendParentLeaseMail job started for user: ' . $this->user->id);
 
-            $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
 
-            if (!$userForLease) {
-                Log::error('No StudentsInfo found for user ' . $userMain->id . ' year ' . $this->year);
+            $studentInfo = StudentsInfo::where('userUid', $this->user->id)->where('year', $this->year)->first();
+
+            if (!$studentInfo) {
+                Log::error('No StudentsInfo found for user ' . $this->user->id . ' year ' . $this->year);
                 return;
             }
 
-            $booking = Booking::where('id', $userForLease->bookingId)->first();
+            $booking = Booking::where('id', $studentInfo->bookingId)->first();
 
             $message_replace['booking_application'] = "#" . $booking->booking_code;
-            $message_replace['name'] = $userForLease->userFirstName;
+            $message_replace['name'] = $studentInfo->userFirstName;
             $message_replace['lease_link'] = $this->leaseOpenTag;
             $message_replace['close_lease_link'] = "</a>";
-            $message_replace['sponsor_name'] = trim(($userForLease->sponFirstName ?? '') . ' ' . ($userForLease->sponLastName ?? ''));
-            $message_replace['student_name'] = trim(($userForLease->userFirstName ?? '') . ' ' . ($userForLease->userLastname ?? ''));
+            $message_replace['sponsor_name'] = trim(($studentInfo->sponFirstName ?? '') . ' ' . ($studentInfo->sponLastName ?? ''));
+            $message_replace['student_name'] = trim(($studentInfo->userFirstName ?? '') . ' ' . ($studentInfo->userLastname ?? ''));
             $message_replace['application_year'] = $this->year;
             $message_replace['property_name'] = $booking->propertyName ?? '';
 
@@ -87,18 +87,18 @@ class SendParentLeaseMail implements ShouldQueue
                 $newMessage = str_replace("[property_name]", $message_replace['property_name'], $newMessage);
                 // "sponFirstName":null,"sponLastName":null,"sponCellCode":null,"sponCell":null,"sponEmail":"test@email.com"
                 // ✅ Choose email more safely
-                $recipientEmail = $userForLease->sponEmail
-                    ?? $userForLease->userEmail
-                    ?? $userMain->email;
+                $recipientEmail = $studentInfo->sponEmail
+                    ?? $studentInfo->userEmail
+                    ?? $this->user->email;
 
                 if (empty($recipientEmail)) {
-                    Log::error('Parent email not found for user ' . $userMain->id);
+                    Log::error('Parent email not found for user ' . $this->user->id);
                     return;
                 }
 
                 $data['messageForMail'] = $newMessage;
                 $data['email'] = $recipientEmail;
-                $data['name'] = $userForLease->userFirstName;
+                $data['name'] = $studentInfo->userFirstName;
                 $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
 
                 $data['cc'] = "";
@@ -114,12 +114,12 @@ class SendParentLeaseMail implements ShouldQueue
                     $mailArr = explode(";", $allowedMails);
 
                     if (in_array(explode("@", $data['email'])[1], $mailArr)) {
-                        $data['email'] = $userForLease->sponEmail ?? $userForLease->userEmail;
+                        $data['email'] = $studentInfo->sponEmail ?? $studentInfo->userEmail;
                     } else {
                         $data['email'] = "conurbandigital@gmail.com";
                     }
                 } else {
-                    $data['email'] = $userForLease->sponEmail ?? $userForLease->userEmail;
+                    $data['email'] = $studentInfo->sponEmail ?? $studentInfo->userEmail;
                 }
 
                 Log::info('Sending email to ' . $data['email']);
@@ -129,7 +129,7 @@ class SendParentLeaseMail implements ShouldQueue
         } catch (\Exception $e) {
             Log::error('Error in SendResendLeaseMail job', [
                 'error' => $e->getMessage(),
-                'user_id' => $this->userUid->id ?? null,
+                'user_id' => $this->user->id ?? null,
             ]);
         }
     }
