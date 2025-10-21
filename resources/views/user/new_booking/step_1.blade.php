@@ -148,8 +148,8 @@
             <div class="form-field">
                 <label>Gender *<span id="gender_error" class="hidden" style="color:red"><small>This field is 
                             required</small></span></label>
-                            
-                <select name="gender" id='gender' class="required" <?php if ($user->userNationality !== 'International' && $user->gender !== null) {echo 'disabled';} ?>>
+
+                <select name="gender" id='gender' class="required" >
                     <option value="" disabled selected>Please select one</option>
                     <option value="1" <?php if ($user->gender == '1') {
                         echo 'selected';
