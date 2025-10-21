@@ -24,7 +24,7 @@ class SendParentLeaseMail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $user;
+    public $student;
     public $randomString;
     public $leaseOpenTag;
     public $year;
@@ -34,9 +34,9 @@ class SendParentLeaseMail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $user, $randomString, $leaseOpenTag, $year)
+    public function __construct(User $student, $randomString, $leaseOpenTag, $year)
     {
-        $this->user = $user;
+        $this->student = $student;
         $this->randomString = $randomString;
         $this->leaseOpenTag = $leaseOpenTag;
         $this->year = $year;
@@ -50,13 +50,13 @@ class SendParentLeaseMail implements ShouldQueue
     public function handle()
     {
         try {
-            Log::info('SendParentLeaseMail job started for user: ' . $this->user->id);
+            Log::info('SendParentLeaseMail job started for student: ' . $this->student->id);
 
 
-            $studentInfo = StudentsInfo::where('userUid', $this->user->id)->where('year', $this->year)->first();
+            $studentInfo = StudentsInfo::where('userUid', $this->student->id)->where('year', $this->year)->first();
 
             if (!$studentInfo) {
-                Log::error('No StudentsInfo found for user ' . $this->user->id . ' year ' . $this->year);
+                Log::error('No StudentsInfo found for student ' . $this->student->id . ' year ' . $this->year);
                 return;
             }
             Log::info('SendParentLeaseMail 1');
@@ -89,10 +89,10 @@ class SendParentLeaseMail implements ShouldQueue
                 // ✅ Choose email more safely
                 $recipientEmail = $studentInfo->sponEmail
                     ?? $studentInfo->userEmail
-                    ?? $this->user->email;
+                    ?? $this->student->email;
 
                 if (empty($recipientEmail)) {
-                    Log::error('Parent email not found for user ' . $this->user->id);
+                    Log::error('Parent email not found for student ' . $this->student->id);
                     return;
                 }
                 Log::info('SendParentLeaseMail 3');
@@ -129,7 +129,7 @@ class SendParentLeaseMail implements ShouldQueue
         } catch (\Exception $e) {
             Log::error('Error in SendResendLeaseMail job', [
                 'error' => $e->getMessage(),
-                'user_id' => $this->user->id ?? null,
+                'student_id' => $this->student->id ?? null,
             ]);
         }
     }

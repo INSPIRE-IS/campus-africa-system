@@ -57,25 +57,25 @@ class test_send_parent_link extends Command
 
         if (!$lease_link) {
             Log::error('No lease link found for user ' . $userUid . ' year ' . $year);
-            return;
+            $lease_link = UserLeaseToken::create([
+                "userUid"   => $userUid,
+                "leaseToken" => $this->generateRandomLongString(),
+                "active"    => 1,
+                "signed"    => 0,
+                "role"      => "parent", // you may want to add a column to distinguish tokens
+                "year" => $year
+            ]);
         }
 
-        $user = User::where('id', $userUid)->first();
+        $student = User::where('id', $userUid)->first();
 
         // Create Parent Lease Token
-        $parentLeaseToken = UserLeaseToken::create([
-            "userUid"   => $userUid,
-            "leaseToken" => $this->generateRandomLongString(),
-            "active"    => 1,
-            "signed"    => 0,
-            "role"      => "parent", // you may want to add a column to distinguish tokens
-            "year" => $year
-        ]);
+
 
         // Build link for parent
         $baseurl = config('app.url');
 
-        $leaseOpenTag = "<a href='" . $baseurl . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
+        $leaseOpenTag = "<a href='" . $baseurl . "/sign-lease/" . $lease_link->leaseToken . "' target='_blank'>";
         Log::info('Sending parent signing link: ' . $leaseOpenTag);
         $studentInfo = StudentsInfo::where('userUid', $userUid)->where('year', $year)->first();
 
@@ -86,17 +86,18 @@ class test_send_parent_link extends Command
         if ($parentEmail && $parentEmail !== "") {
             try {
                 Log::info('Sending parent signing link: ' . $leaseOpenTag);
-                dispatch(new SendParentLeaseMail($user, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
+                // dispatch(new SendParentLeaseMail($student, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
+                (new SendParentLeaseMail($student, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year))->handle();
             } catch (\Exception $e) {
                 Log::error('Failed to dispatch SendParentLeaseMail job', [
                     'error' => $e->getMessage(),
-                    'user'  => $user,
+                    'student'  => $student,
                 ]);
             }
         } else {
             Log::error('Failed to dispatch SendParentLeaseMail job', [
                 'error' => 'Parent email not found',
-                'user'  => $user,
+                'user'  => $student,
                 'leaseOpenTag'  => $leaseOpenTag,
             ]);
         }
