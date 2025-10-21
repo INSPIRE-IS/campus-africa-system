@@ -268,9 +268,10 @@ class LeaseController extends Controller
     public function save_parent_signed_lease(Request $request, $lease_link)
     {
         // dd($request->all());
-        $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', 1)->where('role', 'parent')->firstOrFail();
+        $lease_link_parent = UserLeaseToken::where('leaseToken', $lease_link)->where('active', 1)->where('role', 'parent')->firstOrFail();
+        $lease_link_student = UserLeaseToken::where('leaseToken', $lease_link)->where('signed', 1)->where('role', 'student')->firstOrFail();
 
-        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+        $user = StudentsInfo::where('userUid', $lease_link_parent->userUid)->where('year', $lease_link_parent->year)->first();
 
         // === Decode parent signature ===
         $data = $request->signature_string;
@@ -287,10 +288,10 @@ class LeaseController extends Controller
         $parentSignaturePath = 'storage/files/' . $userIdentification . '/' . $new_name;
 
         // Student signature (previously saved)
-        $studentSignature = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
+        $studentSignature = 'storage/files/' . $userIdentification . '/' . $lease_link_student->signature_url;
 
-        $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
-        $booking = Booking::where('userId', $user->userUid)->where('year', $lease_link->year)->first();
+        $data = StudentsInfo::where('userUid', $lease_link_parent->userUid)->where('year', $lease_link_parent->year)->first();
+        $booking = Booking::where('userId', $user->userUid)->where('year', $lease_link_parent->year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
@@ -325,7 +326,7 @@ class LeaseController extends Controller
         \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
 
         // Update user file
-        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->userUid)->where('year', $lease_link->year)
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->userUid)->where('year', $lease_link_parent->year)
             ->update([
                 'fileName' => $fileNameToSave,
                 'fileUrl'  => 'files/' . $userIdentification . '/' . $fileNameToSave,
@@ -333,18 +334,18 @@ class LeaseController extends Controller
             ]);
 
         // Mark parent token signed
-        $lease_link->update([
+        $lease_link_parent->update([
             'active' => 0,
             'signed' => 1,
             'signature_url' => $new_name
         ]);
         ActionList::create([
-            "userUid" => $lease_link->userUid,
+            "userUid" => $lease_link_parent->userUid,
             "action" => "Parent/Sponser Signed",
             "actionUserUid" => $data->userUid,
             "actionUserDisplayName" => $data->userFirstName,
             "actionUserRole" => "Applicant",
-            "year" => $lease_link->year,
+            "year" => $lease_link_parent->year,
         ]);
         return 'Parent Signing Completed';
     }

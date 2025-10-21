@@ -59,7 +59,7 @@ class SendParentLeaseMail implements ShouldQueue
                 Log::error('No StudentsInfo found for user ' . $this->user->id . ' year ' . $this->year);
                 return;
             }
-
+            Log::info('SendParentLeaseMail 1');
             $booking = Booking::where('id', $studentInfo->bookingId)->first();
 
             $message_replace['booking_application'] = "#" . $booking->booking_code;
@@ -74,7 +74,7 @@ class SendParentLeaseMail implements ShouldQueue
             $mailerForMessage = MailerList::where("mailer_name", "Sponsor Agreement")->first();
 
             if ($mailerForMessage && $mailerForMessage->status == '1') {
-
+                Log::info('SendParentLeaseMail 2');
                 $mailerMessage = $mailerForMessage->message;
 
                 $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
@@ -95,7 +95,7 @@ class SendParentLeaseMail implements ShouldQueue
                     Log::error('Parent email not found for user ' . $this->user->id);
                     return;
                 }
-
+                Log::info('SendParentLeaseMail 3');
                 $data['messageForMail'] = $newMessage;
                 $data['email'] = $recipientEmail;
                 $data['name'] = $studentInfo->userFirstName;
@@ -106,7 +106,7 @@ class SendParentLeaseMail implements ShouldQueue
                 if (!empty($allowedMailsCC)) {
                     $data['cc'] = explode(";", $allowedMailsCC);
                 }
-
+                Log::info('SendParentLeaseMail 4');
                 $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
                 if (!empty($allowedMails)) {
@@ -114,15 +114,15 @@ class SendParentLeaseMail implements ShouldQueue
                     $mailArr = explode(";", $allowedMails);
 
                     if (in_array(explode("@", $data['email'])[1], $mailArr)) {
-                        $data['email'] = $studentInfo->sponEmail ?? $studentInfo->userEmail;
+                        $data['email'] = $recipientEmail;
                     } else {
                         $data['email'] = "conurbandigital@gmail.com";
                     }
                 } else {
-                    $data['email'] = $studentInfo->sponEmail ?? $studentInfo->userEmail;
+                    $data['email'] = $recipientEmail;
                 }
 
-                Log::info('Sending email to ' . $data['email']);
+                Log::info('Sending email to 5 ' . $data['email']);
                 $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
                 Mail::mailer('smtp')->to($data['email'])->send($email);
             }
