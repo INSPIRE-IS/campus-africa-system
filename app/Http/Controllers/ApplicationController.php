@@ -27,6 +27,7 @@ use DateTime;
 use App\Models\InstitutionProperties;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendStudentVerifyMailByAdminMail;
+use Illuminate\Support\Facades\Log;
 
 class ApplicationController extends Controller
 {
@@ -1600,13 +1601,28 @@ class ApplicationController extends Controller
         $user = User::where('id', Auth::user()->id)->first();
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
+        $user->login_route_expires_in = 60 * 24 * 2; // 2 days   
         $generator = new LoginUrl($user);
+
         $generator->setRedirectUrl('/verify-email-account');
         $url = $generator->generate();
 
         $userUidData = User::where('id', Auth::user()->id)->first();
         $this->dispatch(new SendNewBookingMail($userUidData, $url));
 
+
+        // Log details for debugging
+        $expiresAt = now()->addMinutes($user->login_route_expires_in);
+
+        Log::info('Magic Login URL Generated', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'magic_login_url' => $url,
+            'expires_at' => $expiresAt->toDateTimeString(),
+            'expires_timestamp' => $expiresAt->timestamp,
+            'current_time' => now()->toDateTimeString(),
+            'expires_in_human' => $expiresAt->diffForHumans(),
+        ]);
         // $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
         // $message_replace['name'] = $request->firstName;
         // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
