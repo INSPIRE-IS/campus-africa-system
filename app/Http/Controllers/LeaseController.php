@@ -101,8 +101,8 @@ class LeaseController extends Controller
     {
 
         $lease_link = UserLeaseToken::where('leaseToken', $lease_link)->where('active', '1')->first();
-        // $user = User::where('id', $lease_link->userUid)->first();
-        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+        $user = User::where('id', $lease_link->userUid)->first();
+        $studentInfo = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
         $booking = Booking::where('userId', $lease_link->userUid)->where('year', $lease_link->year)->first();
 
         // get the base64 string
@@ -116,10 +116,10 @@ class LeaseController extends Controller
         // decode the string to the correct format
         $data = base64_decode($data);
 
-        if ($user->userId == "") {
-            $userIdentification = $user->userPassport;
+        if ($studentInfo->userId == "") {
+            $userIdentification = $studentInfo->userPassport;
         } else {
-            $userIdentification = $user->userId;
+            $userIdentification = $studentInfo->userId;
         }
 
 
@@ -134,7 +134,7 @@ class LeaseController extends Controller
         // retreive all records from db
         // $data = User::where('id', $user->userUid)->first();
         $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
-        $booking = Booking::where('userId', $user->userUid)->where('year', $lease_link->year)->first();
+        $booking = Booking::where('userId', $studentInfo->userUid)->where('year', $lease_link->year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();
         $leaseAdminFee = Lookups::where('group_id', '8')->first();
@@ -160,62 +160,107 @@ class LeaseController extends Controller
         $bookingYear = substr($booking->year, -2);
         $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
 
-        $fileNameToSave = $bookingYear . $bookingPrefix . "_" . $booking->bed_code . "_" . $user->userLastname . "_" . $user->userFirstName . ".pdf";
+        $fileNameToSave = $bookingYear . $bookingPrefix . "_" . $booking->bed_code . "_" . $studentInfo->userLastname . "_" . $studentInfo->userFirstName . ".pdf";
 
         $content = $pdf->download($fileNameToSave)->getOriginalContent();
-        // $user = User::where('id', $user->id)->first();
-        $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->first();
+
 
         \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
+        $parentEmail = $studentInfo->sponEmail ?? null;
 
-        //Data to update
-        $data = array(
-            'fileName' => $fileNameToSave,
-            'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
-            'status' => 'Uploaded',
-        );
+        if ($parentEmail && $parentEmail !== "") {
+            //Data to update
+            $data = array(
+                'fileName' => $fileNameToSave,
+                'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
+                'status' => 'Student Signed',
+                'rejectReason' => '',
+            );
+            ActionList::create([
+                "userUid" => $studentInfo->userUid,
+                "action" => "Student Signed, Pending Parent Signature",
+                "actionUserUid" => $studentInfo->userUid,
+                "actionUserDisplayName" => $studentInfo->userFirstName,
+                "actionUserRole" => "Applicant",
+                "year" => $lease_link->year,
+            ]);
+        } else {
+            //Data to update
+            $data = array(
+                'fileName' => $fileNameToSave,
+                'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
+                'status' => 'Uploaded',
+                'rejectReason' => '',
+            );
 
-        UserFiles::where('fileId', 'moveIn')->where('userUid', $user->userUid)->where('year', $lease_link->year)->update($data);
+            ActionList::create([
+                "userUid" => $studentInfo->userUid,
+                "action" => "Student Signed, Pending approval",
+                "actionUserUid" => $studentInfo->userUid,
+                "actionUserDisplayName" => $studentInfo->userFirstName,
+                "actionUserRole" => "Applicant",
+                "year" => $lease_link->year,
+            ]);
+        }
+
+        UserFiles::where('fileId', 'moveIn')->where('userUid', $studentInfo->userUid)->where('year', $lease_link->year)->update($data);
 
         // User::where('id', $user->id)->update(['rob_55_lease' => 1]);
-        $studentInfo = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $lease_link->year)->update(['rob_55_lease' => 1]);
+        $studentInfo->update(['rob_55_lease' => 1]);
 
         //Update Token to signed & inactive
         UserLeaseToken::where('leaseToken', $lease_link->leaseToken)->update(['active' => 0, 'signed' => 1, 'signature_url' => $new_name]);
-
-
-        // Create Parent Lease Token
-        $parentLeaseToken = UserLeaseToken::create([
-            "userUid"   => $user->userUid,
-            "leaseToken" => $this->generateRandomLongString(),
-            "active"    => 1,
-            "signed"    => 0,
-            "role"      => "parent", // you may want to add a column to distinguish tokens
-            "year" => $lease_link->year
-        ]);
-
-        // Build link for parent
-        $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
-        Log::info('Sending parent signing link: ' . $leaseOpenTag);
-
         // Find parent email (assuming in StudentsInfo or related table)
         $parentEmail = $studentInfo->sponEmail ?? null;
 
         if ($parentEmail && $parentEmail !== "") {
+            // Create Parent Lease Token
+            $parentLeaseToken = UserLeaseToken::create([
+                "userUid"   => $studentInfo->userUid,
+                "leaseToken" => $this->generateRandomLongString(),
+                "active"    => 1,
+                "signed"    => 0,
+                "role"      => "parent", // you may want to add a column to distinguish tokens
+                "year" => $lease_link->year
+            ]);
+
+            // Build link for parent
+            $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $parentLeaseToken->leaseToken . "' target='_blank'>";
+            Log::info('Sending parent signing link: ' . $leaseOpenTag);
+
+
             try {
                 Log::info('Sending parent signing link: ' . $leaseOpenTag);
                 $this->dispatch(new SendParentLeaseMail($user, $this->generateRandomLongString(), $leaseOpenTag, $lease_link->year));
+
+                ActionList::create([
+                    "userUid" => $studentInfo->userUid,
+                    "action" => "Parent Email Sent",
+                    "actionUserUid" => $studentInfo->userUid,
+                    "actionUserDisplayName" => $studentInfo->userFirstName,
+                    "actionUserRole" => "Applicant",
+                    "year" => $lease_link->year,
+                ]);
             } catch (\Exception $e) {
                 Log::error('Failed to dispatch SendParentLeaseMail job', [
                     'error' => $e->getMessage(),
                     'user'  => $user,
                 ]);
+                ActionList::create([
+                    "userUid" => $studentInfo->userUid,
+                    "action" => "Parent Email Sent, Failed",
+                    "actionUserUid" => $studentInfo->userUid,
+                    "actionUserDisplayName" => $studentInfo->userFirstName,
+                    "actionUserRole" => "Applicant",
+                    "year" => $lease_link->year,
+                ]);
             }
         } else {
-            Log::error('Failed to dispatch SendParentLeaseMail job', [
-                'error' => 'Parent email not found',
-                'user'  => $user,
-                'leaseOpenTag'  => $leaseOpenTag,
+            Log::info('Failed to dispatch SendParentLeaseMail job', [
+                'info' => 'Parent email not found',
+                'userUid',
+                $lease_link->userUid,
+                "year" => $lease_link->year,
             ]);
         }
 
@@ -281,16 +326,23 @@ class LeaseController extends Controller
             ->update([
                 'fileName' => $fileNameToSave,
                 'fileUrl'  => 'files/' . $userIdentification . '/' . $fileNameToSave,
-                'status'   => 'Fully Signed',
+                'status'   => 'Uploaded',
             ]);
 
         // Mark parent token signed
-        UserLeaseToken::where('id', $lease_link->id)->update([
+        $lease_link->update([
             'active' => 0,
             'signed' => 1,
             'signature_url' => $new_name
         ]);
-
+        ActionList::create([
+            "userUid" => $lease_link->userUid,
+            "action" => "Parent/Sponser Signed",
+            "actionUserUid" => $data->userUid,
+            "actionUserDisplayName" => $data->userFirstName,
+            "actionUserRole" => "Applicant",
+            "year" => $lease_link->year,
+        ]);
         return 'Parent Signing Completed';
     }
 
@@ -315,12 +367,12 @@ class LeaseController extends Controller
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
             $this_year = $this_year->lookup_name;
         }
-
-
-        // Create Lease Link
-        $leaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0, "role" => 'student', "year" => $this_year]);
-
-        $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
+        $userLeaseToken = UserLeaseToken::where("userUid", $request->userId)->where("signed", 0)->where("role", 'student')->where("year", $this_year)->where('active', '1')->first();
+        if (empty($userLeaseToken)) {
+            // Create Lease Link
+            $userLeaseToken = UserLeaseToken::create(["userUid" => $request->userId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0, "role" => 'student', "year" => $this_year]);
+        }
+        $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $userLeaseToken->leaseToken . "' target='_blank'>";
 
         $userUidData = User::where('id', $request->userId)->first();
         try {

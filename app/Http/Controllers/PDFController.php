@@ -178,7 +178,14 @@ class PDFController extends Controller
       Log::info('Sending email to ' . $leaseOpenTag);
       $userUidData = User::where('id', $studentId)->first();
       $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag, $this_year));
-
+      ActionList::create([
+        "userUid" => $studentId,
+        "action" => "Lease Email Resent",
+        "actionUserUid" => Auth::user()->id,
+        "actionUserDisplayName" => Auth::user()->userFirstName,
+        "actionUserRole" => Auth::user()->userRole,
+        "year" => $this_year,
+      ]);
       // $message_replace['booking_application'] = "#".$booking->booking_code;
       // $message_replace['name'] = $userForLease->userFirstName;
       // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
