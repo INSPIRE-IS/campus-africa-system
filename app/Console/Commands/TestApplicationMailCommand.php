@@ -12,6 +12,7 @@ class TestApplicationMailCommand extends Command
 {
     protected $signature = 'test:application-mail {userId}';
     protected $description = 'Test sending the application thank-you email';
+    // php artisan test:application-mail 1
 
     public function handle()
     {

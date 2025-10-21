@@ -15,7 +15,7 @@ class SendTestEmailCommand extends Command
      * @var string
      */
     protected $signature = 'email:send-test {email}';
-    // php artisan email:send-test dev@example.com
+    // php artisan email:send-test longjsjs@gmail.com
 
     /**
      * The console command description.
