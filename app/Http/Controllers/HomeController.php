@@ -186,6 +186,11 @@ class HomeController extends Controller
                             $userFileProofOfPayment = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $selected_year)->first();
 
                             if (!empty($userFileProofOfPayment)) {
+                                // in case the user session is for the previous year just update it to the current year
+                                $this_year = Lookups::where('group_id', '4')->first();
+                                $this_year = $this_year->lookup_name;
+                                Session::put('year', $this_year);
+
                                 return redirect('/complete/online-application');
                             } else {
                                 return redirect('/step-4/online-application');
