@@ -23,7 +23,7 @@ class regen_signed_lease_pdf extends Command
      * @var string
      */
     protected $signature = 'command:regen_signed_lease_pdf {userId} {year}';
-    // Usage: php artisan command:regen_signed_lease_pdf 11117 2025
+    // Usage: php artisan command:regen_signed_lease_pdf 17767 2025
 
     /**
      * The console command description.
@@ -42,9 +42,13 @@ class regen_signed_lease_pdf extends Command
         $userUid = $this->argument('userId');
         $year = $this->argument('year');
         $signed_at = 'Regenerated via CLI';
-        $role = 'student';
+        $role = 'parent';
+        $studentRelative      = 'images/lease/test_student_001.png';
+        $parentRelative      = 'images/lease/test_parent_001.png';
+        $ownerRelative      = 'images/lease/juanita-cronje.jpg';
 
-        if ($role = 'parent') {
+        if ($role == 'parent') {
+            $this->info("parent lease");
             $lease_link = UserLeaseToken::where('userUid', $userUid)
                 ->where('active', 0)
                 ->where('signed', 1)
@@ -88,12 +92,14 @@ class regen_signed_lease_pdf extends Command
             // $signature = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
             // $this->info("Signature URL: {$signature}");
             // $owner = 'storage/leases/juanita-cronje.jpg';
-            $signatureRelative  = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
-            $ownerRelative      = 'storage/leases/juanita-cronje.jpg';
-            $studentSignature = pdfImagePath($signatureRelative);
+            // $studentRelative  = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
+            // $ownerRelative      = 'storage/leases/juanita-cronje.jpg';
+            $studentSignature = pdfImagePath($studentRelative);
+            $signature = pdfImagePath($studentRelative);
             $owner     = pdfImagePath($ownerRelative);
-            $parentRelative      = 'storage/files/' . $userIdentification . '/' . $lease_link_parent->signature_url;
+            //$parentRelative      = 'storage/files/' . $userIdentification . '/' . $lease_link_parent?->signature_url;
             $parentSignature = pdfImagePath($parentRelative);
+            $parent = pdfImagePath($parentRelative);
 
 
             $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
@@ -109,6 +115,7 @@ class regen_signed_lease_pdf extends Command
                 'signed_at',
                 'studentSignature',
                 'parentSignature',
+                'parent',
                 'signature',
                 'owner',
                 'paymentBooking'
@@ -158,9 +165,9 @@ class regen_signed_lease_pdf extends Command
             // $signature = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
             // $this->info("Signature URL: {$signature}");
             // $owner = 'storage/leases/juanita-cronje.jpg';
-            $signatureRelative  = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
-            $ownerRelative      = 'storage/leases/juanita-cronje.jpg';
-            $signature = pdfImagePath($signatureRelative);
+            //$studentRelative  = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
+            //$ownerRelative      = 'storage/leases/juanita-cronje.jpg';
+            $signature = pdfImagePath($studentRelative);
             $owner     = pdfImagePath($ownerRelative);
 
 
