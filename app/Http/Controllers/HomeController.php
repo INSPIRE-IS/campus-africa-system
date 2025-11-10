@@ -42,6 +42,7 @@ use App\Jobs\SendStudentVerifyMailByAdminMail;
 use App\Jobs\SendLeaseApprovedMail;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendReminderMail;
+use App\Models\OnlinePayments;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 
@@ -10983,6 +10984,8 @@ class HomeController extends Controller
                 '<b>Booking Fee</b>',
                 '<b>Payment Type</b>',
                 '<b>Payment Reference</b>',
+                '<b>Payment Date</b>',
+                '<b>Table Used</b>',
                 '<b>Copy Of ID</b>',
                 '<b>Student Card</b>',
                 '<b>Proof of Registration</b>',
@@ -11131,6 +11134,32 @@ class HomeController extends Controller
             if ($booking) {
                 $residence = Residence::where('id', $booking->property)->pluck('residence')->first();
                 $roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+                $payment_date = ""; // 
+                $table_used = ""; // 
+                if (($booking->payment_type == 'Credit/Debit Card' || $booking->payment_type == 'Credit$Debit Card' || $booking->payment_type == 'Online EFT')
+                    && !empty($booking->booking_payment_ref)
+                ) {
+                    $onlinePayment = OnlinePayments::select('created_at')
+                        ->where('userUid', $booking->userId)
+                        ->where('reference', $booking->booking_payment_ref)
+                        ->where('payment_status', 1)
+                        ->orderBy('created_at', 'desc')->first();
+                    $payment_date = $onlinePayment ? $onlinePayment->created_at : "";
+                    $table_used = $onlinePayment ? "Online Payments" : "";
+                }
+                // 
+                if (($booking->payment_type == 'Manual EFT' || $booking->payment_type == 'Online EFT')
+                    && !empty($booking->booking_payment_ref)
+                ) {
+                    $pop = UserFiles::select('created_at')
+                        ->where('userUid', $booking->userId)
+                        ->where('fileId', 'proof_of_payment')
+                        ->where('year', $booking->year)
+                        ->orderBy('created_at', 'desc')->first();
+                    $payment_date = $pop ? $pop->created_at : "";
+                    $table_used = $pop ? "User Files" : "";
+                }
+
 
                 $floor = $booking->floor;
                 $unit = $booking->unit;
@@ -11141,6 +11170,7 @@ class HomeController extends Controller
 
                 $booking_payment_type = $booking->payment_type;
                 $booking_payment_ref = $booking->booking_payment_ref;
+                $booking_date = $payment_date;
             } else {
                 $residence = "";
                 $roomType = "";
@@ -11175,6 +11205,8 @@ class HomeController extends Controller
                 $rob_10_fee,
                 $booking_payment_type,
                 $booking_payment_ref,
+                $booking_date,
+                $table_used,
                 $rob_15_id,
                 $rob_20_card,
                 $rob_25_reg,
