@@ -15,6 +15,7 @@
                 </div>
             </div>
         @endif
+{{-- Physical Address Next of Kin Student Type --}}
         <div class="container">
 
             <div class="col-3" id="col1">
@@ -123,11 +124,9 @@
                     @endif
                 </div>
             </div>
-
-
         </div>
     </div>
-
+{{-- Applicant Details --}}
     <div class="container">
 
         <div class="appRow">
@@ -221,7 +220,7 @@
                     </div>
 
                 </div>
-
+{{-- Application Summary --}}
                 <div class="customWhiteCard" id="applicationCard" style="margin-top:20px;">
                     <div class="flex">
                         <div class="bed_code_status"></div>
@@ -305,7 +304,7 @@
 
                     </div>
                 </div>
-
+{{-- Action List --}}
                 <div class="customWhiteCard" id="actionListCard" style="margin-top:20px;">
                     <div class="">
                         <h2 class="appHeader">Action List
@@ -361,7 +360,7 @@
                         @endforeach
                     </div>
                 </div>
-
+{{-- Previous Bookings --}}
                 <div class="customWhiteCard" id="actionListCard" style="margin-top:20px; margin-bottom:20px;">
                     <div class="">
                         <h2 class="appHeader">Previous Bookings</h2>
@@ -390,7 +389,7 @@
         </div>
         <div class="appRow">
             <div class="cards">
-
+{{-- Booking --}}
                 <div class="customWhiteCard">
                     <!-- <button type="button" class="reminder">Send reminder</button> -->
                     <!-- <h2 class="appSubHeader bold">PAYMENT TYPE </h2> -->
@@ -624,14 +623,14 @@
                     <!-- <h2 class="appSubHeader bold">BOOKING FEE</h2> -->
                     <!-- <p class="appSubHeader"> -->
                     <!-- @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'NSFAS')
-    R {{ $residence->nsfas_booking_rate }}
-    @endif
-                                                                                                                                                                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
-    R {{ $residence->bursary_booking_rate }}
-    @endif
-                                                                                                                                                                                                                                                        @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
-    R {{ $residence->booking_rate }}
-    @endif -->
+                        R {{ $residence->nsfas_booking_rate }}
+                        @endif
+                                                                                                                                                                                                                                                                            @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Bursary')
+                        R {{ $residence->bursary_booking_rate }}
+                        @endif
+                                                                                                                                                                                                                                                                            @if ($residence !== null && $user[0]['userInfo']['studentType'] == 'Cash / Direct')
+                        R {{ $residence->booking_rate }}
+                        @endif -->
                     <!-- R {{ $booking->room_rate }} -->
                     <!-- </p> -->
                     <!-- <br/> -->
@@ -644,7 +643,7 @@
 
                     <!-- </p> -->
                 </div>
-
+{{-- Documents --}}
                 <div class="customWhiteCard" id="documentsCard" style="margin-top:20px;">
                     <div class="bigHeader appSearchForm">
                         <h2 class="appHeader">Documents
@@ -910,7 +909,7 @@
 
 
                 </div>
-
+{{-- Comments --}}
                 <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                     <h2 class="appHeader">Comments</h2>
                     @if (in_array($booking->property, $allowedResidences))

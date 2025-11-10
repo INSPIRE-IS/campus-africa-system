@@ -170,9 +170,11 @@
                             required</small></span></label>
                 <select name="studentType" id='studentType' class="required">
                     <option value="" selected disabled>Select a Student Type</option>
-                    <option value="NSFAS">NSFAS</option>
-                    <option value="Bursary">Bursary</option>
-                    <option value="Cash / Direct">Cash</option>
+                    <option value="NSFAS" >NSFAS</option>
+                    <option value="GCRA" >GCRA</option>
+                    <option value="MQA" >MQA</option>
+                    <option value="Bursary" >Bursary</option>
+                    <option value="Cash / Direct" >Cash</option>
                 </select>
             </div>
 
@@ -793,7 +795,7 @@
                                     $("#property").append('<option value="' + index.id + '">' + index
                                         .residence + '</option>')
                                 }
-                            } else if ($("#studentType").val() == "NSFAS" && inSelectedNsfas.includes(
+                            } else if (($("#studentType").val() == "NSFAS" || $("#studentType").val() == "GCRA" || $("#studentType").val() == "MQA") && inSelectedNsfas.includes(
                                     index.id)) {
                                 if (allow == 0) {
                                     $("#property").append('<option value="' + index.id + '" disabled>' +

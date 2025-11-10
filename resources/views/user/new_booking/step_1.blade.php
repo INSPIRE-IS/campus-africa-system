@@ -202,15 +202,11 @@
                             required</small></span></label>
                 <select name="studentType" id='studentType' class="required">
                     <option value="" selected disabled>Select a Student Type</option>
-                    <option value="NSFAS" <?php if ($cancelled == 0 && $user->studentType == 'NSFAS') {
-                        echo 'selected';
-                    } ?>>NSFAS</option>
-                    <option value="Bursary" <?php if ($cancelled == 0 && $user->studentType == 'Bursary') {
-                        echo 'selected';
-                    } ?>>Bursary</option>
-                    <option value="Cash / Direct" <?php if ($cancelled == 0 && $user->studentType == 'Cash / Direct') {
-                        echo 'selected';
-                    } ?>>Cash</option>
+                    <option value="NSFAS" <?php if ($cancelled == 0 && $user->studentType == 'NSFAS') {echo 'selected';} ?>>NSFAS</option>
+                    <option value="GCRA" <?php if ($cancelled == 0 && $user->studentType == 'GCRA') {echo 'selected';} ?>>GCRA</option>
+                    <option value="MQA" <?php if ($cancelled == 0 && $user->studentType == 'MQA') {echo 'selected';} ?>>MQA</option>
+                    <option value="Bursary" <?php if ($cancelled == 0 && $user->studentType == 'Bursary') {echo 'selected';} ?>>Bursary</option>
+                    <option value="Cash / Direct" <?php if ($cancelled == 0 && $user->studentType == 'Cash / Direct') {echo 'selected';} ?>>Cash</option>
                 </select>
             </div>
             @php
@@ -601,7 +597,7 @@
                                     $("#property").append('<option value="' + index.id + '">' + index
                                         .residence + '</option>')
                                 }
-                            } else if ($("#studentType").val() == "NSFAS" && inSelectedNsfas.includes(
+                            } else if (($("#studentType").val() == "NSFAS" || $("#studentType").val() == "GCRA" || $("#studentType").val() == "MQA") && inSelectedNsfas.includes(
                                     index.id)) {
                                 if (allow == 0) {
                                     $("#property").append('<option value="' + index.id + '" disabled>' +
