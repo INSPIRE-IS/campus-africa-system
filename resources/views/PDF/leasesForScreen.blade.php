@@ -737,10 +737,11 @@
                 <li>Consolidated Urban Acquisitions 3 (Pty) Ltd</li>
                 <li>Little Swift Investments 450 (Pty) Ltd</li>
                 <li>Braamby Trading (Pty) Ltd & The Truzen 130 Trust</li>
-                <li>126 Siemert Rd CC</li>
-                <li>80 Jorissen Student investments</li>
-                <li>Braamlofts Student Investments</li>
-                <li>Ymca student Investments</li>
+                <li>80J Student Investments Pty Ltd</li>
+                <li>BL Student Investments Pty Ltd</li>
+                <li>The Y Student Investments Pty Ltd</li>
+                <li>Renvest Properties Pty Ltd</li>
+                <li>Park Mews Investments Pty Lid</li>
             </ul>
             <br/><br/><br/>
 
