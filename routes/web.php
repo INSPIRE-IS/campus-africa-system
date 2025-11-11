@@ -205,7 +205,8 @@ Route::post('/undo-waive-booking-fee', [HomeController::class, 'undo_waive_booki
 Route::post("/waive-info", [HomeController::class, 'waive_action']);
 Route::post("/waive-fee-request", [HomeController::class, 'waive_request']);
 Route::post("/waive-info-reject", [HomeController::class, 'waive_reject']);
-Route::post("/download-invoice", [InvoiceController::class, 'generate']);
+Route::get("/download-quote", [InvoiceController::class, 'generateQuote']);
+Route::get("/download-invoice", [InvoiceController::class, 'generateInvoice']);
 
 Route::get('/update/booking-fees', [HomeController::class, 'update_booking_fees']);
 Route::get('/update/nsfas', [HomeController::class, 'update_nsfas']);
