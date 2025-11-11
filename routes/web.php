@@ -74,6 +74,10 @@ Route::post('/update-profile', [ProfileController::class, 'update']);
 Route::get('/my-documents', [HomeController::class, 'documents'])->name('my-documents');
 
 Route::get('/leases', [HomeController::class, 'leases']);
+Route::get('/compatibility', [HomeController::class, 'compatibility']); //->name('compatibility');
+// Route::get('/compatibility', [HomeController::class, 'compatibility'])->name('compatibility.index');
+Route::get('/compatibility/search', [HomeController::class, 'search'])->name('compatibility.search');
+
 Route::get('/mailing', [HomeController::class, 'mailing']);
 Route::get('/invoices', [HomeController::class, 'invoices']);
 

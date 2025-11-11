@@ -27,6 +27,7 @@ use DateTime;
 use App\Models\InstitutionProperties;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendStudentVerifyMailByAdminMail;
+use App\Models\Question;
 use Illuminate\Support\Facades\Log;
 
 class ApplicationController extends Controller
@@ -44,9 +45,10 @@ class ApplicationController extends Controller
             $residences = Residence::whereNull('status')->get();
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
+            $questions = Question::with('options')->get();
             //dd($this_year);
 
-            return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences, "application_year" => $this_year]);
+            return view('application.step_1', ["lookups" => $lookups, "questions" => $questions, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences, "application_year" => $this_year]);
         } else {
             return view('errors.onlineAppOffline');
         }
