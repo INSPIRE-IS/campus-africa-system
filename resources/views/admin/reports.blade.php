@@ -36,6 +36,9 @@
                     <select name="student_type" id='student_type'>
                         <option value="All" selected>All Student Types</option>
                         <option value="NSFAS">NSFAS</option>
+                        <option value="FUNZA">FUNZA</option>
+                        <option value="GCRA">GCRA</option>
+                        <option value="MQA">MQA</option>
                         <option value="Bursary">Bursary</option>
                         <option value="Cash / Direct">Cash / Direct</option>
                     </select>
@@ -283,6 +286,9 @@
             <select name="student_type3" id='student_type3'>
                 <option value="All">All Student Types</option>
                 <option value="NSFAS">NSFAS</option>
+                <option value="FUNZA">FUNZA</option>
+                <option value="GCRA">GCRA</option>
+                <option value="MQA">MQA</option>
                 <option value="Bursary">Bursary</option>
                 <option value="Cash / Direct">Cash</option>
             </select>

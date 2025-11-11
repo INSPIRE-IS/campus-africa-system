@@ -216,7 +216,7 @@ class RegisterController extends Controller
         // User::where('id', $user->id)->update(["bookingRef" => $booking->id]);
         StudentsInfo::where('id', $userInfo->id)->update(["bookingRef" => $booking->id, "bookingId" => $booking->id]);
 
-        if ($request->studentType == "NSFAS" || $request->studentType == "GCRA" || $request->studentType == "MQA") {
+        if ($request->studentType == "NSFAS" || $request->studentType === "FUNZA" || $request->studentType == "GCRA" || $request->studentType == "MQA") {
 
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->orderBy('created_at', 'desc')->first();
 
@@ -363,7 +363,7 @@ class RegisterController extends Controller
                                 $bookingPrice = $room->acf->booking_fee_override;
                             }
 
-                            if ($userInfo->studentType === "NSFAS" || $userInfo->studentType === "GCRA" || $userInfo->studentType === "MQA") {
+                            if ($userInfo->studentType === "NSFAS" || $request->studentType === "FUNZA" || $userInfo->studentType === "GCRA" || $userInfo->studentType === "MQA") {
                                 if (!in_array("NSFAS Students", $appliesTo)) {
                                     $bookingPrice = 0;
                                 }
@@ -389,7 +389,7 @@ class RegisterController extends Controller
                 $bookingPrice = $roomTypeData->booking_price;
                 $deposit = $roomTypeData->rent_price;
 
-                if ($userInfo->studentType == "NSFAS" || $userInfo->studentType == "GCRA" || $userInfo->studentType == "MQA") {
+                if ($userInfo->studentType == "NSFAS" || $request->studentType === "FUNZA" || $userInfo->studentType == "GCRA" || $userInfo->studentType == "MQA") {
                     if ($roomTypeData->apply_nsfas == null) {
                         $bookingPrice = 0;
                     }

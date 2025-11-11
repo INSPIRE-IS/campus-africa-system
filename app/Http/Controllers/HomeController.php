@@ -8297,6 +8297,9 @@ class HomeController extends Controller
                             <option value="NSFAS" <?php if ($userInfo->studentType == "NSFAS") {
                                                         echo "selected";
                                                     } ?>>NSFAS</option>
+                            <option value="FUNZA" <?php if ($userInfo->studentType == "FUNZA") {
+                                                        echo "selected";
+                                                    } ?>>FUNZA</option>
                             <option value="GCRA" <?php if ($userInfo->studentType == "GCRA") {
                                                         echo "selected";
                                                     } ?>>GCRA</option>

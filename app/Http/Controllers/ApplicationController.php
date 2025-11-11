@@ -1432,7 +1432,7 @@ class ApplicationController extends Controller
                                 $booking_data['room_rate'] = $room->acf->booking_fee_override;
                             }
 
-                            if ($request->studentType === "NSFAS" || $request->studentType === "GCRA" || $request->studentType === "MQA") {
+                            if ($request->studentType === "NSFAS" || $request->studentType === "FUNZA" || $request->studentType === "GCRA" || $request->studentType === "MQA") {
                                 if (!in_array("NSFAS Students", $appliesTo)) {
                                     $booking_data['room_rate'] = "0";
                                     $actionFileData['action'] = "Booking Fee is R0";
@@ -1464,7 +1464,7 @@ class ApplicationController extends Controller
             $booking_data['room_rate'] = $roomTypeData->booking_price;
             $deposit = $roomTypeData->rent_price;
 
-            if ($user->studentType == "NSFAS" || $user->studentType == "GCRA" || $user->studentType == "MQA") {
+            if ($user->studentType == "NSFAS" || $request->studentType === "FUNZA" || $user->studentType == "GCRA" || $user->studentType == "MQA") {
                 if ($roomTypeData->apply_nsfas == null) {
                     $booking_data['room_rate'] = "0";
                     $actionFileData['action'] = "Booking Fee is R0";
@@ -1557,7 +1557,7 @@ class ApplicationController extends Controller
             ActionList::create($actionFileData);
         }
 
-        if ($request->studentType == "NSFAS" || $request->studentType == "GCRA" || $request->studentType == "MQA") {
+        if ($request->studentType == "NSFAS" || $request->studentType === "FUNZA" || $request->studentType == "GCRA" || $request->studentType == "MQA") {
 
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->orderBy('created_at', 'desc')->first();
 

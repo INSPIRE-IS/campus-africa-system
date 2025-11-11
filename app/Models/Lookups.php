@@ -62,13 +62,14 @@ class Lookups extends Model
         '7' => 'Saturday',
     ];
 
-
+    // Student Types
     const FUNDING_TYPES = [
         '1' => 'NSFAS',
         '2' => 'Bursary',
         '3' => 'Cash / Direct',
         '4' => 'GCRA',
         '5' => 'MQA',
+        '6' => 'FUNZA',
     ];
 
 
