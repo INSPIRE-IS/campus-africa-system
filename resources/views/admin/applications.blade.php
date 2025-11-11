@@ -79,15 +79,12 @@
                     <option value="All" selected <?php if (Session::get('student_type') == 'All') {
                         echo 'selected';
                     } ?>>All Student Types</option>
-                    <option value="NSFAS" <?php if (Session::get('student_type') == 'NSFAS') {
-                        echo 'selected';
-                    } ?>>NSFAS</option>
-                    <option value="Bursary" <?php if (Session::get('student_type') == 'Bursary') {
-                        echo 'selected';
-                    } ?>>Bursary</option>
-                    <option value="Cash / Direct" <?php if (Session::get('student_type') == 'Cash / Direct') {
-                        echo 'selected';
-                    } ?>>Cash</option>
+                    <option value="NSFAS" <?php if (Session::get('student_type') == 'NSFAS') {echo 'selected';} ?>>NSFAS</option>
+                    <option value="FUNZA" <?php if (Session::get('student_type') == 'FUNZA') {echo 'selected';} ?>>FUNZA</option>
+                    <option value="GCRA" <?php if (Session::get('student_type') == 'GCRA') {echo 'selected';} ?>>GCRA</option>
+                    <option value="MQA" <?php if (Session::get('student_type') == 'MQA') {echo 'selected';} ?>>MQA</option>
+                    <option value="Bursary" <?php if (Session::get('student_type') == 'Bursary') {echo 'selected';} ?>>Bursary</option>
+                    <option value="Cash / Direct" <?php if (Session::get('student_type') == 'Cash / Direct') {echo 'selected';} ?>>Cash</option>
                 </select>
             </div>
 

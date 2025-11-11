@@ -45,8 +45,9 @@ class ApplicationController extends Controller
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
             //dd($this_year);
+            $fundingTypes = Lookups::FUNDING_TYPES;
 
-            return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences, "application_year" => $this_year]);
+            return view('application.step_1', ["lookups" => $lookups, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences, "application_year" => $this_year, "fundingTypes" => $fundingTypes]);
         } else {
             return view('errors.onlineAppOffline');
         }
@@ -1431,7 +1432,7 @@ class ApplicationController extends Controller
                                 $booking_data['room_rate'] = $room->acf->booking_fee_override;
                             }
 
-                            if ($request->studentType === "NSFAS") {
+                            if ($request->studentType === "NSFAS" || $request->studentType === "FUNZA" || $request->studentType === "GCRA" || $request->studentType === "MQA") {
                                 if (!in_array("NSFAS Students", $appliesTo)) {
                                     $booking_data['room_rate'] = "0";
                                     $actionFileData['action'] = "Booking Fee is R0";
@@ -1463,7 +1464,7 @@ class ApplicationController extends Controller
             $booking_data['room_rate'] = $roomTypeData->booking_price;
             $deposit = $roomTypeData->rent_price;
 
-            if ($user->studentType == "NSFAS") {
+            if ($user->studentType == "NSFAS" || $request->studentType === "FUNZA" || $user->studentType == "GCRA" || $user->studentType == "MQA") {
                 if ($roomTypeData->apply_nsfas == null) {
                     $booking_data['room_rate'] = "0";
                     $actionFileData['action'] = "Booking Fee is R0";
@@ -1556,7 +1557,7 @@ class ApplicationController extends Controller
             ActionList::create($actionFileData);
         }
 
-        if ($request->studentType == "NSFAS") {
+        if ($request->studentType == "NSFAS" || $request->studentType === "FUNZA" || $request->studentType == "GCRA" || $request->studentType == "MQA") {
 
             $nsfasStudentsApproval = ImportNSFASStudentAuditLog::where('student_number', $request->studNumber)->orderBy('created_at', 'desc')->first();
 
