@@ -66,6 +66,7 @@ class PreferenceSeeder extends Command
                 'allow_partial_match' => false,
             ],
         ];
+        // this seeds the questions and options probably a one time thing
         if (false) {
             foreach ($questions as $qData) {
                 $question = Question::updateOrCreate(
@@ -81,38 +82,34 @@ class PreferenceSeeder extends Command
                 }
             }
         }
+        // we never want to run this seeder on live
+        if (false) {
+            $this->info('✅ Lifestyle questions and options seeded successfully.');
+            $year = 2026;
+            $questions = Question::whereNotNull("is_active")->pluck("id");
 
-
-        $this->info('✅ Lifestyle questions and options seeded successfully.');
-
-
-        $year = 2026;
-
-        $questions = Question::whereNotNull("is_active")->pluck("id");
-
-        $students = StudentsInfo::query()
-            ->whereHas("booking", fn($q) => $q->where("year", $year))
-            ->get();
-
-
-        foreach ($students as $student) {
-            foreach ($questions as $questionId) {
-                $random = rand(1, 4);
-                $questionOption =  QuestionOption::where("question_id", $questionId)->where("option_value", $random)->first();
-                $this->info($questionOption->id);
-                $this->info("Seeding answer for {$student->userUid} for question {$questionId} with option {$random}");
-                StudentQuestionAnswer::updateOrCreate(
-                    [
-                        "student_id" => $student->id,
-                        "question_id" => $questionId,
-                        "academic_year" => $year
-                    ],
-                    [
-                        "question_option_id" => $questionOption->id,
-                        "numeric_value" => $random, // <-- random scale 1–5
-                        "text_value" => null
-                    ]
-                );
+            $students = StudentsInfo::query()
+                ->whereHas("booking", fn($q) => $q->where("year", $year))
+                ->get();
+            foreach ($students as $student) {
+                foreach ($questions as $questionId) {
+                    $random = rand(1, 4);
+                    $questionOption =  QuestionOption::where("question_id", $questionId)->where("option_value", $random)->first();
+                    $this->info($questionOption->id);
+                    $this->info("Seeding answer for {$student->userUid} for question {$questionId} with option {$random}");
+                    StudentQuestionAnswer::updateOrCreate(
+                        [
+                            "student_id" => $student->id,
+                            "question_id" => $questionId,
+                            "academic_year" => $year
+                        ],
+                        [
+                            "question_option_id" => $questionOption->id,
+                            "numeric_value" => $random, // <-- random scale 1–5
+                            "text_value" => null
+                        ]
+                    );
+                }
             }
         }
     }
