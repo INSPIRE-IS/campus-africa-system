@@ -172,6 +172,25 @@
                         echo $user->userAddress1;
                     } ?>">
             </div>
+
+            <div class="form-field-big">
+                <label>Room Compatibility * <span id="userAddress1_error" class="hidden" style="color:red"><small>This
+                            field is required</small></span></label>
+                    @foreach($questions as $question)
+                        <div class="question-block">
+                            <p><strong>{{ $question->question_text }}</strong></p>
+                            @foreach($question->options as $option)
+                                <label class="block">
+                                    <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option->id }}">
+                                    {{ $option->option_text }}
+                                </label>
+                            @endforeach
+                        </div>
+                        <hr>
+                    @endforeach
+            </div>
+
+
             <div class="form-field-big" style="height:77px !important">
                 <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is
                         required</small></span>

@@ -136,4 +136,19 @@ class StudentsInfo extends Model
     {
         return $this->belongsTo(Booking::class, 'bookingId', 'id');
     }
+
+    public function compatibilityScoresAsA()
+    {
+        return $this->hasMany(StudentCompatibilityScore::class, 'student_a_id');
+    }
+
+    public function compatibilityScoresAsB()
+    {
+        return $this->hasMany(StudentCompatibilityScore::class, 'student_b_id');
+    }
+
+    public function compatibilityScores()
+    {
+        return $this->compatibilityScoresAsA->merge($this->compatibilityScoresAsB);
+    }
 }
