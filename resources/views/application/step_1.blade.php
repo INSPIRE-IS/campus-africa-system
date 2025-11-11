@@ -2,7 +2,12 @@
 
 @section('content')
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
 
+        .question-error {
+            color: red;
+        }
+    </style>
     <div class="yellowGradientSmall">
         <div class="container">
 
@@ -137,8 +142,67 @@
                 </select>
             </div>
 
+
+            @foreach($questions as $question)
+                <div style="width:100%; margin-top:20px;" >
+                <label for="radio">{{ $question->question_text }} * <small style="font-size:12px;">Please select an option.</small></label>
+                    @if($question->input_type === 'radio')
+                    <div  
+                    style="
+                        display:flex;
+                        flex-direction:row;
+                        flex-wrap:wrap;
+                        gap:8px;
+                        margin-top:6px;
+                        width:95%;
+                    ">
+
+                        @foreach($question->options as $option)
+
+                    <div 
+                        
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:start;
+                        gap:3px;
+                        cursor:pointer;
+                        background-color:#f0f0f0;
+                        border-radius:7px;
+                        padding:0px 4px;
+                        flex:1 1 180px;">
+                    <span style="width:14px;margin-top:6px;">
+                        <input type="radio" 
+                        class="required-question"
+                        name="answers[{{ $question->id }}]" 
+                        value="{{ $option->id }}"> 
+                    </span>
+                    
+                    <span style="font-size:14px; font-weight:semi-bold; color:#000; width:100%;">
+                        {{ $option->option_text }}
+                    <div class="question-error hidden" style="color:red; font-size:12px;">
+    Please select an option.
+                    </div>                        
+                    </span>
+
+                    </div>
+
+                        @endforeach
+                        
+                        </div>                
+                    @elseif($question->input_type === 'range')
+                        <input type="range"
+                            name="answers[{{ $question->id }}]"
+                            min="{{ $question->min_value }}"
+                            max="{{ $question->max_value }}"
+                            step="{{ $question->step ?? 1 }}"
+                            style=" width:98%"
+                            class="required">
+                    @endif
+                </div>
+            @endforeach
             <div class="form-field">
-                <br />
+                
             </div>
 
             <div class="form-field-big">
@@ -147,6 +211,10 @@
                 <input type="text" placeholder="Street No" name="userAddress1" id="userAddress1" style="width:98% "
                     class="required">
             </div>
+
+
+            
+
             <div class="form-field-big" style="height:77px !important">
                 <span id="userAddress2_error" class="hidden" style="color:red"><small>This field is
                         required</small></span>
@@ -940,6 +1008,21 @@
             if ($('.fieldError').length > 0) {
                 req = 0;
             }
+            // Validate multiple-choice questions
+            $('.required-question').each(function() {
+                let groupName = $(this).attr('name');
+                if ($(`input[name="${groupName}"]:checked`).length === 0) {
+                    req = 0;
+                    $(this).closest('div').find('.question-error').removeClass('hidden');
+                } else {
+                    $(this).closest('div').find('.question-error').addClass('hidden');
+                }
+            });
+            let answers = {};
+            $("input[name^='answers']:checked").each(function () {
+                let questionId = $(this).attr("name").match(/\d+/)[0];
+                answers[questionId] = $(this).val();
+            }); // 9903014800086
 
             if (req == 0) {
                 Swal.fire(
@@ -1010,6 +1093,7 @@
                                     roomType: $("#roomType").val(),
                                     password: $("#password").val(),
                                     gender: $("#gender").val(),
+                                    answers: answers,
                                 },
                                 success: function(data) {
                                     window.location.replace('/online-application-verify/' +

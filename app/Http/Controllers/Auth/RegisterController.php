@@ -27,6 +27,8 @@ use App\Models\RoomTypes;
 use DateTime;
 use App\Models\BookingPayment;
 use App\Jobs\SendApplicationThankYouMail;
+use App\Models\QuestionOption;
+use App\Models\StudentQuestionAnswer;
 
 class RegisterController extends Controller
 {
@@ -128,6 +130,7 @@ class RegisterController extends Controller
 
     protected function registration_step_one(Request $request)
     {
+        // dd($request);
 
         $validated = $request->validate([
             'email' => 'email|required|unique:users',
@@ -260,67 +263,6 @@ class RegisterController extends Controller
         $this->dispatch(new SendApplicationThankYouMail($userUidData, $userToken->security_token, $url, $request->year));
 
         $bookinfRefNo = Booking::where('id', $booking->id)->first();
-
-        // $message_replace['bookingRef'] = $bookinfRefNo->booking_code;
-        // $message_replace['name'] = $request->firstName;
-        // $message_replace['security_token'] = $userToken->security_token;
-        // $message_replace['application_link'] = "<a href='".$url."' target='_blank'>";
-        // $message_replace['close_application_link']="</a>";
-
-        // $mailerForMessage = MailerList::where("mailer_name", "Application Thank You")->first();
-
-        // if($mailerForMessage->status == '1'){
-
-        //     $mailerMessage = $mailerForMessage->message;
-
-        //     $newMessage = str_replace("[application_number]", "#".$message_replace['bookingRef'], $mailerMessage);
-        //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-        //     $newMessage = str_replace("[security_code]", $message_replace['security_token'], $newMessage);
-        //     $newMessage = str_replace("[application_link]", $message_replace['application_link'], $newMessage);
-        //     $newMessage = str_replace("[close_application_link]", $message_replace['close_application_link'], $newMessage);
-
-        //     $data['name'] = $request->firstName;
-        //     $data['email'] = $request->email;
-        //     $data['messageForMail'] = $newMessage;
-        //     $data['subject'] = str_replace("[application_number]", $message_replace['bookingRef'], $mailerForMessage->subject);
-
-
-
-        //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-        //     $data['cc'] = explode(";", $allowedMailsCC);
-
-        //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-
-        //     if(!empty($allowedMails)){
-
-        //         $mailArr = explode(";", $allowedMails);
-
-        //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
-        //             $data['email'] = $user->email;
-        //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
-        //         }
-        //     }else{
-        //         $data['email'] = $user->email;
-        //     }
-
-        //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
-        //     //     $data['email'] = $user->email;
-        //     // }else{
-        //     //     $data['email'] = "conurbandigital@gmail.com";
-        //     // }
-
-        //     Mail::send('email.yellow_back', $data, function($message) use ($data) {
-        //         // $message->to($data['email'], $data['name'])->subject
-        //         //     ('Campus Africa User Application');
-        //         $message->to($data['email'])->subject($data['subject']);
-        //         $message->bcc($data['cc']);
-        //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
-        //     });
-        // }
-
-
 
         $admin_fee = Lookups::where('group_id', '8')->first();
         $lookup_lease_dates = Lookups::where('group_id', '4')->first();
@@ -486,6 +428,28 @@ class RegisterController extends Controller
                 "nsfas_rate" => $nsfas_rate,
             ]);
         }
+        if (!empty($userInfo)) {
+            $questionOptions = QuestionOption::all();
+            $studentId = $userInfo->id;
+            $answers = $request->answers;
+            $year = $request->year;
+            foreach ($answers as $questionId => $optionId) {
+                $option = $questionOptions->firstWhere('id', $optionId);
+                StudentQuestionAnswer::updateOrCreate(
+                    [
+                        'student_id' => $studentId,
+                        'question_id' => $questionId,
+                        'academic_year' => $year,
+                    ],
+                    [
+                        'question_option_id' => $optionId,
+                        'numeric_value' => $option ? $option->option_value : null, // optional if you want numeric comparison
+                    ]
+                );
+            }
+        }
+
+
 
         return $userToken->applicationToken;
     }

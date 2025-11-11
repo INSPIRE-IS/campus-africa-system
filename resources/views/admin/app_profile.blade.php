@@ -608,7 +608,14 @@
                                 <button type="button" class="generatePdf"
                                     onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
                                     Generate Pro Forma Invoice
+                                </button>                               
+                                <button type="button" 
+                                    style="padding: 10px;margin-right: 8px; margin-top: 30px;background-color: #f1cc3e; border: none;color: #fff;border-radius: 10px; float: right;"
+                                    onClick="generateNSFASQuote('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
+                                    Generate NSFAS Quote
                                 </button>
+
+                            
                             </div>
                         </div>
                     @endif
@@ -1456,17 +1463,7 @@
     <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>
 
-    <div class="hidden">
-        <a href="/storage/files/<?php if ($user[0]['userInfo']['userId'] == '') {
-            echo $user[0]['userInfo']['userPassport'];
-        } else {
-            echo $user[0]['userInfo']['userId'];
-        } ?>/<?php if ($user[0]['userInfo']['userId'] == '') {
-            echo $user[0]['userInfo']['userPassport'];
-        } else {
-            echo $user[0]['userInfo']['userId'];
-        } ?>_invoice.pdf" download><button type="button"
-                id="downloadBtn">Download</button></a></hidden>
+    <div class="hidden"></hidden>
 
         <div class="clearSpaceLogin"></div>
         <div class="clearSpaceLogin"></div>
@@ -1597,22 +1594,45 @@
                 }
             }
 
-            function generateInvoice(paymentId, bookingId, userId) {
-                $.ajax({
-                    type: "post",
-                    url: "/download-invoice",
-                    data: {
-                        paymentId: paymentId,
-                        bookingId: bookingId,
-                        userId: userId,
-                    },
+            // function generateNSFASQuote(paymentId, bookingId, userId) {
+            //     $.ajax({
+            //         type: "post",
+            //         url: "/download-quote",
+            //         data: {
+            //             paymentId: paymentId,
+            //             bookingId: bookingId,
+            //             userId: userId,
+            //         },
 
-                    success: function(data) {
-                        $("#downloadBtn").click();
-                    },
-                });
+            //         success: function(data) {
+            //             const url = `/download-quote?paymentId=${paymentId}&bookingId=${bookingId}&userId=${userId}`;
+            //             window.open(url, "_blank");
+            //         },
+            //     });
+            // }
+            function generateNSFASQuote(paymentId, bookingId, userId) {
+                const url = `/download-quote?paymentId=${paymentId}&bookingId=${bookingId}&userId=${userId}`;
+                window.open(url, "_blank");
             }
+            // function generateInvoice(paymentId, bookingId, userId) {
+            //     $.ajax({
+            //         type: "post",
+            //         url: "/download-invoice",
+            //         data: {
+            //             paymentId: paymentId,
+            //             bookingId: bookingId,
+            //             userId: userId,
+            //         },
 
+            //         success: function(data) {
+            //             $("#downloadBtn").click();
+            //         },
+            //     });
+            // }
+            function generateInvoice(paymentId, bookingId, userId) {
+                const url = `/download-invoice?paymentId=${paymentId}&bookingId=${bookingId}&userId=${userId}`;
+                window.open(url, "_blank");
+            }
             function changeNsfsBursar(userId, bursar) {
 
                 if (bursar == 1) {
