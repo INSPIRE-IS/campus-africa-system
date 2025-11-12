@@ -428,6 +428,7 @@ class RegisterController extends Controller
                 "nsfas_rate" => $nsfas_rate,
             ]);
         }
+
         if (!empty($userInfo)) {
             $questionOptions = QuestionOption::all();
             $studentId = $userInfo->id;

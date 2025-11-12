@@ -181,7 +181,7 @@
                     <span style="font-size:14px; font-weight:semi-bold; color:#000; width:100%;">
                         {{ $option->option_text }}
                     <div class="question-error hidden" style="color:red; font-size:12px;">
-    Please select an option.
+                        Please select an option.
                     </div>                        
                     </span>
 
@@ -349,7 +349,7 @@
     <!-- <div class="footerClearfix"></div>
                                         <div class="footerClearfix"></div>
                                          -->
-    <div class="footerClearfix"></div>
+    
 
 
     <script>

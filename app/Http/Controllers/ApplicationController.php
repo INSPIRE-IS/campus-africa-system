@@ -28,6 +28,8 @@ use App\Models\InstitutionProperties;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendStudentVerifyMailByAdminMail;
 use App\Models\Question;
+use App\Models\QuestionOption;
+use App\Models\StudentQuestionAnswer;
 use Illuminate\Support\Facades\Log;
 
 class ApplicationController extends Controller
@@ -1219,13 +1221,14 @@ class ApplicationController extends Controller
         $inSelectedCash = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->where('cash', '1')->pluck('property_id')->toArray();
         $inSelectedBursary = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->where('bursary', '1')->pluck('property_id')->toArray();
         $inSelectedNsfas = InstitutionProperties::where("institution_id", $userInfo->institutionStudy)->where('nsfas', '1')->pluck('property_id')->toArray();
+        $questions = Question::with('options')->get();
 
         $cancelled = 0;
 
         if ($userInfo->rob_60_cancelled == 1 || $userInfo->year < $this_year - 1) {
             $cancelled = 1;
         }
-        return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences, "inSelectedCash" => $inSelectedCash, "inSelectedBursary" => $inSelectedBursary, "inSelectedNsfas" => $inSelectedNsfas]);
+        return view('user.new_booking.step_1', ["user" => $userInfo, "cancelled" => $cancelled, "lookups" => $lookups, "residences" => $residences, "inSelectedCash" => $inSelectedCash, "inSelectedBursary" => $inSelectedBursary, "inSelectedNsfas" => $inSelectedNsfas, "questions" => $questions]);
     }
 
     public function new_booking_step_1_save(Request $request)
@@ -1746,8 +1749,26 @@ class ApplicationController extends Controller
                 ]);
             }
         }
-
-
+        if (!empty($userInfo)) {
+            $questionOptions = QuestionOption::all();
+            $studentId = $userInfo->id;
+            $answers = $request->answers;
+            $year = $request->year;
+            foreach ($answers as $questionId => $optionId) {
+                $option = $questionOptions->firstWhere('id', $optionId);
+                StudentQuestionAnswer::updateOrCreate(
+                    [
+                        'student_id' => $studentId,
+                        'question_id' => $questionId,
+                        'academic_year' => $year,
+                    ],
+                    [
+                        'question_option_id' => $optionId,
+                        'numeric_value' => $option ? $option->option_value : null, // optional if you want numeric comparison
+                    ]
+                );
+            }
+        }
 
         return redirect('/new-booking-step-2');
     }
