@@ -45,6 +45,7 @@ use App\Jobs\SendReminderMail;
 use App\Models\OnlinePayments;
 use App\Models\Question;
 use App\Models\StudentCompatibilityScore;
+use App\Models\StudentQuestionAnswer;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 
@@ -2014,11 +2015,40 @@ class HomeController extends Controller
         // $years = range(date('Y') - 3, date('Y')); // example dropdown range
         $currentYear = date('Y');
         $years = Lookups::where('group_id', '4')->get()->pluck('lookup_name')->toArray();
+        $year = Lookups::where('group_id', '4')->first();
+        $year_name = $year->lookup_name;
 
         $title = "Student Compatibility Matches";
-        $headerTitle = "Student Compatibility Matches";
+        $headerTitle = $year_name . " Student Compatibility Matches";
+        $studentQuestionAnswer = StudentQuestionAnswer::where('academic_year', $year_name)->get();
+        // dd($studentQuestionAnswer);
+        $totalQuestions = 4; // or dynamically count unique questions
+        $stats = [
+            'total' => $studentQuestionAnswer->count() / $totalQuestions,
+            'questions' => [],
+        ];
 
-        return view('admin.compatibility', compact('years', 'currentYear', 'title', 'headerTitle'));
+        foreach (range(1, $totalQuestions) as $qId) {
+            $options = [];
+            foreach (range(1, 4) as $val) {
+                $options[] = [
+                    'label' => chr(64 + $val), // A, B, C, D
+                    'count' => $studentQuestionAnswer
+                        ->where('question_id', $qId)
+                        ->where('numeric_value', $val)
+                        ->count(),
+                ];
+            }
+
+            $stats['questions'][] = [
+                'id' => $qId,
+                'options' => $options,
+            ];
+        }
+        //dd($stats);
+
+
+        return view('admin.compatibility', compact('years', 'currentYear', 'title', 'headerTitle', 'stats', 'year_name'));
 
 
 
