@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Property extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'property_data';
 
@@ -30,7 +31,8 @@ class Property extends Model
         'status',
     ];
 
-    public function roomType(){
+    public function roomType()
+    {
         return $this->hasOne("App\Models\RoomTypes", "id", "room_type");
     }
 }
