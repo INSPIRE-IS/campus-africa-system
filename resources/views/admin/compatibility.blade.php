@@ -1,16 +1,118 @@
 @extends('layouts.admin')
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
 
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 15px;
+             margin: 0px 0px 20px 0px;
+        }
+
+        .question-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .question-card h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            flex: 1 0 45%;
+            margin: 5px 0;
+            color: #fff;
+            font-weight: bold;
+            padding: 6px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        /* Color variations */
+        .red { background: #e74c3c; }
+        .green { background: #27ae60; }
+        .blue { background: #2980b9; }
+        .yellow { background: #f1c40f; }
+
+        .count-circle {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #000;
+            color: #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+    </style>
 @section('content')
 <div class="container" style="max-width: 1000px; margin: 30px auto;">
     <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">
-        Student Compatibility Matches
+        Stats for {{ $stats['total']}} students
     </h1>
+{{-- <div class="grid grid-cols-4 gap-4">
+  @foreach($stats['questions'] as $question)
+      <div class="p-4 bg-white rounded shadow">
+          <h3 class="font-bold mb-2">Question {{ $question['id'] }}</h3>
+          <ul>
+              @foreach($question['options'] as $opt)
+                  <li>{{ $opt['label'] }}: {{ $opt['count'] }}</li>
+              @endforeach
+          </ul>
+      </div>
+  @endforeach
+</div> --}}
+<div class="stats-container">
+        @foreach($stats['questions'] as $question)
+            <div class="question-card">
+                <h3>Question {{ $question['id'] }}</h3>
+                <div class="options">
+                    @foreach($question['options'] as $index => $opt)
+                        @php
+                            $colors = ['red', 'green', 'blue', 'yellow'];
+                            $color = $colors[$index] ?? 'gray';
+                        @endphp
+                        <div class="option {{ $color }}">
+                            {{ $opt['label'] }}
+                            <div class="count-circle">{{ $opt['count'] }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+    </div>
 
     <div style="margin-bottom: 15px;">
         <label for="year" style="margin-right: 10px;">Academic Year:</label>
         <select id="year" name="year" style="padding: 6px 10px;">
             @foreach($years as $y)
-                <option value="{{ $y }}" {{ $y == $currentYear ? 'selected' : '' }}>
+                <option value="{{ $y }}" {{ $y == $year_name ? 'selected' : '' }}>
                     {{ $y }}
                 </option>
             @endforeach

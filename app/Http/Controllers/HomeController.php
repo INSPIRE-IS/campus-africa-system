@@ -43,11 +43,15 @@ use App\Jobs\SendLeaseApprovedMail;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendReminderMail;
 use App\Models\OnlinePayments;
+use App\Models\Question;
+use App\Models\StudentCompatibilityScore;
+use App\Models\StudentQuestionAnswer;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use PhpOffice\PhpSpreadsheet\Calculation\LookupRef\Lookup;
 
 class HomeController extends Controller
 {
@@ -2005,6 +2009,148 @@ class HomeController extends Controller
     {
         return view('admin.invoices', ["headerTitle" => "Invoices", "title" => "Invoices"]);
     }
+
+    public function compatibility(Request $request)
+    {
+        // $years = range(date('Y') - 3, date('Y')); // example dropdown range
+        $currentYear = date('Y');
+        $years = Lookups::where('group_id', '4')->get()->pluck('lookup_name')->toArray();
+        $year = Lookups::where('group_id', '4')->first();
+        $year_name = $year->lookup_name;
+
+        $title = "Student Compatibility Matches";
+        $headerTitle = $year_name . " Student Compatibility Matches";
+        $studentQuestionAnswer = StudentQuestionAnswer::where('academic_year', $year_name)->get();
+        // dd($studentQuestionAnswer);
+        $totalQuestions = 4; // or dynamically count unique questions
+        $stats = [
+            'total' => $studentQuestionAnswer->count() / $totalQuestions,
+            'questions' => [],
+        ];
+
+        foreach (range(1, $totalQuestions) as $qId) {
+            $options = [];
+            foreach (range(1, 4) as $val) {
+                $options[] = [
+                    'label' => chr(64 + $val), // A, B, C, D
+                    'count' => $studentQuestionAnswer
+                        ->where('question_id', $qId)
+                        ->where('numeric_value', $val)
+                        ->count(),
+                ];
+            }
+
+            $stats['questions'][] = [
+                'id' => $qId,
+                'options' => $options,
+            ];
+        }
+        //dd($stats);
+
+
+        return view('admin.compatibility', compact('years', 'currentYear', 'title', 'headerTitle', 'stats', 'year_name'));
+
+
+
+        return view('admin.compatibility', compact('data', 'year'));
+    }
+
+    public function search(Request $request)
+    {
+        $year = $request->input('year');
+        $query = $request->input('query');
+
+        $students = StudentsInfo::where('userFirstName', 'like', "%{$query}%")
+            ->orWhere('userLastname', 'like', "%{$query}%")
+            ->where('year', $year)
+            ->orderBy('userFirstName')
+            ->paginate(100);
+
+        $results = [];
+        $questions = Question::all()->keyBy('id');
+
+        foreach ($students as $student) {
+            $matches = $this->findTopMatches($student->id, $year, $questions);
+            $results[] = [
+                'student' => $student,
+                'top_matches' => $matches,
+            ];
+        }
+
+        return response()->json([
+            'data' => $results,
+            'current_page' => $students->currentPage(),
+            'last_page' => $students->lastPage(),
+        ]);
+    }
+
+    public static function findTopMatches($studentId, $year, $limit = 5)
+    {
+
+        $matches = StudentCompatibilityScore::where(function ($q) use ($studentId) {
+            $q->where('student_a_id', $studentId)
+                ->orWhere('student_b_id', $studentId);
+        })
+            ->where('academic_year', $year)
+            ->orderByDesc('compatibility_score')
+            ->take(10)
+            ->get();
+        //dd($matches);
+        if ($matches->isEmpty()) {
+            \Log::warning("No matches found for student {$studentId} in year {$year}");
+        }
+
+        // Cache or eager-load student data to avoid repeated queries
+        $studentIds = $matches->map(function ($m) use ($studentId) {
+            return $m->student_a_id == $studentId ? $m->student_b_id : $m->student_a_id;
+        })->unique();
+        if ($studentIds->isEmpty()) {
+            \Log::warning("No studentIds found for student {$studentId} in year {$year}");
+        }
+        // $others = StudentsInfo::whereIn('id', $studentIds)->get()->keyBy('id');
+        return $matches->map(function ($match) use ($studentId, $year) {
+            //return $matches->map(function ($match) use ($studentId, $others) {
+            // $otherId = $match->student_a_id == $studentId ? $match->student_b_id : $match->student_a_id;
+            // $other = $others->find($otherId);
+
+            // return [
+            //     'name' => $other ? "{$other->name} {$other->surname}" : 'Unknown',
+            //     'score' => $match->compatibility_score,
+            // ];
+            $otherId = $match->student_a_id == $studentId
+                ? $match->student_b_id
+                : $match->student_a_id;
+
+            $other = StudentsInfo::where('id', $otherId)
+                ->where('year', 2026)
+                ->first();
+
+            \Log::warning("No studentIds found for student {$otherId} in year {$year}");
+
+
+            $score = $match->compatibility_score;
+
+            // Determine match tier
+            if ($score >= 90) {
+                $tier = 100;
+            } elseif ($score >= 70) {
+                $tier = 75;
+            } elseif ($score >= 50) {
+                $tier = 50;
+            } elseif ($score >= 25) {
+                $tier = 25;
+            } else {
+                $tier = 0;
+            }
+
+            return [
+                'name'  => $other ? optional($other)->userFirstName . ' ' . optional($other)->userLastname : 'Unknown',
+                'score' => round($score, 1),
+                'tier'  => $tier,
+            ];
+        });
+    }
+
 
     public function thanks(Request $request)
     {
