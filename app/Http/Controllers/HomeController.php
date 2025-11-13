@@ -2020,28 +2020,31 @@ class HomeController extends Controller
 
         $title = "Student Compatibility Matches";
         $headerTitle = $year_name . " Student Compatibility Matches";
-        $studentQuestionAnswer = StudentQuestionAnswer::where('academic_year', $year_name)->get();
+        $questions = Question::with('options')->get();
+        $studentAnswers  = StudentQuestionAnswer::where('academic_year', $year_name)->get();
         // dd($studentQuestionAnswer);
         $totalQuestions = 4; // or dynamically count unique questions
         $stats = [
-            'total' => $studentQuestionAnswer->count() / $totalQuestions,
+            'total' => $studentAnswers->count() / $totalQuestions,
             'questions' => [],
         ];
 
-        foreach (range(1, $totalQuestions) as $qId) {
+        foreach ($questions as $question) {
             $options = [];
-            foreach (range(1, 4) as $val) {
+            foreach ($question->options as $opt) {
                 $options[] = [
-                    'label' => chr(64 + $val), // A, B, C, D
-                    'count' => $studentQuestionAnswer
-                        ->where('question_id', $qId)
-                        ->where('numeric_value', $val)
+                    'label' => chr(64 + $opt->option_value), // A, B, C, D etc.
+                    'text' => $opt->option_text,
+                    'count' => $studentAnswers
+                        ->where('question_id', $question->id)
+                        ->where('numeric_value', $opt->option_value)
                         ->count(),
                 ];
             }
 
             $stats['questions'][] = [
-                'id' => $qId,
+                'id' => $question->id,
+                'text' => $question->question_text,
                 'options' => $options,
             ];
         }

@@ -76,29 +76,20 @@
     <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">
         Stats for {{ $stats['total']}} students
     </h1>
-{{-- <div class="grid grid-cols-4 gap-4">
-  @foreach($stats['questions'] as $question)
-      <div class="p-4 bg-white rounded shadow">
-          <h3 class="font-bold mb-2">Question {{ $question['id'] }}</h3>
-          <ul>
-              @foreach($question['options'] as $opt)
-                  <li>{{ $opt['label'] }}: {{ $opt['count'] }}</li>
-              @endforeach
-          </ul>
-      </div>
-  @endforeach
-</div> --}}
-<div class="stats-container">
+
+    <div class="stats-container">
         @foreach($stats['questions'] as $question)
-            <div class="question-card">
+            <div class="question-card" title="{{ $question['text'] }}">
                 <h3>Question {{ $question['id'] }}</h3>
                 <div class="options">
                     @foreach($question['options'] as $index => $opt)
                         @php
                             $colors = ['red', 'green', 'blue', 'yellow'];
                             $color = $colors[$index] ?? 'gray';
+                            $tooltip = "Q{$question['id']}: {$question['text']} \nAnswer: {$opt['text']}";
                         @endphp
-                        <div class="option {{ $color }}">
+
+                        <div class="option {{ $color }}" title="{{ $tooltip }}">
                             {{ $opt['label'] }}
                             <div class="count-circle">{{ $opt['count'] }}</div>
                         </div>
