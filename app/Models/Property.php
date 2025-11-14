@@ -30,7 +30,12 @@ class Property extends Model
         'status',
     ];
 
-    public function roomType(){
+    public function roomType()
+    {
         return $this->hasOne("App\Models\RoomTypes", "id", "room_type");
+    }
+    public function bookings()
+    {
+        return $this->hasMany(\App\Models\Booking::class, 'property', 'id');
     }
 }

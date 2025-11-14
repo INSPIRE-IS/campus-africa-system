@@ -2087,6 +2087,7 @@ class HomeController extends Controller
         ]);
     }
 
+
     public static function findTopMatches($studentId, $year, $limit = 5)
     {
 
@@ -2100,7 +2101,7 @@ class HomeController extends Controller
             ->get();
         //dd($matches);
         if ($matches->isEmpty()) {
-            \Log::warning("No matches found for student {$studentId} in year {$year}");
+            Log::warning("No matches found for student {$studentId} in year {$year}");
         }
 
         // Cache or eager-load student data to avoid repeated queries
@@ -2108,7 +2109,7 @@ class HomeController extends Controller
             return $m->student_a_id == $studentId ? $m->student_b_id : $m->student_a_id;
         })->unique();
         if ($studentIds->isEmpty()) {
-            \Log::warning("No studentIds found for student {$studentId} in year {$year}");
+            Log::warning("No studentIds found for student {$studentId} in year {$year}");
         }
         // $others = StudentsInfo::whereIn('id', $studentIds)->get()->keyBy('id');
         return $matches->map(function ($match) use ($studentId, $year) {
@@ -2128,7 +2129,7 @@ class HomeController extends Controller
                 ->where('year', 2026)
                 ->first();
 
-            \Log::warning("No studentIds found for student {$otherId} in year {$year}");
+            Log::warning("No studentIds found for student {$otherId} in year {$year}");
 
 
             $score = $match->compatibility_score;
