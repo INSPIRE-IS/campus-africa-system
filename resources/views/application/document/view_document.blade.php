@@ -111,12 +111,12 @@
                 @if($file->fileId != "MDA")
                     @if ($doc_approved == 2)
 
-                        @if($user->rob_50_approve != 2 || Auth::user()->role_delete_uploaded == 1)
+                        @if($user->rob_50_approve != 2 || Auth::user()->role_delete_uploaded == 1 || Auth::user()->role_other_reject_doc == 1)
                             @if (($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
                                 <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
-                            @endif
+                            @endif                           
                         @endif
-                       
+                        
 
                     @else
                         @if(Auth::user()->role_upload_docs == 1)
@@ -132,7 +132,11 @@
                                     <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                                 @endif
                             @endif
-
+                            @if(Auth::user()->role_other_reject_doc == 1)
+                                @if ((explode("_", $file->fileId)[0] === "other"))
+                                    <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
+                                @endif
+                            @endif 
                         @endif
 
                         @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
@@ -149,7 +153,8 @@
             <hr style="margin-bottom: 35px;">
 
             <h3>Info</h3>
-
+<span> show theis {{Auth::user()->role_other_reject_doc}}</span>
+<span> show theis {{explode("_", $file->fileId)[0] === "other"}}</span>
             
 
             <div>

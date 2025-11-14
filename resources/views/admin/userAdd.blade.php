@@ -144,6 +144,10 @@
                     <label for="role_funding" style="width:500px">Approve Funding, Other & Fee Waiver</label>
                 </li>
                 <li style="display:inline-flex">
+                    <input type="checkbox" id="role_other_reject_doc" name="role_other_reject_doc" value="1">
+                    <label for="role_other_reject_doc" style="width:500px">Reject Other Documents</label>
+                </li>                
+                <li style="display:inline-flex">
                     <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1">
                     <label for="role_app_lease" style="width:500px">Approve Applications & Leases</label>
                 </li>
