@@ -18,4 +18,15 @@ class StudentCompatibilityScore extends Model
         'academic_year',
         'last_calculated_at',
     ];
+
+
+    public function studentA()
+    {
+        return $this->belongsTo(\App\Models\StudentsInfo::class, 'student_a_id');
+    }
+
+    public function studentB()
+    {
+        return $this->belongsTo(\App\Models\StudentsInfo::class, 'student_b_id');
+    }
 }

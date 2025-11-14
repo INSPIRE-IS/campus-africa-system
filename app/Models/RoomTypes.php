@@ -27,4 +27,14 @@ class RoomTypes extends Model
         'apply_cash',
         'use_nsfas',
     ];
+
+    public function scopeSharedOnly($query)
+    {
+        return $query->where('name', 'not like', 'Single%');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(\App\Models\Booking::class, 'roomType', 'id');
+    }
 }

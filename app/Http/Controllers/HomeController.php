@@ -2020,28 +2020,31 @@ class HomeController extends Controller
 
         $title = "Student Compatibility Matches";
         $headerTitle = $year_name . " Student Compatibility Matches";
-        $studentQuestionAnswer = StudentQuestionAnswer::where('academic_year', $year_name)->get();
+        $questions = Question::with('options')->get();
+        $studentAnswers  = StudentQuestionAnswer::where('academic_year', $year_name)->get();
         // dd($studentQuestionAnswer);
         $totalQuestions = 4; // or dynamically count unique questions
         $stats = [
-            'total' => $studentQuestionAnswer->count() / $totalQuestions,
+            'total' => $studentAnswers->count() / $totalQuestions,
             'questions' => [],
         ];
 
-        foreach (range(1, $totalQuestions) as $qId) {
+        foreach ($questions as $question) {
             $options = [];
-            foreach (range(1, 4) as $val) {
+            foreach ($question->options as $opt) {
                 $options[] = [
-                    'label' => chr(64 + $val), // A, B, C, D
-                    'count' => $studentQuestionAnswer
-                        ->where('question_id', $qId)
-                        ->where('numeric_value', $val)
+                    'label' => chr(64 + $opt->option_value), // A, B, C, D etc.
+                    'text' => $opt->option_text,
+                    'count' => $studentAnswers
+                        ->where('question_id', $question->id)
+                        ->where('numeric_value', $opt->option_value)
                         ->count(),
                 ];
             }
 
             $stats['questions'][] = [
-                'id' => $qId,
+                'id' => $question->id,
+                'text' => $question->question_text,
                 'options' => $options,
             ];
         }
@@ -2084,6 +2087,7 @@ class HomeController extends Controller
         ]);
     }
 
+
     public static function findTopMatches($studentId, $year, $limit = 5)
     {
 
@@ -2097,7 +2101,7 @@ class HomeController extends Controller
             ->get();
         //dd($matches);
         if ($matches->isEmpty()) {
-            \Log::warning("No matches found for student {$studentId} in year {$year}");
+            Log::warning("No matches found for student {$studentId} in year {$year}");
         }
 
         // Cache or eager-load student data to avoid repeated queries
@@ -2105,7 +2109,7 @@ class HomeController extends Controller
             return $m->student_a_id == $studentId ? $m->student_b_id : $m->student_a_id;
         })->unique();
         if ($studentIds->isEmpty()) {
-            \Log::warning("No studentIds found for student {$studentId} in year {$year}");
+            Log::warning("No studentIds found for student {$studentId} in year {$year}");
         }
         // $others = StudentsInfo::whereIn('id', $studentIds)->get()->keyBy('id');
         return $matches->map(function ($match) use ($studentId, $year) {
@@ -2125,7 +2129,7 @@ class HomeController extends Controller
                 ->where('year', 2026)
                 ->first();
 
-            \Log::warning("No studentIds found for student {$otherId} in year {$year}");
+            Log::warning("No studentIds found for student {$otherId} in year {$year}");
 
 
             $score = $match->compatibility_score;
