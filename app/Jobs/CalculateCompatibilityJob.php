@@ -10,7 +10,9 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentQuestionAnswer;
 use App\Models\Question;
+
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CalculateCompatibilityJob implements ShouldQueue
 {
@@ -39,7 +41,24 @@ class CalculateCompatibilityJob implements ShouldQueue
         foreach ($this->students as $i => $a) {
             foreach ($this->students as $j => $b) {
                 if ($a['id'] >= $b['id']) continue;
-                if (($a['gender'] ?? null) !== ($b['gender'] ?? null)) continue;
+                Log::info("Comparing {$a['id']} with {$b['id']}");
+                $agender = $a['gender'] ?? null;
+                $bgender = $b['gender'] ?? null;
+                Log::info("Genders: {$agender}, {$bgender}");
+                // if (!$agender) continue;
+                // if (!$bgender) continue;
+                // if ($agender !== $bgender) continue;
+                if (!$agender || !$bgender || $agender !== $bgender) continue;
+
+                $aproperty = $a['booking']['property'] ?? null;
+                $bproperty = $b['booking']['property'] ?? null;
+                Log::info("Properties: {$aproperty}, {$bproperty}");
+
+                // if (!$aproperty) continue;
+                // if (!$bproperty) continue;
+                // if ($aproperty !== $bproperty) continue;
+                if (!$aproperty || !$bproperty) continue;
+                if ($aproperty !== $bproperty) continue;
 
                 $score = $this->calculateWeightScore(
                     $answers[$a['id']] ?? collect(),

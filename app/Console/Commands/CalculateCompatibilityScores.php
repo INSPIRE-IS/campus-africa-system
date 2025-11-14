@@ -9,23 +9,32 @@ use App\Models\StudentsInfo;
 use App\Models\StudentQuestionAnswer;
 use App\Models\StudentCompatibilityScore;
 use App\Jobs\CalculateCompatibilityJob;
+use Illuminate\Support\Facades\Log;
 
 class CalculateCompatibilityScores extends Command
 {
     protected $signature = 'calculate:compatibility {--year=}';
-    // php artisan calculate:compatibility --year=2022
+    // php artisan calculate:compatibility --year=2026
+    // php artisan route:list | findstr booking_payments
+    // php artisan queue:work
+    // php artisan schedule:list
+    // php artisan schedule:run
     protected $description = 'Calculates compatibility scores between all students based on preference answers';
 
     public function handle()
     {
+        ini_set('memory_limit', '1024M');
+        echo ini_get('memory_limit');
+        $year = $this->option('year') ?? date('Y');
+        $batchSize = 500;
+
         if (true) {
-            $year = $this->option('year') ?? date('Y');
-            $batchSize = 1000;
 
             $this->info("Dispatching compatibility jobs for {$year}...");
 
-            StudentsInfo::select('id', 'gender')
-                ->with('booking:id,propertyId,year')
+            StudentsInfo::select('id', 'gender', 'bookingId')
+                ->with('booking:id,property,roomType,year')
+                ->where('year', $year)
                 ->chunk($batchSize, function ($students) use ($year) {
                     dispatch(new CalculateCompatibilityJob($students->toArray(), $year));
                 });
@@ -49,15 +58,20 @@ class CalculateCompatibilityScores extends Command
                 ->whereNotNull('gender') // ensure gender present
                 ->whereHas('booking', function ($q) use ($year) {
                     $q->where('year', $year)
-                        ->whereNotNull('property'); // must belong to a residence
+                        ->whereNotNull('property') // must belong to a residence
+                        ->whereHas('booking.roomType', fn($q) => $q->sharedOnly()); // Exclude any "Single" type room
+                    // ->whereHas('roomType', function ($q2) {
+                    //     $q2->where('name', 'not like', 'Single%'); 
+                    // });
                 })
-                ->with(['booking'])
+                ->with(['booking.roomType'])
                 ->get()
                 ->map(function ($s) {
                     return (object)[
                         'student_id' => $s->id, // match answer table student_id
                         'gender'     => $s->gender,
                         'propertyId' => $s->booking->propertyId ?? null,
+                        'room_type'  => $s->booking->roomType->name ?? null,
                     ];
                 });
             $this->info("🔄 Found {$students->count()} students with answers for this year.");
@@ -66,10 +80,25 @@ class CalculateCompatibilityScores extends Command
                 return;
             }
 
+            // 🔎 Log those excluded for transparency
+            $excludedSingles = StudentsInfo::query()
+                ->whereHas('booking', function ($q) use ($year) {
+                    $q->where('year', $year)
+                        ->whereHas('roomType', function ($q2) {
+                            $q2->where('name', 'like', 'Single%');
+                        });
+                })
+                ->count();
+
+            if ($excludedSingles > 0) {
+                $this->warn("Skipped {$excludedSingles} students in single rooms (not eligible for matching).");
+                Log::info("Skipped {$excludedSingles} single-room students in year {$year}.");
+            }
+
             // Step 2: Clean up existing scores for this year (optional)
             StudentCompatibilityScore::where('academic_year', $year)->delete();
             $questionsCollection = Question::where('is_active', 1)->get();
-            $this->info("🔄 Found {$questionsCollection->count()} questions with is_active = 1.");
+            $this->info("Found {$questionsCollection->count()} questions with is_active = 1.");
 
             // Step 3: Compare each student with every other student
             $count = 0;

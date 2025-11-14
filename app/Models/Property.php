@@ -35,4 +35,8 @@ class Property extends Model
     {
         return $this->hasOne("App\Models\RoomTypes", "id", "room_type");
     }
+    public function bookings()
+    {
+        return $this->hasMany(\App\Models\Booking::class, 'property', 'id');
+    }
 }
