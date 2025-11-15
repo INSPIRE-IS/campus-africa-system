@@ -139,7 +139,7 @@
 
                         <br/>
                         
-                        @if($user->studentType == "Cash / Direct")
+                        @if(isset($user) $user->studentType == "Cash / Direct")
                             <label for="bankStatement" id="bankStatementUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
                                 <div class="uploadSection" id="copyBankStatement">
                                     <h3 class="uploadName">3 MONTHS BANK STATEMENTS</h3>
@@ -175,7 +175,7 @@
                         @else
                             <label for="bursaryApproval" id="bursaryApprovalUpload" style="cursor:pointer" class="<?php if($BursaryCopy && $BursaryCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BursaryCopy && $BursaryCopy->status == "Approved"){echo 'greenBorder';}else{ echo 'redBorder';}?>">
                                 <div class="uploadSection" id="copybursaryApproval">
-                                    <h3 class="uploadName">@if($user->studentType == "NSFAS") NSFAS @else BURSARY @endif APPROVAL</h3>
+                                    <h3 class="uploadName">@if(isset($user) && $user->studentType == "NSFAS") NSFAS @else BURSARY @endif APPROVAL</h3>
                                     <div class="uploadFileSection" id="bursaryApprovalUploadSection">
                                         
                                         <div id="bursaryApprovalSection">
@@ -277,7 +277,7 @@
         $.ajax({
             type: "post",
             url: "/check-uploaded-docs",
-            data: {userUid: "<?php echo $user->userUid; ?>"},
+            data: {userUid: "{{ auth()->user()->userUid ?? '' }}"},
 
             success: function (data) {
                 console.log(data)
@@ -328,7 +328,7 @@
 
             var form_data = new FormData();
             form_data.append("file", document.getElementById(field).files[0]);
-            form_data.append("userUid", "<?php echo $user->userUid; ?>");
+            form_data.append("userUid", "{{ auth()->user()->userUid ?? '' }}");
             form_data.append("fileType", field);
 
             $.ajax({

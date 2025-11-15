@@ -41,7 +41,7 @@
             <div class="tab">5: Pay Booking Fee</div>
         </div>
 
-        <form id="newStudent" class="form onlineForm" autocomplete="off">
+        <form id="newStudent" class="form onlineForm" autocomplete="off" style="z-index: 20">
             <br />
             <h1 class="formHeading">Applicant Details</h1>
             <br />
@@ -414,10 +414,10 @@
         </form>
 
     </div>
- <div class="footerClearfix"></div>
+
 
     <br /><br /><br />
-
+<div class="footerClearfix"></div>
 
     <script>
         $.ajaxSetup({
