@@ -9045,19 +9045,19 @@ class HomeController extends Controller
             LEFT OUTER JOIN room_types rt ON rt.id = pd.room_type
             WHERE (`year` <= pd.year_end or pd.year_end = 0)
             ' . implode($query) . '
-            and pd.residence in (' . $auth_loc_check . ')
+            and pd.deleted_at is null and pd.residence in (' . $auth_loc_check . ') 
             
             order by pd.residence, cast(pd.floor as unsigned), cast(pd.unit as unsigned), pd.room, pd.bed, pd.year, pd.year_end ASC
 
             ' . $sLimit;
-
+        //dd($sql);
         //Get all of our students
         $searched_data = DB::select($sql);
 
         // return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId') , Session::get('page')]);
 
         /* Total data set length */
-        $sQuery = "SELECT COUNT(pd.id) as totcount FROM property_data pd where (`year` <= pd.year_end or pd.year_end = 0)" . implode($query) . "and pd.residence in (" . $auth_loc_check . ")";
+        $sQuery = "SELECT COUNT(pd.id) as totcount FROM property_data pd where (`year` <= pd.year_end or pd.year_end = 0)" . implode($query) . "and pd.deleted_at is null and pd.residence in (" . $auth_loc_check . ")";
         $rResultTotal = DB::select($sQuery);
         $aResultTotal = $rResultTotal[0]->totcount;
         $iTotal = $aResultTotal;
