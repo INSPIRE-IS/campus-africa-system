@@ -31,6 +31,7 @@ use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\StudentQuestionAnswer;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class ApplicationController extends Controller
 {
@@ -338,18 +339,52 @@ class ApplicationController extends Controller
     {
         $lookups = Lookups::get();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        // determine target year
+        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
+        // load current user
+        $userId = Auth::user()->id;
+
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+        // search booking for selected year
+        $booking = Booking::where('userId', $userId)
+            ->where('year', $year)
+            ->first();
+
+        // if not found, try previous year
+        if (!$booking) {
+            $year = $year - 1;
+
+            $booking = Booking::where('userId', $userId)
+                ->where('year', $year)
+                ->first();
+
+            // if found, switch session year and continue
+            if ($booking) {
+                Session::put('year', $year);
+            }
+        }
+
+        // if still null → logout
+        if (!$booking) {
+            Auth::logout();
+            Session::flush();
+
+            return redirect()->route('login')
+                ->withErrors(['message' => 'No valid booking found.']);
+        }
+
 
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
-        $user = User::where('id', Auth::user()->id)->first();
-        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        $user = User::where('id', $userId)->first();
+        $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $year)->first();
 
-        $IdCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'copyID')->where('year', $this_year)->first();
-        $StudentCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'studentCard')->where('year', $this_year)->first();
-        $BankCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bankStatement')->where('year', $this_year)->first();
-        $BursaryCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->first();
-        $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->where('year', $this_year)->first();
+        $IdCopy = UserFiles::where("userUid", $userId)->where('fileId', 'copyID')->where('year', $year)->first();
+        $StudentCopy = UserFiles::where("userUid", $userId)->where('fileId', 'studentCard')->where('year', $year)->first();
+        $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
+        $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
+        $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
 
         return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
     }
@@ -876,16 +911,48 @@ class ApplicationController extends Controller
     {
         $lookups = Lookups::get();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        // determine target year
+        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
 
-        // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
-        $user = User::where('id', Auth::user()->id)->first();
-        $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+        // load current user
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // search booking for selected year
+        $booking = Booking::where('userId', $user->id)
+            ->where('year', $year)
+            ->first();
+
+        // if not found, try previous year
+        if (!$booking) {
+            $year = $year - 1;
+
+            $booking = Booking::where('userId', $user->id)
+                ->where('year', $year)
+                ->first();
+
+            // if found, switch session year and continue
+            if ($booking) {
+                Session::put('year', $year);
+            }
+        }
+
+        // if still null → logout
+        if (!$booking) {
+            Auth::logout();
+            Session::flush();
+
+            return redirect()->route('login')
+                ->withErrors(['message' => 'No valid booking found.']);
+        }
+
         // User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
-        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2]);
-        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $year)->update(['onboard_complete' => 2]);
+        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $year)->first();
+        // dd($userInfo);
         return view('application.complete', ["lookups" => $lookups, "user" => $userInfo, "booking" => $booking]);
     }
 
@@ -1924,16 +1991,50 @@ class ApplicationController extends Controller
     public function new_booking_step_4(Request $request)
     {
         $lookups = Lookups::get();
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
 
-        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->orderBy('year', 'desc')->first();
+        // determine target year
+        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
+        // load current user
+        $userId = Auth::user()->id;
 
-        $IdCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'copyID')->where('year', $this_year)->first();
-        $StudentCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'studentCard')->where('year', $this_year)->first();
-        $BankCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bankStatement')->where('year', $this_year)->first();
-        $BursaryCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'bursaryApproval')->where('year', $this_year)->first();
-        $RegistrationCopy = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proofRegistration')->where('year', $this_year)->first();
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+        // search booking for selected year
+        $booking = Booking::where('userId', $userId)
+            ->where('year', $year)
+            ->first();
+
+        // if not found, try previous year
+        if (!$booking) {
+            $year = $year - 1;
+
+            $booking = Booking::where('userId', $userId)
+                ->where('year', $year)
+                ->first();
+
+            // if found, switch session year and continue
+            if ($booking) {
+                Session::put('year', $year);
+            }
+        }
+
+        // if still null → logout
+        if (!$booking) {
+            Auth::logout();
+            Session::flush();
+
+            return redirect()->route('login')
+                ->withErrors(['message' => 'No valid booking found.']);
+        }
+
+        $userInfo = StudentsInfo::where('userUid', $userId)->orderBy('year', 'desc')->first();
+
+        $IdCopy = UserFiles::where("userUid", $userId)->where('fileId', 'copyID')->where('year', $year)->first();
+        $StudentCopy = UserFiles::where("userUid", $userId)->where('fileId', 'studentCard')->where('year', $year)->first();
+        $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
+        $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
+        $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
 
         return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy, "new" => 1]);
     }
