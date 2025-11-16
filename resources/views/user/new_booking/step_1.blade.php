@@ -408,7 +408,7 @@
             </div>
 
             <button type="button" class="detailsChange" id="submitForm"
-                style="text-transform:uppercase; background-color:#e74f26">Proceed to next step</button>
+                style="text-transform:uppercase; background-color:#e5b219">Proceed to next step</button>
 
 
         </form>
