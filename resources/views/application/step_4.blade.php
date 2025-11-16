@@ -139,7 +139,7 @@
 
                         <br/>
                         
-                        @if(isset($user) $user->studentType == "Cash / Direct")
+                        @if(isset($user) && $user->studentType == "Cash / Direct")
                             <label for="bankStatement" id="bankStatementUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
                                 <div class="uploadSection" id="copyBankStatement">
                                     <h3 class="uploadName">3 MONTHS BANK STATEMENTS</h3>
@@ -272,6 +272,7 @@
     });
 
     checkDocuments();
+    console.log('checkDocuments', {{ auth()->user()->userUid ?? '' }})
 
     function checkDocuments(){
         $.ajax({
