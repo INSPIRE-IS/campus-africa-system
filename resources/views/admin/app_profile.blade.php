@@ -2262,7 +2262,7 @@
 
                         Object.keys(properties).forEach(function(key) {
 
-                            if (data[4].studentType == "NSFAS" && inSelectedNsfas.includes(properties[key]
+                            if ((data[4].studentType == "NSFAS" || data[4].studentType == "FUNZA" || data[4].studentType == "GCRA" || data[4].studentType == "MQA" ) && inSelectedNsfas.includes(properties[key]
                                     .id)) {
                                 $('#property').append('<option value="' + properties[key].id + '">' +
                                     properties[key].residence + '</option>')
