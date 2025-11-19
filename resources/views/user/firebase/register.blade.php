@@ -6,11 +6,11 @@
             <a style="width=200px; margin: 20px 20px 20px 0px;"
                 href="https://play.google.com/store/apps/details?id=com.campusafrica.maintenance&pcampaignid=web_share"
                 target="_blank" rel="noopener noreferrer">
-                <img src="/images/logo/android.png" alt="Play Store Logo" width="140" height="45">
+                <img src="/images/logo/android.png" alt="Play Store Logo" width="140" height="45"/>
             </a>
             <a style="width=200px; margin: 20px 20px 20px 0px;"
                 href="https://apps.apple.com/za/app/campus-africa/id1607476667" target="_blank" rel="noopener noreferrer">
-                <img src="/images/logo/apple.png" alt="App Store Logo" width="140" height="45">
+                <img src="/images/logo/apple.png" alt="App Store Logo" width="140" height="45"/>
             </a>
         </div>
         @if ($errors->any())

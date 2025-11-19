@@ -140,7 +140,7 @@
                         <br/>
                         
                         @if(isset($user) && $user->studentType == "Cash / Direct")
-                            <label for="bankStatement" id="bankStatementUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
+                            <label for="bankStatement" id="bankStatementUpload" style="cursor:pointer;" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
                                 <div class="uploadSection" id="copyBankStatement">
                                     <h3 class="uploadName">3 MONTHS BANK STATEMENTS</h3>
                                     <div class="uploadFileSection" id="bankStatementUploadSection">
@@ -172,6 +172,73 @@
                                     </div>
                                 </div>
                             </label>
+                            <br/>
+                            <label for="sponsorId" id="sponsorIdUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
+                                <div class="uploadSection" id="copySponsorId">
+                                    <h3 class="uploadName">ID OF SPONSOR</h3>
+                                    <div class="uploadFileSection" id="sponsorIdUploadSection">
+                                        
+                                        <div id="sponsorIdSection">
+                                            <?php 
+                                                if($BankCopy && $BankCopy->status == "Uploaded"){
+                                                    echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                                }elseif($BankCopy && $BankCopy->status == "Approved"){
+                                                    echo ' <i class="fas fa-file successful"></i>';
+                                                }else{
+                                                    echo '<i class="fas fa-file-upload" ></i>';
+                                                }
+                                            ?>
+                                        </div>
+
+                                        <?php 
+                                            if($BankCopy && $BankCopy->status == "Uploaded"){
+                                                echo '<label id="sponsorIdSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($BankCopy && $BankCopy->status == "Approved"){
+                                                echo '<label id="sponsorIdSuccess" class="successLabel">Approved</label>';
+                                            }else{ 
+                                                echo '<input type="file" id="sponsorId" onChange="UploadDocument(\'sponsorId\')" accept="image/*, application/pdf" hidden/>';
+                                            }
+                                        ?>
+                                        
+                                        
+                                        
+                                    </div>
+                                </div>
+                            </label>
+                            <br/>
+                            <label for="sponsorPayslip" id="sponsorPayslipUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
+                                <div class="uploadSection" id="copySponsorPayslip">
+                                    <h3 class="uploadName">PAYSLIP OF SPONSOR</h3>
+                                    <div class="uploadFileSection" id="sponsorPayslipUploadSection">
+                                        
+                                        <div id="sponsorPayslipSection">
+                                            <?php 
+                                                if($BankCopy && $BankCopy->status == "Uploaded"){
+                                                    echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                                }elseif($BankCopy && $BankCopy->status == "Approved"){
+                                                    echo ' <i class="fas fa-file successful"></i>';
+                                                }else{
+                                                    echo '<i class="fas fa-file-upload" ></i>';
+                                                }
+                                            ?>
+                                        </div>
+
+                                        <?php 
+                                            if($BankCopy && $BankCopy->status == "Uploaded"){
+                                                echo '<label id="sponsorPayslipSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($BankCopy && $BankCopy->status == "Approved"){
+                                                echo '<label id="sponsorPayslipSuccess" class="successLabel">Approved</label>';
+                                            }else{ 
+                                                echo '<input type="file" id="sponsorPayslip" onChange="UploadDocument(\'sponsorPayslip\')" accept="image/*, application/pdf" hidden/>';
+                                            }
+                                        ?>
+                                        
+                                        
+                                        
+                                    </div>
+                                </div>
+                            </label>
+
                         @else
                             <label for="bursaryApproval" id="bursaryApprovalUpload" style="cursor:pointer" class="<?php if($BursaryCopy && $BursaryCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BursaryCopy && $BursaryCopy->status == "Approved"){echo 'greenBorder';}else{ echo 'redBorder';}?>">
                                 <div class="uploadSection" id="copybursaryApproval">
@@ -212,7 +279,7 @@
                         
                         <label for="proofRegistration" id="proofRegistrationUpload" style="cursor:pointer" class="<?php if($RegistrationCopy && $RegistrationCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($RegistrationCopy && $RegistrationCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
                             <div class="uploadSection" id="copyProofRegistration">
-                                <h3 class="uploadName">PROOF OF REGISTRATION</h3>
+                                <h3 class="uploadName">PROOF OF REGISTRATION {{ isset($RegistrationCopy) ? $RegistrationCopy->status : 'nothing' }}</h3>
                                 <div class="uploadFileSection" id="proofRegistrationUploadSection">
                                     
                                         <div id="proofRegistrationSection">
@@ -272,51 +339,65 @@
     });
 
     checkDocuments();
-    console.log('checkDocuments', {{ auth()->user()->userUid ?? '' }})
+    console.log('checkDocuments', {{ $user->userUid ?? '' }})
 
     function checkDocuments(){
         $.ajax({
             type: "post",
             url: "/check-uploaded-docs",
-            data: {userUid: "{{ auth()->user()->userUid ?? '' }}"},
+            data: {userUid: "{{ $user->userUid ?? '' }}"},
 
             success: function (data) {
                 console.log(data)
+                // copyID
                 if(data[0].status == "Uploaded"){
                     $("#copyIDSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
                     $("#copyIDUploadSection").empty().append('<label id="copyIDSection" class="toUploadLabel">UPLOADED</label>')
                     $("#copyIDUpload").addClass('yellowBorder')
                     $("#copyIDUpload").removeClass('redBorder')
                 }
-
+                // studentCard
                 if(data[1].status == "Uploaded"){
                     $("#studentCardSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
                     $("#studentCardUploadSection").empty().append('<label id="studentCardSection" class="toUploadLabel">UPLOADED</label>')
                     $("#studentCardUpload").addClass('yellowBorder')
                     $("#studentCardUpload").removeClass('redBorder')
                 }
-
-                if(data[2].status == "Uploaded"){
+                // bankStatement
+                if(data[2]?.status == "Uploaded"){
                     $("#bursaryApprovalSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
                     $("#bursaryApprovalUploadSection").empty().append('<label id="bursaryApprovalSection" class="toUploadLabel">UPLOADED</label>')
                     $("#bursaryApprovalUpload").addClass('yellowBorder')
                     $("#bursaryApprovalUpload").removeClass('redBorder')
                 }
-
-                if(data[3].status == "Uploaded"){
+                // sponsorId
+                if(data[3]?.status == "Uploaded"){
                     $("#bursaryApprovalSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
                     $("#bursaryApprovalUploadSection").empty().append('<label id="bursaryApprovalSection" class="toUploadLabel">UPLOADED</label>')
                     $("#bursaryApprovalUpload").addClass('yellowBorder')
                     $("#bursaryApprovalUpload").removeClass('redBorder')
                 }
-
-                if(data[4].status == "Uploaded"){
+                // sponsorPayslip
+                if(data[4]?.status == "Uploaded"){
+                    $("#sponsorPayslipSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#sponsorPayslipUploadSection").empty().append('<label id="sponsorPayslipSection" class="toUploadLabel">UPLOADED</label>')
+                    $("#sponsorPayslipUpload").addClass('yellowBorder')
+                    $("#sponsorPayslipUpload").removeClass('redBorder')
+                }
+                // bursaryCopy
+                if(data[5]?.status == "Uploaded"){
+                    $("#bursaryCopySection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#bursaryCopyUploadSection").empty().append('<label id="bursaryCopySection" class="toUploadLabel">UPLOADED</label>')
+                    $("#bursaryCopyUpload").addClass('yellowBorder')
+                    $("#bursaryCopyUpload").removeClass('redBorder')
+                }
+                // registrationCopy
+                if(data[6]?.status == "Uploaded"){
                     $("#proofRegistrationSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
                     $("#proofRegistrationUploadSection").empty().append('<label id="proofRegistrationSection" class="toUploadLabel">UPLOADED</label>')
                     $("#proofRegistrationUpload").addClass('yellowBorder')
                     $("#proofRegistrationUpload").removeClass('redBorder')
-                }
-
+                }                
             },
         });
     }
@@ -327,9 +408,18 @@
 
             $("#"+field+"Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
+            const userUid = "{{ $user->userUid ?? '' }}";
+            if(userUid == ""){
+                Swal.fire(
+                    'Error',
+                    'Please login to continue Id:' + userUid,
+                    'error'
+                )
+            }
+
             var form_data = new FormData();
             form_data.append("file", document.getElementById(field).files[0]);
-            form_data.append("userUid", "{{ auth()->user()->userUid ?? '' }}");
+            form_data.append("userUid", "{{ $user->userUid ?? '' }}");
             form_data.append("fileType", field);
 
             $.ajax({
