@@ -6,26 +6,28 @@ use Illuminate\Console\Command;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentsInfo;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use SimpleXLSXGen;
 
 class ExportCompatibilitySimpleXlsx extends Command
 {
-    protected $signature = 'compatibility:export-simple {year} {--building=} {--top=}';
-    // php artisan compatibility:export-simple 2026
-    // php artisan compatibility:export-simple 2026 --building=8
-    // php artisan compatibility:export-simple 2026 --top=3
+    protected $signature = 'download:compatibility_docs {year} {email} {--building=} {--top=} ';
+    // php artisan download:compatibility_docs 2026 jason@inspireonline.co.za
+    // php artisan download:compatibility_docs 2026 jason@inspireonline.co.za --building=8
+    // php artisan download:compatibility_docs 2026 jason@inspireonline.co.za --top=3
     protected $description = 'Export compatibility report per building (multi-sheet XLSX) using SimpleXLSXGen';
-
 
     public function handle()
     {
         ini_set('memory_limit', '1024M');
 
         $year = $this->argument('year') ?? date('Y');
+        $email = $this->argument('email') ?? date('Y');
         $buildingFilter = $this->option('building') ?? null; // optional building filter
         $topN = $this->option('top') ?? 5; // number of matches per student
 
         $this->info("🔄 Generating compatibility report for academic year {$year}...");
+        Log::info("Downloading compatibility docs for {$year} and {$buildingFilter}");
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
         $sheetCount = 0;
@@ -69,6 +71,8 @@ class ExportCompatibilitySimpleXlsx extends Command
 
             // Optional building filter (already filtered via eager load)
             if ($buildingFilter && $a->booking->property != $buildingFilter) continue;
+            Log::info("Checking {$a->booking->property}");
+            if (in_array($a->booking->property, [3, 4, 7])) continue;
 
             $matchesByStudentA[$a->id][] = [
                 'b' => $b,
@@ -160,6 +164,24 @@ class ExportCompatibilitySimpleXlsx extends Command
         $xlsx->saveAs($savePath);
 
         $this->info("🎉 Report generated successfully: {$savePath}");
+
+        // Public URL (if your 'storage/app' is NOT public, move file to 'storage/app/public')
+        $publicUrl = "https://apply.campusafrica.co.za/{$filename}";
+
+        $this->info("🎉 Report generated successfully: {$savePath}");
+
+        // Mail::raw("Your XLSX report is ready for download: {$publicUrl}", function ($message) use ($email) {
+        //     $message->to($email)->subject('Your XLSX Report');
+        // });
+        Mail::raw("Your XLSX report is attached.", function ($message) use ($email, $savePath, $filename) {
+            $message->to($email)
+                ->subject('Your XLSX Report')
+                ->attach($savePath, [
+                    'as' => $filename,
+                    'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]);
+        });
+        $this->info("Download link sent to: {$email}");
     }
 
 
@@ -168,8 +190,9 @@ class ExportCompatibilitySimpleXlsx extends Command
         ini_set('memory_limit', '1024M');
         $this->info(ini_get('memory_limit'));
         $year = $this->argument('year');
-        $testing = 1;
+        $testing = 0;
         $this->info("🔄 Generating compatibility report for academic year {$year}...");
+        Log::info("Generating compatibility report for academic year {$year}...");
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
         $sheetCount = 0;
