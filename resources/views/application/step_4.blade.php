@@ -263,7 +263,7 @@
 
 </div>
 
-<script>
+<script defer>
 
     $.ajaxSetup({
         headers: {
@@ -272,13 +272,13 @@
     });
 
     checkDocuments();
-    console.log('checkDocuments', {{ auth()->user()->userUid ?? '' }})
+    console.log('checkDocuments', {{ $user->userUid ?? '' }})
 
     function checkDocuments(){
         $.ajax({
             type: "post",
             url: "/check-uploaded-docs",
-            data: {userUid: "{{ auth()->user()->userUid ?? '' }}"},
+            data: {userUid: "{{ $user->userUid ?? '' }}"},
 
             success: function (data) {
                 console.log(data)
@@ -329,7 +329,7 @@
 
             var form_data = new FormData();
             form_data.append("file", document.getElementById(field).files[0]);
-            form_data.append("userUid", "{{ auth()->user()->userUid ?? '' }}");
+            form_data.append("userUid", "{{ $user->userUid ?? '' }}");
             form_data.append("fileType", field);
 
             $.ajax({
