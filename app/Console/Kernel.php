@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Models\Lookups;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,6 +25,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name; // date('Y')
+
+        $schedule->command('calculate:compatibility --year=' . $this_year)
+            ->dailyAt('23:59');
         // $schedule->command('inspire')->hourly();
         // $schedule->call(function(){
         //     info('Called every minute');
@@ -37,7 +43,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

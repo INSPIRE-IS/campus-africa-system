@@ -9,6 +9,7 @@ use Jenssegers\Agent\Agent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Mail;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (app()->environment(['local', 'staging', 'development'])) {
+            LOG::info('Mail is set to sandbox');
+            Mail::alwaysTo('sandbox@inspireonline.co.za'); // O@BczDAVgrz2{89e
+        }
+
         View::composer('*', function ($view) {
             $agent = new Agent();
             $sessionYear = Session::get('year', now()->year);
