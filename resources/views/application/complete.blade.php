@@ -33,7 +33,7 @@
         <h1 style="font-weight:500">Thank you for your application!</h1>
 
         <br/>
-        <h3>Your application reference is #{{isset($booking) && $booking->booking_code ?? ''}}</h3>
+        <h3>Your application reference is #{{isset($booking) ? $booking->booking_code : ''}}</h3>
         <br/>
         <p>We will keep you updated by email on the progress of your application & any documents
 	        you have uploaded.
