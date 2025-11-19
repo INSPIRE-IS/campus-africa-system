@@ -330,7 +330,7 @@
 
 </div>
 
-<script>
+<script defer>
 
     $.ajaxSetup({
         headers: {

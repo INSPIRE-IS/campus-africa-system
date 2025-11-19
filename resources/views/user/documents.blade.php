@@ -309,7 +309,7 @@
             if (currentStep === steps.length) {
                 console.log("Values", values)
 
-                const user = "<?php echo Auth::user(); ?>";
+                const user = @json(Auth::user());
                 const bookingId = user?.bookingId;
                 if (!bookingId) {
                     return;
