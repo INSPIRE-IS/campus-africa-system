@@ -250,9 +250,15 @@ Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePas
 //Students to sign lease
 Route::get('/sign-lease/{id}', [LeaseController::class, 'view_sign_lease']);
 Route::post('/save-signed-lease/{id}', [LeaseController::class, 'save_signed_lease']);
+Route::group(['middleware' => ['auth']], function () {
+    // https://campus-africa-system.test/debug-lease-preview/17617/2025
+    Route::get('/debug-lease-preview/{userId}/{year}', [LeaseController::class, 'debug_lease_preview']);
+});
+
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::get('/check-all-rooms/{id}', [HomeController::class, 'check_all_rooms']);
 Route::post("/check-building-prefix", [HomeController::class, 'check_building_prefix']);
+
 
 
 Route::post('/booking/set-year', [BookingReportController::class, 'setYear'])->name('booking.setYear');

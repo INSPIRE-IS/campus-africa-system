@@ -7,6 +7,19 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <style>
+        br {
+            display: block;
+            margin-top: 0.3em;
+            content: "";
+            line-height: 0.1em;
+            height: .6em;
+            clear: both;
+        }
+        .special {
+            margin-top: 0.2em;
+            height: .4em;
+        }
+
         footer {
             position: fixed;
             bottom: 0px;
@@ -38,40 +51,31 @@
         <p style="text-align:center;font-weight:bold; font-size:13px;">(“the Owner”)</p>
         <p style="text-align:center; font-weight:bold; font-size:13px;">AND</p>
         <br />
-        <table style="width:100%; margin-top:-20px; margin-top:-15px;">
+        <table style="width:100%; margin-top:-20px;">
             <tr>
-                <td style="text-align:right; padding-right:70px 20px;">
-                    <span style="font-size:20px;"><b>{{ $data->userFirstName }} {{ $data->userLastname }}</b></span>
+                <td style="text-align:right; padding-right:20px 20px;">
+                    <span style="font-size:15px;"><b>Full Name {{ $data->userFirstName }} {{ $data->userLastname }}</b></span>
                 </td>
-                <td style="text-align:left; padding-left:70px 20px;">
-                    <span style="font-size:20px;"><b>
+                <td style="text-align:left; padding-left:20px 20px;">
+                    <span style="font-size:15px;"><b>
                             @if ($data->userNationality == 'South Africa')
-                                {{ $data->userId }}
+                                {{ 'ID Number' }} {{ $data->userId }}
                             @else
-                                {{ $data->userPassport }}
+                                {{ 'Passport Number' }} {{ $data->userPassport }}
                             @endif
                         </b></span>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:right; padding-right:70px 20px;">
-                    Full Name
-                </td>
-                <td style="text-align:left; padding-left:70px 20px;">
-                    @if ($data->userNationality == 'South Africa')
-                        {{ 'ID Number' }}
-                    @else
-                        {{ 'Passport Number' }}
-                    @endif
                 </td>
             </tr>
         </table>
         <p style="text-align:center; font-weight:bold; font-size:15px;">(“the Student”)</p>
         <br />
+            <div style="text-align:center; font-size:14px; margin-top:-15px;">
+                <img src="{{ public_path($signature) }}" width="200" />
+            </div>
         <hr />
         <br />
 
-        <p style="font-size:14px;"><strong>1. Definitions </strong>
+        <p style="font-size:14px; margin-top:-20px;"><strong>1. Definitions </strong>
             <br />
 
             In this agreement, unless clearly inconsistent with or otherwise indicated by the context, the following
@@ -132,8 +136,9 @@
 
 
         <br />
-        <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                style='width:200px;' /></span>
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
         <footer>
             Page | 1
         </footer>
@@ -144,7 +149,7 @@
         <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
             style="width:70px; margin-left:44%;">
 
-        <ol style="list-style-type:none; text-laign:left; font-size:14px;">
+        <ol style="list-style-type:none; text-align:left; font-size:14px;">
             <li><span style="margin-left:-20px;">f. </span><strong>“Swipe Card”</strong> means: a payment mechanism
                 provided to Students of tertiary institutions who receive bursary, loan, sponsorship or related
                 allowances, for the consumption of student necessities, by suppliers, which suppliers for the purposes
@@ -223,8 +228,9 @@
                 Accommodation. Wherever possible, the Student will be told in advance of such visits. </li>
         </ol>
         <br />
-        <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                style='width:200px;' /></span>
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
         <footer>
             Page | 2
         </footer>
@@ -237,7 +243,7 @@
         <br />
         <span style="font-weight:bold; font-size:14px;">3. Payment of Accommodation and Student Meal Fees </span>
 
-        <ol type="a" style="text-laign:left; font-size:14px;">
+        <ol type="a" style="text-align:left; font-size:14px;">
             <li>The Student agrees to pay the Owner, the sum of <b>R{{ $paymentBooking->monthly_rental }}</b> as a
                 monthly fee for the non-exclusive right to make use of the facilities at the residence and Single /
                 Shared Room.
@@ -276,7 +282,7 @@
 
         <span style="font-weight:bold; font-size:14px;">4. Administration Fee</span>
 
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in
                 the amount of <b>R
                     @if ($paymentBooking->rob_loan_waived == '2') 0
@@ -293,7 +299,7 @@
 
         <span style="font-weight:bold; font-size:14px;">5. The Security Deposit </span>
 
-        <ol type="a" style="text-laign:left; font-size:14px;">
+        <ol type="a" style="text-align:left; font-size:14px;">
             <li>The Student agrees to deposit with the Owner the amount of <b>R @if ($paymentBooking->rob_deposit_waived == '2') 0
                     @else
                         @if ($data->studentType == 'Cash / Direct' || ($data->studentType == 'Bursary' && $data->nsfas_bursar !== 1))
@@ -325,8 +331,9 @@
                 by the Owner in terms of this clause 5 (five). </li>
 
             <br />
-            <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                    style='width:200px;' /></span>
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
             <footer>
                 Page | 3
             </footer>
@@ -353,7 +360,7 @@
 
         <span style="font-weight:bold; font-size:14px;">6. The Student’s Obligations </span>
 
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>The Student must: </li>
             <br />
             <ol type="i">
@@ -398,8 +405,9 @@
                 <li>Keep any animals in the Accommodation without the Owner’s prior written permission. </li>
                 <br />
                 <br />
-                <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                        style='width:200px;' /></span>
+                    <div style="text-align:right; font-size:14px;">
+                        <img src="{{ public_path($signature) }}" width="100" />
+                    </div>
                 <footer>
                     Page | 4
                 </footer>
@@ -424,7 +432,7 @@
 
         <span style="font-weight:bold; font-size:14px;">7. The Owner’s Obligations </span>
 
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>The Owner shall: </li>
             <br />
             <ol type="i">
@@ -474,8 +482,9 @@
             Shared Room or Singles, including, all costs and expenses brought about in connection with any loss or
             damage.</p>
         <br />
-        <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                style='width:200px;' /></span>
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
         <footer>
             Page | 5
         </footer>
@@ -489,7 +498,7 @@
 
         <span style="font-weight:bold; font-size:14px;">9. Guests of the Student </span>
 
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>The Student may invite any person (“guests”) other than any who have been barred by the Owner from
                 visiting the property into the Accommodation, provided that such guests must comply with any signing in
                 and out procedures, which may be prescribed from time to time by the Owner.</li>
@@ -514,7 +523,7 @@
 
         <span style="font-weight:bold; font-size:14px;">10. Termination </span>
 
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>This Temporary Lodging Agreement may be terminated by either party giving 1 (one) month’s written notice
                 to the other party of their intention to terminate.</li>
             <br />
@@ -539,7 +548,7 @@
 
         <span style="font-weight:bold; font-size:14px;">11. Special Remedy for Breach: </span>
 
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>a. Notwithstanding clause 10b supra, in the event that the Student defaults in any payment due under
                 this accommodation agreement or breaches any other terms, or breaches the house rules in Annexure C
                 attached hereto, and fails to remedy such default or breach within 3 (three) Days after receiving a
@@ -550,8 +559,9 @@
                 <li>take back possession of the accommodation, </li>
 
                 <br />
-                <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                        style='width:200px;' /></span>
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
                 <footer>
                     Page | 6
                 </footer>
@@ -580,48 +590,55 @@
             </li>
         </ol>
         <br />
-        <span style="font-weight:bold; font-size:14px;">12. Domicilia Citandi Et Executandi </span>
+        <span style="font-weight:bold; font-size:14px; margin-top:-20px;">12. Domicilia Citandi Et Executandi </span>
 
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>The parties choose as their domicilia citandi et executandi (“domicilium”) for all purposes under this
                 agreement, whether in respect of court process, notices or other documents or communications of
                 whatsoever nature, their respective addresses as appear below: </li>
             <ol type="i" style="font-size:14px;">
                 <li>The Owner:
-                    <br /><br />
+                    <br />
                     <span style="font-weight:bold">Physical Address:</span> 14th Floor, 19AM, 19 Ameshoff Street,
                     Braamfontein, Johannesburg, 2001
-                    <br />
+                    <br class="special" />
                     <span style="font-weight:bold">Fax Number:</span> 086 558 7632
-                    <br />
+                    <br class="special" />
                     <span style="font-weight:bold">Email:</span> students@conurban.co.za
                 </li>
                 <br />
                 <li>The Student:
-                    <br /><br />
+                    <br />
                     <span style="font-weight:bold">The unit occupied under this agreement</span>
-                    <br /><br />
+                    <br class="special" />
                     <span style="font-weight:bold">Accommodation centre:</span> {{ $propertyData->residence }}
-                    <br />
+                    <br class="special" />
                     <span style="font-weight:bold">Physical Address:</span> {{ $residence->address }}
-                    <br />
+                    <br class="special" />
                     <span style="font-weight:bold">Unit No:</span> {{ $propertyData->bed_code }} (or such other number
                     that the student may be allocated in terms of clause 2d, which unit number shall be evidenced by
                     reference to the owner's tenancy schedule report)
-                    <br />
+                    <br class="special" />
                     <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
-                    <br />
+                    <br class="special" />
                     <span style="font-weight:bold">Cell Number:</span> {{ $data->userCell }}
-                    <br /><br />
+                    <br class="special" />
                     <span style="font-weight:bold">The student’s normal residential address (outside of the academic
                         year) </span>
-                    <br /><br />
+                    <br class="special" />
                     <span style="font-weight:bold">Physical Address:</span> {{ $data->userAddress1 }},
                     {{ $data->userAddress2 }}, {{ $data->userAddressCity }}, {{ $data->userAddressPostal }}
-                    <br />
+                    <br class="special" />
                     <!-- <span style="font-weight:bold">Unit No:</span> ???
                         <br/> -->
                     <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
+                </li>
+                <br />
+                <li>Next of Kin of Student:
+                    <br />
+                    <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
+                    <br class="special" />
+                    <span style="font-weight:bold">Cell Number:</span> {{ $data->userCell }}
                 </li>
             </ol>
             <br />
@@ -633,6 +650,16 @@
                 e-mail address, provided that the change shall become effective vis-à-vis that addressee on the seventh
                 business day from the receipt of the notice by the addressee</li>
             <br />
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
+                <footer>
+                    Page | 7
+                </footer>            
+            <div class="page_break"></div>
+                <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+                    style="width:70px; margin-left:44%;">
+                <br />            
             <li>Any notice to a party: </li>
             <ol type="i" style="font-size:14px;">
                 <li>sent by prepaid registered post in a correctly addressed envelope to it at an address chosen as its
@@ -640,18 +667,7 @@
                     day after posting (unless the contrary is proved); </li>
 
                 <br />
-                <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                        style='width:200px;' /></span>
-                <footer>
-                    Page | 7
-                </footer>
 
-                <div class="page_break"></div>
-
-
-                <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
-                    style="width:70px; margin-left:44%;">
-                <br />
                 <li>delivered by hand to a responsible person during ordinary business hours at the physical address
                     chosen as its domicilium shall be deemed to have been received on the day of delivery; or </li>
                 <br />
@@ -667,14 +683,13 @@
 
             </ol>
         </ol>
-        <br />
         <p style="font-size:14px;">The provisions of the Electronic Communications and Transactions Act, No. 25 of
             2002, are expressly excluded from this agreement in this regard, and data messages (as defined in that Act)
             are excluded as a valid form of notice in terms hereof.</p>
         <br />
         <span style="font-weight:bold; font-size:14px;">13. Whole agreement </span>
         <br />
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>This is the entire agreement between the parties pertaining to the subject matter hereto; </li>
             <br />
             <li>No variation or consensual cancellation of this agreement will be of any force unless reduced to writing
@@ -683,7 +698,7 @@
         <br />
         <span style="font-weight:bold; font-size:14px;">14. Non-waiver </span>
         <br />
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>No extension of time or indulgence must be interpreted as a waiver of any right in terms of this
                 agreement that one party may have against the other. </li>
             <br />
@@ -693,7 +708,7 @@
         <br />
         <span style="font-weight:bold; font-size:14px;">15. Protection of Personal Information Act </span>
         <br />
-        <ol type="a" style=" text-laign:left; font-size:14px;">
+        <ol type="a" style=" text-align:left; font-size:14px;">
             <li>The Tenant:</li>
             <br />
             <ol type="i" style="font-size:14px;">
@@ -702,13 +717,13 @@
                 <br />
                 <li>grants their express consent under section 27 of POPIA, that the Landlord may have access to the
                     Tenant’s personal information held for the express purpose of:</li>
-                <ol type="a" style=" text-laign:left; font-size:14px;">
+                <ol type="a" style=" text-align:left; font-size:14px;">
                     <li>processing their application for student accommodation;</li>
                     <li>conducting any credit searches against the Tenant with any recognised credit bureau.</li>
                 </ol>
                 <br />
                 <li>on the expiry of this Agreement, the Tenant expressly requests that:</li>
-                <ol type="a" style=" text-laign:left; font-size:14px;">
+                <ol type="a" style=" text-align:left; font-size:14px;">
                     <li>the Landlord releases any personal information pertaining to the Tenant to the Tenant;</li>
                     <li>stop using, processing or accessing the Tenant’s personal information;</li>
                     <li>destroy any personal information regarding the Tenant and held by the Landlord, save and to the
@@ -716,11 +731,10 @@
                     </li>
                 </ol>
             </ol>
-            <br />
         </ol>
-        <br />
-        <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                style='width:200px;' /></span>
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
         <footer>
             Page | 8
         </footer>
@@ -745,7 +759,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' />
+                        <img src="{{public_path($signature)}}" width="200" />
                     </p>
                 </td>
             </tr>
@@ -761,7 +775,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' />
+                        <img src="{{public_path($signature)}}" width="200" />
                     </p>
                 </td>
             </tr>
@@ -777,7 +791,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' />
+                        <img src="{{public_path($signature)}}" width="200" />
                     </p>
                 </td>
             </tr>
@@ -788,9 +802,8 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">OWNER Signature: <img
-                            src="{{ url('/images/lease/juanita-cronje.jpg') }}" alt="Kim Degenaar"
-                            style='width:200px;' /><br />(Who if signing in a representative capacity<br />warrants
+                    <p style="font-size:14px;">OWNER Signature: <img src="{{public_path($owner)}}" width="160" alt="Kim Degenaar" />
+                        <br />(Who if signing in a representative capacity<br />warrants
                         that he is duly authorized thereto)</p>
                 </td>
                 <td style="vertical-align: top;">
@@ -806,8 +819,7 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">LODGER's Signature: <img
-                            src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' /><br />(Who if
+                    <p style="font-size:14px;">LODGER's Signature: <img src="{{public_path($signature)}}" width="200" /><br />(Who if
                         signing in a representative capacity<br />warrants that he is duly authorized thereto)</p>
                 </td>
                 <td style="vertical-align: top;">
@@ -818,7 +830,9 @@
                 </td>
             </tr>
         </table>
-
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
         <footer>
             Page | 9
         </footer>
@@ -976,12 +990,12 @@
         </table>
         <br />
         <br />
-        <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                style='width:200px;' /></span>
+        <span style="font-size:14px;">Sign (Lodger) <img src="{{public_path($signature)}}" width="200" /></span>
         <br /><br /><br />
-        <span style="font-size:14px;">Sign (Owner) <img src="{{ url('/images/lease/juanita-cronje.jpg') }}"
-                alt="Kim Degenaar" style='width:200px;' /></span>
-
+        <span style="font-size:14px;">Sign (Owner) <img src="{{public_path($owner)}}" width="160" /></span>
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
         <footer>
             Page | 10
         </footer>
@@ -1007,97 +1021,24 @@
             <li>Park Mews Investments Pty Lid</li>
         </ul>
         <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
+        <br /><br /><br />
 
-        <!-- <table style="border:1px solid #000; border-collapse: collapse; width:100%">
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <th style="padding:5px; border:1px solid #000; border-collapse: collapse; width:33.3%; background-color:#ccc">
-                        <span style="font-weight:bold; font-size:14px;">RESIDENCE</span>
-                    </th>
-                    <th style="padding:5px; border:1px solid #000; border-collapse: collapse; background-color:#ccc">
-                        <span style="font-weight:bold; font-size:14px;">RESIDENCE ADDRESS</span>
-                    </th>
-                    <th style="padding:5px; border:1px solid #000; border-collapse: collapse; background-color:#ccc">
-                        <span style="font-weight:bold; font-size:14px;">RESIDENCE OWNER</span>
-                    </th>
-                </tr>
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">126 SIEMERT</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">126 JOE SLOVE ROAD, NEW DOORNFONTEIN, JOHANNESBURG, 2001</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">126 SIEMERT RD CC</span>
-                    </td>
-                </tr>
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">49 JORISSEN</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">49 JORISSEN STREET, BRAAMFONTEIN, JOHANNESBURG, 2001</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">BRAAMBY TRADING (PTY) LTD</span>
-                    </td>
-                </tr>
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">80 JORISSEN</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">80 JORISSEN STREET, BRAAMFONTEIN, JOHANNESBURG, 2001</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">K201406883 (SOUTH AFRICA) (PTY) LTD</span>
-                    </td>
-                </tr>
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">BRAAMLOFTS</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">26 BICCARD STREET, BRAAMFONTEIN, JOHANNESBURG, 2001</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">PONTEI INVESTMENTS (PTY) LTD</span>
-                    </td>
-                </tr>
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">DUNVISTA MANSIONS</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">70 BANKET STREET, HILLBROW, JOHANNESBURG, 2001</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">CONSOLIDATED URBAN ACQUISITIONS 3 (PTY) LTD</span>
-                    </td>
-                </tr>
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">WYNTON JOY</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">3 NUGGET STREET, HILLBROW, JOHANNESBURG, 2001</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">LITTLE SWIFT INVESTMENTS 450 (PTY) LTD</span>
-                    </td>
-                </tr>
-                <tr style="border:1px solid #000; border-collapse: collapse;">
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">YMCA</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">104 RISSIK STREET, BRAAMFONTEIN, JOHANNESBURG, 2001</span>
-                    </td>
-                    <td style="padding:5px; border:1px solid #000; border-collapse: collapse;">
-                        <span style="font-size:14px;">JIRAC PROJECTS (PTY) LTD</span>
-                    </td>
-                </tr>
-            </table> -->
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
 
         <footer>
             Page | 11
@@ -1136,25 +1077,24 @@
         <p style="font-weight:bold; font-size:14px;">Signed at {{ $signed_at }} on this <?php echo date('d'); ?> day of
             <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
         <br />
-        <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>"
-                style='width:200px;' /><br />Student</p>
+        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($signature)}}" width="200" /><br />Student</p>
         <!-- <br/> -->
-        <p style="font-weight:bold; font-size:14px;"><img src="{{ url('/images/lease/juanita-cronje.jpg') }}"
-                alt="Kim Degenaar" style='width:200px;' /><br />For and on behalf of<br />Owner</p>
+        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Kim Degenaar" width="160" />
+                <br class="special" />For and on behalf of<br class="special" />Owner</p>
         <br />
         <hr />
         <br />
         <span style="font-weight:bold; font-size:14px;">Acknowledgement by parent/guardian of the abovementioned
             student:</span>
-        <br /><br />
+        <br />
         <p style="font-weight:bold; font-size:14px;">I @if ($data->sponFirstName !== '')
                 {{ $data->sponFirstName }} {{ $data->sponLastName }}
             @else
                 ________________________
             @endif With
-            <br /><br />
+            <br />
             ID {{ $data->sponId }}
-            <br /><br />
+            <br />
             Hereby acknowledge that I am jointly and severally liable for any rental/accommodation payments due on
             demand to the Owner for accommodation supplied to the student mentioned in this lease at the student
             accommodation centre as indicated in clause 12.a.ii of this lease.
@@ -1162,7 +1102,6 @@
         <br />
         <p style="font-weight:bold; font-size:14px;">Signed at __________________________________ on this ____ day of
             ____________ 20__.</p>
-        <br />
         <br />
         <table style="width:100%">
             <tr>
@@ -1174,7 +1113,9 @@
                 </td>
             </tr>
         </table>
-
+            <div style="text-align:right; font-size:14px;">
+                <img src="{{ public_path($signature) }}" width="100" />
+            </div>
         <footer>
             Page | 12
         </footer>
