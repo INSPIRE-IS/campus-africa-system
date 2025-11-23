@@ -1,4 +1,7 @@
-
+php artisan route:list | findstr booking_payments
+php artisan queue:work
+php artisan schedule:list
+php artisan schedule:run
 
 composer require kreait/firebase-php:^6.0 symfony/css-selector:^6.0 --with-all-dependencies
 composer require google/cloud-firestore --with-all-dependencies

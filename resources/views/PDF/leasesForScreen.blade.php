@@ -391,7 +391,7 @@
                         <br/>
                         <span style="font-weight:bold">Email:</span> {{$data->userEmail}}
                         <br/>
-                        <span style="font-weight:bold">Cell Number:</span> {{$data->userCell}}
+                        <span style="font-weight:bold">Cell Number:</span> {{$data->userCellCode}}{{$data->userCell}}
                         <br/><br/>
                         <span style="font-weight:bold">The student’s normal residential address (outside of the academic year) </span>
                         <br/><br/>
@@ -401,6 +401,14 @@
                         <br/> -->
                         <span style="font-weight:bold">Email:</span> {{$data->userEmail}}
                     </li>
+                    <br />
+                    <li>Next of Kin of Student:
+                        <br /><br />
+                        <span style="font-weight:bold">Email:</span> {{ $data->kinEmail }}
+                        <br />
+                        <span style="font-weight:bold">Cell Number:</span> {{ $data->kinCellCode }}{{ $data->kinCellNo }}
+                    </li>
+
                 </ol>
                 <br/>
                 <li>Any notice or communication required or permitted to be given in terms of this agreement shall be valid and effective only if in writing, but it shall be competent to give notice by facsimile or e-mail. </li>
