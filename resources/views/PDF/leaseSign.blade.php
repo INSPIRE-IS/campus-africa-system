@@ -70,7 +70,7 @@
         <p style="text-align:center; font-weight:bold; font-size:15px;">(“the Student”)</p>
         <br />
             <div style="text-align:center; font-size:14px; margin-top:-15px;">
-                <img src="{{ public_path($signature) }}" width="200" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' />
             </div>
         <hr />
         <br />
@@ -137,7 +137,7 @@
 
         <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
         <footer>
             Page | 1
@@ -229,7 +229,7 @@
         </ol>
         <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
         <footer>
             Page | 2
@@ -332,7 +332,7 @@
 
             <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
             <footer>
                 Page | 3
@@ -406,7 +406,7 @@
                 <br />
                 <br />
                     <div style="text-align:right; font-size:14px;">
-                        <img src="{{ public_path($signature) }}" width="100" />
+                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
                     </div>
                 <footer>
                     Page | 4
@@ -483,7 +483,7 @@
             damage.</p>
         <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
         <footer>
             Page | 5
@@ -560,7 +560,7 @@
 
                 <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
                 <footer>
                     Page | 6
@@ -621,7 +621,7 @@
                     <br class="special" />
                     <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
                     <br class="special" />
-                    <span style="font-weight:bold">Cell Number:</span> {{ $data->userCell }}
+                    <span style="font-weight:bold">Cell Number:</span> {{$data->userCellCode}} {{$data->userCell}}
                     <br class="special" />
                     <span style="font-weight:bold">The student’s normal residential address (outside of the academic
                         year) </span>
@@ -636,9 +636,11 @@
                 <br />
                 <li>Next of Kin of Student:
                     <br />
+                    <span style="font-weight:bold">Full Name:</span> {{ $data->kinFirstName }} {{ $data->kinLastName }}
+                    <br class="special" />
                     <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
                     <br class="special" />
-                    <span style="font-weight:bold">Cell Number:</span> {{ $data->userCell }}
+                    <span style="font-weight:bold">Cell Number:</span> {{ $data->kinCellCode }} {{ $data->kinCellNo }}
                 </li>
             </ol>
             <br />
@@ -651,7 +653,7 @@
                 business day from the receipt of the notice by the addressee</li>
             <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
                 <footer>
                     Page | 7
@@ -733,7 +735,7 @@
             </ol>
         </ol>
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
         <footer>
             Page | 8
@@ -759,7 +761,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="{{public_path($signature)}}" width="200" />
+                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' />
                     </p>
                 </td>
             </tr>
@@ -775,7 +777,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="{{public_path($signature)}}" width="200" />
+                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' />
                     </p>
                 </td>
             </tr>
@@ -791,7 +793,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="{{public_path($signature)}}" width="200" />
+                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' />
                     </p>
                 </td>
             </tr>
@@ -802,7 +804,7 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">OWNER Signature: <img src="{{public_path($owner)}}" width="160" alt="Kim Degenaar" />
+                    <p style="font-size:14px;">OWNER Signature: <img src="file://{{public_path($owner)}}" width="160" alt="Kim Degenaar" />
                         <br />(Who if signing in a representative capacity<br />warrants
                         that he is duly authorized thereto)</p>
                 </td>
@@ -819,7 +821,7 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">LODGER's Signature: <img src="{{public_path($signature)}}" width="200" /><br />(Who if
+                    <p style="font-size:14px;">LODGER's Signature: <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' /><br />(Who if
                         signing in a representative capacity<br />warrants that he is duly authorized thereto)</p>
                 </td>
                 <td style="vertical-align: top;">
@@ -831,7 +833,7 @@
             </tr>
         </table>
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
         <footer>
             Page | 9
@@ -990,11 +992,11 @@
         </table>
         <br />
         <br />
-        <span style="font-size:14px;">Sign (Lodger) <img src="{{public_path($signature)}}" width="200" /></span>
+        <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' /></span>
         <br /><br /><br />
         <span style="font-size:14px;">Sign (Owner) <img src="{{public_path($owner)}}" width="160" /></span>
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
         <footer>
             Page | 10
@@ -1037,7 +1039,7 @@
         <br /><br /><br />
 
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
 
         <footer>
@@ -1077,7 +1079,7 @@
         <p style="font-weight:bold; font-size:14px;">Signed at {{ $signed_at }} on this <?php echo date('d'); ?> day of
             <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
         <br />
-        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($signature)}}" width="200" /><br />Student</p>
+        <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:200px;' /><br />Student</p>
         <!-- <br/> -->
         <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Kim Degenaar" width="160" />
                 <br class="special" />For and on behalf of<br class="special" />Owner</p>
@@ -1114,19 +1116,11 @@
             </tr>
         </table>
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" style='width:100px;' />
             </div>
         <footer>
             Page | 12
         </footer>
-
-
-
-
-
-
-
-
     </div>
 
 </body>

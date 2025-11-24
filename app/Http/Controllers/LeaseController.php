@@ -127,9 +127,14 @@ class LeaseController extends Controller
         $owner = 'images/lease/juanita-cronje.jpg';
 
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
-
+        // check environment for dev or prod
+        if (env('APP_ENV') == 'local') {
+            $pdf = PDF::loadView('PDF.leaseSignDev', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
+        } else {
+            $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
+        }
         // share data to view
-        $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
+
 
         // download PDF file with download method
         // return $pdf->download('lease.pdf');
