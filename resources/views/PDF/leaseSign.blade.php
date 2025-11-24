@@ -621,7 +621,7 @@
                     <br class="special" />
                     <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
                     <br class="special" />
-                    <span style="font-weight:bold">Cell Number:</span> {{ $data->userCell }}
+                    <span style="font-weight:bold">Cell Number:</span> {{$data->userCellCode}} {{$data->userCell}}
                     <br class="special" />
                     <span style="font-weight:bold">The student’s normal residential address (outside of the academic
                         year) </span>
@@ -636,9 +636,11 @@
                 <br />
                 <li>Next of Kin of Student:
                     <br />
+                    <span style="font-weight:bold">Full Name:</span> {{ $data->kinFirstName }} {{ $data->kinLastName }}
+                    <br class="special" />
                     <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
                     <br class="special" />
-                    <span style="font-weight:bold">Cell Number:</span> {{ $data->userCell }}
+                    <span style="font-weight:bold">Cell Number:</span> {{ $data->kinCellCode }} {{ $data->kinCellNo }}
                 </li>
             </ol>
             <br />
