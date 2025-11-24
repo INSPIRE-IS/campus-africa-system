@@ -350,20 +350,40 @@ class LeaseController extends Controller
 
                 // generate PDF
                 $baseUrl = config('app.url') ?? 'https://campusafrica.co.za';
-                $pdf = PDF::loadView('PDF.leaseSignParent', compact(
-                    'data',
-                    'propertyData',
-                    'residence',
-                    'booking',
-                    'leaseAdminFee',
-                    'signed_at',
-                    'studentSignature',
-                    'parentSignature',
-                    'parent',
-                    'signature',
-                    'owner',
-                    'paymentBooking'
-                ));
+
+                if (env('APP_ENV') == 'local') {
+                    //  $pdf = PDF::loadView('PDF.leaseSignDev', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
+                    $pdf = PDF::loadView('PDF.leaseSignDev', compact(
+                        'data',
+                        'propertyData',
+                        'residence',
+                        'booking',
+                        'leaseAdminFee',
+                        'signed_at',
+                        'studentSignature',
+                        'parentSignature',
+                        'parent',
+                        'signature',
+                        'owner',
+                        'paymentBooking'
+                    ));
+                } else {
+                    // $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
+                    $pdf = PDF::loadView('PDF.leaseSign', compact(
+                        'data',
+                        'propertyData',
+                        'residence',
+                        'booking',
+                        'leaseAdminFee',
+                        'signed_at',
+                        'studentSignature',
+                        'parentSignature',
+                        'parent',
+                        'signature',
+                        'owner',
+                        'paymentBooking'
+                    ));
+                }
                 $bookingYear = substr($booking->year, -2);
                 $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
                 $timestamp = date('YmdHis');
@@ -415,27 +435,43 @@ class LeaseController extends Controller
                 $userIdentification = !empty($user->userId) ? $user->userId : $user->userPassport;
                 $signature = 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
                 $owner = 'images/lease/juanita-cronje.jpg';
+
                 // $signature =  pdfImagePath($signature); // 'storage/files/' . $userIdentification . '/' . $lease_link->signature_url;
                 // $this->info("Signature URL: {$signature}");
                 // $owner     = pdfImagePath($owner);
-
-
                 $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
                 // generate PDF
                 $baseUrl = config('app.url') ?? 'https://campusafrica.co.za';
-                $pdf = PDF::loadView('PDF.leaseSign', compact(
-                    'data',
-                    'propertyData',
-                    'residence',
-                    'booking',
-                    'leaseAdminFee',
-                    'signed_at',
-                    'signature',
-                    'owner',
-                    'paymentBooking',
-                    'baseUrl'
-                ));
+                if (env('APP_ENV') == 'local') {
+                    $pdf = PDF::loadView('PDF.leaseSignDev', compact(
+                        'data',
+                        'propertyData',
+                        'residence',
+                        'booking',
+                        'leaseAdminFee',
+                        'signed_at',
+                        'signature',
+                        'owner',
+                        'paymentBooking',
+                        'baseUrl'
+                    ));
+                } else {
+                    $pdf = PDF::loadView('PDF.leaseSign', compact(
+                        'data',
+                        'propertyData',
+                        'residence',
+                        'booking',
+                        'leaseAdminFee',
+                        'signed_at',
+                        'signature',
+                        'owner',
+                        'paymentBooking',
+                        'baseUrl'
+                    ));
+                }
+
+
 
                 $bookingYear = substr($booking->year, -2);
                 $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
