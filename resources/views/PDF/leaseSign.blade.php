@@ -246,9 +246,7 @@
         <ol type="a" style="text-align:left; font-size:14px;">
             <li>The Student agrees to pay the Owner, the sum of <b>R{{ $paymentBooking->monthly_rental }}</b> as a
                 monthly fee for the non-exclusive right to make use of the facilities at the residence and Single /
-                Shared Room. Should the aforementioned rental be the NSFAS-approved rate at the time this 
-                lease is signed, and should NSFAS amend that rate at any time thereafter, the rental will automatically 
-                adjust to the revised NSFAS rate for the applicable monthly rental.
+                Shared Room. The aforementioned fee shall be the NSFAS-approved rate at the time this agreement is signed if the student is NSFAS approved. Should NSFAS amend that rate at any time thereafter, the monthly fee will automatically adjust to the revised NSFAS rate.
                 <!-- and a further R ??? as an optional monthly fee for the provision of Student Meals on a daily basis -->
             </li>
             <br />
