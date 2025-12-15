@@ -87,6 +87,7 @@ class HomeController extends Controller
         //Session::put('year', '2026');
         //Session::forget('year'); // Clear specific
         //dd(Session::get('year'));
+
         $currentYear = now()->year;
 
         $years = Lookups::where('group_id', '4')
@@ -126,7 +127,7 @@ class HomeController extends Controller
 
                 // Try to find the selected year
                 $studentInfo = $studentInfos->firstWhere('year', $selected_year);
-
+                // dd($studentInfo);
                 // If not found, fall back to the first available one
                 if (!$studentInfo) {
                     $studentInfo = $studentInfos->first(); // or choose a specific fallback strategy
