@@ -2379,6 +2379,7 @@ class HomeController extends Controller
             "role_bm_report" => $request->role_bm_report,
             "role_mda_report" => $request->role_mda_report,
             "role_all_apps_report" => $request->role_all_apps_report,
+            "role_allow_generate_invoice" => $request->role_allow_generate_invoice !== '1' ? 0 : 1,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -3519,6 +3520,7 @@ class HomeController extends Controller
             "role_bm_report" => $request->role_bm_report,
             "role_mda_report" => $request->role_mda_report,
             "role_all_apps_report" => $request->role_all_apps_report,
+            "role_allow_generate_invoice" => $request->role_allow_generate_invoice,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);

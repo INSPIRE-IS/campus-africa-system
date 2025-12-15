@@ -182,9 +182,10 @@
                     <input type="checkbox" id="role_all_apps_report" name="role_all_apps_report" value="1" <?php if($user->role_all_apps_report == "1"){echo "checked";} ?>>
                     <label for="role_all_apps_report" style="width:500px">All Application Report</label>
                 </li>
-
-                
-                
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_allow_generate_invoice" name="role_allow_generate_invoice" value="1" <?php if($user->role_allow_generate_invoice == "1"){echo "checked";} ?>>
+                    <label for="role_allow_generate_invoice" style="width:500px">Allow Generate Invoice</label>
+                </li>
             </ul>
         </div>
 

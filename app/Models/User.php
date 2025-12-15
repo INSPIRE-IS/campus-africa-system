@@ -153,6 +153,7 @@ class User extends Authenticatable
         'role_bm_report',
         'role_mda_report',
         'role_all_apps_report',
+        'role_allow_generate_invoice',
     ];
 
     public function files()
