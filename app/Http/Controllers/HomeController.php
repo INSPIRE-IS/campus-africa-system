@@ -88,6 +88,7 @@ class HomeController extends Controller
         //Session::put('year', '2026');
         //Session::forget('year'); // Clear specific
         //dd(Session::get('year'));
+
         $currentYear = now()->year;
 
         $years = Lookups::where('group_id', '4')
@@ -127,7 +128,7 @@ class HomeController extends Controller
 
                 // Try to find the selected year
                 $studentInfo = $studentInfos->firstWhere('year', $selected_year);
-
+                // dd($studentInfo);
                 // If not found, fall back to the first available one
                 if (!$studentInfo) {
                     $studentInfo = $studentInfos->first(); // or choose a specific fallback strategy
@@ -2380,6 +2381,7 @@ class HomeController extends Controller
             "role_bm_report" => $request->role_bm_report,
             "role_mda_report" => $request->role_mda_report,
             "role_all_apps_report" => $request->role_all_apps_report,
+            "role_allow_generate_invoice" => $request->role_allow_generate_invoice !== '1' ? 0 : 1,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
@@ -3521,6 +3523,7 @@ class HomeController extends Controller
             "role_bm_report" => $request->role_bm_report,
             "role_mda_report" => $request->role_mda_report,
             "role_all_apps_report" => $request->role_all_apps_report,
+            "role_allow_generate_invoice" => $request->role_allow_generate_invoice,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);

@@ -15,6 +15,7 @@ class FixPaymentData extends Command
      * @var string
      */
     protected $signature = 'command:fix_payment_data';
+    // php artisan command:fix_payment_data
 
     /**
      * The console command description.
@@ -33,15 +34,15 @@ class FixPaymentData extends Command
         $allNsfasRooms = RoomTypes::where('use_nsfas', 1)->get();
         $nsfas_room_ids = [];
 
-        foreach($allNsfasRooms as $room){
+        foreach ($allNsfasRooms as $room) {
             array_push($nsfas_room_ids, $room->id);
         }
 
         $allBookings = Booking::whereIn('roomType', $nsfas_room_ids)->get();
 
-        foreach($allBookings as $booking){
+        foreach ($allBookings as $booking) {
             app('App\Http\Controllers\HomeController')->paymentDeatilsInternal($booking->userId);
-            echo $booking->id." Booking done | ";
+            echo $booking->id . " Booking done | ";
         }
 
         echo " -- All Done";

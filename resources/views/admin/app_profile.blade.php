@@ -605,16 +605,17 @@
                                         Update Rates
                                     </button>
                                 @endif
-                                <button type="button" class="generatePdf"
-                                    onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
-                                    Generate Pro Forma Invoice
-                                </button>                               
-                                <button type="button" 
-                                    style="padding: 10px;margin-right: 8px; margin-top: 30px;background-color: #f1cc3e; border: none;color: #fff;border-radius: 10px; float: right;"
-                                    onClick="generateNSFASQuote('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
-                                    Generate NSFAS Quote
-                                </button>
-
+                                @if (Auth::user()->role_allow_generate_invoice == 1)
+                                    <button type="button" class="generatePdf"
+                                        onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
+                                        Generate Pro Forma Invoice
+                                    </button>                               
+                                    <button type="button" 
+                                        style="padding: 10px;margin-right: 8px; margin-top: 30px;background-color: #f1cc3e; border: none;color: #fff;border-radius: 10px; float: right;"
+                                        onClick="generateNSFASQuote('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
+                                        Generate NSFAS Quote
+                                    </button>
+                                @endif
                             
                             </div>
                         </div>

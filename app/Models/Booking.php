@@ -51,4 +51,19 @@ class Booking extends Model
     {
         return $this->hasOne("App\Models\RoomTypes", "id", "roomType");
     }
+
+    public function property()
+    {
+        return $this->belongsTo("App\Models\Property", "property", "property");
+    }
+
+    public function propertyData()
+    {
+        return $this->belongsTo("App\Models\Property", "property_data_id", "property_data_id");
+    }
+
+    public function bookingPayment()
+    {
+        return $this->hasOne("App\Models\BookingPayment", "bookingId", "id");
+    }
 }
