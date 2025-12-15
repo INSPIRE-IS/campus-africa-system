@@ -133,10 +133,16 @@
             </select>
             <br />
 
-            <button type="button" class="detailsChange" id="downloadAllApps" style="float:left; margin-left:0px;">Download
-                Applications</button>
-            <div class="hidden"><a href="" download id="downloadAppsBtn"><button type="button"
-                        id="downloadBtnApps">Download</button></a></div>
+            <button type="button" class="detailsChange" id="downloadAllApps" style="float:left; margin-left:0px;">
+                Download Applications
+            </button>
+            <div class="hidden">
+                <a href="" download id="downloadAppsBtn">
+                    <button type="button" id="downloadBtnApps">
+                            Download
+                    </button>
+                </a>
+            </div>
 
             <br /><br /><br /><br /><br />
 
