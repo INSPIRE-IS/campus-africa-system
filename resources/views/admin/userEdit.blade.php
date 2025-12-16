@@ -139,13 +139,17 @@
                     <label for="role_non_funding" style="width:500px">Approve Non-Funding Documents</label>
                 </li>
                 <li style="display:inline-flex">
+                    <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1" <?php if($user->role_app_lease == "1"){echo "checked";} ?>>
+                    <label for="role_app_lease" style="width:500px">Approve Applications & Leases</label>
+                </li>                
+                <li style="display:inline-flex">
                     <input type="checkbox" id="role_funding" name="role_funding" value="1" <?php if($user->role_funding == "1"){echo "checked";} ?>>
                     <label for="role_funding" style="width:500px">Approve Funding, Other & Fee Waiver</label>
                 </li>
                 <li style="display:inline-flex">
-                    <input type="checkbox" id="role_app_lease" name="role_app_lease" value="1" <?php if($user->role_app_lease == "1"){echo "checked";} ?>>
-                    <label for="role_app_lease" style="width:500px">Approve Applications & Leases</label>
-                </li>
+                    <input type="checkbox" id="role_other_reject_doc" name="role_other_reject_doc" value="1" <?php if($user->role_other_reject_doc == "1"){echo "checked";} ?>>
+                    <label for="role_other_reject_doc" style="width:500px">Reject Other Documents</label>
+                </li>                
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1" <?php if($user->role_nsfas_approval_upload == "1"){echo "checked";} ?>>
                     <label for="role_nsfas_approval_upload" style="width:500px">NSFAS File Upload</label>
