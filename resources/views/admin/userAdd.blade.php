@@ -159,6 +159,8 @@
                     <input type="checkbox" id="role_waive_fee" name="role_waive_fee" value="1">
                     <label for="role_waive_fee" style="width:500px">Request Fee Waiver</label>
                 </li>
+
+
                 <!-- <li style="display:inline-flex">
                     <input type="checkbox" id="role_approve_waive" name="role_approve_waive" value="1">
                     <label for="role_approve_waive" style="width:500px">Approve Fee Waiver </label>
@@ -183,10 +185,10 @@
                     <input type="checkbox" id="role_all_apps_report" name="role_all_apps_report" value="1">
                     <label for="role_all_apps_report" style="width:500px">All Application Report </label>
                 </li>
-                
-
-                
-                
+                <li style="display:inline-flex">
+                    <input type="checkbox" id="role_allow_generate_invoice" name="role_allow_generate_invoice" value="1">
+                    <label for="role_allow_generate_invoice" style="width:500px">Allow Generate Invoice</label>
+                </li>
             </ul>
         </div>
 
