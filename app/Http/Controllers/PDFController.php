@@ -31,14 +31,14 @@ class PDFController extends Controller
     $bookingId = $request->bookingId;
     $property = $request->property;
     $roomType = $request->roomType;
+
     $this_year = Lookups::where('group_id', '4')->first();
-    $this_year = $this_year->lookup_name;
-    //get current year
-    $session_year = Session::get('year');
-    if (!empty($session_year)) {
-      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-      $this_year = $this_year->lookup_name;
+    if (Session::has('year')) {
+      $year = Session::get('year');
+      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
     }
+    $this_year = $this_year->lookup_name;
+
     if (!$request->type) {
 
       $oldData = Booking::where('userId', $bookingId)->where('year', $this_year)->first();
@@ -163,7 +163,15 @@ class PDFController extends Controller
 
 
       // Create Lease Link
-      $leaseToken = UserLeaseToken::create(["userUid" => $studentId, "leaseToken" => $this->generateRandomLongString(), "active" => 1, "signed" => 0]);
+      $leaseToken = UserLeaseToken::create(
+        [
+          "userUid" => $studentId,
+          "leaseToken" => $this->generateRandomLongString(),
+          "active" => 1,
+          "signed" => 0,
+          "year" => $this_year
+        ]
+      );
       // $userForLease = User::where('id', $studentId)->first();
       // $userForLease = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
 

@@ -129,6 +129,7 @@
 
                 <ol type="a" style="text-laign:left; font-size:14px;">
                     <li>The Student agrees to pay the Owner, the sum of <b>R{{$paymentBooking->monthly_rental}}</b> as a monthly fee for the non-exclusive right to make use of the facilities at the residence and Single / Shared Room.
+                        The aforementioned fee shall be the NSFAS-approved rate at the time this agreement is signed if the student is NSFAS approved. Should NSFAS amend that rate at any time thereafter, the monthly fee will automatically adjust to the revised NSFAS rate.
                          <!-- and a further R ??? as an optional monthly fee for the provision of Student Meals on a daily basis -->
                         </li>
                     <br/>
@@ -391,7 +392,7 @@
                         <br/>
                         <span style="font-weight:bold">Email:</span> {{$data->userEmail}}
                         <br/>
-                        <span style="font-weight:bold">Cell Number:</span> {{$data->userCell}}
+                        <span style="font-weight:bold">Cell Number:</span> {{$data->userCellCode}} {{$data->userCell}}
                         <br/><br/>
                         <span style="font-weight:bold">The student’s normal residential address (outside of the academic year) </span>
                         <br/><br/>
@@ -401,6 +402,16 @@
                         <br/> -->
                         <span style="font-weight:bold">Email:</span> {{$data->userEmail}}
                     </li>
+                    <br />
+                    <li>Next of Kin of Student:
+                        <br /><br />
+                        <span style="font-weight:bold">Full Name:</span> {{ $data->kinFirstName }} {{ $data->kinLastName }}
+                        <br />
+                        <span style="font-weight:bold">Email:</span> {{ $data->kinEmail }}
+                        <br />
+                        <span style="font-weight:bold">Cell Number:</span> {{ $data->kinCellCode }} {{ $data->kinCellNo }}
+                    </li>
+
                 </ol>
                 <br/>
                 <li>Any notice or communication required or permitted to be given in terms of this agreement shall be valid and effective only if in writing, but it shall be competent to give notice by facsimile or e-mail. </li>
