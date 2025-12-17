@@ -72,6 +72,20 @@ class TestQuoteInvoicePDFGeneration extends Command
                 'description' => 'Lease Fee',
                 'amount' => $leaseFee,
             ];
+            $deposit = $bookingPayment->deposit;
+
+            if ($bookingPayment->rob_loan_waived == '2') {
+                $leaseFee = 0;
+            }
+            if ($bookingPayment->rob_deposit_waived == '2') {
+                $deposit = 0;
+            }
+            $items[] = [
+                'date' => '',
+                'description' => 'Deposit',
+                'amount' => $deposit,
+            ];
+
 
             $period = new DatePeriod(
                 new DateTime($booking->lease_from_date),
@@ -197,7 +211,7 @@ class TestQuoteInvoicePDFGeneration extends Command
             }
             $user = $studentsInfo;
 
-            $pdf = PDF::loadView('PDF.quote', compact('user', 'booking', 'property', 'bookingPayment', 'leaseFee', 'deposit'));
+            $pdf = PDF::loadView('PDF.invoiceOld', compact('user', 'booking', 'property', 'bookingPayment', 'leaseFee', 'deposit'));
             $content = $pdf->download('test')->getOriginalContent();
             $dateNow = date('Y-m-d');
             $new_name = $dateNow . '_quote.pdf';
