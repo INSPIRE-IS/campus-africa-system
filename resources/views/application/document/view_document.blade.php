@@ -153,8 +153,8 @@
             <hr style="margin-bottom: 35px;">
 
             <h3>Info</h3>
-<span> show theis {{Auth::user()->role_other_reject_doc}}</span>
-<span> show theis {{explode("_", $file->fileId)[0] === "other"}}</span>
+            <span> show theis {{Auth::user()->role_other_reject_doc}}</span>
+            <span> show theis {{explode("_", $file->fileId)[0] === "other"}}</span>
             
 
             <div>

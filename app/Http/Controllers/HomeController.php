@@ -728,6 +728,7 @@ class HomeController extends Controller
         $name = $studentInfo->userFirstName . " " . $studentInfo->userLastname;
 
         $files = UserFiles::where('userUid', $userId)->where('year', $this_year)->get();
+        //dd($files);
         $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
 
         $userData = [];
@@ -738,6 +739,10 @@ class HomeController extends Controller
         if ($studentInfo->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null) {
             array_push($all, "moveIn");
         }
+        if ($studentInfo->rob_51_temp_lease_approve == 2) {
+            array_push($all, "tempMoveIn");
+        }
+
         if ($studentInfo->studentType == "Cash / Direct") {
             array_push($all, "bankStatement");
         }
@@ -838,6 +843,7 @@ class HomeController extends Controller
         $comments = Comments::with('users')->where('user_uid', $userId)->orderBy('created_at', 'desc')->get();
 
         $leaseApproved = 'false';
+        $tempLeaseApproved = 'false';
 
         $bank = 0;
         $approval = 0;
@@ -848,7 +854,11 @@ class HomeController extends Controller
                     $leaseApproved = "true";
                 }
             }
-
+            if ($userFile['field'] == "tempMoveIn") {
+                if ($userFile['status'] == "XApproved") {
+                    $tempLeaseApproved = "true";
+                }
+            }
             if ($userFile['field'] == "bankStatement") {
                 $bank = 1;
             }
@@ -896,7 +906,7 @@ class HomeController extends Controller
         $previousBookings = Booking::where('userId', $userId)->where('year', '!=', $this_year)->orderBy('year', 'desc')->get();
 
         if ((($userData[0]['userInfo']['rob_60_cancelled'] == '0' || $userData[0]['userInfo']['rob_60_cancelled'] == null) && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1') {
-            return ["Info" => 1, "headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail, "previousBookings" => $previousBookings, "paymentBooking" => $paymentBooking];
+            return ["Info" => 1, "headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'tempLeaseApproved' => $tempLeaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail, "previousBookings" => $previousBookings, "paymentBooking" => $paymentBooking];
         } else {
             return ["Info" => 0, "headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName];
         }
@@ -1872,6 +1882,45 @@ class HomeController extends Controller
         }
         // $this->update_user_status($userId);
     }
+
+    protected function generate_temp_lease(Request $request)
+    {
+
+        $userId = $request->userId;
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        //get current year
+        $session_year = Session::get('year');
+        if (!empty($session_year)) {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+            $this_year = $this_year->lookup_name;
+        }
+
+        // $user = User::where('id', $userId)->first();
+        $user = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+
+        $data['name'] = $user->userFirstName;
+        $data['email'] = $user->userEmail;
+        $data['roomNo'] = $user->roomNo;
+        $data['bookingRef'] = $user->bookingRef;
+
+
+        $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 2]);
+        dd($studentInfo);
+        ActionList::create([
+            "userUid" => $userId,
+            "action" => "Approved temp lease and sent confirmation email",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
+        ]);
+
+        // $this->update_user_status($userId);
+
+    }
+
 
     public function documents(Request $request)
     {
@@ -6090,6 +6139,7 @@ class HomeController extends Controller
 
     public function action_data(Request $request)
     {
+        dd($request->all());
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
         //get current year
@@ -7952,6 +8002,7 @@ class HomeController extends Controller
                 "rob_40_bed" => $user->rob_40_bed,
                 "rob_45_other" => $user->rob_45_other,
                 "rob_50_approve" => $user->rob_50_approve,
+                "rob_51_temp_lease_approve" => $user->rob_51_temp_lease_approve,
                 "rob_60_cancelled" => $user->rob_60_cancelled,
                 'parent_approved' => $user->parent_approved,
                 'burser_approved' => $user->burser_approved,

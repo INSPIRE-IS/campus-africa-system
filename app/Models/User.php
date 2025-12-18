@@ -154,6 +154,7 @@ class User extends Authenticatable
         'role_mda_report',
         'role_all_apps_report',
         'role_allow_generate_invoice',
+        'role_allow_generate_temp_lease',
     ];
 
     public function files()

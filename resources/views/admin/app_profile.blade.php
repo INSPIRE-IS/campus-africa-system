@@ -703,6 +703,7 @@
                         <?php $i = 0; ?>
 
                         @foreach ($user[0]['files'] as $file)
+                        {{-- <p>file: {{ $file['field'] }}</p> --}}
                             @if ($file['field'] !== 'moveIn' || ($file['field'] == 'moveIn' && $user[0]['userInfo']['rob_50_approve'] == '2'))
                                 <div class="section">
                                     <div class="label">
@@ -827,6 +828,18 @@
                                             @endif
                                         @endif
 
+                                        {{-- @if ($file['field'] === 'tempMoveIn')
+                                            @if ($user[0]['userInfo']['rob_55_lease'] == 0)
+                                                <div class="button rejected"></div>
+                                            @elseif ($user[0]['userInfo']['rob_55_lease'] == 1)
+                                                <div class="button action"></div>
+                                            @elseif ($user[0]['userInfo']['rob_55_lease'] == 2)
+                                                <div class="button approved"></div>
+                                            @else
+                                                <div class="button na"></div>
+                                            @endif
+                                        @endif --}}
+
                                         {{-- @if ($file['field'] === 'moveIn')
                                         @if ($file['status'] === 'XApproved' || $file['status'] === 'Approved')
                                             <div class="button approved"></div>
@@ -870,7 +883,26 @@
                                                 @endif
                                             @endif
                                         @endif
+                                        @if ($file['field'] === 'tempMoveIn')
+                                            @if (isset($file['url']) && isset($file['fileName']))
+                                                <a href="/storage/{{ $file['url'] }}"
+                                                    download="{{ $file['fileName'] }}">
+                                                    <button type="button" id="myBtn_download">Download Lease</button>
+                                                </a>
+                                            @endif
+                                        @endif
 
+                                        @if ($file['field'] === 'tempMoveIn' && $file['status'] !== 'XApproved')
+                                            @if (Auth::user()->role_lease_regen == '1')
+                                                <a href="#">
+                                                    <button type="button" id="myBtn_regen_lease">Regen Lease</button>
+                                                </a>
+                                                @if ($file['status'] !== 'AUploaded')
+                                                    <button type="button" id="myBtn_resend_lease"
+                                                        onClick="resendLease()">Resend Lease</button>
+                                                @endif
+                                            @endif
+                                        @endif
                                         @if ($file['status'] === 'AUploaded' || $file['status'] === 'XApproved')
                                             <button type="button"
                                                 onClick="btn_view_document_ajax({{ $file['id'] }})">View
@@ -2055,8 +2087,8 @@
 
                         $(".appSection").empty()
 
-                        if ((data['rob_50_approve'] == 0 || data['rob_50_approve'] == 1) && (data[
-                                'rob_60_cancelled'] == 0 || data['rob_60_cancelled'] == null)) {
+                        if ((data['rob_50_approve'] == 0 || data['rob_50_approve'] == 1) && 
+                            (data['rob_60_cancelled'] == 0 || data['rob_60_cancelled'] == null)) {
                             $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
 
                             if ("<?php echo Auth::user()->role_app_lease; ?>" == 1 &&
@@ -2073,6 +2105,14 @@
                                 )
                                 $("#sendMailReminder").addClass('hidden');
                             }
+
+                        }else if(data['rob_50_approve'] == 2 && data['rob_51_temp_lease_approve'] == null ){
+                            $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
+                            if ("<?php echo Auth::user()->role_allow_generate_temp_lease; ?>" == 1) {
+                                $(".main_btn").empty().append(
+                                    '<button type="button" class="appBtn" id="approveTemp" onClick="approveTempLease(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">APPROVE TEMP LEASE AND SEND CONFIRMATION</button><br/>'
+                                )
+                            }                            
                         }
 
                         if (data['rob_10_fee'] == 2 &&
