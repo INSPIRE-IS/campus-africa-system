@@ -19,6 +19,7 @@ use Mail;
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
+use App\Jobs\SendResendTempLeaseMail;
 use Illuminate\Support\Facades\Log;
 // use GPBMetadata\Google\Api\Log;
 use Illuminate\Support\Facades\Session;
@@ -250,6 +251,110 @@ class PDFController extends Controller
     }
 
     return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
+  }
+
+
+  public function createTempLeasePDF(Request $request, $studentId)
+  {
+
+    $bookingId = $request->bookingId;
+    $property = $request->property;
+    $roomType = $request->roomType;
+
+    $this_year = Lookups::where('group_id', '4')->first();
+    if (Session::has('year')) {
+      $year = Session::get('year');
+      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+    }
+    $this_year = $this_year->lookup_name;
+
+
+    $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
+    //dd($studentId);
+    $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
+    $propertyData = Property::where('id', $booking->property_data_id)->first();
+    $residence = Residence::where('id', $propertyData->residence)->first();
+    $leaseAdminFee = Lookups::where('group_id', '8')->first();
+    $owner = storage_path() . '/leases/juanita-cronje.jpg';
+
+    $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+    if ($data->userId == "") {
+      $userIdentification = $data->userPassport;
+    } else {
+      $userIdentification = $data->userId;
+    }
+
+
+    $pdfdata = [
+      'tenantName' => $data->userLastname . " " . $data->userFirstName,
+      'tenantId' => $userIdentification,
+    ];
+
+    $pdf = PDF::loadView('PDF.temp_lease', $pdfdata);
+
+    $bookingYear = substr($booking->year, -2);
+    $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
+
+    $fileNameToSave = $bookingYear . $bookingPrefix . "_" . $booking->bed_code . "_" . $data->userLastname . "_" . $data->userFirstName . ".pdf";
+    // $fileNameToSave = 'lease.pdf';
+
+    $content = $pdf->download($fileNameToSave)->getOriginalContent();
+    // $user = User::where('id', $studentId)->first();
+
+    \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
+
+    //Check if there is an existing lease to overwrite
+    $tempLease = UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->first();
+
+    $data = array(
+      'userUid' => $studentId,
+      'fileName' => $fileNameToSave,
+      'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
+      'status' => 'Rejected',
+      'uploaded_by' => Auth::user()->name,
+      'created_at' => date('Y-m-d h:m:s'),
+      'year' => $this_year,
+    );
+
+    if (!empty($tempLease)) {
+      UserFiles::where('tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->update($data);
+      $action_type = "Regenerated Temp Lease";
+    } else {
+      $data['fileId'] = 'tempMoveIn';
+      UserFiles::insert($data);
+      $action_type = "Generated Temp Lease";
+    }
+
+    ActionList::create([
+      "userUid" => $studentId,
+      "action" => $action_type,
+      "actionUserUid" => Auth::user()->id,
+      "actionUserDisplayName" => Auth::user()->userFirstName,
+      "actionUserRole" => Auth::user()->userRole,
+      "year" => $this_year,
+    ]);
+
+    // User::where('id', $studentId)->update(['rob_55_lease' => 0]);
+    StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 2]);
+
+
+    // Create Lease Link
+    $leaseToken = UserLeaseToken::create(
+      [
+        "userUid" => $studentId,
+        "leaseToken" => $this->generateRandomLongString(),
+        "lease_type" => "temp_lease",
+        "active" => 1,
+        "signed" => 0,
+        "year" => $this_year
+      ]
+    );
+
+    $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-temp-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
+    $userUidData = User::where('id', $studentId)->first();
+    $this->dispatch(new SendResendTempLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+
+    return [UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
   }
 
   public function generateRandomLongString($length = 24)

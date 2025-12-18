@@ -278,7 +278,80 @@
                     }
                 });
             }
+            function approveTempLease(userId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Generate Temp Lease',
+                    text: "You are about to gemerate a temp lease for the application and send approval email. Continue?",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, approve'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // $("#approveProfile").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
+                        $.ajax({
+                            type: "post",
+                            url: "/generate-temp-lease",
+                            data: {
+                                userId: "{{ $user[0]['userInfo']['userUid'] }}",
+                            },
+
+                            success: function(data) {
+                                // window.location.reload();
+                                checkUserStatus();
+                                $.ajax({
+                                    type: "post",
+                                    url: "/createTempLease/{{ $user[0]['userInfo']['userUid'] }}",
+                                    data: {
+                                        bookingId: "{{ $user[0]['userInfo']['userUid'] }}",
+                                        property: $("#property").val(),
+                                        roomType: $("#roomType").val(),
+                                        floor: $("#floor").val(),
+                                        unit: $("#unit").val(),
+                                        room: $("#room").val(),
+                                        bed: $("#bed").val(),
+                                        bed_code: $("#bed_code").val(),
+                                        lease_from_date: $("#lease_from_date").val(),
+                                        lease_from_time: $("#lease_from_time").val(),
+                                        lease_to_date: $("#lease_to_date").val(),
+                                        lease_to_time: $("#lease_to_time").val(),
+                                        type: "auto",
+                                    },
+
+                                    success: function(data) {
+
+                                        var regen = "";
+                                        if ("<?php echo Auth::user()->role_allow_generate_temp_lease; ?>" == "1") {
+                                            var regen =
+                                                '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Temp Lease</button>'
+                                        }
+
+
+                                        // window.location.reload();
+                                        $("#documentsSectionDisplay").append(
+                                            '<div class="section">' +
+                                            '<div class="label">TEMP LEASE</div>' +
+                                            '<div class="status" id="tempMoveInStatus"><div class="button rejected"></div></div>' +
+                                            '<div class="banner" id="tempMoveInBanner">' +
+                                            '<a href="/storage/' + data[0]['fileUrl'] +
+                                            '" download="' + data[0]['fileName'] +
+                                            '" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Temp Lease</button></a>' +
+                                            regen +
+                                            '<label for="tempMoveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label>' +
+                                            '<input type="file" id="tempMoveIn" onChange="UploadDocument(\'tempMoveIn\')" accept="image/*, application/pdf"  hidden>' +
+                                            '</div>' +
+                                            '</div>')
+                                        checkUserStatus();
+                                        $("#changeDatesLease").addClass('hidden');
+                                    },
+                                });
+                            },
+                        });
+                    }
+                });
+            }
             // function addressApp(){
             //     Swal.fire({
             //         title: 'Please Approve or Reject this data first.',
