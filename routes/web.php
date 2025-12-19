@@ -70,6 +70,7 @@ Route::get('/check-user-payment/{userId}', [HomeController::class, 'check_user_p
 
 Route::get('/my-profile', [ProfileController::class, 'index'])->name('my-profile');
 Route::post('/update-profile', [ProfileController::class, 'update']);
+Route::post('/questionnaire/update', [ProfileController::class, 'update_questionnaire'])->name('questionnaire.update');
 
 Route::get('/my-documents', [HomeController::class, 'documents'])->name('my-documents');
 

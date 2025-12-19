@@ -1022,7 +1022,7 @@
             $("input[name^='answers']:checked").each(function () {
                 let questionId = $(this).attr("name").match(/\d+/)[0];
                 answers[questionId] = $(this).val();
-            }); // 9903014800086
+            });
 
             if (req == 0) {
                 Swal.fire(
