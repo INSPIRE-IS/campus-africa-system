@@ -152,4 +152,18 @@ class StudentsInfo extends Model
     {
         return $this->compatibilityScoresAsA->merge($this->compatibilityScoresAsB);
     }
+
+    public function questionAnswers()
+    {
+        return $this->hasMany(StudentQuestionAnswer::class, 'student_id');
+    }
+
+    /**
+     * Answers for a specific academic year
+     */
+    public function questionAnswersForYear($year)
+    {
+        return $this->hasMany(StudentQuestionAnswer::class, 'student_id')
+            ->where('academic_year', $year);
+    }
 }

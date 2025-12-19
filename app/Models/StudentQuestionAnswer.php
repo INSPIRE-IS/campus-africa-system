@@ -28,4 +28,9 @@ class StudentQuestionAnswer extends Model
     {
         return $this->belongsTo(QuestionOption::class);
     }
+
+    public function student()
+    {
+        return $this->belongsTo(StudentsInfo::class, 'student_id');
+    }
 }
