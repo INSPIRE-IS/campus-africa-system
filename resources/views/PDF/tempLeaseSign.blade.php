@@ -124,7 +124,7 @@
 
         <td width="33%" class="center">
             <div class="line" style="width: 90%; margin: auto;"></div>
-            <div style="font-size: 11px;">Witness</div>
+            <div style="font-size: 11px;"></div>
         </td>
     </tr>
 </table>
