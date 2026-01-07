@@ -2110,7 +2110,7 @@
 
                         }
                         if(data['generate_temp_lease'] && data['rob_51_temp_lease_approve'] == null){
-                            $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
+                            // $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
                             if (data['role_allow_generate_temp_lease'] == 1) {
                                 $(".main_btn").empty().append(
                                     '<button type="button" class="appBtn" id="approveTemp" onClick="approveTempLease(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">GENERATE TEMP LEASE AND SEND FOR SIGNATURE</button><br/><br/><br/>'
