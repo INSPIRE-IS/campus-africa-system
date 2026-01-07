@@ -152,19 +152,19 @@ class InvoiceController extends Controller
                             'addressPostal' => '2017',
                         ];
                         break;
-                    case 'FUNSA---':
+                    case 'FUNSA':
                         $billTo = [
-                            'name' => 'FUNSA',
+                            'name' => 'NSFAS',
                             'regNo' => '',
-                            'contactName' => '',
-                            'contactEmail' => '',
-                            'contactPhone' => '',
+                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            'contactPhone' => '+27113556532',
                         ];
                         $billAddress = [
-                            'address1' => '',
-                            'address2' => '',
-                            'addressCity' => '',
-                            'addressPostal' => '',
+                            'address1' => 'Ground Floor-Solomon Mahlangu House',
+                            'address2' => '1 Jorissen Street',
+                            'addressCity' => 'Braamfontein',
+                            'addressPostal' => '2017',
                         ];
                         break;
                     case 'GCRA':
@@ -180,6 +180,21 @@ class InvoiceController extends Controller
                             'address2' => 'Johannesburg',
                             'addressCity' => 'Johannesburg',
                             'addressPostal' => '2001',
+                        ];
+                        break;
+                    case 'NRF':
+                        $billTo = [
+                            'name' => 'NRF',
+                            'regNo' => '',
+                            'contactName' => 'National Research Foundation',
+                            'contactEmail' => '',
+                            'contactPhone' => '',
+                        ];
+                        $billAddress = [
+                            'address1' => '1 Jan Smuts Ave',
+                            'address2' => 'Braamfontein',
+                            'addressCity' => 'Johannesburg',
+                            'addressPostal' => '1828',
                         ];
                         break;
                     case 'MQA':
@@ -416,19 +431,34 @@ class InvoiceController extends Controller
                             'addressPostal' => '2017',
                         ];
                         break;
-                    case 'FUNSA---':
+                    case 'FUNSA':
                         $billTo = [
-                            'name' => 'FUNSA',
+                            'name' => 'NSFAS',
                             'regNo' => '',
-                            'contactName' => '',
+                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            'contactPhone' => '+27113556532',
+                        ];
+                        $billAddress = [
+                            'address1' => 'Ground Floor-Solomon Mahlangu House',
+                            'address2' => '1 Jorissen Street',
+                            'addressCity' => 'Braamfontein',
+                            'addressPostal' => '2017',
+                        ];
+                        break;
+                    case 'NRF':
+                        $billTo = [
+                            'name' => 'NRF',
+                            'regNo' => '',
+                            'contactName' => 'National Research Foundation',
                             'contactEmail' => '',
                             'contactPhone' => '',
                         ];
                         $billAddress = [
-                            'address1' => '',
-                            'address2' => '',
-                            'addressCity' => '',
-                            'addressPostal' => '',
+                            'address1' => '1 Jan Smuts Ave',
+                            'address2' => 'Braamfontein',
+                            'addressCity' => 'Johannesburg',
+                            'addressPostal' => '1828',
                         ];
                         break;
                     case 'GCRA':
