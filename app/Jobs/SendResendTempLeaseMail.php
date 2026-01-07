@@ -55,15 +55,21 @@ class SendResendTempLeaseMail implements ShouldQueue
 
             $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
             $booking = Booking::where('id', $userForLease->bookingId)->first();
-
+            if (!$userForLease || !$booking) {
+                Log::error('Temp lease mail aborted – missing data', [
+                    'user_id' => $this->userUid->id
+                ]);
+                return;
+            }
             $message_replace['booking_application'] = "#" . $booking->booking_code;
             $message_replace['name'] = $userForLease->userFirstName;
             $message_replace['lease_link'] = $this->leaseOpenTag;
             $message_replace['close_lease_link'] = "</a>";
 
             $mailerForMessage = MailerList::where("mailer_name", "Temp Lease Application")->first();
+            Log::info($mailerForMessage);
 
-            if ($mailerForMessage->status == '1') {
+            if (!$mailerForMessage || $mailerForMessage->status == '1') {
 
                 $mailerMessage = $mailerForMessage->message;
 
@@ -101,6 +107,10 @@ class SendResendTempLeaseMail implements ShouldQueue
                 Log::info('Sending email to ' . $data['email']);
                 $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
                 Mail::mailer('smtp')->to($data['email'])->send($email);
+            } else {
+                Log::error('Temp lease mail aborted – mailer not found', [
+                    'user_id' => $this->userUid->id
+                ]);
             }
         } catch (\Exception $e) {
             Log::error('Error in SendResendLeaseMail job', [
