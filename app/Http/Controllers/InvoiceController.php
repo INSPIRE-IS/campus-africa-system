@@ -119,7 +119,7 @@ class InvoiceController extends Controller
             $period = new DatePeriod(
                 new DateTime($booking->lease_from_date),
                 new DateInterval('P1M'),
-                (new DateTime($booking->lease_to_date))->modify('+1 month')
+                (new DateTime($booking->lease_to_date)) // ->modify('+1 month')
             );
 
             foreach ($period as $date) {
@@ -135,20 +135,84 @@ class InvoiceController extends Controller
             // Invoice meta
             $invoiceNumber = $user->studentNo . '-' . date('Ymd');
             $invoiceDate = date('Y/m/d');
-            if ($user->studentType == 'Bursary') {
-                $billTo = [
-                    'name' => $user->burCompanyName,
-                    'regNo' => $user->burRegNo,
-                    'contactName' => $user->burContactPerson,
-                    'contactEmail' => $user->burEmail,
-                    'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
-                ];
-                $billAddress = [
-                    'address1' => $user->bAddress1,
-                    'address2' => $user->bAddress2,
-                    'addressCity' => $user->bAddressCity,
-                    'addressPostal' => $user->bAddressPostal,
-                ];
+            if ($user->studentType == 'Bursary' || $user->studentType == 'NSFAS' || $user->studentType == 'FUNSA' || $user->studentType == 'GCRA' || $user->studentType == 'MQA') {
+                switch ($user->studentType) {
+                    case 'NSFAS':
+                        $billTo = [
+                            'name' => 'NSFAS',
+                            'regNo' => '',
+                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            'contactPhone' => '+27113556532',
+                        ];
+                        $billAddress = [
+                            'address1' => 'Ground Floor-Solomon Mahlangu House',
+                            'address2' => '1 Jorissen Street',
+                            'addressCity' => 'Braamfontein',
+                            'addressPostal' => '2017',
+                        ];
+                        break;
+                    case 'FUNSA---':
+                        $billTo = [
+                            'name' => 'FUNSA',
+                            'regNo' => '',
+                            'contactName' => '',
+                            'contactEmail' => '',
+                            'contactPhone' => '',
+                        ];
+                        $billAddress = [
+                            'address1' => '',
+                            'address2' => '',
+                            'addressCity' => '',
+                            'addressPostal' => '',
+                        ];
+                        break;
+                    case 'GCRA':
+                        $billTo = [
+                            'name' => 'GCRA',
+                            'regNo' => '',
+                            'contactName' => 'Mogopa Ngcobo',
+                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            'contactPhone' => '+27113556532',
+                        ];
+                        $billAddress = [
+                            'address1' => '17 Simmonds Street',
+                            'address2' => 'Johannesburg',
+                            'addressCity' => 'Johannesburg',
+                            'addressPostal' => '2001',
+                        ];
+                        break;
+                    case 'MQA':
+                        $billTo = [
+                            'name' => 'Mining Qualifications Authority',
+                            'regNo' => '',
+                            'contactName' => 'Felicitus Lebetha',
+                            'contactEmail' => 'Felicitusl@mqa.org.za',
+                            'contactPhone' => '+27115472674',
+                        ];
+                        $billAddress = [
+                            'address1' => '7 Anerley Road',
+                            'address2' => 'Parktown',
+                            'addressCity' => 'Johannesburg',
+                            'addressPostal' => '2193',
+                        ];
+                        break;
+                    default:
+                        $billTo = [
+                            'name' => $user->burCompanyName,
+                            'regNo' => $user->burRegNo,
+                            'contactName' => $user->burContactPerson,
+                            'contactEmail' => $user->burEmail,
+                            'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
+                        ];
+                        $billAddress = [
+                            'address1' => $user->bAddress1,
+                            'address2' => $user->bAddress2,
+                            'addressCity' => $user->bAddressCity,
+                            'addressPostal' => $user->bAddressPostal,
+                        ];
+                        break;
+                }
             } else if ($user->studentType == 'Cash / Direct') {
                 $billTo = [
                     'name' => '',
@@ -178,15 +242,12 @@ class InvoiceController extends Controller
                     'addressPostal' => '',
                 ];
             }
-
-
-
-
             /*
             |--------------------------------------------------------------------------
             | Generate PDF
             |--------------------------------------------------------------------------
             */
+            /** @disregard P1009 */
             $pdf = PDF::loadView(
                 'PDF.invoice',
                 compact(
@@ -211,7 +272,7 @@ class InvoiceController extends Controller
             // $new_name = $randomNumber . '_invoice.pdf';
 
             // $content = $pdf->download('test')->getOriginalContent();
-            $new_name = $userIdentification . '_invoice.pdf';
+            $new_name = $userIdentification . '_quote.pdf';
 
             $location = 'public/files/' . $userIdentification . '/' . $new_name;
 
@@ -229,7 +290,6 @@ class InvoiceController extends Controller
 
     public function generateInvoice(Request $request)
     {
-
         $session_year = Session::get('year');
         if (!empty($session_year)) {
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
@@ -323,7 +383,7 @@ class InvoiceController extends Controller
             $period = new DatePeriod(
                 new DateTime($booking->lease_from_date),
                 new DateInterval('P1M'),
-                (new DateTime($booking->lease_to_date))->modify('+1 month')
+                (new DateTime($booking->lease_to_date)) // ->modify('+1 month')
             );
 
             foreach ($period as $date) {
@@ -339,20 +399,84 @@ class InvoiceController extends Controller
             // Invoice meta
             $invoiceNumber = $user->studentNo . '-' . date('Ymd');
             $invoiceDate = date('Y/m/d');
-            if ($user->studentType == 'Bursary') {
-                $billTo = [
-                    'name' => $user->burCompanyName,
-                    'regNo' => $user->burRegNo,
-                    'contactName' => $user->burContactPerson,
-                    'contactEmail' => $user->burEmail,
-                    'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
-                ];
-                $billAddress = [
-                    'address1' => $user->bAddress1,
-                    'address2' => $user->bAddress2,
-                    'addressCity' => $user->bAddressCity,
-                    'addressPostal' => $user->bAddressPostal,
-                ];
+            if ($user->studentType == 'Bursary' || $user->studentType == 'NSFAS' || $user->studentType == 'FUNSA' || $user->studentType == 'GCRA' || $user->studentType == 'MQA') {
+                switch ($user->studentType) {
+                    case 'NSFAS':
+                        $billTo = [
+                            'name' => 'NSFAS',
+                            'regNo' => '',
+                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            'contactPhone' => '+27113556532',
+                        ];
+                        $billAddress = [
+                            'address1' => 'Ground Floor-Solomon Mahlangu House',
+                            'address2' => '1 Jorissen Street',
+                            'addressCity' => 'Braamfontein',
+                            'addressPostal' => '2017',
+                        ];
+                        break;
+                    case 'FUNSA---':
+                        $billTo = [
+                            'name' => 'FUNSA',
+                            'regNo' => '',
+                            'contactName' => '',
+                            'contactEmail' => '',
+                            'contactPhone' => '',
+                        ];
+                        $billAddress = [
+                            'address1' => '',
+                            'address2' => '',
+                            'addressCity' => '',
+                            'addressPostal' => '',
+                        ];
+                        break;
+                    case 'GCRA':
+                        $billTo = [
+                            'name' => 'GCRA',
+                            'regNo' => '',
+                            'contactName' => 'Mogopa Ngcobo',
+                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            'contactPhone' => '+27113556532',
+                        ];
+                        $billAddress = [
+                            'address1' => '17 Simmonds Street',
+                            'address2' => 'Johannesburg',
+                            'addressCity' => 'Johannesburg',
+                            'addressPostal' => '2001',
+                        ];
+                        break;
+                    case 'MQA':
+                        $billTo = [
+                            'name' => 'Mining Qualifications Authority',
+                            'regNo' => '',
+                            'contactName' => 'Felicitus Lebetha',
+                            'contactEmail' => 'Felicitusl@mqa.org.za',
+                            'contactPhone' => '+27115472674',
+                        ];
+                        $billAddress = [
+                            'address1' => '7 Anerley Road',
+                            'address2' => 'Parktown',
+                            'addressCity' => 'Johannesburg',
+                            'addressPostal' => '2193',
+                        ];
+                        break;
+                    default:
+                        $billTo = [
+                            'name' => $user->burCompanyName,
+                            'regNo' => $user->burRegNo,
+                            'contactName' => $user->burContactPerson,
+                            'contactEmail' => $user->burEmail,
+                            'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
+                        ];
+                        $billAddress = [
+                            'address1' => $user->bAddress1,
+                            'address2' => $user->bAddress2,
+                            'addressCity' => $user->bAddressCity,
+                            'addressPostal' => $user->bAddressPostal,
+                        ];
+                        break;
+                }
             } else if ($user->studentType == 'Cash / Direct') {
                 $billTo = [
                     'name' => '',
@@ -382,15 +506,12 @@ class InvoiceController extends Controller
                     'addressPostal' => '',
                 ];
             }
-
-
-
-
             /*
             |--------------------------------------------------------------------------
             | Generate PDF
             |--------------------------------------------------------------------------
             */
+            /** @disregard P1009 */
             $pdf = PDF::loadView(
                 'PDF.invoice',
                 compact(
