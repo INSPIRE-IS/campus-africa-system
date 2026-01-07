@@ -82,6 +82,7 @@
                     <option value="NSFAS" <?php if (Session::get('student_type') == 'NSFAS') {echo 'selected';} ?>>NSFAS</option>
                     <option value="FUNZA" <?php if (Session::get('student_type') == 'FUNZA') {echo 'selected';} ?>>FUNZA</option>
                     <option value="GCRA" <?php if (Session::get('student_type') == 'GCRA') {echo 'selected';} ?>>GCRA</option>
+                    <option value="NRF" <?php if (Session::get('student_type') == 'NRF') {echo 'selected';} ?>>NRF</option>
                     <option value="MQA" <?php if (Session::get('student_type') == 'MQA') {echo 'selected';} ?>>MQA</option>
                     <option value="Bursary" <?php if (Session::get('student_type') == 'Bursary') {echo 'selected';} ?>>Bursary</option>
                     <option value="Cash / Direct" <?php if (Session::get('student_type') == 'Cash / Direct') {echo 'selected';} ?>>Cash</option>

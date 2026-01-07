@@ -363,7 +363,7 @@ class RegisterController extends Controller
                                 $bookingPrice = $room->acf->booking_fee_override;
                             }
 
-                            if ($userInfo->studentType === "NSFAS" || $request->studentType === "FUNZA" || $userInfo->studentType === "GCRA" || $userInfo->studentType === "MQA") {
+                            if ($userInfo->studentType === "NSFAS" || $userInfo->studentType === "NRF" || $userInfo->studentType === "FUNZA" || $userInfo->studentType === "GCRA" || $userInfo->studentType === "MQA") {
                                 if (!in_array("NSFAS Students", $appliesTo)) {
                                     $bookingPrice = 0;
                                 }

@@ -38,6 +38,7 @@
                         <option value="NSFAS">NSFAS</option>
                         <option value="FUNZA">FUNZA</option>
                         <option value="GCRA">GCRA</option>
+                        <option value="NRF">NRF</option>
                         <option value="MQA">MQA</option>
                         <option value="Bursary">Bursary</option>
                         <option value="Cash / Direct">Cash / Direct</option>
@@ -288,6 +289,7 @@
                 <option value="NSFAS">NSFAS</option>
                 <option value="FUNZA">FUNZA</option>
                 <option value="GCRA">GCRA</option>
+                <option value="NRF">NRF</option>
                 <option value="MQA">MQA</option>
                 <option value="Bursary">Bursary</option>
                 <option value="Cash / Direct">Cash</option>

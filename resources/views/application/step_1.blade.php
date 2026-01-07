@@ -173,6 +173,7 @@
                     <option value="NSFAS" >NSFAS</option>
                     <option value="FUNZA" >FUNZA</option>
                     <option value="GCRA" >GCRA</option>
+                    <option value="NRF" >NRF</option>
                     <option value="MQA" >MQA</option>
                     <option value="Bursary" >Bursary</option>
                     <option value="Cash / Direct" >Cash</option>
@@ -796,7 +797,7 @@
                                     $("#property").append('<option value="' + index.id + '">' + index
                                         .residence + '</option>')
                                 }
-                            } else if (($("#studentType").val() == "NSFAS" || $("#studentType").val() === "FUNZA" || $("#studentType").val() == "GCRA" || $("#studentType").val() == "MQA") && inSelectedNsfas.includes(
+                            } else if (($("#studentType").val() == "NSFAS" || $("#studentType").val() === "NRF" || $("#studentType").val() === "FUNZA" || $("#studentType").val() == "GCRA" || $("#studentType").val() == "MQA") && inSelectedNsfas.includes(
                                     index.id)) {
                                 if (allow == 0) {
                                     $("#property").append('<option value="' + index.id + '" disabled>' +
