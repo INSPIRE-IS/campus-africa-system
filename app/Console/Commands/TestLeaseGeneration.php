@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 class TestLeaseGeneration extends Command
 {
     protected $signature = 'command:test_lease_generation {userUid} {year}';
-    // php artisan command:test_lease_generation 17617 2025
+    // php artisan command:test_lease_generation 10773 2026
     protected $description = 'Test the lease resend + generation process manually';
 
     public function handle()
@@ -83,7 +83,7 @@ class TestLeaseGeneration extends Command
             $this->error("User record not found in users table!");
         } else {
             try {
-                dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $lease_link));
+                dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $lease_link, $this_year));
                 $this->info("Email job dispatched successfully!");
             } catch (\Exception $e) {
                 $this->error("Email job failed: " . $e->getMessage());
