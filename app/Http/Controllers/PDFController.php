@@ -296,13 +296,13 @@ class PDFController extends Controller
       'fileName' => $fileNameToSave,
       'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
       'status' => 'Rejected',
-      'uploaded_by' => Auth::user()->name,
+      'uploaded_by' => auth()->user()->name,
       'created_at' => date('Y-m-d h:m:s'),
       'year' => $this_year,
     );
 
     if (!empty($tempLease)) {
-      UserFiles::where('tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->update($data);
+      UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->update($data);
       $action_type = "Regenerated Temp Lease";
     } else {
       $data['fileId'] = 'tempMoveIn';
@@ -313,9 +313,9 @@ class PDFController extends Controller
     ActionList::create([
       "userUid" => $studentId,
       "action" => $action_type,
-      "actionUserUid" => Auth::user()->id,
-      "actionUserDisplayName" => Auth::user()->userFirstName,
-      "actionUserRole" => Auth::user()->userRole,
+      "actionUserUid" => auth()->user()->id,
+      "actionUserDisplayName" => auth()->user()->userFirstName,
+      "actionUserRole" => auth()->user()->userRole,
       "year" => $this_year,
     ]);
 
@@ -337,7 +337,7 @@ class PDFController extends Controller
 
     $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-temp-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
     $userUidData = User::where('id', $studentId)->first();
-    $this->dispatch(new SendResendTempLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+    SendResendTempLeaseMail::dispatch($userUidData, $leaseToken->leaseToken, $leaseOpenTag);
 
     return [UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
   }

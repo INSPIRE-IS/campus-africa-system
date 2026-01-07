@@ -1907,13 +1907,13 @@ class HomeController extends Controller
 
 
         $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 2]);
-        dd($studentInfo);
+
         ActionList::create([
             "userUid" => $userId,
             "action" => "Approved temp lease and sent confirmation email",
-            "actionUserUid" => Auth::user()->id,
-            "actionUserDisplayName" => Auth::user()->userFirstName,
-            "actionUserRole" => Auth::user()->userRole,
+            "actionUserUid" => auth()->user()->id,
+            "actionUserDisplayName" => auth()->user()->userFirstName,
+            "actionUserRole" => auth()->user()->userRole,
             "year" => $this_year,
         ]);
 
@@ -6139,7 +6139,6 @@ class HomeController extends Controller
 
     public function action_data(Request $request)
     {
-        dd($request->all());
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
         //get current year
@@ -6192,6 +6191,9 @@ class HomeController extends Controller
                 // User::where('id', $request->userId)->update(['parent_approved' => null]);
                 StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(['parent_approved' => null]);
             }
+        } else if ($request->FileNameForApproval == "tempMoveIn") {
+            $name = 'TEMP LEASE';
+            $field = "rob_51_temp_lease_approve";
         }
 
         $dataToUpdate = [
@@ -8008,7 +8010,9 @@ class HomeController extends Controller
                 'burser_approved' => $user->burser_approved,
                 'burCompanyName' => $user->burCompanyName,
                 'sponFirstName' => $user->sponFirstName,
-                'kinFirstName' => $user->kinFirstName
+                'kinFirstName' => $user->kinFirstName,
+                'role_allow_generate_temp_lease' => 1,
+                'generate_temp_lease' => (date('m') == '01')
             ];
         } else {
             return false;

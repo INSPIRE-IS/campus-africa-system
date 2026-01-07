@@ -282,7 +282,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Generate Temp Lease',
-                    text: "You are about to gemerate a temp lease for the application and send approval email. Continue?",
+                    text: "You are about to generate a temp lease for the application and send approval email. Continue?",
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
