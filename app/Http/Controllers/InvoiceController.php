@@ -134,8 +134,7 @@ class InvoiceController extends Controller
             // Invoice meta
             $invoiceNumber = $user->studentNo . '-' . date('Ymd');
             $invoiceDate = date('Y/m/d');
-
-            if ($user->studentType == 'Bursary') {
+            if ($user->studentType == 'Bursary' || $user->studentType == 'NSFAS' || $user->studentType == 'FUNSA' || $user->studentType == 'GCRA' || $user->studentType == 'MQA') {
                 switch ($user->studentType) {
                     case 'NSFAS':
                         $billTo = [
@@ -247,6 +246,7 @@ class InvoiceController extends Controller
             | Generate PDF
             |--------------------------------------------------------------------------
             */
+            /** @disregard P1009 */
             $pdf = PDF::loadView(
                 'PDF.invoice',
                 compact(
@@ -287,7 +287,6 @@ class InvoiceController extends Controller
 
     public function generateInvoice(Request $request)
     {
-
         $session_year = Session::get('year');
         if (!empty($session_year)) {
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
@@ -397,7 +396,7 @@ class InvoiceController extends Controller
             // Invoice meta
             $invoiceNumber = $user->studentNo . '-' . date('Ymd');
             $invoiceDate = date('Y/m/d');
-            if ($user->studentType == 'Bursary') {
+            if ($user->studentType == 'Bursary' || $user->studentType == 'NSFAS' || $user->studentType == 'FUNSA' || $user->studentType == 'GCRA' || $user->studentType == 'MQA') {
                 switch ($user->studentType) {
                     case 'NSFAS':
                         $billTo = [
@@ -504,12 +503,12 @@ class InvoiceController extends Controller
                     'addressPostal' => '',
                 ];
             }
-
             /*
             |--------------------------------------------------------------------------
             | Generate PDF
             |--------------------------------------------------------------------------
             */
+            /** @disregard P1009 */
             $pdf = PDF::loadView(
                 'PDF.invoice',
                 compact(
