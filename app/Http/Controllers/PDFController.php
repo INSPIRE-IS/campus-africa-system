@@ -186,15 +186,8 @@ class PDFController extends Controller
       $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
       Log::info('Sending email to ' . $leaseOpenTag);
       $userUidData = User::where('id', $studentId)->first();
-      $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag, $this_year));
-      ActionList::create([
-        "userUid" => $studentId,
-        "action" => "Lease Email Resent",
-        "actionUserUid" => Auth::user()->id,
-        "actionUserDisplayName" => Auth::user()->userFirstName,
-        "actionUserRole" => Auth::user()->userRole,
-        "year" => $this_year,
-      ]);
+      $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year));
+
       // $message_replace['booking_application'] = "#".$booking->booking_code;
       // $message_replace['name'] = $userForLease->userFirstName;
       // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
@@ -272,9 +265,9 @@ class PDFController extends Controller
     $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
     //dd($studentId);
     $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
-    $propertyData = Property::where('id', $booking->property_data_id)->first();
-    $residence = Residence::where('id', $propertyData->residence)->first();
-    $leaseAdminFee = Lookups::where('group_id', '8')->first();
+    // $propertyData = Property::where('id', $booking->property_data_id)->first();
+    // $residence = Residence::where('id', $propertyData->residence)->first();
+    // $leaseAdminFee = Lookups::where('group_id', '8')->first();
     $owner = storage_path() . '/leases/juanita-cronje.jpg';
 
     $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
@@ -293,9 +286,10 @@ class PDFController extends Controller
     $pdf = PDF::loadView('PDF.temp_lease', $pdfdata);
 
     $bookingYear = substr($booking->year, -2);
-    $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
+    // $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
 
-    $fileNameToSave = $bookingYear . $bookingPrefix . "_" . $booking->bed_code . "_" . $data->userLastname . "_" . $data->userFirstName . ".pdf";
+    // $fileNameToSave = $bookingYear . $bookingPrefix . "_" . $booking->bed_code . "_" . $data->userLastname . "_" . $data->userFirstName . ".pdf";
+    $fileNameToSave = $bookingYear . "_" . $data->userLastname . "_" . $data->userFirstName . ".pdf";
     // $fileNameToSave = 'lease.pdf';
 
     $content = $pdf->download($fileNameToSave)->getOriginalContent();

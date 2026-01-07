@@ -883,26 +883,28 @@
                                                 @endif
                                             @endif
                                         @endif
+
+
                                         @if ($file['field'] === 'tempMoveIn')
                                             @if (isset($file['url']) && isset($file['fileName']))
                                                 <a href="/storage/{{ $file['url'] }}"
                                                     download="{{ $file['fileName'] }}">
-                                                    <button type="button" id="myBtn_download">Download Lease</button>
+                                                    <button type="button" id="myBtn_download">Download Temp Lease</button>
                                                 </a>
                                             @endif
                                         @endif
-
                                         @if ($file['field'] === 'tempMoveIn' && $file['status'] !== 'XApproved')
                                             @if (Auth::user()->role_lease_regen == '1')
                                                 <a href="#">
-                                                    <button type="button" id="myBtn_regen_lease">Regen Lease</button>
+                                                    <button type="button" id="myBtn_regen_temp_lease">Regen Temp Lease</button>
                                                 </a>
                                                 @if ($file['status'] !== 'AUploaded')
-                                                    <button type="button" id="myBtn_resend_lease"
-                                                        onClick="resendLease()">Resend Lease</button>
+                                                    <button type="button" id="myBtn_resend_temp_lease"
+                                                        onClick="resendTempLease()">Resend Temp Lease</button>
                                                 @endif
                                             @endif
                                         @endif
+
                                         @if ($file['status'] === 'AUploaded' || $file['status'] === 'XApproved')
                                             <button type="button"
                                                 onClick="btn_view_document_ajax({{ $file['id'] }})">View
@@ -2108,7 +2110,7 @@
 
                         }
                         if(data['generate_temp_lease'] && data['rob_51_temp_lease_approve'] == null){
-                            $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
+                            // $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
                             if (data['role_allow_generate_temp_lease'] == 1) {
                                 $(".main_btn").empty().append(
                                     '<button type="button" class="appBtn" id="approveTemp" onClick="approveTempLease(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">GENERATE TEMP LEASE AND SEND FOR SIGNATURE</button><br/><br/><br/>'
@@ -4675,7 +4677,21 @@
                     },
                 });
             }
+            function resendTempLease() {
+                $("#myBtn_resend_temp_lease").html('<i class="fas fa-circle-notch fa-spin"></i>');
 
+                $.ajax({
+                    type: "post",
+                    url: "/resendTempLease",
+                    data: {
+                        userId: "{{ $user[0]['userInfo']['userUid'] }}",
+                    },
+
+                    success: function(data) {
+                        $("#myBtn_resend_lease").html('RESEND TEMP LEASE');
+                    },
+                });
+            }
 
             $(document).off('click').on('click', '#myBtn_regen_lease', function(e) {
                 let btn = $(this);
@@ -4712,7 +4728,41 @@
 
                 e.preventDefault();
             });
+            $(document).off('click').on('click', '#myBtn_regen_temp_lease', function(e) {
+                let btn = $(this);
+                $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
+                $.ajax({
+                    type: "post",
+                    url: "/createTempLease/{{ $user[0]['userInfo']['userUid'] }}",
+                    data: {
+                        type: "auto",
+                    },
+
+                    success: function(data) {
+                        // if($("#change_bed_type").val() == "cancel"){
+                        // console.log(data)
+
+                        let uploadbtnT = '<a href="/storage/' + data[0]['fileUrl'] + '" download="' + data[0]
+                            ['fileName'] +
+                            '" style="margin-right:5px;"><button type="button" id="myBtn_temp_download">Download Temp Lease</button></a> '
+
+                        if ("<?php echo Auth::user()->role_lease_regen; ?>" == "1") {
+                            uploadbtnT +=
+                                '<button type="button" id="myBtn_regen_temp_lease" style="margin-right:5px;">Regen Temp Lease</button> <button type="button" id="myBtn_resend_lease" onClick="resendTempLease()">Resend Temp Lease</button>'
+                        }
+
+                        uploadbtnT +=
+                            '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" accept="image/*, application/pdf" hidden/>';
+                        $("#moveInBanner").empty().append(uploadbtnT);
+                        $("#moveInStatus").empty().append('<div class="button rejected"></div>');
+                        // }      
+                        $(btn).html('REGEN LEASE');
+                    },
+                });
+
+                e.preventDefault();
+            });
 
             // function checkData(){
             //     $.ajax({

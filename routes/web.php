@@ -305,6 +305,7 @@ Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePas
 
 //Students to sign lease
 Route::post('/resendLease', [LeaseController::class, 'resendLease']);
+Route::post('/resendTempLease', [LeaseController::class, 'resendTempLease']);
 Route::get('/sign-lease/{id}', [LeaseController::class, 'view_sign_lease']);
 Route::post('/save-signed-lease/{id}', [LeaseController::class, 'save_signed_lease']);
 Route::post('/save-parent-signed-lease/{token}', [LeaseController::class, 'save_parent_signed_lease'])->name('parent.sign.lease');

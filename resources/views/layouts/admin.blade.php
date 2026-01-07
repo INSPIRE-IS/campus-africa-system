@@ -322,10 +322,10 @@
 
                                     success: function(data) {
 
-                                        var regen = "";
+                                        var regenT = "";
                                         if ("<?php echo Auth::user()->role_allow_generate_temp_lease; ?>" == "1") {
-                                            var regen =
-                                                '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Temp Lease</button>'
+                                            var regenT =
+                                                '<button type="button" id="myBtn_regen_temp_lease" style="margin-right:5px;">Regen Temp Lease</button>'
                                         }
 
 
@@ -337,8 +337,8 @@
                                             '<div class="banner" id="tempMoveInBanner">' +
                                             '<a href="/storage/' + data[0]['fileUrl'] +
                                             '" download="' + data[0]['fileName'] +
-                                            '" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Temp Lease</button></a>' +
-                                            regen +
+                                            '" style="margin-right:5px;"><button type="button" id="myBtn_temp_download">Download Temp Lease</button></a>' +
+                                            regenT +
                                             '<label for="tempMoveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload"></i></label>' +
                                             '<input type="file" id="tempMoveIn" onChange="UploadDocument(\'tempMoveIn\')" accept="image/*, application/pdf"  hidden>' +
                                             '</div>' +
