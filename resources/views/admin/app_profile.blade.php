@@ -2121,13 +2121,15 @@
                                 $(".appSection").append(
                                     '<div id="MainAppSection"><div class="main_btn"></div></div>'
                                 );
-
+                            }
+                            if ($('#approveTemp').length === 0) {
                                 $(".main_btn").append(
                                     '<button type="button" class="appBtn" id="approveTemp" ' +
                                     'onClick="approveTempLease(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">' +
                                     'GENERATE TEMP LEASE AND SEND FOR SIGNATURE</button><br/><br/><br/>'
                                 );
                             }
+
                         }  
                                                        
                         
