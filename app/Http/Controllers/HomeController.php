@@ -6203,6 +6203,7 @@ class HomeController extends Controller
         } else if ($request->FileNameForApproval == "tempMoveIn") {
             $name = 'TEMP LEASE';
             $field = "rob_51_temp_lease_approve";
+            $studentInfo->update(['rob_51_temp_lease_approve' => $request->type]);
         }
 
         $dataToUpdate = [

@@ -456,7 +456,7 @@ class LeaseController extends Controller
         UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $user->userUid)->where('year', $this_year)->update($data);
 
         // User::where('id', $user->id)->update(['rob_55_lease' => 1]);
-        StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->update(['rob_55_lease' => 1]);
+        StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 2]);
 
         //Update Token to signed & inactive
         UserLeaseToken::where('leaseToken', $lease_link->leaseToken)
@@ -696,6 +696,8 @@ class LeaseController extends Controller
 
         $prevLeaseToken = UserLeaseToken::where("userUid", $request->userId)->where("lease_type", "temp_lease")->where("active", 1)->where("signed", 0)->get();
 
+
+
         if (!empty($prevLeaseToken)) {
             foreach ($prevLeaseToken as $token) {
                 UserLeaseToken::where('id', $token->id)->update(["active" => 0]);
@@ -709,6 +711,9 @@ class LeaseController extends Controller
         }
         $this_year = $this_year->lookup_name;
 
+        $studentInfo = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
+        $studentInfo->update(['rob_51_temp_lease_approve' => 0]);
+
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(
             [
@@ -721,78 +726,18 @@ class LeaseController extends Controller
             ]
         );
 
-        $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
+        $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-temp-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
 
         $userUidData = User::where('id', $request->userId)->first();
         try {
             Log::info('Sending email to ');
-            $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag));
+            $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year));
         } catch (\Exception $e) {
             Log::error('Failed to dispatch SendResendLeaseMail job', [
                 'error' => $e->getMessage(),
                 'userUidData' => $userUidData,
             ]);
         }
-
-
-        // $userForLease = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
-        // $booking = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
-
-        // $message_replace['booking_application'] = "#".$booking->booking_code;
-        // $message_replace['name'] = $userForLease->userFirstName;
-        // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
-        // $message_replace['close_lease_link']="</a>";
-
-        // $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
-
-        // if($mailerForMessage->status == '1'){
-
-        //     $mailerMessage = $mailerForMessage->message;
-
-        //     $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
-        //     $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-        //     $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
-        //     $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
-
-        //     $data['messageForMail'] = $newMessage;
-        //     $data['email'] = $userForLease->userEmail;
-        //     $data['name'] = $userForLease->userFirstName;
-        //     $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
-
-
-
-        //     $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-        //     $data['cc'] = explode(";", $allowedMailsCC);
-
-        //     $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-
-        //     if(!empty($allowedMails)){
-
-        //         $mailArr = explode(";", $allowedMails);
-
-        //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
-        //             $data['email'] = $userForLease->userEmail;
-        //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
-        //         }
-        //     }else{
-        //         $data['email'] = $userForLease->userEmail;
-        //     }
-
-        //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
-        //     //     $data['email'] = $userForLease->userEmail;
-        //     // }else{
-        //     //     $data['email'] = "conurbandigital@gmail.com";
-        //     // }
-
-        //     Mail::send('email.green_back', $data, function($message) use ($data) {
-        //         $message->to($data['email'])->subject($data['subject']);
-        //         $message->bcc($data['cc']);
-        //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
-        //         $message->from('noreply@campusafrica.co.za','Campus Africa');
-        //     });
-        // }
-
     }
     public function debug_lease_preview(Request $request, $userId, $year)
     {

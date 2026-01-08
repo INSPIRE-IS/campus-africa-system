@@ -828,17 +828,17 @@
                                             @endif
                                         @endif
 
-                                        {{-- @if ($file['field'] === 'tempMoveIn')
-                                            @if ($user[0]['userInfo']['rob_55_lease'] == 0)
+                                        @if ($file['field'] === 'tempMoveIn')
+                                            @if ($user[0]['userInfo']['rob_51_temp_lease_approve'] == 0)
                                                 <div class="button rejected"></div>
-                                            @elseif ($user[0]['userInfo']['rob_55_lease'] == 1)
-                                                <div class="button action"></div>
-                                            @elseif ($user[0]['userInfo']['rob_55_lease'] == 2)
+                                            @elseif ($user[0]['userInfo']['rob_51_temp_lease_approve'] == 1)
                                                 <div class="button approved"></div>
+                                            @elseif ($user[0]['userInfo']['rob_51_temp_lease_approve'] == 2)
+                                                <div class="button action"></div>
                                             @else
                                                 <div class="button na"></div>
                                             @endif
-                                        @endif --}}
+                                        @endif
 
                                         {{-- @if ($file['field'] === 'moveIn')
                                         @if ($file['status'] === 'XApproved' || $file['status'] === 'Approved')
@@ -889,7 +889,7 @@
                                             @if (isset($file['url']) && isset($file['fileName']))
                                                 <a href="/storage/{{ $file['url'] }}"
                                                     download="{{ $file['fileName'] }}">
-                                                    <button type="button" id="myBtn_download">Download Temp Lease</button>
+                                                    <button type="button" id="myBtn_temp_download">Download Temp Lease</button>
                                                 </a>
                                             @endif
                                         @endif
@@ -2109,14 +2109,27 @@
                             }
 
                         }
-                        if(data['generate_temp_lease'] && data['rob_51_temp_lease_approve'] == null){
-                            // $(".appSection").append('<div id="MainAppSection"><div class="main_btn"></div></div>')
-                            if (data['role_allow_generate_temp_lease'] == 1) {
-                                $(".main_btn").empty().append(
-                                    '<button type="button" class="appBtn" id="approveTemp" onClick="approveTempLease(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">GENERATE TEMP LEASE AND SEND FOR SIGNATURE</button><br/><br/><br/>'
-                                )
+                        console.log(data['generate_temp_lease'])
+                        if (
+                            data['generate_temp_lease'] &&
+                            data['rob_51_temp_lease_approve'] == 3 &&
+                            data['role_allow_generate_temp_lease'] == 1
+                        ) {
+
+                            if ($('#MainAppSection').length === 0) {
+
+                                $(".appSection").append(
+                                    '<div id="MainAppSection"><div class="main_btn"></div></div>'
+                                );
+
+                                $(".main_btn").append(
+                                    '<button type="button" class="appBtn" id="approveTemp" ' +
+                                    'onClick="approveTempLease(\'<?php echo $user[0]['userInfo']['userUid']; ?>\')">' +
+                                    'GENERATE TEMP LEASE AND SEND FOR SIGNATURE</button><br/><br/><br/>'
+                                );
                             }
-                        }                                
+                        }  
+                                                       
                         
 
                         if (data['rob_10_fee'] == 2 &&
@@ -4688,12 +4701,12 @@
                     },
 
                     success: function(data) {
-                        $("#myBtn_resend_lease").html('RESEND TEMP LEASE');
+                        $("#myBtn_resend_temp_lease").html('RESEND TEMP LEASE');
                     },
                 });
             }
 
-            $(document).off('click').on('click', '#myBtn_regen_lease', function(e) {
+            $(document).off('click').on('click', '#myBtn_regen_temp_lease', function(e) {
                 let btn = $(this);
                 $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -4710,11 +4723,11 @@
 
                         let uploadbtn = '<a href="/storage/' + data[0]['fileUrl'] + '" download="' + data[0]
                             ['fileName'] +
-                            '" style="margin-right:5px;"><button type="button" id="myBtn_download">Download Lease</button></a> '
+                            '" style="margin-right:5px;"><button type="button" id="myBtn_temp_download">Download Temp Lease</button></a> '
 
                         if ("<?php echo Auth::user()->role_lease_regen; ?>" == "1") {
                             uploadbtn +=
-                                '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                                '<button type="button" id="myBtn_regen_temp_lease" style="margin-right:5px;">Regen Temp Lease</button> <button type="button" id="myBtn_resend_temp_lease" onClick="resendTempLease()">Resend Temp Lease</button>'
                         }
 
                         uploadbtn +=
@@ -4722,7 +4735,7 @@
                         $("#moveInBanner").empty().append(uploadbtn);
                         $("#moveInStatus").empty().append('<div class="button rejected"></div>');
                         // }      
-                        $(btn).html('REGEN LEASE');
+                        $(btn).html('REGEN TEMP LEASE');
                     },
                 });
 
@@ -4749,7 +4762,7 @@
 
                         if ("<?php echo Auth::user()->role_lease_regen; ?>" == "1") {
                             uploadbtnT +=
-                                '<button type="button" id="myBtn_regen_temp_lease" style="margin-right:5px;">Regen Temp Lease</button> <button type="button" id="myBtn_resend_lease" onClick="resendTempLease()">Resend Temp Lease</button>'
+                                '<button type="button" id="myBtn_regen_temp_lease" style="margin-right:5px;">Regen Temp Lease</button> <button type="button" id="myBtn_resend_temp_lease" onClick="resendTempLease()">Resend Temp Lease</button>'
                         }
 
                         uploadbtnT +=
@@ -4757,7 +4770,7 @@
                         $("#moveInBanner").empty().append(uploadbtnT);
                         $("#moveInStatus").empty().append('<div class="button rejected"></div>');
                         // }      
-                        $(btn).html('REGEN LEASE');
+                        $(btn).html('REGEN TEMP LEASE');
                     },
                 });
 

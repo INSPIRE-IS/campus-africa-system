@@ -329,7 +329,7 @@ class PDFController extends Controller
     ]);
 
     // User::where('id', $studentId)->update(['rob_55_lease' => 0]);
-    StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 2]);
+    StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 0]);
 
 
     // Create Lease Link
