@@ -326,9 +326,7 @@ class LeaseController extends Controller
             // $data = User::where('id', $lease_link->userUid)->first();
             $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
             $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
-            $propertyData = Property::where('id', $booking->property_data_id)->first();
-            $residence = Residence::where('id', $propertyData->residence)->first();
-            $leaseAdminFee = Lookups::where('group_id', '8')->first();
+
             $owner = storage_path() . '/leases/juanita-cronje.jpg';
             $logo = storage_path() . '/images/logo/temp_lease_logo.png';
 
@@ -403,9 +401,7 @@ class LeaseController extends Controller
         // $data = User::where('id', $user->userUid)->first();
         $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
         $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
-        $propertyData = Property::where('id', $booking->property_data_id)->first();
-        $residence = Residence::where('id', $propertyData->residence)->first();
-        $leaseAdminFee = Lookups::where('group_id', '8')->first();
+
         $signed_at = $request->signed_at;
         $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
         Log::info('signature of the lease file: ' . $signature);
