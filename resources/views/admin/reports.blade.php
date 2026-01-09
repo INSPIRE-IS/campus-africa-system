@@ -327,6 +327,31 @@
                 style="float:left; margin-left:0px;">Download Documents</button>
         @endif
 
+        {{-- Institution and Funding Lease Documents --}}
+        @if (Auth::user()->role_all_apps_report == 1 && Auth::user()->role_manage_users == 1)
+            <br /><br /><br /><br />
+            <hr /><br />
+            <h2>Compatability Matching</h2>
+            <br />
+
+            <select id="studYear4" name="studYear4">
+                <option value="All">All Years</option>
+                @foreach ($appYears as $year)
+                    <option value="{{ $year->year }}">{{ $year->year }}</option>
+                @endforeach
+            </select>
+
+            <select id="prop4" name="prop4">
+                <option value="All">All Properties</option>
+                @foreach ($propertyList as $prop)
+                    <option value="{{ $prop->id }}">{{ $prop->residence }}</option>
+                @endforeach
+            </select>
+            <br />
+
+            <button type="button" class="detailsChange" id="downloadCompatabilityDocs"
+                style="float:left; margin-left:0px;">Download Documents</button>
+        @endif        
     </div>
 
     <script>
@@ -722,6 +747,30 @@
                 }
             });
         })
+
+        $("#downloadCompatabilityDocs").on('click', function() {
+            $("#downloadCompatabilityDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+            
+            $.ajax({
+                type: "post",
+                url: "/download-compatability-docs",
+                data: {
+                    year: $("#studYear4").val(),
+                    prop: $("#prop4").val()
+                },
+                success: function(data) {
+                    $("#downloadCompatabilityDocs").empty().append('Download Documents')
+
+                    alert('A link will be emailed to you once the documents have been generated.');
+                },
+                error: function(data) {
+                    $("#downloadCompatabilityDocs").empty().append('Download Documents');
+                    alert('Something went wrong!');
+                }
+            });
+        })
+
+
     </script>
 
 

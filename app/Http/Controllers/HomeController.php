@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DownloadCompatibilityDocs;
 use App\Jobs\DownloadDocsJob;
 use App\Jobs\DownloadSelectedDocsJob;
 use Illuminate\Http\Request;
@@ -6823,7 +6824,23 @@ class HomeController extends Controller
         //     echo "failed";
         // }
     }
+    public function download_compatability_docs(Request $request)
+    {
+        $yearId = $request->year;
+        $building = $request->prop == "All" ? null : $request->prop;
+        $email = 'jason@inspireonline.co.za'; // $request->user()->email;
+        Log::info("Downloading compatibility docs for {$yearId} and {$building}");
 
+        DownloadCompatibilityDocs::dispatch($yearId, $email, $building);
+
+        // $exitCode = Artisan::call('download:docs', ['year' => $yearId, 'prop' => $prop, 'lease_filter' => $lease_filter]);
+
+        // if ($exitCode === 0) {
+        //     echo "done";
+        // } else {
+        //     echo "failed";
+        // }
+    }
     public function waive_action(Request $request)
     {
 

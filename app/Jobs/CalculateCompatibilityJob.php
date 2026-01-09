@@ -20,7 +20,7 @@ class CalculateCompatibilityJob implements ShouldQueue
 
     protected array $students;
     protected $year;
-    const MIN_SCORE = 50;
+    const MIN_SCORE = 0;
 
     public function __construct(array $students, $year)
     {
@@ -45,18 +45,13 @@ class CalculateCompatibilityJob implements ShouldQueue
                 $agender = $a['gender'] ?? null;
                 $bgender = $b['gender'] ?? null;
                 Log::info("Genders: {$agender}, {$bgender}");
-                // if (!$agender) continue;
-                // if (!$bgender) continue;
-                // if ($agender !== $bgender) continue;
+
                 if (!$agender || !$bgender || $agender !== $bgender) continue;
 
                 $aproperty = $a['booking']['property'] ?? null;
                 $bproperty = $b['booking']['property'] ?? null;
                 Log::info("Properties: {$aproperty}, {$bproperty}");
 
-                // if (!$aproperty) continue;
-                // if (!$bproperty) continue;
-                // if ($aproperty !== $bproperty) continue;
                 if (!$aproperty || !$bproperty) continue;
                 if ($aproperty !== $bproperty) continue;
 
