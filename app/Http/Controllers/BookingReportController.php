@@ -13,6 +13,7 @@ use App\Models\PropertyPermission;
 use App\Models\StudentsInfo;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BookingReportController extends Controller
 {
@@ -28,9 +29,21 @@ class BookingReportController extends Controller
         // $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
 
         //dd($jsonDataRooms);
-
+        // $residences = Residence::get();
+        $year = Session::get('year');
+        if ($year == null) {
+            $lookupYear = Lookups::where('group_id', '4')->first();
+            $year = $lookupYear->lookup_name;
+            session(['year' => $year]);
+        }
         $residences = [];
-        $allProp = Residence::whereNull('status')->get();
+        $residenceIds = [3, 4, 7];
+        $allProp = Residence::whereNull('status')
+            ->when((int)$year >= 2026, function ($q) use ($residenceIds) {
+                $q->whereNotIn('id', $residenceIds);
+            })
+            ->get();
+
         $permissionProp = PropertyPermission::where('userUid', Auth::user()->id)->get();
         $lookups = Lookups::get();
 
@@ -40,14 +53,6 @@ class BookingReportController extends Controller
                     array_push($residences, $prop);
                 }
             }
-        }
-
-        // $residences = Residence::get();
-        $year = Session::get('year');
-        if ($year == null) {
-            $lookupYear = Lookups::where('group_id', '4')->first();
-            $year = $lookupYear->lookup_name;
-            session(['year' => $year]);
         }
 
         $propertyData = Property::where('inventory', '1')->get();
@@ -156,7 +161,6 @@ class BookingReportController extends Controller
             } else {
                 $propSummary['booking_percent'] = round($propSummary['total_bookings'] / $propSummary['total_beds'] * 100);
             }
-
             array_push($summaryData, $propSummary);
         }
 
