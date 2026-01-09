@@ -8458,6 +8458,10 @@ class HomeController extends Controller
                             <option value="GCRA" <?php if ($userInfo->studentType == "GCRA") {
                                                         echo "selected";
                                                     } ?>>GCRA</option>
+                            <option value="NRF" <?php if ($userInfo->studentType == "NRF") {
+                                                    echo "selected";
+                                                } ?>>NRF</option>
+
                             <option value="MQA" <?php if ($userInfo->studentType == "MQA") {
                                                     echo "selected";
                                                 } ?>>MQA</option>

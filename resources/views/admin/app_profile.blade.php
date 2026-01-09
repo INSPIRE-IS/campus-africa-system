@@ -2178,7 +2178,7 @@
                                         } else if (data[4].studentType == "Bursary" && inSelectedBursary
                                             .includes(properties[key].id)) {
                                             $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence +'</option>')
-                                        } else if ((data[4].studentType == "NSFAS" || data[4].studentType == "FUNZA" || data[4].studentType == "GCRA" || data[4].studentType == "MQA") && inSelectedNsfas.includes(properties[key].id)) {
+                                        } else if ((data[4].studentType == "NSFAS" || data[4].studentType == "NRF" || data[4].studentType == "FUNZA" || data[4].studentType == "GCRA" || data[4].studentType == "MQA") && inSelectedNsfas.includes(properties[key].id)) {
                                             $("#propertyBuilding").append('<option value="' + properties[key].id + '">' + properties[key].residence +'</option>')
                                         } else {
                                             $('#propertyBuilding').append('<option value="' + properties[
@@ -2197,7 +2197,7 @@
                                         .includes(properties[key].id)) {
                                         $("#propertyBuilding").append('<option value="' + properties[key]
                                             .id + '">' + properties[key].residence + '</option>')
-                                    } else if ((data[4].studentType == "NSFAS" || data[4].studentType == "FUNZA" || data[4].studentType == "GCRA" || data[4].studentType == "MQA") && inSelectedNsfas.includes(
+                                    } else if ((data[4].studentType == "NSFAS" || data[4].studentType == "NRF" || data[4].studentType == "FUNZA" || data[4].studentType == "GCRA" || data[4].studentType == "MQA") && inSelectedNsfas.includes(
                                             properties[key].id)) {
                                         $("#propertyBuilding").append('<option value="' + properties[key]
                                             .id + '">' + properties[key].residence + '</option>')
@@ -2263,7 +2263,7 @@
 
                         Object.keys(properties).forEach(function(key) {
 
-                            if ((data[4].studentType == "NSFAS" || data[4].studentType == "FUNZA" || data[4].studentType == "GCRA" || data[4].studentType == "MQA" ) && inSelectedNsfas.includes(properties[key]
+                            if ((data[4].studentType == "NSFAS" || data[4].studentType == "NRF" || data[4].studentType == "FUNZA" || data[4].studentType == "GCRA" || data[4].studentType == "MQA" ) && inSelectedNsfas.includes(properties[key]
                                     .id)) {
                                 $('#property').append('<option value="' + properties[key].id + '">' +
                                     properties[key].residence + '</option>')

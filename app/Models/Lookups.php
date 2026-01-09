@@ -70,6 +70,7 @@ class Lookups extends Model
         '4' => 'GCRA',
         '5' => 'MQA',
         '6' => 'FUNZA',
+        '7' => 'NRF',
     ];
 
 

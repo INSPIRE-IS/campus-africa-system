@@ -1503,7 +1503,7 @@ class ApplicationController extends Controller
                                 $booking_data['room_rate'] = $room->acf->booking_fee_override;
                             }
 
-                            if ($request->studentType === "NSFAS" || $request->studentType === "FUNZA" || $request->studentType === "GCRA" || $request->studentType === "MQA") {
+                            if ($request->studentType === "NSFAS" || $request->studentType === "NRF" || $request->studentType === "FUNZA" || $request->studentType === "GCRA" || $request->studentType === "MQA") {
                                 if (!in_array("NSFAS Students", $appliesTo)) {
                                     $booking_data['room_rate'] = "0";
                                     $actionFileData['action'] = "Booking Fee is R0";
