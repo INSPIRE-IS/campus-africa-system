@@ -117,7 +117,7 @@ class HomeController extends Controller
         if (Auth::user()->userRole == "0") {
 
             $appOnline = Lookups::where('group_id', '9')->first();
-
+            // dd($appOnline); 
             if ($appOnline->lookup_name == '1') {
 
                 // $student = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
@@ -129,6 +129,7 @@ class HomeController extends Controller
                 $studentInfo = $studentInfos->firstWhere('year', $selected_year);
                 // dd($studentInfo);
                 // If not found, fall back to the first available one
+
                 if (!$studentInfo) {
                     $studentInfo = $studentInfos->first(); // or choose a specific fallback strategy
                     if ($studentInfo && $studentInfo->year == $years->first()->lookup_name) {
@@ -158,13 +159,14 @@ class HomeController extends Controller
                         "selected_year" => $selected_year
                     ]);
                 }
-
+                // dd($student->onboard_complete);
 
                 // if($student->email_verified != 1){
 
                 //     return redirect('/verify-password');
 
                 // }else 
+
                 if ($student->onboard_complete != '2') {
 
                     // User::where('id', Auth::user()->id)->update(['onboard_complete' => 1]);
@@ -218,6 +220,8 @@ class HomeController extends Controller
                     } else {
                         $returnInfo = $this->inActiveStudent($selected_year);
                     }
+                    $questionnairecomplete = $student->questionAnswersForYear($this_year)->exists();
+                    $questions = Question::with('options')->get();
 
                     if ($returnInfo['Status'] == '1') {
                         return view('user.dashboard', [
@@ -232,7 +236,9 @@ class HomeController extends Controller
                             "bookingPaid" => $returnInfo['bookingPaid'],
                             "user" => $student,
                             "years" => $years,
-                            "selected_year" => $selected_year
+                            "selected_year" => $selected_year,
+                            "questions" => $questions,
+                            "questionnairecomplete" => $questionnairecomplete,
                         ]);
                     } else {
                         $agent = new Agent();
@@ -247,7 +253,9 @@ class HomeController extends Controller
                             "user" => $student,
                             "agent" => $agent,
                             "years" => $years,
-                            "selected_year" => $selected_year
+                            "selected_year" => $selected_year,
+                            "questions" => $questions,
+                            "questionnairecomplete" => $questionnairecomplete,
                         ]);
                     }
                 }

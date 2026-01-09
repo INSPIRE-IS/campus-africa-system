@@ -1,23 +1,77 @@
 @extends('layouts.dash')
 
 @section('content')
+<style>
+
+.question-button {
+    background-color: #e74f26;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.q-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+}
+
+.q-modal-content {
+    background: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    width: 65%;
+    border-radius: 12px;
+    position: relative;
+    height: 540px;
+    overflow-y: scroll;
+}
+
+.closeQuestionnaire {
+    position: absolute;
+    right: 16px;
+    top: 10px;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.question-error {
+    color: red;
+    font-size: 12px;
+    display: none;
+}
+</style>
+
     <div class="container">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 4px;margin-top: 12px;">
-            <form method="GET" action="{{ route('home') }}" style="display: flex; align-items: center;">
-                <label for="year" style="margin-right: 10px; font-weight: 600; font-size: 16px; color: #555;">
-                    Select Year:
-                </label>
-                <select name="year" id="year" onchange="this.form.submit()"
-                    style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #eece5b; color: #333; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);  width:240px;">
-                    @foreach ($years as $year)
-                        <option value="{{ $year->lookup_name }}"
-                            style="font-size: 16px;font-weight: 400;line-height: 1.5;color: #000; text-align:center;"
-                            {{ $selected_year == $year->lookup_name ? 'selected' : '' }}>
-                            {{ $year->lookup_name }}
-                        </option>
-                    @endforeach
-                </select>
-            </form>
+        <div style="display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 4px;margin-top: 12px;">
+            @if ($questionnairecomplete)
+                <button type="button" class="question-button" id="modalQuestionnaire" style="margin-left:0px;">Questionnaire</button>
+            @endif
+            
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 4px;margin-top: 12px;">
+                <form method="GET" action="{{ route('home') }}" style="display: flex; align-items: center;">
+                    <label for="year" style="margin-right: 10px; font-weight: 600; font-size: 16px; color: #555;">
+                        Select Year:
+                    </label>
+                    <select name="year" id="year" onchange="this.form.submit()"
+                        style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #eece5b; color: #333; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);  width:240px;">
+                        @foreach ($years as $year)
+                            <option value="{{ $year->lookup_name }}"
+                                style="font-size: 16px;font-weight: 400;line-height: 1.5;color: #000; text-align:center;"
+                                {{ $selected_year == $year->lookup_name ? 'selected' : '' }}>
+                                {{ $year->lookup_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
         </div>
         <div class="cards">
             <div class="whiteYellowCard roomImgBack smallerCard" style="margin-right:6%">
@@ -272,6 +326,166 @@
         </div>
     </div>
 
+    <div id="changeQuestionnaireModal" class="q-modal">
+        <div class="q-modal-content " id="changeQuestionnaire">
+            <span class="closeQuestionnaire" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+            <div class="form-card">
+                <h2>Questionnaire</h2>
+                <form id="questionnaireForm">
+                    @csrf
+                    @foreach($questions as $question)
+                        <div style="width:100%; margin-top:20px;" >
+                        <label for="radio">{{ $question->question_text }} * <small style="font-size:12px;">Please select an option.</small></label>
+                            @if($question->input_type === 'radio')
+                            <div  
+                            style="
+                                display:flex;
+                                flex-direction:row;
+                                flex-wrap:wrap;
+                                gap:8px;
+                                margin-top:6px;
+                                width:95%;
+                            ">
+
+                                @foreach($question->options as $option)
+
+                            <div 
+                                
+                            style="
+                                display:flex;
+                                align-items:center;
+                                justify-content:start;
+                                gap:3px;
+                                cursor:pointer;
+                                background-color:#f0f0f0;
+                                border-radius:7px;
+                                padding:0px 4px;
+                                flex:1 1 180px;">
+                            <span style="width:14px;margin-top:6px;">
+                                <input type="radio" 
+                                class="required-question"
+                                name="answers[{{ $question->id }}]" 
+                                value="{{ $option->id }}"> 
+                            </span>
+                            
+                            <span style="font-size:14px; font-weight:semi-bold; color:#000; width:100%;">
+                                {{ $option->option_text }}
+                            <div class="question-error hidden" style="color:red; font-size:12px;">
+                                Please select an option.
+                            </div>                        
+                            </span>
+
+                            </div>
+
+                                @endforeach
+                                
+                                </div>                
+                            @elseif($question->input_type === 'range')
+                                <input type="range"
+                                    name="answers[{{ $question->id }}]"
+                                    min="{{ $question->min_value }}"
+                                    max="{{ $question->max_value }}"
+                                    step="{{ $question->step ?? 1 }}"
+                                    style=" width:98%"
+                                    class="required">
+                            @endif
+                        </div>
+                    @endforeach
+
+                <div class="form-field-big">
+                    <button type="submit" id="submitQuestionnaire" class="question-button"
+                        style="width:98%; border:none; padding:12px; border-radius:10px; margin-top:8px">submit</button>
+                </div>                    
+                </form>
+
+            </div>
+        </div>
+    </div>
+<script>
+$(document).ready(function () {
+
+    const modal = $('#changeQuestionnaireModal');
+
+    // Open modal
+    $('#modalQuestionnaire').on('click', function () {
+        modal.fadeIn(200);
+    });
+
+    // Close via X
+    $('.closeQuestionnaire').on('click', function () {
+        modal.fadeOut(200);
+    });
+
+    // Close when clicking outside content
+    modal.on('click', function (e) {
+        if ($(e.target).is('#changeQuestionnaireModal')) {
+            modal.fadeOut(200);
+        }
+    });
+
+});
+
+$('#questionnaireForm').on('submit', function (e) {
+    e.preventDefault();
+
+    let req = 1;
+    let answers = {};
+
+    // Reset errors
+    $('.question-error').hide();
+
+    // Validate radio groups
+    $('.required-question').each(function () {
+        let groupName = $(this).attr('name');
+
+        if ($(`input[name="${groupName}"]:checked`).length === 0) {
+            req = 0;
+            $(this).closest('div').find('.question-error').show();
+        }
+    });
+
+    if (req === 0) {
+        alert('Please answer all questions');
+        return;
+    }
+
+    // Collect answers
+    $("input[name^='answers']:checked").each(function () {
+        let questionId = $(this).attr('name').match(/\d+/)[0];
+        answers[questionId] = $(this).val();
+    });
+
+    // AJAX submit
+    $.ajax({
+        url: "{{ route('questionnaire.update') }}",
+        type: "post",
+        data: {
+            _token: "{{ csrf_token() }}",
+            userUid: "{{ Auth::user()->id }}",
+            answers: answers
+        },
+        beforeSend: function () {
+            $('.profileSubmit').prop('disabled', true).text('Saving...');
+        },
+        success: function (response) {
+            alert('Questionnaire saved successfully');
+            $('#changeQuestionnaireModal').fadeOut(200);
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        },
+        error: function (xhr) {
+            console.log(xhr.message);
+            console.log(xhr.errors);
+
+            alert('Something went wrong. Please try again.');
+        },
+        complete: function () {
+            $('.profileSubmit').prop('disabled', false).text('Restore Booking');
+        }
+    });
+});
+</script>
     <div id="changeRoomModal" class="modal">
         <div class="modal-content " id="changeBuildingHeight" style="height: 275px;">
             <span class="closeRoom" style="float:right; font-size:25px; cursor:pointer">&times;</span>
@@ -323,6 +537,7 @@
         spanRoom.onclick = function() {
             modalRoom.style.display = "none";
         }
+
 
         function cancelBooking(bookingId, userId) {
 
