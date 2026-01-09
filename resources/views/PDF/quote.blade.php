@@ -1,189 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <style>
-        footer {
-            position: fixed; 
-            bottom: 0px; 
-            left: 0px; 
-            right: 0px;
-            height: 50px; 
-
-            /** Extra personal styles **/
-            color: #ccc;
-            text-align: center;
-            line-height: 35px;
-        }
-        .page_break { page-break-before: always; }
-    </style>
+    <title>Braamby Tax Invoice</title>
 </head>
 
+<body style="font-family: DejaVu Sans, sans-serif; font-size:11px; color:#000; margin:0; padding:0;">
 
-<body>
-    <div class="container mt-5">
-        <h2 style="text-align: center"><i>Consolidated Urban Management Corporation (PTY) Ltd</i></h2>
-        <br/>
-        <table style="width:100%">
-            <tr>
-                <td>VAT NO: {{$property->company_vat}}</td>
-                <td style="text-align:right">Owner Reg No: {{$property->company_reg}}</td>
-            </tr>
-        </table>
-        <p style="text-align: center">{{$property->account_name}} t/a<br/>
-        <span style="text-transform:uppercase">{{$property->residence}}</span> - CAMPUS AFRICA<br/>
-        <span style="text-transform:uppercase">{{$property->address}}</span><br/>
-        TEL: 011 0256257 | Email: students@conurban.co.za | Fax: 0865587632</p>
-        <br/>
-        <table style="width:100%">
-            <tr>
-                <td style="text-transform:uppercase">PROFORMA Quote</td>
-                <td style="text-align:right">No: PF{{$booking->booking_code}}</td>
-            </tr>
-        </table>
-        <br/>
-        <table style="width:100%">
-            <tr>
-                <td style="border-top: 1px solid #000; border-left: 1px solid #000;">Student name</td>
-                <td style="border-top: 1px solid #000; border-right: 1px solid #000;"></td>
-                <td style="border-top: 1px solid #000; border-left: 1px solid #000;"></td>
-                <td style="border-top: 1px solid #000; border-right: 1px solid #000;"></td>
-            </tr>
-            <tr>
-                <td style="border-left: 1px solid #000;">{{$user->userFirstName}}</td>
-                <td style="border-right: 1px solid #000;">{{$user->userLastname}}</td>
-                <td style="border-left: 1px solid #000;">Date</td>
-                <td style="border-right: 1px solid #000;"><?php echo date('Y-m-d');?></td>
-            </tr>
-            <tr>
-                <td style="border-bottom: 1px solid #000; border-left: 1px solid #000;"></td>
-                <td style="border-bottom: 1px solid #000; border-right: 1px solid #000;"></td>
-                <td style="border-bottom: 1px solid #000; border-left: 1px solid #000;">Student No</td>
-                <td style="border-bottom: 1px solid #000; border-right: 1px solid #000;">{{$user->studentNo}}</td>
-            </tr>
-        </table>
-        <br/>
-        <table style="width:100%">
-            <tr>
-                <td style="text-transform:uppercase; border-bottom:1px solid #000">Date</td>
-                <td style="text-transform:uppercase; border-bottom:1px solid #000">Reference</td>
-                <td style="text-transform:uppercase; border-bottom:1px solid #000"></td>
-                <td style="text-transform:uppercase; border-bottom:1px solid #000">Description</td>
-                <td style="text-transform:uppercase; border-bottom:1px solid #000">Debit</td>
-                <td style="text-transform:uppercase; border-bottom:1px solid #000">Credit</td>
-                <td style="text-transform:uppercase; border-bottom:1px solid #000">Balance</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>Lease Admin Fee</td>
-                <td></td>
-                <td></td>
-                <td>R {{number_format($leaseFee, 2, '.', ' ')}}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>Deposit</td>
-                <td></td>
-                <td></td>
-                <td>R {{number_format($deposit, 2, '.', ' ')}}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <?php for($i = new DateTime($booking->lease_from_date); $i <= new DateTime($booking->lease_to_date); $i->modify('+1 month')){ ?>
+@php
+    $colDetails = '55%';
+    $colStudent = '20%';
+    $colAmount  = '25%';
+@endphp
 
+<!-- ================= HEADER ================= -->
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+    <tr>
+        <td width="55%" style="vertical-align:top; padding:5px;">
+            <img src="{{ public_path('images/consolidated_urban.jpg') }}" height="65">
+        </td>
+
+        <td width="45%" style="vertical-align:top; padding:5px;">
+            <div style="font-size:24px; font-weight:bold; margin-bottom:10px;">
+                Tax Invoice
+            </div>
+
+            <table width="100%" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
                 <tr>
-                    <td><?php echo $i->format("Y-m-d");?></td>
-                    <td></td>
-                    <td></td>
-                    <td><?php echo $i->format("F");?> Rent</td>
-                    <td></td>
-                    <td></td>
-                    <td>R {{number_format($bookingPayment->funded_monthly, 2, '.', ' ')}}</td>
+                    <td style="font-size:10px; font-weight:bold; width:40%;">Invoice #:</td>
+                    <td>{{ $invoiceNumber }}</td>
                 </tr>
+                <tr>
+                    <td style="font-size:10px; font-weight:bold;">Invoice date:</td>
+                    <td>{{ $invoiceDate }}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px; font-weight:bold;">Student Number:</td>
+                    <td>{{ $user->studentNo }}</td>
+                </tr>
+                <tr>
+                    <td style="font-size:10px; font-weight:bold;">Student Name:</td>
+                    <td>{{ $user->userFirstName }} {{ $user->userLastname }}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 
-            <?php }?>
-            <tr>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>Total Due</td>
-                <td></td>
-                <td>R</td>
-                <td>R {{number_format(($bookingPayment->total_funded + $deposit + $leaseFee), 2, '.', ' ')}}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>60 DAYS +</td>
-                <td>30 DAYS</td>
-                <td>CURRENT</td>
-                <td>TOTAL</td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="border-bottom:1px solid #000">0.0</td>
-                <td style="border-bottom:1px solid #000">0.0</td>
-                <td style="border-bottom:1px solid #000">0.0</td>
-                <td style="border-bottom:1px solid #000">R {{number_format(($bookingPayment->total_funded + $deposit + $leaseFee), 2, '.', ' ')}}</td>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-                <td style="border-bottom:1px solid #000"></td>
-            </tr>
-        </table>
-        <br/>
-        <p>NB: Interest will be charged at the rate of 2% per month<br/>
-        NSFAS rates will apply<br/>
-        Subject to change</p>
-        <br/>
-        <p><b>BANKING DETAILS</b></p>
-        <p><b>{{$property->account_name}}<br/>
-        {{$property->bank_name}}<br/>
-        ACCOUNT NUMBER: {{$property->account_number}}<br/>
-        <!-- BRANCH NAME: {{$property->branch}}</p> -->
-        BRANCH NUMBER: {{$property->branch_code}}</p>
+<!-- ================= BILL TO ================= -->
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:14px;">
+    <tr>
+        <td width="55%" style="vertical-align:top; padding:5px;">
+            <div style="font-weight:bold;">Braamby Trading (Pty) Ltd</div>
+            <div>P O Box 55597 Northlands 2116</div>
+
+            <div style="margin-top:12px; font-size:10px;">
+                <div style="font-weight:bold;">
+                    Campus Africa, 49 Jorrissen Street Johannesburg 2001
+                </div>
+                <div>VAT No: 4600283107 &amp; 4370280168</div>
+                <div>Company Registration Number: 2018/357298/07 &amp; IT000290/2017(N)</div>
+                <div>Account Queries : Andrea Fourie</div>
+                <div>Email: andrea@conurban.co.za</div>
+            </div>
+        </td>
+
+        <td width="45%" style="vertical-align:top; padding:5px;">
+            <div style="margin-bottom:10px;">
+                <span style="font-weight:bold;">Bill to:</span><br>
+                @if(!empty($billTo['name'])){{ $billTo['name'] }}<br>@endif
+                @if(!empty($billTo['regNo'])){{ $billTo['regNo'] }}<br>@endif
+                @if(!empty($billTo['contactName'])){{ $billTo['contactName'] }}<br>@endif
+                @if(!empty($billTo['contactEmail'])){{ $billTo['contactEmail'] }}<br>@endif
+                @if(!empty($billTo['contactPhone'])){{ $billTo['contactPhone'] }}<br>@endif
+            </div>
+
+            <div>
+                <span style="font-weight:bold;">Address:</span><br>
+                {{ $billAddress['address1'] }}<br>
+                {{ $billAddress['address2'] }}<br>
+                {{ $billAddress['addressCity'] }}<br>
+                {{ $billAddress['addressPostal'] }}
+            </div>
+        </td>
+    </tr>
+</table>
+
+<!-- ================= ITEMS ================= -->
+<table width="100%" cellpadding="4" cellspacing="0"
+       style="border-collapse:collapse; margin-top:16px;">
+
+    <tr style="font-weight:bold; border-bottom:1px solid #000;">
+        <td width="{{ $colDetails }}">Accommodation for Bursary student invoice</td>
+        <td width="{{ $colDetails }}">Details</td>
+        <td width="{{ $colStudent }}" style="text-align:center;">Number of Student</td>
+        <td width="{{ $colAmount }}" style="text-align:right;">Amount Incl VAT</td>
+    </tr>
+
+    @foreach($items as $item)
+        <tr style="page-break-inside:avoid;">
+            <td>{{ $item['date'] }}</td>
+            <td>{{ $item['description'] }}</td>
+            <td style="text-align:center;">{{ $user->studentNo }}</td>
+            <td style="text-align:right;">
+                R {{ number_format($item['amount'], 2, ',', ' ') }}
+            </td>
+        </tr>
+    @endforeach
+
+    <tr>
+        <td colspan="4" style="border-top:1px solid #000;"></td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td></td>
+        <td style="font-weight:bold;">TOTAL</td>
+        <td style="text-align:right; font-weight:bold;">
+            R {{ number_format($totalAmount, 2, ',', ' ') }}
+        </td>
+    </tr>
+</table>
+
+<!-- ================= AGING ================= -->
+<table width="70%" cellpadding="4" cellspacing="0"
+       style="border-collapse:collapse; margin-top:16px;">
+
+    <tr style="font-weight:bold;">
+        <td width="20%">60 DAYS+</td>
+        <td width="20%">30 DAYS</td>
+        <td width="20%">CURRENT</td>
+        <td width="20%">TOTAL</td>
+        <td width="20%"></td>
+    </tr>
+
+    <tr>
+        <td>-R</td>
+        <td>-R</td>
+        <td>R {{ number_format($totalAmount, 2, ',', ' ') }}</td>
+        <td>R {{ number_format($totalAmount, 2, ',', ' ') }}</td>
+        <td></td>
+    </tr>
+</table>
+
+<!-- ================= BANKING ================= -->
+<div style="margin-top:16px;">
+    <div style="font-weight:bold;">
+        NB: Interest will be charged at the rate of 2% per month<br>
+        NSFAS rates will apply<br>
+        Subject to change
     </div>
-</body>
 
+    <div style="font-weight:bold; margin-top:10px;">
+        BANKING DETAILS
+    </div>
+
+    <div>
+        {{ $property->account_name }}<br>
+        {{ $property->bank_name }}<br>
+        ACCOUNT NUMBER: {{ $property->account_number }}<br>
+        BRANCH NUMBER: {{ $property->branch_code }}
+    </div>
+</div>
+
+<div style="margin-top:16px;">
+    <div style="font-weight:bold;">Managing Agent</div>
+    <div>
+        Consolidated Urban Management (Pty) Ltd is the Official Management Agent of the Company
+    </div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div style="position:fixed; bottom:25px; left:0; right:0; text-align:center; font-size:10px;">
+    Consolidated Urban Management Corporation (PTY) Ltd
+</div>
+
+</body>
 </html>
