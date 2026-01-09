@@ -44,7 +44,7 @@
 <table>
     <tr>
         <td width="100%" class="right">
-            <img src="{{ public_path('images/logo/temp_lease_logo.png') }}" height="70" alt="logo">
+            <img src="{{ $logo }}" height="70" alt="logo">
             {{-- <img src="https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg'" height="70"> --}}
         </td>
     </tr>

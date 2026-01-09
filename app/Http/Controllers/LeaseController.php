@@ -199,8 +199,8 @@ class LeaseController extends Controller
             $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
             $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
 
-            $owner = storage_path() . '/leases/juanita-cronje.jpg';
-            $logo = storage_path() . '/images/logo/temp_lease_logo.png';
+            $owner = '/images/lease/juanita-cronje.jpg';
+            $logo = '/images/logo/temp_lease_logo.png';
 
             $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
             if ($data->userId == "") {
