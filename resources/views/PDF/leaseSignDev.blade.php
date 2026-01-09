@@ -20,7 +20,13 @@
             margin-top: 0.2em;
             height: .4em;
         }
-
+        .signature{
+            max-width: 100px;
+            max-height: 40px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
         footer {
             position: fixed;
             bottom: 0px;
@@ -70,7 +76,7 @@
         <p style="text-align:center; font-weight:bold; font-size:15px;">(“the Student”)</p>
         <br />
         <div style="text-align:center; font-size:14px; margin-top:-15px;">
-            <img src="{{ public_path($signature) }}" width="200" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <hr />
         <br />
@@ -138,7 +144,7 @@
 
         <br />
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <footer>
             Page | 1
@@ -230,7 +236,7 @@
         </ol>
         <br />
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <footer>
             Page | 2
@@ -333,7 +339,7 @@
 
             <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="{{ public_path($signature) }}" class="signature" />
             </div>
             <footer>
                 Page | 3
@@ -407,7 +413,7 @@
                 <br />
                 <br />
                 <div style="text-align:right; font-size:14px;">
-                    <img src="{{ public_path($signature) }}" width="100" />
+                    <img src="{{ public_path($signature) }}" class="signature" />
                 </div>
                 <footer>
                     Page | 4
@@ -484,7 +490,7 @@
             damage.</p>
         <br />
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <footer>
             Page | 5
@@ -561,7 +567,7 @@
 
                 <br />
                 <div style="text-align:right; font-size:14px;">
-                    <img src="{{ public_path($signature) }}" width="100" />
+                    <img src="{{ public_path($signature) }}" class="signature" />
                 </div>
                 <footer>
                     Page | 6
@@ -654,7 +660,7 @@
                 business day from the receipt of the notice by the addressee</li>
             <br />
             <div style="text-align:right; font-size:14px;">
-                <img src="{{ public_path($signature) }}" width="100" />
+                <img src="{{ public_path($signature) }}" class="signature" />
             </div>
             <footer>
                 Page | 7
@@ -736,7 +742,7 @@
             </ol>
         </ol>
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <footer>
             Page | 8
@@ -762,7 +768,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="{{public_path($signature)}}" width="200" />
+                        <img src="{{public_path($signature)}}" class="signature" />
                     </p>
                 </td>
             </tr>
@@ -778,7 +784,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="{{public_path($signature)}}" width="200" />
+                        <img src="{{public_path($signature)}}" class="signature" />
                     </p>
                 </td>
             </tr>
@@ -794,7 +800,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="{{public_path($signature)}}" width="200" />
+                        <img src="{{public_path($signature)}}" class="signature" />
                     </p>
                 </td>
             </tr>
@@ -805,7 +811,7 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">OWNER Signature: <img src="{{public_path($owner)}}" width="160" alt="Kim Degenaar" />
+                    <p style="font-size:14px;">OWNER Signature: <img src="{{public_path($owner)}}" class="signature" alt="Kim Degenaar" />
                         <br />(Who if signing in a representative capacity<br />warrants
                         that he is duly authorized thereto)
                     </p>
@@ -823,7 +829,7 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">LODGER's Signature: <img src="{{public_path($signature)}}" width="200" /><br />(Who if
+                    <p style="font-size:14px;">LODGER's Signature: <img src="{{public_path($signature)}}" class="signature" /><br />(Who if
                         signing in a representative capacity<br />warrants that he is duly authorized thereto)</p>
                 </td>
                 <td style="vertical-align: top;">
@@ -835,7 +841,7 @@
             </tr>
         </table>
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <footer>
             Page | 9
@@ -994,11 +1000,11 @@
         </table>
         <br />
         <br />
-        <span style="font-size:14px;">Sign (Lodger) <img src="{{public_path($signature)}}" width="200" /></span>
+        <span style="font-size:14px;">Sign (Lodger) <img src="{{public_path($signature)}}" class="signature" /></span>
         <br /><br /><br />
-        <span style="font-size:14px;">Sign (Owner) <img src="{{public_path($owner)}}" width="160" /></span>
+        <span style="font-size:14px;">Sign (Owner) <img src="{{public_path($owner)}}" class="signature" /></span>
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <footer>
             Page | 10
@@ -1041,7 +1047,7 @@
         <br /><br /><br />
 
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
 
         <footer>
@@ -1082,9 +1088,9 @@
         <p style="font-weight:bold; font-size:14px;">Signed at {{ $signed_at }} on this <?php echo date('d'); ?> day of
             <?php echo date('F'); ?> <?php echo date('Y'); ?></p>
         <br />
-        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($signature)}}" width="200" /><br />Student</p>
+        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($signature)}}" class="signature" /><br />Student</p>
         <!-- <br/> -->
-        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Kim Degenaar" width="160" />
+        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Kim Degenaar" class="signature" />
             <br class="special" />For and on behalf of<br class="special" />Owner
         </p>
         <br />
@@ -1120,7 +1126,7 @@
             </tr>
         </table>
         <div style="text-align:right; font-size:14px;">
-            <img src="{{ public_path($signature) }}" width="100" />
+            <img src="{{ public_path($signature) }}" class="signature" />
         </div>
         <footer>
             Page | 12
