@@ -30,6 +30,8 @@ use App\Jobs\SendStudentVerifyMailByAdminMail;
 use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\StudentQuestionAnswer;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
@@ -702,212 +704,244 @@ class ApplicationController extends Controller
 
     public function step_5(Request $request)
     {
-        $lookups = Lookups::get();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        DB::beginTransaction();
 
-        // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
-        $user = User::where('id', Auth::user()->id)->first();
-        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-        $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+        try {
+            $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+            $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
 
+            $lookups = Lookups::get();
 
-        if ($booking->cancelled == 1) {
-            dd('Error, please contact support');
-        }
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
 
-        // $residences = Property::where('id', $booking->property)
-        $proofPayment = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
-        $agent = new Agent();
+            // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
+            $user = User::where('id', Auth::user()->id)->first();
+            $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+            $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
 
 
-        $lookup = Lookups::where('group_id', '7')->first();
-        $room_rate = 0;
-        $actionFileData['action'] = "";
+            if ($booking->cancelled == 1) {
+                throw new Exception('Error, please contact support');
+            }
 
-        $roomTypeInfo = RoomTypes::where('property_id', $booking->property)->where('id', $booking->roomType)->first();
-        $propertyTypeInfo = Residence::where('id', $booking->property)->first();
+            // $residences = Property::where('id', $booking->property)
+            $proofPayment = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+            $agent = new Agent();
 
-        $allResidences = Residence::whereNull('status')->get();
-        $allRoomTypes = RoomTypes::get();
 
-        $property = Residence::where('id', $booking->property)->pluck('residence')->first();
-        $roomTypeNew = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
-
-        $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
-        $roomTypeId = $roomTypeData->room_map_slug;
-
-        $bookingRoomtype = $roomTypeInfo->name;
-        $booking->property = $propertyTypeInfo->residence;
-
-        if ($lookup && $lookup->lookup_name == "1") {
+            $lookup = Lookups::where('group_id', '7')->first();
             $room_rate = 0;
-            $actionFileData['action'] = "Booking Fee Waived";
-        }
+            $actionFileData['action'] = "";
 
-        $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
-        $residenceId = "";
+            $roomTypeInfo = RoomTypes::where('property_id', $booking->property)->where('id', $booking->roomType)->first();
+            $propertyTypeInfo = Residence::where('id', $booking->property)->first();
 
-        foreach ($jsonDataResidence as $residence) {
-            if ($residence->title->rendered == $booking->property) {
-                //get room booking fee from residence (WP)
-                if ($actionFileData['action'] == "") {
-                    $room_rate = $residence->acf->booking_fee;
-                }
-                //get residence ID (WP)
-                $residenceId = $residence->id;
+            $allResidences = Residence::whereNull('status')->get();
+            $allRoomTypes = RoomTypes::get();
+
+            $property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $roomTypeNew = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+
+            $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
+            ///////////////////////////////////////////////////////
+            //TODO: temp set booking fee to 0 for sharing rooms
+            $isSharingRoom = false;
+
+            if ($roomTypeData && str_contains(strtolower($roomTypeData->name), 'sharing')) {
+                $isSharingRoom = true;
             }
-        }
+            $roomTypeId = $roomTypeData->room_map_slug;
+            //////////////////////////////////////////////////////
+            $bookingRoomtype = $roomTypeInfo->name;
+            $booking->property = $propertyTypeInfo->residence;
+
+            if ($lookup && $lookup->lookup_name == "1") {
+                $room_rate = 0;
+                $actionFileData['action'] = "Booking Fee Waived";
+            }
 
 
-        $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+            $residenceId = "";
 
-        $roomType = "";
-        $roomName = "";
-        $priced_from = 0;
-        $chair = "false"; //436
-        $wifi = "false"; //405
-        $bath = "false"; //468
-        $kitchen = "false"; //413
-        $beds = 0;
-
-        foreach ($jsonDataRooms as $room) {
-            if ($residenceId == $room->acf->residence) {
-
-
-                if ($room->id == $roomTypeId) {
-                    $attributes = $room->acf->attributes;
-
-
-                    foreach ($attributes as $attr) {
-                        if ($attr == "436") {
-                            $chair = "true";
-                        }
-                        if ($attr == "405") {
-                            $wifi = "true";
-                        }
-                        if ($attr == "413") {
-                            $kitchen = "true";
-                        }
-                        if ($attr == "468") {
-                            $bath = "true";
-                        }
+            foreach ($jsonDataResidence as $residence) {
+                if ($residence->title->rendered == $booking->property) {
+                    //get room booking fee from residence (WP)
+                    if ($actionFileData['action'] == "") {
+                        $room_rate = $residence->acf->booking_fee;
                     }
-
-                    $roomType = $roomTypeNew;
-                    $roomName = $room->slug;
-                    $priced_from = $room->acf->price_from;
-                    $beds = $room->acf->beds;
-
-                    $appliesTo = $room->acf->booking_fee_applies_to;
-
-                    if ($room->acf->booking_fee_override !== "") {
-                        $room_rate = $room->acf->booking_fee_override;
-                    }
-
-                    if ($userInfo->studentType == "NSFAS") {
-                        if (!in_array("NSFAS Students", $appliesTo)) {
-                            $room_rate = "0";
-                            $actionFileData['action'] = "Booking Fee is R0";
-                        }
-                    }
-
-                    if ($userInfo->studentType == "Bursary") {
-                        if (!in_array("Bursary Students", $appliesTo)) {
-                            $room_rate = "0";
-                            $actionFileData['action'] = "Booking Fee is R0";
-                        }
-                    }
-
-                    if ($userInfo->studentType == "Cash / Direct") {
-                        if (!in_array("Cash Students", $appliesTo)) {
-                            $room_rate = "0";
-                            $actionFileData['action'] = "Booking Fee is R0";
-                        }
-                    }
+                    //get residence ID (WP)
+                    $residenceId = $residence->id;
                 }
             }
-        }
 
-        if ($roomTypeData->pull_price == null) {
-            $priced_from = $roomTypeData->rent_price;
-            $room_rate = $roomTypeData->booking_price;
 
-            if ($userInfo->studentType == "NSFAS") {
-                if ($roomTypeData->apply_nsfas == null) {
-                    $room_rate = "0";
+
+
+            $roomType = "";
+            $roomName = "";
+            $priced_from = 0;
+            $chair = "false"; //436
+            $wifi = "false"; //405
+            $bath = "false"; //468
+            $kitchen = "false"; //413
+            $beds = 0;
+
+            foreach ($jsonDataRooms as $room) {
+                if ($residenceId == $room->acf->residence) {
+
+
+                    if ($room->id == $roomTypeId) {
+                        $attributes = $room->acf->attributes;
+
+
+                        foreach ($attributes as $attr) {
+                            if ($attr == "436") {
+                                $chair = "true";
+                            }
+                            if ($attr == "405") {
+                                $wifi = "true";
+                            }
+                            if ($attr == "413") {
+                                $kitchen = "true";
+                            }
+                            if ($attr == "468") {
+                                $bath = "true";
+                            }
+                        }
+
+                        $roomType = $roomTypeNew;
+                        $roomName = $room->slug;
+                        $priced_from = $room->acf->price_from;
+                        $beds = $room->acf->beds;
+
+                        $appliesTo = $room->acf->booking_fee_applies_to;
+
+                        if ($room->acf->booking_fee_override !== "") {
+                            $room_rate = $room->acf->booking_fee_override;
+                        }
+
+                        if ($userInfo->studentType == "NSFAS") {
+                            if (!in_array("NSFAS Students", $appliesTo)) {
+                                $room_rate = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
+                            }
+                        }
+
+                        if ($userInfo->studentType == "Bursary") {
+                            if (!in_array("Bursary Students", $appliesTo)) {
+                                $room_rate = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
+                            }
+                        }
+
+                        if ($userInfo->studentType == "Cash / Direct") {
+                            if (!in_array("Cash Students", $appliesTo)) {
+                                $room_rate = "0";
+                                $actionFileData['action'] = "Booking Fee is R0";
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($roomTypeData->pull_price == null) {
+                $priced_from = $roomTypeData->rent_price;
+                $room_rate = $roomTypeData->booking_price;
+
+                if ($userInfo->studentType == "NSFAS") {
+                    if ($roomTypeData->apply_nsfas == null) {
+                        $room_rate = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+
+                if ($userInfo->studentType == "Bursary") {
+                    if ($roomTypeData->apply_bursary == null) {
+                        $room_rate = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+
+                if ($userInfo->studentType == "Cash / Direct") {
+                    if ($roomTypeData->apply_cash == null) {
+                        $room_rate = "0";
+                        $actionFileData['action'] = "Booking Fee is R0";
+                    }
+                }
+            }
+            ///////////////////////////////////////////////////////
+            //TODO: temp set booking fee to 0 for sharing rooms
+            if ($isSharingRoom === true) {
+                $room_rate = 0;
+                $actionFileData['action'] = "Booking Fee waived (Sharing Room)";
+            }
+            ///////////////////////////////////////////////////////
+            // existing DB updates here
+            // Booking::update(...)
+            if ($room_rate == "0") {
+
+                $uploaded = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+
+                if (!$uploaded) {
+                    UserFiles::create([
+                        'userUid' => $user->id,
+                        'fileId' => 'proof_of_payment',
+                        'status' => 'Approved',
+                        'year' => $this_year,
+                    ]);
+
+                    // User::where('id', $user->id)->update([
+                    //     'rob_10_fee' => 2
+                    // ]);
+                    // StudentsInfo::update
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
+                        'rob_10_fee' => 2,
+                        'rob_40_bed' => 1
+                    ]);
+
+                    $actionFileData['userUid'] = $user->id;
                     $actionFileData['action'] = "Booking Fee is R0";
+                    $actionFileData['actionUserUid'] = Auth::user()->id;
+                    $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
+                    $actionFileData['actionUserRole'] = Auth::user()->userRole;
+                    $actionFileData['year'] = $this_year;
+                    // ActionList::create
+                    ActionList::create($actionFileData);
+                } else {
+                    UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
+                        'status' => 'Approved'
+                    ]);
+
+                    // User::where('id', $user->id)->update([
+                    //     'rob_10_fee' => 2
+                    // ]);
+                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
+                        'rob_10_fee' => 2,
+                        'rob_40_bed' => 1,
+                    ]);
                 }
-            }
 
-            if ($userInfo->studentType == "Bursary") {
-                if ($roomTypeData->apply_bursary == null) {
-                    $room_rate = "0";
-                    $actionFileData['action'] = "Booking Fee is R0";
-                }
-            }
-
-            if ($userInfo->studentType == "Cash / Direct") {
-                if ($roomTypeData->apply_cash == null) {
-                    $room_rate = "0";
-                    $actionFileData['action'] = "Booking Fee is R0";
-                }
-            }
-        }
-
-        if ($room_rate == "0") {
-
-            $uploaded = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
-
-            if (!$uploaded) {
-                UserFiles::create([
-                    'userUid' => $user->id,
-                    'fileId' => 'proof_of_payment',
-                    'status' => 'Approved',
-                    'year' => $this_year,
-                ]);
-
-                // User::where('id', $user->id)->update([
-                //     'rob_10_fee' => 2
-                // ]);
-
-                StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
-                    'rob_10_fee' => 2,
-                    'rob_40_bed' => 1
-                ]);
-
-                $actionFileData['userUid'] = $user->id;
-                $actionFileData['action'] = "Booking Fee is R0";
-                $actionFileData['actionUserUid'] = Auth::user()->id;
-                $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
-                $actionFileData['actionUserRole'] = Auth::user()->userRole;
-                $actionFileData['year'] = $this_year;
-
-                ActionList::create($actionFileData);
+                Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
             } else {
-                UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
-                    'status' => 'Approved'
-                ]);
-
-                // User::where('id', $user->id)->update([
-                //     'rob_10_fee' => 2
-                // ]);
-                StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
-                    'rob_10_fee' => 2,
-                    'rob_40_bed' => 1,
-                ]);
+                Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
             }
 
-            Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
-        } else {
-            Booking::where('userId', $user->id)->where('year', $this_year)->update(['room_rate' => $room_rate]);
+            $newBooking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
+
+            DB::commit();
+            return view('application.step_5', ["lookups" => $lookups, "user" => $userInfo, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate, "roomTypeInfo" => $roomTypeInfo, "propertyTypeInfo" => $propertyTypeInfo]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::error('Step 5 failed', [
+                'user_id' => auth()->user()->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            abort(500, 'Unable to complete booking step');
         }
-
-        $newBooking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
-
-
-        return view('application.step_5', ["lookups" => $lookups, "user" => $userInfo, "booking" => $newBooking, "proofPayment" => $proofPayment, "agent" => $agent, "priced_from" => $priced_from, "chair" => $chair, "wifi" => $wifi, "bath" => $bath, "kitchen" => $kitchen, "beds" => $beds, "room_rate" => $room_rate, "roomTypeInfo" => $roomTypeInfo, "propertyTypeInfo" => $propertyTypeInfo]);
     }
 
     public function complete_online_app(Request $request)
