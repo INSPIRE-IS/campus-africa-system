@@ -20,6 +20,7 @@ class ExportCompatibilitySimpleXlsx extends Command
     public function handle()
     {
         ini_set('memory_limit', '1024M');
+        $debug = 0;
 
         $year = $this->argument('year') ?? date('Y');
         $email = $this->argument('email') ?? date('Y');
@@ -27,7 +28,7 @@ class ExportCompatibilitySimpleXlsx extends Command
         $topN = $this->option('top') ?? 5; // number of matches per student
 
         $this->info("🔄 Generating compatibility report for academic year {$year}...");
-        Log::info("Downloading compatibility docs for {$year} and {$buildingFilter}");
+        if ($debug == 1) Log::info("Downloading compatibility docs for {$year} and {$buildingFilter}");
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
         $sheetCount = 0;
@@ -71,7 +72,7 @@ class ExportCompatibilitySimpleXlsx extends Command
 
             // Optional building filter (already filtered via eager load)
             if ($buildingFilter && $a->booking->property != $buildingFilter) continue;
-            Log::info("Checking {$a->booking->property}");
+            if ($debug == 1) Log::info("Checking {$a->booking->property}");
             if (in_array($a->booking->property, [3, 4, 7])) continue;
 
             $matchesByStudentA[$a->id][] = [
@@ -188,11 +189,12 @@ class ExportCompatibilitySimpleXlsx extends Command
     public function handle1()
     {
         ini_set('memory_limit', '1024M');
+        $debug = 0;
         $this->info(ini_get('memory_limit'));
         $year = $this->argument('year');
         $testing = 0;
         $this->info("🔄 Generating compatibility report for academic year {$year}...");
-        Log::info("Generating compatibility report for academic year {$year}...");
+        if ($debug == 1) Log::info("Generating compatibility report for academic year {$year}...");
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
         $sheetCount = 0;
