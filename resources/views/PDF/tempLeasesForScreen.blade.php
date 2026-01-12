@@ -5,12 +5,14 @@
     <title>Early Lease Termination</title>
 
     <style>
+
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
             color: #000;
             line-height: 1.5;
-            padding: 200px
+            padding: 20px;
+            width: 100%;
         }
 
         table {
@@ -44,7 +46,7 @@
 <table>
     <tr>
         <td width="100%" class="right">
-            <img src="{{ $logo }}" height="70" alt="logo">
+            <img src="{{ public_path('images/logo/temp_lease_logo.png') }}" height="70" alt="logo">
             {{-- <img src="https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg'" height="70"> --}}
         </td>
     </tr>
