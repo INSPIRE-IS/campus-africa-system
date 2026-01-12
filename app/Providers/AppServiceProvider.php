@@ -31,12 +31,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 
-        // if (app()->environment(['local', 'staging', 'development'])) {
-        //     LOG::info('Mail is set to sandbox');
-        //     Mail::alwaysTo('sandbox@inspireonline.co.za'); // O@BczDAVgrz2{89e
-        // }
+        if (app()->environment(['local', 'staging', 'development'])) {
+            LOG::info('Mail is set to sandbox');
+            //Mail::alwaysTo('sandbox@inspireonline.co.za');
+            // Mail::alwaysTo([
+            //     ['email' => 'you@inspireonline.co.za', 'name' => 'Jason'],
+            //     ['email' => 'tester@inspireonline.co.za', 'name' => 'QA Tester'],
+            // ]);
+            Mail::alwaysTo(explode(',', env('MAIL_SANDBOX_TO')));
+        }
 
-        View::composer('*', function ($view) {
+        View::composer('*', function ($view) { // O@BczDAVgrz2{89e
             $agent = new Agent();
             $sessionYear = Session::get('year', now()->year);
             $bedCode = null;
