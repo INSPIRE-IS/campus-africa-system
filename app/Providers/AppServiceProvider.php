@@ -35,8 +35,8 @@ class AppServiceProvider extends ServiceProvider
             LOG::info('Mail is set to sandbox');
             //Mail::alwaysTo('sandbox@inspireonline.co.za');
             Mail::alwaysTo([
-                ['email' => 'jason@inspireonline.co.za', 'name' => 'Jason'],
-                ['email' => 'sandbox@inspireonline.co.za', 'name' => 'QA Tester'],
+                'andrea@conurban.co.za',
+                'sandbox@inspireonline.co.za'
             ]);
             //Mail::alwaysTo(explode(',', env('MAIL_SANDBOX_TO')));
         }
