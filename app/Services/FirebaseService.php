@@ -21,7 +21,11 @@ class FirebaseService
         // $this->auth = $factory->createAuth();
         // $this->firestore = $factory->createFirestore()->database();
         // $firestore = new FirestoreClient(['projectId' => 'campus-africa-bda4b', 'credentials' => storage_path('app/firebase/serviceAccountKey.json')]);
-        $firebaseConfig = json_decode(env('FIREBASE_CREDENTIALS'), true);
+        $firebaseConfig = config('firebase.credentials');
+
+        if (empty($firebaseConfig)) {
+            throw new \RuntimeException('Firebase credentials are not configured.');
+        }
         //Log::info('firebaseConfig', $firebaseConfig);
 
         $factory = (new Factory)->withServiceAccount($firebaseConfig);
