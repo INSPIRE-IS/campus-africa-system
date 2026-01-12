@@ -373,7 +373,25 @@ class RegisterController extends Controller
 
                 ActionList::create($actionFileData);
             }
+            $isSharingRoom = false;
 
+            if ($roomTypeData && str_contains(strtolower($roomTypeData->name), 'sharing')) {
+                $isSharingRoom = true;
+            }
+
+            if ($isSharingRoom === true) {
+                $bookingPrice = 0;
+            }
+            if ($isSharingRoom === true) {
+                ActionList::create([
+                    "userUid" => $user->id,
+                    "action" => "Booking fee waived due to sharing room",
+                    "actionUserUid" => $user->id,
+                    "actionUserDisplayName" => $userInfo->userFirstName,
+                    "actionUserRole" => 0,
+                    "year" => $this_year,
+                ]);
+            }
             $diff = 0;
             for ($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')) {
                 $diff++;
