@@ -19,6 +19,15 @@
             width: 100%;
             border-collapse: collapse;
         }
+        .logo{
+            width: 50%;
+            height:auto;
+        }
+
+        .owner{
+            width: 50%;
+            height: auto;
+        }
 
         .center { text-align: center; }
         .left { text-align: left; }
@@ -46,7 +55,7 @@
 <table>
     <tr>
         <td width="100%" class="right">
-            <img src="{{ public_path('images/logo/temp_lease_logo.png') }}" height="70" alt="logo">
+            <img class="logo" src="{{ $logo }}"  alt="logo">
             {{-- <img src="https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg'" height="70"> --}}
         </td>
     </tr>
@@ -117,7 +126,7 @@
 
         <td width="33%" class="center">
         <span class="line" style="display: inline-block; width: 200px;">
-            <img src="{{ $owner }}" width="200" alt="Kim Degenaar" />
+            <img class="owner" src="{{ $owner }}"  alt="Juanita Cronje" />
         </span>
             <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>
         </td>
