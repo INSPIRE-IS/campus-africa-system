@@ -17,7 +17,7 @@
             border-collapse: collapse;
         }
         .logo{
-            width: 50%;
+            width: 80%;
             height:auto;
         }
 
@@ -34,7 +34,6 @@
         .line { border-bottom: 1px solid #000; }
 
         footer {
-            position: fixed;
             bottom: 25px;
             left: 0;
             right: 0;
