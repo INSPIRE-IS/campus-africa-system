@@ -406,8 +406,9 @@ class LeaseController extends Controller
         $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
         Log::info('signature of the lease file: ' . $signature);
         $owner = '/images/lease/juanita-cronje.jpg';
+        Log::info('owner of the lease file: ' . $owner);
         $logo = '/images/logo/temp_lease_logo.png';
-
+        Log::info('logo of the lease file: ' . $logo);
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
         if ($user->userId == "") {
