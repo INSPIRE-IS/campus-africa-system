@@ -2,7 +2,72 @@
 
 @section('content')
 
+<style>
+@media screen and (max-width: 600px) {
+    .main {
+        height: 100vh;
+        width: 100%;
+        overflow-y: auto;
+        background-color: antiquewhite;
+        padding: 0;
+        margin: 0;
+    }
+
+    .yellowGradientSmall {
+        height: 200px;
+        overflow-y: auto;
+        width: 100%;
+        padding: 0;
+        margin: 0;        
+    }
+    .booking {
+        font-size: 18px !important;
+    }
+
+    .footer {
+        height: 200px;
+        overflow-y: auto;
+        width: 100%;
+                padding: 0;
+        margin: 0;
+    }
+}
+@media only screen and (max-width: 850px) {
+    .main {
+        height: 100vh;
+        width: 100%;
+        overflow-y: auto;
+        background-color: antiquewhite;
+        padding: 0;
+        margin: 0;
+    }
+
+    .yellowGradientSmall {
+        height: 200px;
+        overflow-y: auto;
+        width: 100%;
+        padding: 0;
+        margin: 0;        
+    }
+    .booking {
+        font-size: 18px !important;
+    }
+
+    .footer {
+        height: 200px;
+        overflow-y: auto;
+        width: 100%;
+                padding: 0;
+        margin: 0;
+    }
+}
+
+
+
+</style>
+
 @if(!Auth::check())
+<div class="main">
 <div class="yellowGradientSmall">
     <div class="container">
 
@@ -74,7 +139,7 @@
         </form>
     </div>
 </div>
-
+</div>
 <script>
     jQuery(document).ready( function($) {
         

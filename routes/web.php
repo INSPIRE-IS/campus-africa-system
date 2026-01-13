@@ -334,7 +334,7 @@ Route::group(['middleware' => ['auth']], function () {
             'tenantName' => 'John Doe',
             'tenantId' => '9001015009083',
         ];
-
+        /** @disregard P1009 */
         $pdf = PDF::loadView('PDF.temp_lease', $data);
 
         return $pdf->stream('test.pdf'); // shows in browser (no download)
