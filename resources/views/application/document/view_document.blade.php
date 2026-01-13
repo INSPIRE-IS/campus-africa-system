@@ -1652,10 +1652,9 @@
                         // console.log(data);
                     }
 
-                    if(data[1] == '1'){
+                    if(data[1] == '1' || data[1] == true){
                         window.location.reload();
                     }
-
                 }
             });            
 
