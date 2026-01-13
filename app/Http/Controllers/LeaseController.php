@@ -390,7 +390,7 @@ class LeaseController extends Controller
         }
         // generate a random name
         $new_name = $userIdentification . '_' . strtotime("now") . '_' . substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyz', ceil(20 / strlen($x)))), 1, 20) . '.' . $extension;
-        $location = 'public/files/' . $userIdentification . '/' . $new_name;
+        $location = 'storage/files/' . $userIdentification . '/' . $new_name;
         Log::info('Location of the lease file: ' . $location);
         // file_put_contents(storage_path() . '/app/public/files/' . $userIdentification . '/' . $new_name, $data);
         \Storage::put('public/files/' . $userIdentification . '/' . $new_name, $data);
@@ -403,11 +403,11 @@ class LeaseController extends Controller
         $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
 
         $signed_at = $request->signed_at;
-        $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
+        $signature = pdfImagePath('storage/files/' . $userIdentification . '/' . $new_name);
         Log::info('signature of the lease file: ' . $signature);
-        $owner = '/images/lease/juanita-cronje.jpg';
+        $owner = pdfImagePath('/images/lease/juanita-cronje.jpg');
         Log::info('owner of the lease file: ' . $owner);
-        $logo = '/images/logo/temp_lease_logo.png';
+        $logo = pdfImagePath('/images/logo/temp_lease_logo.png');
         Log::info('logo of the lease file: ' . $logo);
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
