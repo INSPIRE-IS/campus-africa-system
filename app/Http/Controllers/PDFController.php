@@ -268,8 +268,12 @@ class PDFController extends Controller
     // $propertyData = Property::where('id', $booking->property_data_id)->first();
     // $residence = Residence::where('id', $propertyData->residence)->first();
     // $leaseAdminFee = Lookups::where('group_id', '8')->first();
-    $owner = storage_path() . '/leases/juanita-cronje.jpg';
-
+    $owner1 = storage_path() . '/leases/juanita-cronje.jpg';
+    Log::info('owner of the lease file: ' . $owner1);
+    $owner = '/images/lease/juanita-cronje.jpg';
+    Log::info('owner of the lease file: ' . $owner);
+    $logo = '/images/logo/temp_lease_logo.png';
+    Log::info('logo of the lease file: ' . $logo);
     $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
     if ($data->userId == "") {
       $userIdentification = $data->userPassport;
@@ -283,7 +287,7 @@ class PDFController extends Controller
       'tenantId' => $userIdentification,
     ];
 
-    $pdf = PDF::loadView('PDF.temp_lease', $pdfdata);
+    $pdf = PDF::loadView('PDF.temp_lease', $pdfdata, $logo);
 
     $bookingYear = substr($booking->year, -2);
     // $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
