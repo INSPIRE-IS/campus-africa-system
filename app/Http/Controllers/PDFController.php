@@ -287,7 +287,7 @@ class PDFController extends Controller
       'tenantId' => $userIdentification,
     ];
 
-    $pdf = PDF::loadView('PDF.temp_lease', $pdfdata, $logo);
+    $pdf = PDF::loadView('PDF.temp_lease', compact('pdfdata', 'logo'));
 
     $bookingYear = substr($booking->year, -2);
     // $bookingPrefix = Residence::where('id', $booking->property)->pluck('building_prefix')->first();
