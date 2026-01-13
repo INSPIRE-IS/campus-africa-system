@@ -16,7 +16,16 @@
             width: 100%;
             border-collapse: collapse;
         }
+        .logo{
+            width: 50%;
+            height:auto;
+        }
 
+        .owner{
+            width: 50%;
+            height: auto;
+        }
+        
         .center { text-align: center; }
         .bold { font-weight: bold; }
         .underline { text-decoration: underline; }
@@ -54,7 +63,7 @@
 <table>
     <tr>
         <td width="20%">
-            <img src="{{ public_path('images/consolidated_urban.jpg') }}" height="70">
+            <img class="logo" src="{{ $logo }}"  alt="logo">
         </td>
 
         <td width="80%" class="center" style="font-size: 11px;">
