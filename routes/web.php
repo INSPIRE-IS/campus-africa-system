@@ -17,6 +17,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MailReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -279,10 +280,32 @@ Route::group(['middleware' => ['auth']], function () {
             'tenantName' => 'John Doe',
             'tenantId' => '9001015009083',
         ];
-        /** @disregard P1009 */
-        $pdf = PDF::loadView('PDF.temp_lease', $data);
+        $pdfdata = [
+            'tenantName' => 'John Doe',
+            'tenantId' => '9001015009083',
+        ];
 
-        return $pdf->stream('test.pdf'); // shows in browser (no download)
+        $signed_at = 'test';
+        $signature = pdfImagePath('storage/files/0705091094080/0705091094080_1768318164_ma4lpfzr6v81w0khjn73.png'); //  'storage/files/' . $userIdentification . '/' . $new_name;
+        Log::info('signature of the lease file: ' . $signature);
+        $owner = pdfImagePath('images/lease/juanita-cronje.jpg');
+        Log::info('owner of the lease file: ' . $owner);
+        storage_path() .
+            $logo =  pdfImagePath('images/logo/temp_lease_logo.png');
+        Log::info('logo of the lease file: ' . $logo);
+        /** @disregard P1009 */
+        //$pdf = PDF::loadView('PDF.temp_lease', compact('data', 'signed_at', 'signature', 'owner', 'logo'));
+        $pdf = PDF::loadView('PDF.tempLeaseSign', compact('pdfdata', 'signed_at', 'signature', 'owner', 'logo'));
+
+        //return $pdf->stream('test.pdf'); // shows in browser (no download)
+        //return $pdf->download('test.pdf'); // shows in browser (no download)
+        return view('PDF.tempLeaseSign', compact(
+            'pdfdata',
+            'signed_at',
+            'signature',
+            'owner',
+            'logo'
+        ));
     });
 });
 
