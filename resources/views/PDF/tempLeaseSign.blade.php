@@ -23,7 +23,7 @@
 
         .owner{
             width: 50%;
-            height: auto;
+            height: 50px;
         }
 
         .center { text-align: center; }
@@ -53,7 +53,6 @@
     <tr>
         <td width="100%" class="right">
             <img class="logo" src="{{ $logo }}"  alt="logo">
-            {{-- <img src="https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg'" height="70"> --}}
         </td>
     </tr>
     <tr>       
@@ -117,14 +116,14 @@
 <table>
     <tr>
         <td width="33%" class="center">
-        <span class="line" style="display: inline-block; width: width: 90%;">
+        <span class="line" style="display: inline-block; width: 90%; height: 40px">
             <img class="owner" src="{{ $signature }}" alt="signature" />
         </span>
             <div style="font-size: 11px;">(Tenant signature)</div>
         </td>
 
         <td width="33%" class="center">
-        <span class="line" style="display: inline-block; width: width: 90%;">
+        <span class="line" style="display: inline-block; width: 90%; height: 40px">
             <img class="owner" src="{{ $owner }}"  alt="Juanita Cronje" />
         </span>
             <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>
