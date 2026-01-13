@@ -39,7 +39,7 @@
         .line { border-bottom: 1px solid #000; }
 
         footer {
-            position: fixed;
+            position: relative;
             bottom: 25px;
             left: 0;
             right: 0;
@@ -120,12 +120,12 @@
 <table>
     <tr>
         <td width="33%" class="center">
-            <div class="line" style="width: 90%; margin: auto;"></div>
+            <div class="line" style="width: 90%; margin: auto; height: 140px;"></div>
             <div style="font-size: 11px;">(Tenant signature)</div>
         </td>
 
         <td width="33%" class="center">
-        <span class="line" style="display: inline-block; width: 90%">
+        <span class="line" style="display: inline-block; width: 90%; height: 140px;">
             <img class="owner" src="{{ $owner }}"  alt="Juanita Cronje" />
         </span>
             <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>

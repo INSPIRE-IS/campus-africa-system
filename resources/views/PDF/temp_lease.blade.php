@@ -123,7 +123,7 @@
 <table>
     <tr>
         <td width="33%" class="center">
-            <div class="line" style="width: 90%; margin: auto;"></div>
+            <div class="line" style="width: 90%; margin: auto; height: 140px;"></div>
             <div style="font-size: 11px;">(Tenant signature)</div>
         </td>
 
