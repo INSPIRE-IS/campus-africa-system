@@ -117,14 +117,14 @@
 <table>
     <tr>
         <td width="33%" class="center">
-        <span class="line" style="display: inline-block; width: 200px;">
-            <img src="{{ $signature }}" width="200" alt="signature" />
+        <span class="line" style="display: inline-block; width: width: 90%;">
+            <img class="owner" src="{{ $signature }}" alt="signature" />
         </span>
             <div style="font-size: 11px;">(Tenant signature)</div>
         </td>
 
         <td width="33%" class="center">
-        <span class="line" style="display: inline-block; width: 200px;">
+        <span class="line" style="display: inline-block; width: width: 90%;">
             <img class="owner" src="{{ $owner }}"  alt="Juanita Cronje" />
         </span>
             <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>

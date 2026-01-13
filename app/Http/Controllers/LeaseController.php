@@ -277,7 +277,8 @@ class LeaseController extends Controller
         $signed_at = $request->signed_at;
         $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
         Log::info('signature of the lease file: ' . $signature);
-        $owner = 'images/lease/juanita-cronje.jpg';
+        $owner = '/images/lease/juanita-cronje.jpg';
+        $logo = '/images/logo/temp_lease_logo.png';
 
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
@@ -294,9 +295,9 @@ class LeaseController extends Controller
 
         // check environment for dev or prod
         if (env('APP_ENV') == 'local') {
-            $pdf = PDF::loadView('PDF.tempLeaseSignDev', compact('pdfdata', 'signed_at', 'signature', 'owner'));
+            $pdf = PDF::loadView('PDF.tempLeaseSignDev', compact('pdfdata', 'signed_at', 'signature', 'owner', 'logo'));
         } else {
-            $pdf = PDF::loadView('PDF.tempLeaseSign', compact('pdfdata', 'signed_at', 'signature', 'owner'));
+            $pdf = PDF::loadView('PDF.tempLeaseSign', compact('pdfdata', 'signed_at', 'signature', 'owner', 'logo'));
         }
         // share data to view
 
