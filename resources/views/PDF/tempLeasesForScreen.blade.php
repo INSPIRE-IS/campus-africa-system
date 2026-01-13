@@ -20,7 +20,7 @@
             border-collapse: collapse;
         }
         .logo{
-            width: 50%;
+            width: 80%;
             height:auto;
         }
 
@@ -125,7 +125,7 @@
         </td>
 
         <td width="33%" class="center">
-        <span class="line" style="display: inline-block; width: 200px;">
+        <span class="line" style="display: inline-block; width: 90%">
             <img class="owner" src="{{ $owner }}"  alt="Juanita Cronje" />
         </span>
             <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>
