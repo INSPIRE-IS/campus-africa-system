@@ -885,25 +885,28 @@
                                         @endif
 
 
+                                        <!-- tempMoveIn -->
                                         @if ($file['field'] === 'tempMoveIn')
                                             @if (isset($file['url']) && isset($file['fileName']))
                                                 <a href="/storage/{{ $file['url'] }}"
                                                     download="{{ $file['fileName'] }}">
-                                                    <button type="button" id="myBtn_temp_download">Download Temp Lease</button>
+                                                    <button type="button" id="myBtn_temp_download"><small >Download Temp Lease</small></button>
                                                 </a>
                                             @endif
                                         @endif
                                         @if ($file['field'] === 'tempMoveIn' && $file['status'] !== 'XApproved')
                                             @if (Auth::user()->role_lease_regen == '1')
                                                 <a href="#">
-                                                    <button type="button" id="myBtn_regen_temp_lease">Regen Temp Lease</button>
+                                                    <button type="button" id="myBtn_regen_temp_lease"> <small >Regen Temp Lease</small></button>
                                                 </a>
                                                 @if ($file['status'] !== 'AUploaded')
                                                     <button type="button" id="myBtn_resend_temp_lease"
-                                                        onClick="resendTempLease()">Resend Temp Lease</button>
+                                                        onClick="resendTempLease()"> <small >Resend Temp Lease</small></button>
+                                                        
                                                 @endif
                                             @endif
                                         @endif
+                                        <!-- tempMoveIn -->
 
                                         @if ($file['status'] === 'AUploaded' || $file['status'] === 'XApproved')
                                             <button type="button"

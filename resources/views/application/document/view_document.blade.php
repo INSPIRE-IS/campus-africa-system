@@ -1011,7 +1011,7 @@
                     },
 
                     success: function (data) {
-
+                        console.log('data', data);
                         checkUserStatus();
                         refreshActions();
 
@@ -1022,7 +1022,8 @@
                                 $("#myModal").html("");
                                 $("#myModal").css("display", "none");   
                             } else {                                
-                                refresh_this_modal();
+                                // refresh_this_modal();
+                                window.location.reload();
                             }
                             
 
