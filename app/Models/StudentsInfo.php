@@ -120,6 +120,7 @@ class StudentsInfo extends Model
         'general_reminder_sent',
         'gender',
         'userEmailAlt',
+        'rob_51_temp_lease_approve',
     ];
 
     public function files()

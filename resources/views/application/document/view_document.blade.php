@@ -153,8 +153,8 @@
             <hr style="margin-bottom: 35px;">
 
             <h3>Info</h3>
-<span> show theis {{Auth::user()->role_other_reject_doc}}</span>
-<span> show theis {{explode("_", $file->fileId)[0] === "other"}}</span>
+            <span> show theis {{Auth::user()->role_other_reject_doc}}</span>
+            <span> show theis {{explode("_", $file->fileId)[0] === "other"}}</span>
             
 
             <div>
@@ -1011,7 +1011,7 @@
                     },
 
                     success: function (data) {
-
+                        console.log('data', data);
                         checkUserStatus();
                         refreshActions();
 
@@ -1022,7 +1022,8 @@
                                 $("#myModal").html("");
                                 $("#myModal").css("display", "none");   
                             } else {                                
-                                refresh_this_modal();
+                                // refresh_this_modal();
+                                window.location.reload();
                             }
                             
 
@@ -1652,10 +1653,9 @@
                         // console.log(data);
                     }
 
-                    if(data[1] == '1'){
+                    if(data[1] == '1' || data[1] == true){
                         window.location.reload();
                     }
-
                 }
             });            
 

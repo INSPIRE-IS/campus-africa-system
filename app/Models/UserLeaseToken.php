@@ -15,6 +15,7 @@ class UserLeaseToken extends Model
     protected $fillable = [
         'userUid',
         'leaseToken',
+        'lease_type',
         'active',
         'signed',
         'signature_url',

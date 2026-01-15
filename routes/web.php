@@ -17,6 +17,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MailReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +65,9 @@ Route::post('/action/file', [HomeController::class, 'action_file']);
 Route::get('/action-list/{userId}/{filter}', [HomeController::class, 'action_list']);
 Route::get('/document-list/{userId}/{filter}', [HomeController::class, 'document_list']);
 Route::post('/approve-application', [HomeController::class, 'approve_application']);
+
 Route::post('/reject-application', [HomeController::class, 'reject_application']);
+Route::post('/generate-temp-lease', [HomeController::class, 'generate_temp_lease']);
 Route::get('/check-user-status/{userId}', [HomeController::class, 'check_user_status']);
 Route::get('/check-user-payment/{userId}', [HomeController::class, 'check_user_payment']);
 
@@ -178,8 +181,8 @@ Route::post('/get-booking-info', [HomeController::class, 'get_booking_info']);
 Route::get('/properties-import', [HomeController::class, 'properties_import']);
 Route::post('/import/data', [HomeController::class, 'import_data']);
 
-Route::post('/resendLease', [LeaseController::class, 'resendLease']);
 Route::post('/createLease/{studentId}', [PDFController::class, 'createPDF']);
+Route::post('/createTempLease/{studentId}', [PDFController::class, 'createTempLeasePDF']);
 Route::get('/properties-info', [HomeController::class, 'properties_info']);
 Route::get('/residence/edit/{residenceId}', [HomeController::class, 'residence_edit']);
 Route::post('/save-residence', [HomeController::class, 'save_residence']);
@@ -249,12 +252,64 @@ Route::get('/reset-password/{id}', [ResetPasswordController::class, 'resetPasswo
 Route::post('/update-password/{id}', [ResetPasswordController::class, 'updatePasswordUser']);
 
 //Students to sign lease
+Route::post('/resendLease', [LeaseController::class, 'resendLease']);
+Route::post('/resendTempLease', [LeaseController::class, 'resendTempLease']);
 Route::get('/sign-lease/{id}', [LeaseController::class, 'view_sign_lease']);
 Route::post('/save-signed-lease/{id}', [LeaseController::class, 'save_signed_lease']);
 Route::group(['middleware' => ['auth']], function () {
+    // resend lease link
+    // https://campus-africa-system.test/resendLease/17617/2025
+
+    // get sign lease view token must be active not signed from user_lease_token table
+    // https://campus-africa-system.test/sign-lease/egmoIwgIsemNksf3Xi7PVPkf
+
+    // preview a signed lease
     // https://campus-africa-system.test/debug-lease-preview/17617/2025
     Route::get('/debug-lease-preview/{userId}/{year}', [LeaseController::class, 'debug_lease_preview']);
 });
+
+//Students to sign lease
+Route::get('/sign-temp-lease/{id}', [LeaseController::class, 'view_sign_temp_lease']);
+Route::post('/save-signed-temp-lease/{id}', [LeaseController::class, 'save_signed_temp_lease']);
+Route::group(['middleware' => ['auth']], function () {
+    // https://campus-africa-system.test/debug-lease-preview/5602/2026
+    // preview a temp lease
+    //Route::get('/debug-temp-lease-preview/{userId}/{year}', [LeaseController::class, 'debug_temp_lease_preview']);
+
+    Route::get('/test-temp-lease-pdf', function () {
+        $data = [
+            'tenantName' => 'John Doe',
+            'tenantId' => '9001015009083',
+        ];
+        $pdfdata = [
+            'tenantName' => 'John Doe',
+            'tenantId' => '9001015009083',
+        ];
+
+        $signed_at = 'test';
+        $signature = pdfImagePath('storage/files/0705091094080/0705091094080_1768318164_ma4lpfzr6v81w0khjn73.png'); //  'storage/files/' . $userIdentification . '/' . $new_name;
+        Log::info('signature of the lease file: ' . $signature);
+        $owner = pdfImagePath('images/lease/juanita-cronje.jpg');
+        Log::info('owner of the lease file: ' . $owner);
+        storage_path() .
+            $logo =  pdfImagePath('images/logo/temp_lease_logo.png');
+        Log::info('logo of the lease file: ' . $logo);
+        /** @disregard P1009 */
+        //$pdf = PDF::loadView('PDF.temp_lease', compact('data', 'signed_at', 'signature', 'owner', 'logo'));
+        $pdf = PDF::loadView('PDF.tempLeaseSign', compact('pdfdata', 'signed_at', 'signature', 'owner', 'logo'));
+
+        //return $pdf->stream('test.pdf'); // shows in browser (no download)
+        //return $pdf->download('test.pdf'); // shows in browser (no download)
+        return view('PDF.tempLeaseSign', compact(
+            'pdfdata',
+            'signed_at',
+            'signature',
+            'owner',
+            'logo'
+        ));
+    });
+});
+
 
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::get('/check-all-rooms/{id}', [HomeController::class, 'check_all_rooms']);
