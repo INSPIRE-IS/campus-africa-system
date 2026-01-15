@@ -23,10 +23,14 @@ class FirebaseDebug extends Command
 
     // # 🔎 View Firestore structure
     // php artisan firebase:debug --structure
+    // students@conurban.co.za Stud3nt@2025
 
     // # 👤 Look up a Firebase Auth user
     // php artisan firebase:debug --auth-user=example@domain.com
     // php artisan firebase:debug --auth-user=lincoln@fixrbuddy.co.za
+    // php artisan firebase:debug --auth-user=jason@whitehart.co.za
+    // php artisan firebase:debug --auth-user=students@conurban.co.za
+
 
     // # 👤 Look up a Firebase Auth user
     // php artisan firebase:debug --user=asdkjfasfhaskjhlasdhf
