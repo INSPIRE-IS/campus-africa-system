@@ -110,16 +110,17 @@ class MaintenanceController extends Controller
             $this_year = $this_year->lookup_name;
         }
         $studInfo = StudentsInfo::select('bookingId', 'userFirstName', 'userLastname', 'userEmail', 'userCellCode', 'userCell', 'year', 'id')->where('userUid', $userId)->where('year', $this_year)->first();
-        $booking = Booking::select('id', 'bed_code', 'property', 'booking_code')->find($studInfo->bookingId);
+        $booking = Booking::select('id', 'bed_code', 'property', 'booking_code', 'floor', 'room', 'roomType')->find($studInfo->bookingId);
         $property = Residence::select('residence', 'id')->where('id', $booking->property ?? null)->first();
 
-
+        $uid = null;
         try {
             $existing = $this->firebase->getUserByEmail($studInfo->userEmail);
             if (!empty($existing)) {
                 $uid = $existing->uid;
             }
         } catch (Exception $e) {
+            Log::info("No Firebase user found for email will create one: " . $studInfo->userEmail);
             $uid = null;
         }
 
@@ -142,10 +143,24 @@ class MaintenanceController extends Controller
             "first_name" => $studInfo->userFirstName,
             "groups" => [0 =>  $property->residence],
             "last_name" => $studInfo->userLastname,
+            "display_name" =>  $studInfo->userFirstName . " " . $studInfo->userLastname,
             "phone_number" => $studInfo->userCellCode . $studInfo->userCell,
             "role" => "Tenant",
             "password" => $request->input('password'),
+
+            "building" => $property->residence,
+            "building_id" => $booking->property,
+            "floor" => $booking->floor,
+            "room" => $booking->room,
+            "room_type" => $booking->roomType,
+
+            "is_active" => true,
+            "needs_auth_setup" => false,
         ];
+
+
+        Log::info('details');
+        Log::info($details);
         // dd($details);
         try {
             $userId = Auth::user()->id;
@@ -161,6 +176,7 @@ class MaintenanceController extends Controller
             $localUser->password = Hash::make($request->input('password'));
             $localUser->save();
             Log::info('✅ Password updated. ' . $localUser->password);
+            Log::info('✅ existing firebase user id. ' . $uid);
             Log::info("Updating firebase user and password");
             $user = $this->firebase->registerOrUpdateUser($details);
             // Also update local Laravel user's password

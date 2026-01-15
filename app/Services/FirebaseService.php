@@ -171,14 +171,39 @@ class FirebaseService
 
         // 2. Prepare additional Firestore fields
         $this->firestore->collection('users')->document($user->uid)->set([
+            'id' => $user->uid,
             'uid' => $user->uid,
+
             'email' => $details['email'],
-            'first_name' => $details['first_name'] ?? null,
-            'last_name' => $details['last_name'] ?? null,
-            'bed_code' => $details['bed_code'] ?? null,
+            'displayName' => $extra['display_name'] ?? null,
+            'firstName' => $details['first_name'] ?? null,
+            'lastName' => $details['last_name'] ?? null,
+            'phoneNumber' => $extra['phone_number'] ?? null,
+
             'role' => $details['role'] ?? null,
-            'groups' => $details['groups'] ?? [],
-            'created_time' => now()->toDateTimeString(),
+
+            // Residence info
+            'building' => $details['building'] ?? null,
+            'buildingId' => $details['building_id'] ?? null,
+            'floor' => $details['floor'] ?? null,
+            'room' => $details['room'] ?? null,
+            'roomType' => $details['room_type'] ?? null,
+
+            // Status flags
+            'isActive' => $details['is_active'] ?? true,
+            'needsAuthSetup' => $details['needs_auth_setup'] ?? false,
+
+            // Terms
+            'termsAccepted' => false,
+            'termsAcceptedAt' => null,
+            'termsAcceptedVersion' => null,
+
+            // Activity
+            'lastLogin' => null,
+
+            // Timestamps
+            'createdAt' =>  now()->toDateTimeString(),
+            'updatedAt' =>  now()->toDateTimeString(),
         ]);
 
         // 3. Return the created Firebase Auth user
@@ -205,16 +230,41 @@ class FirebaseService
 
         // 📝 Create/update Firestore user document
         $this->firestore->collection('users')->document($user->uid)->set([
+            'id' => $user->uid,
             'uid' => $user->uid,
+
             'email' => $details['email'],
-            'first_name' => $details['first_name'] ?? null,
-            'last_name' => $details['last_name'] ?? null,
-            'bed_code' => $details['bed_code'] ?? null,
+            'displayName' => $extra['displayName'] ?? null,
+            'firstName' => $details['first_name'] ?? null,
+            'lastName' => $details['last_name'] ?? null,
+            'phoneNumber' => $extra['phoneNumber'] ?? null,
+
             'role' => $details['role'] ?? null,
-            'groups' => $details['groups'] ?? [],
-            'created_time' => now()->toDateTimeString(),
+
+            // Residence info
+            'building' => $details['building'] ?? null,
+            'buildingId' => $details['building_id'] ?? null,
+            'floor' => $details['floor'] ?? null,
+            'room' => $details['room'] ?? null,
+            'roomType' => $details['room_type'] ?? null,
+
+            // Status flags
+            'isActive' => $details['is_active'] ?? true,
+            'needsAuthSetup' => $details['needs_auth_setup'] ?? false,
+
+            // Terms
+            'termsAccepted' => false,
+            'termsAcceptedAt' => null,
+            'termsAcceptedVersion' => null,
+
+            // Activity
+            'lastLogin' => null,
+
+            // Timestamps
+            'createdAt' =>  now()->toDateTimeString(),
+            'updatedAt' =>  now()->toDateTimeString(),
         ]);
-        Log::info('✅ User exists. ' . $user->uid);
+        Log::info('✅ Campus User exists. ' . $user->uid);
         return $user;
     }
 

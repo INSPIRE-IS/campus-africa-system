@@ -279,7 +279,7 @@
                         
                         <label for="proofRegistration" id="proofRegistrationUpload" style="cursor:pointer" class="<?php if($RegistrationCopy && $RegistrationCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($RegistrationCopy && $RegistrationCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
                             <div class="uploadSection" id="copyProofRegistration">
-                                <h3 class="uploadName">PROOF OF REGISTRATION {{ isset($RegistrationCopy) ? $RegistrationCopy->status : 'nothing' }}</h3>
+                                <h3 class="uploadName">PROOF OF REGISTRATION {{ isset($RegistrationCopy) ? $RegistrationCopy->status : 'required' }}</h3>
                                 <div class="uploadFileSection" id="proofRegistrationUploadSection">
                                     
                                         <div id="proofRegistrationSection">
