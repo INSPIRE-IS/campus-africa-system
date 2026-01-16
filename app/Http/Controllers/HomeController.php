@@ -3779,7 +3779,12 @@ class HomeController extends Controller
         }
 
 
-        if ($request->fieldStatus !== null && $request->fieldStatus !== "All") {
+        if (
+            $request->fieldStatus !== null &&
+            $request->fieldStatus !== "All" &&
+            is_array($request->status) &&
+            count($request->status) > 0
+        ) {
 
             $queryString = "";
             $i = 1;
@@ -3792,8 +3797,6 @@ class HomeController extends Controller
                 }
                 $i++;
             }
-
-
 
             if (!in_array("3", $request->status)) {
                 $value = '(ui.' . $request->fieldStatus . ' in (' . $queryString . ') AND (ui.rob_60_cancelled = "0" OR ui.rob_60_cancelled is null))';
