@@ -23,6 +23,7 @@ use App\Jobs\SendResendTempLeaseMail;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class PDFController extends Controller
 {
