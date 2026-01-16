@@ -80,7 +80,6 @@
                 <option value="G" <?php if(!empty($propertyData) && $propertyData->room == "G"){echo "selected";}?>>G</option>
                 <option value="H" <?php if(!empty($propertyData) && $propertyData->room == "H"){echo "selected";}?>>H</option>
                 <option value="I" <?php if(!empty($propertyData) && $propertyData->room == "I"){echo "selected";}?>>I</option>
-                
             </select>
         </div>
 
@@ -92,10 +91,20 @@
                 <option value="b" <?php if(!empty($propertyData) && $propertyData->bed == "b"){echo "selected";}?>>b</option>
                 <option value="c" <?php if(!empty($propertyData) && $propertyData->bed == "c"){echo "selected";}?>>c</option>
                 <option value="d" <?php if(!empty($propertyData) && $propertyData->bed == "d"){echo "selected";}?>>d</option>
+                <option value="e" <?php if(!empty($propertyData) && $propertyData->bed == "e"){echo "selected";}?>>e</option>
+                <option value="f" <?php if(!empty($propertyData) && $propertyData->bed == "f"){echo "selected";}?>>f</option>
+                <option value="g" <?php if(!empty($propertyData) && $propertyData->bed == "g"){echo "selected";}?>>g</option>
+                <option value="h" <?php if(!empty($propertyData) && $propertyData->bed == "h"){echo "selected";}?>>h</option>
+                <option value="i" <?php if(!empty($propertyData) && $propertyData->bed == "i"){echo "selected";}?>>i</option>
                 <option value="A" <?php if(!empty($propertyData) && $propertyData->bed == "A"){echo "selected";}?>>A</option>
                 <option value="B" <?php if(!empty($propertyData) && $propertyData->bed == "B"){echo "selected";}?>>B</option>
                 <option value="C" <?php if(!empty($propertyData) && $propertyData->bed == "C"){echo "selected";}?>>C</option>
                 <option value="D" <?php if(!empty($propertyData) && $propertyData->bed == "D"){echo "selected";}?>>D</option>
+                <option value="E" <?php if(!empty($propertyData) && $propertyData->bed == "E"){echo "selected";}?>>E</option>
+                <option value="F" <?php if(!empty($propertyData) && $propertyData->bed == "F"){echo "selected";}?>>F</option>
+                <option value="G" <?php if(!empty($propertyData) && $propertyData->bed == "G"){echo "selected";}?>>G</option>
+                <option value="H" <?php if(!empty($propertyData) && $propertyData->bed == "H"){echo "selected";}?>>H</option>
+                <option value="I" <?php if(!empty($propertyData) && $propertyData->bed == "I"){echo "selected";}?>>I</option>
             </select>
         </div>
 
