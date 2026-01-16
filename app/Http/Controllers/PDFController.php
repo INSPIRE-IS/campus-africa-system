@@ -15,13 +15,13 @@ use App\Models\Lookups;
 use App\Models\UserLeaseToken;
 use App\Models\MailerList;
 use Mail;
-// use Grosv\LaravelPasswordlessLogin\LoginUrl;
+
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
 use App\Jobs\SendResendTempLeaseMail;
 use Illuminate\Support\Facades\Log;
-// use GPBMetadata\Google\Api\Log;
+
 use Illuminate\Support\Facades\Session;
 
 class PDFController extends Controller
