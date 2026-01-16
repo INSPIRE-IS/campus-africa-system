@@ -11,6 +11,7 @@ class FirebaseDebug extends Command
                             {--structure : Show Firestore structure} 
                             {--auth-user= : Lookup a user by email or UID}
                             {--user= : Lookup a user by email or UID}
+                            {--lookup-user= : Unified lookup across Auth + Firestore}
                             {--password= : New password to update}
                             {--password-user= : User email or UID for password update}
                             {--email= : New email to update}
@@ -49,6 +50,12 @@ class FirebaseDebug extends Command
     // # 🛠️ View latest maintenance items
     // php artisan firebase:debug --list-maintenance
 
+    // # 🛠️ View latest maintenance items
+    // php artisan firebase:debug --lookup-user=example@domain.com
+    // php artisan firebase:debug --lookup-user=UID
+    // php artisan firebase:debug --lookup-user=students@conurban.co.za
+    // php artisan firebase:debug --lookup-user=tlodipjanemalemela@gmail.com
+    // php artisan firebase:debug --lookup-user=mKjbozRQJqR2dSmTXBbcCVJMMFE3
 
     public function __construct(FirebaseService $firebase)
     {
@@ -149,6 +156,53 @@ class FirebaseDebug extends Command
             }
             return;
         }
+
+        // Unified lookup for auth + firestore
+        if ($emailOrUid = $this->option('lookup-user')) {
+            $this->info("Looking up user across Firebase Auth + Firestore: {$emailOrUid}");
+
+            try {
+                // Try email first, fallback to UID
+                $user = filter_var($emailOrUid, FILTER_VALIDATE_EMAIL)
+                    ? $this->firebase->getUserByEmail($emailOrUid)
+                    : $this->firebase->getUserByUid($emailOrUid);
+
+                $this->info("🔍 Firebase Auth User:");
+                dump([
+                    'uid' => $user->uid,
+                    'email' => $user->email,
+                    'displayName' => $user->displayName,
+                    'phoneNumber' => $user->phoneNumber,
+                ]);
+
+                // Get Firestore profile
+                $profile = $this->firebase->getUserProfileByUid($user->uid);
+
+                if ($profile) {
+                    $this->info("📄 Firestore User Document:");
+                    dump($profile);
+                } else {
+                    $this->warn("⚠ No Firestore document found for UID: {$user->uid}");
+                }
+
+                // Optionally, show maintenance items assigned to user
+                $this->info("🛠 Maintenance Items for this user:");
+                $items = $this->firebase->getMaintenanceItemsForUser($user->uid);
+
+                if (!$items->isEmpty()) {
+                    foreach ($items as $item) {
+                        $this->line("• {$item->id()} — " . json_encode($item->data()));
+                    }
+                } else {
+                    $this->line("No maintenance items linked to this user.");
+                }
+            } catch (\Throwable $e) {
+                $this->error("Error: " . $e->getMessage());
+            }
+
+            return;
+        }
+
 
         $this->warn('No options provided or missing required parameters. Use --help for usage.');
     }
