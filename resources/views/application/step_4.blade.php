@@ -173,16 +173,16 @@
                                 </div>
                             </label>
                             <br/>
-                            <label for="sponsorId" id="sponsorIdUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
-                                <div class="uploadSection" id="copySponsorId">
+                            <label for="other_sponsor_id" id="other_sponsor_idUpload" style="cursor:pointer" class="<?php if($SponsorId && $SponsorId->status == "Uploaded"){echo 'yellowBorder';}elseif($SponsorId && $SponsorId->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
+                                <div class="uploadSection" id="copyother_sponsor_id">
                                     <h3 class="uploadName">ID OF SPONSOR</h3>
-                                    <div class="uploadFileSection" id="sponsorIdUploadSection">
+                                    <div class="uploadFileSection" id="other_sponsor_idUploadSection">
                                         
-                                        <div id="sponsorIdSection">
+                                        <div id="other_sponsor_idSection">
                                             <?php 
-                                                if($BankCopy && $BankCopy->status == "Uploaded"){
+                                                if($SponsorId && $SponsorId->status == "Uploaded"){
                                                     echo ' <i class="fas fa-clock" id="yellowClock"></i>';
-                                                }elseif($BankCopy && $BankCopy->status == "Approved"){
+                                                }elseif($SponsorId && $SponsorId->status == "Approved"){
                                                     echo ' <i class="fas fa-file successful"></i>';
                                                 }else{
                                                     echo '<i class="fas fa-file-upload" ></i>';
@@ -191,12 +191,12 @@
                                         </div>
 
                                         <?php 
-                                            if($BankCopy && $BankCopy->status == "Uploaded"){
-                                                echo '<label id="sponsorIdSuccess" class="toUploadLabel">UPLOADED</label>';
-                                            }elseif($BankCopy && $BankCopy->status == "Approved"){
-                                                echo '<label id="sponsorIdSuccess" class="successLabel">Approved</label>';
+                                            if($SponsorId && $SponsorId->status == "Uploaded"){
+                                                echo '<label id="other_sponsor_idSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($SponsorId && $SponsorId->status == "Approved"){
+                                                echo '<label id="other_sponsor_idSuccess" class="successLabel">Approved</label>';
                                             }else{ 
-                                                echo '<input type="file" id="sponsorId" onChange="UploadDocument(\'sponsorId\')" accept="image/*, application/pdf" hidden/>';
+                                                echo '<input type="file" id="other_sponsor_id" onChange="UploadDocument(\'other_sponsor_id\')" accept="image/*, application/pdf" hidden/>';
                                             }
                                         ?>
                                         
@@ -206,16 +206,16 @@
                                 </div>
                             </label>
                             <br/>
-                            <label for="sponsorPayslip" id="sponsorPayslipUpload" style="cursor:pointer" class="<?php if($BankCopy && $BankCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BankCopy && $BankCopy->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
-                                <div class="uploadSection" id="copySponsorPayslip">
+                            <label for="other_sponsor_payslip" id="other_sponsor_payslipUpload" style="cursor:pointer" class="<?php if($SponsorPayslip && $SponsorPayslip->status == "Uploaded"){echo 'yellowBorder';}elseif($SponsorPayslip && $SponsorPayslip->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
+                                <div class="uploadSection" id="copyother_sponsor_payslip">
                                     <h3 class="uploadName">PAYSLIP OF SPONSOR</h3>
-                                    <div class="uploadFileSection" id="sponsorPayslipUploadSection">
+                                    <div class="uploadFileSection" id="other_sponsor_payslipUploadSection">
                                         
-                                        <div id="sponsorPayslipSection">
+                                        <div id="other_sponsor_payslipSection">
                                             <?php 
-                                                if($BankCopy && $BankCopy->status == "Uploaded"){
+                                                if($SponsorPayslip && $SponsorPayslip->status == "Uploaded"){
                                                     echo ' <i class="fas fa-clock" id="yellowClock"></i>';
-                                                }elseif($BankCopy && $BankCopy->status == "Approved"){
+                                                }elseif($SponsorPayslip && $SponsorPayslip->status == "Approved"){
                                                     echo ' <i class="fas fa-file successful"></i>';
                                                 }else{
                                                     echo '<i class="fas fa-file-upload" ></i>';
@@ -224,17 +224,14 @@
                                         </div>
 
                                         <?php 
-                                            if($BankCopy && $BankCopy->status == "Uploaded"){
-                                                echo '<label id="sponsorPayslipSuccess" class="toUploadLabel">UPLOADED</label>';
-                                            }elseif($BankCopy && $BankCopy->status == "Approved"){
-                                                echo '<label id="sponsorPayslipSuccess" class="successLabel">Approved</label>';
+                                            if($SponsorPayslip && $SponsorPayslip->status == "Uploaded"){
+                                                echo '<label id="other_sponsor_payslipSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($SponsorPayslip && $SponsorPayslip->status == "Approved"){
+                                                echo '<label id="other_sponsor_payslipSuccess" class="successLabel">Approved</label>';
                                             }else{ 
-                                                echo '<input type="file" id="sponsorPayslip" onChange="UploadDocument(\'sponsorPayslip\')" accept="image/*, application/pdf" hidden/>';
+                                                echo '<input type="file" id="other_sponsor_payslip" onChange="UploadDocument(\'other_sponsor_payslip\')" accept="image/*, application/pdf" hidden/>';
                                             }
                                         ?>
-                                        
-                                        
-                                        
                                     </div>
                                 </div>
                             </label>
@@ -348,16 +345,16 @@
             data: {userUid: "{{ $user->userUid ?? '' }}"},
 
             success: function (data) {
-                console.log(data)
+                //console.log('data '.data)
                 // copyID
-                if(data[0].status == "Uploaded"){
+                if(data[0]?.status == "Uploaded"){
                     $("#copyIDSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
                     $("#copyIDUploadSection").empty().append('<label id="copyIDSection" class="toUploadLabel">UPLOADED</label>')
                     $("#copyIDUpload").addClass('yellowBorder')
                     $("#copyIDUpload").removeClass('redBorder')
                 }
                 // studentCard
-                if(data[1].status == "Uploaded"){
+                if(data[1]?.status == "Uploaded"){
                     $("#studentCardSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
                     $("#studentCardUploadSection").empty().append('<label id="studentCardSection" class="toUploadLabel">UPLOADED</label>')
                     $("#studentCardUpload").addClass('yellowBorder')
@@ -403,7 +400,7 @@
     }
 
     function UploadDocument(field){
-
+            //console.log('field ', field);
         if(document.getElementById(field).files[0].type == "application/pdf" || document.getElementById(field).files[0].type.split("/")[0] == "image"){
 
             $("#"+field+"Section").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');

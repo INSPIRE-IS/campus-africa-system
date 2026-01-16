@@ -385,10 +385,24 @@ class ApplicationController extends Controller
         $IdCopy = UserFiles::where("userUid", $userId)->where('fileId', 'copyID')->where('year', $year)->first();
         $StudentCopy = UserFiles::where("userUid", $userId)->where('fileId', 'studentCard')->where('year', $year)->first();
         $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
+        // new logic for cash students require sponsorId and sponsorPayslip
+        if ($userInfo->studentType == "Cash / Direct" &&  $year >= '2026') {
+            UserFiles::firstOrCreate([
+                'userUid' => $userInfo->userUid,
+                'fileId' => 'other_sponsor_id',
+                'year' => $year,
+            ]);
+
+            UserFiles::firstOrCreate([
+                'userUid' => $userInfo->userUid,
+                'fileId' => 'other_sponsor_payslip',
+                'year' => $year,
+            ]);
+        }
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
         $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
 
-        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
+        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "SponsorId" => $SponsorId, "SponsorPayslip" => $SponsorPayslip, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
     }
 
     function get_user_status($fileType, $user, $student)
@@ -596,10 +610,7 @@ class ApplicationController extends Controller
 
     public function file_upload(Request $request)
     {
-        //dd($request);
 
-
-        //////////////////////////////////////////////////////////////////////////////
         $userUid = $request->userUid;
         $currUser = User::where('id', $userUid)->first();
         $fileType = $request->fileType;
@@ -626,8 +637,9 @@ class ApplicationController extends Controller
                 $fileUrlBack = $fileUrl;
 
                 $hasFile = UserFiles::where('userUid', $userUid)->where('fileId', $fileType)->where('year', $this_year)->first();
-
+                //Log::info('hasFile ' . $hasFile);
                 $user_status = $this->get_user_status($fileType, "", StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first());
+                //Log::info('user_status ', $user_status);
                 $field_data = $user_status['field_data'];
                 $field_doc = $user_status['field_doc'];
 
@@ -2140,11 +2152,26 @@ class ApplicationController extends Controller
 
         // $IdCopy = UserFiles::where("userUid", $userId)->where('fileId', 'copyID')->where('year', $year)->first();
         // $StudentCopy = UserFiles::where("userUid", $userId)->where('fileId', 'studentCard')->where('year', $year)->first();
+
+        // new logic for repeat booking duplicate previous year files
         $IdCopy           = $this->duplicatePreviousYearFile($userId, 'copyID', $year);
         $StudentCopy      = $this->duplicatePreviousYearFile($userId, 'studentCard', $year);
+
         $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
-        $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'sponsorId')->where('year', $year)->first();
-        $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'sponsorPayslip')->where('year', $year)->first();
+        // new logic for cash students require sponsorId and sponsorPayslip
+        if ($userInfo->studentType == "Cash / Direct" &&  $year >= '2026') {
+            UserFiles::firstOrCreate([
+                'userUid' => $userInfo->userUid,
+                'fileId' => 'other_sponsor_id',
+                'year' => $year,
+            ]);
+
+            UserFiles::firstOrCreate([
+                'userUid' => $userInfo->userUid,
+                'fileId' => 'other_sponsor_payslip',
+                'year' => $year,
+            ]);
+        }
 
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
         $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
@@ -2162,8 +2189,12 @@ class ApplicationController extends Controller
         $IdCopy = UserFiles::where("userUid", $userId)->where('fileId', 'copyID')->where('year', $year)->first();
         $StudentCopy = UserFiles::where("userUid", $userId)->where('fileId', 'studentCard')->where('year', $year)->first();
         $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
-        $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'sponsorId')->where('year', $year)->first();
-        $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'sponsorPayslip')->where('year', $year)->first();
+        // new logic for cash students require sponsorId and sponsorPayslip
+        // other_sponsor_id 
+        // other_sponsor_payslip
+        $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_id')->where('year', $year)->first();
+        $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_payslip')->where('year', $year)->first();
+
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
         $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
 

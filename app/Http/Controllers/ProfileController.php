@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
 use App\Models\ActionList;
-use App\models\Lookups;
+use App\Models\Lookups;
 use App\Models\QuestionOption;
 use App\Models\StudentQuestionAnswer;
 use Illuminate\Support\Facades\Session;
