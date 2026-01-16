@@ -386,6 +386,8 @@ class ApplicationController extends Controller
         $StudentCopy = UserFiles::where("userUid", $userId)->where('fileId', 'studentCard')->where('year', $year)->first();
         $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
         // new logic for cash students require sponsorId and sponsorPayslip
+        $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_id')->where('year', $year)->first();
+        $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_payslip')->where('year', $year)->first();
         if ($userInfo->studentType == "Cash / Direct" &&  $year >= '2026') {
             UserFiles::firstOrCreate([
                 'userUid' => $userInfo->userUid,
