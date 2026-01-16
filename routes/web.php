@@ -271,6 +271,7 @@ Route::group(['middleware' => ['auth']], function () {
 //Students to sign lease
 Route::get('/sign-temp-lease/{id}', [LeaseController::class, 'view_sign_temp_lease']);
 Route::post('/save-signed-temp-lease/{id}', [LeaseController::class, 'save_signed_temp_lease']);
+
 Route::group(['middleware' => ['auth']], function () {
     // https://campus-africa-system.test/debug-lease-preview/5602/2026
     // preview a temp lease
@@ -278,8 +279,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/test-temp-lease-pdf', function () {
         $data = [
-            'tenantName' => 'John Doe',
-            'tenantId' => '9001015009083',
+            'tenantName' => 'Kamogelo',
+            'tenantId' => '0406301269089',
         ];
         $pdfdata = [
             'tenantName' => 'John Doe',
@@ -323,34 +324,42 @@ Route::post('/update/room-activation', [BookingReportController::class, 'room_ac
 
 Route::post('/get-room-ids', [ApplicationController::class, 'get_room_ids']);
 
-//User Online application
+// STUDENT ONLINE APPLICATION
 Route::get('/online-application/{property}/{roomType}', [ApplicationController::class, 'step_1']);
 Route::get("/online-application-verify/{applicationToken}", [ApplicationController::class, 'step_verify']);
 Route::post("/veryfiy-user", [ApplicationController::class, 'veryfiy_user']);
+
+Route::get("/student-create-new-booking", [ApplicationController::class, 'new_booking_step_1']);
+Route::post("/new-booking-step-1-save", [ApplicationController::class, 'new_booking_step_1_save']);
+
 Route::get("/step-2/online-application", [ApplicationController::class, 'step_2']);
 Route::post("/step-2-spon", [ApplicationController::class, 'step_2_spon']);
 Route::post("/step-2-bur", [ApplicationController::class, 'step_2_bur']);
+Route::get("/new-booking-step-2", [ApplicationController::class, 'new_booking_step_2']);
+Route::post('/new-booking-step-2-spon-save', [ApplicationController::class, 'new_booking_step_2_spon_save']);
+Route::post('/new-booking-step-2-bur-save', [ApplicationController::class, 'new_booking_step_2_bur_save']);
+
 Route::get("/step-3/online-application", [ApplicationController::class, 'step_3']);
 Route::post("/step-3-kin", [ApplicationController::class, 'step_3_kin']);
+Route::post("/new-booking-step-3-save", [ApplicationController::class, 'new_booking_step_3_save']);
+Route::get("/new-booking-step-3", [ApplicationController::class, 'new_booking_step_3']);
+
 Route::get("/step-4/online-application", [ApplicationController::class, 'step_4']);
+Route::get('/new-booking-step-4', [ApplicationController::class, 'new_booking_step_4']);
+
 Route::post("/application-file-upload", [ApplicationController::class, 'file_upload']);
+
 Route::get("/step-5/online-application", [ApplicationController::class, 'step_5']);
+
 Route::get("/complete/online-application", [ApplicationController::class, 'complete_online_app']);
+
 Route::get("/verify-password", [ApplicationController::class, 'verify_password']);
 Route::post("/confirm-password", [ApplicationController::class, 'confirm_password']);
 Route::get("/retry/online-application", [ApplicationController::class, 'retry_payment']);
 
-Route::get("/student-create-new-booking", [ApplicationController::class, 'new_booking_step_1']);
-Route::post("/new-booking-step-1-save", [ApplicationController::class, 'new_booking_step_1_save']);
-Route::get("/new-booking-step-2", [ApplicationController::class, 'new_booking_step_2']);
-Route::post("/new-booking-step-3-save", [ApplicationController::class, 'new_booking_step_3_save']);
-Route::get('/new-booking-step-4', [ApplicationController::class, 'new_booking_step_4']);
-Route::post('/new-booking-step-2-spon-save', [ApplicationController::class, 'new_booking_step_2_spon_save']);
-Route::get("/new-booking-step-3", [ApplicationController::class, 'new_booking_step_3']);
-Route::post('/new-booking-step-2-bur-save', [ApplicationController::class, 'new_booking_step_2_bur_save']);
 
 
-
+// UTILITY ROUTES 
 Route::post("/passwordless-login", [LoginController::class, 'passwordlessLogin']);
 Route::get('/change-student-type', [ApplicationController::class, 'change_student_type']);
 Route::post('/change-new-student-details', [ApplicationController::class, 'update_student_details']);

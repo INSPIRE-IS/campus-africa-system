@@ -16,6 +16,46 @@ https://windows.php.net/downloads/pecl/releases/grpc/1.43.0/
 php artisan make:model MaintenanceLog --migration
 php artisan make:controller Admin/MaintenanceController -r -mMaintenanceLog
 
+if ($fileType == "proof_of_payment") {
+            $typeName = "Booking Fee Proof of Payment";
+            $field_data = "fee_approved";
+            $field_doc = "rob_10_fee";
+        } elseif ($fileType == "copyID") {
+            $typeName = "Copy of ID Document";
+            $field_data = "id_data_approved";
+            $field_doc = "rob_15_id";
+        } elseif ($fileType == "studentCard") {
+            $typeName = "Copy of Student Card";
+            $field_data = "student_card_approved";
+            $field_doc = "rob_20_card";
+        } elseif ($fileType == "proofRegistration") {
+            $typeName = "Proof of Registration";
+            $field_data = "registration_approved";
+            $field_doc = "rob_25_reg";
+        } elseif ($fileType == "bursaryApproval") {
+            if ($student->studentType == "NSFAS") {
+                $typeName = "NSFAS Approval";
+            } else {
+                $typeName = "Bursary Approval";
+            }
+            $field_data = "bursary_approved";
+            $field_doc = "rob_30_funds";
+        } elseif ($fileType == "bankStatement") {
+            $typeName = "Bank Statements";
+            $field_data = "bank_approved";
+            $field_doc = "rob_30_funds";
+        } elseif ($fileType == "moveIn") {
+            $typeName = "Lease";
+            $field_data = "";
+            $field_doc = "rob_55_lease";
+        } else {
+            $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
+            $field_data = $fileType;
+            $field_doc = "rob_45_other";
+        }
+
+
+
 
 php artisan make:migration add_soft_deletes_to_user_files_table
 php artisan make:migration add_soft_deletes_to_bookings_data_table
