@@ -13,6 +13,7 @@ class Property extends Model
     protected $table = 'property_data';
 
     protected $fillable = [
+        'id',
         'residence',
         'meta_info_1',
         'meta_info_2',

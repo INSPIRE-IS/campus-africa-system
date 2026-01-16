@@ -213,6 +213,10 @@ class FirebaseService
     public function registerOrUpdateUser(array $details = [], array $extra = [])
     {
         try {
+            Log::info('details');
+            Log::info($details);
+            Log::info('extra');
+            Log::info($extra);
             // Check if user exists
             $existingUser = $this->auth->getUserByEmail($details['email']);
             Log::info('✅ User exists. ' . $existingUser->uid);
@@ -234,10 +238,10 @@ class FirebaseService
             'uid' => $user->uid,
 
             'email' => $details['email'],
-            'displayName' => $extra['displayName'] ?? null,
+            'displayName' => $details['display_name'] ?? null,
             'firstName' => $details['first_name'] ?? null,
             'lastName' => $details['last_name'] ?? null,
-            'phoneNumber' => $extra['phoneNumber'] ?? null,
+            'phoneNumber' => $details['phone_number'] ?? null,
 
             'role' => $details['role'] ?? null,
 
@@ -261,9 +265,9 @@ class FirebaseService
             'lastLogin' => null,
 
             // Timestamps
-            'createdAt' =>  now()->toDateTimeString(),
+            'createdAt' =>  $details['created_at'] ?? now()->toDateTimeString(),
             'updatedAt' =>  now()->toDateTimeString(),
-        ]);
+        ], ['merge' => true]);
         Log::info('✅ Campus User exists. ' . $user->uid);
         return $user;
     }
@@ -291,5 +295,13 @@ class FirebaseService
         }
 
         return $collection->documents();
+    }
+
+    public function getMaintenanceItemsForUser(string $uid)
+    {
+        return $this->firestore
+            ->collection('maintenance_items')
+            ->where('userId', '=', $uid)
+            ->documents();
     }
 }

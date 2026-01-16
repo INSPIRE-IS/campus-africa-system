@@ -109,8 +109,12 @@ class MaintenanceController extends Controller
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
         }
-        $studInfo = StudentsInfo::select('bookingId', 'userFirstName', 'userLastname', 'userEmail', 'userCellCode', 'userCell', 'year', 'id')->where('userUid', $userId)->where('year', $this_year)->first();
-        $booking = Booking::select('id', 'bed_code', 'property', 'booking_code', 'floor', 'room', 'roomType')->find($studInfo->bookingId);
+        $studInfo = StudentsInfo::select('bookingId', 'userFirstName', 'userLastname', 'userEmail', 'userCellCode', 'userCell', 'year', 'id')
+            ->where('userUid', $userId)
+            ->where('year', $this_year)->first();
+        $booking = Booking::select('id', 'bed_code', 'property', 'booking_code', 'floor', 'room', 'roomType', "property_data_id")
+            ->with('residence:residence,id', 'roomType:name,id,property_id')
+            ->find($studInfo->bookingId);
         $property = Residence::select('residence', 'id')->where('id', $booking->property ?? null)->first();
 
         $uid = null;
@@ -124,18 +128,6 @@ class MaintenanceController extends Controller
             $uid = null;
         }
 
-        // $user = [
-        //     "id" => $booking->booking_code,
-        //     "bed_code" => $booking->bed_code,
-        //     "email" => $studInfo->userEmail,
-        //     "first_name" => $studInfo->userFirstName,
-        //     "residence" =>  $property->residence ?? null,
-        //     "last_name" => $studInfo->userLastname,
-        //     "phone_number" => $studInfo->userCellCode . $studInfo->userCell,
-        //     "role" => "Tenant",
-        //     "uid" => $uid,
-        // ];
-
         $details = [
             "id" => $booking->booking_code ?? null,
             "bed_code" => $booking->bed_code,
@@ -144,24 +136,27 @@ class MaintenanceController extends Controller
             "groups" => [0 =>  $property->residence],
             "last_name" => $studInfo->userLastname,
             "display_name" =>  $studInfo->userFirstName . " " . $studInfo->userLastname,
-            "phone_number" => $studInfo->userCellCode . $studInfo->userCell,
-            "role" => "Tenant",
+            "cell_code" =>  $studInfo->userCellCode,
+            "phone_number" =>  $studInfo->userCellCode . $studInfo->userCell,
+            "role" => "tenant",
             "password" => $request->input('password'),
 
             "building" => $property->residence,
             "building_id" => $booking->property,
             "floor" => $booking->floor,
-            "room" => $booking->room,
-            "room_type" => $booking->roomType,
+            "room" => $booking->bed_code,
+            "room_type" => $booking->RoomType->name,
 
             "is_active" => true,
             "needs_auth_setup" => false,
         ];
+        // $extra = [
+        //     'display_name' => $studInfo->userFirstName . ' ' . $studInfo->userLastname,
+        //     'phone_number' => $studInfo->userCellCode . $studInfo->userCell,
+        // ];
 
 
-        Log::info('details');
-        Log::info($details);
-        // dd($details);
+        //dd($details);
         try {
             $userId = Auth::user()->id;
             if (!$userId) {
@@ -178,7 +173,7 @@ class MaintenanceController extends Controller
             Log::info('✅ Password updated. ' . $localUser->password);
             Log::info('✅ existing firebase user id. ' . $uid);
             Log::info("Updating firebase user and password");
-            $user = $this->firebase->registerOrUpdateUser($details);
+            $user = $this->firebase->registerOrUpdateUser($details, $extra);
             // Also update local Laravel user's password
 
 

@@ -61,7 +61,10 @@ class Booking extends Model
     {
         return $this->belongsTo("App\Models\Property", "property_data_id", "property_data_id");
     }
-
+    public function propertyDataID()
+    {
+        return $this->belongsTo("App\Models\Property", "property_data_id", "id");
+    }
     public function bookingPayment()
     {
         return $this->hasOne("App\Models\BookingPayment", "bookingId", "id");
