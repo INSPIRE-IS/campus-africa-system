@@ -75,6 +75,12 @@
                 <option value="B" <?php if(!empty($propertyData) && $propertyData->room == "B"){echo "selected";}?>>B</option>
                 <option value="C" <?php if(!empty($propertyData) && $propertyData->room == "C"){echo "selected";}?>>C</option>
                 <option value="D" <?php if(!empty($propertyData) && $propertyData->room == "D"){echo "selected";}?>>D</option>
+                <option value="E" <?php if(!empty($propertyData) && $propertyData->room == "E"){echo "selected";}?>>E</option>
+                <option value="F" <?php if(!empty($propertyData) && $propertyData->room == "F"){echo "selected";}?>>F</option>
+                <option value="G" <?php if(!empty($propertyData) && $propertyData->room == "G"){echo "selected";}?>>G</option>
+                <option value="H" <?php if(!empty($propertyData) && $propertyData->room == "H"){echo "selected";}?>>H</option>
+                <option value="I" <?php if(!empty($propertyData) && $propertyData->room == "I"){echo "selected";}?>>I</option>
+                
             </select>
         </div>
 
