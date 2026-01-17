@@ -47,7 +47,7 @@ class SendResendTempLeaseMail implements ShouldQueue
     public function handle()
     {
         try {
-            Log::info('SendResendLeaseMail job started for user: ' . $this->userUid->id);
+            // Log::info('SendResendTempLeaseMail job started for user: ' . $this->userUid->id);
             $userMain = $this->userUid;
 
             $this_year = Lookups::where('group_id', '4')->first();
@@ -67,7 +67,7 @@ class SendResendTempLeaseMail implements ShouldQueue
             $message_replace['close_lease_link'] = "</a>";
 
             $mailerForMessage = MailerList::where("mailer_name", "Temp Lease Application")->first();
-            Log::info($mailerForMessage);
+            // Log::info($mailerForMessage);
 
             if (!$mailerForMessage || $mailerForMessage->status == '1') {
 
@@ -104,7 +104,7 @@ class SendResendTempLeaseMail implements ShouldQueue
                     $data['email'] = $userForLease->userEmail;
                 }
 
-                Log::info('Sending email to ' . $data['email']);
+                //  Log::info('Sending email to ' . $data['email']);
                 $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
                 Mail::mailer('smtp')->to($data['email'])->send($email);
             } else {
@@ -113,7 +113,7 @@ class SendResendTempLeaseMail implements ShouldQueue
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Error in SendResendLeaseMail job', [
+            Log::error('Error in SendResendTempLeaseMail job', [
                 'error' => $e->getMessage(),
                 'user_id' => $this->userUid->id ?? null,
             ]);
