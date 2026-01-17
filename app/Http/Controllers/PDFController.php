@@ -21,9 +21,8 @@ use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
 use App\Jobs\SendResendTempLeaseMail;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Log;
+
 
 class PDFController extends Controller
 {
@@ -75,6 +74,7 @@ class PDFController extends Controller
           ActionList::create([
             "userUid" => $request->bookingId,
             "action" => "Updated " . $changedField . " From " . $oldData->$key . " to " . $new,
+            /** @disregard P1009 */
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
@@ -108,6 +108,7 @@ class PDFController extends Controller
       $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
       // share data to view
+      /** @disregard P1009 */
       $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking'));
 
       // download PDF file with download method
@@ -127,7 +128,7 @@ class PDFController extends Controller
 
       $content = $pdf->download($fileNameToSave)->getOriginalContent();
       // $user = User::where('id', $studentId)->first();
-
+      /** @disregard P1009 */
       \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
 
       //Check if there is an existing lease to overwrite
@@ -138,6 +139,7 @@ class PDFController extends Controller
         'fileName' => $fileNameToSave,
         'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
         'status' => 'Rejected',
+        /** @disregard P1009 */
         'uploaded_by' => Auth::user()->name,
         'created_at' => date('Y-m-d h:m:s'),
         'year' => $this_year,
@@ -188,60 +190,6 @@ class PDFController extends Controller
       Log::info('Sending email to ' . $leaseOpenTag);
       $userUidData = User::where('id', $studentId)->first();
       $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year));
-
-      // $message_replace['booking_application'] = "#".$booking->booking_code;
-      // $message_replace['name'] = $userForLease->userFirstName;
-      // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
-      // $message_replace['close_lease_link']="</a>";
-
-      // $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
-
-      // if($mailerForMessage->status == '1'){
-
-      //   $mailerMessage = $mailerForMessage->message;
-
-      //   $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
-      //   $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
-      //   $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
-      //   $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
-
-      //   $data['messageForMail'] = $newMessage;
-      //   $data['email'] = $userForLease->userEmail;
-      //   $data['name'] = $userForLease->userFirstName;
-      //   $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
-
-
-
-      //   $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
-      //   $data['cc'] = explode(";", $allowedMailsCC);
-
-      //   $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
-
-      //   if(!empty($allowedMails)){
-
-      //     $mailArr = explode(";", $allowedMails);
-
-      //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
-      //         $data['email'] = $userForLease->userEmail;
-      //     }else{
-      //         $data['email'] = "conurbandigital@gmail.com";
-      //     }
-      //   }else{
-      //     $data['email'] = $userForLease->userEmail;
-      //   }
-
-      //   Mail::send('email.green_back', $data, function($message) use ($data) {
-      //       // $message->to($data['email'], $data['name'])->subject('Application Approved');
-      //       // $message->to($data['email'])->subject($data['subject']);
-      //       // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
-      //       $message->to($data['email'])->subject($data['subject']);
-      //         $message->bcc($data['cc']);
-      //         $message->from('noreply@campusafrica.co.za','Campus Africa');
-      //       // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
-      //   });
-      // }
-
-
     }
 
     return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
@@ -287,7 +235,7 @@ class PDFController extends Controller
       'tenantName' => $data->userLastname . " " . $data->userFirstName,
       'tenantId' => $userIdentification,
     ];
-
+    /** @disregard P1009 */
     $pdf = PDF::loadView('PDF.temp_lease', compact('pdfdata', 'logo'));
 
     $bookingYear = substr($booking->year, -2);
@@ -299,7 +247,7 @@ class PDFController extends Controller
 
     $content = $pdf->download($fileNameToSave)->getOriginalContent();
     // $user = User::where('id', $studentId)->first();
-
+    /** @disregard P1009 */
     \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
 
     //Check if there is an existing lease to overwrite
