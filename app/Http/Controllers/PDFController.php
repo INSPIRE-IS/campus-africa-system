@@ -270,11 +270,11 @@ class PDFController extends Controller
     // $residence = Residence::where('id', $propertyData->residence)->first();
     // $leaseAdminFee = Lookups::where('group_id', '8')->first();
     $owner1 = storage_path() . '/leases/juanita-cronje.jpg';
-    Log::info('owner of the lease file: ' . $owner1);
+    // Log::info('owner of the lease file: ' . $owner1);
     $owner = '/images/lease/juanita-cronje.jpg';
-    Log::info('owner of the lease file: ' . $owner);
+    // Log::info('owner of the lease file: ' . $owner);
     $logo = '/images/logo/temp_lease_logo.png';
-    Log::info('logo of the lease file: ' . $logo);
+    // Log::info('logo of the lease file: ' . $logo);
     $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
     if ($data->userId == "") {
       $userIdentification = $data->userPassport;
@@ -333,9 +333,7 @@ class PDFController extends Controller
       "year" => $this_year,
     ]);
 
-    // User::where('id', $studentId)->update(['rob_55_lease' => 0]);
     StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 0]);
-
 
     // Create Lease Link
     $leaseToken = UserLeaseToken::create(
@@ -351,6 +349,7 @@ class PDFController extends Controller
 
     $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-temp-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
     $userUidData = User::where('id', $studentId)->first();
+    Log::info('send temp lease url : ' . $leaseOpenTag);
     SendResendTempLeaseMail::dispatch($userUidData, $leaseToken->leaseToken, $leaseOpenTag);
 
     return [UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];

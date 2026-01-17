@@ -125,6 +125,10 @@
                     <option value="rob_55_lease" <?php if (Session::get('fieldStatus') == 'rob_55_lease') {
                         echo 'selected';
                     } ?>>Lease</option>
+                    <option value="rob_51_temp_lease_approve" <?php if (Session::get('fieldStatus') == 'rob_51_temp_lease_approve') {
+                        echo 'selected';
+                    } ?>>Temp Lease</option>
+
                 </select>
             </div>
 
@@ -180,21 +184,21 @@
                 </ul>
                 <!-- <br/><br/><br/> -->
                 <!-- <label>Processing Status</label><br/>
-                                                                                                                                                                    <select name="processingStatus" id='processingStatus'>
-                                                                                                                                                                        <option value="All" selected >All</option>
-                                                                                                                                                                        <option value="Approved" <?php if (Session::get('processingStatus') == 'Approved') {
-                                                                                                                                                                            echo 'selected';
-                                                                                                                                                                        } ?>>&#128994; Valid</option>
-                                                                                                                                                                        <option value="Pending" <?php if (Session::get('processingStatus') == 'Pending') {
-                                                                                                                                                                            echo 'selected';
-                                                                                                                                                                        } ?>>&#128993; Pending</option>
-                                                                                                                                                                        <option value="Incomplete" <?php if (Session::get('processingStatus') == 'Incomplete') {
-                                                                                                                                                                            echo 'selected';
-                                                                                                                                                                        } ?>>&#128308; Incomplete</option>
-                                                                                                                                                                        <option value="NA" <?php if (Session::get('processingStatus') == 'NA') {
-                                                                                                                                                                            echo 'selected';
-                                                                                                                                                                        } ?>>⚪ NA</option>
-                                                                                                                                                                    </select> -->
+                <select name="processingStatus" id='processingStatus'>
+                    <option value="All" selected >All</option>
+                    <option value="Approved" <?php if (Session::get('processingStatus') == 'Approved') {
+                        echo 'selected';
+                    } ?>>&#128994; Valid</option>
+                    <option value="Pending" <?php if (Session::get('processingStatus') == 'Pending') {
+                        echo 'selected';
+                    } ?>>&#128993; Pending</option>
+                    <option value="Incomplete" <?php if (Session::get('processingStatus') == 'Incomplete') {
+                        echo 'selected';
+                    } ?>>&#128308; Incomplete</option>
+                    <option value="NA" <?php if (Session::get('processingStatus') == 'NA') {
+                        echo 'selected';
+                    } ?>>⚪ NA</option>
+                </select> -->
             </div>
             <div class="searchField" style="height:80px;">
                 <label>Source</label><br />
@@ -274,7 +278,7 @@
                 <thead>
                     <tr>
                         <th class="first">BOOKING REFERENCE</th>
-                        <th style="width:50%">APPLICANT | ROOM</th>
+                        <th style="width:30%">APPLICANT | ROOM</th>
                         <th style="width:10%">SOURCE</th>
                         <th style="width:10%">BED CODE</th>
                         <th style="width:10%">DATE</th>
@@ -290,6 +294,7 @@
                         <th>OTHER</th>
                         <th>APPROVE</th>
                         <th>LEASE</th>
+                        <th>TEMP LEASE</th>
                     </tr>
                 </thead>
                 <tbody id="applicantsSection">

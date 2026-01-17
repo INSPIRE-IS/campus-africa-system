@@ -3639,6 +3639,7 @@ class HomeController extends Controller
 
     public function app_filter(Request $request)
     {
+        //dd($request->all());
         $search_value = [];
 
         if ($request->firstLoad !== "1") {
@@ -3786,25 +3787,38 @@ class HomeController extends Controller
             count($request->status) > 0
         ) {
 
-            $queryString = "";
-            $i = 1;
-            foreach ($request->status as $id) {
+            $statuses = $request->status;
 
-                if ($i < count($request->status)) {
-                    $queryString .= "'" . $id . "',";
-                } else {
-                    $queryString .= "'" . $id . "'";
+            // 🔥 FIELD-SPECIFIC REMAP
+            if ($request->fieldStatus === 'rob_51_temp_lease_approve') {
+
+                $mapped = [];
+
+                foreach ($statuses as $s) {
+                    if ($s === "1") {        // UI Pending
+                        $mapped[] = "2";    // DB Pending
+                    } elseif ($s === "2") {  // UI Approved
+                        $mapped[] = "1";    // DB Approved
+                    } else {
+                        $mapped[] = $s;     // 0 & 3 unchanged
+                    }
                 }
-                $i++;
+
+                $statuses = $mapped;
             }
 
-            if (!in_array("3", $request->status)) {
-                $value = '(ui.' . $request->fieldStatus . ' in (' . $queryString . ') AND (ui.rob_60_cancelled = "0" OR ui.rob_60_cancelled is null))';
+            $queryString = "'" . implode("','", $statuses) . "'";
+
+            // ORIGINAL LOGIC
+            if (!in_array("3", $statuses)) {
+                $value = '(ui.' . $request->fieldStatus . ' IN (' . $queryString . ') 
+                        AND (ui.rob_60_cancelled = "0" OR ui.rob_60_cancelled IS NULL))';
             } else {
-                $value = '(ui.' . $request->fieldStatus . ' in (' . $queryString . ') OR ui.rob_60_cancelled = "1")';
+                $value = '(ui.' . $request->fieldStatus . ' IN (' . $queryString . ') 
+                        OR ui.rob_60_cancelled = "1")';
             }
 
-            array_push($search_value, $value);
+            $search_value[] = $value;
         }
 
         if ($request->student_type !== "" && !empty($request->student_type)) {
@@ -3879,6 +3893,7 @@ class HomeController extends Controller
                 $student->rob_40_bed,
                 $student->rob_45_other,
                 $student->rob_50_approve,
+                $student->rob_51_temp_lease_approve, // <-- ADD THIS
                 $student->rob_55_lease,
             ];
 
@@ -3922,7 +3937,7 @@ class HomeController extends Controller
         usort($userData, function ($a, $b) {
             return $b['counter'] - $a['counter'];
         });
-
+        // dd($userData);
         return json_encode([$userData, Session::get('sortDirection'), Session::get('sortId'), Session::get('page')]);
     }
 

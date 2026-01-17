@@ -109,6 +109,7 @@ jQuery(document).ready(function ($) {
                     var rob_other = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                     var rob_approve = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
                     var rob_lease = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
+                    var rob_temp_lease = '<span class="hidden">D</span><div class="button na noBoarder"></div>';
 
                     //For non cancelled rows work out the robots
                     if (arrayItem["rob_60_cancelled"] == 0 || arrayItem["rob_60_cancelled"] == null) {
@@ -192,6 +193,17 @@ jQuery(document).ready(function ($) {
                             rob_lease = rob_approved;
                         }
 
+                        // 0=Rejected, 1=Approved, 2=Pending, 3=Not Set
+                        if (arrayItem["rob_51_temp_lease_approve"] == 0) {
+                            rob_temp_lease = rob_rejected;
+                        } else if (arrayItem["rob_51_temp_lease_approve"] == 1) {
+                            rob_temp_lease = rob_approved;
+                        } else if (arrayItem["rob_51_temp_lease_approve"] == 2) {
+                            rob_temp_lease = rob_pending;
+                        }
+                        // else if (arrayItem["rob_51_temp_lease_approve"] == 3) {
+                        //     rob_temp_lease = rob_not_set;
+                        // }
                     }
 
                     var m = new Date(arrayItem["created_at"]);
@@ -233,15 +245,15 @@ jQuery(document).ready(function ($) {
                         bed_code = arrayItem["bed_code"];
                     }
 
-                    if(arrayItem["app_source"] == 0){
+                    if (arrayItem["app_source"] == 0) {
                         source = "Offline";
-                    }else{
+                    } else {
                         source = "Online";
                     }
 
-                    if(arrayItem['email_verified'] == '1'){
+                    if (arrayItem['email_verified'] == '1') {
                         verified = "<i class='fas fa-check' style='color:green'></i>";
-                    }else{
+                    } else {
                         verified = "&#10060;";
                     }
 
@@ -249,16 +261,16 @@ jQuery(document).ready(function ($) {
                         .add([
                             "#" + arrayItem["booking_code"],
                             '<span class="bold">' +
-                                arrayItem["userFirstName"] +
-                                " " +
-                                arrayItem["userLastname"] +
-                                "</span><br/> " +
-                                arrayItem["userEmail"]+ " " +verified+"<br/> " +
-                                arrayItem["property_residence"] +
-                                " | " +
-                                arrayItem["roomTypeName"],
-                                source,
-                                arrayItem["bed_code"],
+                            arrayItem["userFirstName"] +
+                            " " +
+                            arrayItem["userLastname"] +
+                            "</span><br/> " +
+                            arrayItem["userEmail"] + " " + verified + "<br/> " +
+                            arrayItem["property_residence"] +
+                            " | " +
+                            arrayItem["roomTypeName"],
+                            source,
+                            arrayItem["bed_code"],
                             '<span style="white-space: nowrap;">' + dateString + "</span>",
                             studentType,
                             rob_fee,
@@ -271,6 +283,7 @@ jQuery(document).ready(function ($) {
                             rob_other,
                             rob_approve,
                             rob_lease,
+                            rob_temp_lease,
                         ])
                         .page(page)
                         .order(order)
