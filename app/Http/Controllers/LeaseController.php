@@ -444,14 +444,25 @@ class LeaseController extends Controller
 
         \Storage::put('public/files/' . $userIdentification . '/' . $fileNameToSave, $content);
 
-        //Data to update
-        $data = array(
-            'fileName' => $fileNameToSave,
-            'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
-            'status' => 'Uploaded',
-        );
+        // //Data to update
+        // $data = array(
+        //     'fileName' => $fileNameToSave,
+        //     'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
+        //     'status' => 'Uploaded',
+        // );
 
-        UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $user->userUid)->where('year', $this_year)->update($data);
+        UserFiles::updateOrCreate(
+            [
+                'fileId' => 'tempMoveIn',
+                'userUid' => $user->userUid,
+                'year' => $this_year,
+            ],
+            [
+                'fileName' => $fileNameToSave,
+                'fileUrl' => 'files/' . $userIdentification . '/' . $fileNameToSave,
+                'status' => 'Uploaded',
+            ]
+        );
         // test
         // User::where('id', $user->id)->update(['rob_55_lease' => 1]);
         StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->update(['rob_51_temp_lease_approve' => 2]);
