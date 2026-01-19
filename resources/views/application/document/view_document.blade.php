@@ -1023,10 +1023,12 @@
                                 $("#myModal").css("display", "none");   
                             } else {                                
                                 // refresh_this_modal();
-                                window.location.reload();
-                            }
-                            
+                                setTimeout(() => {
+                                   // window.location.reload(); 
+                                   refresh_this_modal();                                   
+                                }, 300);
 
+                            }
                         } else {
                             alert("error");
                             console.log(data);
@@ -1159,6 +1161,7 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes!'
         }).then((result) => {
+            console.log('actionSwal result', result);
             if (result.isConfirmed) {
                 if(type === "Rejected"){
                         $("#rejected").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
@@ -1204,6 +1207,7 @@
             },
 
             success: function (data) {
+                console.log('action approve file data', data);
 
                 if(type == "Approved" && $("#FileNameForApproval").val() == "moveIn"){
                     // window.location.reload();
@@ -1330,7 +1334,7 @@
                     },
 
                     success: function (data) {
-
+                        console.log('action reject file data', data);
                         $("#"+fileForApproval+"Status").empty().append('<div class="button rejected"></div>');
 
                         //Add back upload button
