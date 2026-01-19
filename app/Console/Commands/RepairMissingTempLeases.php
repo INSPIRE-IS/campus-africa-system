@@ -46,7 +46,7 @@ class RepairMissingTempLeases extends Command
             return Command::FAILURE;
         }
 
-
+        /////////////// validate-temp-leases
         if ($this->argument('method') == 'validate-temp-leases') {
             $rows = [];
 
@@ -55,48 +55,52 @@ class RepairMissingTempLeases extends Command
             foreach ($students as $student) {
 
                 $token = UserLeaseToken::where('userUid', $student->userUid)
+                    ->where('lease_type', 'temp_lease')
                     ->where('year', $student->year)
                     ->first();
 
-                $expectedState = 3;
-                $fileExists = false;
-                $hasUserFile = false;
-
-                if ($token) {
-
-                    if ($token->active == 0 && $token->signed == 0) {
-                        $expectedState = 0;
-                    }
-
-                    if ($token->active == 0 && $token->signed == 1 && $token->signature_url) {
-
-                        $userIdentification = $student->userId ?: $student->userPassport;
-                        $path = 'public/files/' . $userIdentification . '/' . $token->signature_url;
-
-                        if (Storage::exists($path)) {
-                            $fileExists = true;
-                            $expectedState = 1;
-                        }
-                    }
-                }
-
-                $hasUserFile = UserFiles::where('fileId', 'tempMoveIn')
+                $userFile = UserFiles::where('fileId', 'tempMoveIn')
                     ->where('userUid', $student->userUid)
                     ->where('year', $student->year)
-                    ->exists();
+                    ->first();
+
+                $expectedState = $this->deriveTempLeaseState($token, $userFile);
+                // ---- PDF sanity check (independent) ----
+                $fileExists = false;
 
                 if (
-                    $student->rob_51_temp_lease_approve != $expectedState ||
-                    ($expectedState === 1 && !$hasUserFile)
+                    $token &&
+                    $token->signed == 1 &&
+                    $token->signature_url
                 ) {
+                    $userIdentification = $student->userId ?: $student->userPassport;
+                    $path = 'public/files/' . $userIdentification . '/' . $token->signature_url;
+
+                    $fileExists = Storage::exists($path);
+                }
+                // ---- validation conditions ----
+                $hasMismatch = $student->rob_51_temp_lease_approve != $expectedState;
+
+                $missingPdf =
+                    $expectedState === 2 &&
+                    $token &&
+                    $token->signed == 1 &&
+                    !$fileExists;
+
+                $invalidApproval =
+                    $expectedState === 1 &&
+                    (!$userFile || !$fileExists);
+
+                if ($hasMismatch || $missingPdf || $invalidApproval) {
+
                     $rows[] = [
-                        'userUid' => $student->userUid,
-                        'year' => $student->year,
-                        'current' => $student->rob_51_temp_lease_approve,
-                        'expected' => $expectedState,
-                        'token' => $token ? 'yes' : 'no',
-                        'file_exists' => $fileExists ? 'yes' : 'no',
-                        'user_file' => $hasUserFile ? 'yes' : 'no',
+                        'userUid'     => $student->userUid,
+                        'year'        => $student->year,
+                        'current'     => $student->rob_51_temp_lease_approve,
+                        'expected'    => $expectedState,
+                        'token'       => $token ? 'yes' : 'no',
+                        'pdf_exists'  => $fileExists ? 'yes' : 'no',
+                        'user_file'   => $userFile ? $userFile->status : 'no',
                     ];
                 }
             }
@@ -114,6 +118,7 @@ class RepairMissingTempLeases extends Command
             $this->warn('Inconsistencies detected. Run fixer commands to repair.');
         }
 
+        /////////////// repair-temp-leases
         if ($this->argument('method') == 'repair-temp-leases') {
 
             $tokens = UserLeaseToken::where('signed', 1)
@@ -155,6 +160,7 @@ class RepairMissingTempLeases extends Command
                     ->exists();
 
                 if ($exists) {
+                    $this->line("UserFile exists ({$exists->status}) — skipping");
                     continue;
                 }
 
@@ -188,18 +194,14 @@ class RepairMissingTempLeases extends Command
                     continue;
                 }
 
-                UserFiles::updateOrCreate(
-                    [
-                        'fileId' => 'tempMoveIn',
-                        'userUid' => $token->userUid,
-                        'year' => $token->year,
-                    ],
-                    [
-                        'fileName' => $fileName,
-                        'fileUrl' => $filePath,
-                        'status' => 'Uploaded',
-                    ]
-                );
+                UserFiles::create([
+                    'fileId'   => 'tempMoveIn',
+                    'userUid'  => $token->userUid,
+                    'year'     => $token->year,
+                    'fileName' => $fileName,
+                    'fileUrl' => $filePath,
+                    'status'  => 'Uploaded',
+                ]);
 
                 $this->info("Repaired temp lease for {$userIdentification}");
             }
@@ -256,5 +258,27 @@ class RepairMissingTempLeases extends Command
             }
             return Command::SUCCESS;
         }
+    }
+
+    function deriveTempLeaseState($token, $userFile): int
+    {
+        if (!$token) {
+            return 3;
+        }
+
+        if ($token->signed == 0) {
+            return 0;
+        }
+
+        if (!$userFile) {
+            return 2;
+        }
+
+        return match ($userFile->status) {
+            'Uploaded' => 2,
+            'Rejected' => 0,
+            'Approved' => 1,
+            default => 2,
+        };
     }
 }
