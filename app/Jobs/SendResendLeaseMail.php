@@ -99,7 +99,7 @@ class SendResendLeaseMail implements ShouldQueue
                     $data['email'] = $userForLease->userEmail;
                 }
 
-                Log::info('Sending email to ' . $data['email']);
+                //Log::info('Sending email to ' . $data['email']);
                 $email = new GreenBackMail($newMessage, $data['subject'], 'noreply@campusafrica.co.za', 'Campus Africa', $data['cc']);
                 Mail::mailer('smtp')->to($data['email'])->send($email);
             }
