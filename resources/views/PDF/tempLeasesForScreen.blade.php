@@ -92,7 +92,7 @@
     <span class="line" style="display: inline-block; width: 200px;">
         {{ $pdfdata['tenantId'] ?? 'test' }}
     </span>
-    and Braamby Trading (Pty) Ltd, the lessor.
+    and {{$pdfdata['propertyName'] ?? 'Property Name'}}, the lessor.
 </div>
 
 <br>

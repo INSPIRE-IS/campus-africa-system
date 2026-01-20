@@ -32,7 +32,7 @@ class TestQuoteInvoicePDFGeneration extends Command
 
     public function handle()
     {
-
+        // test invoice
         if (true) {
             $userId = $this->argument('userId');
             $this_year = $this->argument('year');
@@ -90,7 +90,7 @@ class TestQuoteInvoicePDFGeneration extends Command
             $period = new DatePeriod(
                 new DateTime($booking->lease_from_date),
                 new DateInterval('P1M'),
-                (new DateTime($booking->lease_to_date))->modify('+1 month')
+                (new DateTime($booking->lease_to_date)) // ->modify('+1 month')
             );
 
             foreach ($period as $date) {
@@ -185,7 +185,161 @@ class TestQuoteInvoicePDFGeneration extends Command
 
             $this->info("Invoice PDF saved: {$location}");
         }
+        // test quote
+        if (false) {
+            $userId = $this->argument('userId');
+            $this_year = $this->argument('year');
 
+            $studentsInfo = StudentsInfo::where('userUid', $userId)
+                ->where('year', $this_year)
+                ->first();
+
+            $booking = Booking::where('id', $studentsInfo->bookingId)->first();
+            $property = Residence::where('id', $booking->property)->first();
+            $bookingPayment = BookingPayment::where('bookingId', $booking->id)->first();
+
+            $user = $studentsInfo;
+
+            $userIdentification = $studentsInfo->userId ?: $studentsInfo->userPassport;
+
+            // Fees
+            $leaseFee = $bookingPayment->loan_admin_fee;
+            $deposit = $bookingPayment->deposit;
+
+            if ($bookingPayment->rob_loan_waived == '2') {
+                $leaseFee = 0;
+            }
+            if ($bookingPayment->rob_deposit_waived == '2') {
+                $deposit = 0;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Build invoice items
+            |--------------------------------------------------------------------------
+            */
+            $items = [];
+
+            $items[] = [
+                'date' => '',
+                'description' => 'Lease Fee',
+                'amount' => $leaseFee,
+            ];
+            $deposit = $bookingPayment->deposit;
+
+            if ($bookingPayment->rob_loan_waived == '2') {
+                $leaseFee = 0;
+            }
+            if ($bookingPayment->rob_deposit_waived == '2') {
+                $deposit = 0;
+            }
+            $items[] = [
+                'date' => '',
+                'description' => 'Deposit',
+                'amount' => $deposit,
+            ];
+
+
+            $period = new DatePeriod(
+                new DateTime($booking->lease_from_date),
+                new DateInterval('P1M'),
+                (new DateTime($booking->lease_to_date)) // ->modify('+1 month')
+            );
+
+            foreach ($period as $date) {
+                $items[] = [
+                    'date' => $date->format('Y-m-d'),
+                    'description' => 'Rental for ' . $date->format('F'),
+                    'amount' => $bookingPayment->funded_monthly,
+                ];
+            }
+
+            $totalAmount = collect($items)->sum('amount');
+
+            // Invoice meta
+            $invoiceNumber = $user->studentNo . '-' . date('Ymd');
+            $invoiceDate = date('Y/m/d');
+            if ($studentsInfo->studentType == 'Bursary') {
+                $billTo = [
+                    'name' => $studentsInfo->burCompanyName,
+                    'regNo' => $studentsInfo->burRegNo,
+                    'contactName' => $studentsInfo->burContactPerson,
+                    'contactEmail' => $studentsInfo->burEmail,
+                    'contactPhone' => $studentsInfo->burContactCode . ' ' . $studentsInfo->burContactNo,
+                ];
+                $billAddress = [
+                    'address1' => $studentsInfo->bAddress1,
+                    'address2' => $studentsInfo->bAddress2,
+                    'addressCity' => $studentsInfo->bAddressCity,
+                    'addressPostal' => $studentsInfo->bAddressPostal,
+                ];
+            } else if ($studentsInfo->studentType == 'Cash / Direct') {
+                $billTo = [
+                    'name' => '',
+                    'regNo' => '',
+                    'contactName' => $studentsInfo->sponFirstName . ' ' . $studentsInfo->sponLastName,
+                    'contactEmail' => $studentsInfo->sponEmail,
+                    'contactPhone' => $studentsInfo->sponCellCode . ' ' . $studentsInfo->sponCell,
+                ];
+                $billAddress = [
+                    'address1' => $studentsInfo->pAddress1,
+                    'address2' => $studentsInfo->pAddress2,
+                    'addressCity' => $studentsInfo->pAddressCity,
+                    'addressPostal' => $studentsInfo->pAddressPostal,
+                ];
+            } else {
+                $billTo = [
+                    'name' => '',
+                    'regNo' => '',
+                    'contactName' => '',
+                    'contactEmail' => '',
+                    'contactPhone' => '',
+                ];
+                $billAddress = [
+                    'address1' => '',
+                    'address2' => '',
+                    'addressCity' => '',
+                    'addressPostal' => '',
+                ];
+            }
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Generate PDF
+            |--------------------------------------------------------------------------
+            */
+            $pdf = PDF::loadView(
+                'PDF.quote',
+                compact(
+                    'user',
+                    'booking',
+                    'property',
+                    'bookingPayment',
+                    'items',
+                    'totalAmount',
+                    'invoiceNumber',
+                    'invoiceDate',
+                    'billTo',
+                    'billAddress'
+                )
+            );
+
+            $content = $pdf->output();
+
+            $randomNumber = rand(1000, 9999);
+            $new_name = $randomNumber . '_quote.pdf';
+
+            $location = 'public/files/' . $userIdentification . '/' . $new_name;
+
+            \Storage::put($location, $content);
+
+            $this->info("Quote PDF saved: {$location}");
+        }
+
+        /////////////////////////// old version ////////////////////////////////////////
         if (false) {
             $userId = $this->argument('userId');
             $this_year = $this->argument('year');
