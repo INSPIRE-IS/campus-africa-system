@@ -335,10 +335,16 @@ Route::group(['middleware' => ['auth']], function () {
         $data = [
             'tenantName' => 'Kamogelo',
             'tenantId' => '0406301269089',
+            'propertyName' => 'property Name',
         ];
         $pdfdata = [
             'tenantName' => 'John Doe',
             'tenantId' => '9001015009083',
+            'propertyName' => 'property Name',
+            'propertyOwner' => 'property Owner',
+            'propertyAddress' => 'property Address',
+            'CompanyReg' => 'Company Reg',
+            'CompanyVat' => 'Company Vat',
         ];
 
         $signed_at = 'test';

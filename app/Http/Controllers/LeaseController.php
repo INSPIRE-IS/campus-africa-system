@@ -326,6 +326,7 @@ class LeaseController extends Controller
             // $data = User::where('id', $lease_link->userUid)->first();
             $data = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
             $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
+            $property = Residence::where('id', $booking->property)->first();
 
             $owner = '/images/lease/juanita-cronje.jpg';
             $logo = '/images/logo/temp_lease_logo.png';
@@ -340,6 +341,11 @@ class LeaseController extends Controller
             $pdfdata = [
                 'tenantName' => $data->userLastname . " " . $data->userFirstName,
                 'tenantId' => $userIdentification,
+                'propertyName' => $property->residence,
+                'propertyOwner' => $property->owner,
+                'propertyAddress' => $property->address,
+                'CompanyReg' => $property->company_reg,
+                'CompanyVat' => $property->company_vat,
             ];
             // dd($pdfdata);
             $pdf = view('PDF.tempLeasesForScreen', compact('pdfdata', 'owner', 'logo'));
@@ -401,7 +407,7 @@ class LeaseController extends Controller
         // $data = User::where('id', $user->userUid)->first();
         $user = StudentsInfo::where('userUid', $lease_link->userUid)->where('year', $this_year)->first();
         $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
-
+        $residence = Residence::where('id', $booking->property)->first();
         $signed_at = $request->signed_at;
         $signature = pdfImagePath('storage/files/' . $userIdentification . '/' . $new_name);
         Log::info('signature of the lease file: ' . $signature);
@@ -420,6 +426,11 @@ class LeaseController extends Controller
         $pdfdata = [
             'tenantName' => $user->userLastname . " " . $user->userFirstName,
             'tenantId' => $userIdentification,
+            'propertyName' => $residence->residence,
+            'propertyOwner' => $residence->owner,
+            'propertyAddress' => $residence->address,
+            'CompanyReg' => $residence->company_reg,
+            'CompanyVat' => $residence->company_vat,
         ];
 
         // check environment for dev or prod
