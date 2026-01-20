@@ -81,7 +81,7 @@
     <span class="line" style="display: inline-block; width: 200px;">
         {{ $pdfdata['tenantId'] ?? 'test' }}
     </span>
-    and Braamby Trading (Pty) Ltd, the lessor.
+    and {{ $pdfdata['propertyName'] ?? 'Property Name'}}, the lessor.
 </div>
 
 <br>
@@ -117,7 +117,7 @@
 
         <td width="33%" class="center">
         <span class="line" style="display: inline-block; width: 200px;">
-            <img src="{{ $owner }}" width="100" alt="Kim Degenaar" />
+            <img src="{{ $owner }}" width="100" alt="Juanita Cronje" />
         </span>
             <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>
         </td>

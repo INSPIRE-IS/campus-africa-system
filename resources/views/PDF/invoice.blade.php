@@ -56,10 +56,11 @@
 
             <div style="margin-top:12px; font-size:10px;">
                 <div style="font-weight:bold;">
-                    Campus Africa, 49 Jorrissen Street Johannesburg 2001
+                    <span style="text-transform:uppercase">{{$property->residence}}</span> - CAMPUS AFRICA,
+                    <span style="text-transform:uppercase">{{$property->address}}</span>
                 </div>
-                <div>VAT No: 4600283107 &amp; 4370280168</div>
-                <div>Company Registration Number: 2018/357298/07 &amp; IT000290/2017(N)</div>
+                <div>VAT No: {{$property->company_vat}}</div>
+                <div>Company Registration Number: {{$property->company_reg}}</div>
                 <div>Account Queries : Andrea Fourie</div>
                 <div>Email: andrea@conurban.co.za</div>
             </div>
@@ -163,7 +164,7 @@
     </div>
 </div>
 
-<div style="margin-top:16px;">
+<div style="margin-top:16px; margin-bottom:16px;">
     <div style="font-weight:bold;">Managing Agent</div>
     <div>
         Consolidated Urban Management (Pty) Ltd is the Official Management Agent of the Company
@@ -171,7 +172,7 @@
 </div>
 
 <!-- ================= FOOTER ================= -->
-<div style="position:fixed; bottom:25px; left:0; right:0; text-align:center; font-size:10px;">
+<div style="position:fixed; bottom:10px; left:0; right:0; text-align:center; font-size:10px;">
     Consolidated Urban Management Corporation (PTY) Ltd
 </div>
 

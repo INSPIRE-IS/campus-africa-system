@@ -92,7 +92,7 @@
     <span class="line" style="display: inline-block; width: 200px;">
         {{ $tenantId ?? '' }}
     </span>
-    and Braamby Trading (Pty) Ltd, the lessor.
+    and {{ $propertyName ?? '' }}, the lessor.
 </div>
 
 <br>
