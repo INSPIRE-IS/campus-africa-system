@@ -47,7 +47,8 @@ class SendResendTempLeaseMail implements ShouldQueue
     public function handle()
     {
         try {
-            // Log::info('SendResendTempLeaseMail job started for user: ' . $this->userUid->id);
+            Log::info('SendResendTempLeaseMail job started for user: ' . $this->userUid->id);
+            Log::info('SendResendTempLeaseMail job tag: ' . $this->leaseOpenTag);
             $userMain = $this->userUid;
 
             $this_year = Lookups::where('group_id', '4')->first();

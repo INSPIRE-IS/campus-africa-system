@@ -83,7 +83,7 @@ class TestLeaseGeneration extends Command
             $this->error("User record not found in users table!");
         } else {
             try {
-                dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $lease_link, $this_year));
+                dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $lease_link));
                 $this->info("Email job dispatched successfully!");
             } catch (\Exception $e) {
                 $this->error("Email job failed: " . $e->getMessage());
