@@ -53,6 +53,7 @@ class SendResendLeaseMail implements ShouldQueue
             $now = date('Y-m-d h:m:s');
             Log::info('SendResendLeaseMail job started for user: ' . $this->userUid->id);
             Log::info('SendResendLeaseMail job started for at ' . $now);
+            Log::info('SendResendLeaseMail job tag: ' . $this->leaseOpenTag);
             $userMain = $this->userUid;
             $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
             $booking = Booking::where('id', $userForLease->bookingId)->first();

@@ -23,6 +23,7 @@ use DateTime;
 use App\Models\ActionList;
 use App\Models\BookingPayment;
 use App\Jobs\SendResendLeaseMail;
+use App\Jobs\SendResendTempLeaseMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
@@ -751,9 +752,9 @@ class LeaseController extends Controller
         $userUidData = User::where('id', $request->userId)->first();
         try {
             Log::info('Sending email to ');
-            $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year));
+            $this->dispatch(new SendResendTempLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag));
         } catch (\Exception $e) {
-            Log::error('Failed to dispatch SendResendLeaseMail job', [
+            Log::error('Failed to dispatch SendResendTempLeaseMail job', [
                 'error' => $e->getMessage(),
                 'userUidData' => $userUidData,
             ]);
