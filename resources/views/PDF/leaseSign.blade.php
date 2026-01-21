@@ -768,7 +768,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; class="signature" ?>" />
+                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature;  ?>" class="signature" />
                     </p>
                 </td>
             </tr>
@@ -784,7 +784,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; class="signature" ?>" />
+                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" class="signature" />
                     </p>
                 </td>
             </tr>
@@ -800,7 +800,7 @@
                 <td style="vertical-align: top;">
                     <p style="font-size:12px;"><i>SIGNATURE OF LODGER:</i>
                         <br />
-                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; class="signature" ?>" />
+                        <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" class="signature" />
                     </p>
                 </td>
             </tr>
@@ -811,7 +811,7 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">OWNER Signature: <img src="file://{{public_path($owner)}}" class="signature" alt="Kim Degenaar" />
+                    <p style="font-size:14px;">OWNER Signature: <img src="file://{{public_path($owner)}}" class="signature" alt="Juanita Cronje" />
                         <br />(Who if signing in a representative capacity<br />warrants
                         that he is duly authorized thereto)</p>
                 </td>
@@ -1088,7 +1088,7 @@
         <br />
         <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" class="signature" /><br />Student</p>
         <!-- <br/> -->
-        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Kim Degenaar" width="160" />
+        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Juanita Cronje" width="160" />
                 <br class="special" />For and on behalf of<br class="special" />Owner</p>
         <br />
         <hr />
