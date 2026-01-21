@@ -811,7 +811,7 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%; vertical-align: top;">
-                    <p style="font-size:14px;">OWNER Signature: <img src="{{public_path($owner)}}" class="signature" alt="Kim Degenaar" />
+                    <p style="font-size:14px;">OWNER Signature: <img src="{{public_path($owner)}}" class="signature" alt="Juanita Cronje" />
                         <br />(Who if signing in a representative capacity<br />warrants
                         that he is duly authorized thereto)
                     </p>
@@ -1090,7 +1090,7 @@
         <br />
         <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($signature)}}" class="signature" /><br />Student</p>
         <!-- <br/> -->
-        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Kim Degenaar" class="signature" />
+        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Juanita Cronje" class="signature" />
             <br class="special" />For and on behalf of<br class="special" />Owner
         </p>
         <br />
