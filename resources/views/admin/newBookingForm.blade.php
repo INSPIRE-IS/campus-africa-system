@@ -200,13 +200,21 @@
                 <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
                 <select name="year" id="year" class="required">
-                    @foreach ($lookups as $lookup)
+                    {{-- @foreach ($lookups as $lookup)
                         @if ($lookup->group_id == '4' && (int) $lookup->lookup_name == $nextYear)
                             <option value="{{ $lookup->lookup_name }}">
                                 {{ $lookup->lookup_name }}
                             </option>
                         @endif
+                    @endforeach --}}
+                    @foreach ($lookups->where('group_id', 4)->sortByDesc('lookup_name') as $lookup)
+                        <option value="{{ $lookup->lookup_name }}"
+                            {{ $application_year == $lookup->lookup_name ? 'selected' : 'disabled' }}>
+                            {{ $lookup->lookup_name }}
+                        </option>
                     @endforeach
+
+
                 </select>
             </div>
 
@@ -240,10 +248,7 @@
                     <option value="" selected disabled>Please select one</option>
                     @foreach ($lookups as $lookup)
                         @if ($lookup->group_id == '6')
-                            <option value="{{ $lookup->lookup_name }}" <?php if ($cancelled == '0' && $user->yearOfStudy == $lookup->lookup_name) {
-                                echo 'selected';
-                            } ?>>{{ $lookup->lookup_name }}
-                            </option>
+                            <option value="{{ $lookup->lookup_name }}" <?php if ($cancelled == '0' && $user->yearOfStudy == $lookup->lookup_name) {echo 'selected';} ?>>{{ $lookup->lookup_name }}</option>
                         @endif
                     @endforeach
                 </select>
