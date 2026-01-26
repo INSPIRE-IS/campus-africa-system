@@ -3463,7 +3463,7 @@ class HomeController extends Controller
 
     public function app_filter(Request $request)
     {
-        //dd($request->all());
+        // dd($request->all());
         $search_value = [];
 
         if ($request->firstLoad !== "1") {
@@ -3544,7 +3544,7 @@ class HomeController extends Controller
 
         if ($request->property !== "" && !empty($request->property)) {
             if ($request->property !== "All") {
-                $property = 'bookings_data.property LIKE "%' . $request->property . '%"';
+                $property = 'bookings_data.property = "' . $request->property . '"';
                 array_push($search_value, $property);
             }
         }
@@ -3686,7 +3686,7 @@ class HomeController extends Controller
 
         //Get all of our students
         $searched_students = DB::select($sql);
-
+        // dd($sql);
         $userData = [];
 
         $allowed = [];
