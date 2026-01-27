@@ -18,7 +18,6 @@
         <br/>
         <hr/>
         <br/>
-
             <p style="font-size:14px;"><strong>1.	Definitions </strong>
             <br/>
 

@@ -45,7 +45,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container mt-5">
         <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"

@@ -22,8 +22,6 @@
         .page_break { page-break-before: always; }
     </style>
 </head>
-
-
 <body>
     <div class="container mt-5">
         <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo" style="width:70px; margin-left:44%;">
