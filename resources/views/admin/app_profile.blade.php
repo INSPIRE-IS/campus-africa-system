@@ -1530,7 +1530,7 @@
 
 
 
-        <script>
+        <script defer>
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -4695,6 +4695,41 @@
                     },
                 });
             }
+
+            $(document).off('click.regenLease').on('click.regenLease', '#myBtn_regen_lease', function(e) {
+                let btn = $(this);
+                $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+                $.ajax({
+                    type: "post",
+                    url: "/createLease/{{ $user[0]['userInfo']['userUid'] }}",
+                    data: {
+                        type: "auto",
+                    },
+
+                    success: function(data) {
+                        // if($("#change_bed_type").val() == "cancel"){
+                        let uploadbtn = '<a href="/storage/' + data[0]['fileUrl'] + '" download="' + data[0]
+                            ['fileName'] +
+                            '" style="margin-right:5px;"><button type="button" id="myBtn_temp_download">Download Lease</button></a> '
+
+                        if ("<?php echo Auth::user()->role_lease_regen; ?>" == "1") {
+                            uploadbtn +=
+                                '<button type="button" id="myBtn_regen_lease" style="margin-right:5px;">Regen Lease</button> <button type="button" id="myBtn_resend_lease" onClick="resendLease()">Resend Lease</button>'
+                        }
+
+                        uploadbtn +=
+                            '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" accept="image/*, application/pdf" hidden/>';
+                        $("#moveInBanner").empty().append(uploadbtn);
+                        $("#moveInStatus").empty().append('<div class="button rejected"></div>');
+                        // }      
+                        $(btn).html('REGEN LEASE');
+                    },
+                });
+
+                e.preventDefault();
+            });
+
             function resendTempLease() {
                 $("#myBtn_resend_temp_lease").html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -4711,42 +4746,7 @@
                 });
             }
 
-            $(document).off('click').on('click', '#myBtn_regen_temp_lease', function(e) {
-                let btn = $(this);
-                $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
-
-                $.ajax({
-                    type: "post",
-                    url: "/createLease/{{ $user[0]['userInfo']['userUid'] }}",
-                    data: {
-                        type: "auto",
-                    },
-
-                    success: function(data) {
-                        // if($("#change_bed_type").val() == "cancel"){
-                        // console.log(data)
-
-                        let uploadbtn = '<a href="/storage/' + data[0]['fileUrl'] + '" download="' + data[0]
-                            ['fileName'] +
-                            '" style="margin-right:5px;"><button type="button" id="myBtn_temp_download">Download Temp Lease</button></a> '
-
-                        if ("<?php echo Auth::user()->role_lease_regen; ?>" == "1") {
-                            uploadbtn +=
-                                '<button type="button" id="myBtn_regen_temp_lease" style="margin-right:5px;">Regen Temp Lease</button> <button type="button" id="myBtn_resend_temp_lease" onClick="resendTempLease()">Resend Temp Lease</button>'
-                        }
-
-                        uploadbtn +=
-                            '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" accept="image/*, application/pdf" hidden/>';
-                        $("#moveInBanner").empty().append(uploadbtn);
-                        $("#moveInStatus").empty().append('<div class="button rejected"></div>');
-                        // }      
-                        $(btn).html('REGEN TEMP LEASE');
-                    },
-                });
-
-                e.preventDefault();
-            });
-            $(document).off('click').on('click', '#myBtn_regen_temp_lease', function(e) {
+            $(document).off('click.regenTempLease').on('click.regenTempLease', 'button#myBtn_regen_temp_lease', function(e) {
                 let btn = $(this);
                 $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -4771,9 +4771,9 @@
                         }
 
                         uploadbtnT +=
-                            '<label for="moveIn" id="moveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="moveIn" onChange="UploadDocument(\'moveIn\')" accept="image/*, application/pdf" hidden/>';
-                        $("#moveInBanner").empty().append(uploadbtnT);
-                        $("#moveInStatus").empty().append('<div class="button rejected"></div>');
+                            '<label for="tempMoveIn" id="tempMoveInSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="tempMoveIn" onChange="UploadDocument(\'tempMoveIn\')" accept="image/*, application/pdf" hidden/>';
+                        $("#tempMoveInBanner").empty().append(uploadbtnT);
+                        $("#tempMoveInStatus").empty().append('<div class="button rejected"></div>');
                         // }      
                         $(btn).html('REGEN TEMP LEASE');
                     },
