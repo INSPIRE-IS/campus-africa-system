@@ -3680,7 +3680,7 @@ class HomeController extends Controller
                 LEFT OUTER JOIN students_info ui on bookings_data.id = ui.bookingId
                 LEFT OUTER JOIN property p on p.id = bookings_data.property
                 LEFT OUTER JOIN room_types r on r.id = bookings_data.roomType
-            WHERE u.userRole = 0 ' . implode($query);
+            WHERE u.userRole = 0 and ui.deleted_at is null ' . implode($query);
 
         //dd($sql);
 
