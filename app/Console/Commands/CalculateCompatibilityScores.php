@@ -92,7 +92,7 @@ class CalculateCompatibilityScores extends Command
 
             if ($excludedSingles > 0) {
                 $this->warn("Skipped {$excludedSingles} students in single rooms (not eligible for matching).");
-                Log::info("Skipped {$excludedSingles} single-room students in year {$year}.");
+                // Log::info("Skipped {$excludedSingles} single-room students in year {$year}.");
             }
 
             // Step 2: Clean up existing scores for this year (optional)
