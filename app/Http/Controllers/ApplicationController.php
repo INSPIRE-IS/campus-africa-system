@@ -275,7 +275,11 @@ class ApplicationController extends Controller
 
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
-
+        /** @disregard P1009 */
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        /** @disregard P1009 */
         $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
 
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
@@ -344,11 +348,15 @@ class ApplicationController extends Controller
         // determine target year
         $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
         // load current user
-        $userId = Auth::user()->id;
 
-        if (!$userId) {
+        /** @disregard P1009 */
+        if (!Auth::check()) {
             return redirect()->route('login');
         }
+
+        /** @disregard P1009 */
+        $userId = Auth::user()->id;
+
         // search booking for selected year
         $booking = Booking::where('userId', $userId)
             ->where('year', $year)
@@ -370,6 +378,7 @@ class ApplicationController extends Controller
 
         // if still null → logout
         if (!$booking) {
+            /** @disregard P1009 */
             Auth::logout();
             Session::flush();
 
@@ -706,7 +715,7 @@ class ApplicationController extends Controller
                 Booking::where('userId', $userUid)->where('year', $this_year)->update(['payment_type' => 'Manual EFT']);
 
                 $this->update_user_status($userUid);
-
+                /** @disregard P1009 */
                 return [$file->id, StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first(), $file];
             } else {
                 return ["error", "File Not Valid"];
@@ -895,7 +904,7 @@ class ApplicationController extends Controller
             // existing DB updates here
             // Booking::update(...)
             if ($room_rate == "0") {
-
+                /** @disregard P1009 */
                 $uploaded = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
                 if (!$uploaded) {
@@ -910,6 +919,7 @@ class ApplicationController extends Controller
                     //     'rob_10_fee' => 2
                     // ]);
                     // StudentsInfo::update
+                    /** @disregard P1009 */
                     StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
                         'rob_10_fee' => 2,
                         'rob_40_bed' => 1
@@ -2177,8 +2187,11 @@ class ApplicationController extends Controller
 
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
         $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
+        // new logic for cash students require sponsorId and sponsorPayslip
+        $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_id')->where('year', $year)->first();
+        $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_payslip')->where('year', $year)->first();
 
-        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy, "new" => 1]);
+        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "SponsorId" => $SponsorId, "SponsorPayslip" => $SponsorPayslip, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy, "new" => 1]);
     }
 
     public function check_uploaded_docs(Request $request)

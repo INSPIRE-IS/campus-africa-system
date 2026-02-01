@@ -150,6 +150,7 @@ class MaintenanceController extends Controller
             "is_active" => true,
             "needs_auth_setup" => false,
         ];
+        $extra = [];
         // $extra = [
         //     'display_name' => $studInfo->userFirstName . ' ' . $studInfo->userLastname,
         //     'phone_number' => $studInfo->userCellCode . $studInfo->userCell,

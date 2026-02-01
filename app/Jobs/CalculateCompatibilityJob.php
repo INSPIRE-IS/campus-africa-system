@@ -41,16 +41,16 @@ class CalculateCompatibilityJob implements ShouldQueue
         foreach ($this->students as $i => $a) {
             foreach ($this->students as $j => $b) {
                 if ($a['id'] >= $b['id']) continue;
-                Log::info("Comparing {$a['id']} with {$b['id']}");
+                // Log::info("Comparing {$a['id']} with {$b['id']}");
                 $agender = $a['gender'] ?? null;
                 $bgender = $b['gender'] ?? null;
-                Log::info("Genders: {$agender}, {$bgender}");
+                // Log::info("Genders: {$agender}, {$bgender}");
 
                 if (!$agender || !$bgender || $agender !== $bgender) continue;
 
                 $aproperty = $a['booking']['property'] ?? null;
                 $bproperty = $b['booking']['property'] ?? null;
-                Log::info("Properties: {$aproperty}, {$bproperty}");
+                // Log::info("Properties: {$aproperty}, {$bproperty}");
 
                 if (!$aproperty || !$bproperty) continue;
                 if ($aproperty !== $bproperty) continue;
