@@ -727,22 +727,30 @@ class ApplicationController extends Controller
 
     public function step_5(Request $request)
     {
-
+        $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+        $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
         DB::beginTransaction();
 
         try {
-            $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
-            $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+
 
             $lookups = Lookups::get();
 
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
 
+            /** @disregard P1009 */
+            if (!Auth::check()) {
+                return redirect()->route('login');
+            }
+
+            /** @disregard P1009 */
+            $userId = Auth::user()->id;
+
             // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
-            $user = User::where('id', Auth::user()->id)->first();
-            $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
-            $booking = Booking::where('userId', Auth::user()->id)->where('year', $this_year)->first();
+            $user = User::where('id',  $userId)->first();
+            $userInfo = StudentsInfo::where('userUid',  $userId)->where('year', $this_year)->first();
+            $booking = Booking::where('userId',  $userId)->where('year', $this_year)->first();
 
 
             if ($booking->cancelled == 1) {
@@ -750,7 +758,7 @@ class ApplicationController extends Controller
             }
 
             // $residences = Property::where('id', $booking->property)
-            $proofPayment = UserFiles::where("userUid", Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+            $proofPayment = UserFiles::where("userUid",  $userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
             $agent = new Agent();
 
 
@@ -798,9 +806,6 @@ class ApplicationController extends Controller
                     $residenceId = $residence->id;
                 }
             }
-
-
-
 
             $roomType = "";
             $roomName = "";
@@ -897,15 +902,15 @@ class ApplicationController extends Controller
             ///////////////////////////////////////////////////////
             //TODO: temp set booking fee to 0 for sharing rooms
             if ($isSharingRoom === true) {
-                $room_rate = 0;
+                $room_rate = "0";
                 $actionFileData['action'] = "Booking Fee waived (Sharing Room)";
             }
             ///////////////////////////////////////////////////////
             // existing DB updates here
             // Booking::update(...)
             if ($room_rate == "0") {
-                /** @disregard P1009 */
-                $uploaded = UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+
+                $uploaded = UserFiles::where('userUid',  $userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
                 if (!$uploaded) {
                     UserFiles::create([
@@ -919,29 +924,28 @@ class ApplicationController extends Controller
                     //     'rob_10_fee' => 2
                     // ]);
                     // StudentsInfo::update
-                    /** @disregard P1009 */
-                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
+                    StudentsInfo::where('userUid',  $userId)->where('year', $this_year)->update([
                         'rob_10_fee' => 2,
                         'rob_40_bed' => 1
                     ]);
 
                     $actionFileData['userUid'] = $user->id;
                     $actionFileData['action'] = "Booking Fee is R0";
-                    $actionFileData['actionUserUid'] = Auth::user()->id;
-                    $actionFileData['actionUserDisplayName'] = Auth::user()->userFirstName;
-                    $actionFileData['actionUserRole'] = Auth::user()->userRole;
+                    $actionFileData['actionUserUid'] =  $userId;
+                    $actionFileData['actionUserDisplayName'] = $user->userFirstName;
+                    $actionFileData['actionUserRole'] = $user->userRole;
                     $actionFileData['year'] = $this_year;
                     // ActionList::create
                     ActionList::create($actionFileData);
                 } else {
-                    UserFiles::where('userUid', Auth::user()->id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
+                    UserFiles::where('userUid',  $userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
                         'status' => 'Approved'
                     ]);
 
                     // User::where('id', $user->id)->update([
                     //     'rob_10_fee' => 2
                     // ]);
-                    StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update([
+                    StudentsInfo::where('userUid',  $userId)->where('year', $this_year)->update([
                         'rob_10_fee' => 2,
                         'rob_40_bed' => 1,
                     ]);
@@ -960,7 +964,7 @@ class ApplicationController extends Controller
             DB::rollBack();
 
             Log::error('Step 5 failed', [
-                'user_id' => auth()->user()->id,
+                'user' => auth()->user(),
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
