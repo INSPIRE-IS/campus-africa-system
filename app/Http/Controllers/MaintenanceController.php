@@ -34,6 +34,11 @@ class MaintenanceController extends Controller
 
     public function create()
     {
+
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $userId = Auth::user()->id;
         //get current year
         $session_year = Session::get('year');
