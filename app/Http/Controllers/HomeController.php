@@ -47,6 +47,7 @@ use App\Models\OnlinePayments;
 use App\Models\Question;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentQuestionAnswer;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 
@@ -7933,6 +7934,12 @@ class HomeController extends Controller
         $user = StudentsInfo::where('userUid', $student_id)->where('year', $this_year)->first();
         //dd($user);
         if (!empty($user)) {
+            // GET CONFIG TEMP LEASE WINDOW FROM LOOKUPS
+            $year = now()->year;
+            $window_start = Carbon::create($year, Lookups::TEMP_LEASE_WINDOW['start']['month'], Lookups::TEMP_LEASE_WINDOW['start']['day'])->startOfDay();
+            $window_end = Carbon::create($year, Lookups::TEMP_LEASE_WINDOW['end']['month'], Lookups::TEMP_LEASE_WINDOW['end']['day'])->endOfDay();
+            $generate_temp_lease = now()->between($window_start, $window_end);
+
             return [
                 "student_type" => $user->studentType,
                 "rob_10_fee" => $user->rob_10_fee,
@@ -7952,7 +7959,7 @@ class HomeController extends Controller
                 'sponFirstName' => $user->sponFirstName,
                 'kinFirstName' => $user->kinFirstName,
                 'role_allow_generate_temp_lease' => 1,
-                'generate_temp_lease' => (date('m') == '01')
+                'generate_temp_lease' => $generate_temp_lease
             ];
         } else {
             return false;

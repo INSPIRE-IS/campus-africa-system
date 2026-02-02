@@ -73,6 +73,11 @@ class Lookups extends Model
         '7' => 'NRF',
     ];
 
+    const TEMP_LEASE_WINDOW = [
+        'start' => ['month' => 1, 'day' => 1],
+        'end' => ['month' => 2, 'day' => 28],
+    ];
+
 
     protected $fillable = [
         'group_id',
