@@ -55,11 +55,12 @@ class InvoiceController extends Controller
             if ($bookingPayment->rob_deposit_waived == '2') {
                 $deposit = 0;
             }
-
+            /** @disregard P1009 */
             $pdf = PDF::loadView('PDF.quote', compact('user', 'booking', 'property', 'bookingPayment', 'leaseFee', 'deposit'));
             $content = $pdf->download('test')->getOriginalContent();
             $new_name = $userIdentification . '_quote.pdf';
             // dd($new_name);
+            /** @disregard P1009 */
             \Storage::put('public/files/' . $userIdentification . '/' . $new_name, $content);
             return $pdf->download($new_name);
         }
@@ -145,12 +146,23 @@ class InvoiceController extends Controller
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
                         ];
-                        $billAddress = [
-                            'address1' => 'Ground Floor-Solomon Mahlangu House',
-                            'address2' => '1 Jorissen Street',
-                            'addressCity' => 'Braamfontein',
-                            'addressPostal' => '2017',
-                        ];
+                        //dd($user->institutionStudy);
+                        if ($user->institutionStudy == '20' || $user->institutionStudy == '21' || $user->institutionStudy == '22') {
+                            $billAddress = [
+                                'address1' => '',
+                                'address2' => '',
+                                'addressCity' => '',
+                                'addressPostal' => '',
+                            ];
+                        } else {
+                            $billAddress = [
+                                'address1' => 'Ground Floor-Solomon Mahlangu House',
+                                'address2' => '1 Jorissen Street',
+                                'addressCity' => 'Braamfontein',
+                                'addressPostal' => '2017',
+                            ];
+                        }
+
                         break;
                     case 'FUNSA':
                         $billTo = [
@@ -290,7 +302,7 @@ class InvoiceController extends Controller
             $new_name = $userIdentification . '_quote.pdf';
 
             $location = 'public/files/' . $userIdentification . '/' . $new_name;
-
+            /** @disregard P1009 */
             \Storage::put($location, $content);
 
             Log::info("Invoice PDF saved: {$location}");
@@ -335,11 +347,11 @@ class InvoiceController extends Controller
             if ($bookingPayment->rob_deposit_waived == '2') {
                 $deposit = 0;
             }
-
+            /** @disregard P1009 */
             $pdf = PDF::loadView('PDF.invoiceOld', compact('user', 'booking', 'property', 'bookingPayment', 'leaseFee', 'deposit'));
             $content = $pdf->download('test')->getOriginalContent();
             $new_name = $userIdentification . '_invoice.pdf';
-
+            /** @disregard P1009 */
             \Storage::put('public/files/' . $userIdentification . '/' . $new_name, $content);
             return $pdf->download($new_name);
         }
@@ -424,12 +436,21 @@ class InvoiceController extends Controller
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
                         ];
-                        $billAddress = [
-                            'address1' => 'Ground Floor-Solomon Mahlangu House',
-                            'address2' => '1 Jorissen Street',
-                            'addressCity' => 'Braamfontein',
-                            'addressPostal' => '2017',
-                        ];
+                        if ($user->instuitutionStudy == '20' || $user->instuitutionStudy == '21' || $user->instuitutionStudy == '22') {
+                            $billAddress = [
+                                'address1' => '',
+                                'address2' => '',
+                                'addressCity' => '',
+                                'addressPostal' => '',
+                            ];
+                        } else {
+                            $billAddress = [
+                                'address1' => 'Ground Floor-Solomon Mahlangu House',
+                                'address2' => '1 Jorissen Street',
+                                'addressCity' => 'Braamfontein',
+                                'addressPostal' => '2017',
+                            ];
+                        }
                         break;
                     case 'FUNSA':
                         $billTo = [
@@ -569,7 +590,7 @@ class InvoiceController extends Controller
             $new_name = $userIdentification . '_invoice.pdf';
 
             $location = 'public/files/' . $userIdentification . '/' . $new_name;
-
+            /** @disregard P1009 */
             \Storage::put($location, $content);
 
             Log::info("Invoice PDF saved: {$location}");
