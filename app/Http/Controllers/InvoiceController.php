@@ -140,10 +140,10 @@ class InvoiceController extends Controller
                     case 'NSFAS':
                         $billTo = [
                             'name' => 'NSFAS',
-                            'regNo' => '',
-                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
-                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
-                            'contactPhone' => '+27113556532',
+                            // 'regNo' => '',
+                            // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            // 'contactPhone' => '+27113556532',
                         ];
                         $billAddress = [
                             'address1' => 'Ground Floor-Solomon Mahlangu House',
@@ -154,11 +154,11 @@ class InvoiceController extends Controller
                         break;
                     case 'FUNSA':
                         $billTo = [
-                            'name' => 'NSFAS',
-                            'regNo' => '',
-                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
-                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
-                            'contactPhone' => '+27113556532',
+                            'name' => 'FUNSA',
+                            // 'regNo' => '',
+                            // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            // 'contactPhone' => '+27113556532',
                         ];
                         $billAddress = [
                             'address1' => 'Ground Floor-Solomon Mahlangu House',
@@ -170,10 +170,10 @@ class InvoiceController extends Controller
                     case 'GCRA':
                         $billTo = [
                             'name' => 'GCRA',
-                            'regNo' => '',
-                            'contactName' => 'Mogopa Ngcobo',
-                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
-                            'contactPhone' => '+27113556532',
+                            // 'regNo' => '',
+                            // 'contactName' => 'Mogopa Ngcobo',
+                            // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            // 'contactPhone' => '+27113556532',
                         ];
                         $billAddress = [
                             'address1' => '17 Simmonds Street',
@@ -185,10 +185,10 @@ class InvoiceController extends Controller
                     case 'NRF':
                         $billTo = [
                             'name' => 'NRF',
-                            'regNo' => '',
-                            'contactName' => 'National Research Foundation',
-                            'contactEmail' => '',
-                            'contactPhone' => '',
+                            // 'regNo' => '',
+                            // 'contactName' => 'National Research Foundation',
+                            // 'contactEmail' => '',
+                            // 'contactPhone' => '',
                         ];
                         $billAddress = [
                             'address1' => '1 Jan Smuts Ave',
@@ -200,10 +200,10 @@ class InvoiceController extends Controller
                     case 'MQA':
                         $billTo = [
                             'name' => 'Mining Qualifications Authority',
-                            'regNo' => '',
-                            'contactName' => 'Felicitus Lebetha',
-                            'contactEmail' => 'Felicitusl@mqa.org.za',
-                            'contactPhone' => '+27115472674',
+                            // 'regNo' => '',
+                            // 'contactName' => 'Felicitus Lebetha',
+                            // 'contactEmail' => 'Felicitusl@mqa.org.za',
+                            // 'contactPhone' => '+27115472674',
                         ];
                         $billAddress = [
                             'address1' => '7 Anerley Road',
@@ -215,10 +215,10 @@ class InvoiceController extends Controller
                     default:
                         $billTo = [
                             'name' => $user->burCompanyName,
-                            'regNo' => $user->burRegNo,
-                            'contactName' => $user->burContactPerson,
-                            'contactEmail' => $user->burEmail,
-                            'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
+                            // 'regNo' => $user->burRegNo,
+                            // 'contactName' => $user->burContactPerson,
+                            // 'contactEmail' => $user->burEmail,
+                            // 'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
                         ];
                         $billAddress = [
                             'address1' => $user->bAddress1,
@@ -419,10 +419,10 @@ class InvoiceController extends Controller
                     case 'NSFAS':
                         $billTo = [
                             'name' => 'NSFAS',
-                            'regNo' => '',
-                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
-                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
-                            'contactPhone' => '+27113556532',
+                            // 'regNo' => '',
+                            // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            // 'contactPhone' => '+27113556532',
                         ];
                         $billAddress = [
                             'address1' => 'Ground Floor-Solomon Mahlangu House',
@@ -433,11 +433,11 @@ class InvoiceController extends Controller
                         break;
                     case 'FUNSA':
                         $billTo = [
-                            'name' => 'NSFAS',
-                            'regNo' => '',
-                            'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
-                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
-                            'contactPhone' => '+27113556532',
+                            'name' => 'FUNSA',
+                            // 'regNo' => '',
+                            // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
+                            // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            // 'contactPhone' => '+27113556532',
                         ];
                         $billAddress = [
                             'address1' => 'Ground Floor-Solomon Mahlangu House',
@@ -449,10 +449,10 @@ class InvoiceController extends Controller
                     case 'NRF':
                         $billTo = [
                             'name' => 'NRF',
-                            'regNo' => '',
-                            'contactName' => 'National Research Foundation',
-                            'contactEmail' => '',
-                            'contactPhone' => '',
+                            // 'regNo' => '',
+                            // 'contactName' => 'National Research Foundation',
+                            // 'contactEmail' => '',
+                            // 'contactPhone' => '',
                         ];
                         $billAddress = [
                             'address1' => '1 Jan Smuts Ave',
@@ -464,10 +464,10 @@ class InvoiceController extends Controller
                     case 'GCRA':
                         $billTo = [
                             'name' => 'GCRA',
-                            'regNo' => '',
-                            'contactName' => 'Mogopa Ngcobo',
-                            'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
-                            'contactPhone' => '+27113556532',
+                            // 'regNo' => '',
+                            // 'contactName' => 'Mogopa Ngcobo',
+                            // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
+                            // 'contactPhone' => '+27113556532',
                         ];
                         $billAddress = [
                             'address1' => '17 Simmonds Street',
@@ -479,10 +479,10 @@ class InvoiceController extends Controller
                     case 'MQA':
                         $billTo = [
                             'name' => 'Mining Qualifications Authority',
-                            'regNo' => '',
-                            'contactName' => 'Felicitus Lebetha',
-                            'contactEmail' => 'Felicitusl@mqa.org.za',
-                            'contactPhone' => '+27115472674',
+                            // 'regNo' => '',
+                            // 'contactName' => 'Felicitus Lebetha',
+                            // 'contactEmail' => 'Felicitusl@mqa.org.za',
+                            // 'contactPhone' => '+27115472674',
                         ];
                         $billAddress = [
                             'address1' => '7 Anerley Road',
@@ -494,10 +494,10 @@ class InvoiceController extends Controller
                     default:
                         $billTo = [
                             'name' => $user->burCompanyName,
-                            'regNo' => $user->burRegNo,
-                            'contactName' => $user->burContactPerson,
-                            'contactEmail' => $user->burEmail,
-                            'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
+                            // 'regNo' => $user->burRegNo,
+                            // 'contactName' => $user->burContactPerson,
+                            // 'contactEmail' => $user->burEmail,
+                            // 'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
                         ];
                         $billAddress = [
                             'address1' => $user->bAddress1,
