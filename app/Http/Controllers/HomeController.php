@@ -10988,7 +10988,11 @@ class HomeController extends Controller
         } else {
             $query .= "where (pd.year_end = '0' or pd.year_end = '" . $this_year->lookup_name . "') ";
         }
-
+        if ($query !== "") {
+            $query .= " and pd.deleted_at is null ";
+        } else {
+            $query .= " where pd.deleted_at is null ";
+        }
         $beds = [
             ['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>', '<b>LAST NAME</b>', '<b>EMAIL</b>', '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>', '<b>ID NUMBER / PASSPORT</b>', '<b>GENDER</b>', '<b>STUDENT TYPE</b>', '<b>BURSAR COMPANY</b>', '<b>INSTITUTION</b>', '<b>STUDENT NUMBER</b>', '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
         ];
