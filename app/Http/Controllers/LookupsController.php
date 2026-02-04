@@ -697,10 +697,10 @@ class LookupsController extends Controller
         $year = $request->year;
         $this_year = Lookups::where('group_id', '4')->first();
 
-        $query = "";
+        $query = "where pd.deleted_at is null ";
 
         if ($property !== "All") {
-            $query .= "where pd.residence = '" . $property . "'";
+            $query .= "and pd.residence = '" . $property . "'";
         }
 
         if ($year !== "All") {
@@ -710,14 +710,9 @@ class LookupsController extends Controller
             } else {
                 $yearSearch = floatval($this_year->lookup_name) + 1;
             }
-
-            if ($query !== "") {
-                $query .= "and (pd.year_end = '0' or pd.year_end = '" . $yearSearch . "') ";
-            } else {
-                $query .= "where (pd.year_end = '0' or pd.year_end = '" . $yearSearch . "') ";
-            }
+            $query .= "and (pd.year_end = '0' or pd.year_end = '" . $yearSearch . "') ";
         }
-
+        dd('here');
         $beds = [
             ['<b>Residence</b>', '<b>Room Type</b>', '<b>Meta Info 1</b>', '<b>Meta Info 2</b>', '<b>Floor</b>', '<b>Unit</b>', '<b>Room</b>', '<b>Bed</b>', '<b>Bed Code</b>',  '<b>Inventory</b>', '<b>Year</b>', '<b>Year End</b>'],
         ];
