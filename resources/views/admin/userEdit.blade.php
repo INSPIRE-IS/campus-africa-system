@@ -148,7 +148,7 @@
                 </li>
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_other_reject_doc" name="role_other_reject_doc" value="1" <?php if($user->role_other_reject_doc == "1"){echo "checked";} ?>>
-                    <label for="role_other_reject_doc" style="width:500px">Reject Other Documents</label>
+                    <label for="role_other_reject_doc" style="width:500px">Manage Other Documents</label>
                 </li>                
                 <li style="display:inline-flex">
                     <input type="checkbox" id="role_nsfas_approval_upload" name="role_nsfas_approval_upload" value="1" <?php if($user->role_nsfas_approval_upload == "1"){echo "checked";} ?>>
