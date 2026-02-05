@@ -132,11 +132,16 @@
                                     <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                                 @endif
                             @endif
-                            @if(Auth::user()->role_other_reject_doc == 1)
+
+
+                            @if(Auth::user()->role_other_reject_doc == 1 && Auth::user()->role_funding != 1)
                                 @if ((explode("_", $file->fileId)[0] === "other"))
+                                    <button type="button" class="approve button" id="approved" onClick="actionFile('Approved', '')">Approve</button>
                                     <button type="button" class="rejected button" id="rejected" onClick="actionFile('Rejected', '')">Reject</button>
                                 @endif
                             @endif 
+
+
                         @endif
 
                         @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
@@ -153,8 +158,8 @@
             <hr style="margin-bottom: 35px;">
 
             <h3>Info</h3>
-            <span> show theis {{Auth::user()->role_other_reject_doc}}</span>
-            <span> show theis {{explode("_", $file->fileId)[0] === "other"}}</span>
+            {{-- <span> show {{Auth::user()->role_other_reject_doc}}</span> --}}
+            {{-- <span> show {{explode("_", $file->fileId)[0] === "other"}}</span> --}}
             
 
             <div>
