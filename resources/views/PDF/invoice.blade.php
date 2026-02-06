@@ -70,7 +70,7 @@
             <div style="margin-bottom:10px;">
                 <span style="font-weight:bold;">Bill to:</span><br>
                 @if(!empty($billTo['name'])){{ $billTo['name'] }}<br>@endif
-                @if(!empty($billTo['regNo'])){{ $billTo['regNo'] }}<br>@endif
+                @if(!empty($billTo['regNo']))<span style="font-weight:bold;">Vat no: </span>{{ $billTo['regNo'] }}<br>@endif
                 @if(!empty($billTo['contactName'])){{ $billTo['contactName'] }}<br>@endif
                 @if(!empty($billTo['contactEmail'])){{ $billTo['contactEmail'] }}<br>@endif
                 @if(!empty($billTo['contactPhone'])){{ $billTo['contactPhone'] }}<br>@endif

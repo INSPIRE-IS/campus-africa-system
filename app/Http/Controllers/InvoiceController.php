@@ -140,7 +140,7 @@ class InvoiceController extends Controller
                     case 'NSFAS':
                         $billTo = [
                             'name' => 'NSFAS',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
@@ -166,7 +166,7 @@ class InvoiceController extends Controller
                     case 'FUNSA':
                         $billTo = [
                             'name' => 'FUNSA',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
@@ -181,7 +181,7 @@ class InvoiceController extends Controller
                     case 'GCRA':
                         $billTo = [
                             'name' => 'GCRA',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'Mogopa Ngcobo',
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
@@ -196,7 +196,7 @@ class InvoiceController extends Controller
                     case 'NRF':
                         $billTo = [
                             'name' => 'NRF',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'National Research Foundation',
                             // 'contactEmail' => '',
                             // 'contactPhone' => '',
@@ -211,7 +211,7 @@ class InvoiceController extends Controller
                     case 'MQA':
                         $billTo = [
                             'name' => 'Mining Qualifications Authority',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'Felicitus Lebetha',
                             // 'contactEmail' => 'Felicitusl@mqa.org.za',
                             // 'contactPhone' => '+27115472674',
@@ -226,7 +226,7 @@ class InvoiceController extends Controller
                     default:
                         $billTo = [
                             'name' => $user->burCompanyName,
-                            // 'regNo' => $user->burRegNo,
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => $user->burContactPerson,
                             // 'contactEmail' => $user->burEmail,
                             // 'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
@@ -242,7 +242,7 @@ class InvoiceController extends Controller
             } else if ($user->studentType == 'Cash / Direct') {
                 $billTo = [
                     'name' => '',
-                    'regNo' => '',
+                    'regNo' => $user->burRegNo,
                     'contactName' => $user->sponFirstName . ' ' . $user->sponLastName,
                     'contactEmail' => $user->sponEmail,
                     'contactPhone' => $user->sponCellCode . ' ' . $user->sponCell,
@@ -428,7 +428,7 @@ class InvoiceController extends Controller
                     case 'NSFAS':
                         $billTo = [
                             'name' => 'NSFAS',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
@@ -452,7 +452,7 @@ class InvoiceController extends Controller
                     case 'FUNSA':
                         $billTo = [
                             'name' => 'FUNSA',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'University of the Witwatersrand, Johannesburg c/o Financial aid and Scholarship Office',
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
@@ -467,7 +467,7 @@ class InvoiceController extends Controller
                     case 'NRF':
                         $billTo = [
                             'name' => 'NRF',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'National Research Foundation',
                             // 'contactEmail' => '',
                             // 'contactPhone' => '',
@@ -482,7 +482,7 @@ class InvoiceController extends Controller
                     case 'GCRA':
                         $billTo = [
                             'name' => 'GCRA',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'Mogopa Ngcobo',
                             // 'contactEmail' => 'Mogopa.Ngcobo@gauteng.gov.za',
                             // 'contactPhone' => '+27113556532',
@@ -497,7 +497,7 @@ class InvoiceController extends Controller
                     case 'MQA':
                         $billTo = [
                             'name' => 'Mining Qualifications Authority',
-                            // 'regNo' => '',
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => 'Felicitus Lebetha',
                             // 'contactEmail' => 'Felicitusl@mqa.org.za',
                             // 'contactPhone' => '+27115472674',
@@ -512,7 +512,7 @@ class InvoiceController extends Controller
                     default:
                         $billTo = [
                             'name' => $user->burCompanyName,
-                            // 'regNo' => $user->burRegNo,
+                            'regNo' => $user->burRegNo,
                             // 'contactName' => $user->burContactPerson,
                             // 'contactEmail' => $user->burEmail,
                             // 'contactPhone' => $user->burContactCode . ' ' . $user->burContactNo,
@@ -528,7 +528,7 @@ class InvoiceController extends Controller
             } else if ($user->studentType == 'Cash / Direct') {
                 $billTo = [
                     'name' => '',
-                    'regNo' => '',
+                    'regNo' => $user->burRegNo,
                     'contactName' => $user->sponFirstName . ' ' . $user->sponLastName,
                     'contactEmail' => $user->sponEmail,
                     'contactPhone' => $user->sponCellCode . ' ' . $user->sponCell,
