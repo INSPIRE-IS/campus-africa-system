@@ -51,7 +51,7 @@
 
     <div class="container">
         <div style="display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 4px;margin-top: 12px;">
-            @if ($questionnairecomplete)
+            @if (!$questionnairecomplete)
                 <button type="button" class="question-button" id="modalQuestionnaire" style="margin-left:0px;">Questionnaire</button>
             @endif
             
