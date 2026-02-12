@@ -1,0 +1,39 @@
+booking_id,user_id,building,student_type,current_loan_admin_fee,expected_loan_admin_fee,current_deposit,expected_deposit,status
+23413,10174,80 Jorissen,NRF,0,1000,5950,5950,bad
+24353,19841,80 Jorissen,Bursary,0,1000,0,5950,bad
+24600,20037,80 Jorissen,NRF,0,1000,0,5950,bad
+24695,3723,80 Jorissen,Cash / Direct,0,1000,0,5950,bad
+20727,15317,Amani 49Â Jorissen,Bursary,0,1000,6600,6600,bad
+20774,9782,Amani 49Â Jorissen,NRF,0,1000,0,6000,bad
+21194,8620,Amani 49Â Jorissen,NRF,0,1000,0,5800,bad
+21311,17936,Amani 49Â Jorissen,NRF,0,1000,0,5800,bad
+21407,13048,Amani 49Â Jorissen,Bursary,0,1000,6600,6600,bad
+21461,7160,Amani 49Â Jorissen,NRF,0,1000,0,5800,bad
+21465,10374,Amani 49Â Jorissen,Bursary,0,1000,0,6000,bad
+22183,15132,Amani 49Â Jorissen,Bursary,0,1000,0,6000,bad
+22506,915,Amani 49Â Jorissen,NRF,0,1000,6000,6000,bad
+22767,18571,Amani 49Â Jorissen,Bursary,0,1000,0,6600,bad
+22885,6935,Amani 49Â Jorissen,Bursary,0,1000,6600,6600,bad
+23153,18823,Amani 49Â Jorissen,NRF,0,1000,0,6000,bad
+23469,8818,Amani 49Â Jorissen,NRF,0,1000,0,6000,bad
+24601,20038,Amani 49Â Jorissen,NRF,0,1000,0,6600,bad
+24767,20172,Amani 49Â Jorissen,NRF,0,1000,0,6600,bad
+24875,11682,Amani 49Â Jorissen,NRF,0,1000,0,6600,bad
+21568,18061,Braamlofts,Cash / Direct,1000,1000,0,5500,bad
+22037,5167,Braamlofts,Bursary,0,1000,0,5950,bad
+23725,19277,Braamlofts,Bursary,0,1000,0,5500,bad
+23857,19395,Park Mews,NRF,0,1000,0,5400,bad
+24427,19899,Park Mews,Cash / Direct,1000,1000,0,5600,bad
+21753,12355,Rennie House Apartments,Bursary,0,1000,5990,5990,bad
+24568,20011,Rennie House Apartments,Bursary,0,1000,0,5990,bad
+24813,9073,Rennie House Apartments,NRF,0,1000,0,6600,bad
+22230,6284,Wynton Joy,Bursary,0,1000,0,5500,bad
+20672,6158,YMCA,NRF,0,1000,0,5700,bad
+21599,14139,YMCA,NRF,0,1000,0,5700,bad
+21604,13913,YMCA,Cash / Direct,1000,1000,0,5500,bad
+22671,7222,YMCA,Cash / Direct,0,1000,5500,5500,bad
+22856,18631,YMCA,Bursary,0,1000,6450,6450,bad
+23201,18853,YMCA,Cash / Direct,1000,1000,0,5500,bad
+24183,19703,YMCA,Cash / Direct,1000,1000,0,5500,bad
+24499,19958,YMCA,NRF,0,1000,0,6450,bad
+24701,20121,YMCA,NRF,0,1000,0,6450,bad
