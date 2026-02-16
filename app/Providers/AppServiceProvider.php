@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
 
         if (app()->environment(['local', 'staging', 'development'])) {
-            LOG::info('Mail is set to sandbox');
+            //LOG::info('Mail is set to sandbox');
             //Mail::alwaysTo('sandbox@inspireonline.co.za');
             Mail::alwaysTo([
                 'andrea@conurban.co.za',

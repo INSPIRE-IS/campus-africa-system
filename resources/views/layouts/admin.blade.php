@@ -56,23 +56,23 @@
             <a href="/applications">Applications</a>
             <a href="/leases">Leases</a>
             <a href="/invoices">Invoices</a>
-            @if (Auth::user()->role_lookup == '1')
+            @if (Auth::user() && Auth::user()->role_lookup == '1')
                 <a href="/mailing">Mailing</a>
                 <a href="/lookups">Lookups</a>
             @endif
             <a href="/reports">Reports</a>
 
-            @if (Auth::user()->role_view_booking_summary == '1')
+            @if (Auth::user() && Auth::user()->role_view_booking_summary == '1')
                 <a href="/booking-summary">Booking Summary</a>
             @endif
 
-            @if (Auth::user()->role_manage_users == '1')
+            @if (Auth::user() && Auth::user()->role_manage_users == '1')
                 <a href="/users">Users</a>
             @endif
 
 
 
-            <a href="/logout">Hi {{ Auth::user()->userFirstName }}, Log out</a>
+            <a href="/logout">Hi {{Auth::user() && Auth::user()->userFirstName }}, Log out</a>
             <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                 <i class="fa fa-bars"></i>
             </a>

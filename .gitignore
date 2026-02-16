@@ -21,3 +21,6 @@ public/uploads/NSFAS_Approval_Export_8.xlsx
 composer.lock
 *.xlsx
 note.txt
+AGENTS.md
+REVIEWED_VIEWS.md
+Todos.md

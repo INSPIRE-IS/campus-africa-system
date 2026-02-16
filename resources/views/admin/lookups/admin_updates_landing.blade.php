@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        @if (Auth::user()->role_super == 1)
+        @if (Auth::user() && Auth::user()->role_super == 1)
             <h1>New</h1>
             <div>
                 <button style="float: none;" type="button" id="beds_update" class="detailsChange">Update Beds - Super</button>
@@ -11,6 +11,15 @@
 
                 <button style="float: none;" type="button" id="nsfas_rate_update" class="detailsChange">Update NSFAS Rate -
                     Super</button>
+                <br /><br />
+                <button style="float: none;" type="button" id="reportBookingPricingLocal" class="detailsChange">Report Lease
+                    Fee/Deposit Differences (Local)</button>
+                <button style="float: none;" type="button" id="reportBookingPricingFull" class="detailsChange">Report Full
+                    Booking Pricing (WP)</button>
+                <button style="float: none;" type="button" id="updateBookingPricingLocal" class="detailsChange">Update Lease
+                    Fee/Deposit (Local)</button>
+                <button style="float: none;" type="button" id="updateBookingPricingFull" class="detailsChange">Update Full
+                    Booking Pricing (WP)</button>
             </div>
 
 
@@ -18,7 +27,7 @@
             <div>
                 <button style="float: none;" type="button" id="newCancelled" class="detailsChange">Cancelled on
                     bookings</button>
-                <button style="float: none;" type="button" id="newStudents" class="detailsChange">New Students
+                <button style="float: none;" type="button" id="newStudentsBtn" class="detailsChange">New Students
                     Table</button>
                 <button style="float: none;" type="button" id="newPayments" class="detailsChange">Payments Update</button>
                 <button style="float: none;" type="button" id="nameCase" class="detailsChange">Name Case Update</button>
@@ -287,7 +296,7 @@
             })
         })
 
-        $("#newStudents").on('click', function() {
+        $("#newStudentsBtn").on('click', function() {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -298,13 +307,13 @@
                 confirmButtonText: 'Yes, Update it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $("#newStudents").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                    $("#newStudentsBtn").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
                     $.ajax({
                         type: "get",
                         url: "/admin-updates/update-new-students",
 
                         success: function(data) {
-                            $("#newStudents").empty().append('New Students Table');
+                            $("#newStudentsBtn").empty().append('New Students Table');
 
                             Swal.fire(
                                 'Success',
@@ -466,5 +475,115 @@
                 }
             })
         })
+
+        $("#reportBookingPricingLocal").on('click', function() {
+            $("#reportBookingPricingLocal").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+            $.ajax({
+                type: "get",
+                url: "/admin-updates/report-booking-pricing-local",
+                success: function(data) {
+                    $("#reportBookingPricingLocal").empty().append('Report Lease Fee/Deposit Differences (Local)');
+                    const emailText = data.email ? `An email will be sent to ${data.email}.` : 'An email will be sent shortly.';
+                    Swal.fire(
+                        'Report queued',
+                        `The local report is being generated for ${data.current_year}. ${emailText}`,
+                        'success'
+                    )
+                },
+                error: function(xhr) {
+                    $("#reportBookingPricingLocal").empty().append('Report Lease Fee/Deposit Differences (Local)');
+                    const message = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Report failed';
+                    Swal.fire('Error', message, 'error');
+                }
+            });
+        });
+
+        $("#reportBookingPricingFull").on('click', function() {
+            $("#reportBookingPricingFull").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+            $.ajax({
+                type: "get",
+                url: "/admin-updates/report-booking-pricing-full",
+                success: function(data) {
+                    $("#reportBookingPricingFull").empty().append('Report Full Booking Pricing (WP)');
+                    const emailText = data.email ? `An email will be sent to ${data.email}.` : 'An email will be sent shortly.';
+                    Swal.fire(
+                        'Report queued',
+                        `The WP report is being generated for ${data.current_year}. ${emailText}`,
+                        'success'
+                    )
+                },
+                error: function(xhr) {
+                    $("#reportBookingPricingFull").empty().append('Report Full Booking Pricing (WP)');
+                    const message = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Report failed';
+                    Swal.fire('Error', message, 'error');
+                }
+            });
+        });
+
+        $("#updateBookingPricingLocal").on('click', function() {
+            Swal.fire({
+                title: 'Update Lease Fee & Deposit?',
+                text: "This will update loan admin fee and deposit using local lookup values for the current year.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#updateBookingPricingLocal").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                    $.ajax({
+                        type: "get",
+                        url: "/admin-updates/update-booking-pricing-local",
+                        success: function(data) {
+                            $("#updateBookingPricingLocal").empty().append('Update Lease Fee/Deposit (Local)');
+                            Swal.fire(
+                                'Success',
+                                `Updated ${data.updated_bookings} bookings.`,
+                                'success'
+                            )
+                        },
+                        error: function(xhr) {
+                            $("#updateBookingPricingLocal").empty().append('Update Lease Fee/Deposit (Local)');
+                            const message = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Update failed';
+                            Swal.fire('Error', message, 'error');
+                        }
+                    });
+                }
+            })
+        });
+
+        $("#updateBookingPricingFull").on('click', function() {
+            Swal.fire({
+                title: 'Update Full Booking Pricing?',
+                text: "This will recompute booking fee, deposit, and related fields using WP data for the current year.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#updateBookingPricingFull").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
+                    $.ajax({
+                        type: "get",
+                        url: "/admin-updates/update-booking-pricing-full",
+                        success: function(data) {
+                            $("#updateBookingPricingFull").empty().append('Update Full Booking Pricing (WP)');
+                            Swal.fire(
+                                'Success',
+                                `Updated ${data.updated_bookings} bookings.`,
+                                'success'
+                            )
+                        },
+                        error: function(xhr) {
+                            $("#updateBookingPricingFull").empty().append('Update Full Booking Pricing (WP)');
+                            const message = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Update failed';
+                            Swal.fire('Error', message, 'error');
+                        }
+                    });
+                }
+            })
+        });
     </script>
 @endsection

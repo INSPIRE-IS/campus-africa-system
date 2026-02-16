@@ -263,6 +263,7 @@
             </div>
 
             <div class="form-field">
+                {{-- STUDENT TYPE --}}
                 <label>Student Type * <span id="studentType_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
                 <select name="studentType" id='studentType' class="required">
@@ -646,7 +647,7 @@
                                 allow = 1
                                 text = "";
                             }
-
+                            // STUDENT TYPE
                             if ($("#studentType").val() == "Cash / Direct" && inSelectedCash.includes(
                                     index.id)) {
                                 if (allow == 0) {

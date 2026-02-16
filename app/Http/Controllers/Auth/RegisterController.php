@@ -135,8 +135,13 @@ class RegisterController extends Controller
     {
         // dd($request);
         try {
-            $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
-            $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+            if (app()->environment('testing') || env('TEST_DISABLE_WP')) {
+                $jsonDataResidence = [];
+                $jsonDataRooms = [];
+            } else {
+                $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
+                $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
+            }
 
             return DB::transaction(function () use ($request, $jsonDataResidence, $jsonDataRooms) {
                 $validated = $request->validate([
@@ -272,8 +277,7 @@ class RegisterController extends Controller
 
                 $bookinfRefNo = Booking::where('id', $booking->id)->first();
 
-                $admin_fee = Lookups::where('group_id', '8')->first();
-                $lookup_lease_dates = Lookups::where('group_id', '4')->first();
+                $lookup_lease_dates = Lookups::where('group_id', '4')->where('lookup_name', $request->year)->first();
 
                 $bookingPrice = 0;
                 $residenceId = 0;
@@ -309,7 +313,7 @@ class RegisterController extends Controller
                                     if ($room->acf->booking_fee_override !== "") {
                                         $bookingPrice = $room->acf->booking_fee_override;
                                     }
-
+                                    // studentType
                                     if ($userInfo->studentType === "NSFAS" || $userInfo->studentType === "NRF" || $userInfo->studentType === "FUNZA" || $userInfo->studentType === "GCRA" || $userInfo->studentType === "MQA") {
                                         if (!in_array("NSFAS Students", $appliesTo)) {
                                             $bookingPrice = 0;
@@ -405,7 +409,8 @@ class RegisterController extends Controller
                     for ($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')) {
                         $diff++;
                     }
-                    $yearly_rent = floatval($deposit) * floatval($diff);
+                    $monthlyRent = floatval($deposit);
+                    $yearly_rent = $monthlyRent * floatval($diff);
 
                     $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
                     $funded = floatval($institution->nsfas_amount) * floatval($diff);
@@ -415,26 +420,53 @@ class RegisterController extends Controller
                     $nsfas_rate = null;
 
 
+                    $monthly = $monthlyRent;
+
                     if (($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)) {
-                        $admin_fee = '1000';
-                        $deposit = $monthly = $monthlyFunded = $deposit;
+                        $monthlyFunded = $monthlyRent;
                         $funded = $yearly_rent;
                         $topup = '0';
                     } else {
-                        $monthly = $deposit;
-                        $deposit = 0;
-                        $admin_fee = 0;
-
                         if ($is_nsfas === true) {
                             $monthly = $monthlyFunded;
-                            $deposit = 0;
-                            $admin_fee = 0;
                             $nsfas_rate = 1;
                             $yearly_rent = $funded;
                             $topup = 0;
                             $nsfas_rate = 1;
                         }
                     }
+
+                    $admin_fee = 0;
+                    $deposit = 0;
+                    $fundingId = Lookups::fundingTypeIdForLabel($userInfo->studentType);
+                    $selectedYear = $bookinfRefNo->year ?? $request->year;
+
+                    if ($fundingId && $selectedYear) {
+                        $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $selectedYear)->first();
+                        $yearData = [];
+                        if ($yearLookup) {
+                            if (is_array($yearLookup->data)) {
+                                $yearData = $yearLookup->data;
+                            } elseif (!empty($yearLookup->data)) {
+                                $decoded = json_decode($yearLookup->data, true);
+                                if (is_array($decoded)) {
+                                    $yearData = $decoded;
+                                }
+                            }
+                        }
+
+                        $leaseFees = $yearData['lease_fees'] ?? [];
+                        $depositApplies = $yearData['deposit_applies'] ?? [];
+
+                        if (array_key_exists($fundingId, $leaseFees)) {
+                            $admin_fee = floatval($leaseFees[$fundingId]);
+                        }
+
+                        if (array_key_exists($fundingId, $depositApplies) && $depositApplies[$fundingId]) {
+                            $deposit = $monthlyRent;
+                        }
+                    }
+
                     // 6. BookingPayment
                     BookingPayment::create([
                         "bookingId" => $bookinfRefNo->id,

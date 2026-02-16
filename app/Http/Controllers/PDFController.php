@@ -57,7 +57,30 @@ class PDFController extends Controller
 
       $propertyData = Property::where('residence', $property)->where('room_type', $roomType)->where("floor", $request->floor)->where('unit', $request->unit)->where('room', $request->room)->where('bed', $request->bed)->where('bed_code', $request->bed_code)->first();
 
-      $leaseAdminFee = Lookups::where('group_id', '8')->first();
+      $studentInfo = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+      $leaseAdminFee = 0;
+      if ($studentInfo) {
+        $fundingId = Lookups::fundingTypeIdForLabel($studentInfo->studentType);
+        if ($fundingId) {
+          $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $this_year)->first();
+          $yearData = [];
+          if ($yearLookup) {
+            if (is_array($yearLookup->data)) {
+              $yearData = $yearLookup->data;
+            } elseif (!empty($yearLookup->data)) {
+              $decoded = json_decode($yearLookup->data, true);
+              if (is_array($decoded)) {
+                $yearData = $decoded;
+              }
+            }
+          }
+
+          $leaseFees = $yearData['lease_fees'] ?? [];
+          if (array_key_exists($fundingId, $leaseFees)) {
+            $leaseAdminFee = floatval($leaseFees[$fundingId]);
+          }
+        }
+      }
 
 
 
@@ -102,7 +125,27 @@ class PDFController extends Controller
       $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
       $propertyData = Property::where('id', $booking->property_data_id)->first();
       $residence = Residence::where('id', $propertyData->residence)->first();
-      $leaseAdminFee = Lookups::where('group_id', '8')->first();
+      $leaseAdminFee = 0;
+      $fundingId = Lookups::fundingTypeIdForLabel($data->studentType);
+      if ($fundingId) {
+        $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $this_year)->first();
+        $yearData = [];
+        if ($yearLookup) {
+          if (is_array($yearLookup->data)) {
+            $yearData = $yearLookup->data;
+          } elseif (!empty($yearLookup->data)) {
+            $decoded = json_decode($yearLookup->data, true);
+            if (is_array($decoded)) {
+              $yearData = $decoded;
+            }
+          }
+        }
+
+        $leaseFees = $yearData['lease_fees'] ?? [];
+        if (array_key_exists($fundingId, $leaseFees)) {
+          $leaseAdminFee = floatval($leaseFees[$fundingId]);
+        }
+      }
       $owner = storage_path() . '/leases/juanita-cronje.jpg';
 
       $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
