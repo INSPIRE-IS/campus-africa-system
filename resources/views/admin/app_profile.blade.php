@@ -2693,7 +2693,7 @@
 
                         Object.keys(properties).forEach(function(key) {
                             if (parseFloat("{{ $booking->property }}") !== properties[key].id) {
-
+                                // STUDENT TYPE
                                 if ("{{ $user[0]['userInfo']['rob_60_cancelled'] }}" == '1') {
                                     if (propArr.includes(properties[key].id)) {
 

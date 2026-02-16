@@ -24,7 +24,6 @@ class Lookups extends Model
         '11' => 'Email - BCC Email Addresses',
         '12' => 'Email - Reminder Booking Fee',
         '13' => 'Email - Reminder Outstanding Documents',
-        //'14' => 'Funding Type',
     ];
 
     const CLASSES = [
@@ -73,6 +72,28 @@ class Lookups extends Model
         '7' => 'NRF',
     ];
 
+    public static function fundingTypeIdForLabel($label)
+    {
+        $label = trim((string) $label);
+        if ($label === '') {
+            return null;
+        }
+
+        static $map = null;
+        if ($map === null) {
+            $map = [];
+            foreach (static::FUNDING_TYPES as $id => $name) {
+                $key = strtolower(preg_replace('/\s+/', ' ', trim($name)));
+                $map[$key] = (string) $id;
+            }
+            $map['cash'] = '3';
+        }
+
+        $normalized = strtolower(preg_replace('/\s+/', ' ', $label));
+
+        return $map[$normalized] ?? null;
+    }
+
     const TEMP_LEASE_WINDOW = [
         'start' => ['month' => 1, 'day' => 1],
         'end' => ['month' => 2, 'day' => 28],
@@ -82,6 +103,7 @@ class Lookups extends Model
     protected $fillable = [
         'group_id',
         'lookup_name',
+        'data',
         'lease_from_date',
         'lease_from_time',
         'lease_to_date',
@@ -96,6 +118,10 @@ class Lookups extends Model
         'month_to',
         'day_to',
         'nsfas_amount',
+    ];
+
+    protected $casts = [
+        'data' => 'array',
     ];
 
     public function users()

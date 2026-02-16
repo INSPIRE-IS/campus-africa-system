@@ -58,10 +58,32 @@
                                 Email - Reminder Booking Fee
                             @elseif($lookup->group_id == '13')
                                 Email - Reminder Outstanding Documents
+                            @elseif($lookup->group_id == '14')
+                                Lease Fees
+                            @elseif($lookup->group_id == '15')
+                                Deposits 
                             @endif
                         </td>
                         <td>
-                            @if ($lookup->group_id == '9')
+                            @if ($lookup->group_id == '14' || $lookup->group_id == '15')
+                                @php
+                                    $fees = is_array($lookup->data) ? $lookup->data : ($lookup->data ? json_decode($lookup->data, true) : []);
+                                    $feeCount = 0;
+                                    if (is_array($fees)) {
+                                        foreach ($fees as $fee) {
+                                            if ($fee !== '' && $fee !== null) {
+                                                $feeCount++;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <div>{{ $lookup->lookup_name }}</div>
+                                @if ($lookup->group_id == '14')
+                                    <small>Funding fees: {{ $feeCount > 0 ? $feeCount . ' set' : 'none' }}</small>
+                                @else
+                                    <small>Deposit types: {{ $feeCount > 0 ? $feeCount . ' set' : 'none' }}</small>
+                                @endif
+                            @elseif ($lookup->group_id == '9')
                                 @if ($lookup->lookup_name == '1')
                                     Online
                                 @else
@@ -93,8 +115,10 @@
                             @if (Auth::user()->role_lookup == '1')
                                 <button type="button" id="tableBtn" class="detailsChange"
                                     onClick="deleteLookup('{{ $lookup->id }}')" style="margin:5px;">Delete</button>
-                                <a href="/lookups/edit/{{ $lookup->id }}"><button type="button" style="margin:5px;"
-                                        id="tableBtn" class="detailsChange">Edit</button></a>
+                                @if ($lookup->group_id != '14' && $lookup->group_id != '15')
+                                    <a href="/lookups/edit/{{ $lookup->id }}"><button type="button" style="margin:5px;"
+                                            id="tableBtn" class="detailsChange">Edit</button></a>
+                                @endif
                             @endif
                         </td>
                     </tr>
