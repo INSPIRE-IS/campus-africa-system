@@ -33,6 +33,7 @@
 
                 <div class="searchField">
                     <label></label><br />
+                    {{-- STUDENT TYPE --}}
                     <select name="student_type" id='student_type'>
                         <option value="All" selected>All Student Types</option>
                         <option value="NSFAS">NSFAS</option>

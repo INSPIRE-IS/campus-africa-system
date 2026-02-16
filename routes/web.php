@@ -130,6 +130,10 @@ Route::get('/admin-updates/name-case-update', [LookupsController::class, 'admin_
 Route::get('/admin-updates/update-beds', [LookupsController::class, 'admin_updates_update_beds']);
 Route::get('/admin-updates/update-gender', [LookupsController::class, 'admin_updates_update_gender']);
 Route::get('/admin-updates/update-nsfas-rate', [LookupsController::class, 'admin_updates_update_nsfas_rate']);
+Route::get('/admin-updates/report-booking-pricing-local', [LookupsController::class, 'admin_updates_report_booking_pricing_local']);
+Route::get('/admin-updates/update-booking-pricing-local', [LookupsController::class, 'admin_updates_update_booking_pricing_local']);
+Route::get('/admin-updates/update-booking-pricing-full', [LookupsController::class, 'admin_updates_update_booking_pricing_full']);
+Route::get('/admin-updates/report-booking-pricing-full', [LookupsController::class, 'admin_updates_report_booking_pricing_full']);
 
 
 

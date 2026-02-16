@@ -2,6 +2,10 @@
 
 @section('content')
 
+@php
+    $fundingTypes = $fundingTypes ?? \App\Models\Lookups::FUNDING_TYPES;
+@endphp
+
 <div class="container form-card">
 <form action="/new-lookup" method="post" autocomplete="off">
     @csrf
@@ -87,6 +91,52 @@
             <input type="number" id="nsfas_amount" name="nsfas_amount" >
         </div>
 
+        <div class="form-field hidden" id="fundingFeesTable">
+            <label>Funding Type Lease Fees (Current Year Only)</label>
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Funding Type</th>
+                        <th style="text-align:left;">Fee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($fundingTypes as $typeId => $typeName)
+                        <tr>
+                            <td>{{ $typeName }}</td>
+                            <td>
+                                <input type="text" name="lease_fees[{{ $typeId }}]" class="lease-fee-input" inputmode="decimal" disabled>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <small>Shown only when the lookup year matches the current year ({{ $currentYear ?? 'N/A' }}).</small>
+        </div>
+
+        <div class="form-field hidden" id="fundingDepositsTable">
+            <label>Funding Type Deposit Applies (Current Year Only)</label>
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Funding Type</th>
+                        <th style="text-align:left;">Deposit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($fundingTypes as $typeId => $typeName)
+                        <tr>
+                            <td>{{ $typeName }}</td>
+                            <td>
+                                <input type="checkbox" name="deposit_applies[{{ $typeId }}]" value="1" disabled>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <small>Shown only when the lookup year matches the current year ({{ $currentYear ?? 'N/A' }}).</small>
+        </div>
+
         <!-- <div class="form-field hidden" id="waiverDateFrom">
             <label>Waiver Date From</label>
             <input type="date" name="date_from" id="date_from">
@@ -102,6 +152,21 @@
 </div>
 
 <script>
+    const currentYear = @json($currentYear ?? null);
+
+    function toggleFundingFees() {
+        const groupId = $("#group_id").val();
+        const lookupYear = $("#value").val();
+        const shouldShowFees = groupId === "4" && currentYear && lookupYear === String(currentYear);
+        const shouldShowDeposits = groupId === "4" && currentYear && lookupYear === String(currentYear);
+
+        $("#fundingFeesTable").toggleClass('hidden', !shouldShowFees);
+        $("#fundingFeesTable").find('input').prop('disabled', !shouldShowFees);
+
+        $("#fundingDepositsTable").toggleClass('hidden', !shouldShowDeposits);
+        $("#fundingDepositsTable").find('input').prop('disabled', !shouldShowDeposits);
+    }
+
     $("#group_id").on('change', function(){
         if($("#group_id").val() == "7"){
             $("#normalVlaue").addClass('hidden');
@@ -156,7 +221,52 @@
             // $("#waiverDateFrom").addClass('hidden');
             // $("#waiverDateTo").addClass('hidden');
         }
+
+        toggleFundingFees();
     })
+
+    $("#value").on('input', function() {
+        toggleFundingFees();
+    });
+
+    function isValidNonNegativeNumber(value) {
+        if (value === '') {
+            return true;
+        }
+        if (!/^\d*(\.\d+)?$/.test(value)) {
+            return false;
+        }
+        return parseFloat(value) >= 0;
+    }
+
+    $(document).on('keydown', '.lease-fee-input', function(e) {
+        const key = e.key;
+        const isControl = e.ctrlKey || e.metaKey || e.altKey;
+        if (isControl || key === 'Backspace' || key === 'Delete' || key === 'Tab' || key === 'ArrowLeft' || key === 'ArrowRight' || key === 'Home' || key === 'End') {
+            return;
+        }
+        if (key === '.') {
+            if ($(this).val().includes('.')) {
+                e.preventDefault();
+            }
+            return;
+        }
+        if (!/^\d$/.test(key)) {
+            e.preventDefault();
+        }
+    });
+
+    $(document).on('blur', '.lease-fee-input', function() {
+        const value = $(this).val().trim();
+        if (!isValidNonNegativeNumber(value)) {
+            this.setCustomValidity('Enter a number 0 or greater.');
+            this.reportValidity();
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    toggleFundingFees();
 </script>
 
 @endsection
