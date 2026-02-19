@@ -86,13 +86,13 @@
     In the event of the early termination of the written Temporary Lodging Agreement between,
     I 
     <span class="line" style="display: inline-block; width: 250px;">
-        {{ $tenantName ?? '' }}
+        {{ $pdfdata['tenantName'] ?? '' }}
     </span>
     the lessee with ID/Passport number 
     <span class="line" style="display: inline-block; width: 200px;">
-        {{ $tenantId ?? '' }}
+        {{ $pdfdata['tenantId'] ?? '' }}
     </span>
-    and {{ $propertyName ?? '' }}, the lessor.
+    and {{ $pdfdata['propertyName'] ?? 'Property Name' }}, the lessor.
 </div>
 
 <br>
@@ -129,7 +129,7 @@
 
         <td width="33%" class="center">
             <div class="line" style="width: 90%; margin: auto;"></div>
-            <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>
+            <div style="font-size: 11px;">For: {{ $pdfdata['propertyName'] ?? 'Property Name' }}</div>
         </td>
 
         <td width="33%" class="center">

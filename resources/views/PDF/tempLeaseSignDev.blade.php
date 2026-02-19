@@ -119,7 +119,7 @@
         <span class="line" style="display: inline-block; width: 200px;">
             <img src="{{ $owner }}" width="100" alt="Juanita Cronje" />
         </span>
-            <div style="font-size: 11px;">For: Braamby Trading (Pty) Ltd</div>
+            <div style="font-size: 11px;">For: {{ $pdfdata['propertyName'] ?? 'Property Name' }}</div>
         </td>
 
         <td width="33%" class="center">
