@@ -231,7 +231,7 @@
 
 
         {{-- All Documents --}}
-        @if (Auth::user()->role_all_apps_report == 1 && Auth::user()->role_manage_users == 1)
+        @if (Auth::user()->role_all_apps_report == 1 && Auth::user()->role_lookup == 1)
             <br /><br /><br /><br />
             <hr /><br />
             <h2>All Documents</h2>
@@ -263,7 +263,7 @@
         @endif
 
         {{-- Institution and Funding Lease Documents --}}
-        @if (Auth::user()->role_all_apps_report == 1 && Auth::user()->role_manage_users == 1)
+        @if (Auth::user()->role_all_apps_report == 1 && Auth::user()->role_lookup == 1)
             <br /><br /><br /><br />
             <hr /><br />
             <h2>Institution and Funding Lease Documents</h2>
@@ -329,7 +329,7 @@
         @endif
 
         {{-- Institution and Funding Lease Documents --}}
-        @if (Auth::user()->role_all_apps_report == 1 && Auth::user()->role_manage_users == 1)
+        @if (Auth::user()->role_all_apps_report == 1 && Auth::user()->role_lookup == 1)
             <br /><br /><br /><br />
             <hr /><br />
             <h2>Compatability Matching</h2>
