@@ -1331,6 +1331,12 @@
                 }
                 
             },
+            error: function (data) {
+                console.log('action approve file data', data);
+                alert("error");
+                $("#myModal").html("");
+                $("#myModal").css("display", "none");
+            }
         });
     }
 
