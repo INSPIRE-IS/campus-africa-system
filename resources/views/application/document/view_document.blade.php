@@ -1260,6 +1260,17 @@
                     //     }
                     // })
 
+                } else if (type == "Approved" && $("#FileNameForApproval").val() == "tempMoveIn") {
+                    $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
+
+                    let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_temp_download">Download Temp Lease</button></a> <button type="button" onclick="btn_view_document_ajax('+data[0]['id']+')">View Document</button>';
+                    $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
+
+                    refreshActions();
+                    checkUserStatus();
+
+                    $("#myModal").html("");
+                    $("#myModal").css("display", "none");
                 } else {
                     $("#"+fileForApproval+"Status").empty().append('<div class="button '+type.toLowerCase()+'"></div>');
 
@@ -1300,6 +1311,16 @@
 
                         bookingTypeDetails();
                         resendLease();
+                    }else if(type == "Rejected" && fileForApproval == "tempMoveIn"){
+                        let uploadbtn = '<a href="/storage/'+data[0]['fileUrl']+'" download="'+data[0]['fileName']+'" style="margin-right:5px;"><button type="button" id="myBtn_temp_download">Download Temp Lease</button></a> '
+
+                        if("<?php echo Auth::user()->role_allow_generate_temp_lease;?>" == "1"){
+                            uploadbtn += '<button type="button" id="myBtn_regen_temp_lease" style="margin-right:5px;">Regen Temp Lease</button>'
+                            uploadbtn += '<button type="button" id="myBtn_resend_temp_lease" onClick="resendTempLease()">Resend Temp Lease</button>'
+                        }
+
+                        uploadbtn += '<label for="{{$file->fileId}}" id="{{$file->fileId}}Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;"><span class="text">Upload</span><i class="fas fa-file-upload" ></i></label><input type="file" id="{{$file->fileId}}" onChange="UploadDocument(\'{{$file->fileId}}\')" accept="image/*, application/pdf" hidden/>';
+                        $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
                     }
                 
                     refreshActions();
