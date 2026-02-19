@@ -2113,6 +2113,11 @@
 
                         }
                         console.log(data['generate_temp_lease'])
+                        // TODO (ROB rules):
+                        // - Investigate rob_45_other reset when "other*" docs are cancelled/removed.
+                        // - If generate_temp_lease is true but rob_45_other is stuck at 1, approval can be blocked.
+                        // - Consider resetting rob_45_other to 3 when no active other-docs remain.
+                        // TODO (business rule): Temp lease generation window is Jan 1 through the last day of Feb.
                         if (
                             data['generate_temp_lease'] &&
                             data['rob_51_temp_lease_approve'] == 3 &&
