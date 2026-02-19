@@ -895,7 +895,7 @@
                                             @endif
                                         @endif
                                         @if ($file['field'] === 'tempMoveIn' && $file['status'] !== 'XApproved')
-                                            @if (Auth::user()->role_lease_regen == '1')
+                                            @if (Auth::user()->role_allow_generate_temp_lease == '1')
                                                 <a href="#">
                                                     <button type="button" id="myBtn_regen_temp_lease"> <small >Regen Temp Lease</small></button>
                                                 </a>

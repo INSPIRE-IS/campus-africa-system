@@ -7933,7 +7933,12 @@ class HomeController extends Controller
             // GET CONFIG TEMP LEASE WINDOW FROM LOOKUPS
             $year = now()->year;
             $window_start = Carbon::create($year, Lookups::TEMP_LEASE_WINDOW['start']['month'], Lookups::TEMP_LEASE_WINDOW['start']['day'])->startOfDay();
-            $window_end = Carbon::create($year, Lookups::TEMP_LEASE_WINDOW['end']['month'], Lookups::TEMP_LEASE_WINDOW['end']['day'])->endOfDay();
+            $window_end_month = (int) Lookups::TEMP_LEASE_WINDOW['end']['month'];
+            $window_end_day = (int) Lookups::TEMP_LEASE_WINDOW['end']['day'];
+            $window_end = Carbon::create($year, $window_end_month, $window_end_day)->endOfDay();
+            if ($window_end_month === 2 && $window_end_day === 28) {
+                $window_end = Carbon::create($year, $window_end_month, 1)->endOfMonth()->endOfDay();
+            }
             $generate_temp_lease = now()->between($window_start, $window_end);
 
             return [
