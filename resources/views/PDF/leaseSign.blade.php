@@ -47,7 +47,7 @@
 </head>
 <body>
     <div class="container mt-5">
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
         <h2 style="text-align:center">TEMPORARY LODGING AGREEMENT</h2>
         <p style="text-align:center; font-size:13px; font-weight:bold; margin-top:-10px;">BETWEEN</p>
@@ -151,7 +151,7 @@
         <div class="page_break"></div>
 
 
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
 
         <ol style="list-style-type:none; text-align:left; font-size:14px;">
@@ -243,7 +243,7 @@
         <div class="page_break"></div>
 
 
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
         <br />
         <span style="font-weight:bold; font-size:14px;">3. Payment of Accommodation and Student Meal Fees </span>
@@ -346,7 +346,7 @@
             <div class="page_break"></div>
 
 
-            <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
                 style="width:70px; margin-left:44%;">
             <br />
 
@@ -420,7 +420,7 @@
                 <div class="page_break"></div>
 
 
-                <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+                <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
                     style="width:70px; margin-left:44%;">
                 <br />
 
@@ -497,7 +497,7 @@
         <div class="page_break"></div>
 
 
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
         <br />
 
@@ -574,7 +574,7 @@
                 <div class="page_break"></div>
 
 
-                <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+                <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
                     style="width:70px; margin-left:44%;">
                 <br />
                 <li>have a common law right to retain the Student’s movables to ensure payment of his or her
@@ -664,7 +664,7 @@
                     Page | 7
                 </footer>            
             <div class="page_break"></div>
-                <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+                <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
                     style="width:70px; margin-left:44%;">
                 <br />            
             <li>Any notice to a party: </li>
@@ -749,7 +749,7 @@
         <div class="page_break"></div>
 
 
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
         <br />
         <table style="width:100%; border:1px solid #000;">
@@ -847,7 +847,7 @@
         <div class="page_break"></div>
 
 
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
         <br /><br />
         <span style="font-weight:bold; font-size:14px;"> ANNEXURE A: Inventory of contents of Room – UNIT:
@@ -1010,7 +1010,7 @@
         <div class="page_break"></div>
 
 
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
         <br />
         <span style="font-weight:bold; font-size:14px;">ANNEXURE B</span>
@@ -1054,7 +1054,7 @@
         <div class="page_break"></div>
 
 
-        <img src='https://campusafrica.co.za/wp-content/uploads/2021/09/Site_Logo.svg' alt="Logo"
+        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo"
             style="width:70px; margin-left:44%;">
         <br />
         <br />
@@ -1131,3 +1131,4 @@
 </body>
 
 </html>
+
