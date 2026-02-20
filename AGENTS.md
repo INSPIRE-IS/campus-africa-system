@@ -53,5 +53,8 @@
 - Temp lease status mapping is documented as `0=Rejected, 1=Approved, 2=Pending, 3=Not Set` (migration comment + UI mapping), but `createTempLeasePDF()` and `resendTempLease()` currently set `rob_51_temp_lease_approve` to `0`, which can show "Rejected" immediately after generation. Keep this mismatch in mind when fixing flow/state bugs.
 - Temp lease flow (current): generate button -> `/generate-temp-lease` sets `rob_51_temp_lease_approve = 2` and logs action -> `/createTempLease/{studentId}` builds the PDF, creates/updates `tempMoveIn`, creates a temp-lease token, emails the signing link, then sets `rob_51_temp_lease_approve = 0`; signing `/save-signed-temp-lease` stores the signed PDF, marks `tempMoveIn` as Uploaded, sets `rob_51_temp_lease_approve = 2`; admin approval/rejection via `action_data` sets `rob_51_temp_lease_approve` to 1/0 and updates `tempMoveIn` status.
 - Temp lease regen/resend buttons in `app_profile.blade.php` are gated by `role_allow_generate_temp_lease`.
+- Temp lease approve/reject in the document modal now updates `tempMoveIn` UI immediately (status/banner + close modal) to match `moveIn` behavior.
+- Reports view: sections for All Documents / Institution & Funding Docs / Compatibility are gated by `role_all_apps_report` + `role_lookup` (not `role_manage_users`).
+- Step 5 booking guardrails: `ApplicationController::step_5()` now checks auth before starting a DB transaction, loads booking via `StudentsInfo.bookingId` with fallback to user+year, and logs out + redirects to login if the booking is missing or cancelled.
 ## Project TODOs
 - See `TODOS.md`
