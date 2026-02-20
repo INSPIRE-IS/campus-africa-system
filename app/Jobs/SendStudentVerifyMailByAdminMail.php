@@ -24,17 +24,19 @@ class SendStudentVerifyMailByAdminMail implements ShouldQueue
     public $userUid;
     public $bookingGenRef;
     public $url;
+    public $this_year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $bookingGenRef, $url)
+    public function __construct(User $userUid, $this_year, $bookingGenRef, $url)
     {
         $this->userUid = $userUid;
         $this->bookingGenRef = $bookingGenRef;
         $this->url = $url;
+        $this->this_year = $this_year;
     }
 
     /**
@@ -47,11 +49,11 @@ class SendStudentVerifyMailByAdminMail implements ShouldQueue
 
         $userMain = $this->userUid;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        // $this_year = Lookups::where('group_id', '4')->first();
+        // $this_year = $this_year->lookup_name;
 
         $user = User::where('id', $userMain->id)->first();
-        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->this_year)->first();
 
         $message_replace['bookingRef'] = $this->bookingGenRef;
         $message_replace['name'] = $userInfo->userFirstName;
