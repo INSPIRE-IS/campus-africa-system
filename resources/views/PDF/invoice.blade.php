@@ -61,8 +61,8 @@
                 </div>
                 <div>VAT No: {{$property->company_vat}}</div>
                 <div>Company Registration Number: {{$property->company_reg}}</div>
-                <div>Account Queries : Andrea Fourie</div>
-                <div>Email: andrea@conurban.co.za</div>
+                <div>Account Queries : Owethu Sithole</div>
+                <div>Email: owethu@conurban.co.za</div>
             </div>
         </td>
 

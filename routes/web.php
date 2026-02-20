@@ -18,6 +18,7 @@ use App\Http\Controllers\MailReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -271,6 +272,92 @@ Route::group(['middleware' => ['auth']], function () {
 //Students to sign lease
 Route::get('/sign-temp-lease/{id}', [LeaseController::class, 'view_sign_temp_lease']);
 Route::post('/save-signed-temp-lease/{id}', [LeaseController::class, 'save_signed_temp_lease']);
+
+// PDF test routes (admin-only)
+$buildLeaseTestData = function ($userId) {
+    if (!Auth::check() || (Auth::user()->role_super != 1 && Auth::user()->role_lookup != 1)) {
+        abort(403);
+    }
+
+    $year = request('year') ?? Session::get('year');
+    if (empty($year)) {
+        $yearLookup = \App\Models\Lookups::where('group_id', '4')->first();
+        $year = $yearLookup ? $yearLookup->lookup_name : null;
+    }
+
+    $data = \App\Models\StudentsInfo::where('userUid', $userId)->where('year', $year)->first();
+    if (!$data) {
+        abort(404, 'Student record not found for this year.');
+    }
+
+    $booking = \App\Models\Booking::where('userId', $userId)->where('year', $year)->first();
+    if (!$booking) {
+        abort(404, 'Booking not found for this year.');
+    }
+
+    $propertyData = \App\Models\Property::where('id', $booking->property_data_id)->first();
+    $residenceId = $propertyData ? $propertyData->residence : $booking->property;
+    $residence = \App\Models\Residence::where('id', $residenceId)->first();
+    if (!$residence) {
+        abort(404, 'Residence not found.');
+    }
+
+    if (!$propertyData) {
+        $propertyData = (object) [
+            'residence' => $residence->residence,
+            'bed_code' => $booking->bed_code,
+        ];
+    }
+
+    $leaseAdminFee = 0;
+    $fundingId = \App\Models\Lookups::fundingTypeIdForLabel($data->studentType);
+    if ($fundingId && $year) {
+        $yearLookup = \App\Models\Lookups::where('group_id', '4')->where('lookup_name', $year)->first();
+        $yearData = [];
+        if ($yearLookup) {
+            if (is_array($yearLookup->data)) {
+                $yearData = $yearLookup->data;
+            } elseif (!empty($yearLookup->data)) {
+                $decoded = json_decode($yearLookup->data, true);
+                if (is_array($decoded)) {
+                    $yearData = $decoded;
+                }
+            }
+        }
+        $leaseFees = $yearData['lease_fees'] ?? [];
+        if (array_key_exists($fundingId, $leaseFees)) {
+            $leaseAdminFee = floatval($leaseFees[$fundingId]);
+        }
+    }
+
+    $paymentBooking = \App\Models\BookingPayment::where('bookingId', $booking->id)->first();
+    $signature = public_path('images/lease/test_student_001.png');
+    $owner = public_path('images/lease/juanita-cronje.jpg');
+    $signed_at = 'Test';
+    $agent = new \Jenssegers\Agent\Agent();
+
+    return compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signature', 'owner', 'paymentBooking', 'signed_at', 'agent');
+};
+
+Route::get('/test-lease-sign-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData($userId);
+    return \PDF::loadView('PDF.leaseSign', $vars)->stream('lease-sign-test.pdf');
+});
+
+Route::get('/test-lease-sign-dev-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData($userId);
+    return \PDF::loadView('PDF.leaseSignDev', $vars)->stream('lease-sign-dev-test.pdf');
+});
+
+Route::get('/test-lease-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData($userId);
+    return \PDF::loadView('PDF.leases', $vars)->stream('lease-test.pdf');
+});
+
+Route::get('/test-lease-screen-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData($userId);
+    return \PDF::loadView('PDF.leasesForScreen', $vars)->stream('lease-screen-test.pdf');
+});
 
 Route::group(['middleware' => ['auth']], function () {
     // https://campus-africa-system.test/debug-lease-preview/5602/2026

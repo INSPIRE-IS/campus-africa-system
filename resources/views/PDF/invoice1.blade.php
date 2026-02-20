@@ -116,8 +116,8 @@
                 <tr class="bold text-xsmall"><td>Campus Africa, 49 Jorrissen Street Johannesburg 2001</td></tr>
                 <tr class="text-xsmall"><td>VAT No: 4600283107 & 4370280168</td></tr>
                 <tr class="text-xsmall"><td>Company Registration Number: 2018/357298/07 & IT000290/2017(N)</td></tr>
-                <tr class="text-xsmall"><td>Account Queries : Andrea Fourie</td></tr>
-                <tr class="text-xsmall"><td>Email: andrea@conurban.co.za</td></tr>
+                <tr class="text-xsmall"><td>Account Queries : Owethu Sithole</td></tr>
+                <tr class="text-xsmall"><td>Email: owethu@conurban.co.za</td></tr>
             </table>
         </td>
 
