@@ -3297,9 +3297,10 @@ class HomeController extends Controller
         $generator = new LoginUrl($user);
         $generator->setRedirectUrl('/verify-email-account');
         $url = $generator->generate();
-
+        $this_year = Lookups::where(['group_id' => '4', 'lookup_name' => $request->year])->first();
+        $this_year = $this_year->lookup_name;
         $userUidData = User::where('id', $userInfo->userUid)->first();
-        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $bookingYear . $bookingPrefix . $bookingID, $url, $this_year));
+        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $this_year, $bookingYear . $bookingPrefix . $bookingID, $url));
 
         // $message_replace['bookingRef'] = $bookingYear.$bookingPrefix.$bookingID;
         // $message_replace['name'] = $user->userFirstName;
@@ -4278,7 +4279,7 @@ class HomeController extends Controller
         $emailValid = true;
         $idNumberValid = true;
         $property = null;
-
+        $booking = (object)[];
         if ($email !== "") {
             $user = $emailCheck = User::where('email', $email)->first();
 
@@ -4302,8 +4303,10 @@ class HomeController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $booking = Booking::where('userId', $user->userUid)->orderBy('year', 'desc')->first();
-
+        if (!empty($user)) {
+            $booking = Booking::where('userId', $user->userUid)->orderBy('year', 'desc')->first();
+        }
+        // TODO : check if user is a student or not and see what to return if these are not true
         return ["done", $emailValid, $idNumberValid, $user, $property, $booking, $this_year];
     }
 
@@ -4312,7 +4315,7 @@ class HomeController extends Controller
         $passportNo = $request->passportNo;
         $passportNoValid = true;
         $property = null;
-
+        $booking = (object)[];
         if ($passportNo !== "") {
             $user = $idCheck = StudentsInfo::where('userPassport', $passportNo)->orderby('year', 'desc')->first();
 
@@ -4326,12 +4329,12 @@ class HomeController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
-        $booking = (object)[];
+
 
         if (!empty($user)) {
             $booking = Booking::where('userId', $user->userUid)->orderBy('year', 'desc')->first();
         }
-
+        // TODO : check if user is a student or not and see what to return if these are not true
         return ["done", $passportNoValid, $user, $property, $booking, $this_year];
     }
 
@@ -8553,13 +8556,11 @@ class HomeController extends Controller
     public function save_inline_data(Request $request)
     {
         $oldData = User::find($request->userUid);
-
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
         $session_year = Session::get('year');
         if (!empty($session_year)) {
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-            $this_year = $this_year->lookup_name;
-        } else {
-            $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
         }
         if ($request->task == "inline_edit_address") {
@@ -8701,7 +8702,7 @@ class HomeController extends Controller
                 $url = $generator->generate();
 
                 $userUidData = User::where('id', $request->userUid)->first();
-                $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url, $this_year));
+                $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $this_year, $booking->booking_code, $url));
 
                 // $message_replace['bookingRef'] = $booking->booking_code;
                 // $message_replace['name'] = $userInfo->userFirstName;

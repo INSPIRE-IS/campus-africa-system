@@ -727,22 +727,19 @@ class ApplicationController extends Controller
 
     public function step_5(Request $request)
     {
+        /** @disregard P1009 */
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
         $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
-        DB::beginTransaction();
 
         try {
-
-
             $lookups = Lookups::get();
 
             $this_year = Lookups::where('group_id', '4')->first();
             $this_year = $this_year->lookup_name;
-
-            /** @disregard P1009 */
-            if (!Auth::check()) {
-                return redirect()->route('login');
-            }
 
             /** @disregard P1009 */
             $userId = Auth::user()->id;
@@ -750,12 +747,39 @@ class ApplicationController extends Controller
             // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
             $user = User::where('id',  $userId)->first();
             $userInfo = StudentsInfo::where('userUid',  $userId)->where('year', $this_year)->first();
-            $booking = Booking::where('userId',  $userId)->where('year', $this_year)->first();
+            $booking = null;
 
+            if ($userInfo && $userInfo->bookingId) {
+                $booking = Booking::where('id', $userInfo->bookingId)
+                    ->where('userId', $userId)
+                    ->where('year', $this_year)
+                    ->first();
+            }
+
+            if (!$booking && $userId && $this_year) {
+                $booking = Booking::where('userId', $userId)
+                    ->where('year', $this_year)
+                    ->first();
+            }
+            if (!$booking) {
+                /** @disregard P1009 */
+                Auth::logout();
+                Session::flush();
+
+                return redirect()->route('login')
+                    ->withErrors(['message' => 'No valid booking found. Please log in again or contact support.']);
+            }
 
             if ($booking->cancelled == 1) {
-                throw new Exception('Error, please contact support');
+                /** @disregard P1009 */
+                Auth::logout();
+                Session::flush();
+
+                return redirect()->route('login')
+                    ->withErrors(['message' => 'Your booking is cancelled. Please contact support.']);
             }
+
+            DB::beginTransaction();
 
             // $residences = Property::where('id', $booking->property)
             $proofPayment = UserFiles::where("userUid",  $userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
@@ -1273,7 +1297,7 @@ class ApplicationController extends Controller
         $url = $generator->generate();
 
         $userUidData = User::where('id', $request->userUid)->first();
-        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $booking->booking_code, $url, $this_year));
+        $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $this_year, $booking->booking_code, $url));
 
 
         // $message_replace['bookingRef'] = $booking->booking_code;
