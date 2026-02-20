@@ -273,64 +273,85 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('/sign-temp-lease/{id}', [LeaseController::class, 'view_sign_temp_lease']);
 Route::post('/save-signed-temp-lease/{id}', [LeaseController::class, 'save_signed_temp_lease']);
 
-// PDF test routes (admin-only)
-$buildLeaseTestData = function ($userId) {
+// PDF test routes (admin-only, fake data)
+$buildLeaseTestData = function () {
     if (!Auth::check() || (Auth::user()->role_super != 1 && Auth::user()->role_lookup != 1)) {
         abort(403);
     }
 
-    $year = request('year') ?? Session::get('year');
-    if (empty($year)) {
-        $yearLookup = \App\Models\Lookups::where('group_id', '4')->first();
-        $year = $yearLookup ? $yearLookup->lookup_name : null;
-    }
+    $year = date('Y');
 
-    $data = \App\Models\StudentsInfo::where('userUid', $userId)->where('year', $year)->first();
-    if (!$data) {
-        abort(404, 'Student record not found for this year.');
-    }
+    $data = (object) [
+        'userFirstName' => 'Test',
+        'userLastname' => 'Student',
+        'userId' => '9901010000001',
+        'userPassport' => 'P1234567',
+        'userNationality' => 'South Africa',
+        'studentNo' => 'STU123456',
+        'userEmail' => 'test.student@example.com',
+        'userCellCode' => '+27',
+        'userCell' => '0820000000',
+        'userDob' => '1999-01-01',
+        'userAddress1' => '1 Test Street',
+        'userAddress2' => 'Braamfontein',
+        'userAddressCity' => 'Johannesburg',
+        'userAddressPostal' => '2001',
+        'pAddress1' => '1 Test Street',
+        'pAddress2' => 'Braamfontein',
+        'pAddressCity' => 'Johannesburg',
+        'pAddressPostal' => '2001',
+        'year' => $year,
+        'studentType' => 'Cash / Direct',
+        'kinFirstName' => 'Test',
+        'kinLastName' => 'Guardian',
+        'kinEmail' => 'guardian@example.com',
+        'kinCellCode' => '+27',
+        'kinCellNo' => '0820000001',
+        'nsfas_bursar' => 0,
+        'sponFirstName' => '',
+        'sponLastName' => '',
+        'sponId' => '',
+    ];
 
-    $booking = \App\Models\Booking::where('userId', $userId)->where('year', $year)->first();
-    if (!$booking) {
-        abort(404, 'Booking not found for this year.');
-    }
+    $booking = (object) [
+        'lease_from_date' => '2026-02-01',
+        'lease_from_time' => '12:00',
+        'lease_to_date' => '2026-11-30',
+        'lease_to_time' => '12:00',
+        'booking_code' => 'BOOK-TEST',
+        'bed_code' => 'A-101',
+        'property' => 1,
+        'roomType' => 1,
+        'floor' => '1',
+        'unit' => 'A',
+        'room' => '101',
+        'bed' => '1',
+        'room_rate' => '0',
+        'year' => $year,
+    ];
 
-    $propertyData = \App\Models\Property::where('id', $booking->property_data_id)->first();
-    $residenceId = $propertyData ? $propertyData->residence : $booking->property;
-    $residence = \App\Models\Residence::where('id', $residenceId)->first();
-    if (!$residence) {
-        abort(404, 'Residence not found.');
-    }
+    $propertyData = (object) [
+        'residence' => 'Test Residence',
+        'bed_code' => 'A-101',
+    ];
 
-    if (!$propertyData) {
-        $propertyData = (object) [
-            'residence' => $residence->residence,
-            'bed_code' => $booking->bed_code,
-        ];
-    }
+    $residence = (object) [
+        'residence' => 'Test Residence',
+        'owner' => 'Test Owner (Pty) Ltd',
+        'address' => '1 Test Street, Johannesburg, 2001',
+        'company_reg' => '2026/000000/07',
+        'company_vat' => '4000000000',
+    ];
 
     $leaseAdminFee = 0;
-    $fundingId = \App\Models\Lookups::fundingTypeIdForLabel($data->studentType);
-    if ($fundingId && $year) {
-        $yearLookup = \App\Models\Lookups::where('group_id', '4')->where('lookup_name', $year)->first();
-        $yearData = [];
-        if ($yearLookup) {
-            if (is_array($yearLookup->data)) {
-                $yearData = $yearLookup->data;
-            } elseif (!empty($yearLookup->data)) {
-                $decoded = json_decode($yearLookup->data, true);
-                if (is_array($decoded)) {
-                    $yearData = $decoded;
-                }
-            }
-        }
-        $leaseFees = $yearData['lease_fees'] ?? [];
-        if (array_key_exists($fundingId, $leaseFees)) {
-            $leaseAdminFee = floatval($leaseFees[$fundingId]);
-        }
-    }
-
-    $paymentBooking = \App\Models\BookingPayment::where('bookingId', $booking->id)->first();
+    $paymentBooking = (object) [
+        'monthly_rental' => 5500,
+        'rob_loan_waived' => '0',
+        'loan_admin_fee' => 450,
+        'rob_deposit_waived' => '0',
+        'deposit' => 1000,
+        'rob_b_waived' => '0',
+    ];
     $signature = public_path('images/lease/test_student_001.png');
     $owner = public_path('images/lease/juanita-cronje.jpg');
     $signed_at = 'Test';
@@ -339,23 +360,23 @@ $buildLeaseTestData = function ($userId) {
     return compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signature', 'owner', 'paymentBooking', 'signed_at', 'agent');
 };
 
-Route::get('/test-lease-sign-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
-    $vars = $buildLeaseTestData($userId);
+Route::get('/test-lease-sign-pdf', function () use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData();
     return \PDF::loadView('PDF.leaseSign', $vars)->stream('lease-sign-test.pdf');
 });
 
-Route::get('/test-lease-sign-dev-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
-    $vars = $buildLeaseTestData($userId);
+Route::get('/test-lease-sign-dev-pdf', function () use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData();
     return \PDF::loadView('PDF.leaseSignDev', $vars)->stream('lease-sign-dev-test.pdf');
 });
 
-Route::get('/test-lease-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
-    $vars = $buildLeaseTestData($userId);
+Route::get('/test-lease-pdf', function () use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData();
     return \PDF::loadView('PDF.leases', $vars)->stream('lease-test.pdf');
 });
 
-Route::get('/test-lease-screen-pdf/{userId}', function ($userId) use ($buildLeaseTestData) {
-    $vars = $buildLeaseTestData($userId);
+Route::get('/test-lease-screen-pdf', function () use ($buildLeaseTestData) {
+    $vars = $buildLeaseTestData();
     return \PDF::loadView('PDF.leasesForScreen', $vars)->stream('lease-screen-test.pdf');
 });
 
