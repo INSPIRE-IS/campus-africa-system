@@ -1,6 +1,6 @@
 
     <div class="container mt-5">
-        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+        <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
         <h2 style="text-align:center">TEMPORARY LODGING AGREEMENT</h2>
         <p style="text-align:center; font-size:13px; font-weight:bold;">BETWEEN</p>
         <h4 style="text-align:center;">CONSOLIDATED URBAN MANAGEMENT CORPORATION (PTY) LTD</h4>
@@ -65,7 +65,7 @@
         <div class="page_break"><br/><br/><br/></div>
 
 
-        <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+        <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
 
             <ol style="list-style-type:none; text-laign:left; font-size:14px;">
                 <li><span style="margin-left:-20px;">f. </span><strong>“Swipe Card”</strong> means: a payment mechanism provided to Students of tertiary institutions who receive bursary, loan, sponsorship or related allowances, for the consumption of student necessities, by suppliers, which suppliers for the purposes of this agreement include but are not limited to, ‘NSFAS’, ‘Intellicard’, ‘Eduloan’ and ‘Wizzard’; </li>
@@ -122,7 +122,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+            <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <span style="font-weight:bold; font-size:14px;">3. Payment of Accommodation and Student Meal Fees </span>
 
@@ -182,7 +182,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+            <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
 
                 <li>If the deposit is insufficient to cover the amount required to cover such repairs or remedies as are permitted deductions under this Temporary Lodging Agreement, the Student shall pay on demand such further sum as the Owner reasonably requires in order to cover the amount which the deposit would have otherwise covered. </li>
@@ -240,7 +240,7 @@
                     <div class="page_break"><br/><br/><br/></div>
 
 
-                    <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+                    <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
                     <br/>
 
                     <li>Permit any third party to use the Accommodation, otherwise than explicitly provided for by this Temporary Lodging Agreement. </li>
@@ -299,7 +299,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+            <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
 
             <span style="font-weight:bold; font-size:14px;">9.	Guests of the Student </span>
@@ -351,7 +351,7 @@
                     <div class="page_break"><br/><br/><br/></div>
 
 
-                    <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+                    <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
                     <br/>
                     <li>have a common law right to retain the Student’s movables to ensure payment of his or her Accommodation Fees, and </li>
                     <br/>
@@ -429,7 +429,7 @@
                     <div class="page_break"><br/><br/><br/></div>
 
 
-                    <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+                    <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
                     <br/>
                     <li>delivered by hand to a responsible person during ordinary business hours at the physical address chosen as its domicilium shall be deemed to have been received on the day of delivery; or </li>
                     <br/>
@@ -491,7 +491,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+            <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <table style="width:100%; border:1px solid #000;">
                 <tr>
@@ -579,7 +579,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+            <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/><br/>
             <span style="font-weight:bold; font-size:14px;"> ANNEXURE A: Inventory of contents of Room – UNIT: {{$propertyData->residence}}, {{$propertyData->bed_code}}, {{$data->userFirstName}}, {{$data->userLastname}}, {{$data->year}}</span>
             <br/><br/>
@@ -737,7 +737,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+            <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <span style="font-weight:bold; font-size:14px;">ANNEXURE B</span>
             <br/><br/>
@@ -853,7 +853,7 @@
             <div class="page_break"><br/><br/><br/></div>
 
 
-            <img src="{{ public_path('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
+            <img src="{{ asset('images/logo/Site_Logo.svg') }}" alt="Logo" style="width:70px; margin-left:<?php if(!$agent->isMobile()){ echo '47';}else{echo '35';}?>%;">
             <br/>
             <br/>
             <span style="font-weight:bold; font-size:14px;">ANNEXURE C: Acknowledgement of obligation for accommodation payments</span>
@@ -918,4 +918,5 @@
 
 
     </div>
+
 
