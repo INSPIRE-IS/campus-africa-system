@@ -999,7 +999,7 @@
         <br />
         <span style="font-size:14px;">Sign (Lodger) <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" class="signature" /></span>
         <br /><br /><br />
-        <span style="font-size:14px;">Sign (Owner) <img src="{{public_path($owner)}}" width="160" /></span>
+        <span style="font-size:14px;">Sign (Owner) <img src="{{public_path($owner)}}" class="signature" alt="Juanita Cronje" /></span>
             <div style="text-align:right; font-size:14px;">
                 <img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" class="signature" />
             </div>
@@ -1086,7 +1086,7 @@
         <br />
         <p style="font-weight:bold; font-size:14px;"><img src="<?php echo "https://$_SERVER[HTTP_HOST]"; ?>/<?php echo $signature; ?>" class="signature" /><br />Student</p>
         <!-- <br/> -->
-        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Juanita Cronje" width="160" />
+        <p style="font-weight:bold; font-size:14px;"><img src="{{public_path($owner)}}" alt="Juanita Cronje" class="signature" />
                 <br class="special" />For and on behalf of<br class="special" />Owner</p>
         <br />
         <hr />
