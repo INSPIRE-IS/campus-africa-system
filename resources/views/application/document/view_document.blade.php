@@ -1306,8 +1306,9 @@
                         $("#"+fileForApproval+"Banner").empty().append(uploadbtn);
 
                         var pDoc = document.getElementById("MDAStatus");
-                        parentDiv = pDoc.parentNode;
-                        parentDiv.style.display = 'none';
+                        if (pDoc && pDoc.parentNode) {
+                            pDoc.parentNode.style.display = 'none';
+                        }
 
                         bookingTypeDetails();
                         resendLease();
