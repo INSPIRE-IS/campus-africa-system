@@ -293,7 +293,7 @@
                 the amount of <b>R
                     @if ($paymentBooking->rob_loan_waived == '2') 0
                     @else
-                    @if ($data->studentType == 'Cash / Direct' || ($data->studentType == 'Bursary' && $data->nsfas_bursar !== 1))
+                    @if ($data->studentType == 'Cash / Direct' || $data->studentType == 'NRF' || ($data->studentType == 'Bursary' && $data->nsfas_bursar !== 1))
                     {{ $paymentBooking->loan_admin_fee }}
                     @else
                     0
@@ -308,7 +308,7 @@
         <ol type="a" style="text-align:left; font-size:14px;">
             <li>The Student agrees to deposit with the Owner the amount of <b>R @if ($paymentBooking->rob_deposit_waived == '2') 0
                     @else
-                    @if ($data->studentType == 'Cash / Direct' || ($data->studentType == 'Bursary' && $data->nsfas_bursar !== 1))
+                    @if ($data->studentType == 'Cash / Direct' || $data->studentType == 'NRF' || ($data->studentType == 'Bursary' && $data->nsfas_bursar !== 1))
                     {{ $paymentBooking->deposit }}
                     @else
                     0
