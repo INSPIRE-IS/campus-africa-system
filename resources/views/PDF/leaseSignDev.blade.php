@@ -291,13 +291,10 @@
         <ol type="a" style=" text-align:left; font-size:14px;">
             <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in
                 the amount of <b>R
-                    @if ($paymentBooking->rob_loan_waived == '2') 0
-                    @else
-                    @if ($data->studentType == 'Cash / Direct' || $data->studentType == 'NRF' || ($data->studentType == 'Bursary' && $data->nsfas_bursar !== 1))
-                    {{ $paymentBooking->loan_admin_fee }}
-                    @else
+                    @if ($paymentBooking->rob_loan_waived == '2')
                     0
-                    @endif
+                    @else
+                    {{ $paymentBooking->loan_admin_fee }}
                     @endif
                 </b>. </li>
             <br />
@@ -306,13 +303,10 @@
         <span style="font-weight:bold; font-size:14px;">5. The Security Deposit </span>
 
         <ol type="a" style="text-align:left; font-size:14px;">
-            <li>The Student agrees to deposit with the Owner the amount of <b>R @if ($paymentBooking->rob_deposit_waived == '2') 0
-                    @else
-                    @if ($data->studentType == 'Cash / Direct' || $data->studentType == 'NRF' || ($data->studentType == 'Bursary' && $data->nsfas_bursar !== 1))
-                    {{ $paymentBooking->deposit }}
-                    @else
+            <li>The Student agrees to deposit with the Owner the amount of <b>R @if ($paymentBooking->rob_deposit_waived == '2')
                     0
-                    @endif
+                    @else
+                    {{ $paymentBooking->deposit }}
                     @endif </b>month fee as a security deposit, payable to the Owner subsequent to
                 the signature date hereto but prior to the commencement of the accommodation period, which security
                 deposit shall be held by the Owner against any breach or non-performance of this agreement or any part
