@@ -46,9 +46,6 @@
 - When investigating application status for a student, the admin suggested checking whether the user has linked files; current code paths may loop through files per user, which is heavy and not necessarily useful as-is. Consider summarizing counts or aggregations instead of per-file loops.
 - The `booking-summary` view/function reports per-property totals (beds, bookings allocated, waiting list, booking %). Keep this in mind for future analysis; we can review this function together when ready.
 - `booking_summary` logic (BookingReportController): counts only bookings for the selected year where `booking.cancelled != '1'`, StudentsInfo exists for `userUid`+`year`, and `StudentsInfo.rob_60_cancelled != 1`. Allocation rules: allocated if `rob_10_fee == '2'` and `rob_40_bed == '2'`; waitlisted if `rob_10_fee == '2'` and `rob_40_bed != '2'`. Room types exclude "Building Manager"; properties exclude `status != null` and (for year >= 2026) residence IDs 3,4,7.
-- Admin “Add Document” (app profile) is gated by: allowed residence, `role_upload_docs == 1`, `rob_60_cancelled == 0`, and either `rob_50_approve == 0` or (`role_modify_approved == 1` and `rob_50_approve == 2`). See `resources/views/admin/app_profile.blade.php`.
-- Lease templates show admin fee/deposit as 0 unless `studentType` is `Cash / Direct` or `Bursary` with `nsfas_bursar != 1` (or waived flags). This means `NRF` currently falls into the “0” path.
-- Staging uses new funding-type fee/deposit logic (via lookup `deposit_applies` + lease fee config) in the application/admin flows, but lease PDFs still use the older studentType branching. Live fix should be the temporary studentType adjustment; full alignment with funding rules to follow when staging changes are approved for live.
 - Temporary: set booking fee to 0 for sharing rooms in `ApplicationController` around line 780.
 - ROB rules note: if an `other*` document is created then later cancelled/removed, ensure `rob_45_other` is reset (otherwise approvals can be blocked even when all other ROB steps are approved). Example seen: all `rob_*` steps approved but `rob_45_other` stuck at `1`.
 - Temp lease window for showing the generate button is computed in `HomeController::check_user_status()` using `Lookups::TEMP_LEASE_WINDOW` (Jan 1 through end-of-Feb when the end day is configured as Feb 28, to handle leap years).
@@ -59,5 +56,9 @@
 - Temp lease approve/reject in the document modal now updates `tempMoveIn` UI immediately (status/banner + close modal) to match `moveIn` behavior.
 - Reports view: sections for All Documents / Institution & Funding Docs / Compatibility are gated by `role_all_apps_report` + `role_lookup` (not `role_manage_users`).
 - Step 5 booking guardrails: `ApplicationController::step_5()` now checks auth before starting a DB transaction, loads booking via `StudentsInfo.bookingId` with fallback to user+year, and logs out + redirects to login if the booking is missing or cancelled.
+- Admin "Add Document" (app profile) is gated by: allowed residence, `role_upload_docs == 1`, `rob_60_cancelled == 0`, and either `rob_50_approve == 0` or (`role_modify_approved == 1` and `rob_50_approve == 2`). See `resources/views/admin/app_profile.blade.php`.
+- Lease templates show admin fee/deposit as 0 unless `studentType` is `Cash / Direct` or `Bursary` with `nsfas_bursar != 1` (or waived flags). This means `NRF` currently falls into the "0" path.
+- Staging uses new funding-type fee/deposit logic (via lookup `deposit_applies` + lease fee config) in the application/admin flows, but lease PDFs still use the older studentType branching. Live fix should be the temporary studentType adjustment; full alignment with funding rules to follow when staging changes are approved for live.
 ## Project TODOs
 - See `TODOS.md`
+
