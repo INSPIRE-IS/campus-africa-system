@@ -599,7 +599,7 @@
                                 </h2>
                             </div>
                             <div style="flex-grow:2">
-                                @if (Auth::user()->role_manage_users == 1)
+                                @if (Auth::user()->role_sys_admin == 1)
                                     <button type="button" id="openPaymentModal" class="profileSubmit"
                                         style="padding: 10px;margin-top: 30px;background-color: #ffbb3c;border: none;color: #fff;border-radius: 10px;">
                                         Update Rates

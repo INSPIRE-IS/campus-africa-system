@@ -120,6 +120,7 @@ class User extends Authenticatable
         'role_update_booking_fee',
         'role_lookup',
         'role_comment',
+        'role_sys_admin',
         'user_role_name',
         'nsfas_bursar',
         'role_cancel_lease',
