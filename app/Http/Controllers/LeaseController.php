@@ -22,6 +22,7 @@ use App\Models\RoomTypes;
 use DateTime;
 use App\Models\ActionList;
 use App\Models\BookingPayment;
+use App\Services\LeaseContactService;
 use App\Jobs\SendResendLeaseMail;
 use App\Jobs\SendResendTempLeaseMail;
 use Illuminate\Support\Facades\Log;
@@ -220,11 +221,12 @@ class LeaseController extends Controller
 
 
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+        $leaseContact = LeaseContactService::resolve($data);
         // check environment for dev or prod
         if (env('APP_ENV') == 'local') {
-            $pdf = PDF::loadView('PDF.leaseSignDev', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
+            $pdf = PDF::loadView('PDF.leaseSignDev', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking', 'leaseContact'));
         } else {
-            $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
+            $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking', 'leaseContact'));
         }
         // share data to view
 
@@ -887,6 +889,7 @@ class LeaseController extends Controller
                 // $owner     = pdfImagePath($owner);
 
                 $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+                $leaseContact = LeaseContactService::resolve($data);
 
                 // generate PDF
                 $baseUrl = config('app.url') ?? 'https://campusafrica.co.za';
@@ -905,7 +908,8 @@ class LeaseController extends Controller
                         'parent',
                         'signature',
                         'owner',
-                        'paymentBooking'
+                        'paymentBooking',
+                        'leaseContact'
                     ));
                 } else {
                     // $pdf = PDF::loadView('PDF.leaseSign', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signed_at', 'signature', 'owner', 'paymentBooking'));
@@ -921,7 +925,8 @@ class LeaseController extends Controller
                         'parent',
                         'signature',
                         'owner',
-                        'paymentBooking'
+                        'paymentBooking',
+                        'leaseContact'
                     ));
                 }
                 $bookingYear = substr($booking->year, -2);
@@ -1001,6 +1006,7 @@ class LeaseController extends Controller
                 // $this->info("Signature URL: {$signature}");
                 // $owner     = pdfImagePath($owner);
                 $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+                $leaseContact = LeaseContactService::resolve($data);
 
                 // generate PDF
                 $baseUrl = config('app.url') ?? 'https://campusafrica.co.za';
@@ -1015,6 +1021,7 @@ class LeaseController extends Controller
                         'signature',
                         'owner',
                         'paymentBooking',
+                        'leaseContact',
                         'baseUrl'
                     ));
                 } else {
@@ -1028,6 +1035,7 @@ class LeaseController extends Controller
                         'signature',
                         'owner',
                         'paymentBooking',
+                        'leaseContact',
                         'baseUrl'
                     ));
                 }
@@ -1068,6 +1076,7 @@ class LeaseController extends Controller
                 'signature',
                 'owner',
                 'paymentBooking',
+                'leaseContact',
                 'baseUrl'
             ));
         } catch (\Exception $e) {

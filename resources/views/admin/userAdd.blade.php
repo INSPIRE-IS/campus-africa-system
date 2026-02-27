@@ -248,6 +248,10 @@
                     <label for="role_manage_users" style="width:500px">Manage Users</label>
                 </li>
                 <li style="display:inline-flex">
+                    <input type="checkbox" id="role_sys_admin" name="role_sys_admin" value="1">
+                    <label for="role_sys_admin" style="width:500px">System Admin (Update Rates)</label>
+                </li>
+                <li style="display:inline-flex">
                     <input type="checkbox" id="role_lookup" name="role_lookup" value="1">
                     <label for="role_lookup" style="width:500px">Manage Lookups & Emails</label>
                 </li>

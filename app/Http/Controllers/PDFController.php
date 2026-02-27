@@ -18,6 +18,7 @@ use Mail;
 
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
+use App\Services\LeaseContactService;
 use App\Jobs\SendResendLeaseMail;
 use App\Jobs\SendResendTempLeaseMail;
 use Illuminate\Support\Facades\Log;
@@ -122,9 +123,37 @@ class PDFController extends Controller
       // $data = User::where('id', $studentId)->first();
       $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
       //dd($studentId);
+      if (!$data) {
+        return response()->json([
+          'message' => 'Cannot generate lease. Student info not found.',
+        ], 404);
+      }
+      $missingFields = LeaseContactService::missingFields($data);
+      if (!empty($missingFields)) {
+        return response()->json([
+          'message' => 'Kin detail is missing required fields. Please ensure these are available to continue. Missing: ' . implode(', ', $missingFields) . '.',
+          'missing' => $missingFields,
+        ], 422);
+      }
+
       $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
+      if (!$booking) {
+        return response()->json([
+          'message' => 'Cannot generate lease. Booking not found.',
+        ], 404);
+      }
       $propertyData = Property::where('id', $booking->property_data_id)->first();
+      if (!$propertyData) {
+        return response()->json([
+          'message' => 'Cannot generate lease. Booking property data not found.',
+        ], 422);
+      }
       $residence = Residence::where('id', $propertyData->residence)->first();
+      if (!$residence) {
+        return response()->json([
+          'message' => 'Cannot generate lease. Residence not found.',
+        ], 422);
+      }
       $leaseAdminFee = 0;
       $fundingId = Lookups::fundingTypeIdForLabel($data->studentType);
       if ($fundingId) {
@@ -150,9 +179,10 @@ class PDFController extends Controller
 
       $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
+      $leaseContact = LeaseContactService::resolve($data);
+
       // share data to view
-      /** @disregard P1009 */
-      $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking'));
+      $pdf = PDF::loadView('PDF.leases', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking', 'leaseContact'));
 
       // download PDF file with download method
       // return $pdf->download('lease.pdf');
