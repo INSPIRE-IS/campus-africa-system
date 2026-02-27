@@ -85,7 +85,9 @@ class LeaseController extends Controller
             $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
             // === Determine role (student or parent) ===
             $role = $lease_link->role ?? 'student';  // default for backwards compatibility
-
+            //TODO - update to use new service
+            // $leaseContact = LeaseContactService::resolve($data);
+            // $pdf = view('PDF.leasesForScreen', compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'owner', 'paymentBooking', 'leaseContact'));
             // Student signature (if already signed)
             $studentSignature = null;
             if ($role === 'parent') {
