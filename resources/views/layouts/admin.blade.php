@@ -1,3 +1,16 @@
+@php
+    $authUser = Auth::user();
+    if ($authUser) {
+        $isDeleted = method_exists($authUser, 'trashed') ? $authUser->trashed() : !empty($authUser->deleted_at);
+        if ($isDeleted) {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            header('Location: /login');
+            exit;
+        }
+    }
+@endphp
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
