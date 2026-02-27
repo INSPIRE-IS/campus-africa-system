@@ -2481,6 +2481,9 @@
 
                             window.location.reload();
                         },
+                        error: function(xhr) {
+                            showLeaseError(xhr, 'Lease generation blocked', 'Generate Lease', $("#generateLease"));
+                        },
                     });
 
                 }
@@ -3306,6 +3309,9 @@
                                         var pDoc = document.getElementById("MDAStatus");
                                         parentDiv = pDoc.parentNode;
                                         parentDiv.style.display = 'none';
+                                    },
+                                    error: function(xhr) {
+                                        showLeaseError(xhr, 'Lease generation blocked');
                                     },
                                 });
                             }
@@ -4693,7 +4699,39 @@
                     success: function(data) {
                         $("#myBtn_resend_lease").html('RESEND LEASE');
                     },
+                    error: function(xhr) {
+                        showLeaseError(xhr, 'Lease resend failed', 'RESEND LEASE', $("#myBtn_resend_lease"));
+                    },
                 });
+            }
+
+            function showLeaseError(xhr, title, fallbackLabel, button) {
+                let message = 'Request failed.';
+                if (xhr) {
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    } else if (xhr.responseText) {
+                        try {
+                            const parsed = JSON.parse(xhr.responseText);
+                            if (parsed && parsed.message) {
+                                message = parsed.message;
+                            }
+                        } catch (e) {
+                            message = xhr.responseText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                        }
+                    }
+                    if (xhr.status) {
+                        message = message ? `${message} (HTTP ${xhr.status})` : `HTTP ${xhr.status}`;
+                    }
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: title,
+                    text: message,
+                });
+                if (button && fallbackLabel) {
+                    button.html(fallbackLabel);
+                }
             }
 
             $(document).off('click.regenLease').on('click.regenLease', '#myBtn_regen_lease', function(e) {
@@ -4725,6 +4763,9 @@
                         // }      
                         $(btn).html('REGEN LEASE');
                     },
+                    error: function(xhr) {
+                        showLeaseError(xhr, 'Lease generation blocked', 'REGEN LEASE', btn);
+                    },
                 });
 
                 e.preventDefault();
@@ -4742,6 +4783,9 @@
 
                     success: function(data) {
                         $("#myBtn_resend_temp_lease").html('RESEND TEMP LEASE');
+                    },
+                    error: function(xhr) {
+                        showLeaseError(xhr, 'Temp lease resend failed', 'RESEND TEMP LEASE', $("#myBtn_resend_temp_lease"));
                     },
                 });
             }
@@ -4776,6 +4820,9 @@
                         $("#tempMoveInStatus").empty().append('<div class="button rejected"></div>');
                         // }      
                         $(btn).html('REGEN TEMP LEASE');
+                    },
+                    error: function(xhr) {
+                        showLeaseError(xhr, 'Temp lease generation failed', 'REGEN TEMP LEASE', btn);
                     },
                 });
 

@@ -43,7 +43,7 @@
         .page_break {
             page-break-before: always;
         }
-    </style>
+</style>
 </head>
 <body>
     <div class="container mt-5">
@@ -642,11 +642,11 @@
                 <br />
                 <li>Next of Kin of Student:
                     <br />
-                    <span style="font-weight:bold">Full Name:</span> {{ $data->kinFirstName }} {{ $data->kinLastName }}
+                    <span style="font-weight:bold">Full Name:</span> {{ $leaseContact['kin_name'] }}
                     <br class="special" />
-                    <span style="font-weight:bold">Email:</span> {{ $data->userEmail }}
+                    <span style="font-weight:bold">Email:</span> {{ $leaseContact['kin_email'] }}
                     <br class="special" />
-                    <span style="font-weight:bold">Cell Number:</span> {{ $data->kinCellCode }} {{ $data->kinCellNo }}
+                    <span style="font-weight:bold">Cell Number:</span> {{ $leaseContact['kin_cell'] }}
                 </li>
             </ol>
             <br />
@@ -1098,13 +1098,9 @@
         <span style="font-weight:bold; font-size:14px;">Acknowledgement by parent/guardian of the abovementioned
             student:</span>
         <br />
-        <p style="font-weight:bold; font-size:14px;">I @if ($data->sponFirstName !== '')
-            {{ $data->sponFirstName }} {{ $data->sponLastName }}
-            @else
-            ________________________
-            @endif With
+        <p style="font-weight:bold; font-size:14px;">I {{ $leaseContact['ack_name'] }} With
             <br />
-            ID {{ $data->sponId }}
+            ID {{ $leaseContact['ack_id'] }}
             <br />
             Hereby acknowledge that I am jointly and severally liable for any rental/accommodation payments due on
             demand to the Owner for accommodation supplied to the student mentioned in this lease at the student

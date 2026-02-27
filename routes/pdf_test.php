@@ -4,10 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use App\Services\LeaseContactService;
 
 // PDF test routes (admin-only, fake data)
 $ensureTestRole = function () {
-    if (!Auth::check() || (Auth::user()->role_super != 1 && Auth::user()->role_lookup != 1)) {
+    if (!Auth::check() || (Auth::user()->role_super != 1 && Auth::user()->role_sys_admin != 1)) {
         abort(403);
     }
 };
@@ -93,7 +94,9 @@ $buildLeaseTestData = function () use ($ensureTestRole) {
     $signed_at = 'Test';
     $agent = new \Jenssegers\Agent\Agent();
 
-    return compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signature', 'owner', 'paymentBooking', 'signed_at', 'agent');
+    $leaseContact = LeaseContactService::resolve($data);
+
+    return compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signature', 'owner', 'paymentBooking', 'signed_at', 'agent', 'leaseContact');
 };
 
 Route::get('/test-lease-sign-pdf', function () use ($buildLeaseTestData) {
