@@ -106,7 +106,6 @@
                 <option value="1" <?php if(!empty($propertyData) && $propertyData->status == '1'){echo "selected";}?>>Inactive</option>
             </select>
         </div>
-
         <div class="form-field" style="height:150px !important;">
             <br/>
             <hr/>
@@ -119,6 +118,23 @@
             </ul>
 
         </div>
+        <div class="form-field" style="height:150px !important;">
+            <br/>
+            <hr/>
+            <br/>
+            <label>Active Date</label>
+            <input type="date" name="active_date" id="active_date" value="<?php if(!empty($propertyData) && $propertyData->active_date){echo $propertyData->active_date;}?>">
+        </div>
+
+        <div class="form-field" style="height:150px !important;">
+            <br/>
+            <hr/>
+            <br/>
+            <label>Inactive Date</label>
+            <input type="date" name="inactive_date" id="inactive_date" value="<?php if(!empty($propertyData) && $propertyData->inactive_date){echo $propertyData->inactive_date;}?>">
+        </div>
+
+
 
 
         <div class="form-field">

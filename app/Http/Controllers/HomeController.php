@@ -5980,6 +5980,8 @@ class HomeController extends Controller
             "status" => $request->status == 0 ? null : $request->status,
             "female" => $request->female == 0 ? null : $request->female,
             "male" => $request->male == 0 ? null : $request->male,
+            "active_date" => $request->active_date ?: null,
+            "inactive_date" => $request->inactive_date ?: null,
         ];
 
         if ($request->nsfas_booking_rate == null) {
