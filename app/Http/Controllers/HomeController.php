@@ -2219,6 +2219,65 @@ class HomeController extends Controller
             $regen = "1";
         }
 
+        $newData = [
+            'userFirstName|First Name' => ucwords(strtolower($request->firstName)),
+            'userLastname|Last Name' => ucwords(strtolower($request->lastName)),
+            'userEmail|Email' => $request->email,
+            'role_create_app|Create App' => $request->create_app,
+            'role_edit_app|Edit App' => $request->edit_app,
+            'role_upload_docs|Upload Docs' => $request->upload_docs,
+            'role_approve_docs|Approve Docs' => $request->approve_docs,
+            'role_delete_booking|Delete Booking' => $request->delete_booking,
+            'role_delete_uploaded|Delete Uploaded' => $request->delete_uploaded,
+            'role_change_date|Change Date' => $request->role_change_date,
+            'role_change_bed|Change Bed' => $request->role_change_bed,
+            'role_manage_users|Manage Users' => $request->role_manage_users,
+            'role_sys_admin|System Admin' => $request->role_sys_admin,
+            'role_nsfas_approval_upload|NSFAS Approval Upload' => $request->role_nsfas_approval_upload,
+            'role_cancel_booking|Cancel Booking' => $request->role_cancel_booking,
+            'role_update_booking_fee|Update Booking Fee' => $request->role_update_booking_fee,
+            'role_lookup|Lookup' => $request->role_lookup,
+            'role_comment|Comment' => $request->role_comment,
+            'user_role_name|Role Name' => $request->user_role_name,
+            'role_cancel_lease|Cancel Lease' => $request->role_cancel_lease,
+            'role_lease_regen|Lease Regen' => $regen,
+            'role_modify_approved|Modify Approved' => $request->role_modify_approved !== '1' ? 0 : 1,
+            'role_non_funding|Non Funding' => $request->role_non_funding !== '1' ? 0 : 1,
+            'role_other_reject_doc|Other Reject Doc' => $request->role_other_reject_doc !== '1' ? 0 : 1,
+            'role_funding|Funding' => $request->role_funding !== '1' ? 0 : 1,
+            'role_app_lease|App Lease' => $request->role_app_lease !== '1' ? 0 : 1,
+            'template|Template' => $request->template,
+            'role_change_student_type|Change Student Type' => $request->role_change_student_type,
+            'role_view_booking_summary|View Booking Summary' => $request->role_view_booking_summary,
+            'role_toggle_online_booking|Toggle Online Booking' => $request->role_toggle_online_booking,
+            'role_change_building|Change Building' => $request->role_change_building,
+            'role_waive_fee|Waive Fee' => $request->role_waive_fee,
+            'role_bm_report|BM Report' => $request->role_bm_report,
+            'role_mda_report|MDA Report' => $request->role_mda_report,
+            'role_all_apps_report|All Apps Report' => $request->role_all_apps_report,
+            'role_allow_generate_invoice|Allow Generate Invoice' => $request->role_allow_generate_invoice !== '1' ? 0 : 1,
+        ];
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        foreach ($newData as $key => $new) {
+            $info = explode("|", $key);
+            $field = $info[0];
+            $label = $info[1];
+            $old = $oldUser->$field ?? null;
+
+            if ((string) $old !== (string) $new) {
+                ActionList::create([
+                    "userUid" => $request->userUid,
+                    "action" => "System User Updated " . $label . " From " . $old . " to " . $new,
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
+                ]);
+            }
+        }
+
         User::where('id', $request->userUid)->update([
             "userFirstName" => ucwords(strtolower($request->firstName)),
             "userLastname" => ucwords(strtolower($request->lastName)),
@@ -3415,6 +3474,17 @@ class HomeController extends Controller
             "role_mda_report" => $request->role_mda_report,
             "role_all_apps_report" => $request->role_all_apps_report,
             "role_allow_generate_invoice" => $request->role_allow_generate_invoice,
+        ]);
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = $this_year->lookup_name;
+        ActionList::create([
+            "userUid" => $newUser->id,
+            "action" => "System User Created",
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
         ]);
 
         $allAccess = explode(",", $request->propertyAccess);
