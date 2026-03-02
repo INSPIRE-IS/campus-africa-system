@@ -2141,12 +2141,16 @@ class HomeController extends Controller
             'email',
             'user_role_name',
         )
-            ->where("userRole", "!=", "0")
-            ->where(function ($query) {
+            ->where("userRole", "!=", "0");
+
+        if (!Auth::user()->role_super) {
+            $systemUsers = $systemUsers->where(function ($query) {
                 $query->whereNull('role_super')
                     ->orWhere('role_super', '!=', 1);
-            })
-            ->get();
+            });
+        }
+
+        $systemUsers = $systemUsers->get();
 
         $students = User::select(
             'id',
