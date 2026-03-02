@@ -56,11 +56,12 @@ class DownloadAllDocs extends Command
         // $users = User::where("year", $year)
         //     ->get();
         $zipFileName = "all_user_files.zip";
+        $zipPath = storage_path("app/public/" . $zipFileName);
 
         $password = "12345678";
 
         $zip = new ZipArchive();
-        $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         $userZipFilesToDelete = []; // Array to store user ZIP file names
 
@@ -87,6 +88,7 @@ class DownloadAllDocs extends Command
 
                 $files = UserFiles::where("userUid", $u->id)->where("year", $year)->get();
                 $userZipFileName = $code . ".zip";
+                $userZipPath = storage_path("app/public/" . $userZipFileName);
 
                 $filesToAdd = $files->filter(function ($file) {
                     $filePath = storage_path("app/public/" . $file->fileUrl);
@@ -101,10 +103,10 @@ class DownloadAllDocs extends Command
                     $userZip = new ZipArchive();
                     if (
                         $userZip->open(
-                            $userZipFileName,
-                            ZipArchive::CREATE | ZipArchive::OVERWRITE
-                        ) === true
-                    ) {
+                        $userZipPath,
+                        ZipArchive::CREATE | ZipArchive::OVERWRITE
+                    ) === true
+                ) {
                         foreach ($filesToAdd as $file) {
                             $filePath = storage_path("app/public/" . $file->fileUrl);
                             $fileNameInZip = basename($filePath);
@@ -113,8 +115,8 @@ class DownloadAllDocs extends Command
                         $userZip->close();
 
                         // Add the user ZIP into the combined ZIP
-                        $zip->addFile($userZipFileName, $userZipFileName);
-                        $userZipFilesToDelete[] = $userZipFileName; // Add to the list for deletion in next iteration
+                        $zip->addFile($userZipPath, $userZipFileName);
+                        $userZipFilesToDelete[] = $userZipPath; // Add to the list for deletion in next iteration
                     } else {
                         $debug == 1 && dump("Error creating user ZIP: " . $userZip->getStatusString());
                     }
@@ -141,11 +143,7 @@ class DownloadAllDocs extends Command
             throw $e;
         }
 
-        $sourcePath = $zipFileName;
-        $destinationPath = public_path($zipFileName); // Path in the public directory
-
-        // Move the file using rename()
-        if (rename($sourcePath, $destinationPath)) {
+        if (file_exists($zipPath)) {
             $debug == 1 && dump(
                 "Download all user files: <a href='/storage/" .
                     $zipFileName .
@@ -154,7 +152,7 @@ class DownloadAllDocs extends Command
                     "</a><br>"
             );
         } else {
-            $debug == 1 && dump("Error moving ZIP file to public directory."); // Handle potential errors
+            $debug == 1 && dump("Error creating ZIP file.");
         }
 
         $debug == 1 && dump("Done");
@@ -170,9 +168,11 @@ class DownloadAllDocs extends Command
         $email = $this->argument('email');
 
         // Send email without template
-        \Mail::raw('Zip file created - https://apply.campusafrica.co.za/all_user_files.zip', function ($message) use ($email) {
-            $message->to($email)
-                ->subject('Test Email');
-        });
+        if (file_exists($zipPath)) {
+            \Mail::raw('Zip file created - https://apply.campusafrica.co.za/storage/all_user_files.zip', function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('Test Email');
+            });
+        }
     }
 }
