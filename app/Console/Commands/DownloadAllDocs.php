@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\UserFiles;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class DownloadAllDocs extends Command
@@ -61,9 +62,27 @@ class DownloadAllDocs extends Command
         $password = "12345678";
 
         $zip = new ZipArchive();
-        $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zipOpenResult = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        if ($zipOpenResult !== true) {
+            Log::error('DownloadAllDocs: Failed to open main zip', [
+                'zipPath' => $zipPath,
+                'zipStatus' => $zipOpenResult,
+                'year' => $year,
+                'prop' => $prop,
+                'lease_filter' => $lease_filter,
+            ]);
+
+            $email = $this->argument('email');
+            \Mail::raw('Download failed: could not create the ZIP file. Please try again or contact support.', function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('Download failed');
+            });
+
+            return 1;
+        }
 
         $userZipFilesToDelete = []; // Array to store user ZIP file names
+        $filesAdded = 0;
 
         foreach ($bookings as $booking) {
             $u = User::find($booking->userId);
@@ -117,8 +136,17 @@ class DownloadAllDocs extends Command
                         // Add the user ZIP into the combined ZIP
                         $zip->addFile($userZipPath, $userZipFileName);
                         $userZipFilesToDelete[] = $userZipPath; // Add to the list for deletion in next iteration
+                        $filesAdded++;
                     } else {
                         $debug == 1 && dump("Error creating user ZIP: " . $userZip->getStatusString());
+                        Log::warning('DownloadAllDocs: Failed to create user zip', [
+                            'userZipPath' => $userZipPath,
+                            'userZipStatus' => $userZip->getStatusString(),
+                            'userId' => $u->id ?? null,
+                            'year' => $year,
+                            'prop' => $prop,
+                            'lease_filter' => $lease_filter,
+                        ]);
                     }
                 } else {
                     $debug == 1 && dump("User " . $u->id . " has no files to add.");
@@ -143,7 +171,7 @@ class DownloadAllDocs extends Command
             throw $e;
         }
 
-        if (file_exists($zipPath)) {
+        if (file_exists($zipPath) && $filesAdded > 0) {
             $debug == 1 && dump(
                 "Download all user files: <a href='/storage/" .
                     $zipFileName .
@@ -153,6 +181,13 @@ class DownloadAllDocs extends Command
             );
         } else {
             $debug == 1 && dump("Error creating ZIP file.");
+            Log::warning('DownloadAllDocs: No files added to zip or zip missing', [
+                'zipPath' => $zipPath,
+                'filesAdded' => $filesAdded,
+                'year' => $year,
+                'prop' => $prop,
+                'lease_filter' => $lease_filter,
+            ]);
         }
 
         $debug == 1 && dump("Done");
@@ -168,10 +203,15 @@ class DownloadAllDocs extends Command
         $email = $this->argument('email');
 
         // Send email without template
-        if (file_exists($zipPath)) {
+        if (file_exists($zipPath) && $filesAdded > 0) {
             \Mail::raw('Zip file created - https://apply.campusafrica.co.za/storage/all_user_files.zip', function ($message) use ($email) {
                 $message->to($email)
                     ->subject('Test Email');
+            });
+        } else {
+            \Mail::raw('Download failed: no files were found for the selected criteria. Please adjust filters and try again.', function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('Download failed');
             });
         }
     }
