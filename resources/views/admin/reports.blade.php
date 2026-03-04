@@ -237,16 +237,14 @@
             <h2>All Documents</h2>
             <br />
             <select id="studYear2" name="studYear2">
-                <option value="All">All Years</option>
                 @foreach ($appYears as $year)
                     <option value="{{ $year->year }}">{{ $year->year }}</option>
                 @endforeach
             </select>
 
             <select id="propdd2" name="propdd2">
-                <option value="All">All Properties</option>
                 @foreach ($propertyList as $prop)
-                    <option value="{{ $prop->id }}">{{ $prop->residence }}</option>
+                    <option value="{{ $prop->id }}" data-active-date="{{ $prop->active_date }}" data-inactive-date="{{ $prop->inactive_date }}">{{ $prop->residence }}</option>
                 @endforeach
             </select>
 
@@ -270,16 +268,14 @@
             <br />
 
             <select id="studYear3" name="studYear3">
-                <option value="All">All Years</option>
                 @foreach ($appYears as $year)
                     <option value="{{ $year->year }}">{{ $year->year }}</option>
                 @endforeach
             </select>
 
             <select id="prop3" name="prop3">
-                <option value="All">All Properties</option>
                 @foreach ($propertyList as $prop)
-                    <option value="{{ $prop->id }}">{{ $prop->residence }}</option>
+                    <option value="{{ $prop->id }}" data-active-date="{{ $prop->active_date }}" data-inactive-date="{{ $prop->inactive_date }}">{{ $prop->residence }}</option>
                 @endforeach
             </select>
 
@@ -336,7 +332,6 @@
             <br />
 
             <select id="studYear4" name="studYear4">
-                <option value="All">All Years</option>
                 @foreach ($appYears as $year)
                     <option value="{{ $year->year }}">{{ $year->year }}</option>
                 @endforeach
@@ -749,10 +744,10 @@
             });
         })
 
-        $("#downloadCompatabilityDocs").on('click', function() {
-            $("#downloadCompatabilityDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-            
-            $.ajax({
+    $("#downloadCompatabilityDocs").on('click', function() {
+        $("#downloadCompatabilityDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+        
+        $.ajax({
                 type: "post",
                 url: "/download-compatability-docs",
                 data: {
@@ -771,6 +766,62 @@
             });
         })
 
+        function yearToRange(year) {
+            if (year === "All" || year === "" || year === null) {
+                return null;
+            }
+            return {
+                start: year + "-01-01",
+                end: year + "-12-31"
+            };
+        }
+
+        function inRange(dateValue, range) {
+            if (!dateValue) {
+                return true;
+            }
+            return dateValue >= range.start && dateValue <= range.end;
+        }
+
+        function filterPropertiesByYear(yearValue, selectId) {
+            var range = yearToRange(yearValue);
+            var $select = $("#" + selectId);
+            var $options = $select.find("option");
+
+            if (!range) {
+                $options.removeClass("hidden");
+                return;
+            }
+
+            $options.each(function() {
+                var activeDate = $(this).data("active-date");
+                var inactiveDate = $(this).data("inactive-date");
+
+                var activeOk = inRange(activeDate, { start: "0000-01-01", end: range.end });
+                var inactiveOk = !inactiveDate || inactiveDate >= range.start;
+
+                if (activeOk && inactiveOk) {
+                    $(this).removeClass("hidden");
+                } else {
+                    $(this).addClass("hidden");
+                }
+            });
+
+            if ($select.find("option:selected").hasClass("hidden")) {
+                $select.val($select.find("option:not(.hidden)").first().val());
+            }
+        }
+
+        $("#studYear2").on("change", function() {
+            filterPropertiesByYear($(this).val(), "propdd2");
+        });
+
+        $("#studYear3").on("change", function() {
+            filterPropertiesByYear($(this).val(), "prop3");
+        });
+
+        filterPropertiesByYear($("#studYear2").val(), "propdd2");
+        filterPropertiesByYear($("#studYear3").val(), "prop3");
 
     </script>
 

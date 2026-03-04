@@ -34,7 +34,7 @@ class DownloadSelectedDocs extends Command
 
         $zipFileName = "selected_user_files.zip";
         $password = "12345678";
-        $destinationPath = public_path($zipFileName);
+        $zipPath = storage_path("app/public/" . $zipFileName);
 
         $users = DB::table('bookings_data as bd')
             ->join('students_info as si', 'si.bookingId', '=', 'bd.id')
@@ -57,7 +57,7 @@ class DownloadSelectedDocs extends Command
         }
 
         $zip = new ZipArchive();
-        if ($zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             $this->error("Failed to create ZIP file.");
             return 1;
         }
@@ -77,17 +77,7 @@ class DownloadSelectedDocs extends Command
 
         $zip->close();
 
-        if (!is_writable(public_path())) {
-            $this->error("Public directory is not writable.");
-            return 1;
-        }
-
-        if (!rename($zipFileName, $destinationPath)) {
-            $this->error("Error moving ZIP file to public directory.");
-            return 1;
-        }
-
-        Mail::raw("Zip file created - https://apply.campusafrica.co.za/{$zipFileName}", function ($message) use ($email) {
+        Mail::raw("Zip file created - https://apply.campusafrica.co.za/storage/{$zipFileName}", function ($message) use ($email) {
             $message->to($email)->subject('Your Document Download');
         });
 

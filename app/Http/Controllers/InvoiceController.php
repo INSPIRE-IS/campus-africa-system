@@ -9,12 +9,15 @@ use App\Models\Booking;
 use App\Models\BookingPayment;
 use App\Models\Residence;
 use App\Models\RoomTypes;
+use App\Models\UserFiles;
+use App\Models\ActionList;
 use PDF;
 use Illuminate\Support\Facades\Storage;
 use App\Models\StudentsInfo;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
@@ -302,6 +305,36 @@ class InvoiceController extends Controller
             /** @disregard P1009 */
             \Storage::put($location, $content);
 
+            // $fileData = [
+            //     'userUid' => $userId,
+            //     'fileId' => 'quote',
+            //     'fileName' => $new_name,
+            //     'fileUrl' => 'files/' . $userIdentification . '/' . $new_name,
+            //     'status' => 'Uploaded',
+            //     'uploaded_by' => Auth::user() ? Auth::user()->name : null,
+            //     'year' => $this_year,
+            // ];
+            // $existing = UserFiles::where('userUid', $userId)
+            //     ->where('fileId', 'quote')
+            //     ->where('year', $this_year)
+            //     ->first();
+            // if ($existing) {
+            //     UserFiles::where('id', $existing->id)->update($fileData);
+            // } else {
+            //     UserFiles::create($fileData);
+            // }
+
+            if (Auth::check()) {
+                ActionList::create([
+                    "userUid" => $userId,
+                    "action" => "Quote Generated",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
+                ]);
+            }
+
             Log::info("Invoice PDF saved: {$location}");
 
             return response($content, 200, [
@@ -586,6 +619,36 @@ class InvoiceController extends Controller
             $location = 'public/files/' . $userIdentification . '/' . $new_name;
             /** @disregard P1009 */
             \Storage::put($location, $content);
+
+            // $fileData = [
+            //     'userUid' => $userId,
+            //     'fileId' => 'invoice',
+            //     'fileName' => $new_name,
+            //     'fileUrl' => 'files/' . $userIdentification . '/' . $new_name,
+            //     'status' => 'Uploaded',
+            //     'uploaded_by' => Auth::user() ? Auth::user()->name : null,
+            //     'year' => $this_year,
+            // ];
+            // $existing = UserFiles::where('userUid', $userId)
+            //     ->where('fileId', 'invoice')
+            //     ->where('year', $this_year)
+            //     ->first();
+            // if ($existing) {
+            //     UserFiles::where('id', $existing->id)->update($fileData);
+            // } else {
+            //     UserFiles::create($fileData);
+            // }
+
+            if (Auth::check()) {
+                ActionList::create([
+                    "userUid" => $userId,
+                    "action" => "Invoice Generated",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
+                ]);
+            }
 
             Log::info("Invoice PDF saved: {$location}");
 

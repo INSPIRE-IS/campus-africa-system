@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\UserFiles;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class DownloadAllDocs extends Command
@@ -56,13 +57,32 @@ class DownloadAllDocs extends Command
         // $users = User::where("year", $year)
         //     ->get();
         $zipFileName = "all_user_files.zip";
+        $zipPath = storage_path("app/public/" . $zipFileName);
 
         $password = "12345678";
 
         $zip = new ZipArchive();
-        $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zipOpenResult = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        if ($zipOpenResult !== true) {
+            Log::error('DownloadAllDocs: Failed to open main zip', [
+                'zipPath' => $zipPath,
+                'zipStatus' => $zipOpenResult,
+                'year' => $year,
+                'prop' => $prop,
+                'lease_filter' => $lease_filter,
+            ]);
+
+            $email = $this->argument('email');
+            \Mail::raw('Download failed: could not create the ZIP file. Please try again or contact support.', function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('Download failed');
+            });
+
+            return 1;
+        }
 
         $userZipFilesToDelete = []; // Array to store user ZIP file names
+        $filesAdded = 0;
 
         foreach ($bookings as $booking) {
             $u = User::find($booking->userId);
@@ -87,6 +107,7 @@ class DownloadAllDocs extends Command
 
                 $files = UserFiles::where("userUid", $u->id)->where("year", $year)->get();
                 $userZipFileName = $code . ".zip";
+                $userZipPath = storage_path("app/public/" . $userZipFileName);
 
                 $filesToAdd = $files->filter(function ($file) {
                     $filePath = storage_path("app/public/" . $file->fileUrl);
@@ -101,10 +122,10 @@ class DownloadAllDocs extends Command
                     $userZip = new ZipArchive();
                     if (
                         $userZip->open(
-                            $userZipFileName,
-                            ZipArchive::CREATE | ZipArchive::OVERWRITE
-                        ) === true
-                    ) {
+                        $userZipPath,
+                        ZipArchive::CREATE | ZipArchive::OVERWRITE
+                    ) === true
+                ) {
                         foreach ($filesToAdd as $file) {
                             $filePath = storage_path("app/public/" . $file->fileUrl);
                             $fileNameInZip = basename($filePath);
@@ -113,10 +134,19 @@ class DownloadAllDocs extends Command
                         $userZip->close();
 
                         // Add the user ZIP into the combined ZIP
-                        $zip->addFile($userZipFileName, $userZipFileName);
-                        $userZipFilesToDelete[] = $userZipFileName; // Add to the list for deletion in next iteration
+                        $zip->addFile($userZipPath, $userZipFileName);
+                        $userZipFilesToDelete[] = $userZipPath; // Add to the list for deletion in next iteration
+                        $filesAdded++;
                     } else {
                         $debug == 1 && dump("Error creating user ZIP: " . $userZip->getStatusString());
+                        Log::warning('DownloadAllDocs: Failed to create user zip', [
+                            'userZipPath' => $userZipPath,
+                            'userZipStatus' => $userZip->getStatusString(),
+                            'userId' => $u->id ?? null,
+                            'year' => $year,
+                            'prop' => $prop,
+                            'lease_filter' => $lease_filter,
+                        ]);
                     }
                 } else {
                     $debug == 1 && dump("User " . $u->id . " has no files to add.");
@@ -141,11 +171,7 @@ class DownloadAllDocs extends Command
             throw $e;
         }
 
-        $sourcePath = $zipFileName;
-        $destinationPath = public_path($zipFileName); // Path in the public directory
-
-        // Move the file using rename()
-        if (rename($sourcePath, $destinationPath)) {
+        if (file_exists($zipPath) && $filesAdded > 0) {
             $debug == 1 && dump(
                 "Download all user files: <a href='/storage/" .
                     $zipFileName .
@@ -154,7 +180,14 @@ class DownloadAllDocs extends Command
                     "</a><br>"
             );
         } else {
-            $debug == 1 && dump("Error moving ZIP file to public directory."); // Handle potential errors
+            $debug == 1 && dump("Error creating ZIP file.");
+            Log::warning('DownloadAllDocs: No files added to zip or zip missing', [
+                'zipPath' => $zipPath,
+                'filesAdded' => $filesAdded,
+                'year' => $year,
+                'prop' => $prop,
+                'lease_filter' => $lease_filter,
+            ]);
         }
 
         $debug == 1 && dump("Done");
@@ -170,9 +203,16 @@ class DownloadAllDocs extends Command
         $email = $this->argument('email');
 
         // Send email without template
-        \Mail::raw('Zip file created - https://apply.campusafrica.co.za/all_user_files.zip', function ($message) use ($email) {
-            $message->to($email)
-                ->subject('Test Email');
-        });
+        if (file_exists($zipPath) && $filesAdded > 0) {
+            \Mail::raw('Zip file created - https://apply.campusafrica.co.za/storage/all_user_files.zip', function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('Test Email');
+            });
+        } else {
+            \Mail::raw('Download failed: no files were found for the selected criteria. Please adjust filters and try again.', function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('Download failed');
+            });
+        }
     }
 }

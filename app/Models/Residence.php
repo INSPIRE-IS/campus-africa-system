@@ -32,5 +32,7 @@ class Residence extends Model
         'company_vat',
         'male',
         'female',
+        'active_date',
+        'inactive_date',
     ];
 }
