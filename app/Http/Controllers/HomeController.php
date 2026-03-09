@@ -3058,6 +3058,47 @@ class HomeController extends Controller
             'gender' => $request->gender,
         ]);
 
+        if ($request->studentType == "Cash / Direct" && $request->year >= '2026') {
+            $sponsorId = UserFiles::withTrashed()
+                ->where('userUid', $user->id)
+                ->where('fileId', 'other_sponsor_id')
+                ->where('year', $request->year)
+                ->first();
+            if (!$sponsorId) {
+                UserFiles::create([
+                    'userUid' => $user->id,
+                    'fileId' => 'other_sponsor_id',
+                    'year' => $request->year,
+                ]);
+            }
+
+            $sponsorPayslip = UserFiles::withTrashed()
+                ->where('userUid', $user->id)
+                ->where('fileId', 'other_sponsor_payslip')
+                ->where('year', $request->year)
+                ->first();
+            if (!$sponsorPayslip) {
+                UserFiles::create([
+                    'userUid' => $user->id,
+                    'fileId' => 'other_sponsor_payslip',
+                    'year' => $request->year,
+                ]);
+            }
+
+            $policeClearance = UserFiles::withTrashed()
+                ->where('userUid', $user->id)
+                ->where('fileId', 'other_police_clearance')
+                ->where('year', $request->year)
+                ->first();
+            if (!$policeClearance) {
+                UserFiles::create([
+                    'userUid' => $user->id,
+                    'fileId' => 'other_police_clearance',
+                    'year' => $request->year,
+                ]);
+            }
+        }
+
         ActionList::create([
             "userUid" => $user->id,
             "action" => "Registered " . $request->firstName . " as a new user",
@@ -4452,6 +4493,7 @@ class HomeController extends Controller
                 }
             }
         }
+        $createdOtherDocs = [];
         // new logic for cash students require sponsorId and sponsorPayslip
         if ($userInfo->studentType == "Cash / Direct" &&  $this_year >= '2026') {
             $existingSponsorId = UserFiles::withTrashed()
@@ -4465,6 +4507,7 @@ class HomeController extends Controller
                     'fileId' => 'other_sponsor_id',
                     'year' => $this_year,
                 ]);
+                $createdOtherDocs[] = 'other_sponsor_id';
             }
 
             $existingSponsorPayslip = UserFiles::withTrashed()
@@ -4478,9 +4521,24 @@ class HomeController extends Controller
                     'fileId' => 'other_sponsor_payslip',
                     'year' => $this_year,
                 ]);
+                $createdOtherDocs[] = 'other_sponsor_payslip';
+            }
+
+            $existingPoliceClearance = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_police_clearance')
+                ->where('year', $this_year)
+                ->first();
+            if (!$existingPoliceClearance) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_police_clearance',
+                    'year' => $this_year,
+                ]);
+                $createdOtherDocs[] = 'other_police_clearance';
             }
         }
-        return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived, $userInfo];
+        return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived, $userInfo, $createdOtherDocs];
     }
 
     // public function change_booking_building(Request $request){

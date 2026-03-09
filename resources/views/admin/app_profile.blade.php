@@ -3311,6 +3311,12 @@
 
                         $(".app_summary_details").html(app_summary_details);
 
+                        if (Array.isArray(data[6]) && data[6].length > 0) {
+                            data[6].forEach(function(docId) {
+                                appendOtherDocRow(docId);
+                            });
+                        }
+
                         checkUserStatus();
 
                     },
@@ -5630,6 +5636,44 @@
                         $("#waiveThisBookingFee").empty().append('waive booking fee')
                     }
                 })
+            }
+
+            function appendOtherDocRow(docId) {
+                if (!docId) {
+                    return;
+                }
+
+                if (document.getElementById(docId + "Status")) {
+                    return;
+                }
+
+                if (!document.getElementById("documentsSectionDisplay")) {
+                    return;
+                }
+
+                var label = ((docId.replace("other", "other |")).replaceAll("_", " ")).toUpperCase();
+
+                $("#documentsSectionDisplay").append(
+                    '<div class="section">' +
+                    '<div class="label">' +
+                    label +
+                    '</div>' +
+                    '<div class="status" id="' + docId + 'Status">' +
+                    '<div class="button rejected"></div>' +
+                    '</div>' +
+                    '<div class="banner" id="' + docId + 'Banner">' +
+                    '<label for="' + docId + '" id="' + docId +
+                    'Section" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;">' +
+                    '<span class="text">Upload</span>' +
+                    '<i class="fas fa-file-upload"></i>' +
+                    '</label>' +
+                    '<input type="file" id="' + docId + '" onChange="UploadDocument(\'' +
+                    docId + '\')" accept="image/*, application/pdf" hidden>' +
+                    '<button type="button" style="margin-left:5px;" onClick="deleteFile(\'' +
+                    docId + '\')">Delete</button>' +
+                    '</div>' +
+                    '</div>'
+                );
             }
 
             function deleteFile(fileName) {
