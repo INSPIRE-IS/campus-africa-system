@@ -7339,7 +7339,7 @@ class HomeController extends Controller
 
     public function rob_fix(Request $request)
     {
-        if (!Auth::check() || (Auth::user()->role_sys_admin != 1 && Auth::user()->role_bm_report != 1)) {
+        if (!Auth::check() || Auth::user()->role_sys_admin != 1) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -1138,11 +1138,14 @@
                                         </span>
                                     </td>
                                     <td style="text-align:center;">
-                                        @if ($bookingFeeIssue)
+                                        @if ($bookingFeeIssue && Auth::user()->role_sys_admin == 1)
                                             <button type="button" class="appBooking"
                                                 onClick="robFix('clear_booking_fee_requirement', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
                                                 Clear Requirement
                                             </button>
+                                        @elseif ($bookingFeeIssue)
+                                            <button type="button" class="appBooking" disabled
+                                                title="Sys admin only" style="opacity:0.4; cursor:default;">Restricted</button>
                                         @else
                                             <button type="button" class="appBooking" disabled
                                                 style="opacity:0.4; cursor:default;">None</button>
@@ -1185,11 +1188,14 @@
                                         </span>
                                     </td>
                                     <td style="text-align:center;">
-                                        @if ($rob45Mismatch)
+                                        @if ($rob45Mismatch && Auth::user()->role_sys_admin == 1)
                                             <button type="button" class="appBooking"
                                                 onClick="robFix('recompute_other_docs', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
                                                 Recompute Other Docs
                                             </button>
+                                        @elseif ($rob45Mismatch)
+                                            <button type="button" class="appBooking" disabled
+                                                title="Sys admin only" style="opacity:0.4; cursor:default;">Restricted</button>
                                         @else
                                             <button type="button" class="appBooking" disabled
                                                 style="opacity:0.4; cursor:default;">None</button>
