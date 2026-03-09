@@ -7402,6 +7402,7 @@ class HomeController extends Controller
         $actionLabels = [
             'recompute_other_docs' => 'Recompute Other Docs',
             'clear_booking_fee_requirement' => 'Clear Booking Fee Requirement',
+            'fix_bed_allocation' => 'Fix Bed Allocation',
         ];
 
         if (!array_key_exists($request->action, $actionLabels)) {
@@ -7530,6 +7531,41 @@ class HomeController extends Controller
             return response()->json([
                 'message' => 'Booking fee requirement cleared.',
                 'rob_10_fee' => 2,
+            ]);
+        }
+
+        if ($request->action === 'fix_bed_allocation') {
+            if (!$booking) {
+                return response()->json(['message' => 'Booking not found for this student.'], 404);
+            }
+
+            if (empty($booking->bed_code)) {
+                return response()->json(['message' => 'Bed code is not set for this booking.'], 422);
+            }
+
+            $oldRob = $student->rob_40_bed;
+
+            Comments::create([
+                'user_uid' => $userId,
+                'comment' => "ROB Fix - {$actionLabel}: {$reason}",
+                'action_user_uid' => Auth::user()->id,
+                'bookingId' => $bookingId,
+            ]);
+
+            StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_40_bed' => 2]);
+
+            ActionList::create([
+                "userUid" => $userId,
+                "action" => "ROB Fix: Bed allocation set to Approved (rob_40_bed) from {$oldRob} to 2. Reason: {$reason}",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
+
+            return response()->json([
+                'message' => 'Bed allocation updated.',
+                'rob_40_bed' => 2,
             ]);
         }
 
