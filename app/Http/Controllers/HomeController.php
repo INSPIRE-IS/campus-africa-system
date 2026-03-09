@@ -876,7 +876,18 @@ class HomeController extends Controller
         $bank = 0;
         $approval = 0;
 
-        foreach ($userData[0]['files'] as $userFile) {
+        if (empty($userData) || !isset($userData[0]['files'])) {
+            $userData = [["files" => $data ?? [], "userInfo" => $studentInfo]];
+        }
+
+        $userInfoForStatus = $userData[0]['userInfo'] ?? $studentInfo;
+        $userFilesForStatus = $userData[0]['files'] ?? [];
+        if (!is_array($userFilesForStatus)) {
+            $userFilesForStatus = [];
+        }
+        $userFilesForStatus = array_values($userFilesForStatus);
+
+        foreach ($userFilesForStatus as $userFile) {
             if ($userFile['field'] == "moveIn") {
                 if ($userFile['status'] == "XApproved") {
                     $leaseApproved = "true";
@@ -896,29 +907,32 @@ class HomeController extends Controller
             }
         }
 
-        $i = 0;
-        foreach ($userData[0]['files'] as $userFile) {
+        foreach ($userFilesForStatus as $idx => $userFile) {
+            if (!isset($userFile['field'])) {
+                continue;
+            }
 
-            if ($userData[0]['userInfo']['studentType'] !== "Cash / Direct" && $bank == 1) {
-                if ($userData[0]['files'][$i]['field'] == "bankStatement") {
-                    unset($userData[0]['files'][$i]);
+            if ($userInfoForStatus && $userInfoForStatus->studentType !== "Cash / Direct" && $bank == 1) {
+                if ($userFile['field'] == "bankStatement") {
+                    unset($userFilesForStatus[$idx]);
+                    continue;
                 }
             }
 
-            if ($userData[0]['userInfo']['studentType'] == "Cash / Direct" && $approval == 1) {
-                if ($userData[0]['files'][$i]['field'] == "bursaryApproval") {
-                    unset($userData[0]['files'][$i]);
+            if ($userInfoForStatus && $userInfoForStatus->studentType == "Cash / Direct" && $approval == 1) {
+                if ($userFile['field'] == "bursaryApproval") {
+                    unset($userFilesForStatus[$idx]);
+                    continue;
                 }
             }
 
-            if (!$requiresBookingFeeDoc) {
-                if ($userData[0]['files'][$i]['field'] == "proof_of_payment") {
-                    unset($userData[0]['files'][$i]);
-                }
+            if (!$requiresBookingFeeDoc && $userFile['field'] == "proof_of_payment") {
+                unset($userFilesForStatus[$idx]);
+                continue;
             }
-
-            $i++;
         }
+
+        $userData[0]['files'] = array_values($userFilesForStatus);
 
         $allowedResidences = [];
         $allProp = Residence::whereNull('status')->get();
