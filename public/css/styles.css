@@ -1648,6 +1648,102 @@ input:read-only {
     border: 3px solid #000 !important;
 }
 
+/* ROB Fixes status dots (match document robot style outside .section) */
+#RobFixes .status {
+    width: auto;
+}
+
+#RobFixes .status .button {
+    border-radius: 50%;
+    height: 29px;
+    width: 29px;
+    border: 3px solid #cecece;
+    margin: 0 auto;
+}
+
+#RobFixes .status .approved {
+    background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+}
+
+#RobFixes .status .action {
+    background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+}
+
+#RobFixes .status .rejected {
+    background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+}
+
+#RobFixes .status .na {
+    background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
+}
+
+#RobFixes .appBooking {
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #464749;
+    padding: 10px 14px;
+    cursor: pointer;
+    width: auto;
+    min-width: 140px;
+}
+
+#RobFixes .robFixActionBtn {
+    background-color: #ffbb3c;
+    border-color: #ffbb3c;
+    color: #101010;
+}
+
+#RobFixes .robFixDisabledBtn {
+    background-color: #ededed;
+    border-color: #cecece;
+    color: #9aa0a6;
+    cursor: default;
+}
+
+.robFixSwalConfirm,
+.robFixSwalCancel,
+.robFixSwalSuccess,
+.robFixSwalError {
+    color: #464749;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #464749;
+    padding: 10px 16px;
+    margin: 0 4px;
+    cursor: pointer;
+}
+
+.robFixSwalConfirm {
+    background-color: #ffbb3c;
+    border-color: #ffbb3c;
+    color: #101010;
+}
+
+.robFixSwalSuccess {
+    background-color: #1cb915;
+    border-color: #1cb915;
+    color: #ffffff;
+}
+
+.robFixSwalError {
+    background-color: #e74f26;
+    border-color: #e74f26;
+    color: #ffffff;
+}
+
+.robFixSwalCancel {
+    background-color: transparent;
+}
+
 .noBoarder {
     border: none !important;
 }

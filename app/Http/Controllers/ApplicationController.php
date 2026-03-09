@@ -397,23 +397,51 @@ class ApplicationController extends Controller
         // new logic for cash students require sponsorId and sponsorPayslip
         $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_id')->where('year', $year)->first();
         $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_payslip')->where('year', $year)->first();
+        $PoliceClearance = UserFiles::where("userUid", $userId)->where('fileId', 'other_police_clearance')->where('year', $year)->first();
         if ($userInfo->studentType == "Cash / Direct" &&  $year >= '2026') {
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_id',
-                'year' => $year,
-            ]);
+            $existingSponsorId = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_id')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorId) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_id',
+                    'year' => $year,
+                ]);
+            }
 
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_payslip',
-                'year' => $year,
-            ]);
+            $existingSponsorPayslip = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_payslip')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorPayslip) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_payslip',
+                    'year' => $year,
+                ]);
+            }
+
+            $existingPoliceClearance = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_police_clearance')
+                ->where('year', $year)
+                ->first();
+            if (!$existingPoliceClearance) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_police_clearance',
+                    'year' => $year,
+                ]);
+            }
         }
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
         $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
 
-        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "SponsorId" => $SponsorId, "SponsorPayslip" => $SponsorPayslip, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
+        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "SponsorId" => $SponsorId, "SponsorPayslip" => $SponsorPayslip, "PoliceClearance" => $PoliceClearance, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy]);
     }
 
     function get_user_status($fileType, $user, $student)
@@ -2205,17 +2233,44 @@ class ApplicationController extends Controller
         $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
         // new logic for cash students require sponsorId and sponsorPayslip
         if ($userInfo->studentType == "Cash / Direct" &&  $year >= '2026') {
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_id',
-                'year' => $year,
-            ]);
+            $existingSponsorId = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_id')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorId) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_id',
+                    'year' => $year,
+                ]);
+            }
 
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_payslip',
-                'year' => $year,
-            ]);
+            $existingSponsorPayslip = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_payslip')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorPayslip) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_payslip',
+                    'year' => $year,
+                ]);
+            }
+
+            $existingPoliceClearance = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_police_clearance')
+                ->where('year', $year)
+                ->first();
+            if (!$existingPoliceClearance) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_police_clearance',
+                    'year' => $year,
+                ]);
+            }
         }
 
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
@@ -2223,8 +2278,9 @@ class ApplicationController extends Controller
         // new logic for cash students require sponsorId and sponsorPayslip
         $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_id')->where('year', $year)->first();
         $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_payslip')->where('year', $year)->first();
+        $PoliceClearance = UserFiles::where("userUid", $userId)->where('fileId', 'other_police_clearance')->where('year', $year)->first();
 
-        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "SponsorId" => $SponsorId, "SponsorPayslip" => $SponsorPayslip, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy, "new" => 1]);
+        return view('application.step_4', ["lookups" => $lookups, "user" => $userInfo, "IdCopy" => $IdCopy, "StudentCopy" => $StudentCopy, "BankCopy" => $BankCopy, "SponsorId" => $SponsorId, "SponsorPayslip" => $SponsorPayslip, "PoliceClearance" => $PoliceClearance, "BursaryCopy" => $BursaryCopy, "RegistrationCopy" => $RegistrationCopy, "new" => 1]);
     }
 
     public function check_uploaded_docs(Request $request)
@@ -2243,11 +2299,12 @@ class ApplicationController extends Controller
         // other_sponsor_payslip
         $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_id')->where('year', $year)->first();
         $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_payslip')->where('year', $year)->first();
+        $PoliceClearance = UserFiles::where("userUid", $userId)->where('fileId', 'other_police_clearance')->where('year', $year)->first();
 
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
         $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
 
-        return [$IdCopy, $StudentCopy, $BankCopy, $SponsorId, $SponsorPayslip, $BursaryCopy, $RegistrationCopy];
+        return [$IdCopy, $StudentCopy, $BankCopy, $SponsorId, $SponsorPayslip, $BursaryCopy, $RegistrationCopy, $PoliceClearance];
     }
 
     public function all_properties_online(Request $request)

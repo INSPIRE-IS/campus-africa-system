@@ -235,6 +235,36 @@
                                     </div>
                                 </div>
                             </label>
+                            <br/>
+                            <label for="other_police_clearance" id="other_police_clearanceUpload" style="cursor:pointer" class="<?php if($PoliceClearance && $PoliceClearance->status == "Uploaded"){echo 'yellowBorder';}elseif($PoliceClearance && $PoliceClearance->status == "Approved"){echo 'greenBorder';}else{echo 'redBorder';}?>">
+                                <div class="uploadSection" id="copyother_police_clearance">
+                                    <h3 class="uploadName">POLICE CLEARANCE CERTIFICATE</h3>
+                                    <div class="uploadFileSection" id="other_police_clearanceUploadSection">
+                                        
+                                        <div id="other_police_clearanceSection">
+                                            <?php 
+                                                if($PoliceClearance && $PoliceClearance->status == "Uploaded"){
+                                                    echo ' <i class="fas fa-clock" id="yellowClock"></i>';
+                                                }elseif($PoliceClearance && $PoliceClearance->status == "Approved"){
+                                                    echo ' <i class="fas fa-file successful"></i>';
+                                                }else{
+                                                    echo '<i class="fas fa-file-upload" ></i>';
+                                                }
+                                            ?>
+                                        </div>
+
+                                        <?php 
+                                            if($PoliceClearance && $PoliceClearance->status == "Uploaded"){
+                                                echo '<label id="other_police_clearanceSuccess" class="toUploadLabel">UPLOADED</label>';
+                                            }elseif($PoliceClearance && $PoliceClearance->status == "Approved"){
+                                                echo '<label id="other_police_clearanceSuccess" class="successLabel">Approved</label>';
+                                            }else{ 
+                                                echo '<input type="file" id="other_police_clearance" onChange="UploadDocument(\'other_police_clearance\')" accept="image/*, application/pdf" hidden/>';
+                                            }
+                                        ?>
+                                    </div>
+                                </div>
+                            </label>
 
                         @else
                             <label for="bursaryApproval" id="bursaryApprovalUpload" style="cursor:pointer" class="<?php if($BursaryCopy && $BursaryCopy->status == "Uploaded"){echo 'yellowBorder';}elseif($BursaryCopy && $BursaryCopy->status == "Approved"){echo 'greenBorder';}else{ echo 'redBorder';}?>">
@@ -395,6 +425,13 @@
                     $("#proofRegistrationUpload").addClass('yellowBorder')
                     $("#proofRegistrationUpload").removeClass('redBorder')
                 }                
+                // policeClearance
+                if(data[7]?.status == "Uploaded"){
+                    $("#other_police_clearanceSection").empty().append('<i class="fas fa-clock" id="yellowClock"></i>')
+                    $("#other_police_clearanceUploadSection").empty().append('<label id="other_police_clearanceSection" class="toUploadLabel">UPLOADED</label>')
+                    $("#other_police_clearanceUpload").addClass('yellowBorder')
+                    $("#other_police_clearanceUpload").removeClass('redBorder')
+                }
             },
         });
     }

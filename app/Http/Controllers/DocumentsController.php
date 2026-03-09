@@ -847,8 +847,15 @@ class DocumentsController extends Controller
         $userUid = $request->userId;
         $fileName = $request->fileName;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        // Use session year when viewing past/future application years
+        $session_year = Session::get('year');
+        if (!empty($session_year)) {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        }
 
         UserFiles::where('fileId', $fileName)->where('userUid', $userUid)->where('year', $this_year)->delete();
 
@@ -861,7 +868,21 @@ class DocumentsController extends Controller
             "year" => $this_year,
         ]);
 
-        $allOtherFiles = UserFiles::where('userUid', $userUid)->where('year', $this_year)->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn'])->get();
+        $allOtherFiles = UserFiles::where('userUid', $userUid)
+            ->where('year', $this_year)
+            ->whereNotIn('fileId', [
+                'proof_of_payment',
+                'copyID',
+                'studentCard',
+                'proofRegistration',
+                'bursaryApproval',
+                'bankStatement',
+                'moveIn',
+                'tempMoveIn',
+                'quote',
+                'invoice',
+            ])
+            ->get();
 
         if (count($allOtherFiles) == 0) {
             // User::where('id', $userUid)->update(['rob_45_other' => '3']);
