@@ -44,6 +44,7 @@ class ReportRobAnomalies extends Command
             'rob45_mismatch' => 0,
             'rob10_fee_not_2_when_fee_not_required' => 0,
             'fee_required_pop_missing_or_not_approved' => 0,
+            'bed_code_rob40_mismatch' => 0,
             'skipped_not_ready' => 0,
         ];
 
@@ -51,6 +52,7 @@ class ReportRobAnomalies extends Command
             'rob45_mismatch' => [],
             'rob10_fee_not_2_when_fee_not_required' => [],
             'fee_required_pop_missing_or_not_approved' => [],
+            'bed_code_rob40_mismatch' => [],
         ];
 
         $rows = [
@@ -162,7 +164,16 @@ class ReportRobAnomalies extends Command
                         (string) $studentInfo->rob_40_bed === '2' &&
                         (string) $studentInfo->rob_50_approve !== '2';
 
-                    if (!$includeNotReady && !$approvalReady) {
+                    $approvalReadyWithoutBed =
+                        (string) $studentInfo->rob_15_id === '2' &&
+                        (string) $studentInfo->rob_20_card === '2' &&
+                        (string) $studentInfo->rob_25_reg === '2' &&
+                        (string) $studentInfo->rob_30_funds === '2' &&
+                        (string) $studentInfo->rob_35_info === '2' &&
+                        (string) $studentInfo->rob_50_approve !== '2' &&
+                        ((string) $studentInfo->rob_45_other === '2' || (string) $studentInfo->rob_45_other === '3');
+
+                    if (!$includeNotReady && !$approvalReady && !$approvalReadyWithoutBed) {
                         $counts['skipped_not_ready']++;
                         continue;
                     }
@@ -284,6 +295,30 @@ class ReportRobAnomalies extends Command
                             }
                         }
                     }
+
+                    $bedMismatch = !empty($booking->bed_code) && (string) $studentInfo->rob_40_bed !== '2';
+                    if ($bedMismatch && ($includeNotReady || $approvalReadyWithoutBed)) {
+                        $counts['bed_code_rob40_mismatch']++;
+                        $this->addIssueRow(
+                            $rows,
+                            'BED_CODE_ROB40_MISMATCH',
+                            'Bed code is set but ROB 40 (bed allocation) is not approved',
+                            $studentInfo,
+                            $booking,
+                            $payment,
+                            $propertyMap,
+                            $roomTypeMap,
+                            'Bed Allocation (ROB 40)',
+                            $studentInfo->rob_40_bed,
+                            2,
+                            $otherDocs,
+                            $userFiles,
+                            $bookingFee
+                        );
+                        if ($sampleLimit > 0 && count($samples['bed_code_rob40_mismatch']) < $sampleLimit) {
+                            $samples['bed_code_rob40_mismatch'][] = $studentInfo->userUid;
+                        }
+                    }
                 }
             });
 
@@ -297,6 +332,7 @@ class ReportRobAnomalies extends Command
         $this->line("ROB 45 mismatch: {$counts['rob45_mismatch']}");
         $this->line("Fee not required but rob_10_fee != 2: {$counts['rob10_fee_not_2_when_fee_not_required']}");
         $this->line("Fee required but proof_of_payment missing/not approved: {$counts['fee_required_pop_missing_or_not_approved']}");
+        $this->line("Bed code set but rob_40_bed != 2: {$counts['bed_code_rob40_mismatch']}");
 
         if ($sampleLimit > 0) {
             $this->line("");

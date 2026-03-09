@@ -1052,7 +1052,11 @@
 
                             $actualRob45 = (int) ($user[0]['userInfo']['rob_45_other'] ?? -1);
                             $rob45Mismatch = $actualRob45 !== $expectedRob45;
-                            $hasBlockingIssues = $bookingFeeIssue || $rob45Mismatch || $popIssue;
+                            $bedCode = $booking->bed_code ?? null;
+                            $rob40Bed = $user[0]['userInfo']['rob_40_bed'] ?? null;
+                            $bedAllocationMismatch = (!empty($bedCode)) && ((int) $rob40Bed !== 2);
+
+                            $hasBlockingIssues = $bookingFeeIssue || $rob45Mismatch || $popIssue || $bedAllocationMismatch;
 
                             $robRows = [
                                 ['key' => 'rob_10_fee', 'label' => 'Booking Fee', 'naLabel' => 'Not Applicable'],
@@ -1199,6 +1203,33 @@
                                         @endif
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>Bed Allocation</td>
+                                    <td>
+                                        <div class="status" id="robFixBedStatus">
+                                            <div class="button {{ $bedAllocationMismatch ? 'action' : 'approved' }}"></div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span
+                                            title="{{ $bedAllocationMismatch ? 'Action Required' : 'OK' }} | bed_code: {{ $bedCode ?? 'null' }} | rob_40_bed: {{ is_null($rob40Bed) ? 'null' : $rob40Bed }}">
+                                            Info
+                                        </span>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        @if ($bedAllocationMismatch && Auth::user()->role_sys_admin == 1)
+                                            <button type="button" class="appBooking robFixActionBtn"
+                                                onClick="robFix('fix_bed_allocation', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
+                                                Approve Bed Allocation
+                                            </button>
+                                        @elseif ($bedAllocationMismatch)
+                                            <button type="button" class="appBooking robFixDisabledBtn" disabled
+                                                title="Sys admin only">Restricted</button>
+                                        @else
+                                            <button type="button" class="appBooking robFixDisabledBtn" disabled>None</button>
+                                        @endif
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -1222,6 +1253,22 @@
                                         $robValueInt = is_null($robValue) ? null : (int) $robValue;
                                         $robLabel = $robStatusLabels[$robValueInt] ?? 'Not Set';
                                         $robClass = $robStatusClasses[$robValueInt] ?? 'na';
+                                        if ($robRow['key'] === 'rob_51_temp_lease_approve') {
+                                            $tempLeaseLabels = [
+                                                0 => 'Rejected',
+                                                1 => 'Approved',
+                                                2 => 'Pending',
+                                                3 => 'Not Set',
+                                            ];
+                                            $tempLeaseClasses = [
+                                                0 => 'rejected',
+                                                1 => 'approved',
+                                                2 => 'action',
+                                                3 => 'na',
+                                            ];
+                                            $robLabel = $tempLeaseLabels[$robValueInt] ?? 'Not Set';
+                                            $robClass = $tempLeaseClasses[$robValueInt] ?? 'na';
+                                        }
                                         if ($robValueInt === 3) {
                                             $robLabel = $robRow['naLabel'];
                                         }
