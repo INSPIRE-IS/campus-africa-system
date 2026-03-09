@@ -4454,17 +4454,31 @@ class HomeController extends Controller
         }
         // new logic for cash students require sponsorId and sponsorPayslip
         if ($userInfo->studentType == "Cash / Direct" &&  $this_year >= '2026') {
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_id',
-                'year' => $this_year,
-            ]);
+            $existingSponsorId = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_id')
+                ->where('year', $this_year)
+                ->first();
+            if (!$existingSponsorId) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_id',
+                    'year' => $this_year,
+                ]);
+            }
 
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_payslip',
-                'year' => $this_year,
-            ]);
+            $existingSponsorPayslip = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_payslip')
+                ->where('year', $this_year)
+                ->first();
+            if (!$existingSponsorPayslip) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_payslip',
+                    'year' => $this_year,
+                ]);
+            }
         }
         return [$booking, $bookingPropData, $leaseApproved, $booking_paid, $booking_waived, $userInfo];
     }

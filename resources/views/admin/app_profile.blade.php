@@ -1139,16 +1139,15 @@
                                     </td>
                                     <td style="text-align:center;">
                                         @if ($bookingFeeIssue && Auth::user()->role_sys_admin == 1)
-                                            <button type="button" class="appBooking"
+                                            <button type="button" class="appBooking robFixActionBtn"
                                                 onClick="robFix('clear_booking_fee_requirement', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
                                                 Clear Requirement
                                             </button>
                                         @elseif ($bookingFeeIssue)
-                                            <button type="button" class="appBooking" disabled
-                                                title="Sys admin only" style="opacity:0.4; cursor:default;">Restricted</button>
+                                            <button type="button" class="appBooking robFixDisabledBtn" disabled
+                                                title="Sys admin only">Restricted</button>
                                         @else
-                                            <button type="button" class="appBooking" disabled
-                                                style="opacity:0.4; cursor:default;">None</button>
+                                            <button type="button" class="appBooking robFixDisabledBtn" disabled>None</button>
                                         @endif
                                     </td>
                                 </tr>
@@ -1170,8 +1169,7 @@
                                         </span>
                                     </td>
                                     <td style="text-align:center;">
-                                        <button type="button" class="appBooking" disabled
-                                            style="opacity:0.4; cursor:default;">None</button>
+                                        <button type="button" class="appBooking robFixDisabledBtn" disabled>None</button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1189,16 +1187,15 @@
                                     </td>
                                     <td style="text-align:center;">
                                         @if ($rob45Mismatch && Auth::user()->role_sys_admin == 1)
-                                            <button type="button" class="appBooking"
+                                            <button type="button" class="appBooking robFixActionBtn"
                                                 onClick="robFix('recompute_other_docs', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
                                                 Recompute Other Docs
                                             </button>
                                         @elseif ($rob45Mismatch)
-                                            <button type="button" class="appBooking" disabled
-                                                title="Sys admin only" style="opacity:0.4; cursor:default;">Restricted</button>
+                                            <button type="button" class="appBooking robFixDisabledBtn" disabled
+                                                title="Sys admin only">Restricted</button>
                                         @else
-                                            <button type="button" class="appBooking" disabled
-                                                style="opacity:0.4; cursor:default;">None</button>
+                                            <button type="button" class="appBooking robFixDisabledBtn" disabled>None</button>
                                         @endif
                                     </td>
                                 </tr>
@@ -5657,9 +5654,7 @@
 
                             success: function(data) {
 
-                                document.getElementById(fileName + "Status").parentElement.remove();
-
-                                checkUserStatus()
+                                window.location.reload();
                             },
                         });
                     }
@@ -5925,6 +5920,11 @@
                     inputPlaceholder: 'Add a short comment...',
                     showCancelButton: true,
                     confirmButtonText: 'Apply',
+                    customClass: {
+                        confirmButton: 'robFixSwalConfirm',
+                        cancelButton: 'robFixSwalCancel'
+                    },
+                    buttonsStyling: false,
                     preConfirm: (value) => {
                         if (!value || value.trim().length < 3) {
                             Swal.showValidationMessage('Comment is required (min 3 chars).');
@@ -5951,7 +5951,11 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Updated',
-                                text: data.message || 'ROB updated.'
+                                text: data.message || 'ROB updated.',
+                                customClass: {
+                                    confirmButton: 'robFixSwalSuccess'
+                                },
+                                buttonsStyling: false
                             }).then(() => {
                                 window.location.reload();
                             });
@@ -5961,7 +5965,15 @@
                             if (xhr.responseJSON && xhr.responseJSON.message) {
                                 message = xhr.responseJSON.message;
                             }
-                            Swal.fire('Error', message, 'error');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: message,
+                                customClass: {
+                                    confirmButton: 'robFixSwalError'
+                                },
+                                buttonsStyling: false
+                            });
                         }
                     });
                 });

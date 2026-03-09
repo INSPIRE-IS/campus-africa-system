@@ -398,17 +398,31 @@ class ApplicationController extends Controller
         $SponsorId = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_id')->where('year', $year)->first();
         $SponsorPayslip = UserFiles::where("userUid", $userId)->where('fileId', 'other_sponsor_payslip')->where('year', $year)->first();
         if ($userInfo->studentType == "Cash / Direct" &&  $year >= '2026') {
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_id',
-                'year' => $year,
-            ]);
+            $existingSponsorId = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_id')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorId) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_id',
+                    'year' => $year,
+                ]);
+            }
 
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_payslip',
-                'year' => $year,
-            ]);
+            $existingSponsorPayslip = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_payslip')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorPayslip) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_payslip',
+                    'year' => $year,
+                ]);
+            }
         }
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
         $RegistrationCopy = UserFiles::where("userUid", $userId)->where('fileId', 'proofRegistration')->where('year', $year)->first();
@@ -2200,17 +2214,31 @@ class ApplicationController extends Controller
         $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
         // new logic for cash students require sponsorId and sponsorPayslip
         if ($userInfo->studentType == "Cash / Direct" &&  $year >= '2026') {
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_id',
-                'year' => $year,
-            ]);
+            $existingSponsorId = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_id')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorId) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_id',
+                    'year' => $year,
+                ]);
+            }
 
-            UserFiles::firstOrCreate([
-                'userUid' => $userInfo->userUid,
-                'fileId' => 'other_sponsor_payslip',
-                'year' => $year,
-            ]);
+            $existingSponsorPayslip = UserFiles::withTrashed()
+                ->where('userUid', $userInfo->userUid)
+                ->where('fileId', 'other_sponsor_payslip')
+                ->where('year', $year)
+                ->first();
+            if (!$existingSponsorPayslip) {
+                UserFiles::create([
+                    'userUid' => $userInfo->userUid,
+                    'fileId' => 'other_sponsor_payslip',
+                    'year' => $year,
+                ]);
+            }
         }
 
         $BursaryCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bursaryApproval')->where('year', $year)->first();
