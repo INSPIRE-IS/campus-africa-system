@@ -1646,6 +1646,37 @@ input:read-only {
     border: 3px solid #000 !important;
 }
 
+// ROB Fixes status dots (match document robot style outside .section)
+#RobFixes {
+    .status {
+        width: auto;
+    }
+
+    .status .button {
+        border-radius: 50%;
+        height: 29px;
+        width: 29px;
+        border: 3px solid #cecece;
+        margin: 0 auto;
+    }
+
+    .status .approved {
+        background-image: linear-gradient(140deg, #94ff64 0%, #1cb915 100%);
+    }
+
+    .status .action {
+        background-image: linear-gradient(140deg, #ffec5c 0%, #ffbb3c 100%);
+    }
+
+    .status .rejected {
+        background-image: linear-gradient(140deg, #ff5c5c 0%, #b72626 100%);
+    }
+
+    .status .na {
+        background-image: linear-gradient(140deg, #eaeaea 0%, #cecece 100%);
+    }
+}
+
 .noBoarder {
     border: none !important;
 }

@@ -740,11 +740,29 @@ class HomeController extends Controller
         $files = UserFiles::where('userUid', $userId)->where('year', $this_year)->get();
         //dd($files);
         $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
+        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
+        $bookingFee = null;
+        if (!empty($paymentBooking) && $paymentBooking->booking_fee !== null) {
+            $bookingFee = $paymentBooking->booking_fee;
+        } elseif (!empty($booking) && $booking->room_rate !== null) {
+            $bookingFee = $booking->room_rate;
+        }
+
+        $bookingFeeWaived = false;
+        if (!empty($paymentBooking)) {
+            $bookingFeeWaived = ($paymentBooking->booking_fee_waived == '1' || $paymentBooking->rob_b_waived == '1');
+        }
+
+        $requiresBookingFeeDoc = (!$bookingFeeWaived) && ($bookingFee !== null) && ((float) $bookingFee > 0);
 
         $userData = [];
         $uploaded = [];
 
-        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment'];
+        $all = ['copyID', 'studentCard', 'proofRegistration'];
+        if ($requiresBookingFeeDoc) {
+            array_push($all, "proof_of_payment");
+        }
 
         if ($studentInfo->rob_50_approve == 2 && $booking->lease_from_date !== null && $booking->lease_from_time !== null && $booking->lease_to_date !== null && $booking->lease_to_time !== null) {
             array_push($all, "moveIn");
@@ -893,6 +911,12 @@ class HomeController extends Controller
                 }
             }
 
+            if (!$requiresBookingFeeDoc) {
+                if ($userData[0]['files'][$i]['field'] == "proof_of_payment") {
+                    unset($userData[0]['files'][$i]);
+                }
+            }
+
             $i++;
         }
 
@@ -907,8 +931,6 @@ class HomeController extends Controller
                 }
             }
         }
-
-        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
 
         $buildingName = Residence::where('id', $booking->property)->pluck('residence')->first();
         $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
@@ -934,11 +956,29 @@ class HomeController extends Controller
 
         $booking = Booking::where('userId', $userId)->orderBy('year', 'desc')->first();
         $files = UserFiles::where('userUid', $userId)->where('year', $booking->year)->get();
+        $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+
+        $bookingFee = null;
+        if (!empty($paymentBooking) && $paymentBooking->booking_fee !== null) {
+            $bookingFee = $paymentBooking->booking_fee;
+        } elseif (!empty($booking) && $booking->room_rate !== null) {
+            $bookingFee = $booking->room_rate;
+        }
+
+        $bookingFeeWaived = false;
+        if (!empty($paymentBooking)) {
+            $bookingFeeWaived = ($paymentBooking->booking_fee_waived == '1' || $paymentBooking->rob_b_waived == '1');
+        }
+
+        $requiresBookingFeeDoc = (!$bookingFeeWaived) && ($bookingFee !== null) && ((float) $bookingFee > 0);
 
         $userData = [];
         $uploaded = [];
 
-        $all = ['copyID', 'studentCard', 'proofRegistration', 'proof_of_payment', 'moveIn'];
+        $all = ['copyID', 'studentCard', 'proofRegistration', 'moveIn'];
+        if ($requiresBookingFeeDoc) {
+            array_push($all, "proof_of_payment");
+        }
 
         if ($user->studentType == "Cash / Direct") {
             array_push($all, "bankStatement");
@@ -7295,6 +7335,191 @@ class HomeController extends Controller
             "actionUserRole" => Auth::user()->userRole,
             "year" => $this_year,
         ]);
+    }
+
+    public function rob_fix(Request $request)
+    {
+        if (!Auth::check() || (Auth::user()->role_sys_admin != 1 && Auth::user()->role_bm_report != 1)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'action' => 'required|string',
+            'userId' => 'required|integer',
+            'reason' => 'required|string|min:3',
+        ]);
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        if (Session::has('year')) {
+            $year = Session::get('year');
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+        }
+        $this_year = $this_year->lookup_name;
+
+        $userId = $request->userId;
+        $bookingId = $request->bookingId;
+        $reason = trim($request->reason);
+
+        $student = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+        if (!$student) {
+            return response()->json(['message' => 'Student record not found for year ' . $this_year], 404);
+        }
+
+        if (empty($bookingId) && !empty($student->bookingId)) {
+            $bookingId = $student->bookingId;
+        }
+
+        $booking = null;
+        if (!empty($bookingId)) {
+            $booking = Booking::where('id', $bookingId)->first();
+        }
+        if (!$booking) {
+            $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
+            if ($booking) {
+                $bookingId = $booking->id;
+            }
+        }
+
+        $payment = null;
+        if (!empty($bookingId)) {
+            $payment = BookingPayment::where('bookingId', $bookingId)->first();
+        }
+
+        $actionLabels = [
+            'recompute_other_docs' => 'Recompute Other Docs',
+            'clear_booking_fee_requirement' => 'Clear Booking Fee Requirement',
+        ];
+
+        if (!array_key_exists($request->action, $actionLabels)) {
+            return response()->json(['message' => 'Unknown action.'], 422);
+        }
+
+        $actionLabel = $actionLabels[$request->action];
+
+        if ($request->action === 'recompute_other_docs') {
+            $otherFiles = UserFiles::where('userUid', $userId)
+                ->where('year', $this_year)
+                ->where('fileId', 'like', 'other%')
+                ->get();
+
+            $hasUploaded = false;
+            $hasRejected = false;
+            $hasApproved = false;
+
+            foreach ($otherFiles as $file) {
+                if ($file->status == "Uploaded") {
+                    $hasUploaded = true;
+                } elseif ($file->status == "Rejected") {
+                    $hasRejected = true;
+                } elseif ($file->status == "Approved") {
+                    $hasApproved = true;
+                }
+            }
+
+            $otherStatus = 3;
+            if ($otherFiles->count() > 0) {
+                if ($hasUploaded) {
+                    $otherStatus = 1;
+                } elseif ($hasRejected) {
+                    $otherStatus = 0;
+                } elseif ($hasApproved) {
+                    $otherStatus = 2;
+                }
+            }
+
+            $hasWaiver = false;
+            if ($payment) {
+                $hasWaiver = ($payment->rob_b_waived == '1' || $payment->rob_loan_waived == '1' || $payment->rob_deposit_waived == '1');
+            }
+
+            if ($hasWaiver || $otherStatus == 1) {
+                $newRob = 1;
+            } elseif ($otherStatus == 0) {
+                $newRob = 0;
+            } elseif ($otherStatus == 3) {
+                $newRob = 3;
+            } else {
+                $newRob = 2;
+            }
+
+            $oldRob = $student->rob_45_other;
+            Comments::create([
+                'user_uid' => $userId,
+                'comment' => "ROB Fix - {$actionLabel}: {$reason}",
+                'action_user_uid' => Auth::user()->id,
+                'bookingId' => $bookingId,
+            ]);
+            StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_45_other' => $newRob]);
+
+            ActionList::create([
+                "userUid" => $userId,
+                "action" => "ROB Fix: Recomputed Other Docs (rob_45_other) from {$oldRob} to {$newRob}. Reason: {$reason}",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
+
+            return response()->json([
+                'message' => 'Other docs status recomputed.',
+                'rob_45_other' => $newRob,
+            ]);
+        }
+
+        if ($request->action === 'clear_booking_fee_requirement') {
+            $fee = null;
+            if ($payment && $payment->booking_fee !== null) {
+                $fee = $payment->booking_fee;
+            } elseif ($booking && $booking->room_rate !== null) {
+                $fee = $booking->room_rate;
+            }
+
+            if ($fee === null) {
+                $fee = 0;
+            }
+
+            if ((float) $fee > 0) {
+                return response()->json(['message' => 'Booking fee is not zero. Use Waive Booking Fee instead.'], 422);
+            }
+
+            Comments::create([
+                'user_uid' => $userId,
+                'comment' => "ROB Fix - {$actionLabel}: {$reason}",
+                'action_user_uid' => Auth::user()->id,
+                'bookingId' => $bookingId,
+            ]);
+
+            UserFiles::updateOrCreate(
+                [
+                    'userUid' => $userId,
+                    'fileId' => 'proof_of_payment',
+                    'year' => $this_year,
+                ],
+                [
+                    'status' => 'Approved',
+                    'approved_by' => Auth::user()->id,
+                    'rejectReason' => null,
+                ]
+            );
+
+            StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_10_fee' => 2]);
+
+            ActionList::create([
+                "userUid" => $userId,
+                "action" => "ROB Fix: Cleared booking fee requirement (rob_10_fee set to 2). Reason: {$reason}",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
+
+            return response()->json([
+                'message' => 'Booking fee requirement cleared.',
+                'rob_10_fee' => 2,
+            ]);
+        }
+
+        return response()->json(['message' => 'Unknown action.'], 422);
     }
 
     public function update_booking_fees(Request $request)

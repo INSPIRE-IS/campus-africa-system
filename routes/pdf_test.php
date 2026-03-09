@@ -99,6 +99,92 @@ $buildLeaseTestData = function () use ($ensureTestRole) {
     return compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signature', 'owner', 'paymentBooking', 'signed_at', 'agent', 'leaseContact');
 };
 
+$buildLeaseBlankData = function () use ($ensureTestRole) {
+    $ensureTestRole();
+
+    $placeholder = '__________';
+
+    $data = (object) [
+        'userFirstName' => $placeholder,
+        'userLastname' => $placeholder,
+        'userId' => $placeholder,
+        'userPassport' => $placeholder,
+        'userNationality' => $placeholder,
+        'studentNo' => $placeholder,
+        'userEmail' => $placeholder,
+        'userCellCode' => $placeholder,
+        'userCell' => $placeholder,
+        'userDob' => $placeholder,
+        'userAddress1' => $placeholder,
+        'userAddress2' => $placeholder,
+        'userAddressCity' => $placeholder,
+        'userAddressPostal' => $placeholder,
+        'pAddress1' => $placeholder,
+        'pAddress2' => $placeholder,
+        'pAddressCity' => $placeholder,
+        'pAddressPostal' => $placeholder,
+        'year' => date('Y'),
+        'studentType' => $placeholder,
+        'kinFirstName' => $placeholder,
+        'kinLastName' => $placeholder,
+        'kinEmail' => $placeholder,
+        'kinCellCode' => $placeholder,
+        'kinCellNo' => $placeholder,
+        'nsfas_bursar' => 0,
+        'sponFirstName' => $placeholder,
+        'sponLastName' => $placeholder,
+        'sponId' => $placeholder,
+    ];
+
+    $booking = (object) [
+        'lease_from_date' => $placeholder,
+        'lease_from_time' => $placeholder,
+        'lease_to_date' => $placeholder,
+        'lease_to_time' => $placeholder,
+        'booking_code' => $placeholder,
+        'bed_code' => $placeholder,
+        'property' => 0,
+        'roomType' => 0,
+        'floor' => $placeholder,
+        'unit' => $placeholder,
+        'room' => $placeholder,
+        'bed' => $placeholder,
+        'room_rate' => '0',
+        'year' => date('Y'),
+    ];
+
+    $propertyData = (object) [
+        'residence' => $placeholder,
+        'bed_code' => $placeholder,
+    ];
+
+    $residence = (object) [
+        'residence' => $placeholder,
+        'owner' => $placeholder,
+        'address' => $placeholder,
+        'company_reg' => $placeholder,
+        'company_vat' => $placeholder,
+    ];
+
+    $leaseAdminFee = 0;
+    $paymentBooking = (object) [
+        'monthly_rental' => 0,
+        'rob_loan_waived' => '0',
+        'loan_admin_fee' => 0,
+        'rob_deposit_waived' => '0',
+        'deposit' => 0,
+        'rob_b_waived' => '0',
+    ];
+    $signature = public_path('images/lease/test_student_001.png');
+    $owner = public_path('images/lease/juanita-cronje.jpg');
+    $signed_at = $placeholder;
+    $agent = new \Jenssegers\Agent\Agent();
+
+    $leaseContact = LeaseContactService::resolve($data);
+
+    return compact('data', 'propertyData', 'residence', 'booking', 'leaseAdminFee', 'signature', 'owner', 'paymentBooking', 'signed_at', 'agent', 'leaseContact');
+};
+
 Route::get('/test-lease-sign-pdf', function () use ($buildLeaseTestData) {
     $vars = $buildLeaseTestData();
     return \PDF::loadView('PDF.leaseSign', $vars)->stream('lease-sign-test.pdf');
@@ -112,6 +198,11 @@ Route::get('/test-lease-sign-dev-pdf', function () use ($buildLeaseTestData) {
 Route::get('/test-lease-pdf', function () use ($buildLeaseTestData) {
     $vars = $buildLeaseTestData();
     return \PDF::loadView('PDF.leases', $vars)->stream('lease-test.pdf');
+});
+
+Route::get('/test-lease-blank-pdf', function () use ($buildLeaseBlankData) {
+    $vars = $buildLeaseBlankData();
+    return \PDF::loadView('PDF.blank-leases', $vars)->stream('lease-blank.pdf');
 });
 
 Route::get('/test-lease-screen-pdf', function () use ($buildLeaseTestData) {

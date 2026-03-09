@@ -954,6 +954,315 @@
 
 
                 </div>
+                @if (Auth::user()->role_sys_admin == 1 || Auth::user()->role_bm_report == 1)
+                    <div class="customWhiteCard" id="RobFixes" style="margin-top:20px; margin-bottom:20px;">
+                        <h2 class="appHeader">Irregularity Report</h2>
+                        <p class="formParagraph" style="margin-bottom:10px;">
+                            Diagnostics and actions. Comment is required for any change (logged to Action List).
+                        </p>
+                        @php
+                            $bookingFee = null;
+                            if (isset($paymentBooking) && $paymentBooking) {
+                                $bookingFee = $paymentBooking->booking_fee;
+                            } elseif (isset($booking) && $booking) {
+                                $bookingFee = $booking->room_rate;
+                            }
+
+                            $bookingFeeWaived = false;
+                            if (isset($paymentBooking) && $paymentBooking) {
+                                $bookingFeeWaived =
+                                    $paymentBooking->booking_fee_waived == '1' ||
+                                    $paymentBooking->rob_b_waived == '1';
+                            }
+
+                            $requiresBookingFeeDoc = (!$bookingFeeWaived) && (!is_null($bookingFee)) && ((float) $bookingFee > 0);
+
+                            $rob10Fee = $user[0]['userInfo']['rob_10_fee'] ?? null;
+                            $bookingFeeIssue = (!$requiresBookingFeeDoc) && ((int) $rob10Fee !== 2);
+
+                            $popStatus = null;
+                            $popStatusType = 'ok';
+                            foreach ($user[0]['files'] as $file) {
+                                if ($file['field'] === 'proof_of_payment') {
+                                    $popStatus = $file['status'] ?? null;
+                                    break;
+                                }
+                            }
+
+                            if ($requiresBookingFeeDoc) {
+                                if (is_null($popStatus)) {
+                                    $popStatusType = 'missing';
+                                } elseif ($popStatus === 'Approved' || $popStatus === 'XApproved') {
+                                    $popStatusType = 'ok';
+                                } elseif ($popStatus === 'AUploaded' || $popStatus === 'Uploaded') {
+                                    $popStatusType = 'action';
+                                } else {
+                                    $popStatusType = 'missing';
+                                }
+                            }
+
+                            $popIssue = $requiresBookingFeeDoc && $popStatusType !== 'ok';
+
+                            $otherFiles = [];
+                            $hasOtherUploaded = false;
+                            $hasOtherRejected = false;
+                            $hasOtherApproved = false;
+
+                            foreach ($user[0]['files'] as $file) {
+                                if (strpos($file['field'], 'other') === 0) {
+                                    $otherFiles[] = $file;
+                                    if ($file['status'] === 'AUploaded' || $file['status'] === 'Uploaded') {
+                                        $hasOtherUploaded = true;
+                                    } elseif ($file['status'] === 'Rejected') {
+                                        $hasOtherRejected = true;
+                                    } elseif ($file['status'] === 'XApproved' || $file['status'] === 'Approved') {
+                                        $hasOtherApproved = true;
+                                    }
+                                }
+                            }
+
+                            $otherStatus = 3;
+                            if (count($otherFiles) > 0) {
+                                if ($hasOtherUploaded) {
+                                    $otherStatus = 1;
+                                } elseif ($hasOtherRejected) {
+                                    $otherStatus = 0;
+                                } elseif ($hasOtherApproved) {
+                                    $otherStatus = 2;
+                                }
+                            }
+
+                            $hasWaiver = false;
+                            if (isset($paymentBooking) && $paymentBooking) {
+                                $hasWaiver =
+                                    $paymentBooking->rob_b_waived == '1' ||
+                                    $paymentBooking->rob_loan_waived == '1' ||
+                                    $paymentBooking->rob_deposit_waived == '1';
+                            }
+
+                            if ($hasWaiver || $otherStatus == 1) {
+                                $expectedRob45 = 1;
+                            } elseif ($otherStatus == 0) {
+                                $expectedRob45 = 0;
+                            } elseif ($otherStatus == 3) {
+                                $expectedRob45 = 3;
+                            } else {
+                                $expectedRob45 = 2;
+                            }
+
+                            $actualRob45 = (int) ($user[0]['userInfo']['rob_45_other'] ?? -1);
+                            $rob45Mismatch = $actualRob45 !== $expectedRob45;
+                            $hasBlockingIssues = $bookingFeeIssue || $rob45Mismatch || $popIssue;
+
+                            $robRows = [
+                                ['key' => 'rob_10_fee', 'label' => 'Booking Fee', 'naLabel' => 'Not Applicable'],
+                                ['key' => 'rob_15_id', 'label' => 'Copy of ID', 'naLabel' => 'Not Applicable'],
+                                ['key' => 'rob_20_card', 'label' => 'Student Card', 'naLabel' => 'Not Applicable'],
+                                ['key' => 'rob_25_reg', 'label' => 'Registration', 'naLabel' => 'Not Applicable'],
+                                ['key' => 'rob_30_funds', 'label' => 'Funding', 'naLabel' => 'Not Applicable'],
+                                ['key' => 'rob_35_info', 'label' => 'Other Info', 'naLabel' => 'Not Applicable'],
+                                ['key' => 'rob_40_bed', 'label' => 'Bed Allocation', 'naLabel' => 'Not Applicable'],
+                                ['key' => 'rob_45_other', 'label' => 'Other Documents', 'naLabel' => 'Not Required'],
+                                ['key' => 'rob_50_approve', 'label' => 'Application Approval', 'naLabel' => 'Not Set'],
+                                ['key' => 'rob_55_lease', 'label' => 'Lease', 'naLabel' => 'Not Set'],
+                                ['key' => 'rob_51_temp_lease_approve', 'label' => 'Temp Lease', 'naLabel' => 'Not Set'],
+                            ];
+
+                            $robStatusLabels = [
+                                0 => 'Rejected',
+                                1 => 'Action Required',
+                                2 => 'Approved',
+                                3 => 'Not Required',
+                            ];
+
+                            $robStatusClasses = [
+                                0 => 'rejected',
+                                1 => 'action',
+                                2 => 'approved',
+                                3 => 'na',
+                            ];
+                        @endphp
+
+                        @if ($hasBlockingIssues)
+                            <p class="formParagraph" style="margin-bottom:10px; color:#e74f26;">
+                                Blocking issues detected. A comment is required before applying any fix.
+                            </p>
+                        @endif
+
+                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div class="status"><div class="button approved"></div></div>
+                                <span>Approved</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div class="status"><div class="button action"></div></div>
+                                <span>Action Required</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div class="status"><div class="button rejected"></div></div>
+                                <span>No Document</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div class="status"><div class="button na"></div></div>
+                                <span>Not Required</span>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm" style="margin-bottom:12px; table-layout:fixed; width:100%;">
+                            <colgroup>
+                                <col style="width:28%;">
+                                <col style="width:10%;">
+                                <col style="width:42%;">
+                                <col style="width:20%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Issue</th>
+                                    <th>Status</th>
+                                    <th>Detail</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Booking Fee Requirement</td>
+                                    <td>
+                                        <div class="status" id="robFixBookingFeeStatus">
+                                            <div class="button {{ $bookingFeeIssue ? 'action' : 'approved' }}"></div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span
+                                            title="{{ $bookingFeeIssue ? 'Action Required' : 'OK' }} | Booking fee: {{ is_null($bookingFee) ? 'null' : $bookingFee }} | booking_fee_waived: {{ $bookingFeeWaived ? '1' : '0' }} | rob_10_fee: {{ is_null($rob10Fee) ? 'null' : $rob10Fee }}">
+                                            Info
+                                        </span>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        @if ($bookingFeeIssue)
+                                            <button type="button" class="appBooking"
+                                                onClick="robFix('clear_booking_fee_requirement', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
+                                                Clear Requirement
+                                            </button>
+                                        @else
+                                            <button type="button" class="appBooking" disabled
+                                                style="opacity:0.4; cursor:default;">None</button>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Proof of Payment (Booking Fee)</td>
+                                    <td>
+                                        <div class="status" id="robFixProofOfPaymentStatus">
+                                            @if ($popIssue)
+                                                <div class="button {{ $popStatusType === 'action' ? 'action' : 'rejected' }}"></div>
+                                            @else
+                                                <div class="button approved"></div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span
+                                            title="{{ $requiresBookingFeeDoc ? 'Required' : 'Not Required' }} | proof_of_payment status: {{ is_null($popStatus) ? 'missing' : $popStatus }}">
+                                            Info
+                                        </span>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <button type="button" class="appBooking" disabled
+                                            style="opacity:0.4; cursor:default;">None</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other Documents Requirement</td>
+                                    <td>
+                                        <div class="status" id="robFixOtherDocsStatus">
+                                            <div class="button {{ $rob45Mismatch ? 'action' : 'approved' }}"></div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span
+                                            title="{{ $rob45Mismatch ? 'Action Required' : 'OK' }} | rob_45_other: {{ $actualRob45 }} | expected: {{ $expectedRob45 }}">
+                                            Info
+                                        </span>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        @if ($rob45Mismatch)
+                                            <button type="button" class="appBooking"
+                                                onClick="robFix('recompute_other_docs', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
+                                                Recompute Other Docs
+                                            </button>
+                                        @else
+                                            <button type="button" class="appBooking" disabled
+                                                style="opacity:0.4; cursor:default;">None</button>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-sm" style="margin-bottom:0; table-layout:fixed; width:100%;">
+                            <colgroup>
+                                <col style="width:32%;">
+                                <col style="width:10%;">
+                                <col style="width:58%;align:center;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Step</th>
+                                    <th>Status</th>
+                                    <th>Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($robRows as $robRow)
+                                    @php
+                                        $robValue = $user[0]['userInfo'][$robRow['key']] ?? null;
+                                        $robValueInt = is_null($robValue) ? null : (int) $robValue;
+                                        $robLabel = $robStatusLabels[$robValueInt] ?? 'Not Set';
+                                        $robClass = $robStatusClasses[$robValueInt] ?? 'na';
+                                        if ($robValueInt === 3) {
+                                            $robLabel = $robRow['naLabel'];
+                                        }
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <span title="{{ $robRow['key'] }}">{{ $robRow['label'] }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="status" id="{{ $robRow['key'] }}Status">
+                                                <div class="button {{ $robClass }}"></div>
+                                            </div>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span title="{{ $robLabel }} | {{ is_null($robValue) ? 'null' : $robValue }}">
+                                                Info
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                <tr>
+                                    <td><span title="rob_60_cancelled">Cancelled</span></td>
+                                    <td>
+                                        <div class="status" id="rob_60_cancelledStatus">
+                                            @if ($user[0]['userInfo']['rob_60_cancelled'] == 1)
+                                                <div class="button rejected"></div>
+                                            @elseif ($user[0]['userInfo']['rob_60_cancelled'] == 0)
+                                                <div class="button approved"></div>
+                                            @else
+                                                <div class="button na"></div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span
+                                            title="@if ($user[0]['userInfo']['rob_60_cancelled'] == 1) Yes @elseif ($user[0]['userInfo']['rob_60_cancelled'] == 0) No @else Not Set @endif | {{ $user[0]['userInfo']['rob_60_cancelled'] ?? 'null' }}">
+                                            Info
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
 {{-- Comments --}}
                 <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                     <h2 class="appHeader">Comments</h2>
@@ -1479,20 +1788,28 @@
         </div>
     </div>
     <script defer>
-        document.getElementById('openPaymentModal').onclick = function() {
-            document.getElementById('paymentModal').style.display = 'block';
+        const openPaymentModalBtn = document.getElementById('openPaymentModal');
+        const paymentModal = document.getElementById('paymentModal');
+        const closePaymentModalBtn = document.querySelector('.closePaymentModal');
+
+        if (openPaymentModalBtn && paymentModal) {
+            openPaymentModalBtn.onclick = function() {
+                paymentModal.style.display = 'block';
+            };
         }
 
-        document.querySelector('.closePaymentModal').onclick = function() {
-            document.getElementById('paymentModal').style.display = 'none';
+        if (closePaymentModalBtn && paymentModal) {
+            closePaymentModalBtn.onclick = function() {
+                paymentModal.style.display = 'none';
+            };
         }
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            if (event.target == document.getElementById('paymentModal')) {
-                document.getElementById('paymentModal').style.display = 'none';
+            if (paymentModal && event.target == paymentModal) {
+                paymentModal.style.display = 'none';
             }
-        }
+        };
     </script>
     <div class="footerClearfix"></div>
     <div class="footerClearfix"></div>
@@ -5594,6 +5911,55 @@
                     }
                 }
             })
+
+            function robFix(action, userId, bookingId) {
+                Swal.fire({
+                    title: 'Comment for change',
+                    input: 'textarea',
+                    inputPlaceholder: 'Add a short comment...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Apply',
+                    preConfirm: (value) => {
+                        if (!value || value.trim().length < 3) {
+                            Swal.showValidationMessage('Comment is required (min 3 chars).');
+                            return false;
+                        }
+                        return value.trim();
+                    }
+                }).then((result) => {
+                    if (!result.isConfirmed) {
+                        return;
+                    }
+
+                    $.ajax({
+                        type: "post",
+                        url: "/rob-fix",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            action: action,
+                            userId: userId,
+                            bookingId: bookingId,
+                            reason: result.value
+                        },
+                        success: function(data) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Updated',
+                                text: data.message || 'ROB updated.'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            let message = 'Update failed.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Error', message, 'error');
+                        }
+                    });
+                });
+            }
         </script>
 
 
