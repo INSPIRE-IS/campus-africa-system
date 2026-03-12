@@ -37,9 +37,11 @@
                 <form method="POST" action="/metrics-features/enable">
                     @csrf
                     <label for="feature_id" style="display: block; margin-bottom: 6px;">Enable feature</label>
-                    <select name="feature_id" id="feature_id" style="min-width: 240px; margin-right: 10px;">
+                    <select name="feature_id" id="feature_id" style="min-width: 320px; margin-right: 10px;">
                         @foreach ($disabledFeatures as $feature)
-                            <option value="{{ $feature->id }}">{{ $feature->name }}</option>
+                            <option value="{{ $feature->id }}">
+                                {{ $feature->name }}{{ $feature->description ? ' — ' . $feature->description : '' }}
+                            </option>
                         @endforeach
                     </select>
                     <button type="submit" class="detailsChange" @if ($disabledFeatures->count() === 0) disabled @endif>
@@ -56,32 +58,33 @@
                 <table class="display" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th>Feature</th>
-                            <th>Description</th>
-                            <th>Key</th>
-                            <th>Sample Rate</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                                <th>Feature</th>
+                                <th>Description</th>
+                                <th>Key</th>
+                                <th>Sample Rate</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         @forelse ($enabledFeatures as $feature)
                             <tr>
-                                <td>{{ $feature->name }}</td>
-                                <td>{{ $feature->description }}</td>
-                                <td>{{ $feature->key }}</td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        name="sample_rate[{{ $feature->id }}]"
-                                        value="{{ $feature->sample_rate }}"
-                                        step="0.01"
-                                        min="0.01"
-                                        max="1"
-                                        style="width: 90px;"
-                                    />
-                                </td>
-                                <td>Enabled</td>
+                                    <td title="Metric name used in the dashboard.">{{ $feature->name }}</td>
+                                    <td title="{{ $feature->description }}">{{ $feature->description }}</td>
+                                    <td title="Internal metric key used for capture and reporting.">{{ $feature->key }}</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="sample_rate[{{ $feature->id }}]"
+                                            value="{{ $feature->sample_rate }}"
+                                            step="0.01"
+                                            min="0.01"
+                                            max="1"
+                                            style="width: 90px;"
+                                            title="Sampling rate between 0.01 and 1.00 (1 = 100% of events)."
+                                        />
+                                    </td>
+                                    <td>Enabled</td>
                                 <td>
                                     <button
                                         type="submit"
