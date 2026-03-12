@@ -601,6 +601,7 @@
                             <div style="flex-grow:2">
                                 @if (Auth::user()->role_sys_admin == 1)
                                     <button type="button" id="openPaymentModal" class="profileSubmit"
+                                        onClick="document.getElementById('paymentModal').style.display = 'block';"
                                         style="padding: 10px;margin-top: 30px;background-color: #ffbb3c;border: none;color: #fff;border-radius: 10px;">
                                         Update Rates
                                     </button>
@@ -1779,7 +1780,8 @@
     <div id="paymentModal" class="modal">
         <div class="modal-content"
             style="height:400px; max-width: 500px; background-color: #fff; border-radius: 10px; padding: 20px; margin: 10px auto; box-shadow: 0 0 10px rgba(0, 0, 0, .2); text-align: center;">
-            <span class="closePaymentModal" style="float:right; font-size:25px; cursor:pointer">&times;</span>
+            <span class="closePaymentModal" onClick="document.getElementById('paymentModal').style.display = 'none';"
+                style="float:right; font-size:25px; cursor:pointer">&times;</span>
             <div class="form-card">
                 <h2>Update Booking Payment {{ $paymentBooking->id }}</h2>
 
