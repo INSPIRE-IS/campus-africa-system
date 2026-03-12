@@ -17,6 +17,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MailReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\MetricsFeatureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -152,6 +153,12 @@ Route::post("/restore/booking", [HomeController::class, 'restore_booking']);
 
 Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
+
+Route::get('/metrics-features', [MetricsFeatureController::class, 'index']);
+Route::post('/metrics-features/enable', [MetricsFeatureController::class, 'enable']);
+Route::post('/metrics-features/disable/{id}', [MetricsFeatureController::class, 'disable']);
+Route::post('/metrics-features/update', [MetricsFeatureController::class, 'update']);
+Route::get('/metrics-features/data', [MetricsFeatureController::class, 'data']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);

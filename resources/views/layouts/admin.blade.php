@@ -51,6 +51,7 @@
         let sortDirection = '<?php echo Session::get('sortDirection'); ?>';
     </script>
     <script src="../../js/applications.js?v=<?php echo rand(); ?>"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <link rel="stylesheet" type="text/css" href="/css/dropzone.css">
     <script src="/js/dropzone.js"></script>
@@ -79,7 +80,11 @@
                 <a href="/booking-summary">Booking Summary</a>
             @endif
 
-            @if (Auth::user()->role_manage_users == '1')
+            @if (Auth::user() && Auth::user()->role_sys_admin == '1')
+                <a href="/metrics-features">Metrics</a>
+            @endif
+
+            @if (Auth::user() && Auth::user()->role_manage_users == '1')
                 <a href="/users">Users</a>
             @endif
 
@@ -149,6 +154,7 @@
             @yield('content')
         </main>
     </div>
+    @stack('scripts')
     <footer class="footer">
         <div class="footerBanner">
             <div class="container <?php if (!$agent->isMobile()) {
