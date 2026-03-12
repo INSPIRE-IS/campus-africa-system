@@ -80,7 +80,7 @@
                 <a href="/booking-summary">Booking Summary</a>
             @endif
 
-            @if (Auth::user() && Auth::user()->role_sys_admin == '1')
+            @if (Auth::user() && Auth::user()->role_super == '1')
                 <a href="/metrics-features">Metrics</a>
             @endif
 
