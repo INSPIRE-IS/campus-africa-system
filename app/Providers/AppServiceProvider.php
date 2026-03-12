@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use App\Services\MetricsCollector;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -70,6 +72,10 @@ class AppServiceProvider extends ServiceProvider
                 'sessionYear' => $sessionYear,
                 'bedCode'     => $bedCode
             ]);
+        });
+
+        DB::listen(function ($query) {
+            app(MetricsCollector::class)->addQueryTime($query->time);
         });
     }
 }
