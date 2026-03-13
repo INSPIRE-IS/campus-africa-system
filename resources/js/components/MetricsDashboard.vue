@@ -96,7 +96,10 @@
         <div style="margin-top: 30px;">
             <h3>Slow Routes</h3>
             <ul v-if="slowRoutesList.length">
-                <li v-for="item in slowRoutesList" :key="item.key">{{ item.key }}: {{ item.avg }} ms avg</li>
+                <li v-for="item in slowRoutesList" :key="item.route">
+                    {{ item.route }}: {{ item.avg }} ms avg
+                    <span v-if="item.p95">, p95 {{ item.p95 }} ms</span>
+                </li>
             </ul>
             <p v-else>No slow routes captured yet.</p>
         </div>
@@ -146,8 +149,7 @@ export default {
             return Object.keys(totals).map((key) => ({ key, count: totals[key] }));
         },
         slowRoutesList() {
-            const totals = this.dashboard.slow_routes || {};
-            return Object.keys(totals).map((key) => ({ key, avg: totals[key] }));
+            return this.dashboard.slow_routes || [];
         },
     },
     mounted() {

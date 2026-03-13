@@ -73,7 +73,7 @@
                             </td>
                         @endif
                         <td>
-                            @if (preg_match('/^[345]xx$/', $status))
+                            @if (preg_match('/^[34]xx$/', $status))
                                 <a href="/metrics-codes/breakdown?group={{ $status }}&route={{ urlencode($route) }}&start={{ $rangeStart->format('Y-m-d') }}&end={{ $rangeEnd->format('Y-m-d') }}" class="detailsChange" style="margin-right: 8px;">View Codes</a>
                             @endif
                             @if ($status === '5xx')
