@@ -150,6 +150,12 @@ class MetricsCollector
         $routeUri = $route ? $route->uri() : $request->path();
         $routeKey = $routeName ?: ($request->method() . ' ' . $routeUri);
 
+        if ($status >= 300) {
+            $group = floor($status / 100) . 'xx';
+            $this->recordCount('http_requests', 'status:' . $group . '|' . $routeKey, 1, 'hour');
+            $this->recordCount('http_requests', 'status:' . $status . '|' . $routeKey, 1, 'hour');
+        }
+
         $threshold = (int) config('metrics.slow_route_threshold_ms', 500);
         if ($durationMs >= $threshold) {
             $this->recordTiming('slow_routes', $routeKey, $durationMs, 'hour');
@@ -192,11 +198,30 @@ class MetricsCollector
 
         $key = class_basename($e);
         $message = Str::limit($e->getMessage(), 160, '');
+        $route = null;
+        try {
+            $routeObj = request()->route();
+            $routeName = $routeObj ? $routeObj->getName() : null;
+            $routeUri = $routeObj ? $routeObj->uri() : request()->path();
+            $route = $routeName ?: (request()->method() . ' ' . $routeUri);
+        } catch (Throwable $ignored) {
+            $route = null;
+        }
 
         $this->record($feature, 'minute', null, $key, 1, 0, null, null, [
             'message' => $message,
+            'class' => $key,
+            'route' => $route,
         ]);
         $this->record($feature, 'hour', null, $key, 1);
+        if ($route) {
+            $routeKey = 'route|' . $route . '|' . $key;
+            $this->record($feature, 'hour', null, $routeKey, 1, 0, null, null, [
+                'message' => $message,
+                'class' => $key,
+                'route' => $route,
+            ]);
+        }
     }
 
     public function captureQueueProcessed($event): void

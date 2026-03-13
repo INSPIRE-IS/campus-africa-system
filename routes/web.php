@@ -216,6 +216,9 @@ Route::post('/metrics-features/enable', [MetricsFeatureController::class, 'enabl
 Route::post('/metrics-features/disable/{id}', [MetricsFeatureController::class, 'disable']);
 Route::post('/metrics-features/update', [MetricsFeatureController::class, 'update']);
 Route::get('/metrics-features/data', [MetricsFeatureController::class, 'data']);
+Route::get('/metrics-codes', [MetricsFeatureController::class, 'codes']);
+Route::get('/metrics-codes/exceptions', [MetricsFeatureController::class, 'exceptions']);
+Route::get('/metrics-codes/breakdown', [MetricsFeatureController::class, 'codesBreakdown']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
