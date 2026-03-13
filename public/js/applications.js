@@ -46,7 +46,9 @@ jQuery(document).ready(function ($) {
 
         var datatable = $("#application_table").DataTable();
 
-        console.log('show_cancelled', JSON.stringify(document.getElementById('show_cancelled').checked))
+        const showCancelledEl = document.getElementById('show_cancelled');
+        const showCancelledValue = showCancelledEl ? showCancelledEl.checked : false;
+        console.log('show_cancelled', JSON.stringify(showCancelledValue))
         console.log('year', $("#year").val())
 
         $.ajax({
@@ -68,7 +70,7 @@ jQuery(document).ready(function ($) {
                 idPassport: $("#idPassport").val(),
                 bookingRef: $("#bookingRef").val(),
                 firstLoad: $("#firstLoad").val(),
-                show_cancelled: JSON.stringify(document.getElementById('show_cancelled').checked),
+                show_cancelled: JSON.stringify(showCancelledValue),
                 applied: $("#applied").val(),
                 gender: $("#gender").val(),
                 email: $("#email").val(),
