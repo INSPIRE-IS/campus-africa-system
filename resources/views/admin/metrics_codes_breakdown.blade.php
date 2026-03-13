@@ -39,9 +39,9 @@
             <tbody>
                 @forelse ($captures as $capture)
                     <tr>
-                        <td>{{ $capture->code }}</td>
-                        <td>{{ $capture->total }}</td>
-                        <td>{{ $capture->last_seen }}</td>
+                        <td>{{ $capture['code'] ?? '' }}</td>
+                        <td>{{ $capture['total'] ?? 0 }}</td>
+                        <td>{{ $capture['last_seen'] ?? '' }}</td>
                     </tr>
                 @empty
                     <tr>
