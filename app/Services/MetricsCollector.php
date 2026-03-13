@@ -13,6 +13,7 @@ class MetricsCollector
     protected static $featureCacheLoadedAt;
     protected static $requestDbTimeMs = 0;
     protected static $requestQueryCount = 0;
+    protected static $latencyBuckets = [50, 100, 250, 500, 1000, 2000, 5000, 10000];
 
     public function startRequest(): void
     {
@@ -146,9 +147,14 @@ class MetricsCollector
         $this->recordCount('http_requests', 'status:' . $status, 1, 'hour');
 
         $route = $request->route();
-        $routeName = $route ? $route->getName() : null;
         $routeUri = $route ? $route->uri() : $request->path();
-        $routeKey = $routeName ?: ($request->method() . ' ' . $routeUri);
+        $routeKey = $request->method() . ' ' . $routeUri;
+
+        $routeLatencyFeature = $this->feature('route_latency');
+        if ($routeLatencyFeature && $this->shouldSample($routeLatencyFeature)) {
+            $bucketLabel = $this->bucketLabel($durationMs);
+            $this->recordCount('route_latency', 'route|' . $routeKey . '|bkt:' . $bucketLabel, 1, 'hour');
+        }
 
         if ($status >= 300) {
             $group = floor($status / 100) . 'xx';
@@ -252,5 +258,18 @@ class MetricsCollector
         $this->recordCount('queue', 'job:' . $jobName, 1, 'minute');
         $this->recordCount('queue', 'failed', 1, 'hour');
         $this->recordCount('queue', 'job:' . $jobName, 1, 'hour');
+    }
+
+    protected function bucketLabel(int $durationMs): string
+    {
+        $min = 0;
+        foreach (self::$latencyBuckets as $max) {
+            if ($durationMs <= $max) {
+                return $min . '-' . $max;
+            }
+            $min = $max;
+        }
+
+        return self::$latencyBuckets[count(self::$latencyBuckets) - 1] . '+';
     }
 }
