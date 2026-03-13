@@ -88,8 +88,6 @@
                 <a href="/users">Users</a>
             @endif
 
-
-
             <a href="/logout">Hi {{ Auth::user()->userFirstName }}, Log out</a>
             <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                 <i class="fa fa-bars"></i>
