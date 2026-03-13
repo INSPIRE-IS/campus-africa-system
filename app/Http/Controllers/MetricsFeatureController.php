@@ -332,7 +332,7 @@ class MetricsFeatureController extends Controller
             'db' => $this->buildDbSeries($features, $start, $labels),
             'queue' => $this->buildQueueSeries($features, $start, $labels),
             'exceptions' => $this->buildExceptionsSeries($features, $start),
-            'slow_routes' => $this->buildSlowRoutes($features, $start),
+            'slow_routes' => $this->buildSlowRoutes($features, $start, $labels),
             'range' => [
                 'start' => $start->copy()->format('Y-m-d H:i'),
                 'end' => $now->copy()->format('Y-m-d H:i'),
@@ -366,7 +366,7 @@ class MetricsFeatureController extends Controller
 
         $statusTotals = [];
         foreach ($captures as $capture) {
-            if ($capture->key && strpos($capture->key, 'status:') === 0) {
+            if ($capture->key && preg_match('/^status:\\d{3}$/', $capture->key)) {
                 $statusTotals[$capture->key] = ($statusTotals[$capture->key] ?? 0) + (int) $capture->count;
             }
         }
@@ -454,7 +454,7 @@ class MetricsFeatureController extends Controller
         return array_slice($totals, 0, 5, true);
     }
 
-    protected function buildSlowRoutes($features, Carbon $start): array
+    protected function buildSlowRoutes($features, Carbon $start, array $labels): array
     {
         $feature = $features->firstWhere('key', 'slow_routes');
         if (!$feature) {
@@ -480,8 +480,21 @@ class MetricsFeatureController extends Controller
             $averages[$key] = $values['count'] > 0 ? round($values['sum'] / $values['count'], 2) : 0;
         }
 
+        $p95 = $this->buildRouteP95($features, $start, array_keys($averages));
+
         arsort($averages);
-        return array_slice($averages, 0, 5, true);
+        $top = array_slice($averages, 0, 5, true);
+
+        $result = [];
+        foreach ($top as $route => $avg) {
+            $result[] = [
+                'route' => $route,
+                'avg' => $avg,
+                'p95' => $p95[$route] ?? null,
+            ];
+        }
+
+        return $result;
     }
 
     protected function seriesFromCaptures($captures, string $key, array $labels, callable $value): array
@@ -594,5 +607,75 @@ class MetricsFeatureController extends Controller
             return $status;
         }
         return '5xx';
+    }
+
+    protected function buildRouteP95($features, Carbon $start, array $routes): array
+    {
+        $feature = $features->firstWhere('key', 'route_latency');
+        if (!$feature || empty($routes)) {
+            return [];
+        }
+
+        $captures = MetricsCapture::where('metrics_feature_id', $feature->id)
+            ->where('bucket', 'hour')
+            ->where('bucket_start', '>=', $start)
+            ->where('key', 'like', 'route|%|bkt:%')
+            ->get();
+
+        $buckets = $this->latencyBuckets();
+        $bucketOrder = array_keys($buckets);
+
+        $routeBuckets = [];
+        foreach ($captures as $capture) {
+            $key = $capture->key ?? '';
+            $parts = explode('|', $key);
+            if (count($parts) < 3) {
+                continue;
+            }
+            $route = $parts[1];
+            if (!in_array($route, $routes, true)) {
+                continue;
+            }
+            $bucketKey = str_replace('bkt:', '', $parts[2] ?? '');
+            if (!isset($buckets[$bucketKey])) {
+                continue;
+            }
+            $routeBuckets[$route][$bucketKey] = ($routeBuckets[$route][$bucketKey] ?? 0) + (int) $capture->count;
+        }
+
+        $p95 = [];
+        foreach ($routes as $route) {
+            $counts = $routeBuckets[$route] ?? [];
+            $total = array_sum($counts);
+            if ($total === 0) {
+                continue;
+            }
+            $target = (int) ceil($total * 0.95);
+            $running = 0;
+            foreach ($bucketOrder as $bucketKey) {
+                $running += $counts[$bucketKey] ?? 0;
+                if ($running >= $target) {
+                    $p95[$route] = $buckets[$bucketKey];
+                    break;
+                }
+            }
+        }
+
+        return $p95;
+    }
+
+    protected function latencyBuckets(): array
+    {
+        return [
+            '0-50' => 50,
+            '50-100' => 100,
+            '100-250' => 250,
+            '250-500' => 500,
+            '500-1000' => 1000,
+            '1000-2000' => 2000,
+            '2000-5000' => 5000,
+            '5000-10000' => 10000,
+            '10000+' => 10000,
+        ];
     }
 }

@@ -43,6 +43,13 @@ return [
             'sample_rate' => 1.0,
         ],
         [
+            'key' => 'route_latency',
+            'name' => 'Route Latency (P95)',
+            'description' => 'Per-route latency distribution buckets for p95.',
+            'default_enabled' => false,
+            'sample_rate' => 0.25,
+        ],
+        [
             'key' => 'cache',
             'name' => 'Cache',
             'description' => 'Cache hit/miss rate.',
