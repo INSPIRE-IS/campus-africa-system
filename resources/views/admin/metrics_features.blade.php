@@ -114,10 +114,12 @@
 
         <hr />
         <br />
-        <metrics-dashboard
-            initial-range="{{ $range }}"
-            :range-options='@json($rangeOptions)'
-        ></metrics-dashboard>
+        <div id="metrics-app">
+            <metrics-dashboard
+                initial-range="{{ $range }}"
+                :range-options='@json($rangeOptions)'
+            ></metrics-dashboard>
+        </div>
     </div>
 @endsection
 
