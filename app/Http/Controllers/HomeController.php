@@ -967,6 +967,15 @@ class HomeController extends Controller
         $user =  StudentsInfo::where('userUid', $userId)->orderBy('year', 'desc')->first();
         // $user = User::where('id', $userId)->first();
 
+        if (!$user) {
+            Log::warning('oldBooking: no StudentsInfo found', [
+                'userId' => $userId,
+                'year' => $this_year,
+            ]);
+
+            return redirect('/applications')->withErrors(['message' => 'Unable to find a booking for this user.']);
+        }
+
         $name = $user->userFirstName . " " . $user->userLastname;
 
         $booking = Booking::where('userId', $userId)->orderBy('year', 'desc')->first();
@@ -1040,6 +1049,9 @@ class HomeController extends Controller
                 $returnInfo = $this->activeBooking($userId, $this_year);
             } else {
                 $returnInfo = $this->oldBooking($userId);
+            }
+            if ($returnInfo instanceof \Illuminate\Http\RedirectResponse) {
+                return $returnInfo;
             }
             // Log::info('returnInfo' . $returnInfo['Info']);
             // Log::info('show_booking' . $show_booking);
@@ -3947,12 +3959,24 @@ class HomeController extends Controller
         $this_year = Lookups::where('group_id', '4')->first();
         $this_year = $this_year->lookup_name;
 
+        $booking_old = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
+        Log::info('cancel_booking: start', [
+            'userId' => $request->userId,
+            'bookingId' => $request->bookingId ?? null,
+            'year' => $this_year,
+            'booking_property_data_id' => $booking_old->property_data_id ?? null,
+            'booking_bed_code' => $booking_old->bed_code ?? null,
+        ]);
+
         // User::where('id', $request->userId)->update(['rob_60_cancelled' => 1, 'rob_40_bed' => 1, 'rob_50_approve' => 0]);
         StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(['rob_60_cancelled' => 1, 'rob_40_bed' => 1, 'rob_50_approve' => 0]);
 
         Booking::where('userId', $request->userId)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null, 'room_rate' => null, 'cancelled' => 1]);
 
         Property::where('user_id_room', $request->userId)->update(["user_id_room" => null, "room_available" => null]);
+        if (!empty($booking_old) && !empty($booking_old->property_data_id)) {
+            Property::where('id', $booking_old->property_data_id)->update(["user_id_room" => null, "room_available" => null]);
+        }
 
         //Delete the Lease
         UserFiles::where('userUid', $request->userId)->where('fileId', 'moveIn')->where('year', $this_year)->delete();
@@ -3963,11 +3987,22 @@ class HomeController extends Controller
         //     UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->delete();
         // }
 
+        $clearedFields = [
+            'property_data_id' => $booking_old->property_data_id ?? null,
+            'floor' => $booking_old->floor ?? null,
+            'unit' => $booking_old->unit ?? null,
+            'room' => $booking_old->room ?? null,
+            'bed' => $booking_old->bed ?? null,
+            'bed_code' => $booking_old->bed_code ?? null,
+            'room_rate' => $booking_old->room_rate ?? null,
+        ];
+
         if ($request->reason) {
             $cancelledReason = "Application Cancelled because: " . $request->reason;
         } else {
             $cancelledReason = "Application Cancelled";
         }
+        $cancelledReason .= ' | Cleared booking fields: ' . json_encode($clearedFields);
 
         ActionList::create([
             "userUid" => $request->userId,
@@ -3976,6 +4011,12 @@ class HomeController extends Controller
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
             "year" => $this_year,
+        ]);
+
+        Log::info('cancel_booking: completed', [
+            'userId' => $request->userId,
+            'year' => $this_year,
+            'booking_property_data_id' => $booking_old->property_data_id ?? null,
         ]);
 
         return 'true';
