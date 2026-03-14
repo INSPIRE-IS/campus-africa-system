@@ -3229,14 +3229,18 @@
             var spanBooking = document.getElementsByClassName("closeBooking")[0];
 
             var modalBuilding = document.getElementById("changeBuildingModal");
-            var spanBuilding = document.getElementsByClassName("closeBuilding")[0];
+            var closeBuildingButtons = document.getElementsByClassName("closeBuilding");
 
             spanBooking.onclick = function() {
                 modalBooking.style.display = "none";
             }
 
-            spanBuilding.onclick = function() {
-                modalBuilding.style.display = "none";
+            if (modalBuilding && closeBuildingButtons.length) {
+                Array.from(closeBuildingButtons).forEach(function(btn) {
+                    btn.onclick = function() {
+                        modalBuilding.style.display = "none";
+                    }
+                });
             }
 
             var modalLease = document.getElementById("myModalEditLease");
