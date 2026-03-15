@@ -278,7 +278,7 @@
                                         this booking</button>
                                 @endif
 
-                                @if (Auth::user()->role_cancel_booking == 1)
+                                @if (Auth::user()->role_cancel_booking == 1 && Auth::user()->role_super == 1)
                                     @if (
                                         $user[0]['userInfo']['rob_55_lease'] != 2 ||
                                             (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_55_lease'] == 2))
@@ -5010,6 +5010,13 @@
                                 // window.location = "/applications";
                                 window.location.reload();
                             },
+                            error: function(xhr) {
+                                let message = 'Restore not possible.';
+                                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                                    message = xhr.responseJSON.message;
+                                }
+                                Swal.fire('Restore blocked', message, 'error');
+                            }
                         });
                     }
                 })

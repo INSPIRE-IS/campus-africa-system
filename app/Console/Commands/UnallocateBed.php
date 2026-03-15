@@ -19,7 +19,7 @@ class UnallocateBed extends Command
      * @var string
      */
     protected $signature = 'booking:unallocate-bed {userId} {--year=} {--reason=} {--dry-run}';
-
+    // php artisan booking:unallocate-bed 19501 --year=2026 --reason="test" --dry-run
     /**
      * The console command description.
      *
