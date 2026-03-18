@@ -178,6 +178,7 @@ Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 
 Route::post('/getPaymentInfo', [HomeController::class, 'getPaymentInfo']);
 Route::post('/update-booking-payment', [HomeController::class, 'updateBookingPayment'])->name('update.booking.payment');
+Route::post('/update-monthly-pop', [HomeController::class, 'updateMonthlyPop'])->name('update.monthly.pop');
 
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::post("/manage-properties-filter", [HomeController::class, 'properties_filter']);

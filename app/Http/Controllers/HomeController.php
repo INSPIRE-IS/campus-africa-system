@@ -1087,6 +1087,7 @@ class HomeController extends Controller
                     "paymentBooking" => $returnInfo['paymentBooking'],
                     "this_year" => $this_year,
                     'bookingNext' => $show_booking,
+                    'monthlyPopLeadDays' => (int) (Lookups::where('group_id', '14')->value('day_from') ?? 7),
                 ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
@@ -11161,6 +11162,97 @@ class HomeController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Booking payment updated.');
+    }
+
+    public function updateMonthlyPop(Request $request)
+    {
+        if (!Auth::user() || Auth::user()->role_sys_admin != 1) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'booking_payment_id' => 'required|integer|exists:booking_payments,id',
+            'monthly_pop_due_date' => 'nullable|date',
+            'monthly_pop_amount' => 'nullable|numeric',
+        ]);
+
+        $dueDate = $validated['monthly_pop_due_date'] ?? null;
+        $amount = $validated['monthly_pop_amount'] ?? null;
+
+        if ((empty($dueDate) && !empty($amount)) || (!empty($dueDate) && empty($amount))) {
+            return redirect()->back()->withErrors(['monthly_pop_amount' => 'Both due date and amount are required if one is set.']);
+        }
+
+        $sendToStudent = $request->has('send_to_student') ? 1 : 0;
+        $sendToSponsor = $request->has('send_to_sponsor') ? 1 : 0;
+
+        if (empty($dueDate) && empty($amount)) {
+            $sendToStudent = 0;
+            $sendToSponsor = 0;
+        }
+
+        $payment = BookingPayment::find($validated['booking_payment_id']);
+        $oldDue = $payment->monthly_pop_due_date;
+        $oldAmount = $payment->monthly_pop_amount;
+        $oldSendStudent = $payment->send_to_student;
+        $oldSendSponsor = $payment->send_to_sponsor;
+
+        $yearLookup = Lookups::where('group_id', '4')->first();
+        $yearValue = $yearLookup ? $yearLookup->lookup_name : null;
+        if (Session::get('year')) {
+            $sessionYear = Session::get('year');
+            $yearValue = $sessionYear ?: $yearValue;
+        }
+        if ($yearValue) {
+            $studentInfo = StudentsInfo::where('userUid', $request->userId)->where('year', $yearValue)->first();
+            if (empty($studentInfo) || empty($studentInfo->sponEmail)) {
+                $sendToSponsor = 0;
+            }
+        }
+
+        $payment->monthly_pop_due_date = $dueDate;
+        $payment->monthly_pop_amount = $amount;
+        $payment->send_to_student = $sendToStudent;
+        $payment->send_to_sponsor = $sendToSponsor;
+        $payment->save();
+
+        $this_year = Lookups::where('group_id', '4')->first();
+        if (!Session::get('year')) {
+            $year = Session::get('year');
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+        }
+        $this_year = $this_year->lookup_name;
+
+        if (
+            $oldDue != $dueDate ||
+            (string) $oldAmount !== (string) $amount ||
+            (string) $oldSendStudent !== (string) $sendToStudent ||
+            (string) $oldSendSponsor !== (string) $sendToSponsor
+        ) {
+            ActionList::create([
+                "userUid" => $request->userId,
+                "action" => "Monthly POP updated. Due: {$oldDue} -> {$dueDate}; Amount: {$oldAmount} -> {$amount}; Send student: {$oldSendStudent} -> {$sendToStudent}; Send sponsor: {$oldSendSponsor} -> {$sendToSponsor}",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
+
+            $notify = env('MONTHLY_POP_NOTIFY');
+            if (!empty($notify)) {
+                $emails = preg_split('/[;,\\s]+/', $notify, -1, PREG_SPLIT_NO_EMPTY);
+                if (!empty($emails)) {
+                    $message = "Monthly POP updated by " . Auth::user()->userFirstName . " (user {$request->userId}). "
+                        . "Due: {$oldDue} -> {$dueDate}; Amount: {$oldAmount} -> {$amount}; "
+                        . "Send student: {$oldSendStudent} -> {$sendToStudent}; Send sponsor: {$oldSendSponsor} -> {$sendToSponsor}";
+                    Mail::raw($message, function ($mail) use ($emails) {
+                        $mail->to($emails)->subject('Monthly POP Updated');
+                    });
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Monthly POP updated.');
     }
 
     public function all_properties(Request $request)
