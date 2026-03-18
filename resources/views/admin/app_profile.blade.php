@@ -605,6 +605,11 @@
                                         style="padding: 10px;margin-top: 30px;background-color: #ffbb3c;border: none;color: #fff;border-radius: 10px;">
                                         Update Rates
                                     </button>
+                                    <button type="button" id="openMonthlyPopModal" class="profileSubmit"
+                                        onClick="document.getElementById('monthlyPopModal').style.display = 'block';"
+                                        style="padding: 10px;margin-top: 30px;background-color: #ffbb3c;border: none;color: #fff;border-radius: 10px;">
+                                        Update Monthly POP
+                                    </button>
                                 @endif
                                 @if (Auth::user()->role_allow_generate_invoice == 1)
                                     <button type="button" class="generatePdf"
@@ -1839,10 +1844,85 @@
             </div>
         </div>
     </div>
+
+    <div id="monthlyPopModal" class="modal">
+        <div class="modal-content"
+            style="height:450px; max-width: 500px; background-color: #fff; border-radius: 10px; padding: 20px; margin: 10px auto; box-shadow: 0 0 10px rgba(0, 0, 0, .2); text-align: center;">
+            <span class="closeMonthlyPopModal" onClick="document.getElementById('monthlyPopModal').style.display = 'none';"
+                style="float:right; font-size:25px; cursor:pointer">&times;</span>
+            <div class="form-card">
+                <h2>Update Monthly Proof of Payment</h2>
+                <p>for {{ $user[0]['userInfo']['userLastname'] }} {{ $user[0]['userInfo']['userFirstName'] }}</p>
+
+                <form method="POST" action="{{ route('update.monthly.pop') }}">
+                    @csrf
+                    <input type="hidden" name="booking_payment_id" value="{{ $paymentBooking->id }}">
+                    <input type="hidden" name="userId" value="{{ $user[0]['userInfo']['userUid'] }}">
+                    <div style="flex : 1; display:flex; flex-direction:column; align-items:start; width:100%;">
+                        <label style="display:flex; font-weight:semibold; margin-bottom:6px; text-align:left; align-items:center;">
+                            First Send Date 
+                            <span style="font-size:10px; color:red; margin-left:5px;">(repeats monthly for lease period on day selected)</span>
+                        </label>
+                       <div style="width: 50%;float: left;">                       
+                            <input type="date" name="monthly_pop_due_date" value="{{ $paymentBooking->monthly_pop_due_date ?? '' }}">
+                        </div>
+                        <div style="font-size:12px; color:#666; margin-top:6px; text-align:left;">
+                            Due date is {{ $monthlyPopLeadDays ?? 7 }} day{{ ($monthlyPopLeadDays ?? 7) == 1 ? '' : 's' }} after the send date.
+                        </div>
+
+                        <label style="display:flex; font-weight:semibold; margin-bottom:6px; text-align:left;">Monthly Amount</label>
+                        <div style="width: 50%;float: left;">                            
+                            <input type="number" step="0.01" name="monthly_pop_amount"
+                                value="{{ $paymentBooking->monthly_pop_amount ?? '' }}">
+                        </div>
+                    </div>
+                    <label style="display:block; font-weight:bold; margin-bottom:6px; text-align:left;">Send Email Notification to:</label>
+
+                    <div style="flex : 1; display:flex; flex-direction:row; align-items:start; justify-content:start; ">
+                        <label style="display:flex;">
+                            <input type="checkbox" name="send_to_student" value="1"
+                                {{ !empty($paymentBooking->send_to_student) ? 'checked' : '' }}>
+                            <span style="margin-left:5px;">Student</span>
+                        </label>
+
+                        <label style="display:flex; margin-left:15px;">
+                            <input type="checkbox" name="send_to_sponsor" value="1"
+                                {{ empty($user[0]['userInfo']['sponEmail']) ? 'disabled' : '' }}
+                                {{ !empty($paymentBooking->send_to_sponsor) ? 'checked' : '' }}>
+                            <span style=" margin-left:5px;">Sponsor</span>
+                        </label>
+                    </div>
+                    <div style="flex : 1; display:flex; flex-direction:column; align-items:start; justify-content:start; ">
+                        <div style="display:block;font-size:12px; color:#666; margin-top:6px; text-align:left;">
+                            Student email: {{ $user[0]['userInfo']['userEmail'] ?? 'Not set' }}
+                        </div>                    
+                        
+
+                        @if (empty($user[0]['userInfo']['sponEmail']))
+                            <div style="display:block;font-size:12px; color:#a33; margin-bottom:6px; text-align:left;">
+                                Sponsor email not set — sponsor notifications are disabled.
+                            </div>
+                        @else
+                            <div style="display:block;font-size:12px; color:#666; margin-bottom:6px; text-align:left;">
+                                Sponsor email: {{ $user[0]['userInfo']['sponEmail'] ?? 'Not set' }}
+                            </div>                    
+                        @endif
+                    </div>
+                    <div class="form-field-big">
+                        <button type="submit" class="profileSubmit"
+                            style="width:98%; border:none; padding:12px; border-radius:10px;">Save Monthly POP</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <script defer>
         const openPaymentModalBtn = document.getElementById('openPaymentModal');
         const paymentModal = document.getElementById('paymentModal');
         const closePaymentModalBtn = document.querySelector('.closePaymentModal');
+        const openMonthlyPopModalBtn = document.getElementById('openMonthlyPopModal');
+        const monthlyPopModal = document.getElementById('monthlyPopModal');
+        const closeMonthlyPopModalBtn = document.querySelector('.closeMonthlyPopModal');
 
         if (openPaymentModalBtn && paymentModal) {
             openPaymentModalBtn.onclick = function() {
@@ -1856,10 +1936,25 @@
             };
         }
 
+        if (openMonthlyPopModalBtn && monthlyPopModal) {
+            openMonthlyPopModalBtn.onclick = function() {
+                monthlyPopModal.style.display = 'block';
+            };
+        }
+
+        if (closeMonthlyPopModalBtn && monthlyPopModal) {
+            closeMonthlyPopModalBtn.onclick = function() {
+                monthlyPopModal.style.display = 'none';
+            };
+        }
+
         // Close modal when clicking outside
         window.onclick = function(event) {
             if (paymentModal && event.target == paymentModal) {
                 paymentModal.style.display = 'none';
+            }
+            if (monthlyPopModal && event.target == monthlyPopModal) {
+                monthlyPopModal.style.display = 'none';
             }
         };
     </script>
