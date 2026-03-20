@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('metrics:prune')
             ->dailyAt('01:10');
         $schedule->command('booking:send-monthly-pop')
-            ->dailyAt('06:00');
+            ->dailyAt('10:42');
         // $schedule->command('inspire')->hourly();
         // $schedule->call(function(){
         //     info('Called every minute');

@@ -153,7 +153,7 @@ class SendBookingConfirmationMail implements ShouldQueue
                 if (in_array(explode("@", $data['email'])[1], $mailArr)) {
                     $data['email'] = $userInfo->email;
                 } else {
-                    $data['email'] = "conurbandigital@gmail.com";
+                    $data['email'] = "studentsca00@gmail.com";
                 }
             } else {
                 $data['email'] = $userInfo->email;

@@ -1087,7 +1087,6 @@ class HomeController extends Controller
                     "paymentBooking" => $returnInfo['paymentBooking'],
                     "this_year" => $this_year,
                     'bookingNext' => $show_booking,
-                    'monthlyPopLeadDays' => (int) (Lookups::where('group_id', '14')->value('day_from') ?? 7),
                 ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
@@ -1297,7 +1296,7 @@ class HomeController extends Controller
                 //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
                 //             $data['email'] = $genUser->email;
                 //         }else{
-                //             $data['email'] = "conurbandigital@gmail.com";
+                //             $data['email'] = "studentsca00@gmail.com
                 //         }
                 //     }else{
                 //         $data['email'] = $genUser->email;
@@ -1306,7 +1305,7 @@ class HomeController extends Controller
                 //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
                 //     //     $data['email'] = $user->email;
                 //     // }else{
-                //     //     $data['email'] = "conurbandigital@gmail.com";
+                //     //     $data['email'] = "studentsca00@gmail.com";
                 //     // }
 
                 //     Mail::send('email.green_back', $data, function($message) use ($data) {
@@ -1314,7 +1313,7 @@ class HomeController extends Controller
                 //         //     ('Campus Africa User Application');
                 //         $message->to($data['email'])->subject($data['subject']);
                 //         $message->bcc($data['cc']);
-                //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                //         // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za']);
                 //         $message->from('noreply@campusafrica.co.za','Campus Africa');
                 //     });
                 // }
@@ -1379,7 +1378,7 @@ class HomeController extends Controller
     //                 if(in_array(explode("@", $data['email'])[1], $mailArr)){
     //                     $data['email'] = $user->email;
     //                 }else{
-    //                     $data['email'] = "conurbandigital@gmail.com";
+    //                     $data['email'] = "studentsca00@gmail.com";
     //                 }
     //             }else{
     //                 $data['email'] = $user->email;
@@ -3403,7 +3402,7 @@ class HomeController extends Controller
         //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
         //             $data['email'] = $user->email;
         //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
+        //             $data['email'] = "studentsca00@gmail.com";
         //         }
         //     }else{
         //         $data['email'] = $user->email;
@@ -3413,14 +3412,14 @@ class HomeController extends Controller
         //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
         //     //     $data['email'] = $user->email;
         //     // }else{
-        //     //     $data['email'] = "conurbandigital@gmail.com";
+        //     //     $data['email'] = "studentsca00@gmail.com";
         //     // }
 
         //     Mail::send('email.yellow_back', $data, function($message) use ($data) {
         //         // $message->to($data['email'], $data['name'])->subject
         //         //     ('Campus Africa User Application');
         //         $message->to($data['email'])->subject($data['subject']);
-        //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+        //         // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za']);
         //         $message->bcc($data['cc']);
         //         $message->from('noreply@campusafrica.co.za','Campus Africa');
         //     });
@@ -9078,7 +9077,7 @@ class HomeController extends Controller
                 //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
                 //             $data['email'] = $request->userEmail;
                 //         }else{
-                //             $data['email'] = "conurbandigital@gmail.com";
+                //             $data['email'] = "studentsca00@gmail.com";
                 //         }
                 //     }else{
                 //         $data['email'] = $request->userEmail;
@@ -9091,7 +9090,7 @@ class HomeController extends Controller
                 //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
                 //     //     $data['email'] = $request->userEmail;
                 //     // }else{
-                //     //     $data['email'] = "conurbandigital@gmail.com";
+                //     //     $data['email'] = "studentsca00@gmail.com";
                 //     // }
 
                 //     Mail::send('email.yellow_back', $data, function($message) use ($data) {
@@ -9099,7 +9098,7 @@ class HomeController extends Controller
                 //         //     ('Campus Africa User Application');
                 //         $message->to($data['email'])->subject($data['subject']);
                 //         $message->bcc($data['cc']);
-                //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                //         // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za']);
                 //         $message->from('noreply@campusafrica.co.za','Campus Africa');
                 //     });
                 // }
@@ -11011,7 +11010,7 @@ class HomeController extends Controller
         //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
         //             $data['email'] = $genUser->email;
         //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
+        //             $data['email'] = "studentsca00@gmail.com";
         //         }
         //     }else{
         //         $data['email'] = $genUser->email;
@@ -11172,21 +11171,20 @@ class HomeController extends Controller
 
         $validated = $request->validate([
             'booking_payment_id' => 'required|integer|exists:booking_payments,id',
-            'monthly_pop_due_date' => 'nullable|date',
             'monthly_pop_amount' => 'nullable|numeric',
         ]);
 
-        $dueDate = $validated['monthly_pop_due_date'] ?? null;
         $amount = $validated['monthly_pop_amount'] ?? null;
+        $dueDate = null;
 
-        if ((empty($dueDate) && !empty($amount)) || (!empty($dueDate) && empty($amount))) {
-            return redirect()->back()->withErrors(['monthly_pop_amount' => 'Both due date and amount are required if one is set.']);
+        if (!empty($amount)) {
+            $dueDate = \Carbon\Carbon::today()->addMonthNoOverflow()->startOfMonth()->toDateString();
         }
 
         $sendToStudent = $request->has('send_to_student') ? 1 : 0;
         $sendToSponsor = $request->has('send_to_sponsor') ? 1 : 0;
 
-        if (empty($dueDate) && empty($amount)) {
+        if (empty($amount)) {
             $sendToStudent = 0;
             $sendToSponsor = 0;
         }
@@ -11217,7 +11215,7 @@ class HomeController extends Controller
         $payment->save();
 
         $this_year = Lookups::where('group_id', '4')->first();
-        if (!Session::get('year')) {
+        if (Session::get('year')) {
             $year = Session::get('year');
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
         }

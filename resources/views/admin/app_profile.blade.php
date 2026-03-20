@@ -1860,20 +1860,19 @@
                     <input type="hidden" name="userId" value="{{ $user[0]['userInfo']['userUid'] }}">
                     <div style="flex : 1; display:flex; flex-direction:column; align-items:start; width:100%;">
                         <label style="display:flex; font-weight:semibold; margin-bottom:6px; text-align:left; align-items:center;">
-                            First Send Date 
-                            <span style="font-size:10px; color:red; margin-left:5px;">(repeats monthly for lease period on day selected)</span>
+                            Schedule
                         </label>
-                       <div style="width: 50%;float: left;">                       
-                            <input type="date" name="monthly_pop_due_date" value="{{ $paymentBooking->monthly_pop_due_date ?? '' }}">
+                        <div style="font-size:12px; color:#666; margin-top:2px; text-align:left;">
+                            Send: 25th of each month.
                         </div>
-                        <div style="font-size:12px; color:#666; margin-top:6px; text-align:left;">
-                            Due date is {{ $monthlyPopLeadDays ?? 7 }} day{{ ($monthlyPopLeadDays ?? 7) == 1 ? '' : 's' }} after the send date.
+                        <div style="font-size:12px; color:#666; margin-top:2px; text-align:left;">
+                            Due: 1st of the following month.
                         </div>
 
                         <label style="display:flex; font-weight:semibold; margin-bottom:6px; text-align:left;">Monthly Amount</label>
                         <div style="width: 50%;float: left;">                            
                             <input type="number" step="0.01" name="monthly_pop_amount"
-                                value="{{ $paymentBooking->monthly_pop_amount ?? '' }}">
+                                value="{{ $paymentBooking->monthly_pop_amount ?? $paymentBooking->monthly_rental ?? '' }}">
                         </div>
                     </div>
                     <label style="display:block; font-weight:bold; margin-bottom:6px; text-align:left;">Send Email Notification to:</label>
@@ -1881,7 +1880,7 @@
                     <div style="flex : 1; display:flex; flex-direction:row; align-items:start; justify-content:start; ">
                         <label style="display:flex;">
                             <input type="checkbox" name="send_to_student" value="1"
-                                {{ !empty($paymentBooking->send_to_student) ? 'checked' : '' }}>
+                                {{ ($paymentBooking->send_to_student ?? 1) ? 'checked' : '' }}>
                             <span style="margin-left:5px;">Student</span>
                         </label>
 

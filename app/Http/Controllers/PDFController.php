@@ -247,7 +247,7 @@ class PDFController extends Controller
       //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
       //         $data['email'] = $userForLease->userEmail;
       //     }else{
-      //         $data['email'] = "conurbandigital@gmail.com";
+      //         $data['email'] = "studentsca00@gmail.com";
       //     }
       //   }else{
       //     $data['email'] = $userForLease->userEmail;
@@ -256,7 +256,7 @@ class PDFController extends Controller
       //   Mail::send('email.green_back', $data, function($message) use ($data) {
       //       // $message->to($data['email'], $data['name'])->subject('Application Approved');
       //       // $message->to($data['email'])->subject($data['subject']);
-      //       // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
+      //       // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
       //       $message->to($data['email'])->subject($data['subject']);
       //         $message->bcc($data['cc']);
       //         $message->from('noreply@campusafrica.co.za','Campus Africa');

@@ -154,7 +154,7 @@ class SendReminderMail implements ShouldQueue
                 if (in_array(explode("@", $mailData['email'])[1], $mailArr)) {
                     $mailData['email'] = $studentInfoForMail->userEmail;
                 } else {
-                    $mailData['email'] = "conurbandigital@gmail.com";
+                    $mailData['email'] = "studentsca00@gmail.com";
                 }
             } else {
                 $mailData['email'] = $studentInfoForMail->userEmail;

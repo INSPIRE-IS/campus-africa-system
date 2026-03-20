@@ -1342,7 +1342,7 @@ class ApplicationController extends Controller
         //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
         //         $data['email'] = $userInfo->userEmail;
         //     }else{
-        //         $data['email'] = "conurbandigital@gmail.com";
+        //         $data['email'] = "studentsca00@gmail.com";
         //     }
         // }else{
         //     $data['email'] = $userInfo->userEmail;
@@ -1831,7 +1831,7 @@ class ApplicationController extends Controller
         //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
         //             $data['email'] = $user->email;
         //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
+        //             $data['email'] = "studentsca00@gmail.com";
         //         }
         //     }else{
         //         $data['email'] = $user->email;

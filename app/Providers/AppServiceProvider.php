@@ -32,10 +32,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
-        if (app()->environment(['local', 'staging', 'development'])) {
-            LOG::info('Mail is set to sandbox');
+        if (app()->environment(['local'])) {
+            // Log::info('Mail is set to sandbox');
             Mail::alwaysTo('sandbox@inspireonline.co.za'); // O@BczDAVgrz2{89e
+        }
+        if (app()->environment(['staging', 'development'])) {
+            // Log::info('Mail is set to sandbox'); conurbandigital@gmail.com
+            Mail::alwaysTo([
+                'owethu@conurban.co.za',
+                'sandbox@inspireonline.co.za'
+            ]);
         }
 
         View::composer('*', function ($view) {
