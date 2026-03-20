@@ -19,7 +19,7 @@ class AddYearToUserLeaseToken extends Migration
             }
 
             if (!Schema::hasColumn('user_lease_token', 'year')) {
-                $table->string('year', 4)->nullable();
+                $table->string('year')->nullable();
             }
 
             if (!Schema::hasColumn('user_lease_token', 'deleted_at')) {

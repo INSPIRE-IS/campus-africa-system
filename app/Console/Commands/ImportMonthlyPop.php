@@ -23,7 +23,7 @@ class ImportMonthlyPop extends Command
      *
      * @var string
      */
-    protected $description = 'Import monthly POP due date + amount into booking_payments from CSV (or XLSX if supported).';
+    protected $description = 'Import monthly POP amount (and optional send flags) into booking_payments from CSV (or XLSX if supported).';
 
     public function handle()
     {
@@ -87,13 +87,12 @@ class ImportMonthlyPop extends Command
         $idxBookingId = $colIndex(['booking_id', 'bookingid', 'booking id']);
         $idxBookingRef = $colIndex(['booking_ref', 'bookingref', 'booking code', 'booking_code']);
         $idxUserUid = $colIndex(['user_uid', 'useruid', 'user_id', 'userid']);
-        $idxDue = $colIndex(['monthly_pop_due_date', 'due_date', 'due date', 'date']);
         $idxAmount = $colIndex(['monthly_pop_amount', 'amount', 'amount_due', 'amount due']);
         $idxSendStudent = $colIndex(['send_to_student', 'send student', 'send_student']);
         $idxSendSponsor = $colIndex(['send_to_sponsor', 'send sponsor', 'send_sponsor']);
 
-        if ($idxDue === null || $idxAmount === null) {
-            $this->error('Missing required columns: due_date and amount.');
+        if ($idxAmount === null) {
+            $this->error('Missing required column: amount.');
             return 1;
         }
 
@@ -137,15 +136,7 @@ class ImportMonthlyPop extends Command
                 continue;
             }
 
-            $dueRaw = $row[$idxDue] ?? null;
             $amountRaw = $row[$idxAmount] ?? null;
-
-            $dueDate = $this->parseDate($dueRaw);
-            if (!$dueDate) {
-                $this->warn("Invalid due_date for booking {$booking->id}. Skipping.");
-                $counts['skipped']++;
-                continue;
-            }
 
             $amount = $this->parseAmount($amountRaw);
             if ($amount === null) {
@@ -153,6 +144,8 @@ class ImportMonthlyPop extends Command
                 $counts['skipped']++;
                 continue;
             }
+
+            $dueDate = Carbon::today()->addMonthNoOverflow()->startOfMonth()->toDateString();
 
             $oldDue = $payment->monthly_pop_due_date;
             $oldAmount = $payment->monthly_pop_amount;

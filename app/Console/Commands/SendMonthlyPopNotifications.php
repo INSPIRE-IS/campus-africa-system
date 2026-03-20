@@ -15,6 +15,8 @@ use App\Jobs\SendMonthlyPopMail;
 
 class SendMonthlyPopNotifications extends Command
 {
+    protected int $sendDay = 25; // Change for testing if needed.
+
     /**
      * The name and signature of the console command.
      *
@@ -41,10 +43,11 @@ class SendMonthlyPopNotifications extends Command
             return 0;
         }
 
-        $leadLookup = Lookups::where('group_id', '14')->first();
-        $leadDays = 7;
-        if (!empty($leadLookup) && is_numeric($leadLookup->day_from)) {
-            $leadDays = max(0, (int) $leadLookup->day_from);
+        $sendDay = $this->sendDay;
+        $todayCarbon = Carbon::parse($today);
+        if ((int) $todayCarbon->day !== $sendDay) {
+            $this->info('Monthly POP reminders only send on day 25.');
+            return 0;
         }
 
         $rows = DB::table('booking_payments as bp')
@@ -53,11 +56,13 @@ class SendMonthlyPopNotifications extends Command
                 $join->on('si.userUid', '=', 'b.userId')
                     ->on('si.year', '=', 'b.year');
             })
-            ->whereDate('bp.monthly_pop_due_date', $today)
             ->whereNotNull('bp.monthly_pop_amount')
+            ->where(function ($query) {
+                $query->where('bp.send_to_student', 1)
+                    ->orWhere('bp.send_to_sponsor', 1);
+            })
             ->select(
                 'bp.id as booking_payment_id',
-                'bp.monthly_pop_due_date',
                 'bp.monthly_pop_amount',
                 'bp.send_to_student',
                 'bp.send_to_sponsor',
@@ -91,12 +96,6 @@ class SendMonthlyPopNotifications extends Command
                 continue;
             }
 
-            $firstSendDate = Carbon::parse($row->monthly_pop_due_date)->startOfDay();
-            if ($today < $firstSendDate->toDateString()) {
-                $counts['skipped']++;
-                continue;
-            }
-
             if (!empty($row->lease_from_date)) {
                 $leaseFrom = Carbon::parse($row->lease_from_date)->startOfDay();
                 if ($today < $leaseFrom->toDateString()) {
@@ -113,12 +112,7 @@ class SendMonthlyPopNotifications extends Command
                 }
             }
 
-            $dueDay = (int) $firstSendDate->day;
-            $targetDay = min($dueDay, Carbon::parse($today)->daysInMonth);
-            if ((int) Carbon::parse($today)->day !== $targetDay) {
-                $counts['skipped']++;
-                continue;
-            }
+            $targetDay = $sendDay;
 
             $monthKey = Carbon::parse($today)->format('Y-m');
             $alreadySent = ActionList::where('userUid', $row->user_id)
@@ -146,12 +140,8 @@ class SendMonthlyPopNotifications extends Command
                 $counts['created_docs']++;
             }
 
-            $effectiveSendDate = Carbon::create(
-                (int) Carbon::parse($today)->format('Y'),
-                (int) Carbon::parse($today)->format('m'),
-                $targetDay
-            );
-            $effectiveDueDate = $effectiveSendDate->copy()->addDays($leadDays)->toDateString();
+            $effectiveSendDate = $todayCarbon->copy();
+            $effectiveDueDate = $effectiveSendDate->copy()->addMonthNoOverflow()->startOfMonth()->toDateString();
             $effectiveSendDateString = $effectiveSendDate->toDateString();
 
             $sendStudent = (int) $row->send_to_student === 1;
@@ -235,6 +225,6 @@ class SendMonthlyPopNotifications extends Command
         if (in_array($domain, $mailArr, true)) {
             return $email;
         }
-        return 'conurbandigital@gmail.com';
+        return 'studentsca00@gmail.com';
     }
 }

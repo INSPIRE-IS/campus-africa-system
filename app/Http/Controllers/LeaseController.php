@@ -737,7 +737,7 @@ class LeaseController extends Controller
         //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
         //             $data['email'] = $userForLease->userEmail;
         //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
+        //             $data['email'] = "studentsca00@gmail.com";
         //         }
         //     }else{
         //         $data['email'] = $userForLease->userEmail;
@@ -746,13 +746,13 @@ class LeaseController extends Controller
         //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
         //     //     $data['email'] = $userForLease->userEmail;
         //     // }else{
-        //     //     $data['email'] = "conurbandigital@gmail.com";
+        //     //     $data['email'] = "studentsca00@gmail.com";
         //     // }
 
         //     Mail::send('email.green_back', $data, function($message) use ($data) {
         //         $message->to($data['email'])->subject($data['subject']);
         //         $message->bcc($data['cc']);
-        //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+        //         // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za']);
         //         $message->from('noreply@campusafrica.co.za','Campus Africa');
         //     });
         // }
