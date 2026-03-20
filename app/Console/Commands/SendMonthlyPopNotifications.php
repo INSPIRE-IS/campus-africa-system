@@ -15,7 +15,7 @@ use App\Jobs\SendMonthlyPopMail;
 
 class SendMonthlyPopNotifications extends Command
 {
-    protected int $sendDay = 20; // Change for testing if needed.
+    protected int $sendDay = 25; // Change for testing if needed.
 
     /**
      * The name and signature of the console command.
