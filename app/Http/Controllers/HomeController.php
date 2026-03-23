@@ -11447,12 +11447,13 @@ class HomeController extends Controller
     public function download_beds(Request $request)
     {
         $property = $request->property;
+        //get current year        
         $this_year = Lookups::where('group_id', '4')->first();
-        //get current year
-        $session_year = Session::get('year');
-        if (!empty($session_year)) {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-        }
+        // dont do this session cause it does not show on the report so could lead to confusion
+        // $session_year = Session::get('year');
+        // if (!empty($session_year)) {
+        //     $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+        // }
         $institutions = Lookups::where('group_id', '1')->first();
         $faculties = Lookups::where('group_id', '3')->first();
 
