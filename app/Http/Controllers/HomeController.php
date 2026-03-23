@@ -11446,7 +11446,7 @@ class HomeController extends Controller
 
     public function download_beds(Request $request)
     {
-        $property = $request->property;
+        $propertyId = $request->property;
         //get current year        
         $this_year = Lookups::where('group_id', '4')->first();
         // dont do this session cause it does not show on the report so could lead to confusion
@@ -11459,8 +11459,8 @@ class HomeController extends Controller
 
         $query = "";
 
-        if ($property !== "All") {
-            $query .= "where pd.residence = '" . $property . "'";
+        if ($propertyId !== "All") {
+            $query .= "where pd.residence = '" . $propertyId . "'";
         }
 
         if ($query !== "") {
@@ -11531,14 +11531,14 @@ class HomeController extends Controller
             ],
         ];
 
-        if ($property !== "All") {
-            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->where('property', $property)->orderBy('id', 'asc')->get();
+        if ($propertyId !== "All") {
+            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->where('property', $propertyId)->orderBy('id', 'asc')->get();
         } else {
             $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->orderBy('id', 'asc')->get();
         }
 
         foreach ($allBookingsThisYear as $booking) {
-            $property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $propertyName = Residence::where('id', $booking->property)->pluck('residence')->first();
             $room = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
             $user = StudentsInfo::where('bookingId', $booking->id)->where('rob_10_fee', '2')->orderBy('year', 'desc')->first();
 
@@ -11569,7 +11569,7 @@ class HomeController extends Controller
                 $relationship = $user->kinRelationship;
                 $kinContact = $user->kincellCode . $user->kinCellNo;
 
-                $list = [$property, $room, $leaseRate, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+                $list = [$propertyName, $room, $leaseRate, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
                 array_push($waitlist, $list);
             }
         }
@@ -11661,12 +11661,14 @@ class HomeController extends Controller
         $xlsx->addSheet($beds, 'BED CODES');
         $xlsx->addSheet($waitlist, 'WAITLIST');
 
-        $prop = Residence::where('id', $property)->pluck('residence')->first();
+        $prop = $propertyId === "All"
+            ? 'All'
+            : Residence::where('id', $propertyId)->pluck('residence')->first();
 
         // if($year !== "All"){
 
         $downloadUrl = 'Bed_Allocations_Export_' . $this_year->lookup_name . '_' . $prop . '.xlsx';
-        $xlsx->saveAs('Bed_Allocations_Export_' . $this_year->lookup_name . '_' . $prop . '.xlsx');
+        $xlsx->saveAs($downloadUrl);
         // }else{
         //     $downloadUrl = 'System_Bed_Allocations_All_Years.xlsx';
         //     $xlsx->saveAs('System_Bed_Allocations_All_Years.xlsx');
