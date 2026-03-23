@@ -11473,11 +11473,61 @@ class HomeController extends Controller
             $query .= " where pd.deleted_at is null ";
         }
         $beds = [
-            ['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>', '<b>LAST NAME</b>', '<b>EMAIL</b>', '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>', '<b>ID NUMBER / PASSPORT</b>', '<b>GENDER</b>', '<b>STUDENT TYPE</b>', '<b>BURSAR COMPANY</b>', '<b>INSTITUTION</b>', '<b>STUDENT NUMBER</b>', '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+            [
+                '<b>RESIDENCE</b>',
+                '<b>FLOOR PREFIX</b>',
+                '<b>BED CODE PREFIX</b>',
+                '<b>FLOOR</b>',
+                '<b>UNIT</b>',
+                '<b>ROOM</b>',
+                '<b>BED</b>',
+                '<b>BED CODE</b>',
+                '<b>ROOM TYPE</b>',
+                '<b>LEASE RATE (MONTHLY)</b>',
+                '<b>INVENTORY</b>',
+                '<b>BOOKING REF</b>',
+                '<b>FIRST NAME</b>',
+                '<b>LAST NAME</b>',
+                '<b>EMAIL</b>',
+                '<b>CELL NUMBER</b>',
+                '<b>NATIONALITY</b>',
+                '<b>ID NUMBER / PASSPORT</b>',
+                '<b>GENDER</b>',
+                '<b>STUDENT TYPE</b>',
+                '<b>BURSAR COMPANY</b>',
+                '<b>INSTITUTION</b>',
+                '<b>STUDENT NUMBER</b>',
+                '<b>YEAR OF STUDY</b>',
+                '<b>FACULTY</b>',
+                '<b>NEXT OF KIN NAME</b>',
+                '<b>NEXT OF KIN CONTACT</b>',
+                '<b>NEXT OF KIN RELATIONSHIP</b>',
+            ],
         ];
 
         $waitlist = [
-            ['<b>RESIDENCE</b>', '<b>ROOM TYPE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>', '<b>LAST NAME</b>', '<b>EMAIL</b>', '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>', '<b>ID NUMBER / PASSPORT</b>', '<b>GENDER</b>', '<b>STUDENT TYPE</b>', '<b>BURSAR COMPANY</b>', '<b>INSTITUTION</b>', '<b>STUDENT NUMBER</b>', '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+            [
+                '<b>RESIDENCE</b>',
+                '<b>ROOM TYPE</b>',
+                '<b>LEASE RATE (MONTHLY)</b>',
+                '<b>BOOKING REF</b>',
+                '<b>FIRST NAME</b>',
+                '<b>LAST NAME</b>',
+                '<b>EMAIL</b>',
+                '<b>CELL NUMBER</b>',
+                '<b>NATIONALITY</b>',
+                '<b>ID NUMBER / PASSPORT</b>',
+                '<b>GENDER</b>',
+                '<b>STUDENT TYPE</b>',
+                '<b>BURSAR COMPANY</b>',
+                '<b>INSTITUTION</b>',
+                '<b>STUDENT NUMBER</b>',
+                '<b>YEAR OF STUDY</b>',
+                '<b>FACULTY</b>',
+                '<b>NEXT OF KIN NAME</b>',
+                '<b>NEXT OF KIN CONTACT</b>',
+                '<b>NEXT OF KIN RELATIONSHIP</b>',
+            ],
         ];
 
         if ($property !== "All") {
@@ -11492,6 +11542,8 @@ class HomeController extends Controller
             $user = StudentsInfo::where('bookingId', $booking->id)->where('rob_10_fee', '2')->orderBy('year', 'desc')->first();
 
             if (!empty($user) && $user->rob_60_cancelled == 0) {
+                $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+                $leaseRate = $paymentBooking ? $paymentBooking->monthly_rental : "";
 
                 $first_name = $user->userFirstName ?? "";
                 $last_name = $user->userLastname ?? "";
@@ -11516,7 +11568,7 @@ class HomeController extends Controller
                 $relationship = $user->kinRelationship;
                 $kinContact = $user->kincellCode . $user->kinCellNo;
 
-                $list = [$property, $room, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+                $list = [$property, $room, $leaseRate, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
                 array_push($waitlist, $list);
             }
         }
@@ -11533,6 +11585,8 @@ class HomeController extends Controller
             $booking = Booking::where('property_data_id', $bed->id)->where('year',  $this_year->lookup_name)->first();
 
             if (!empty($booking)) {
+                $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+                $leaseRate = $paymentBooking ? $paymentBooking->monthly_rental : "";
                 $user = StudentsInfo::where('bookingId', $booking->id)->where('year',  $this_year->lookup_name)->first();
 
                 if (!empty($user)) {
@@ -11578,6 +11632,7 @@ class HomeController extends Controller
                     $kinContact = "";
                 }
             } else {
+                $leaseRate = "";
                 $booking_ref = "";
                 $first_name = "";
                 $last_name = "";
@@ -11597,7 +11652,7 @@ class HomeController extends Controller
                 $kinContact = "";
             }
 
-            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $leaseRate, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
             array_push($beds, $bed);
         }
 
