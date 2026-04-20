@@ -82,6 +82,30 @@ class PDFController extends Controller
           }
         }
       }
+      $studentInfo = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
+      $leaseAdminFee = 0;
+      if ($studentInfo) {
+        $fundingId = Lookups::fundingTypeIdForLabel($studentInfo->studentType);
+        if ($fundingId) {
+          $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $this_year)->first();
+          $yearData = [];
+          if ($yearLookup) {
+            if (is_array($yearLookup->data)) {
+              $yearData = $yearLookup->data;
+            } elseif (!empty($yearLookup->data)) {
+              $decoded = json_decode($yearLookup->data, true);
+              if (is_array($decoded)) {
+                $yearData = $decoded;
+              }
+            }
+          }
+
+          $leaseFees = $yearData['lease_fees'] ?? [];
+          if (array_key_exists($fundingId, $leaseFees)) {
+            $leaseAdminFee = floatval($leaseFees[$fundingId]);
+          }
+        }
+      }
 
 
 

@@ -305,6 +305,8 @@
         <ol type="a" style="text-align:left; font-size:14px;">
             <li>The Student agrees to deposit with the Owner the amount of <b>R @if ($paymentBooking->rob_deposit_waived == '2')
                     0
+            <li>The Student agrees to deposit with the Owner the amount of <b>R @if ($paymentBooking->rob_deposit_waived == '2')
+                    0
                     @else
                     {{ $paymentBooking->deposit }}
                     @endif </b>month fee as a security deposit, payable to the Owner subsequent to

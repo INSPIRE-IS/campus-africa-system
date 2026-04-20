@@ -155,6 +155,7 @@
             <ol type="a" style=" text-laign:left; font-size:14px;">
                 <li>On signature of this Agreement, the Student agrees to pay a non-refundable, once-off fee to the Owner in the amount of <b>R @if($paymentBooking->rob_loan_waived == '2') 0 @else 
                     {{$paymentBooking->loan_admin_fee}} @endif
+                    {{$paymentBooking->loan_admin_fee}} @endif
                 </b>. </li>
                 <br/>
             </ol>
@@ -162,6 +163,7 @@
             <span style="font-weight:bold; font-size:14px;">5.	The Security Deposit </span>
 
             <ol type="a" style="text-laign:left; font-size:14px;">
+                <li>The Student agrees to deposit with the Owner the amount of <b>R @if($paymentBooking->rob_deposit_waived == '2') 0 @else {{$paymentBooking->deposit}} @endif </b>month fee as a security deposit, payable to the Owner subsequent to the signature date hereto but prior to the commencement of the accommodation period, which security deposit shall be held by the Owner against any breach or non-performance of this agreement or any part hereof by the Student, including but not limited to the application of the security deposit by the Owner, in whole or part, in meeting any payment due by the Student to the Owner during the Accommodation Period or subsequent to the termination of this agreement, or against any damage to the Accommodation or any part of the Owner’s property which has been caused by the Student or by anyone who the Student allows to access to the Owner’s property. </li>
                 <li>The Student agrees to deposit with the Owner the amount of <b>R @if($paymentBooking->rob_deposit_waived == '2') 0 @else {{$paymentBooking->deposit}} @endif </b>month fee as a security deposit, payable to the Owner subsequent to the signature date hereto but prior to the commencement of the accommodation period, which security deposit shall be held by the Owner against any breach or non-performance of this agreement or any part hereof by the Student, including but not limited to the application of the security deposit by the Owner, in whole or part, in meeting any payment due by the Student to the Owner during the Accommodation Period or subsequent to the termination of this agreement, or against any damage to the Accommodation or any part of the Owner’s property which has been caused by the Student or by anyone who the Student allows to access to the Owner’s property. </li>
                 <br/>
 

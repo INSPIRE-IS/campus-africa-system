@@ -833,6 +833,7 @@ class ApplicationController extends Controller
 
             $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
 
+
             //TODO: temp set booking fee to 0 for sharing rooms
             $isSharingRoom = false;
 

@@ -77,7 +77,20 @@
 - Irregularity Report (app profile) is visible to `role_sys_admin` and `role_bm_report`. Actions require a comment (stored in `comments` + `ActionList`). Current actions: recompute `rob_45_other` from other docs + waiver flags; clear booking fee requirement (sets PoP approved + `rob_10_fee=2`) when fee is not required; **fix bed allocation** when `bed_code` is set but `rob_40_bed != 2` (sets `rob_40_bed=2`).
 - ROB anomaly report (`report:rob-anomalies`) flags bed allocation issues when `bed_code` is set but `rob_40_bed != 2` (included for approval-ready‑except‑bed, or when `--include-not-ready` is used).
 - Report command `report:rob-anomalies`: by default only includes approval-ready students (rob_15/20/25/30/35/40 all `2` and `rob_50_approve != 2`). Use `--include-not-ready` to include earlier-stage records. Flags: `rob_45_other` mismatch, `rob_10_fee != 2` when fee not required, PoP missing/not approved when fee required, missing booking/payment. Output includes room type, bed code, bookingStatus.
-- Lease templates show admin fee/deposit as 0 unless `studentType` is `Cash / Direct` or `Bursary` with `nsfas_bursar != 1` (or waived flags). This means `NRF` currently falls into the "0" path.
+- Pricing + fees/deposit sources (legacy vs current):
+  - Legacy (pre year-based lookups):
+    - **Booking fee**: from WordPress JSON when pulling prices (`/wp-json/wp/v2/residences` `acf.booking_fee` + room overrides in `/wp-json/wp/v2/rooms`), otherwise from local `room_types.booking_price`. Applies-to gating used `room_types.apply_*` and WP `booking_fee_applies_to`.
+    - **Monthly rental** (used as the "deposit base amount"): from WordPress room `acf.price_from` when pulling prices, otherwise from local `room_types.rent_price`.
+    - **Lease admin fee** (`booking_payments.loan_admin_fee`): effectively hardcoded in booking flows to `1000` for `Cash / Direct` and `Bursary` with `nsfas_bursar != 1`, otherwise `0` (despite legacy references to `Lookups` group `8`).
+    - **Deposit** (`booking_payments.deposit`): hardcoded "applies" rules based on `studentType`/`nsfas_bursar`; amount was the monthly rental for the applicable types, otherwise `0`.
+  - Current (year-based lookups + stored `BookingPayment`):
+    - Year lookup `lookups.group_id=4` stores config in `lookups.data`:
+      - `lease_fees` (map of funding type id -> admin fee)
+      - `deposit_applies` (map of funding type id -> boolean)
+    - Funding type id is derived from the student type label via `Lookups::fundingTypeIdForLabel()` (`Lookups::FUNDING_TYPES`).
+    - Booking/registration flows write `booking_payments.loan_admin_fee` from `lease_fees[fundingId]` and write `booking_payments.deposit` as the monthly rental when `deposit_applies[fundingId]` is truthy (unless deposit waived). Admin rate edits (`HomeController::updateBookingPayment`) recompute deposit from the updated monthly rental when required and not waived.
+    - Operational note: keep `lease_fees`/`deposit_applies` populated for every funding type used in production; missing keys default to `0` and can cause "R 0" values downstream.
+- Lease PDFs render admin fee/deposit directly from `BookingPayment` (fields: `loan_admin_fee`, `deposit`) unless waived (`rob_loan_waived` / `rob_deposit_waived`); no studentType branching.
 - Lease contact display logic (kin/sponsor): templates use `LeaseContactService::resolve($data)` to render Next‑of‑Kin and parent/guardian acknowledgement. It shows kin if present, otherwise falls back to sponsor fields; if both are blank, it renders placeholders. The `app_parent_kin` checkbox only copies sponsor -> kin at save time (see `ApplicationController::step_3_kin`), and studentType only affects onboarding requirements, not lease rendering.
 - Lease generation guard: `PDFController::createPDF()` now blocks lease generation with a 422 error if required Next‑of‑Kin fields are missing, aligned to the Step 3 Next‑of‑Kin requirements (see `LeaseContactService::missingFields()`), so admins must complete those fields before generating a lease.
 - Debt Assurity (cash only):
@@ -100,9 +113,35 @@
     - `1` = Sales Team, `2` = Building Manager, `3` = HO Approver (see `resources/views/admin/userAdd.blade.php` and `resources/views/admin/userEdit.blade.php`).
     - This is a convenience preset only; the effective access control is determined by the per-permission columns (`role_*`).
   - Document approve/reject endpoint: `POST /action/file` (`HomeController::action_file`) currently gates only on `Auth::user()->userRole` being `1/2/3` (i.e., "not a student"), and does not enforce `role_approve_docs` server-side. UI gating may hide buttons, but the API will still accept requests from any staff account.
-- Staging uses new funding-type fee/deposit logic (via lookup `deposit_applies` + lease fee config) in the application/admin flows, but lease PDFs still use the older studentType branching. Live fix should be the temporary studentType adjustment; full alignment with funding rules to follow when staging changes are approved for live.
+- Debt Assurity (cash only):
+  - `user_files.fileId = assurity_doc`, status tracked by `students_info.rob_65_debt` using temp-lease style semantics (`0=Rejected, 1=Approved, 2=Pending, 3=Not Set/Not Required`).
+  - Tokens stored in `assurity_tokens`; sponsor signs via `/sign-assurity/{token}` and `POST /save-signed-assurity/{token}`.
+  - Admin actions (sys admin only): `POST /generate-assurity/{studentId}` (regen + send link) and `POST /resend-assurity` (resend link).
+  - Auto-trigger: after Step 5 payment submission, the system auto-requests Debt Assurity for Cash students (emails sponsor signing link + emails student reminder). Implemented in PayGate return handlers and PoP upload handler.
+  - Lease generation + final approval blocked when cash student and `rob_65_debt != 1`.
+- Cash sponsor consent flags (Step 2 sponsor flow):
+  - On `/step-2/online-application` for `Cash / Direct`, the sponsor form requires two acknowledgements:
+    - `c_credit_risk`: student acknowledges approval is subject to sponsor meeting Campus Africa credit risk profile and/or a payment arrangement.
+    - `c_credit_check`: student confirms sponsor consents to a credit check for the application.
+  - Stored on `students_info` (and legacy `users`) and validated client-side in `resources/views/application/step_2_spon.blade.php`.
+- Auth / roles / permissions (important distinctions):
+  - `users.userRole` is a coarse "account type" flag used across controllers:
+    - `0` = student/applicant (portal).
+    - `1` = system user (admin/staff). The current admin add/edit flow hard-codes system users to `userRole = 1`.
+    - Some legacy checks also allow `userRole` `2`/`3`, but the current admin add/edit flow does not set those values (2/3 appear to be legacy).
+  - `users.template` is the "Permissions Template" preset used in the admin add/edit UI to auto-check permission checkboxes:
+    - `1` = Sales Team, `2` = Building Manager, `3` = HO Approver (see `resources/views/admin/userAdd.blade.php` and `resources/views/admin/userEdit.blade.php`).
+    - This is a convenience preset only; the effective access control is determined by the per-permission columns (`role_*`).
+  - Document approve/reject endpoint: `POST /action/file` (`HomeController::action_file`) currently gates only on `Auth::user()->userRole` being `1/2/3` (i.e., "not a student"), and does not enforce `role_approve_docs` server-side. UI gating may hide buttons, but the API will still accept requests from any staff account.
 - Property active/inactive: `property.status` remains legacy for application/control flow. New `property.active_date` / `property.inactive_date` are introduced for year‑based reporting filters (reports page only for now). Long term, the goal is to migrate more logic to date‑based activity and reduce reliance on `status`.
 - TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).- Lease PDFs now render admin fee/deposit directly from `BookingPayment` with waiver flags only (no studentType branching) to align with funding lookup logic.
+- `temp/` (gitignored) is a scratchpad folder for investigations and reference documents (not used by app code). Current contents:
+  - `temp/CLIENT_SIGNOFF.md`: draft acceptance checklist for the assurity + related flow changes (compare/merge with root `CLIENT_SIGNOFF.md` as needed).
+  - `temp/DEED OF SURETY.docx`: source legal wording used to build/update `resources/views/PDF/assurity.blade.php`.
+  - `temp/laravel260319ca.log`: captured Laravel log snapshot used for debugging production/staging issues.
+  - `temp/REVIEWED_VIEWS.md`: ad-hoc notes/review findings for specific Blade views (e.g., admin maintenance/update screens).
+  - `temp/TODOS1.md`: scratch TODO list (may overlap with root `TODOS.md` / `TODOS1.md`).
+  - `temp/UPGRADE.md`: Laravel upgrade research notes (dependency blockers, risks, staged upgrade plan).
 - `temp/` (gitignored) is a scratchpad folder for investigations and reference documents (not used by app code). Current contents:
   - `temp/CLIENT_SIGNOFF.md`: draft acceptance checklist for the assurity + related flow changes (compare/merge with root `CLIENT_SIGNOFF.md` as needed).
   - `temp/DEED OF SURETY.docx`: source legal wording used to build/update `resources/views/PDF/assurity.blade.php`.
