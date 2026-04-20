@@ -77,6 +77,19 @@
 - Irregularity Report (app profile) is visible to `role_sys_admin` and `role_bm_report`. Actions require a comment (stored in `comments` + `ActionList`). Current actions: recompute `rob_45_other` from other docs + waiver flags; clear booking fee requirement (sets PoP approved + `rob_10_fee=2`) when fee is not required; **fix bed allocation** when `bed_code` is set but `rob_40_bed != 2` (sets `rob_40_bed=2`).
 - ROB anomaly report (`report:rob-anomalies`) flags bed allocation issues when `bed_code` is set but `rob_40_bed != 2` (included for approval-ready‑except‑bed, or when `--include-not-ready` is used).
 - Report command `report:rob-anomalies`: by default only includes approval-ready students (rob_15/20/25/30/35/40 all `2` and `rob_50_approve != 2`). Use `--include-not-ready` to include earlier-stage records. Flags: `rob_45_other` mismatch, `rob_10_fee != 2` when fee not required, PoP missing/not approved when fee required, missing booking/payment. Output includes room type, bed code, bookingStatus.
+- Pricing + fees/deposit sources (legacy vs current):
+  - Legacy (pre year-based lookups):
+    - **Booking fee**: from WordPress JSON when pulling prices (`/wp-json/wp/v2/residences` `acf.booking_fee` + room overrides in `/wp-json/wp/v2/rooms`), otherwise from local `room_types.booking_price`. Applies-to gating used `room_types.apply_*` and WP `booking_fee_applies_to`.
+    - **Monthly rental** (used as the "deposit base amount"): from WordPress room `acf.price_from` when pulling prices, otherwise from local `room_types.rent_price`.
+    - **Lease admin fee** (`booking_payments.loan_admin_fee`): effectively hardcoded in booking flows to `1000` for `Cash / Direct` and `Bursary` with `nsfas_bursar != 1`, otherwise `0` (despite legacy references to `Lookups` group `8`).
+    - **Deposit** (`booking_payments.deposit`): hardcoded "applies" rules based on `studentType`/`nsfas_bursar`; amount was the monthly rental for the applicable types, otherwise `0`.
+  - Current (year-based lookups + stored `BookingPayment`):
+    - Year lookup `lookups.group_id=4` stores config in `lookups.data`:
+      - `lease_fees` (map of funding type id -> admin fee)
+      - `deposit_applies` (map of funding type id -> boolean)
+    - Funding type id is derived from the student type label via `Lookups::fundingTypeIdForLabel()` (`Lookups::FUNDING_TYPES`).
+    - Booking/registration flows write `booking_payments.loan_admin_fee` from `lease_fees[fundingId]` and write `booking_payments.deposit` as the monthly rental when `deposit_applies[fundingId]` is truthy (unless deposit waived). Admin rate edits (`HomeController::updateBookingPayment`) recompute deposit from the updated monthly rental when required and not waived.
+    - Operational note: keep `lease_fees`/`deposit_applies` populated for every funding type used in production; missing keys default to `0` and can cause "R 0" values downstream.
 - Lease PDFs render admin fee/deposit directly from `BookingPayment` (fields: `loan_admin_fee`, `deposit`) unless waived (`rob_loan_waived` / `rob_deposit_waived`); no studentType branching.
 - Lease contact display logic (kin/sponsor): templates use `LeaseContactService::resolve($data)` to render Next‑of‑Kin and parent/guardian acknowledgement. It shows kin if present, otherwise falls back to sponsor fields; if both are blank, it renders placeholders. The `app_parent_kin` checkbox only copies sponsor -> kin at save time (see `ApplicationController::step_3_kin`), and studentType only affects onboarding requirements, not lease rendering.
 - Lease generation guard: `PDFController::createPDF()` now blocks lease generation with a 422 error if required Next‑of‑Kin fields are missing, aligned to the Step 3 Next‑of‑Kin requirements (see `LeaseContactService::missingFields()`), so admins must complete those fields before generating a lease.
