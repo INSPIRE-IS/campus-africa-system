@@ -7764,14 +7764,6 @@ class HomeController extends Controller
 
         $lookup = Lookups::where('group_id', '7')->first();
 
-        $roomTypeNewId = $booking->roomType;
-
-        $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
-        $booking->roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
-
-        $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
-        $roomTypeId = $roomTypeData->room_map_slug;
-
         $allResidences = Residence::whereNull('status')->get();
         $allRoomTypes = RoomTypes::get();
 
@@ -7779,6 +7771,14 @@ class HomeController extends Controller
         $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
 
         foreach ($bookingList as $booking) {
+            // Booking rows store residence/room type ids; normalize to names for the WP matching below.
+            $roomTypeNewId = $booking->roomType;
+            $booking->property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $booking->roomType = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
+
+            $roomTypeData = RoomTypes::where('id', $roomTypeNewId)->first();
+            $roomTypeId = $roomTypeData ? $roomTypeData->room_map_slug : null;
+
             $user = User::where('id', $booking->userId)->first();
 
             $booking_data = [];
@@ -7808,7 +7808,7 @@ class HomeController extends Controller
                 foreach ($jsonDataRooms as $room) {
                     if ($residenceId == $room->acf->residence) {
 
-                        if ($room->id == $roomTypeId) {
+                        if ($roomTypeId !== null && $room->id == $roomTypeId) {
                             $roomType = $booking->roomType;
                             $roomName = $room->slug;
 
