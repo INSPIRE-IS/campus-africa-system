@@ -25,6 +25,24 @@ use Illuminate\Support\Facades\Session;
 
 class LookupsController extends Controller
 {
+    public function __construct()
+    {
+        // Some Lookups routes are not grouped under auth middleware in routes/web.php.
+        // Guard here so expired sessions reliably log out + flush and redirect to login.
+        $this->middleware(function ($request, $next) {
+            if (!Auth::check()) {
+                Auth::logout();
+                Session::flush();
+
+                return redirect()
+                    ->route('login')
+                    ->withErrors(['message' => 'Session expired. Please log in again.']);
+            }
+
+            return $next($request);
+        });
+    }
+
     public function lookups(Request $request)
     {
         $user = Auth::user();
