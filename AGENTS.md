@@ -56,6 +56,9 @@
 - Lease buttons in `app_profile.blade.php`: **Regen** calls `/createLease` or `/createTempLease` (rebuilds the PDF, overwrites/creates `moveIn`/`tempMoveIn`, resets status to Rejected, creates a new token, emails link). **Resend** calls `/resendLease` or `/resendTempLease` (invalidates old token, creates a new token, emails link; does not rebuild the PDF). Use regen when content needs updating; use resend when only the link/email needs to be reissued.
 - Temp lease approve/reject in the document modal now updates `tempMoveIn` UI immediately (status/banner + close modal) to match `moveIn` behavior.
 - Reports view: sections for All Documents / Institution & Funding Docs / Compatibility are gated by `role_all_apps_report` + `role_lookup` (not `role_manage_users`).
+- Reports downloads:
+  - `/download-selected-docs` (reports page) dispatches `DownloadSelectedDocsJob` -> `download:selected_docs` (console). Filters are applied when values are not "All": `year`, `property`, `institution`, `studentType`, and `lease_filter`. The command only zips `user_files.fileId = moveIn` for the selected year, and `lease_filter` maps to `Uploaded`/`Approved` status.
+  - Reports buttons are wired via jQuery click handlers; avoid duplicate inline `onClick` to prevent double job dispatch.
 - Step 5 booking guardrails: `ApplicationController::step_5()` now checks auth before starting a DB transaction, loads booking via `StudentsInfo.bookingId` with fallback to user+year, and logs out + redirects to login if the booking is missing or cancelled.
 - Admin "Add Document" (app profile) is gated by: allowed residence, `role_upload_docs == 1`, `rob_60_cancelled == 0`, and either `rob_50_approve == 0` or (`role_modify_approved == 1` and `rob_50_approve == 2`). See `resources/views/admin/app_profile.blade.php`.
 - Admin "Update Rates" button (`#openPaymentModal` in `app_profile.blade.php`) is shown only when `Auth::user()->role_sys_admin == 1`. It opens `#paymentModal`, which posts to `/update-booking-payment` (`HomeController::updateBookingPayment`) to update `booking_payments.monthly_rental` and `funded_monthly`, and recalculates `monthly_rental_total` and `total_funded` as `* 10`. The controller logs an `ActionList` entry "Booking Payment Updated"; there is no server-side role check beyond auth, so UI gating is the only access control.
@@ -63,6 +66,13 @@
   - Cancel booking (`POST /cancel/booking` → `HomeController::cancel_booking`): sets `StudentsInfo.rob_60_cancelled=1`, `rob_40_bed=1`, `rob_50_approve=0`; clears booking bed fields (`property_data_id`, floor/unit/room/bed/bed_code), clears `room_rate`, sets `booking.cancelled=1`; clears `Property.user_id_room` for the user; deletes lease file (`user_files.fileId=moveIn`); logs `ActionList` with reason if provided.
   - Deallocate bed (`POST /unallocate-bed` → `HomeController::unallocate_bed`): clears booking bed fields and `Property.user_id_room`; sets `rob_40_bed=1`, `rob_50_approve=0`; deletes lease file (`moveIn`); logs `ActionList` "Unallocated Bed …". It does **not** set `rob_60_cancelled` or `booking.cancelled`.
   - UI entry points: `resources/views/admin/app_profile.blade.php` uses `cancelBooking(bookingId, userId)` (role `role_cancel_booking`) and bed deallocation via `unallocate_bed` in the bed‑change flow (role `role_change_bed`).
+- Bed selection and residence permissions (app profile):
+  - Student type is set in `/student/edit/{studentId}` (controller: `HomeController::student_edit` + `edit_student`) and during registration/booking flows (`new_student` / `newBookingForm`). It is stored on both `users.studentType` and `students_info.studentType` for the selected year.
+  - Allowed residences for bed selection are gated by `institution_properties` for the student's `institutionStudy` and funding type (columns: `cash`, `bursary`, `nsfas`). This is separate from room-type eligibility shown on `/room-types`.
+  - The "Residence Permissions" admin checkbox UI updates `institution_properties` (per institution). If a property is unchecked for a funding type, it will show as "Not Allowed" in the bed-change modal.
+  - Property permissions for the logged-in admin (table `property_permission`) are also enforced in `/check-rooms/{userId}`. If a residence is "Not Allowed", the option is disabled; the property value stays blank, so `/get-booking-info` returns no beds.
+  - `/check-rooms/{userId}` and `/check-all-rooms/{userId}` build the residence/room-type lists for the bed-change modals.
+  - `/get-booking-info` (POST) builds floor/unit/bed lists from `property_data` where `room_available IS NULL`, `inventory=1`, and year is within `year`/`year_end`. It marks beds as booked if a current-year booking exists and the student is not approved/cancelled.
 - Booking fee requirement logic (UI + reports): `proof_of_payment` is required only when booking fee > 0 and not waived (`booking_fee_waived` or `rob_b_waived`). If fee is 0/null or waived, PoP should be omitted from required docs and `rob_10_fee` should be `2`.
 - Irregularity Report (app profile) is visible to `role_sys_admin` and `role_bm_report`. Actions require a comment (stored in `comments` + `ActionList`). Current actions: recompute `rob_45_other` from other docs + waiver flags; clear booking fee requirement (sets PoP approved + `rob_10_fee=2`) when fee is not required; **fix bed allocation** when `bed_code` is set but `rob_40_bed != 2` (sets `rob_40_bed=2`).
 - ROB anomaly report (`report:rob-anomalies`) flags bed allocation issues when `bed_code` is set but `rob_40_bed != 2` (included for approval-ready‑except‑bed, or when `--include-not-ready` is used).
@@ -70,10 +80,36 @@
 - Lease templates show admin fee/deposit as 0 unless `studentType` is `Cash / Direct` or `Bursary` with `nsfas_bursar != 1` (or waived flags). This means `NRF` currently falls into the "0" path.
 - Lease contact display logic (kin/sponsor): templates use `LeaseContactService::resolve($data)` to render Next‑of‑Kin and parent/guardian acknowledgement. It shows kin if present, otherwise falls back to sponsor fields; if both are blank, it renders placeholders. The `app_parent_kin` checkbox only copies sponsor -> kin at save time (see `ApplicationController::step_3_kin`), and studentType only affects onboarding requirements, not lease rendering.
 - Lease generation guard: `PDFController::createPDF()` now blocks lease generation with a 422 error if required Next‑of‑Kin fields are missing, aligned to the Step 3 Next‑of‑Kin requirements (see `LeaseContactService::missingFields()`), so admins must complete those fields before generating a lease.
+- Debt Assurity (cash only):
+  - `user_files.fileId = assurity_doc`, status tracked by `students_info.rob_65_debt` using temp-lease style semantics (`0=Rejected, 1=Approved, 2=Pending, 3=Not Set/Not Required`).
+  - Tokens stored in `assurity_tokens`; sponsor signs via `/sign-assurity/{token}` and `POST /save-signed-assurity/{token}`.
+  - Admin actions (sys admin only): `POST /generate-assurity/{studentId}` (regen + send link) and `POST /resend-assurity` (resend link).
+  - Auto-trigger: after Step 5 payment submission, the system auto-requests Debt Assurity for Cash students (emails sponsor signing link + emails student reminder). Implemented in PayGate return handlers and PoP upload handler.
+  - Lease generation + final approval blocked when cash student and `rob_65_debt != 1`.
+- Cash sponsor consent flags (Step 2 sponsor flow):
+  - On `/step-2/online-application` for `Cash / Direct`, the sponsor form requires two acknowledgements:
+    - `c_credit_risk`: student acknowledges approval is subject to sponsor meeting Campus Africa credit risk profile and/or a payment arrangement.
+    - `c_credit_check`: student confirms sponsor consents to a credit check for the application.
+  - Stored on `students_info` (and legacy `users`) and validated client-side in `resources/views/application/step_2_spon.blade.php`.
+- Auth / roles / permissions (important distinctions):
+  - `users.userRole` is a coarse "account type" flag used across controllers:
+    - `0` = student/applicant (portal).
+    - `1` = system user (admin/staff). The current admin add/edit flow hard-codes system users to `userRole = 1`.
+    - Some legacy checks also allow `userRole` `2`/`3`, but the current admin add/edit flow does not set those values (2/3 appear to be legacy).
+  - `users.template` is the "Permissions Template" preset used in the admin add/edit UI to auto-check permission checkboxes:
+    - `1` = Sales Team, `2` = Building Manager, `3` = HO Approver (see `resources/views/admin/userAdd.blade.php` and `resources/views/admin/userEdit.blade.php`).
+    - This is a convenience preset only; the effective access control is determined by the per-permission columns (`role_*`).
+  - Document approve/reject endpoint: `POST /action/file` (`HomeController::action_file`) currently gates only on `Auth::user()->userRole` being `1/2/3` (i.e., "not a student"), and does not enforce `role_approve_docs` server-side. UI gating may hide buttons, but the API will still accept requests from any staff account.
 - Staging uses new funding-type fee/deposit logic (via lookup `deposit_applies` + lease fee config) in the application/admin flows, but lease PDFs still use the older studentType branching. Live fix should be the temporary studentType adjustment; full alignment with funding rules to follow when staging changes are approved for live.
 - Property active/inactive: `property.status` remains legacy for application/control flow. New `property.active_date` / `property.inactive_date` are introduced for year‑based reporting filters (reports page only for now). Long term, the goal is to migrate more logic to date‑based activity and reduce reliance on `status`.
-- TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).
-- Lease PDFs now render admin fee/deposit directly from `BookingPayment` with waiver flags only (no studentType branching) to align with funding lookup logic.
+- TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).- Lease PDFs now render admin fee/deposit directly from `BookingPayment` with waiver flags only (no studentType branching) to align with funding lookup logic.
+- `temp/` (gitignored) is a scratchpad folder for investigations and reference documents (not used by app code). Current contents:
+  - `temp/CLIENT_SIGNOFF.md`: draft acceptance checklist for the assurity + related flow changes (compare/merge with root `CLIENT_SIGNOFF.md` as needed).
+  - `temp/DEED OF SURETY.docx`: source legal wording used to build/update `resources/views/PDF/assurity.blade.php`.
+  - `temp/laravel260319ca.log`: captured Laravel log snapshot used for debugging production/staging issues.
+  - `temp/REVIEWED_VIEWS.md`: ad-hoc notes/review findings for specific Blade views (e.g., admin maintenance/update screens).
+  - `temp/TODOS1.md`: scratch TODO list (may overlap with root `TODOS.md` / `TODOS1.md`).
+  - `temp/UPGRADE.md`: Laravel upgrade research notes (dependency blockers, risks, staged upgrade plan).
 ## Project TODOs
 - See `TODOS.md`
 - Admin "Add Document" (app profile) is gated by: allowed residence, `role_upload_docs == 1`, `rob_60_cancelled == 0`, and either `rob_50_approve == 0` or (`role_modify_approved == 1` and `rob_50_approve == 2`). See `resources/views/admin/app_profile.blade.php`.

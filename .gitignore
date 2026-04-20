@@ -21,3 +21,4 @@ public/uploads/NSFAS_Approval_Export_8.xlsx
 composer.lock
 *.xlsx
 note.txt
+/temp
