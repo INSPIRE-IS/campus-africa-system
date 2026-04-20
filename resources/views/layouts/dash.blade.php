@@ -1,4 +1,13 @@
 @php
+    // Some pages (e.g. out-of-session signing screens) reuse this layout but don't pass the full dashboard context.
+    // Provide safe defaults to avoid "undefined variable" notices.
+    $headerTitle = $headerTitle ?? 'Campus Africa';
+    $sessionYear = $sessionYear ?? '';
+    $active = $active ?? 0;
+    $bedCode = $bedCode ?? null;
+    $user = $user ?? null;
+    $agent = $agent ?? new \Jenssegers\Agent\Agent();
+
     $authUser = Auth::user();
     if ($authUser) {
         $isDeleted = method_exists($authUser, 'trashed') ? $authUser->trashed() : !empty($authUser->deleted_at);

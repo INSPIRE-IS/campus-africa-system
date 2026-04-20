@@ -111,6 +111,17 @@ class PDFController extends Controller
           'missing' => $missingFields,
         ], 422);
       }
+      // Debt Assurity must be approved (1) before a lease can be generated for Cash students.
+      if ($data->studentType == 'Cash / Direct' && (int) $data->rob_65_debt !== 1) {
+        \Log::warning('LEASE_GATE: blocked lease generation due to debt assurity status', [
+          'studentId' => $studentId,
+          'year' => $this_year,
+          'rob_65_debt' => (int) $data->rob_65_debt,
+        ]);
+        return response()->json([
+          'message' => 'Debt Assurity must be approved before generating a lease.',
+        ], 422);
+      }
 
       $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
       if (!$booking) {

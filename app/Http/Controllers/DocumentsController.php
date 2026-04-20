@@ -17,10 +17,17 @@ use App\Models\MDAInfo;
 use App\Models\BookingPayment;
 use DateTime;
 use Illuminate\Support\Facades\Session;
+use App\Services\AssurityService;
 
 class DocumentsController extends Controller
 {
+    /** @var AssurityService */
+    protected $assurityService;
 
+    public function __construct(AssurityService $assurityService)
+    {
+        $this->assurityService = $assurityService;
+    }
 
     public function view_document($id)
     {
@@ -122,6 +129,10 @@ class DocumentsController extends Controller
             $typeName = "Lease";
             $field_data = "";
             $field_doc = "rob_55_lease";
+        } elseif ($fileType == "assurity_doc") {
+            $typeName = "Debt Assurity";
+            $field_data = "";
+            $field_doc = "rob_65_debt";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;
@@ -652,6 +663,15 @@ class DocumentsController extends Controller
                 ]);
 
                 $this->update_user_status($userUid);
+
+                // If the applicant just submitted booking payment proof (Step 5), auto-request Debt Assurity for Cash students.
+                if ($fileType === 'proof_of_payment' && Auth::user()->userRole == 0) {
+                    $this->assurityService->maybeAutoRequestAfterStep5($userUid, $this_year, [
+                        'user_uid' => Auth::user()->id,
+                        'display_name' => $name,
+                        'role' => 0,
+                    ], 'step5-manual-pop');
+                }
 
                 return [$file->id, UserFiles::where('userUid', $userUid)->where('year', $this_year)->first(), $file];
             } else {
