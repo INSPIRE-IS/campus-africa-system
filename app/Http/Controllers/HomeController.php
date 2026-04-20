@@ -304,6 +304,7 @@ class HomeController extends Controller
         }
         if ($currUser->studentType == "Cash / Direct") {
             array_push($all, "bankStatement");
+            array_push($all, "assurity_doc");
         }
         if ($currUser->studentType !== "Cash / Direct") {
             array_push($all, "bursaryApproval");
@@ -728,7 +729,19 @@ class HomeController extends Controller
 
         $updateData = ["rob_35_info" => $rob_35_info];
 
-        if ($studentInfo->rob_10_fee == 2 && $studentInfo->rob_15_id == 2 && $studentInfo->rob_20_card == 2 && $studentInfo->rob_25_reg == 2 && $studentInfo->rob_30_funds == 2 && $rob_35_info == 2 && $studentInfo->rob_40_bed == 2 && ($studentInfo->rob_45_other == 3 || $studentInfo->rob_45_other == 2) && $studentInfo->rob_50_approve == 0 && ($studentInfo->rob_60_cancelled == 0 || $studentInfo->rob_60_cancelled == null)) {
+        // Debt Assurity status uses temp-lease style semantics (0/1/2/3).
+        // - Cash / Direct: required, default to Not Set (3) until generated/signed.
+        // - Non-cash: Not Required (3).
+        if ($studentInfo->rob_65_debt === null) {
+            $updateData['rob_65_debt'] = 3;
+            $studentInfo->rob_65_debt = 3;
+        }
+
+        $debtAssurityOk = ($studentInfo->studentType == "Cash / Direct")
+            ? ((int) $studentInfo->rob_65_debt === 1)
+            : ((int) $studentInfo->rob_65_debt === 3);
+
+        if ($studentInfo->rob_10_fee == 2 && $studentInfo->rob_15_id == 2 && $studentInfo->rob_20_card == 2 && $studentInfo->rob_25_reg == 2 && $studentInfo->rob_30_funds == 2 && $rob_35_info == 2 && $studentInfo->rob_40_bed == 2 && ($studentInfo->rob_45_other == 3 || $studentInfo->rob_45_other == 2) && $debtAssurityOk && $studentInfo->rob_50_approve == 0 && ($studentInfo->rob_60_cancelled == 0 || $studentInfo->rob_60_cancelled == null)) {
             $updateData['rob_50_approve'] = 1;
         }
 
@@ -774,6 +787,7 @@ class HomeController extends Controller
 
         if ($studentInfo->studentType == "Cash / Direct") {
             array_push($all, "bankStatement");
+            array_push($all, "assurity_doc");
         }
         if ($studentInfo->studentType !== "Cash / Direct") {
             array_push($all, "bursaryApproval");
@@ -922,6 +936,13 @@ class HomeController extends Controller
 
             if ($userInfoForStatus && $userInfoForStatus->studentType == "Cash / Direct" && $approval == 1) {
                 if ($userFile['field'] == "bursaryApproval") {
+                    unset($userFilesForStatus[$idx]);
+                    continue;
+                }
+            }
+
+            if ($userInfoForStatus && $userInfoForStatus->studentType !== "Cash / Direct") {
+                if ($userFile['field'] == "assurity_doc") {
                     unset($userFilesForStatus[$idx]);
                     continue;
                 }
@@ -1135,6 +1156,10 @@ class HomeController extends Controller
             $typeName = "TempLease";
             $field_data = "";
             $field_doc = "rob_51_temp_lease_approve";
+        } elseif ($fileType == "assurity_doc") {
+            $typeName = "Debt Assurity";
+            $field_data = "";
+            $field_doc = "rob_65_debt";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;
@@ -1423,7 +1448,7 @@ class HomeController extends Controller
             $user_status = $this->get_user_status($userFile['fileId'], "", StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->first());
 
             $allOtherFiles = UserFiles::where('userUid', $userFile->userUid)->where('year', $this_year)
-                ->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn', 'tempMoveIn'])
+                ->whereNotIn('fileId', ['proof_of_payment', 'copyID', 'studentCard', 'proofRegistration', 'bursaryApproval', 'bankStatement', 'moveIn', 'tempMoveIn', 'assurity_doc'])
                 ->get();
 
             if ($action == "Rejected") {
@@ -1521,7 +1546,7 @@ class HomeController extends Controller
                 } else {
 
                     // User::where('id', $userFile->userUid)->update([$user_status['field_doc'] => "2"]);
-                    if ($user_status['field_doc'] == "rob_51_temp_lease_approve") {
+                    if ($user_status['field_doc'] == "rob_51_temp_lease_approve" || $user_status['field_doc'] == "rob_65_debt") {
                         StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update([$user_status['field_doc'] => "1"]);
                     } else {
                         StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update([$user_status['field_doc'] => "2"]);
@@ -1612,7 +1637,11 @@ class HomeController extends Controller
             // $status_data = User::where('id', $userFile->userUid)->first();
             $status_data = StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->first();
 
-            if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0) {
+            $debtAssurityOk = ($status_data->studentType == 'Cash / Direct')
+                ? ((int) $status_data->rob_65_debt === 1)
+                : ((int) $status_data->rob_65_debt === 3);
+
+            if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $debtAssurityOk && $status_data->rob_50_approve == 0) {
                 // User::where('id', $userFile->userUid)->update(['rob_50_approve' => 1]);
                 StudentsInfo::where('userUid', $userFile->userUid)->where('year', $this_year)->update(['rob_50_approve' => 1]);
             }
@@ -1759,6 +1788,10 @@ class HomeController extends Controller
 
         // $user = User::where('id', $userId)->first();
         $user = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+        // Debt Assurity must be approved (1) before final approval for Cash students.
+        if ($user && $user->studentType == 'Cash / Direct' && (int) $user->rob_65_debt !== 1) {
+            return response()->json(['message' => 'Debt Assurity must be approved before final approval.'], 422);
+        }
 
         $data['name'] = $user->userFirstName;
         $data['email'] = $user->userEmail;
@@ -2797,6 +2830,8 @@ class HomeController extends Controller
             'year' => $request->year,
             //  'yearOfStudy' => $request->yearOfStudy,
             'studentType' => $request->studentType,
+            // Debt Assurity uses temp-lease style semantics; default to Not Set (3).
+            'rob_65_debt' => 3,
 
             // Address info
             'userAddress1' => $request->userAddress1,
@@ -5601,7 +5636,11 @@ class HomeController extends Controller
 
         $status_data = StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->first();
 
-        if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0) {
+        $debtAssurityOk = ($status_data->studentType == 'Cash / Direct')
+            ? ((int) $status_data->rob_65_debt === 1)
+            : ((int) $status_data->rob_65_debt === 3);
+
+        if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $debtAssurityOk && $status_data->rob_50_approve == 0) {
             // User::where('id', $bookingId)->update(['rob_50_approve' => 1]);
             StudentsInfo::where('userUid', $bookingId)->where('year', $this_year)->update(['rob_50_approve' => 1]);
         }
@@ -6502,7 +6541,11 @@ class HomeController extends Controller
         // $status_data = User::where('id', $request->userId)->first();
         $status_data = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
 
-        if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0) {
+        $debtAssurityOk = ($status_data->studentType == 'Cash / Direct')
+            ? ((int) $status_data->rob_65_debt === 1)
+            : ((int) $status_data->rob_65_debt === 3);
+
+        if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $debtAssurityOk && $status_data->rob_50_approve == 0) {
             User::where('id', $request->userId)->update(['rob_50_approve' => 1]);
         }
 
@@ -7018,6 +7061,7 @@ class HomeController extends Controller
             }
             if ($userData->studentType == "Cash / Direct") {
                 $all[] = "bankStatement";
+                $all[] = "assurity_doc";
             } else {
                 $all[] = "bursaryApproval";
             }
@@ -9149,12 +9193,15 @@ class HomeController extends Controller
                 'rob_55_lease' => 3,
                 'burser_approved' => null,
                 'parent_approved' => null,
+                // Debt Assurity uses temp-lease style semantics; default to Not Set (3).
+                'rob_65_debt' => 3,
             ];
 
             $lease = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->first();
             // $mda = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'MDA')->first();
             $bursary = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bursaryApproval')->first();
             $bankStatement = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bankStatement')->first();
+            $assurityDoc = UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'assurity_doc')->first();
 
             if (!empty($lease)) {
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'moveIn')->delete();
@@ -9167,6 +9214,9 @@ class HomeController extends Controller
             }
             if (!empty($bankStatement)) {
                 UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'bankStatement')->update(['status' => 'Rejected']);
+            }
+            if (!empty($assurityDoc)) {
+                UserFiles::where('userUid', $request->userUid)->where('year', $this_year)->where('fileId', 'assurity_doc')->update(['status' => 'Rejected']);
             }
 
             $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
@@ -9433,7 +9483,11 @@ class HomeController extends Controller
         // $status_data = User::where('id', $request->userUid)->first();
         $status_data = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
 
-        if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $status_data->rob_50_approve == 0) {
+        $debtAssurityOk = ($status_data->studentType == 'Cash / Direct')
+            ? ((int) $status_data->rob_65_debt === 1)
+            : ((int) $status_data->rob_65_debt === 3);
+
+        if ($status_data->rob_10_fee == 2 && $status_data->rob_15_id == 2 && $status_data->rob_20_card == 2 && $status_data->rob_25_reg == 2 && $status_data->rob_30_funds == 2 && $status_data->rob_35_info == 2 && $status_data->rob_40_bed == 2 && ($status_data->rob_45_other == 3 || $status_data->rob_45_other == 2) && $debtAssurityOk && $status_data->rob_50_approve == 0) {
             // User::where('id', $request->userUid)->update(['rob_50_approve' => 1]);
             StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update(['rob_50_approve' => 1]);
         } else {
@@ -11765,20 +11819,21 @@ class HomeController extends Controller
 
     public function download_beds(Request $request)
     {
-        $property = $request->property;
+        $propertyId = $request->property;
+        //get current year        
         $this_year = Lookups::where('group_id', '4')->first();
-        //get current year
-        $session_year = Session::get('year');
-        if (!empty($session_year)) {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-        }
+        // dont do this session cause it does not show on the report so could lead to confusion
+        // $session_year = Session::get('year');
+        // if (!empty($session_year)) {
+        //     $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
+        // }
         $institutions = Lookups::where('group_id', '1')->first();
         $faculties = Lookups::where('group_id', '3')->first();
 
         $query = "";
 
-        if ($property !== "All") {
-            $query .= "where pd.residence = '" . $property . "'";
+        if ($propertyId !== "All") {
+            $query .= "where pd.residence = '" . $propertyId . "'";
         }
 
         if ($query !== "") {
@@ -11792,25 +11847,77 @@ class HomeController extends Controller
             $query .= " where pd.deleted_at is null ";
         }
         $beds = [
-            ['<b>RESIDENCE</b>', '<b>FLOOR PREFIX</b>', '<b>BED CODE PREFIX</b>', '<b>FLOOR</b>', '<b>UNIT</b>', '<b>ROOM</b>', '<b>BED</b>', '<b>BED CODE</b>', '<b>ROOM TYPE</b>',  '<b>INVENTORY</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>', '<b>LAST NAME</b>', '<b>EMAIL</b>', '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>', '<b>ID NUMBER / PASSPORT</b>', '<b>GENDER</b>', '<b>STUDENT TYPE</b>', '<b>BURSAR COMPANY</b>', '<b>INSTITUTION</b>', '<b>STUDENT NUMBER</b>', '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+            [
+                '<b>RESIDENCE</b>',
+                '<b>FLOOR PREFIX</b>',
+                '<b>BED CODE PREFIX</b>',
+                '<b>FLOOR</b>',
+                '<b>UNIT</b>',
+                '<b>ROOM</b>',
+                '<b>BED</b>',
+                '<b>BED CODE</b>',
+                '<b>ROOM TYPE</b>',
+                '<b>LEASE RATE (MONTHLY)</b>',
+                '<b>INVENTORY</b>',
+                '<b>BOOKING REF</b>',
+                '<b>FIRST NAME</b>',
+                '<b>LAST NAME</b>',
+                '<b>EMAIL</b>',
+                '<b>CELL NUMBER</b>',
+                '<b>NATIONALITY</b>',
+                '<b>ID NUMBER / PASSPORT</b>',
+                '<b>GENDER</b>',
+                '<b>STUDENT TYPE</b>',
+                '<b>BURSAR COMPANY</b>',
+                '<b>INSTITUTION</b>',
+                '<b>STUDENT NUMBER</b>',
+                '<b>YEAR OF STUDY</b>',
+                '<b>FACULTY</b>',
+                '<b>NEXT OF KIN NAME</b>',
+                '<b>NEXT OF KIN CONTACT</b>',
+                '<b>NEXT OF KIN RELATIONSHIP</b>',
+            ],
         ];
 
         $waitlist = [
-            ['<b>RESIDENCE</b>', '<b>ROOM TYPE</b>', '<b>BOOKING REF</b>', '<b>FIRST NAME</b>', '<b>LAST NAME</b>', '<b>EMAIL</b>', '<b>CELL NUMBER</b>', '<b>NATIONALITY</b>', '<b>ID NUMBER / PASSPORT</b>', '<b>GENDER</b>', '<b>STUDENT TYPE</b>', '<b>BURSAR COMPANY</b>', '<b>INSTITUTION</b>', '<b>STUDENT NUMBER</b>', '<b>YEAR OF STUDY</b>', '<b>FACULTY</b>', '<b>NEXT OF KIN NAME</b>', '<b>NEXT OF KIN CONTACT</b>', '<b>NEXT OF KIN RELATIONSHIP</b>'],
+            [
+                '<b>RESIDENCE</b>',
+                '<b>ROOM TYPE</b>',
+                '<b>LEASE RATE (MONTHLY)</b>',
+                '<b>BOOKING REF</b>',
+                '<b>FIRST NAME</b>',
+                '<b>LAST NAME</b>',
+                '<b>EMAIL</b>',
+                '<b>CELL NUMBER</b>',
+                '<b>NATIONALITY</b>',
+                '<b>ID NUMBER / PASSPORT</b>',
+                '<b>GENDER</b>',
+                '<b>STUDENT TYPE</b>',
+                '<b>BURSAR COMPANY</b>',
+                '<b>INSTITUTION</b>',
+                '<b>STUDENT NUMBER</b>',
+                '<b>YEAR OF STUDY</b>',
+                '<b>FACULTY</b>',
+                '<b>NEXT OF KIN NAME</b>',
+                '<b>NEXT OF KIN CONTACT</b>',
+                '<b>NEXT OF KIN RELATIONSHIP</b>',
+            ],
         ];
 
-        if ($property !== "All") {
-            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->where('property', $property)->orderBy('id', 'asc')->get();
+        if ($propertyId !== "All") {
+            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->where('property', $propertyId)->orderBy('id', 'asc')->get();
         } else {
             $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->orderBy('id', 'asc')->get();
         }
 
         foreach ($allBookingsThisYear as $booking) {
-            $property = Residence::where('id', $booking->property)->pluck('residence')->first();
+            $propertyName = Residence::where('id', $booking->property)->pluck('residence')->first();
             $room = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
             $user = StudentsInfo::where('bookingId', $booking->id)->where('rob_10_fee', '2')->orderBy('year', 'desc')->first();
 
             if (!empty($user) && $user->rob_60_cancelled == 0) {
+                $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+                $leaseRate = $paymentBooking ? $paymentBooking->monthly_rental : "";
 
                 $first_name = $user->userFirstName ?? "";
                 $last_name = $user->userLastname ?? "";
@@ -11835,7 +11942,7 @@ class HomeController extends Controller
                 $relationship = $user->kinRelationship;
                 $kinContact = $user->kincellCode . $user->kinCellNo;
 
-                $list = [$property, $room, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+                $list = [$propertyName, $room, $leaseRate, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
                 array_push($waitlist, $list);
             }
         }
@@ -11852,6 +11959,8 @@ class HomeController extends Controller
             $booking = Booking::where('property_data_id', $bed->id)->where('year',  $this_year->lookup_name)->first();
 
             if (!empty($booking)) {
+                $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
+                $leaseRate = $paymentBooking ? $paymentBooking->monthly_rental : "";
                 $user = StudentsInfo::where('bookingId', $booking->id)->where('year',  $this_year->lookup_name)->first();
 
                 if (!empty($user)) {
@@ -11897,6 +12006,7 @@ class HomeController extends Controller
                     $kinContact = "";
                 }
             } else {
+                $leaseRate = "";
                 $booking_ref = "";
                 $first_name = "";
                 $last_name = "";
@@ -11916,7 +12026,7 @@ class HomeController extends Controller
                 $kinContact = "";
             }
 
-            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
+            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $leaseRate, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
             array_push($beds, $bed);
         }
 
@@ -11924,12 +12034,14 @@ class HomeController extends Controller
         $xlsx->addSheet($beds, 'BED CODES');
         $xlsx->addSheet($waitlist, 'WAITLIST');
 
-        $prop = Residence::where('id', $property)->pluck('residence')->first();
+        $prop = $propertyId === "All"
+            ? 'All'
+            : Residence::where('id', $propertyId)->pluck('residence')->first();
 
         // if($year !== "All"){
 
         $downloadUrl = 'Bed_Allocations_Export_' . $this_year->lookup_name . '_' . $prop . '.xlsx';
-        $xlsx->saveAs('Bed_Allocations_Export_' . $this_year->lookup_name . '_' . $prop . '.xlsx');
+        $xlsx->saveAs($downloadUrl);
         // }else{
         //     $downloadUrl = 'System_Bed_Allocations_All_Years.xlsx';
         //     $xlsx->saveAs('System_Bed_Allocations_All_Years.xlsx');

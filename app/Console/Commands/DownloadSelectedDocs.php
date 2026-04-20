@@ -20,12 +20,18 @@ class DownloadSelectedDocs extends Command
 
     public function handle()
     {
-        $year = (int) $this->argument('year');
+        $yearArg = trim($this->argument('year'));
         $prop = trim($this->argument('prop'));
         $institution = trim($this->argument('institution'));
         $student_type = trim($this->argument('student_type'));
         $lease_filter = (int) $this->argument('lease_filter');
         $email = filter_var($this->argument('email'), FILTER_VALIDATE_EMAIL);
+
+        if ($yearArg === '' || !is_numeric($yearArg)) {
+            $this->error("Invalid year selected.");
+            return 1;
+        }
+        $year = (int) $yearArg;
 
         if (!$email) {
             $this->error("Invalid email address.");
@@ -36,17 +42,43 @@ class DownloadSelectedDocs extends Command
         $password = "12345678";
         $zipPath = storage_path("app/public/" . $zipFileName);
 
-        $users = DB::table('bookings_data as bd')
-            ->join('students_info as si', 'si.bookingId', '=', 'bd.id')
-            ->join('user_files as uf', 'uf.userUid', '=', 'si.userUid')
-            ->where("bd.property", $prop)
+        $query = DB::table('bookings_data as bd')
+            ->join('students_info as si', function ($join) use ($year) {
+                $join->on('si.bookingId', '=', 'bd.id')
+                    ->where('si.year', $year);
+            })
+            ->join('user_files as uf', function ($join) use ($year) {
+                $join->on('uf.userUid', '=', 'si.userUid')
+                    ->where('uf.year', $year);
+            })
             ->where('bd.year', $year)
-            ->where('si.institutionStudy', $institution)
-            ->where('si.studentType', $student_type)
-            ->where('uf.status', $lease_filter == 2 ? 'Approved' : "Uploaded")
-            ->where('uf.fileId', 'moveIn')
-            ->select('bd.userId', 'uf.fileName', 'si.userTitle', 'si.userFirstName', 'si.userLastname', 'uf.fileUrl')
-            ->get();
+            ->where('uf.fileId', 'moveIn');
+
+        if ($prop !== '' && $prop !== 'All') {
+            $query->where('bd.property', $prop);
+        }
+
+        if ($institution !== '' && $institution !== 'All') {
+            $query->where('si.institutionStudy', $institution);
+        }
+
+        if ($student_type !== '' && $student_type !== 'All') {
+            $query->where('si.studentType', $student_type);
+        }
+
+        if ($lease_filter === 2) {
+            $query->where('uf.status', 'Approved');
+        } elseif ($lease_filter === 1) {
+            $query->where('uf.status', 'Uploaded');
+        } elseif ($lease_filter === 0) {
+            $users = collect();
+        }
+
+        if (!isset($users)) {
+            $users = $query
+                ->select('bd.userId', 'uf.fileName', 'si.userTitle', 'si.userFirstName', 'si.userLastname', 'uf.fileUrl')
+                ->get();
+        }
 
         if ($users->isEmpty()) {
             Mail::raw("No documents found for the given criteria.", function ($message) use ($email) {

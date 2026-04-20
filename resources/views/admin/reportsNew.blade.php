@@ -185,8 +185,7 @@
                     </select>
                 </div>
                 <div class="searchTab">
-                    <button type="button" class="detailsChange" id="downloadAllApps"
-                        onClick="downloadAllAppsReport()">
+                    <button type="button" class="detailsChange" id="downloadAllApps">
                         Download Applications
                     </button>
                 </div>
@@ -311,8 +310,7 @@
                 </div>
 
                 <div class="searchTab">
-                    <button type="button" class="detailsChange" id="downloadAllAppDocs"
-                        onClick="downloadAllAppDocsReport()">Download Documents</button>
+                    <button type="button" class="detailsChange" id="downloadAllAppDocs">Download Documents</button>
                 </div>
             </div>
             </div>
@@ -385,8 +383,7 @@
                     </select>
                 </div>
                 <div class="searchTab">
-                    <button type="button" class="detailsChange" id="downloadSelectedDocs"
-                        onClick="downloadSelectedDocsReport()">Download Documents</button>
+                    <button type="button" class="detailsChange" id="downloadSelectedDocs">Download Documents</button>
                 </div>
             </div>
             </div>
@@ -415,8 +412,7 @@
                     </select>
                 </div>
                 <div class="searchTab">
-                    <button type="button" class="detailsChange" id="downloadCompatabilityDocs"
-                        onClick="downloadCompatabilityDocsReport()">Download Documents</button>
+                    <button type="button" class="detailsChange" id="downloadCompatabilityDocs">Download Documents</button>
                 </div>
             </div>
             </div>

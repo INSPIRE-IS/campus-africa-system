@@ -3,6 +3,39 @@
 @section('content')
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /*
+         * Documents section compact buttons.
+         * Intentionally scoped to `#documentsCard` so we can revert easily if any layout breaks.
+         * Excludes the three header actions (Add Document / Download All / Email Reminder).
+         */
+        #documentsCard button:not(#addOtherDocument):not(#downloadAllDocs):not(#sendMailReminder),
+        #documentsCard .outstandingUpload {
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 11px;
+            line-height: 1.1;
+        }
+
+        #documentsCard .outstandingUpload {
+            margin: 0;
+        }
+
+        @media (max-width: 420px) {
+            #documentsCard button:not(#addOtherDocument):not(#downloadAllDocs):not(#sendMailReminder),
+            #documentsCard .outstandingUpload {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+        }
+
+        #documentsCard .docs-help {
+            margin-left: 8px;
+            font-size: 14px;
+            color: #666;
+            cursor: help;
+        }
+    </style>
 
     <div class="greyAppSection  @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
         @if ($bookingNext)
@@ -661,6 +694,10 @@
                 <div class="customWhiteCard" id="documentsCard" style="margin-top:20px;">
                     <div class="bigHeader appSearchForm">
                         <h2 class="appHeader">Documents
+                            <span class="docs-help"
+                                title="Button guide: Upload = add a file; View = open in modal; Download = download the saved file; Generate = create/refresh the doc and email a signing link; Resend = email a new signing link without changing the PDF; Regen (lease) = rebuild the PDF and email a new link.">
+                                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            </span>
                             <select id="documentSortList">
                                 <option selected value="all">All Documents</option>
                                 <option value="review">Uploaded For Review</option>
@@ -730,6 +767,8 @@
                                             @endif
                                         @elseif($file['field'] === 'bankStatement')
                                             BANK STATEMENT
+                                        @elseif($file['field'] === 'assurity_doc')
+                                            DEBT ASSURITY
                                         @elseif($file['field'] === 'moveIn')
                                             LEASE
                                         @else
@@ -834,6 +873,18 @@
                                             @endif
                                         @endif
 
+                                        @if ($file['field'] === 'assurity_doc')
+                                            @if ($user[0]['userInfo']['rob_65_debt'] == 0)
+                                                <div class="button rejected"></div>
+                                            @elseif ($user[0]['userInfo']['rob_65_debt'] == 1)
+                                                <div class="button approved"></div>
+                                            @elseif ($user[0]['userInfo']['rob_65_debt'] == 2)
+                                                <div class="button action"></div>
+                                            @else
+                                                <div class="button na"></div>
+                                            @endif
+                                        @endif
+
                                         @if ($file['field'] === 'tempMoveIn')
                                             @if ($user[0]['userInfo']['rob_51_temp_lease_approve'] == 0)
                                                 <div class="button rejected"></div>
@@ -890,6 +941,43 @@
                                             @endif
                                         @endif
 
+                                        @if ($file['field'] === 'assurity_doc')
+                                            <div class="assurity-actions" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                                                @if (isset($file['url']) && isset($file['fileName']))
+                                                    <a href="/storage/{{ $file['url'] }}" download="{{ $file['fileName'] }}">
+                                                        <button type="button" id="myBtn_download_assurity" title="Download the latest saved Debt Assurity PDF.">Download</button>
+                                                    </a>
+                                                @endif
+
+                                                @php
+                                                    $rob65Debt = $user[0]['userInfo']['rob_65_debt'] ?? null;
+                                                @endphp
+
+                                                {{-- Only show generate/resend when not approved (Debt Assurity approved = 1). --}}
+                                                @if (Auth::user()->role_sys_admin == 1 && (int) $rob65Debt !== 1)
+                                                    <a href="#">
+                                                        <button type="button" id="myBtn_regen_assurity" title="Create/refresh the Debt Assurity PDF, issue a new signing link, and email the sponsor (and notify the student).">Generate</button>
+                                                    </a>
+                                                    @if ($file['status'] !== 'AUploaded')
+                                                        <button type="button" id="myBtn_resend_assurity" onClick="resendAssurity()" title="Email a new signing link without changing the current PDF content.">Resend</button>
+                                                    @endif
+                                                @endif
+
+                                                @if (($file['status'] === 'AUploaded' || $file['status'] === 'XApproved') && isset($file['id']))
+                                                    <button type="button" onClick="btn_view_document_ajax({{ $file['id'] }})" title="View the uploaded/signed document in the modal.">View</button>
+                                                @endif
+
+                                                {{-- Optional manual upload of a signed PDF (sys admin only). --}}
+                                                @if (Auth::user()->role_sys_admin == 1 && $file['status'] !== 'XApproved')
+                                                    <label for="assurity_doc" id="assurity_docSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;" title="Sys admin only: manually upload a signed Debt Assurity PDF.">
+                                                        <span class="text">Upload Signed</span>
+                                                        <i class="fas fa-file-upload"></i>
+                                                    </label>
+                                                    <input type="file" id="assurity_doc" onChange="UploadDocument('assurity_doc')" accept="image/*, application/pdf" hidden />
+                                                @endif
+                                            </div>
+                                        @endif
+
 
                                         <!-- tempMoveIn -->
                                         @if ($file['field'] === 'tempMoveIn')
@@ -914,13 +1002,16 @@
                                         @endif
                                         <!-- tempMoveIn -->
 
-                                        @if ($file['status'] === 'AUploaded' || $file['status'] === 'XApproved')
+                                        @if (($file['status'] === 'AUploaded' || $file['status'] === 'XApproved') && $file['field'] !== 'assurity_doc')
                                             <button type="button"
                                                 onClick="btn_view_document_ajax({{ $file['id'] }})">View
                                                 Document</button>
                                         @else
                                             @if (in_array($booking->property, $allowedResidences))
                                                 @if (Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                                                    @if ($file['field'] === 'assurity_doc')
+                                                        {{-- Assurity is sponsor-signed; manual upload is handled in the assurity block above (sys admin only). --}}
+                                                    @else
                                                     <!-- booking_payment_ref -->
                                                     @if ($file['field'] === 'proof_of_payment')
                                                         <label onClick="paymentRef()" id="{{ $file['field'] }}Section"
@@ -939,6 +1030,7 @@
                                                         <input type="file" id="{{ $file['field'] }}"
                                                             onChange="UploadDocument('{{ $file['field'] }}')"
                                                             accept="image/*, application/pdf" hidden />
+                                                    @endif
                                                     @endif
 
 
@@ -1062,7 +1154,11 @@
                             $rob40Bed = $user[0]['userInfo']['rob_40_bed'] ?? null;
                             $bedAllocationMismatch = (!empty($bedCode)) && ((int) $rob40Bed !== 2);
 
-                            $hasBlockingIssues = $bookingFeeIssue || $rob45Mismatch || $popIssue || $bedAllocationMismatch;
+                            $requiresDebtAssurity = ($user[0]['userInfo']['studentType'] ?? null) === 'Cash / Direct';
+                            $rob65Debt = $user[0]['userInfo']['rob_65_debt'] ?? null;
+                            $debtAssurityIssue = $requiresDebtAssurity && ((int) $rob65Debt !== 1);
+
+                            $hasBlockingIssues = $bookingFeeIssue || $rob45Mismatch || $popIssue || $bedAllocationMismatch || $debtAssurityIssue;
 
                             $robRows = [
                                 ['key' => 'rob_10_fee', 'label' => 'Booking Fee', 'naLabel' => 'Not Applicable'],
@@ -1073,6 +1169,7 @@
                                 ['key' => 'rob_35_info', 'label' => 'Other Info', 'naLabel' => 'Not Applicable'],
                                 ['key' => 'rob_40_bed', 'label' => 'Bed Allocation', 'naLabel' => 'Not Applicable'],
                                 ['key' => 'rob_45_other', 'label' => 'Other Documents', 'naLabel' => 'Not Required'],
+                                ['key' => 'rob_65_debt', 'label' => 'Debt Assurity', 'naLabel' => 'Not Required'],
                                 ['key' => 'rob_50_approve', 'label' => 'Application Approval', 'naLabel' => 'Not Set'],
                                 ['key' => 'rob_55_lease', 'label' => 'Lease', 'naLabel' => 'Not Set'],
                                 ['key' => 'rob_51_temp_lease_approve', 'label' => 'Temp Lease', 'naLabel' => 'Not Set'],
@@ -1275,8 +1372,28 @@
                                             $robLabel = $tempLeaseLabels[$robValueInt] ?? 'Not Set';
                                             $robClass = $tempLeaseClasses[$robValueInt] ?? 'na';
                                         }
+                                        if ($robRow['key'] === 'rob_65_debt') {
+                                            $assurityLabels = [
+                                                0 => 'Rejected',
+                                                1 => 'Approved',
+                                                2 => 'Pending',
+                                                3 => 'Not Set',
+                                            ];
+                                            $assurityClasses = [
+                                                0 => 'rejected',
+                                                1 => 'approved',
+                                                2 => 'action',
+                                                3 => 'na',
+                                            ];
+                                            $robLabel = $assurityLabels[$robValueInt] ?? 'Not Set';
+                                            $robClass = $assurityClasses[$robValueInt] ?? 'na';
+                                        }
                                         if ($robValueInt === 3) {
-                                            $robLabel = $robRow['naLabel'];
+                                            if ($robRow['key'] === 'rob_65_debt' && $requiresDebtAssurity) {
+                                                $robLabel = 'Not Set';
+                                            } else {
+                                                $robLabel = $robRow['naLabel'];
+                                            }
                                         }
                                     @endphp
                                     <tr>
@@ -5274,6 +5391,46 @@
                     },
                 });
             }
+
+            function resendAssurity() {
+                $("#myBtn_resend_assurity").html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+                $.ajax({
+                    type: "post",
+                    url: "/resend-assurity",
+                    data: {
+                        userId: "{{ $user[0]['userInfo']['userUid'] }}",
+                    },
+                    success: function(data) {
+                        $("#myBtn_resend_assurity").html('Resend');
+                    },
+                    error: function(xhr) {
+                        showLeaseError(xhr, 'Assurity resend failed', 'Resend', $("#myBtn_resend_assurity"));
+                    },
+                });
+            }
+
+            $(document).off('click.regenAssurity').on('click.regenAssurity', '#myBtn_regen_assurity', function(e) {
+                let btn = $(this);
+                $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+                $.ajax({
+                    type: "post",
+                    url: "/generate-assurity/{{ $user[0]['userInfo']['userUid'] }}",
+                    data: {
+                        type: "auto",
+                    },
+                    success: function(data) {
+                        $(btn).html('Generate');
+                        window.location.reload();
+                    },
+                    error: function(xhr) {
+                        showLeaseError(xhr, 'Assurity generation failed', 'Generate', btn);
+                    },
+                });
+
+                e.preventDefault();
+            });
 
             $(document).off('click.regenTempLease').on('click.regenTempLease', 'button#myBtn_regen_temp_lease', function(e) {
                 let btn = $(this);

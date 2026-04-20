@@ -141,8 +141,7 @@
             </select>
             <br />
 
-            <button type="button" class="detailsChange" id="downloadAllApps" style="float:left; margin-left:0px;"
-                onClick="downloadAllAppsReport()">
+            <button type="button" class="detailsChange" id="downloadAllApps" style="float:left; margin-left:0px;">
                 Download Applications
             </button>
             <div class="hidden">
@@ -264,7 +263,7 @@
             <br />
 
             <button type="button" class="detailsChange" id="downloadAllAppDocs"
-                style="float:left; margin-left:0px;" onClick="downloadAllAppDocsReport()">Download Documents</button>
+                style="float:left; margin-left:0px;">Download Documents</button>
         @endif
 
         {{-- Institution and Funding Lease Documents --}}
@@ -328,7 +327,7 @@
             <br />
 
             <button type="button" class="detailsChange" id="downloadSelectedDocs"
-                style="float:left; margin-left:0px;" onClick="downloadSelectedDocsReport()">Download Documents</button>
+                style="float:left; margin-left:0px;">Download Documents</button>
         @endif
 
         {{-- Institution and Funding Lease Documents --}}
@@ -353,7 +352,7 @@
             <br />
 
             <button type="button" class="detailsChange" id="downloadCompatabilityDocs"
-                style="float:left; margin-left:0px;" onClick="downloadCompatabilityDocsReport()">Download Documents</button>
+                style="float:left; margin-left:0px;">Download Documents</button>
         @endif        
     </div>
 

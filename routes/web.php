@@ -10,6 +10,7 @@ use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LookupsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LeaseController;
+use App\Http\Controllers\AssurityController;
 use App\Http\Controllers\BookingReportController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\OnlinePaymentController;
@@ -98,6 +99,38 @@ Route::get('/test-lease/{userId}/{year}', function ($userId, $year) {
 
 
 Auth::routes();
+
+// Admin-only preview route for Debt Assurity PDF (for QA/client signoff).
+Route::get('/admin/test-assurity-pdf/{studentId}', function ($studentId) {
+    if (!Auth::check() || Auth::user()->role_sys_admin != 1) {
+        abort(403);
+    }
+
+    $this_year = \App\Models\Lookups::where('group_id', '4')->first();
+    if (\Illuminate\Support\Facades\Session::has('year')) {
+        $year = \Illuminate\Support\Facades\Session::get('year');
+        $this_year = \App\Models\Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+    }
+    $this_year = $this_year ? $this_year->lookup_name : date('Y');
+
+    $student = \App\Models\StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
+    $booking = \App\Models\Booking::where('userId', $studentId)->where('year', $this_year)->first();
+    if (!$student || !$booking) {
+        abort(404);
+    }
+
+    $residence = \App\Models\Residence::where('id', $booking->property)->first();
+
+    $pdf = \PDF::loadView('PDF.assurity', [
+        'student' => $student,
+        'booking' => $booking,
+        'residence' => $residence,
+        'signature' => null,
+        'signed_at' => null,
+    ]);
+
+    return $pdf->stream($booking->year . '_ASSURITY_PREVIEW_' . $booking->booking_code . '.pdf');
+});
 
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');
 Route::get('/room-booking', [HomeController::class, 'room_booking']);
@@ -340,6 +373,12 @@ Route::group(['middleware' => ['auth']], function () {
 //Students to sign lease
 Route::get('/sign-temp-lease/{id}', [LeaseController::class, 'view_sign_temp_lease']);
 Route::post('/save-signed-temp-lease/{id}', [LeaseController::class, 'save_signed_temp_lease']);
+
+//Debt Assurity (Sponsor signature)
+Route::post('/generate-assurity/{studentId}', [AssurityController::class, 'generate']);
+Route::post('/resend-assurity', [AssurityController::class, 'resend']);
+Route::get('/sign-assurity/{token}', [AssurityController::class, 'view_sign_assurity']);
+Route::post('/save-signed-assurity/{token}', [AssurityController::class, 'save_signed_assurity']);
 
 Route::get('/check-rooms/{id}', [HomeController::class, 'check_rooms']);
 Route::get('/check-all-rooms/{id}', [HomeController::class, 'check_all_rooms']);

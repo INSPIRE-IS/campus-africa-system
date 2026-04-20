@@ -318,6 +318,32 @@
                                     },
                                 });
                             },
+                            error: function(xhr) {
+                                let message = 'Approval failed.';
+                                if (xhr) {
+                                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                                        message = xhr.responseJSON.message;
+                                    } else if (xhr.responseText) {
+                                        try {
+                                            const parsed = JSON.parse(xhr.responseText);
+                                            if (parsed && parsed.message) {
+                                                message = parsed.message;
+                                            }
+                                        } catch (e) {
+                                            message = xhr.responseText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                                        }
+                                    }
+                                    if (xhr.status) {
+                                        message = message ? `${message} (HTTP ${xhr.status})` : `HTTP ${xhr.status}`;
+                                    }
+                                }
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Unable to approve',
+                                    text: message,
+                                });
+                                $("#approveProfile").html('APPROVE APPLICATION AND SEND CONFIRMATION');
+                            }
                         });
                     }
                 });

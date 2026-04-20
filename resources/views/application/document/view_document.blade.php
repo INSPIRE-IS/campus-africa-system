@@ -87,6 +87,13 @@
             
             <input type="hidden" id="FileIdForApproval" value="{{$file->id}}">
             <input type="hidden" id="FileNameForApproval" value="{{$file->fileId}}">
+
+            @php
+                // Most ROB fields use: 0=Rejected, 1=Action Required, 2=Approved, 3=Not Required.
+                // Debt Assurity (`rob_65_debt`) uses temp-lease style semantics: 0=Rejected, 1=Approved, 2=Pending, 3=Not Set/Not Required.
+                $docIsApproved = ($file->fileId === 'assurity_doc') ? ((int) $doc_approved === 1) : ((int) $doc_approved === 2);
+                $docIsActionRequired = ($file->fileId === 'assurity_doc') ? ((int) $doc_approved === 2) : ((int) $doc_approved === 1);
+            @endphp
             
             <!-- && $data_approved == 1 -->
             <!-- && $data_approved == 1 -->
@@ -109,7 +116,7 @@
             <div class="flex" style="margin: 35px 0;" id="buttonSection">
                 @if ($user->rob_60_cancelled == 0)
                 @if($file->fileId != "MDA")
-                    @if ($doc_approved == 2)
+                    @if ($docIsApproved)
 
                         @if($user->rob_50_approve != 2 || Auth::user()->role_delete_uploaded == 1 || Auth::user()->role_other_reject_doc == 1)
                             @if (($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && explode("_", $file->fileId)[0] !== "other" && $file->fileId !== "moveIn" && Auth::user()->role_non_funding == 1) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval" || explode("_", $file->fileId)[0] == "other") && $file->fileId !== "moveIn" && Auth::user()->role_funding == 1) || ($file->fileId == "moveIn" && Auth::user()->role_app_lease == 1))
@@ -540,7 +547,7 @@
                         @endif
                     @endif
 
-                    @if(explode("_", $file->fileId)[0] !== "other" && $file->fileId != "MDA")
+                    @if(explode("_", $file->fileId)[0] !== "other" && $file->fileId != "MDA" && $file->fileId != "moveIn" && $file->fileId != "assurity_doc")
                 
                         @if($user->rob_60_cancelled == 0)
                             <div style="margin-top: 35px;" class="btns_approve_data">
@@ -552,7 +559,7 @@
                                     <button type="button" class="amend button" style="height:40px;" onClick="editData()">Edit</button>
                                 @endif
 
-                                @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && Auth::user()->role_non_funding == 1 && ($doc_approved == 1 || $data_approved == 0)) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && Auth::user()->role_funding == 1 && ($doc_approved == 1 || $data_approved == 0)))
+                                @if(($file->fileId !== "bankStatement" && $file->fileId !== "bursaryApproval" && Auth::user()->role_non_funding == 1 && ($docIsActionRequired || $data_approved == 0)) || (($file->fileId == "bankStatement" || $file->fileId == "bursaryApproval") && Auth::user()->role_funding == 1 && ($docIsActionRequired || $data_approved == 0)))
                                     <button type="button" class="rejected button" style="height:40px;" onClick="approveData('0')">Reject</button>
                                 @endif
                             </div>
