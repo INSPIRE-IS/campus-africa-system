@@ -33,6 +33,7 @@
 
                 <div class="searchField">
                     <label></label><br />
+                    {{-- STUDENT TYPE --}}
                     <select name="student_type" id='student_type'>
                         <option value="All" selected>All Student Types</option>
                         <option value="NSFAS">NSFAS</option>
@@ -60,8 +61,12 @@
                     </select>
                 </div>
                 <div class="searchField">
-                    <label>Date</label><br />
-                    <input type="date" name="date" id="date" />
+                    <label>Year</label><br />
+                    <select name="studentYear" id="studentYear">
+                        @foreach ($appYears as $year)
+                            <option value="{{ $year->year }}">{{ $year->year }}</option>
+                        @endforeach
+                    </select>
                     <br /><br /><br />
                 </div>
 
@@ -83,7 +88,8 @@
             <hr /><br />
             <h2>NSFAS Approval Types</h2>
             <br />
-            <button type="button" class="detailsChange" id="downloadStudents" style="float:left; ">Download NSFAS Approval
+            <button type="button" class="detailsChange" id="downloadStudents" style="float:left; "
+                onClick="downloadStudentsReport()">Download NSFAS Approval
                 Types</button>
             <div class="hidden"><a href="/NSFAS Approval Type Export.xlsx" download><button type="button"
                         id="downloadBtnNsfas">Download</button></a></div>
@@ -102,7 +108,8 @@
             </select>
             <br />
 
-            <button type="button" class="detailsChange" id="downloadRooms" style="float:left; margin-left:0px;">Download
+            <button type="button" class="detailsChange" id="downloadRooms" style="float:left; margin-left:0px;"
+                onClick="downloadRoomsReport()">Download
                 Beds</button>
             <div class="hidden"><a href="" download id="downloadBedsBtn"><button type="button"
                         id="downloadBtnBeds">Download</button></a></div>
@@ -113,7 +120,8 @@
             <hr /><br />
             <h2>MDA Report</h2>
             <br />
-            <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;">Download
+            <button type="button" class="detailsChange" id="downloadMda" style="float:left; margin-left:0px;"
+                onClick="downloadMdaReport()">Download
                 MDA</button>
             <div class="hidden"><a href="/MDA download.xlsx" download><button type="button"
                         id="downloadMdaDoc">Download</button></a></div>
@@ -127,7 +135,6 @@
             <br />
 
             <select id="studYear" name="studYear">
-                <option value="All">All Years</option>
                 @foreach ($appYears as $year)
                     <option value="{{ $year->year }}">{{ $year->year }}</option>
                 @endforeach
@@ -627,7 +634,7 @@
                     student_type: $("#student_type").val(),
                     bookingStatus: $("#bookingStatus").val(),
                     applicationStatus: $("#applicationStatus").val(),
-                    date: $("#date").val(),
+                    year: $("#studentYear").val(),
                 },
                 cache: false,
                 contentType: false,
@@ -640,7 +647,7 @@
 
         })
 
-        $("#downloadStudents").on('click', function() {
+        function downloadStudentsReport() {
             $.ajax({
                 type: "get",
                 url: "/download-nsfas-report",
@@ -649,9 +656,11 @@
                     $("#downloadBtnNsfas").click();
                 },
             });
-        })
+        }
 
-        $("#downloadRooms").on('click', function() {
+        $("#downloadStudents").on('click', downloadStudentsReport);
+
+        function downloadRoomsReport() {
             $("#downloadRooms").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
             $.ajax({
                 type: "post",
@@ -666,9 +675,11 @@
                     $("#downloadRooms").empty().append('Download Beds')
                 },
             });
-        })
+        }
 
-        $("#downloadMda").on('click', function() {
+        $("#downloadRooms").on('click', downloadRoomsReport);
+
+        function downloadMdaReport() {
             $("#downloadMda").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
             $.ajax({
                 type: "get",
@@ -678,9 +689,11 @@
                     $("#downloadMda").empty().append('Download MDA')
                 },
             });
-        })
+        }
 
-        $("#downloadAllApps").on('click', function() {
+        $("#downloadMda").on('click', downloadMdaReport);
+
+        function downloadAllAppsReport() {
             $("#downloadAllApps").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
             $.ajax({
                 type: "post",
@@ -689,15 +702,19 @@
                     year: $("#studYear").val()
                 },
                 success: function(data) {
-                    var a = document.getElementById('downloadAppsBtn');
-                    a.href = data
-                    $("#downloadBtnApps").click();
                     $("#downloadAllApps").empty().append('Download Applications')
+                    alert('A link will be emailed to you once the applications file has been generated.');
                 },
+                error: function(data) {
+                    $("#downloadAllApps").empty().append('Download Applications');
+                    alert('Something went wrong!');
+                }
             });
-        })
+        }
 
-        $("#downloadAllAppDocs").on('click', function() {
+        $("#downloadAllApps").on('click', downloadAllAppsReport);
+
+        function downloadAllAppDocsReport() {
             $("#downloadAllAppDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
             $.ajax({
                 type: "post",
@@ -717,9 +734,11 @@
                     alert('Something went wrong!');
                 }
             });
-        })
+        }
 
-        $("#downloadSelectedDocs").on('click', function() {
+        $("#downloadAllAppDocs").on('click', downloadAllAppDocsReport);
+
+        function downloadSelectedDocsReport() {
             $("#downloadSelectedDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
             $.ajax({
                 type: "post",
@@ -741,12 +760,14 @@
                     alert('Something went wrong!');
                 }
             });
-        })
+        }
 
-    $("#downloadCompatabilityDocs").on('click', function() {
-        $("#downloadCompatabilityDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
-        
-        $.ajax({
+        $("#downloadSelectedDocs").on('click', downloadSelectedDocsReport);
+
+        function downloadCompatabilityDocsReport() {
+            $("#downloadCompatabilityDocs").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
+
+            $.ajax({
                 type: "post",
                 url: "/download-compatability-docs",
                 data: {
@@ -763,7 +784,9 @@
                     alert('Something went wrong!');
                 }
             });
-        })
+        }
+
+        $("#downloadCompatabilityDocs").on('click', downloadCompatabilityDocsReport);
 
         function yearToRange(year) {
             if (year === "All" || year === "" || year === null) {

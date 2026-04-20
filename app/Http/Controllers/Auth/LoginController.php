@@ -103,7 +103,7 @@ class LoginController extends Controller
                             if (in_array(explode("@", $data['email'])[1], $mailArr)) {
                                 $data['email'] = $user->email;
                             } else {
-                                $data['email'] = "conurbandigital@gmail.com";
+                                $data['email'] = "studentsca00@gmail.com";
                             }
                         } else {
                             $data['email'] = $user->email;
@@ -112,7 +112,7 @@ class LoginController extends Controller
                         // if(explode("@", $data['email'])[1] == "conurban.co.za"){
                         //     $data['email'] = $user->email;
                         // }else{
-                        //     $data['email'] = "conurbandigital@gmail.com";
+                        //     $data['email'] = "studentsca00@gmail.com";
                         // }
 
                         Mail::send('email.yellow_back', $data, function ($message) use ($data) {
@@ -122,7 +122,7 @@ class LoginController extends Controller
                             if (!empty($data['cc'])) {
                                 $message->bcc($data['cc']);
                             }
-                            // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+                            // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za']);
                             $message->from('noreply@campusafrica.co.za', 'Campus Africa');
                         });
                     }

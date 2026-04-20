@@ -57,7 +57,28 @@ class LeaseController extends Controller
             $booking = Booking::where('userId', $lease_link->userUid)->where('year', $this_year)->first();
             $propertyData = Property::where('id', $booking->property_data_id)->first();
             $residence = Residence::where('id', $propertyData->residence)->first();
-            $leaseAdminFee = Lookups::where('group_id', '8')->first();
+            $leaseAdminFee = 0;
+            $fundingId = Lookups::fundingTypeIdForLabel($data->studentType);
+            $selectedYear = $booking->year ?? $this_year ?? null;
+            if ($fundingId && $selectedYear) {
+                $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $selectedYear)->first();
+                $yearData = [];
+                if ($yearLookup) {
+                    if (is_array($yearLookup->data)) {
+                        $yearData = $yearLookup->data;
+                    } elseif (!empty($yearLookup->data)) {
+                        $decoded = json_decode($yearLookup->data, true);
+                        if (is_array($decoded)) {
+                            $yearData = $decoded;
+                        }
+                    }
+                }
+
+                $leaseFees = $yearData['lease_fees'] ?? [];
+                if (array_key_exists($fundingId, $leaseFees)) {
+                    $leaseAdminFee = floatval($leaseFees[$fundingId]);
+                }
+            }
             $owner = storage_path() . '/leases/juanita-cronje.jpg';
 
             $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
@@ -125,7 +146,28 @@ class LeaseController extends Controller
         $booking = Booking::where('userId', $user->userUid)->where('year', $this_year)->first();
         $propertyData = Property::where('id', $booking->property_data_id)->first();
         $residence = Residence::where('id', $propertyData->residence)->first();
-        $leaseAdminFee = Lookups::where('group_id', '8')->first();
+        $leaseAdminFee = 0;
+        $fundingId = Lookups::fundingTypeIdForLabel($data->studentType);
+        $selectedYear = $booking->year ?? $this_year ?? null;
+        if ($fundingId && $selectedYear) {
+            $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $selectedYear)->first();
+            $yearData = [];
+            if ($yearLookup) {
+                if (is_array($yearLookup->data)) {
+                    $yearData = $yearLookup->data;
+                } elseif (!empty($yearLookup->data)) {
+                    $decoded = json_decode($yearLookup->data, true);
+                    if (is_array($decoded)) {
+                        $yearData = $decoded;
+                    }
+                }
+            }
+
+            $leaseFees = $yearData['lease_fees'] ?? [];
+            if (array_key_exists($fundingId, $leaseFees)) {
+                $leaseAdminFee = floatval($leaseFees[$fundingId]);
+            }
+        }
         $signed_at = $request->signed_at;
         $signature = 'storage/files/' . $userIdentification . '/' . $new_name;
         $owner = 'images/lease/juanita-cronje.jpg';
@@ -454,7 +496,7 @@ class LeaseController extends Controller
         //         if(in_array(explode("@", $data['email'])[1], $mailArr)){
         //             $data['email'] = $userForLease->userEmail;
         //         }else{
-        //             $data['email'] = "conurbandigital@gmail.com";
+        //             $data['email'] = "studentsca00@gmail.com";
         //         }
         //     }else{
         //         $data['email'] = $userForLease->userEmail;
@@ -463,13 +505,13 @@ class LeaseController extends Controller
         //     // if(explode("@", $data['email'])[1] == "conurban.co.za"){
         //     //     $data['email'] = $userForLease->userEmail;
         //     // }else{
-        //     //     $data['email'] = "conurbandigital@gmail.com";
+        //     //     $data['email'] = "studentsca00@gmail.com";
         //     // }
 
         //     Mail::send('email.green_back', $data, function($message) use ($data) {
         //         $message->to($data['email'])->subject($data['subject']);
         //         $message->bcc($data['cc']);
-        //         // $message->cc(['conurbandigital@gmail.com', 'roger@whitehart.co.za']);
+        //         // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za']);
         //         $message->from('noreply@campusafrica.co.za','Campus Africa');
         //     });
         // }
@@ -571,7 +613,28 @@ class LeaseController extends Controller
 
                 $propertyData = Property::where('id', $booking->property_data_id)->first();
                 $residence = Residence::where('id', $propertyData->residence)->first();
-                $leaseAdminFee = Lookups::where('group_id', '8')->first();
+                $leaseAdminFee = 0;
+                $fundingId = Lookups::fundingTypeIdForLabel($data->studentType);
+                $selectedYear = $booking->year ?? $year ?? null;
+                if ($fundingId && $selectedYear) {
+                    $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $selectedYear)->first();
+                    $yearData = [];
+                    if ($yearLookup) {
+                        if (is_array($yearLookup->data)) {
+                            $yearData = $yearLookup->data;
+                        } elseif (!empty($yearLookup->data)) {
+                            $decoded = json_decode($yearLookup->data, true);
+                            if (is_array($decoded)) {
+                                $yearData = $decoded;
+                            }
+                        }
+                    }
+
+                    $leaseFees = $yearData['lease_fees'] ?? [];
+                    if (array_key_exists($fundingId, $leaseFees)) {
+                        $leaseAdminFee = floatval($leaseFees[$fundingId]);
+                    }
+                }
 
                 $userIdentification = !empty($user->userId) ? $user->userId : $user->userPassport;
 
@@ -672,7 +735,28 @@ class LeaseController extends Controller
                 // property property
                 $residence = Residence::where('id', $booking->property)->first();
 
-                $leaseAdminFee = Lookups::where('group_id', '8')->first();
+                $leaseAdminFee = 0;
+                $fundingId = Lookups::fundingTypeIdForLabel($data->studentType);
+                $selectedYear = $booking->year ?? $year ?? null;
+                if ($fundingId && $selectedYear) {
+                    $yearLookup = Lookups::where('group_id', '4')->where('lookup_name', $selectedYear)->first();
+                    $yearData = [];
+                    if ($yearLookup) {
+                        if (is_array($yearLookup->data)) {
+                            $yearData = $yearLookup->data;
+                        } elseif (!empty($yearLookup->data)) {
+                            $decoded = json_decode($yearLookup->data, true);
+                            if (is_array($decoded)) {
+                                $yearData = $decoded;
+                            }
+                        }
+                    }
+
+                    $leaseFees = $yearData['lease_fees'] ?? [];
+                    if (array_key_exists($fundingId, $leaseFees)) {
+                        $leaseAdminFee = floatval($leaseFees[$fundingId]);
+                    }
+                }
 
 
                 $userIdentification = !empty($user->userId) ? $user->userId : $user->userPassport;

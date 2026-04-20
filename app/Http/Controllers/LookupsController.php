@@ -18,6 +18,9 @@ use App\Models\Comments;
 use App\Models\BookingPayment;
 use DateTime;
 use App\Models\InstitutionProperties;
+use App\Jobs\GenerateBookingPricingReport;
+use App\Jobs\GenerateBookingPricingReportFull;
+use App\Services\BookingPricingCalculator;
 use Illuminate\Support\Facades\Session;
 
 class LookupsController extends Controller
@@ -41,8 +44,11 @@ class LookupsController extends Controller
         if (Auth::user()->role_lookup == 1) {
 
             $allProperties = Residence::whereNull('status')->get();
+            $currentYearLookup = Lookups::where('group_id', '4')->first();
+            $currentYear = $currentYearLookup ? $currentYearLookup->lookup_name : null;
+            $fundingTypes = Lookups::FUNDING_TYPES;
 
-            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup", "allProperties" => $allProperties]);
+            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup", "allProperties" => $allProperties, "currentYear" => $currentYear, "fundingTypes" => $fundingTypes]);
         } else {
             return "404 Error";
         }
@@ -70,10 +76,32 @@ class LookupsController extends Controller
                 "nsfas_amount" => $request->nsfas_amount,
                 "actionUserUid" => Auth::user()->id,
             ];
+        } else if ($request->group_id == "4") {
+            $data = [
+                "group_id" => $request->group_id,
+                "lookup_name" => $request->value,
+                "actionUserUid" => Auth::user()->id,
+            ];
+
+            $currentYearLookup = Lookups::where('group_id', '4')->first();
+            $currentYear = $currentYearLookup ? $currentYearLookup->lookup_name : null;
+
+            if ($currentYear !== null && $currentYear == $request->value) {
+                $leaseFees = $this->normalizeLeaseFees($request);
+                $depositApplies = $this->normalizeDepositApplies($request);
+                $data['data'] = [
+                    'lease_fees' => $leaseFees,
+                    'deposit_applies' => $depositApplies,
+                ];
+            }
         } else {
             $data['group_id'] = $request->group_id;
             $data['lookup_name'] = $request->value;
             $data['actionUserUid'] = Auth::user()->id;
+        }
+
+        if (array_key_exists('data', $data) && is_array($data['data'])) {
+            $data['data'] = json_encode($data['data']);
         }
 
         $lookup = Lookups::create($data);
@@ -120,6 +148,8 @@ class LookupsController extends Controller
             $lookup = Lookups::where('id', $lookupId)->first();
 
             $year_lookup = Lookups::where('group_id', '4')->first();
+            $currentYear = $year_lookup ? $year_lookup->lookup_name : null;
+            $fundingTypes = Lookups::FUNDING_TYPES;
 
             $allProperties = Residence::whereNull('status')->get();
             $instProps = InstitutionProperties::where('institution_id', $lookupId)->pluck('property_id')->toArray();
@@ -128,7 +158,7 @@ class LookupsController extends Controller
             $instPropsBursary = InstitutionProperties::where('institution_id', $lookupId)->where('bursary', '1')->pluck('property_id')->toArray();
             $instPropsNsfas = InstitutionProperties::where('institution_id', $lookupId)->where('nsfas', '1')->pluck('property_id')->toArray();
 
-            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup, "allProperties" => $allProperties, "instProps" => $instProps, "instPropsCash" => $instPropsCash, "instPropsBursary" => $instPropsBursary, "instPropsNsfas" => $instPropsNsfas]);
+            return view('admin.lookups_edit', ["headerTitle" => "Edit Lookup", "lookup" => $lookup, "title" => "Edit Lookup", "year_lookup" => $year_lookup, "currentYear" => $currentYear, "fundingTypes" => $fundingTypes, "allProperties" => $allProperties, "instProps" => $instProps, "instPropsCash" => $instPropsCash, "instPropsBursary" => $instPropsBursary, "instPropsNsfas" => $instPropsNsfas]);
         } else {
             return "404 Error";
         }
@@ -155,6 +185,18 @@ class LookupsController extends Controller
                 "lease_to_time" => $request->lease_to_time,
                 "actionUserUid" => Auth::user()->id,
             ];
+
+            $currentYearLookup = Lookups::where('group_id', '4')->first();
+            $currentYear = $currentYearLookup ? $currentYearLookup->lookup_name : null;
+
+            if ($currentYear !== null && $currentYear == $request->value) {
+                $leaseFees = $this->normalizeLeaseFees($request);
+                $depositApplies = $this->normalizeDepositApplies($request);
+                $data['data'] = [
+                    'lease_fees' => $leaseFees,
+                    'deposit_applies' => $depositApplies,
+                ];
+            }
         } else if ($request->group_id == "7") {
             $data = [
                 "group_id" => $request->group_id,
@@ -221,6 +263,10 @@ class LookupsController extends Controller
             ];
         }
 
+        if (array_key_exists('data', $data) && is_array($data['data'])) {
+            $data['data'] = json_encode($data['data']);
+        }
+
         Lookups::where('id', $request->lookupId)->update($data);
 
         //Update bookings
@@ -231,6 +277,9 @@ class LookupsController extends Controller
 
     public function admin_updates_landing()
     {
+        if (!Auth::user()) {
+            return redirect()->route('login');
+        }
         return view('admin.lookups.admin_updates_landing', ['headerTitle' => 'Admin Updates', "title" => "Admin Updates"]);
     }
 
@@ -896,8 +945,9 @@ class LookupsController extends Controller
     public function admin_updates_payments_update(Request $request)
     {
         $allBookings = Booking::get();
-        $admin_fee = Lookups::where('group_id', '8')->first();
         $lookup_lease_dates = Lookups::where('group_id', '4')->first();
+        $yearLookupCache = [];
+        $yearFundingCache = [];
 
         $jsonDataResidence = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/residences'));
         $jsonDataRooms = json_decode(file_get_contents('https://www.campusafrica.co.za/wp-json/wp/v2/rooms?per_page=100'));
@@ -996,11 +1046,22 @@ class LookupsController extends Controller
                     // $month1 = date('m', $ts1);
                     // $month2 = date('m', $ts2);
                     // $diff = $month2 - $month1;
+                    $selectedYear = $booking->year ?? null;
+                    $yearLookup = null;
+                    if ($selectedYear) {
+                        if (!array_key_exists($selectedYear, $yearLookupCache)) {
+                            $yearLookupCache[$selectedYear] = Lookups::where('group_id', '4')->where('lookup_name', $selectedYear)->first();
+                        }
+                        $yearLookup = $yearLookupCache[$selectedYear];
+                    }
+
+                    $leaseDatesLookup = $yearLookup ?: $lookup_lease_dates;
                     $diff = 0;
-                    for ($i = new DateTime($lookup_lease_dates['lease_from_date']); $i <= new DateTime($lookup_lease_dates['lease_to_date']); $i->modify('+1 month')) {
+                    for ($i = new DateTime($leaseDatesLookup['lease_from_date']); $i <= new DateTime($leaseDatesLookup['lease_to_date']); $i->modify('+1 month')) {
                         $diff++;
                     }
-                    $yearly_rent = floatval($deposit) * floatval($diff);
+                    $monthlyRent = floatval($deposit);
+                    $yearly_rent = $monthlyRent * floatval($diff);
 
                     $institution = Lookups::where('id', $userInfo->institutionStudy)->first();
                     $funded = floatval($institution->nsfas_amount) * floatval($diff);
@@ -1009,15 +1070,32 @@ class LookupsController extends Controller
                     $monthlyFunded = $institution->nsfas_amount;
 
 
+                    $monthly = $monthlyRent;
+
                     if (($userInfo->studentType == "Cash / Direct") || ($userInfo->studentType == "Bursary" && $userInfo->nsfas_bursar !== 1)) {
-                        $admin_fee = '1000';
-                        $deposit = $monthly = $monthlyFunded = $deposit;
+                        $monthlyFunded = $monthlyRent;
                         $funded = $yearly_rent;
                         $topup = '0';
-                    } else {
-                        $monthly = $deposit;
-                        $deposit = 0;
-                        $admin_fee = 0;
+                    }
+
+                    $admin_fee = 0;
+                    $deposit = 0;
+                    $fundingId = Lookups::fundingTypeIdForLabel($userInfo->studentType);
+
+                    if ($fundingId && $selectedYear) {
+                        if (!array_key_exists($selectedYear, $yearFundingCache)) {
+                            $yearFundingCache[$selectedYear] = $this->getYearFundingConfig($selectedYear);
+                        }
+
+                        [$leaseFees, $depositApplies] = $yearFundingCache[$selectedYear];
+
+                        if (array_key_exists($fundingId, $leaseFees)) {
+                            $admin_fee = floatval($leaseFees[$fundingId]);
+                        }
+
+                        if (array_key_exists($fundingId, $depositApplies) && $depositApplies[$fundingId]) {
+                            $deposit = $monthlyRent;
+                        }
                     }
 
 
@@ -1136,5 +1214,350 @@ class LookupsController extends Controller
         foreach ($allBookings as $booking) {
             app('App\Http\Controllers\HomeController')->paymentDeatilsInternal($booking->userId);
         }
+    }
+
+    public function admin_updates_report_booking_pricing_local()
+    {
+        $currentYear = $this->getCurrentYearLookupName();
+        if (!$currentYear) {
+            return response()->json(["error" => "Current year lookup not found."], 400);
+        }
+
+        [$leaseFeeData, $depositData] = $this->getYearFundingConfig($currentYear);
+
+        if (empty($leaseFeeData) && empty($depositData)) {
+            return response()->json(["error" => "No local fee/deposit config found for current year."], 400);
+        }
+
+        $user = Auth::user();
+        if (!$user || !$user->email) {
+            return response()->json(["error" => "User email not available."], 400);
+        }
+
+        GenerateBookingPricingReport::dispatch($user->email, $user->id);
+
+        return response()->json([
+            "status" => "queued",
+            "email" => $user->email,
+            "current_year" => $currentYear,
+        ]);
+    }
+
+    public function admin_updates_report_booking_pricing_full()
+    {
+        $currentYear = $this->getCurrentYearLookupName();
+        if (!$currentYear) {
+            return response()->json(["error" => "Current year lookup not found."], 400);
+        }
+
+        $user = Auth::user();
+        if (!$user || !$user->email) {
+            return response()->json(["error" => "User email not available."], 400);
+        }
+
+        GenerateBookingPricingReportFull::dispatch($user->email, $user->id, null, 0, 1000, null, null, null);
+
+        return response()->json([
+            "status" => "queued",
+            "email" => $user->email,
+            "current_year" => $currentYear,
+        ]);
+    }
+
+    public function admin_updates_update_booking_pricing_local()
+    {
+        set_time_limit(300);
+        $currentYear = $this->getCurrentYearLookupName();
+        if (!$currentYear) {
+            return response()->json(["error" => "Current year lookup not found."], 400);
+        }
+
+        [$leaseFeeData, $depositData] = $this->getYearFundingConfig($currentYear);
+
+        if (empty($leaseFeeData) && empty($depositData)) {
+            return response()->json(["error" => "No local fee/deposit config found for current year."], 400);
+        }
+
+        $bookings = Booking::where('year', $currentYear)->get();
+
+        $updated = 0;
+        $loanUpdates = 0;
+        $depositUpdates = 0;
+        $missingStudent = 0;
+        $missingPayment = 0;
+        $missingFundingType = 0;
+
+        foreach ($bookings as $booking) {
+            $studentInfo = StudentsInfo::where('userUid', $booking->userId)->where('year', $currentYear)->first();
+            if (!$studentInfo) {
+                $missingStudent++;
+                continue;
+            }
+
+            $payment = BookingPayment::where('bookingId', $booking->id)->first();
+            if (!$payment) {
+                $missingPayment++;
+                continue;
+            }
+
+            $fundingId = $this->mapStudentTypeToFundingId($studentInfo->studentType);
+            if (!$fundingId) {
+                $missingFundingType++;
+                continue;
+            }
+
+            [$expectedLoanFee, $expectedDeposit] = $this->calculateLocalLeaseAndDeposit($fundingId, $payment, $leaseFeeData, $depositData, true);
+
+            $updateData = [];
+            if ($expectedLoanFee !== null && abs(floatval($payment->loan_admin_fee) - floatval($expectedLoanFee)) > 0.01) {
+                $updateData["loan_admin_fee"] = $expectedLoanFee;
+                $loanUpdates++;
+            }
+            if ($expectedDeposit !== null && abs(floatval($payment->deposit) - floatval($expectedDeposit)) > 0.01) {
+                $updateData["deposit"] = $expectedDeposit;
+                $depositUpdates++;
+            }
+
+            if (!empty($updateData)) {
+                BookingPayment::where('id', $payment->id)->update($updateData);
+                $updated++;
+            }
+        }
+
+        return response()->json([
+            "current_year" => $currentYear,
+            "updated_bookings" => $updated,
+            "loan_admin_fee_updates" => $loanUpdates,
+            "deposit_updates" => $depositUpdates,
+            "missing_student" => $missingStudent,
+            "missing_payment" => $missingPayment,
+            "missing_funding_type" => $missingFundingType,
+        ]);
+    }
+
+    public function admin_updates_update_booking_pricing_full()
+    {
+        set_time_limit(300);
+        $currentYear = $this->getCurrentYearLookupName();
+        if (!$currentYear) {
+            return response()->json(["error" => "Current year lookup not found."], 400);
+        }
+
+        $fieldToggles = [
+            'booking_fee' => true,
+            'booking_fee_waived' => true,
+            'rob_b_waived' => true,
+            'loan_admin_fee' => true,
+            'loan_admin_fee_waived' => true,
+            'rob_loan_waived' => true,
+            'deposit' => true,
+            'deposit_waived' => true,
+            'rob_deposit_waived' => true,
+            'monthly_rental' => true,
+            'monthly_rental_total' => true,
+            'total_funded' => true,
+            'total_top_up' => true,
+            'funded_monthly' => true,
+            'nsfas_rate' => true,
+        ];
+
+        $bookings = Booking::where('year', $currentYear)->get();
+        $updated = 0;
+        $missingStudent = 0;
+        $missingPayment = 0;
+
+        $lookupLeaseDates = Lookups::where('group_id', '4')->first();
+        $waiveBookingFee = Lookups::where('group_id', '7')->first();
+        [$wpResidences, $wpRooms] = BookingPricingCalculator::fetchWpData();
+
+        foreach ($bookings as $booking) {
+            $studentInfo = StudentsInfo::where('userUid', $booking->userId)->where('year', $currentYear)->first();
+            if (!$studentInfo) {
+                $missingStudent++;
+                continue;
+            }
+
+            $payment = BookingPayment::where('bookingId', $booking->id)->first();
+            if (!$payment) {
+                $missingPayment++;
+                continue;
+            }
+
+            $expected = BookingPricingCalculator::calculateWpPricingForBooking(
+                $booking,
+                $studentInfo,
+                $lookupLeaseDates,
+                $waiveBookingFee,
+                $wpResidences,
+                $wpRooms
+            );
+
+            if (!$expected) {
+                continue;
+            }
+
+            $updateData = array_intersect_key($expected, array_filter($fieldToggles));
+            if (!empty($updateData)) {
+                BookingPayment::where('id', $payment->id)->update($updateData);
+                $updated++;
+            }
+        }
+
+        return response()->json([
+            "current_year" => $currentYear,
+            "updated_bookings" => $updated,
+            "missing_student" => $missingStudent,
+            "missing_payment" => $missingPayment,
+            "disabled_fields" => array_keys(array_filter($fieldToggles, function ($enabled) {
+                return !$enabled;
+            })),
+        ]);
+    }
+
+    private function getCurrentYearLookupName()
+    {
+        $lookup = Lookups::where('group_id', '4')->first();
+        return $lookup ? $lookup->lookup_name : null;
+    }
+
+    private function getLookupDataForYear($groupId, $year)
+    {
+        $lookup = Lookups::where('group_id', $groupId)->where('lookup_name', $year)->first();
+        if (!$lookup) {
+            return [];
+        }
+
+        if (is_array($lookup->data)) {
+            return $lookup->data;
+        }
+
+        if (!empty($lookup->data)) {
+            $decoded = json_decode($lookup->data, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return [];
+    }
+
+    private function getYearFundingConfig($year)
+    {
+        if (!$year) {
+            return [[], []];
+        }
+
+        $lookup = Lookups::where('group_id', '4')->where('lookup_name', $year)->first();
+        if (!$lookup) {
+            return [[], []];
+        }
+
+        $data = [];
+        if (is_array($lookup->data)) {
+            $data = $lookup->data;
+        } elseif (!empty($lookup->data)) {
+            $decoded = json_decode($lookup->data, true);
+            if (is_array($decoded)) {
+                $data = $decoded;
+            }
+        }
+
+        $leaseFees = is_array($data) ? ($data['lease_fees'] ?? []) : [];
+        $depositApplies = is_array($data) ? ($data['deposit_applies'] ?? []) : [];
+
+        return [$leaseFees, $depositApplies];
+    }
+
+    private function mapStudentTypeToFundingId($studentType)
+    {
+        return Lookups::fundingTypeIdForLabel($studentType);
+    }
+
+    private function calculateLocalLeaseAndDeposit($fundingId, $payment, $leaseFeeData, $depositData, $treatMissingLeaseFeeAsZero = false)
+    {
+        $expectedLoanFee = null;
+        if (!empty($leaseFeeData) && array_key_exists($fundingId, $leaseFeeData)) {
+            $expectedLoanFee = floatval($leaseFeeData[$fundingId]);
+        } elseif ($treatMissingLeaseFeeAsZero) {
+            $expectedLoanFee = 0;
+        }
+
+        $expectedDeposit = null;
+        if (!empty($depositData)) {
+            $depositApplies = array_key_exists($fundingId, $depositData) && $depositData[$fundingId];
+            $depositBase = floatval($payment->monthly_rental);
+            $expectedDeposit = $depositApplies ? $depositBase : 0;
+        }
+
+        return [$expectedLoanFee, $expectedDeposit];
+    }
+
+    private function normalizeFundingFees(Request $request)
+    {
+        $fees = $request->input('funding_fees', []);
+        if (!is_array($fees)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach (Lookups::FUNDING_TYPES as $key => $label) {
+            if (!array_key_exists($key, $fees)) {
+                continue;
+            }
+
+            $value = $fees[$key];
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+
+            if ($value !== '' && $value !== null) {
+                $normalized[$key] = $value;
+            }
+        }
+
+        return $normalized;
+    }
+
+    private function normalizeLeaseFees(Request $request)
+    {
+        $fees = $request->input('lease_fees', []);
+        if (!is_array($fees)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach (Lookups::FUNDING_TYPES as $key => $label) {
+            if (!array_key_exists($key, $fees)) {
+                continue;
+            }
+
+            $value = $fees[$key];
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+
+            if ($value !== '' && $value !== null) {
+                $normalized[$key] = $value;
+            }
+        }
+
+        return $normalized;
+    }
+
+    private function normalizeDepositApplies(Request $request)
+    {
+        $applies = $request->input('deposit_applies', []);
+        if (!is_array($applies)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach (Lookups::FUNDING_TYPES as $key => $label) {
+            if (array_key_exists($key, $applies) && $applies[$key]) {
+                $normalized[$key] = true;
+            }
+        }
+
+        return $normalized;
     }
 }

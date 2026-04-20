@@ -14,9 +14,17 @@ class AddYearToUserLeaseToken extends Migration
     public function up()
     {
         Schema::table('user_lease_token', function (Blueprint $table) {
-            $table->string('role')->default('student'); // 'student' or 'parent'
-            $table->string('year', 4)->nullable();
-            $table->softDeletes();
+            if (!Schema::hasColumn('user_lease_token', 'role')) {
+                $table->string('role')->default('student');
+            }
+
+            if (!Schema::hasColumn('user_lease_token', 'year')) {
+                $table->string('year')->nullable();
+            }
+
+            if (!Schema::hasColumn('user_lease_token', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
     }
 

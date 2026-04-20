@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use App\Services\MetricsCollector;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,13 +29,19 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      *
      * @return void
-     */
+    */
     public function boot()
     {
-
-        if (app()->environment(['local', 'staging', 'development'])) {
-            LOG::info('Mail is set to sandbox');
+        if (app()->environment(['local'])) {
+            // Log::info('Mail is set to sandbox');
             Mail::alwaysTo('sandbox@inspireonline.co.za'); // O@BczDAVgrz2{89e
+        }
+        if (app()->environment(['staging', 'development'])) {
+            // Log::info('Mail is set to sandbox'); conurbandigital@gmail.com
+            Mail::alwaysTo([
+                'owethu@conurban.co.za',
+                'sandbox@inspireonline.co.za'
+            ]);
         }
 
         View::composer('*', function ($view) {
@@ -65,6 +73,10 @@ class AppServiceProvider extends ServiceProvider
                 'sessionYear' => $sessionYear,
                 'bedCode'     => $bedCode
             ]);
+        });
+
+        DB::listen(function ($query) {
+            app(MetricsCollector::class)->addQueryTime($query->time);
         });
     }
 }

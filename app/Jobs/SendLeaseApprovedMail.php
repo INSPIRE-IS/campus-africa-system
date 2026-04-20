@@ -86,7 +86,7 @@ class SendLeaseApprovedMail implements ShouldQueue
                 if (in_array(explode("@", $data['email'])[1], $mailArr)) {
                     $data['email'] = $userForLease->userEmail;
                 } else {
-                    $data['email'] = "conurbandigital@gmail.com";
+                    $data['email'] = "studentsca00@gmail.com";
                 }
             } else {
                 $data['email'] = $userForLease->userEmail;

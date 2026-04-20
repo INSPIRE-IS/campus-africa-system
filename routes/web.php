@@ -17,6 +17,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MailReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\MetricsFeatureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -129,6 +130,10 @@ Route::get('/admin-updates/name-case-update', [LookupsController::class, 'admin_
 Route::get('/admin-updates/update-beds', [LookupsController::class, 'admin_updates_update_beds']);
 Route::get('/admin-updates/update-gender', [LookupsController::class, 'admin_updates_update_gender']);
 Route::get('/admin-updates/update-nsfas-rate', [LookupsController::class, 'admin_updates_update_nsfas_rate']);
+Route::get('/admin-updates/report-booking-pricing-local', [LookupsController::class, 'admin_updates_report_booking_pricing_local']);
+Route::get('/admin-updates/update-booking-pricing-local', [LookupsController::class, 'admin_updates_update_booking_pricing_local']);
+Route::get('/admin-updates/update-booking-pricing-full', [LookupsController::class, 'admin_updates_update_booking_pricing_full']);
+Route::get('/admin-updates/report-booking-pricing-full', [LookupsController::class, 'admin_updates_report_booking_pricing_full']);
 
 
 
@@ -153,6 +158,15 @@ Route::post("/restore/booking", [HomeController::class, 'restore_booking']);
 Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
 
+Route::get('/metrics-features', [MetricsFeatureController::class, 'index']);
+Route::post('/metrics-features/enable', [MetricsFeatureController::class, 'enable']);
+Route::post('/metrics-features/disable/{id}', [MetricsFeatureController::class, 'disable']);
+Route::post('/metrics-features/update', [MetricsFeatureController::class, 'update']);
+Route::get('/metrics-features/data', [MetricsFeatureController::class, 'data']);
+Route::get('/metrics-codes', [MetricsFeatureController::class, 'codes']);
+Route::get('/metrics-codes/exceptions', [MetricsFeatureController::class, 'exceptions']);
+Route::get('/metrics-codes/breakdown', [MetricsFeatureController::class, 'codesBreakdown']);
+
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
 Route::post('/passport-check', [HomeController::class, 'passport_check']);
@@ -168,6 +182,7 @@ Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
 
 Route::post('/getPaymentInfo', [HomeController::class, 'getPaymentInfo']);
 Route::post('/update-booking-payment', [HomeController::class, 'updateBookingPayment'])->name('update.booking.payment');
+Route::post('/update-monthly-pop', [HomeController::class, 'updateMonthlyPop'])->name('update.monthly.pop');
 
 Route::get('/manage-properties', [HomeController::class, 'manage_properties']);
 Route::post("/manage-properties-filter", [HomeController::class, 'properties_filter']);

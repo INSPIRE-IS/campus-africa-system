@@ -51,6 +51,7 @@
         let sortDirection = '<?php echo Session::get('sortDirection'); ?>';
     </script>
     <script src="../../js/applications.js?v=<?php echo rand(); ?>"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <link rel="stylesheet" type="text/css" href="/css/dropzone.css">
     <script src="/js/dropzone.js"></script>
@@ -69,21 +70,23 @@
             <a href="/applications">Applications</a>
             <a href="/leases">Leases</a>
             <a href="/invoices">Invoices</a>
-            @if (Auth::user()->role_lookup == '1')
+            @if (Auth::user() && Auth::user()->role_lookup == '1')
                 <a href="/mailing">Mailing</a>
                 <a href="/lookups">Lookups</a>
             @endif
             <a href="/reports">Reports</a>
 
-            @if (Auth::user()->role_view_booking_summary == '1')
+            @if (Auth::user() && Auth::user()->role_view_booking_summary == '1')
                 <a href="/booking-summary">Booking Summary</a>
             @endif
 
-            @if (Auth::user()->role_manage_users == '1')
-                <a href="/users">Users</a>
+            @if (Auth::user() && Auth::user()->role_super == '1')
+                <a href="/metrics-features">Metrics</a>
             @endif
 
-
+            @if (Auth::user() && Auth::user()->role_manage_users == '1')
+                <a href="/users">Users</a>
+            @endif
 
             <a href="/logout">Hi {{ Auth::user()->userFirstName }}, Log out</a>
             <a href="javascript:void(0);" class="icon" onclick="myFunction()">
@@ -149,6 +152,7 @@
             @yield('content')
         </main>
     </div>
+    @stack('scripts')
     <footer class="footer">
         <div class="footerBanner">
             <div class="container <?php if (!$agent->isMobile()) {

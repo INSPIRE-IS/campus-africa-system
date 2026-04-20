@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use App\Services\MetricsCollector;
 
 class Handler extends ExceptionHandler
 {
@@ -35,7 +36,11 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            try {
+                app(MetricsCollector::class)->captureException($e);
+            } catch (Throwable $ignored) {
+                // Avoid breaking exception reporting if metrics fail.
+            }
         });
     }
 

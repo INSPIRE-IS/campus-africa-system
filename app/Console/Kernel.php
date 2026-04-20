@@ -30,6 +30,10 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('calculate:compatibility --year=' . $this_year)
             ->dailyAt('23:59');
+        $schedule->command('metrics:prune')
+            ->dailyAt('01:10');
+        $schedule->command('booking:send-monthly-pop')
+            ->dailyAt('06:00');
         // $schedule->command('inspire')->hourly();
         // $schedule->call(function(){
         //     info('Called every minute');

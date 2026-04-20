@@ -75,6 +75,7 @@
 
             <div class="searchField">
                 <label>Student Type</label><br />
+                {{-- STUDENT TYPE --}}
                 <select name="student_type" id='student_type'>
                     <option value="All" selected <?php if (Session::get('student_type') == 'All') {
                         echo 'selected';

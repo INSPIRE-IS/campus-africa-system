@@ -2090,6 +2090,313 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/MetricsDashboard.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/MetricsDashboard.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: {
+    initialRange: {
+      type: String,
+      "default": '24h'
+    },
+    rangeOptions: {
+      type: Array,
+      "default": function _default() {
+        return ['6h', '24h', '7d'];
+      }
+    }
+  },
+  data: function data() {
+    return {
+      range: this.initialRange,
+      dashboard: {},
+      loading: false,
+      error: null,
+      charts: {}
+    };
+  },
+  computed: {
+    labels: function labels() {
+      return this.dashboard.labels || [];
+    },
+    hasHttp: function hasHttp() {
+      return this.dashboard.http && this.dashboard.http.latency;
+    },
+    hasDb: function hasDb() {
+      return this.dashboard.db && this.dashboard.db.totalTime;
+    },
+    hasQueue: function hasQueue() {
+      return this.dashboard.queue && this.dashboard.queue.processed;
+    },
+    statusTotals: function statusTotals() {
+      var totals = this.dashboard.http ? this.dashboard.http.statusTotals || {} : {};
+      return Object.keys(totals).map(function (key) {
+        return {
+          key: key,
+          count: totals[key]
+        };
+      });
+    },
+    exceptionsList: function exceptionsList() {
+      var totals = this.dashboard.exceptions || {};
+      return Object.keys(totals).map(function (key) {
+        return {
+          key: key,
+          count: totals[key]
+        };
+      });
+    },
+    slowRoutesList: function slowRoutesList() {
+      return this.dashboard.slow_routes || [];
+    }
+  },
+  mounted: function mounted() {
+    this.fetchData();
+  },
+  methods: {
+    linkStyle: function linkStyle(option) {
+      return "margin-left: 10px; ".concat(this.range === option ? 'font-weight: bold;' : '');
+    },
+    setRange: function setRange(option) {
+      if (this.range === option) return;
+      this.range = option;
+      this.fetchData();
+    },
+    fetchData: function fetchData() {
+      var _this = this;
+      this.loading = true;
+      this.error = null;
+      fetch("/metrics-features/data?range=".concat(encodeURIComponent(this.range)), {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).then(function (response) {
+        if (!response.ok) {
+          throw new Error('Failed to load metrics data.');
+        }
+        return response.json();
+      }).then(function (data) {
+        _this.dashboard = data || {};
+        _this.$nextTick(function () {
+          _this.renderCharts();
+        });
+      })["catch"](function (error) {
+        _this.error = error.message || 'Failed to load metrics data.';
+      })["finally"](function () {
+        _this.loading = false;
+      });
+    },
+    renderCharts: function renderCharts() {
+      this.destroyCharts();
+      if (!window.Chart) {
+        this.error = 'Chart.js is not loaded.';
+        return;
+      }
+      if (this.hasHttp) {
+        this.charts.httpLatency = this.buildLineChart(this.$refs.httpLatencyChart, 'Avg Request Latency (ms)', this.dashboard.http.latency, '#f59e0b');
+        this.charts.httpTotal = this.buildLineChart(this.$refs.httpTotalChart, 'Total Requests', this.dashboard.http.total, '#2563eb');
+      }
+      if (this.hasDb) {
+        this.charts.dbTime = this.buildLineChart(this.$refs.dbTimeChart, 'DB Total Time (ms)', this.dashboard.db.totalTime, '#10b981');
+        this.charts.dbCount = this.buildLineChart(this.$refs.dbCountChart, 'DB Query Count', this.dashboard.db.queryCount, '#8b5cf6');
+      }
+      if (this.hasQueue) {
+        this.charts.queue = this.buildBarChart(this.$refs.queueChart, this.labels, [{
+          label: 'Processed',
+          data: this.dashboard.queue.processed,
+          backgroundColor: '#22c55e'
+        }, {
+          label: 'Failed',
+          data: this.dashboard.queue.failed,
+          backgroundColor: '#ef4444'
+        }]);
+      }
+    },
+    buildLineChart: function buildLineChart(el, label, data, color) {
+      if (!el) return null;
+      return new window.Chart(el, {
+        type: 'line',
+        data: {
+          labels: this.labels,
+          datasets: [{
+            label: label,
+            data: data,
+            borderColor: color,
+            backgroundColor: "".concat(color, "33"),
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    },
+    buildBarChart: function buildBarChart(el, labels, datasets) {
+      if (!el) return null;
+      return new window.Chart(el, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    },
+    destroyCharts: function destroyCharts() {
+      var _this2 = this;
+      Object.keys(this.charts).forEach(function (key) {
+        var chart = _this2.charts[key];
+        if (chart && typeof chart.destroy === 'function') {
+          chart.destroy();
+        }
+      });
+      this.charts = {};
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -2117,6 +2424,7 @@ window.Vue = (__webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', (__webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]));
+Vue.component('metrics-dashboard', (__webpack_require__(/*! ./components/MetricsDashboard.vue */ "./resources/js/components/MetricsDashboard.vue")["default"]));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -2124,9 +2432,11 @@ Vue.component('example-component', (__webpack_require__(/*! ./components/Example
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-var app = new Vue({
-  el: '#app'
-});
+if (document.getElementById('metrics-app')) {
+  var app = new Vue({
+    el: '#metrics-app'
+  });
+}
 
 /***/ }),
 
@@ -2146,7 +2456,9 @@ window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 
 try {
   window.Popper = (__webpack_require__(/*! popper.js */ "./node_modules/popper.js/dist/esm/popper.js")["default"]);
-  window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+  if (!window.jQuery && !window.$) {
+    window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+  }
   __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.js");
 } catch (e) {}
 
@@ -37359,6 +37671,45 @@ component.options.__file = "resources/js/components/ExampleComponent.vue"
 
 /***/ }),
 
+/***/ "./resources/js/components/MetricsDashboard.vue":
+/*!******************************************************!*\
+  !*** ./resources/js/components/MetricsDashboard.vue ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _MetricsDashboard_vue_vue_type_template_id_7791d208___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MetricsDashboard.vue?vue&type=template&id=7791d208& */ "./resources/js/components/MetricsDashboard.vue?vue&type=template&id=7791d208&");
+/* harmony import */ var _MetricsDashboard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MetricsDashboard.vue?vue&type=script&lang=js& */ "./resources/js/components/MetricsDashboard.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _MetricsDashboard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _MetricsDashboard_vue_vue_type_template_id_7791d208___WEBPACK_IMPORTED_MODULE_0__.render,
+  _MetricsDashboard_vue_vue_type_template_id_7791d208___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/MetricsDashboard.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************!*\
   !*** ./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
@@ -37375,6 +37726,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/MetricsDashboard.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/MetricsDashboard.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_MetricsDashboard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./MetricsDashboard.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/MetricsDashboard.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_MetricsDashboard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
 /***/ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
 /*!*************************************************************************************!*\
   !*** ./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
@@ -37388,6 +37755,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/MetricsDashboard.vue?vue&type=template&id=7791d208&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/MetricsDashboard.vue?vue&type=template&id=7791d208& ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MetricsDashboard_vue_vue_type_template_id_7791d208___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MetricsDashboard_vue_vue_type_template_id_7791d208___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MetricsDashboard_vue_vue_type_template_id_7791d208___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./MetricsDashboard.vue?vue&type=template&id=7791d208& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/MetricsDashboard.vue?vue&type=template&id=7791d208&");
 
 
 /***/ }),
@@ -37434,6 +37818,406 @@ var staticRenderFns = [
     ])
   },
 ]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/MetricsDashboard.vue?vue&type=template&id=7791d208&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/MetricsDashboard.vue?vue&type=template&id=7791d208& ***!
+  \****************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render),
+/* harmony export */   staticRenderFns: () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function () {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "form-card", staticStyle: { padding: "20px" } },
+    [
+      _c(
+        "div",
+        {
+          staticStyle: {
+            display: "flex",
+            "align-items": "center",
+            "justify-content": "space-between",
+            "flex-wrap": "wrap",
+          },
+        },
+        [
+          _c("h2", { staticStyle: { "margin-bottom": "0" } }, [
+            _vm._v("Metrics Dashboard"),
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticStyle: { "margin-top": "10px" } },
+            [
+              _c("strong", [_vm._v("Range:")]),
+              _vm._v(" "),
+              _vm._l(_vm.rangeOptions, function (option) {
+                return _c(
+                  "a",
+                  {
+                    key: option,
+                    style: _vm.linkStyle(option),
+                    attrs: { href: "#" },
+                    on: {
+                      click: function ($event) {
+                        $event.preventDefault()
+                        return _vm.setRange(option)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v(
+                      "\n                " + _vm._s(option) + "\n            "
+                    ),
+                  ]
+                )
+              }),
+            ],
+            2
+          ),
+        ]
+      ),
+      _vm._v(" "),
+      _vm.error
+        ? _c(
+            "div",
+            { staticStyle: { "margin-top": "10px", color: "#b91c1c" } },
+            [_vm._v("\n        " + _vm._s(_vm.error) + "\n    ")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.loading
+        ? _c("div", { staticStyle: { "margin-top": "10px" } }, [
+            _vm._v("\n        Loading metrics...\n    "),
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.dashboard.range
+        ? _c(
+            "div",
+            { staticStyle: { "margin-top": "6px", color: "#6b7280" } },
+            [
+              _vm._v(
+                "\n        " +
+                  _vm._s(_vm.dashboard.range.start) +
+                  " → " +
+                  _vm._s(_vm.dashboard.range.end) +
+                  "\n    "
+              ),
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.dashboard.kpis
+        ? _c(
+            "div",
+            {
+              staticStyle: {
+                display: "flex",
+                "flex-wrap": "wrap",
+                gap: "16px",
+                "margin-top": "20px",
+                width: "100%",
+              },
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass: "form-field",
+                  staticStyle: {
+                    border: "1px solid #e5e7eb",
+                    padding: "12px 16px",
+                    flex: "1 1 calc(50% - 16px)",
+                    "min-width": "220px",
+                  },
+                },
+                [
+                  _c(
+                    "div",
+                    { staticStyle: { "font-size": "12px", color: "#6b7280" } },
+                    [_vm._v("Avg Latency")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticStyle: {
+                        "font-size": "22px",
+                        "font-weight": "bold",
+                      },
+                    },
+                    [_vm._v(_vm._s(_vm.dashboard.kpis.avg_latency_ms) + " ms")]
+                  ),
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "form-field",
+                  staticStyle: {
+                    border: "1px solid #e5e7eb",
+                    padding: "12px 16px",
+                    flex: "1 1 calc(50% - 16px)",
+                    "min-width": "220px",
+                  },
+                },
+                [
+                  _c(
+                    "div",
+                    { staticStyle: { "font-size": "12px", color: "#6b7280" } },
+                    [_vm._v("Error Rate")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticStyle: {
+                        "font-size": "22px",
+                        "font-weight": "bold",
+                      },
+                    },
+                    [_vm._v(_vm._s(_vm.dashboard.kpis.error_rate_pct) + "%")]
+                  ),
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "form-field",
+                  staticStyle: {
+                    border: "1px solid #e5e7eb",
+                    padding: "12px 16px",
+                    flex: "1 1 calc(50% - 16px)",
+                    "min-width": "220px",
+                  },
+                },
+                [
+                  _c(
+                    "div",
+                    { staticStyle: { "font-size": "12px", color: "#6b7280" } },
+                    [_vm._v("Queue Failure Rate")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticStyle: {
+                        "font-size": "22px",
+                        "font-weight": "bold",
+                      },
+                    },
+                    [
+                      _vm._v(
+                        _vm._s(_vm.dashboard.kpis.queue_failure_rate_pct) + "%"
+                      ),
+                    ]
+                  ),
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "form-field",
+                  staticStyle: {
+                    border: "1px solid #e5e7eb",
+                    padding: "12px 16px",
+                    flex: "1 1 calc(50% - 16px)",
+                    "min-width": "220px",
+                  },
+                },
+                [
+                  _c(
+                    "div",
+                    { staticStyle: { "font-size": "12px", color: "#6b7280" } },
+                    [_vm._v("Total Requests")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticStyle: {
+                        "font-size": "22px",
+                        "font-weight": "bold",
+                      },
+                    },
+                    [_vm._v(_vm._s(_vm.dashboard.kpis.total_requests))]
+                  ),
+                ]
+              ),
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c("div", { staticStyle: { "margin-top": "20px" } }, [
+        _c("h3", [_vm._v("HTTP Requests")]),
+        _vm._v(" "),
+        _vm.hasHttp
+          ? _c(
+              "div",
+              {
+                staticStyle: {
+                  display: "flex",
+                  "flex-wrap": "wrap",
+                  gap: "20px",
+                },
+              },
+              [
+                _c(
+                  "div",
+                  { staticStyle: { flex: "1 1 380px", "max-width": "48%" } },
+                  [
+                    _c("canvas", {
+                      ref: "httpLatencyChart",
+                      attrs: { height: "90" },
+                    }),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticStyle: { flex: "1 1 380px", "max-width": "48%" } },
+                  [
+                    _c("canvas", {
+                      ref: "httpTotalChart",
+                      attrs: { height: "90" },
+                    }),
+                  ]
+                ),
+                _vm._v(" "),
+                _vm.statusTotals.length
+                  ? _c("div", { staticStyle: { "margin-top": "15px" } }, [
+                      _c("strong", [_vm._v("Top Status Codes")]),
+                      _vm._v(" "),
+                      _c(
+                        "ul",
+                        _vm._l(_vm.statusTotals, function (item) {
+                          return _c("li", { key: item.key }, [
+                            _vm._v(
+                              _vm._s(item.key) + ": " + _vm._s(item.count)
+                            ),
+                          ])
+                        }),
+                        0
+                      ),
+                    ])
+                  : _vm._e(),
+              ]
+            )
+          : _c("p", [_vm._v("No HTTP metrics captured yet.")]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { "margin-top": "30px" } }, [
+        _c("h3", [_vm._v("Database")]),
+        _vm._v(" "),
+        _vm.hasDb
+          ? _c(
+              "div",
+              {
+                staticStyle: {
+                  display: "flex",
+                  "flex-wrap": "wrap",
+                  gap: "20px",
+                },
+              },
+              [
+                _c(
+                  "div",
+                  { staticStyle: { flex: "1 1 380px", "max-width": "48%" } },
+                  [
+                    _c("canvas", {
+                      ref: "dbTimeChart",
+                      attrs: { height: "90" },
+                    }),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticStyle: { flex: "1 1 380px", "max-width": "48%" } },
+                  [
+                    _c("canvas", {
+                      ref: "dbCountChart",
+                      attrs: { height: "90" },
+                    }),
+                  ]
+                ),
+              ]
+            )
+          : _c("p", [_vm._v("No DB metrics captured yet.")]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { "margin-top": "30px" } }, [
+        _c("h3", [_vm._v("Queue")]),
+        _vm._v(" "),
+        _vm.hasQueue
+          ? _c("div", { staticStyle: { "max-width": "520px" } }, [
+              _c("canvas", { ref: "queueChart", attrs: { height: "90" } }),
+            ])
+          : _c("p", [_vm._v("No queue metrics captured yet.")]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { "margin-top": "30px" } }, [
+        _c("h3", [_vm._v("Exceptions")]),
+        _vm._v(" "),
+        _vm.exceptionsList.length
+          ? _c(
+              "ul",
+              _vm._l(_vm.exceptionsList, function (item) {
+                return _c("li", { key: item.key }, [
+                  _vm._v(_vm._s(item.key) + ": " + _vm._s(item.count)),
+                ])
+              }),
+              0
+            )
+          : _c("p", [_vm._v("No exception metrics captured yet.")]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { "margin-top": "30px" } }, [
+        _c("h3", [_vm._v("Slow Routes")]),
+        _vm._v(" "),
+        _vm.slowRoutesList.length
+          ? _c(
+              "ul",
+              _vm._l(_vm.slowRoutesList, function (item) {
+                return _c("li", { key: item.route }, [
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(item.route) +
+                      ": " +
+                      _vm._s(item.avg) +
+                      " ms avg\n                "
+                  ),
+                  item.p95
+                    ? _c("span", [_vm._v(", p95 " + _vm._s(item.p95) + " ms")])
+                    : _vm._e(),
+                ])
+              }),
+              0
+            )
+          : _c("p", [_vm._v("No slow routes captured yet.")]),
+      ]),
+    ]
+  )
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
