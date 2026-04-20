@@ -80,9 +80,36 @@
 - Lease templates show admin fee/deposit as 0 unless `studentType` is `Cash / Direct` or `Bursary` with `nsfas_bursar != 1` (or waived flags). This means `NRF` currently falls into the "0" path.
 - Lease contact display logic (kin/sponsor): templates use `LeaseContactService::resolve($data)` to render Next‑of‑Kin and parent/guardian acknowledgement. It shows kin if present, otherwise falls back to sponsor fields; if both are blank, it renders placeholders. The `app_parent_kin` checkbox only copies sponsor -> kin at save time (see `ApplicationController::step_3_kin`), and studentType only affects onboarding requirements, not lease rendering.
 - Lease generation guard: `PDFController::createPDF()` now blocks lease generation with a 422 error if required Next‑of‑Kin fields are missing, aligned to the Step 3 Next‑of‑Kin requirements (see `LeaseContactService::missingFields()`), so admins must complete those fields before generating a lease.
+- Debt Assurity (cash only):
+  - `user_files.fileId = assurity_doc`, status tracked by `students_info.rob_65_debt` using temp-lease style semantics (`0=Rejected, 1=Approved, 2=Pending, 3=Not Set/Not Required`).
+  - Tokens stored in `assurity_tokens`; sponsor signs via `/sign-assurity/{token}` and `POST /save-signed-assurity/{token}`.
+  - Admin actions (sys admin only): `POST /generate-assurity/{studentId}` (regen + send link) and `POST /resend-assurity` (resend link).
+  - Auto-trigger: after Step 5 payment submission, the system auto-requests Debt Assurity for Cash students (emails sponsor signing link + emails student reminder). Implemented in PayGate return handlers and PoP upload handler.
+  - Lease generation + final approval blocked when cash student and `rob_65_debt != 1`.
+- Cash sponsor consent flags (Step 2 sponsor flow):
+  - On `/step-2/online-application` for `Cash / Direct`, the sponsor form requires two acknowledgements:
+    - `c_credit_risk`: student acknowledges approval is subject to sponsor meeting Campus Africa credit risk profile and/or a payment arrangement.
+    - `c_credit_check`: student confirms sponsor consents to a credit check for the application.
+  - Stored on `students_info` (and legacy `users`) and validated client-side in `resources/views/application/step_2_spon.blade.php`.
+- Auth / roles / permissions (important distinctions):
+  - `users.userRole` is a coarse "account type" flag used across controllers:
+    - `0` = student/applicant (portal).
+    - `1` = system user (admin/staff). The current admin add/edit flow hard-codes system users to `userRole = 1`.
+    - Some legacy checks also allow `userRole` `2`/`3`, but the current admin add/edit flow does not set those values (2/3 appear to be legacy).
+  - `users.template` is the "Permissions Template" preset used in the admin add/edit UI to auto-check permission checkboxes:
+    - `1` = Sales Team, `2` = Building Manager, `3` = HO Approver (see `resources/views/admin/userAdd.blade.php` and `resources/views/admin/userEdit.blade.php`).
+    - This is a convenience preset only; the effective access control is determined by the per-permission columns (`role_*`).
+  - Document approve/reject endpoint: `POST /action/file` (`HomeController::action_file`) currently gates only on `Auth::user()->userRole` being `1/2/3` (i.e., "not a student"), and does not enforce `role_approve_docs` server-side. UI gating may hide buttons, but the API will still accept requests from any staff account.
 - Staging uses new funding-type fee/deposit logic (via lookup `deposit_applies` + lease fee config) in the application/admin flows, but lease PDFs still use the older studentType branching. Live fix should be the temporary studentType adjustment; full alignment with funding rules to follow when staging changes are approved for live.
 - Property active/inactive: `property.status` remains legacy for application/control flow. New `property.active_date` / `property.inactive_date` are introduced for year‑based reporting filters (reports page only for now). Long term, the goal is to migrate more logic to date‑based activity and reduce reliance on `status`.
 - TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).
+- `temp/` (gitignored) is a scratchpad folder for investigations and reference documents (not used by app code). Current contents:
+  - `temp/CLIENT_SIGNOFF.md`: draft acceptance checklist for the assurity + related flow changes (compare/merge with root `CLIENT_SIGNOFF.md` as needed).
+  - `temp/DEED OF SURETY.docx`: source legal wording used to build/update `resources/views/PDF/assurity.blade.php`.
+  - `temp/laravel260319ca.log`: captured Laravel log snapshot used for debugging production/staging issues.
+  - `temp/REVIEWED_VIEWS.md`: ad-hoc notes/review findings for specific Blade views (e.g., admin maintenance/update screens).
+  - `temp/TODOS1.md`: scratch TODO list (may overlap with root `TODOS.md` / `TODOS1.md`).
+  - `temp/UPGRADE.md`: Laravel upgrade research notes (dependency blockers, risks, staged upgrade plan).
 ## Project TODOs
 - See `TODOS.md`
 
