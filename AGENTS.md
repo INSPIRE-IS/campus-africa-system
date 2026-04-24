@@ -5,6 +5,33 @@
 - Frontend: Laravel Mix + Vue 2 + Bootstrap 4 + jQuery
 - Database: MySQL 5.7 (see docker-compose)
 
+## Project overview
+- Laravel 8 application (PHP ^7.3 or ^8.0)
+- Frontend: Laravel Mix + Vue 2 + Bootstrap 4 + jQuery
+- Database: MySQL 5.7 (see docker-compose)
+
+## Session Definition
+- A "session" means this single Codex chat thread/conversation. If a new chat starts (or context feels incomplete), treat it as a new session.
+
+## Session Checklist (Do This First)
+1) Re-open `AGENTS.md` (this file) before answering repo-specific questions.
+2) Open the latest `temp/session-YYYY-MM-DD.md` for recent context.
+3) If today's session file does not exist yet, create it from `temp/session-template.md`.
+4) Check `temp/todos.md` for the current action plan and priority items.
+
+## No-Surprises Rules
+- Do not auto-commit. Only commit when explicitly asked.
+- Do not change production/live behavior unless it is gated/flagged and approved.
+- Do not delete/rename large folders or run destructive git commands unless explicitly asked.
+
+## Core principles
+- Always think like a senior developer when making technical decisions.
+- All BA/design choices should reflect senior‑level UI/UX and senior‑marketer thinking (clarity, conversion, and user trust).
+- Default to the best possible UI/UX unless there is a clear constraint.
+
+## Purpose
+Document everything for this repo.
+
 ## Repo layout
 - app/: application code (models, controllers, services, jobs, traits)
 - routes/: web and API routes

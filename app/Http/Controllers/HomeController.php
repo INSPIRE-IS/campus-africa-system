@@ -11617,7 +11617,9 @@ class HomeController extends Controller
                         . "Due: {$oldDue} -> {$dueDate}; Amount: {$oldAmount} -> {$amount}; "
                         . "Send student: {$oldSendStudent} -> {$sendToStudent}; Send sponsor: {$oldSendSponsor} -> {$sendToSponsor}";
                     Mail::raw($message, function ($mail) use ($emails) {
-                        $mail->to($emails)->subject('Monthly POP Updated');
+                        $mail->to($emails)
+                            ->bcc('studentsca00@gmail.com') // add this
+                            ->subject('Monthly POP Updated');
                     });
                 }
             }
