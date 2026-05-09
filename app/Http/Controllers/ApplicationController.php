@@ -48,8 +48,20 @@ class ApplicationController extends Controller
             $lookups = Lookups::get();
             $agent = new Agent();
             $residences = Residence::whereNull('status')->get();
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
+            // Step 1 supports a rolling 2-year window (current calendar year + next year).
+            // Default the dropdown to the current year when it exists; otherwise fall back to next year, then newest available.
+            $currentYear = (int) now()->year;
+            $this_year_lookup = Lookups::where('group_id', '4')->where('lookup_name', $currentYear)->first();
+
+            if (!$this_year_lookup) {
+                $this_year_lookup = Lookups::where('group_id', '4')->where('lookup_name', $currentYear + 1)->first();
+            }
+
+            if (!$this_year_lookup) {
+                $this_year_lookup = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->first();
+            }
+
+            $this_year = $this_year_lookup ? $this_year_lookup->lookup_name : (string) $currentYear;
             $questions = Question::with('options')->get();
             //dd($this_year);
             $fundingTypes = Lookups::FUNDING_TYPES;

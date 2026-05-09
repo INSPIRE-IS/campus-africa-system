@@ -4,6 +4,18 @@
 
 @php
     $fundingTypes = $fundingTypes ?? \App\Models\Lookups::FUNDING_TYPES;
+    $yearLookupData = isset($year_lookup)
+        ? (is_array($year_lookup->data) ? $year_lookup->data : ($year_lookup->data ? json_decode($year_lookup->data, true) : []))
+        : [];
+    $defaultLeaseFees = is_array($yearLookupData) ? ($yearLookupData['lease_fees'] ?? []) : [];
+    $defaultDepositApplies = is_array($yearLookupData) ? ($yearLookupData['deposit_applies'] ?? []) : [];
+
+    $defaultMonthFrom = isset($year_lookup) && $year_lookup->month_from ? (string) $year_lookup->month_from : '1';
+    $defaultDayFrom = isset($year_lookup) && $year_lookup->day_from ? (string) $year_lookup->day_from : '1';
+    $defaultLeaseFromTime = isset($year_lookup) && $year_lookup->lease_from_time ? (string) $year_lookup->lease_from_time : '12:00';
+    $defaultMonthTo = isset($year_lookup) && $year_lookup->month_to ? (string) $year_lookup->month_to : '12';
+    $defaultDayTo = isset($year_lookup) && $year_lookup->day_to ? (string) $year_lookup->day_to : '31';
+    $defaultLeaseToTime = isset($year_lookup) && $year_lookup->lease_to_time ? (string) $year_lookup->lease_to_time : '12:00';
 @endphp
 
 <div class="container form-card">
@@ -40,6 +52,76 @@
                 - When this is not set, no restrictions on email sending<br/>
                 - Please seperate by semicolon</small>
             <small id="mailCCWording" class="hidden">Specify individual email addresses to BCC, Please seperate email addresses by semicolon</small>
+        </div>
+
+        <div class="form-field hidden" id="yearLeaseFields" style="width:stretch">
+            <div class="form-field">
+                <label>Lease From Date (Month)</label>
+                <select name="month_from" id='month_from'>
+                    <option value="0" disabled selected>Select one</option>
+                    <option value="1" {{ $defaultMonthFrom === '1' ? 'selected' : '' }}>January</option>
+                    <option value="2" {{ $defaultMonthFrom === '2' ? 'selected' : '' }}>February</option>
+                    <option value="3" {{ $defaultMonthFrom === '3' ? 'selected' : '' }}>March</option>
+                    <option value="4" {{ $defaultMonthFrom === '4' ? 'selected' : '' }}>April</option>
+                    <option value="5" {{ $defaultMonthFrom === '5' ? 'selected' : '' }}>May</option>
+                    <option value="6" {{ $defaultMonthFrom === '6' ? 'selected' : '' }}>June</option>
+                    <option value="7" {{ $defaultMonthFrom === '7' ? 'selected' : '' }}>July</option>
+                    <option value="8" {{ $defaultMonthFrom === '8' ? 'selected' : '' }}>August</option>
+                    <option value="9" {{ $defaultMonthFrom === '9' ? 'selected' : '' }}>September</option>
+                    <option value="10" {{ $defaultMonthFrom === '10' ? 'selected' : '' }}>October</option>
+                    <option value="11" {{ $defaultMonthFrom === '11' ? 'selected' : '' }}>November</option>
+                    <option value="12" {{ $defaultMonthFrom === '12' ? 'selected' : '' }}>December</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Lease From Date (Day)</label>
+                <select name="day_from" id='day_from'>
+                    <option value="0" disabled selected>Select one</option>
+                    @for ($d = 1; $d <= 31; $d++)
+                        @php $dv = (string) $d; @endphp
+                        <option value="{{ $dv }}" {{ $defaultDayFrom === $dv ? 'selected' : '' }}>{{ str_pad((string) $d, 2, '0', STR_PAD_LEFT) }}</option>
+                    @endfor
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Lease From Time</label>
+                <input type="time" id="lease_from_time" name="lease_from_time" value="{{ $defaultLeaseFromTime }}">
+            </div>
+
+            <div class="form-field">
+                <div class="form-field">
+                    <label>Lease To Date (Month)</label>
+                    <select name="month_to" id='month_to'>
+                        <option value="0" disabled selected>Select one</option>
+                        <option value="1" {{ $defaultMonthTo === '1' ? 'selected' : '' }}>January</option>
+                        <option value="2" {{ $defaultMonthTo === '2' ? 'selected' : '' }}>February</option>
+                        <option value="3" {{ $defaultMonthTo === '3' ? 'selected' : '' }}>March</option>
+                        <option value="4" {{ $defaultMonthTo === '4' ? 'selected' : '' }}>April</option>
+                        <option value="5" {{ $defaultMonthTo === '5' ? 'selected' : '' }}>May</option>
+                        <option value="6" {{ $defaultMonthTo === '6' ? 'selected' : '' }}>June</option>
+                        <option value="7" {{ $defaultMonthTo === '7' ? 'selected' : '' }}>July</option>
+                        <option value="8" {{ $defaultMonthTo === '8' ? 'selected' : '' }}>August</option>
+                        <option value="9" {{ $defaultMonthTo === '9' ? 'selected' : '' }}>September</option>
+                        <option value="10" {{ $defaultMonthTo === '10' ? 'selected' : '' }}>October</option>
+                        <option value="11" {{ $defaultMonthTo === '11' ? 'selected' : '' }}>November</option>
+                        <option value="12" {{ $defaultMonthTo === '12' ? 'selected' : '' }}>December</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Lease To Date (Day)</label>
+                    <select name="day_to" id='day_to'>
+                        <option value="0" disabled selected>Select one</option>
+                        @for ($d = 1; $d <= 31; $d++)
+                            @php $dv = (string) $d; @endphp
+                            <option value="{{ $dv }}" {{ $defaultDayTo === $dv ? 'selected' : '' }}>{{ str_pad((string) $d, 2, '0', STR_PAD_LEFT) }}</option>
+                        @endfor
+                    </select>
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Lease To Time</label>
+                <input type="time" id="lease_to_time" name="lease_to_time" value="{{ $defaultLeaseToTime }}">
+            </div>
         </div>
 
         <div class="form-field hidden" id="propertyListNsfas" style="height:<?php echo 48*count($allProperties);?>px !important;">
@@ -90,51 +172,52 @@
             <label>NSFAS Rate</label>
             <input type="number" id="nsfas_amount" name="nsfas_amount" >
         </div>
-
-        <div class="form-field hidden" id="fundingFeesTable">
-            <label>Funding Type Lease Fees (Current Year Only)</label>
-            <table style="width:100%">
-                <thead>
-                    <tr>
-                        <th style="text-align:left;">Funding Type</th>
-                        <th style="text-align:left;">Fee</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($fundingTypes as $typeId => $typeName)
+        <div style="height:400px !important; margin-top:400px; margin-bottom:10px;">
+            <div class="form-field hidden" id="fundingFeesTable">
+                <label>Funding Type Lease Fees</label>
+                <table style="width:100%">
+                    <thead>
                         <tr>
-                            <td>{{ $typeName }}</td>
-                            <td>
-                                <input type="text" name="lease_fees[{{ $typeId }}]" class="lease-fee-input" inputmode="decimal" disabled>
-                            </td>
+                            <th style="text-align:left;">Funding Type</th>
+                            <th style="text-align:left;">Fee</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <small>Shown only when the lookup year matches the current year ({{ $currentYear ?? 'N/A' }}).</small>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach($fundingTypes as $typeId => $typeName)
+                            <tr>
+                                <td>{{ $typeName }}</td>
+                                <td>
+                                    <input type="text" name="lease_fees[{{ $typeId }}]" class="lease-fee-input" inputmode="decimal" value="{{ $defaultLeaseFees[$typeId] ?? '' }}" disabled>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <small>Saved per year. Used when creating/updating bookings and leases for this year.</small>
+            </div>
 
-        <div class="form-field hidden" id="fundingDepositsTable">
-            <label>Funding Type Deposit Applies (Current Year Only)</label>
-            <table style="width:100%">
-                <thead>
-                    <tr>
-                        <th style="text-align:left;">Funding Type</th>
-                        <th style="text-align:left;">Deposit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($fundingTypes as $typeId => $typeName)
+            <div class="form-field hidden" id="fundingDepositsTable" >
+                <label>Funding Type Deposit Applies</label>
+                <table style="width:100%">
+                    <thead>
                         <tr>
-                            <td>{{ $typeName }}</td>
-                            <td>
-                                <input type="checkbox" name="deposit_applies[{{ $typeId }}]" value="1" disabled>
-                            </td>
+                            <th style="text-align:left;">Funding Type</th>
+                            <th style="text-align:left;">Deposit</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <small>Shown only when the lookup year matches the current year ({{ $currentYear ?? 'N/A' }}).</small>
+                    </thead>
+                    <tbody>
+                        @foreach($fundingTypes as $typeId => $typeName)
+                            <tr>
+                                <td>{{ $typeName }}</td>
+                                <td>
+                                    <input type="checkbox" name="deposit_applies[{{ $typeId }}]" value="1" {{ !empty($defaultDepositApplies[$typeId]) ? 'checked' : '' }} disabled>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <small>Saved per year. If checked, deposit is set to the monthly rental for this funding type (unless waived).</small>
+            </div>
         </div>
 
         <!-- <div class="form-field hidden" id="waiverDateFrom">
@@ -152,19 +235,19 @@
 </div>
 
 <script>
-    const currentYear = @json($currentYear ?? null);
-
     function toggleFundingFees() {
         const groupId = $("#group_id").val();
-        const lookupYear = $("#value").val();
-        const shouldShowFees = groupId === "4" && currentYear && lookupYear === String(currentYear);
-        const shouldShowDeposits = groupId === "4" && currentYear && lookupYear === String(currentYear);
+        const shouldShowFees = groupId === "4";
+        const shouldShowDeposits = groupId === "4";
+        const shouldShowYearFields = groupId === "4";
 
         $("#fundingFeesTable").toggleClass('hidden', !shouldShowFees);
         $("#fundingFeesTable").find('input').prop('disabled', !shouldShowFees);
 
         $("#fundingDepositsTable").toggleClass('hidden', !shouldShowDeposits);
         $("#fundingDepositsTable").find('input').prop('disabled', !shouldShowDeposits);
+
+        $("#yearLeaseFields").toggleClass('hidden', !shouldShowYearFields);
     }
 
     $("#group_id").on('change', function(){
