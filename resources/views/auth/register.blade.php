@@ -129,9 +129,11 @@
                                                 <label>Year *</label>
                                                 <select name="year" id="year" required>
                                                 <option value="" selected disabled>Select One</option>
+                                                @php $minYear = now()->year; @endphp
                                                 @foreach($lookups as $lookup)
                                                     @if($lookup->group_id == "4")
-                                                        <option value="{{$lookup->lookup_name}}" >{{$lookup->lookup_name}}</option>
+                                                        @php $y = (int) $lookup->lookup_name; @endphp
+                                                        <option value="{{$lookup->lookup_name}}" {{ $y < $minYear ? 'disabled' : '' }}>{{$lookup->lookup_name}}</option>
                                                     @endif
                                                 @endforeach
                                                 </select>

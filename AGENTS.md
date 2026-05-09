@@ -32,6 +32,32 @@
 ## Purpose
 Document everything for this repo.
 
+## Session Definition
+- A "session" means this single Codex chat thread/conversation. If a new chat starts (or context feels incomplete), treat it as a new session.
+
+## Session Checklist (Do This First)
+1) Re-open `AGENTS.md` (this file) before answering repo-specific questions.
+2) Open the latest `temp/session-YYYY-MM-DD.md` for recent context.
+3) If today's session file does not exist yet, create it from `temp/session-template.md`.
+4) Check `temp/todos.md` for the current action plan and priority items.
+5) Open `temp/session-contents.md` (session index) to quickly jump between days, and update it when you create a new session file.
+
+## No-Surprises Rules
+- Do not auto-commit. Only commit when explicitly asked.
+- Do not change production/live behavior unless it is gated/flagged and approved.
+- Do not delete/rename large folders or run destructive git commands unless explicitly asked.
+
+## Core principles
+- Always think like a senior developer when making technical decisions.
+- All BA/design choices should reflect senior‑level UI/UX and senior‑marketer thinking (clarity, conversion, and user trust).
+- Default to the best possible UI/UX unless there is a clear constraint.
+- Never guess.
+- Always ask for additional context if required.
+
+## Purpose
+Document everything for this repo.
+
+
 ## Repo layout
 - app/: application code (models, controllers, services, jobs, traits)
 - routes/: web and API routes
@@ -67,6 +93,18 @@ Document everything for this repo.
 - Follow Laravel conventions; prefer existing services/traits when extending behavior
 
 ## Notes
+- Year handling (important legacy behavior):
+  - `lookups.group_id = 4` functions like a "year config table" (one row per academic year with lease dates and year-based config in `lookups.data`).
+  - Many legacy code paths still use `Lookups::where('group_id', '4')->first()` (no ordering), so the "current year" effectively becomes **whatever row MySQL returns first**.
+  - Operational workaround currently used when rolling to a new year: **update/insert the lookup rows so the newest year is the first row returned** (e.g., rename/shift `2025->2026` and `2026->2027`, or recreate rows) to keep legacy `->first()` calls aligned.
+  - Newer pages (notably `HomeController::dashboard()` and `HomeController::documents()`) instead build a year list and use `orderByDesc('lookup_name')` + `Session::put('year')`, which is safer with multiple years.
+  - Student registration (public `/register` wizard):
+    - The Year dropdown is populated from **all** `lookups.group_id=4` rows (`resources/views/auth/register.blade.php`).
+    - `RegisterController::registration_step_one` persists the chosen year onto `students_info.year` and `bookings_data.year`.
+    - **Session year is not set** during registration today, and `RegisterController::fileUpload` still uses `Lookups::where('group_id','4')->first()` for `user_files.year`, which will mis-file uploads when multiple years exist. If we enable dual-year registration (e.g., 2026 + 2027), this must be corrected (set session year on step 1 and/or pass year through upload requests).
+  - Admin applications (`/applications`):
+    - `HomeController::applications` sets `Session::put('year', Lookups::where('group_id','4')->first()->lookup_name)` (legacy).
+    - The year dropdown in `resources/views/admin/applications.blade.php` lists all year rows (sorted desc), and `/applications/filter` persists the chosen year into session.
 - Do not commit secrets from `.env`
 - Use `artisan` generators for new models, controllers, and migrations
 - Application status logic: there is legacy logic tied to user files and flags (e.g., mapping `fileType` like `proof_of_payment`, `copyID`, `studentCard`, `proofRegistration`, `bursaryApproval`, `bankStatement`, `moveIn`, and `other*` to status fields such as `fee_approved`, `id_data_approved`, `student_card_approved`, `registration_approved`, `bursary_approved`, `bank_approved`, and `rob_*` steps). Be mindful of cancelled bookings and soft-deleted records when investigating inconsistencies.
@@ -174,12 +212,23 @@ Document everything for this repo.
   - `temp/DEED OF SURETY.docx`: source legal wording used to build/update `resources/views/PDF/assurity.blade.php`.
   - `temp/laravel260319ca.log`: captured Laravel log snapshot used for debugging production/staging issues.
   - `temp/REVIEWED_VIEWS.md`: ad-hoc notes/review findings for specific Blade views (e.g., admin maintenance/update screens).
+  - `temp/wp-site.md`: public WordPress site inventory (page types, functionality, key URLs) used for product/research context.
+  - `temp/laravel-system.md`: Laravel portal scope/design inventory (student onboarding, docs, bookings, leases, admin operations).
   - `temp/TODOS1.md`: scratch TODO list (may overlap with root `TODOS.md` / `TODOS1.md`).
   - `temp/UPGRADE.md`: Laravel upgrade research notes (dependency blockers, risks, staged upgrade plan).
 ## Project TODOs
 - See `TODOS.md`
+
 - Admin "Add Document" (app profile) is gated by: allowed residence, `role_upload_docs == 1`, `rob_60_cancelled == 0`, and either `rob_50_approve == 0` or (`role_modify_approved == 1` and `rob_50_approve == 2`). See `resources/views/admin/app_profile.blade.php`.
 - Lease templates show admin fee/deposit as 0 unless `studentType` is `Cash / Direct` or `Bursary` with `nsfas_bursar != 1` (or waived flags). This means `NRF` currently falls into the "0" path.
 - Staging uses new funding-type fee/deposit logic (via lookup `deposit_applies` + lease fee config) in the application/admin flows, but lease PDFs still use the older studentType branching. Live fix should be the temporary studentType adjustment; full alignment with funding rules to follow when staging changes are approved for live.
 
-
+## Recent change notes (April 2026)
+- Merge conflict cleanup: kept "Updated upstream" and dropped all "Stashed changes" for a conflict set affecting
+  `HomeController`, `AppServiceProvider`, `ReportRobAnomalies`, `app_profile` docs UI, and stylesheets.
+- Session-expired hardening: added an auth/session guard in `LookupsController::__construct()` so unauthenticated access
+  (expired session) logs out + `Session::flush()` and redirects to login with an error message, instead of crashing on
+  `Auth::user()->...`.
+- Bug fix: `HomeController::update_booking_fees()` referenced `$booking` before the `foreach ($bookingList as $booking)`
+  loop (undefined variable). Normalization of `property`/`roomType` and `roomTypeId` now runs inside the loop with null
+  guards. The pre-loop `$booking` bug dates back to 2022 (introduced around 2022-05-18 / 2022-07-25).
