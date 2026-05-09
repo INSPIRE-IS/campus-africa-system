@@ -13,6 +13,7 @@
 2) Open the latest `temp/session-YYYY-MM-DD.md` for recent context.
 3) If today's session file does not exist yet, create it from `temp/session-template.md`.
 4) Check `temp/todos.md` for the current action plan and priority items.
+5) Open `temp/session-contents.md` (session index) to quickly jump between days, and update it when you create a new session file.
 
 ## No-Surprises Rules
 - Do not auto-commit. Only commit when explicitly asked.
@@ -23,6 +24,8 @@
 - Always think like a senior developer when making technical decisions.
 - All BA/design choices should reflect senior‑level UI/UX and senior‑marketer thinking (clarity, conversion, and user trust).
 - Default to the best possible UI/UX unless there is a clear constraint.
+- Never guess.
+- Always ask for additional context if required.
 
 ## Purpose
 Document everything for this repo.
@@ -63,6 +66,18 @@ Document everything for this repo.
 - Follow Laravel conventions; prefer existing services/traits when extending behavior
 
 ## Notes
+- Year handling (important legacy behavior):
+  - `lookups.group_id = 4` functions like a "year config table" (one row per academic year with lease dates and year-based config in `lookups.data`).
+  - Many legacy code paths still use `Lookups::where('group_id', '4')->first()` (no ordering), so the "current year" effectively becomes **whatever row MySQL returns first**.
+  - Operational workaround currently used when rolling to a new year: **update/insert the lookup rows so the newest year is the first row returned** (e.g., rename/shift `2025->2026` and `2026->2027`, or recreate rows) to keep legacy `->first()` calls aligned.
+  - Newer pages (notably `HomeController::dashboard()` and `HomeController::documents()`) instead build a year list and use `orderByDesc('lookup_name')` + `Session::put('year')`, which is safer with multiple years.
+  - Student registration (public `/register` wizard):
+    - The Year dropdown is populated from **all** `lookups.group_id=4` rows (`resources/views/auth/register.blade.php`).
+    - `RegisterController::registration_step_one` persists the chosen year onto `students_info.year` and `bookings_data.year`.
+    - **Session year is not set** during registration today, and `RegisterController::fileUpload` still uses `Lookups::where('group_id','4')->first()` for `user_files.year`, which will mis-file uploads when multiple years exist. If we enable dual-year registration (e.g., 2026 + 2027), this must be corrected (set session year on step 1 and/or pass year through upload requests).
+  - Admin applications (`/applications`):
+    - `HomeController::applications` sets `Session::put('year', Lookups::where('group_id','4')->first()->lookup_name)` (legacy).
+    - The year dropdown in `resources/views/admin/applications.blade.php` lists all year rows (sorted desc), and `/applications/filter` persists the chosen year into session.
 - Do not commit secrets from `.env`
 - Use `artisan` generators for new models, controllers, and migrations
 - Application status logic: there is legacy logic tied to user files and flags (e.g., mapping `fileType` like `proof_of_payment`, `copyID`, `studentCard`, `proofRegistration`, `bursaryApproval`, `bankStatement`, `moveIn`, and `other*` to status fields such as `fee_approved`, `id_data_approved`, `student_card_approved`, `registration_approved`, `bursary_approved`, `bank_approved`, and `rob_*` steps). Be mindful of cancelled bookings and soft-deleted records when investigating inconsistencies.
@@ -137,12 +152,14 @@ Document everything for this repo.
     - This is a convenience preset only; the effective access control is determined by the per-permission columns (`role_*`).
   - Document approve/reject endpoint: `POST /action/file` (`HomeController::action_file`) currently gates only on `Auth::user()->userRole` being `1/2/3` (i.e., "not a student"), and does not enforce `role_approve_docs` server-side. UI gating may hide buttons, but the API will still accept requests from any staff account.
 - Property active/inactive: `property.status` remains legacy for application/control flow. New `property.active_date` / `property.inactive_date` are introduced for year‑based reporting filters (reports page only for now). Long term, the goal is to migrate more logic to date‑based activity and reduce reliance on `status`.
-- TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).
+- TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).- Lease PDFs now render admin fee/deposit directly from `BookingPayment` with waiver flags only (no studentType branching) to align with funding lookup logic.
 - `temp/` (gitignored) is a scratchpad folder for investigations and reference documents (not used by app code). Current contents:
   - `temp/CLIENT_SIGNOFF.md`: draft acceptance checklist for the assurity + related flow changes (compare/merge with root `CLIENT_SIGNOFF.md` as needed).
   - `temp/DEED OF SURETY.docx`: source legal wording used to build/update `resources/views/PDF/assurity.blade.php`.
   - `temp/laravel260319ca.log`: captured Laravel log snapshot used for debugging production/staging issues.
   - `temp/REVIEWED_VIEWS.md`: ad-hoc notes/review findings for specific Blade views (e.g., admin maintenance/update screens).
+  - `temp/wp-site.md`: public WordPress site inventory (page types, functionality, key URLs) used for product/research context.
+  - `temp/laravel-system.md`: Laravel portal scope/design inventory (student onboarding, docs, bookings, leases, admin operations).
   - `temp/TODOS1.md`: scratch TODO list (may overlap with root `TODOS.md` / `TODOS1.md`).
   - `temp/UPGRADE.md`: Laravel upgrade research notes (dependency blockers, risks, staged upgrade plan).
 ## Project TODOs

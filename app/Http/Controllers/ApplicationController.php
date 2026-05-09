@@ -1066,8 +1066,15 @@ class ApplicationController extends Controller
 
         // return view('application.password', ["lookups" => $lookups, "user" => $user]);
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            // Last-resort fallback to newest configured year (better than random MySQL row order).
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         // User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
         StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
@@ -1077,8 +1084,14 @@ class ApplicationController extends Controller
 
     public function confirm_password(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         User::where('id', Auth::user()->id)->update(['password' => Hash::make($request->confirm_password)]);
         StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
@@ -1221,8 +1234,14 @@ class ApplicationController extends Controller
     {
 
         // User::where('id', Auth::user()->id)->update(['onboard_complete' => 2, 'email_verified' => 1]);
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2, 'email_verified' => 1]);
 
@@ -1239,8 +1258,14 @@ class ApplicationController extends Controller
     {
         // User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
 

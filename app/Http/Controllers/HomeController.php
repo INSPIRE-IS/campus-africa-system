@@ -11265,6 +11265,8 @@ class HomeController extends Controller
             }
         }
 
+        Session::put('year', $request->year);
+
         return redirect('/application-profile/' . $genUser->id);
     }
 

@@ -32,6 +32,7 @@ use App\Models\StudentQuestionAnswer;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class RegisterController extends Controller
 {
@@ -147,6 +148,9 @@ class RegisterController extends Controller
                 $validated = $request->validate([
                     'email' => 'email|required|unique:users',
                 ]);
+
+                // Persist selected academic year early so subsequent steps (uploads, verification) use the right year.
+                Session::put('year', $request->year);
                 // 1. Create user
                 $user = User::create([
                     'name' => $request->firstName,
@@ -239,9 +243,9 @@ class RegisterController extends Controller
                     if (!empty($nsfasStudentsApproval)) {
 
                         $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
-                        $this_year = Lookups::where('group_id', '4')->first();
+                        $selectedYear = $request->year;
 
-                        if (!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name) {
+                        if (!empty($nsfasStudentsApproval) && !empty($yearOfImport) && $yearOfImport->year == $selectedYear) {
 
                             // User::where('id', $user->id)->update(["rob_30_funds" => 2]);
                             StudentsInfo::where('id', $userInfo->id)->update(["rob_30_funds" => 2]);
@@ -250,7 +254,7 @@ class RegisterController extends Controller
                                 'userUid' => $user->id,
                                 'fileId' => 'bursaryApproval',
                                 'status' => 'Approved',
-                                'year' => $this_year->lookup_name,
+                                'year' => $selectedYear,
                             ]);
 
                             ActionList::create([
@@ -259,7 +263,7 @@ class RegisterController extends Controller
                                 "actionUserUid" => $user->id,
                                 "actionUserDisplayName" => $userInfo->userFirstName,
                                 "actionUserRole" => $userInfo->userRole,
-                                "year" => $this_year->lookup_name,
+                                "year" => $selectedYear,
                             ]);
                         }
                     }
@@ -363,8 +367,7 @@ class RegisterController extends Controller
                     //TODO:: TEMP Add pricing logic
                     if ($bookingPrice == "0") {
 
-                        $this_year = Lookups::where('group_id', '4')->first();
-                        $this_year = $this_year->lookup_name;
+                        $this_year = $request->year;
 
                         StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update(["rob_10_fee" => 2]);
 
@@ -533,6 +536,8 @@ class RegisterController extends Controller
 
     protected function registration_step_one_update(Request $request)
     {
+        Session::put('year', $request->year);
+
         return User::where('id', $request->userUid)->update([
             'name' => $request->firstName,
             'userFirstName' => ucwords(strtolower($request->firstName)),
@@ -608,8 +613,15 @@ class RegisterController extends Controller
 
                 $fileUrl = 'files/' . $userUid . '/' . $fileNameToStore;
 
-                $this_year = Lookups::where('group_id', '4')->first();
-                $this_year = $this_year->lookup_name;
+                $this_year = Session::get('year');
+                if (empty($this_year)) {
+                    $this_year = Booking::where('userId', $userUid)->orderBy('year', 'desc')->value('year');
+                }
+                if (empty($this_year)) {
+                    // Last-resort fallback to newest configured year (better than random MySQL row order).
+                    $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+                }
+                Session::put('year', $this_year);
 
                 UserFiles::create([
                     'fileId' => $fileType,

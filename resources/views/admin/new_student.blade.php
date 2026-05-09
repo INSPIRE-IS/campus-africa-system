@@ -154,9 +154,18 @@
                 <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
                 <select name="year" id="year" class="required">
+                    @php
+                        $minYear = now()->year;
+                        $defaultYear = old('year', session('year', $minYear));
+                        if ((int) $defaultYear < $minYear) {
+                            $defaultYear = $minYear;
+                        }
+                    @endphp
                     @foreach ($lookups as $lookup)
-                        @if ($lookup->group_id == '4')
-                            <option value="{{ $lookup->lookup_name }}" selected>{{ $lookup->lookup_name }}</option>
+                        @if ($lookup->group_id == '4' && (int) $lookup->lookup_name >= $minYear)
+                            <option value="{{ $lookup->lookup_name }}" {{ (string) $lookup->lookup_name === (string) $defaultYear ? 'selected' : '' }}>
+                                {{ $lookup->lookup_name }}
+                            </option>
                         @endif
                     @endforeach
                 </select>
