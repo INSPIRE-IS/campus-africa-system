@@ -101,10 +101,12 @@ Document everything for this repo.
   - Student registration (public `/register` wizard):
     - The Year dropdown is populated from **all** `lookups.group_id=4` rows (`resources/views/auth/register.blade.php`).
     - `RegisterController::registration_step_one` persists the chosen year onto `students_info.year` and `bookings_data.year`.
-    - **Session year is not set** during registration today, and `RegisterController::fileUpload` still uses `Lookups::where('group_id','4')->first()` for `user_files.year`, which will mis-file uploads when multiple years exist. If we enable dual-year registration (e.g., 2026 + 2027), this must be corrected (set session year on step 1 and/or pass year through upload requests).
+    - Registration now sets `Session::put('year', $request->year)` on Step 1, and file uploads use `Session::get('year')` (fallback to latest booking year). This is required for safe dual-year registration (e.g., 2026 + 2027), but should be tested end-to-end before deploying.
   - Admin applications (`/applications`):
     - `HomeController::applications` sets `Session::put('year', Lookups::where('group_id','4')->first()->lookup_name)` (legacy).
     - The year dropdown in `resources/views/admin/applications.blade.php` lists all year rows (sorted desc), and `/applications/filter` persists the chosen year into session.
+  - Future improvement (recommended):
+    - Add an explicit "Active Application Year" config (single source of truth) so we can open future-year registrations without accidentally switching legacy "current year" behavior too early, and support overlapping years (e.g., 2026 second-semester registrations in July while opening 2027 applications on June 1).
 - Do not commit secrets from `.env`
 - Use `artisan` generators for new models, controllers, and migrations
 - Application status logic: there is legacy logic tied to user files and flags (e.g., mapping `fileType` like `proof_of_payment`, `copyID`, `studentCard`, `proofRegistration`, `bursaryApproval`, `bankStatement`, `moveIn`, and `other*` to status fields such as `fee_approved`, `id_data_approved`, `student_card_approved`, `registration_approved`, `bursary_approved`, `bank_approved`, and `rob_*` steps). Be mindful of cancelled bookings and soft-deleted records when investigating inconsistencies.

@@ -62,11 +62,11 @@ class LookupsController extends Controller
         if (Auth::user()->role_lookup == 1) {
 
             $allProperties = Residence::whereNull('status')->get();
-            $currentYearLookup = Lookups::where('group_id', '4')->first();
-            $currentYear = $currentYearLookup ? $currentYearLookup->lookup_name : null;
+            $year_lookup = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->first();
+            $currentYear = $year_lookup ? $year_lookup->lookup_name : null;
             $fundingTypes = Lookups::FUNDING_TYPES;
 
-            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup", "allProperties" => $allProperties, "currentYear" => $currentYear, "fundingTypes" => $fundingTypes]);
+            return view('admin.lookups_new', ["headerTitle" => "Add Lookup", "title" => "Add Lookup", "allProperties" => $allProperties, "currentYear" => $currentYear, "fundingTypes" => $fundingTypes, "year_lookup" => $year_lookup]);
         } else {
             return "404 Error";
         }
@@ -95,23 +95,30 @@ class LookupsController extends Controller
                 "actionUserUid" => Auth::user()->id,
             ];
         } else if ($request->group_id == "4") {
+            $dateFrom = $request->value . "-" . $request->month_from . "-" . $request->day_from;
+            $dateTo = $request->value . "-" . $request->month_to . "-" . $request->day_to;
+
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->value,
+                "lease_from_date" => date("Y-m-d", strtotime($dateFrom)),
+                "day_from" => $request->day_from,
+                "month_from" => $request->month_from,
+                "lease_from_time" => $request->lease_from_time,
+                "lease_to_date" => date("Y-m-d", strtotime($dateTo)),
+                "day_to" => $request->day_to,
+                "month_to" => $request->month_to,
+                "lease_to_time" => $request->lease_to_time,
                 "actionUserUid" => Auth::user()->id,
             ];
 
-            $currentYearLookup = Lookups::where('group_id', '4')->first();
-            $currentYear = $currentYearLookup ? $currentYearLookup->lookup_name : null;
-
-            if ($currentYear !== null && $currentYear == $request->value) {
-                $leaseFees = $this->normalizeLeaseFees($request);
-                $depositApplies = $this->normalizeDepositApplies($request);
-                $data['data'] = [
-                    'lease_fees' => $leaseFees,
-                    'deposit_applies' => $depositApplies,
-                ];
-            }
+            // Funding config is stored per year in `lookups.data`.
+            $leaseFees = $this->normalizeLeaseFees($request);
+            $depositApplies = $this->normalizeDepositApplies($request);
+            $data['data'] = [
+                'lease_fees' => $leaseFees,
+                'deposit_applies' => $depositApplies,
+            ];
         } else {
             $data['group_id'] = $request->group_id;
             $data['lookup_name'] = $request->value;
@@ -204,17 +211,13 @@ class LookupsController extends Controller
                 "actionUserUid" => Auth::user()->id,
             ];
 
-            $currentYearLookup = Lookups::where('group_id', '4')->first();
-            $currentYear = $currentYearLookup ? $currentYearLookup->lookup_name : null;
-
-            if ($currentYear !== null && $currentYear == $request->value) {
-                $leaseFees = $this->normalizeLeaseFees($request);
-                $depositApplies = $this->normalizeDepositApplies($request);
-                $data['data'] = [
-                    'lease_fees' => $leaseFees,
-                    'deposit_applies' => $depositApplies,
-                ];
-            }
+            // Funding config is stored per year in `lookups.data`.
+            $leaseFees = $this->normalizeLeaseFees($request);
+            $depositApplies = $this->normalizeDepositApplies($request);
+            $data['data'] = [
+                'lease_fees' => $leaseFees,
+                'deposit_applies' => $depositApplies,
+            ];
         } else if ($request->group_id == "7") {
             $data = [
                 "group_id" => $request->group_id,
