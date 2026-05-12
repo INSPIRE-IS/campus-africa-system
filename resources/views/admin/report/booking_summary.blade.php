@@ -37,7 +37,7 @@
                 @csrf
                 <select name="year" id="year" class="required" onchange="showLoadingAndSubmit()"
                     style="border-radius: 7px;background-color: #f0f0f0;border: none;width: 90%;padding: 10px;font-size: 16px;color: #000;width: 300px;">
-                    @foreach ($lookups->where('group_id', 4)->sortByDesc('lookup_name') as $lookup)
+                    @foreach (($yearLookups ?? $lookups->where('group_id', 4)->sortByDesc('lookup_name')) as $lookup)
                         <option value="{{ $lookup->lookup_name }}" {{ $year == $lookup->lookup_name ? 'selected' : '' }}
                             style="font-size: 16px;font-weight: 400;line-height: 1.5;color: #000;">
                             {{ $lookup->lookup_name }}

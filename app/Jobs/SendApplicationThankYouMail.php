@@ -26,17 +26,19 @@ class SendApplicationThankYouMail implements ShouldQueue
     public $userUid;
     public $securityToken;
     public $returnUrl;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $securityToken, $returnUrl)
+    public function __construct(User $userUid, $securityToken, $returnUrl, $year = null)
     {
         $this->userUid = $userUid;
         $this->securityToken = $securityToken;
         $this->returnUrl = $returnUrl;
+        $this->year = $year;
     }
 
     /**
@@ -49,13 +51,27 @@ class SendApplicationThankYouMail implements ShouldQueue
 
         $userMain = $this->userUid;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        // Don't rely on "current year" lookup ordering here; use the year the user registered for.
+        $this_year = $this->year;
+        if (empty($this_year)) {
+            $this_year = StudentsInfo::where('userUid', $userMain->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
 
         $user = User::where('id', $userMain->id)->first();
         $userForBooking = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
 
+        if (!$userForBooking) {
+            // Can't send a reliable thank-you email without booking context; bail out quietly.
+            return;
+        }
+
         $bookinfRefNo = Booking::where('id', $userForBooking->bookingId)->first();
+        if (!$bookinfRefNo) {
+            return;
+        }
 
         $message_replace['bookingRef'] = $bookinfRefNo->booking_code;
         $message_replace['name'] = $userForBooking->userFirstName;

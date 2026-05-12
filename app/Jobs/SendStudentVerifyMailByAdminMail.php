@@ -49,7 +49,7 @@ class SendStudentVerifyMailByAdminMail implements ShouldQueue
 
         $userMain = $this->userUid;
 
-        // $this_year = Lookups::where('group_id', '4')->first();
+        // $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         // $this_year = $this_year->lookup_name;
 
         $user = User::where('id', $userMain->id)->first();

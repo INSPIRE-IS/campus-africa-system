@@ -35,12 +35,8 @@ class PDFController extends Controller
     $property = $request->property;
     $roomType = $request->roomType;
 
-    $this_year = Lookups::where('group_id', '4')->first();
-    if (Session::has('year')) {
-      $year = Session::get('year');
-      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-    }
-    $this_year = $this_year->lookup_name;
+    $yearUserId = (int) ($bookingId ?: $studentId);
+    $this_year = Lookups::resolveYearForUser($yearUserId, Session::get('year'));
 
     if (!$request->type) {
 
@@ -254,7 +250,7 @@ class PDFController extends Controller
 
       $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
       $userUidData = User::where('id', $studentId)->first();
-      $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag));
+      $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year));
 
       // $message_replace['booking_application'] = "#".$booking->booking_code;
       // $message_replace['name'] = $userForLease->userFirstName;
@@ -322,12 +318,7 @@ class PDFController extends Controller
     $property = $request->property;
     $roomType = $request->roomType;
 
-    $this_year = Lookups::where('group_id', '4')->first();
-    if (Session::has('year')) {
-      $year = Session::get('year');
-      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-    }
-    $this_year = $this_year->lookup_name;
+    $this_year = Lookups::resolveYearForUser((int) $studentId, Session::get('year'));
 
 
     $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
@@ -422,7 +413,7 @@ class PDFController extends Controller
     $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-temp-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
     $userUidData = User::where('id', $studentId)->first();
     Log::info('send temp lease url : ' . $leaseOpenTag);
-    SendResendTempLeaseMail::dispatch($userUidData, $leaseToken->leaseToken, $leaseOpenTag);
+    SendResendTempLeaseMail::dispatch($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year);
 
     return [UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
   }

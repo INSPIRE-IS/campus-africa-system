@@ -24,18 +24,23 @@ class DocumentsController extends Controller
 
     public function view_document($id)
     {
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        if (Session::has('year')) {
-            $year = Session::get('year');
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-        }
-        $this_year = $this_year->lookup_name;
-
         $file = UserFiles::find($id);
+        if (!$file) {
+            abort(404, 'Document not found.');
+        }
+
+        // Resolve year deterministically (prefer the file year, then session year, then booking year, then active year).
+        $this_year = Lookups::resolveYearForUser((int) $file->userUid, $file->year ?: Session::get('year'));
+
         // $user = User::where('id', $file->userUid)->first();
         $user = StudentsInfo::where('userUid', $file->userUid)->where('year', $this_year)->first();
+        if (!$user) {
+            abort(404, 'Student info not found for the selected year.');
+        }
         $booking = Booking::where('userId', $file->userUid)->where('year', $this_year)->first();
+        if (!$booking) {
+            abort(404, 'Booking not found for the selected year.');
+        }
         $onlinePayment = OnlinePayments::where('userUid', $file->userUid)->orderBy('created_at', 'desc')->first();
         // $mda_info = MDAInfo::where('userUid', $file->userUid)->where('call_type', '2')->orderBy('created_at', 'desc')->first();
         // if(!empty($mda_info)){
@@ -46,6 +51,9 @@ class DocumentsController extends Controller
         // }
 
         $property = Residence::where('id', $booking->property)->first();
+        if (!$property) {
+            abort(404, 'Residence not found for this booking.');
+        }
 
         $field = "None";
         $popupTitle = "";
@@ -156,16 +164,11 @@ class DocumentsController extends Controller
 
     public function edit_data_save(Request $request)
     {
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $request->userUid, Session::get('year'));
 
         // $oldData = User::where("id", $request->userUid)->first();
         $oldStudentData = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
         $studentTypeChanged = 0;
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
 
         if ($request->type == "copyID") {
             $newData = [
@@ -553,14 +556,7 @@ class DocumentsController extends Controller
         $userUid = $request->userUid;
         $fileType = $request->fileType;
 
-        $year = Session::get('year');
-        if (empty($year)) {
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-        } else {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-            $this_year = $this_year->lookup_name;
-        }
+        $this_year = Lookups::resolveYearForUser((int) $userUid, Session::get('year'));
 
         $fileUrlBack = "";
 
@@ -664,19 +660,14 @@ class DocumentsController extends Controller
 
     public function update_user_status($user_id)
     {
-
-        $year = Session::get('year');
-        if (empty($year)) {
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-        } else {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-            $this_year = $this_year->lookup_name;
-        }
+        $this_year = Lookups::resolveYearForUser((int) $user_id, Session::get('year'));
 
         $user = User::with('files')->where('id', $user_id)->first();
         $userInfo = StudentsInfo::where('userUid', $user_id)->where('year', $this_year)->first();
         $userFiles = UserFiles::where('userUid',  $user_id)->where('year', $this_year)->get();
+        if (!$userInfo) {
+            return;
+        }
 
         if ($userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed") {
 
@@ -810,16 +801,7 @@ class DocumentsController extends Controller
         $userUid = $request->userId;
         $documentNewName = $request->docName;
 
-
-        //get current year
-        $session_year = Session::get('year');
-        if (!empty($session_year)) {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-            $this_year = $this_year->lookup_name;
-        } else {
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-        }
+        $this_year = Lookups::resolveYearForUser((int) $userUid, Session::get('year'));
 
         UserFiles::create([
             'fileId' => 'other_' . str_replace(" ", "_", $documentNewName),
@@ -847,15 +829,7 @@ class DocumentsController extends Controller
         $userUid = $request->userId;
         $fileName = $request->fileName;
 
-        // Use session year when viewing past/future application years
-        $session_year = Session::get('year');
-        if (!empty($session_year)) {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-            $this_year = $this_year->lookup_name;
-        } else {
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-        }
+        $this_year = Lookups::resolveYearForUser((int) $userUid, Session::get('year'));
 
         UserFiles::where('fileId', $fileName)->where('userUid', $userUid)->where('year', $this_year)->delete();
 

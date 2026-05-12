@@ -62,7 +62,8 @@ class LookupsController extends Controller
         if (Auth::user()->role_lookup == 1) {
 
             $allProperties = Residence::whereNull('status')->get();
-            $year_lookup = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->first();
+            $year_lookup = Lookups::where('group_id', '4')->where('is_active_year', 1)->first()
+                ?? Lookups::where('group_id', '4')->orderByDesc('lookup_name')->first();
             $currentYear = $year_lookup ? $year_lookup->lookup_name : null;
             $fundingTypes = Lookups::FUNDING_TYPES;
 
@@ -101,6 +102,7 @@ class LookupsController extends Controller
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->value,
+                "is_active_year" => $request->has('is_active_year') ? 1 : 0,
                 "lease_from_date" => date("Y-m-d", strtotime($dateFrom)),
                 "day_from" => $request->day_from,
                 "month_from" => $request->month_from,
@@ -130,6 +132,19 @@ class LookupsController extends Controller
         }
 
         $lookup = Lookups::create($data);
+
+        if ($request->group_id == "4") {
+            if ($lookup->is_active_year) {
+                // Enforce exactly one active year.
+                Lookups::where('group_id', 4)->where('id', '!=', $lookup->id)->update(['is_active_year' => 0]);
+            } else {
+                // Ensure at least one active year exists.
+                $activeExists = Lookups::where('group_id', 4)->where('is_active_year', 1)->exists();
+                if (!$activeExists) {
+                    Lookups::where('id', $lookup->id)->update(['is_active_year' => 1]);
+                }
+            }
+        }
 
         if ($request->group_id == "1") {
             InstitutionProperties::where('institution_id', $lookup->id)->delete();
@@ -172,7 +187,8 @@ class LookupsController extends Controller
 
             $lookup = Lookups::where('id', $lookupId)->first();
 
-            $year_lookup = Lookups::where('group_id', '4')->first();
+            $year_lookup = Lookups::where('group_id', '4')->where('is_active_year', 1)->first()
+                ?? Lookups::where('group_id', '4')->orderByDesc('lookup_name')->first();
             $currentYear = $year_lookup ? $year_lookup->lookup_name : null;
             $fundingTypes = Lookups::FUNDING_TYPES;
 
@@ -196,10 +212,12 @@ class LookupsController extends Controller
 
             $dateFrom = $request->value . "-" . $request->month_from . "-" . $request->day_from;
             $dateTo = $request->value . "-" . $request->month_to . "-" . $request->day_to;
+            $isActiveYear = $request->has('is_active_year') ? 1 : 0;
 
             $data = [
                 "group_id" => $request->group_id,
                 "lookup_name" => $request->value,
+                "is_active_year" => $isActiveYear,
                 "lease_from_date" => date("Y-m-d", strtotime($dateFrom)),
                 "day_from" => $request->day_from,
                 "month_from" => $request->month_from,
@@ -218,6 +236,27 @@ class LookupsController extends Controller
                 'lease_fees' => $leaseFees,
                 'deposit_applies' => $depositApplies,
             ];
+
+            $currentlyActive = (int) Lookups::where('id', $request->lookupId)->value('is_active_year');
+
+            // Block turning off the last active year row.
+            if ($currentlyActive === 1 && $isActiveYear === 0) {
+                $otherActiveExists = Lookups::where('group_id', 4)
+                    ->where('id', '!=', $request->lookupId)
+                    ->where('is_active_year', 1)
+                    ->exists();
+
+                if (!$otherActiveExists) {
+                    return redirect()->back()->withErrors([
+                        'message' => 'At least one Year lookup must be marked as Active.',
+                    ])->withInput();
+                }
+            }
+
+            // If we're setting this year active, deactivate all other years.
+            if ($isActiveYear === 1) {
+                Lookups::where('group_id', 4)->where('id', '!=', $request->lookupId)->update(['is_active_year' => 0]);
+            }
         } else if ($request->group_id == "7") {
             $data = [
                 "group_id" => $request->group_id,
@@ -507,7 +546,7 @@ class LookupsController extends Controller
     public function admin_updates_update_properties()
     {
         //Get current booking year
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
 
         //First make all rooms available
         Property::where('room_available', '0')->update(['room_available' => null]);
@@ -605,7 +644,7 @@ class LookupsController extends Controller
     {
         $property = $request->property;
         $year = $request->year;
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         $institutions = Lookups::where('group_id', '1')->first();
         $faculties = Lookups::where('group_id', '3')->first();
 
@@ -765,7 +804,7 @@ class LookupsController extends Controller
 
         $property = $request->property;
         $year = $request->year;
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
 
         $query = "where pd.deleted_at is null ";
 
@@ -966,7 +1005,7 @@ class LookupsController extends Controller
     public function admin_updates_payments_update(Request $request)
     {
         $allBookings = Booking::get();
-        $lookup_lease_dates = Lookups::where('group_id', '4')->first();
+        $lookup_lease_dates = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         $yearLookupCache = [];
         $yearFundingCache = [];
 
@@ -1147,7 +1186,7 @@ class LookupsController extends Controller
 
     public function update_nsfas_amount(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         $this_year = $this_year->lookup_name;
 
         $allStudentInfo = StudentsInfo::where('year', $this_year)->where('institutionStudy', $request->lookup_id)->get();
@@ -1387,7 +1426,7 @@ class LookupsController extends Controller
         $missingStudent = 0;
         $missingPayment = 0;
 
-        $lookupLeaseDates = Lookups::where('group_id', '4')->first();
+        $lookupLeaseDates = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         $waiveBookingFee = Lookups::where('group_id', '7')->first();
         [$wpResidences, $wpRooms] = BookingPricingCalculator::fetchWpData();
 
@@ -1437,7 +1476,7 @@ class LookupsController extends Controller
 
     private function getCurrentYearLookupName()
     {
-        $lookup = Lookups::where('group_id', '4')->first();
+        $lookup = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         return $lookup ? $lookup->lookup_name : null;
     }
 

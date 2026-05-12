@@ -56,6 +56,14 @@
 
         <div class="form-field hidden" id="yearLeaseFields" style="width:stretch">
             <div class="form-field">
+                <label>Active Year</label>
+                <div style="display:inline-flex; align-items:center;">
+                    <input type="checkbox" id="is_active_year" name="is_active_year" style="width:27px !important" value="1">
+                    <label for="is_active_year" style="width:auto;">&nbsp;&nbsp;Mark this year as the active application year</label>
+                </div>
+                <small>Only one Year lookup can be active. Leave unchecked when creating next-year configs early.</small>
+            </div>
+            <div class="form-field">
                 <label>Lease From Date (Month)</label>
                 <select name="month_from" id='month_from'>
                     <option value="0" disabled selected>Select one</option>

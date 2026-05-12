@@ -37,7 +37,7 @@ class RestoreBookingAssignBed extends Command
         $reason = $this->option('reason') ?: 'Restored booking + assigned bed via artisan command';
         $dryRun = (bool) $this->option('dry-run');
 
-        $lookup = Lookups::where('group_id', '4')->first();
+        $lookup = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         $defaultYear = $lookup ? $lookup->lookup_name : null;
         $thisYear = $yearOption ?: $defaultYear;
 

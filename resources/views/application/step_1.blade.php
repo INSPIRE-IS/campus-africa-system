@@ -254,23 +254,7 @@
                             field is
                             required </small></span></label>
                 <select name="year" id="year" class="required">
-                    @php
-                        // Registration supports a rolling 2-year window:
-                        // - allow current calendar year and next year (when configured in lookups)
-                        // - never allow past years
-                        $currentYear = now()->year;
-                        $allowedYears = [$currentYear, $currentYear + 1];
-                        $yearLookups = $lookups
-                            ->where('group_id', 4)
-                            ->filter(function ($l) use ($allowedYears) {
-                                return in_array((int) $l->lookup_name, $allowedYears, true);
-                            })
-                            ->sortByDesc(function ($l) {
-                                return (int) $l->lookup_name;
-                            });
-                    @endphp
-
-                    @foreach ($yearLookups as $lookup)
+                    @foreach (($yearLookups ?? collect()) as $lookup)
                         <option value="{{ $lookup->lookup_name }}" {{ (int) $application_year === (int) $lookup->lookup_name ? 'selected' : '' }}>
                             {{ $lookup->lookup_name }}
                         </option>

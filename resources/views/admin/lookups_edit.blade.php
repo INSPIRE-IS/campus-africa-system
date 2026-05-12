@@ -117,6 +117,14 @@
 
         @if($lookup->group_id == "4")
             <div class="form-field">
+                <label>Active Year</label>
+                <div style="display:inline-flex; align-items:center;">
+                    <input type="checkbox" id="is_active_year" name="is_active_year" style="width:27px !important" value="1" {{ $lookup->is_active_year ? 'checked' : '' }}>
+                    <label for="is_active_year" style="width:auto;">&nbsp;&nbsp;Mark this year as the active application year</label>
+                </div>
+                <small>Only one Year lookup can be active. Changing this affects defaults across the system.</small>
+            </div>
+            <div class="form-field">
                 <div class="form-field">
                     <label>Lease From Date (Month)</label>
                     <select name="month_from" id='month_from'>

@@ -277,7 +277,7 @@ class RegisterController extends Controller
                 $url = $generator->generate();
 
                 $userUidData = User::where('id', $user->id)->first();
-                $this->dispatch(new SendApplicationThankYouMail($userUidData, $userToken->security_token, $url));
+                $this->dispatch(new SendApplicationThankYouMail($userUidData, $userToken->security_token, $url, $request->year));
 
                 $bookinfRefNo = Booking::where('id', $booking->id)->first();
 

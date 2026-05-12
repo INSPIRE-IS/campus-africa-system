@@ -155,18 +155,15 @@
                             required</small></span></label>
                 <select name="year" id="year" class="required">
                     @php
-                        $minYear = now()->year;
-                        $defaultYear = old('year', session('year', $minYear));
-                        if ((int) $defaultYear < $minYear) {
-                            $defaultYear = $minYear;
+                        $defaultYear = old('year', session('year'));
+                        if (empty($defaultYear) && isset($yearLookups) && $yearLookups->count() > 0) {
+                            $defaultYear = $yearLookups->first()->lookup_name; // newest first
                         }
                     @endphp
-                    @foreach ($lookups as $lookup)
-                        @if ($lookup->group_id == '4' && (int) $lookup->lookup_name >= $minYear)
-                            <option value="{{ $lookup->lookup_name }}" {{ (string) $lookup->lookup_name === (string) $defaultYear ? 'selected' : '' }}>
-                                {{ $lookup->lookup_name }}
-                            </option>
-                        @endif
+                    @foreach (($yearLookups ?? collect()) as $lookup)
+                        <option value="{{ $lookup->lookup_name }}" {{ (string) $lookup->lookup_name === (string) $defaultYear ? 'selected' : '' }}>
+                            {{ $lookup->lookup_name }}
+                        </option>
                     @endforeach
                 </select>
             </div>

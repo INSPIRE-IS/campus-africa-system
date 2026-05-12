@@ -11,6 +11,7 @@ use App\Models\Booking;
 use App\Models\Lookups;
 use DateTime;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Auth;
 use App\Models\StudentsInfo;
 
@@ -81,8 +82,7 @@ class OnlinePaymentController extends Controller
             "status" => "Initiated",
         ]);
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $request->id, Session::get('year'));
 
         if ($request->payment_type !== '') {
             Booking::where('userId', $request->id)->where('year', $this_year)->update(['payment_type' => $request->payment_type, 'booking_payment_ref' => $request->reference]);
@@ -90,11 +90,12 @@ class OnlinePaymentController extends Controller
 
         // $currUser = User::where('id', $request->id)->first();
         $currUser = StudentsInfo::where('userUid', $request->id)->where('year', $this_year)->first();
+        $displayName = $currUser ? $currUser->userFirstName : (User::where('id', $request->id)->value('userFirstName') ?? '');
         ActionList::create([
             "userUid" => $request->id,
             "action" => "Online Payment Initiated",
             "actionUserUid" => $request->id,
-            "actionUserDisplayName" => $currUser->userFirstName,
+            "actionUserDisplayName" => $displayName,
             "actionUserRole" => 0,
             "year" => $this_year,
         ]);
@@ -110,10 +111,11 @@ class OnlinePaymentController extends Controller
 
         $transaction = OnlinePayments::where("requestID", $request->PAY_REQUEST_ID)->where("reference", $request->REFERENCE)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         if (!empty($transaction)) {
+            // Derive the booking/year from the payment reference first (no Session context on notify callbacks).
+            $bookingForPayment = Booking::where('booking_payment_ref', $transaction->reference)->orderByDesc('year')->first();
+            $this_year = $bookingForPayment ? (string) $bookingForPayment->year : Lookups::resolveYearForUser((int) $transaction->userUid, null);
+
             if ($request->TRANSACTION_STATUS == '0') {
                 $status = "Not Done";
             } else if ($request->TRANSACTION_STATUS == '1') {
@@ -145,22 +147,18 @@ class OnlinePaymentController extends Controller
                 $paymentMethod = "Online EFT";
             }
 
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-
-            $userBooking = Booking::where('userId', $transaction->userUid)->where('year', $this_year)->first();
-
-            if ($paymentMethod !== null && $paymentMethod !== $userBooking->payment_type) {
-                Booking::where('id', $userBooking->id)->update(['payment_type' => $paymentMethod]);
+            if ($bookingForPayment && $paymentMethod !== null && $paymentMethod !== $bookingForPayment->payment_type) {
+                Booking::where('id', $bookingForPayment->id)->update(['payment_type' => $paymentMethod]);
             }
 
             // $currUser = User::where('id', $transaction->userUid)->first();
             $currUser = StudentsInfo::where('userUid', $transaction->userUid)->where('year', $this_year)->first();
+            $displayName = $currUser ? $currUser->userFirstName : (User::where('id', $transaction->userUid)->value('userFirstName') ?? '');
             ActionList::create([
                 "userUid" => $transaction->userUid,
                 "action" => "Online Payment Status: " . $status,
                 "actionUserUid" => $transaction->userUid,
-                "actionUserDisplayName" => $currUser->userFirstName,
+                "actionUserDisplayName" => $displayName,
                 "actionUserRole" => 0,
                 "year" => $this_year,
             ]);
@@ -174,16 +172,21 @@ class OnlinePaymentController extends Controller
 
         $fileType = "proof_of_payment";
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $paymentUpdate = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
+        $bookingForPayment = null;
+        if ($paymentUpdate && !empty($paymentUpdate->reference)) {
+            $bookingForPayment = Booking::where('booking_payment_ref', $paymentUpdate->reference)->orderByDesc('year')->first();
+        }
+        $this_year = $bookingForPayment ? (string) $bookingForPayment->year : Lookups::resolveYearForUser((int) $id, Session::get('year'));
 
         $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
 
         $user_status = $this->get_user_status($fileType, "",  StudentsInfo::where('userUid', $id)->where('year', $this_year)->first());
         $field_data = $user_status['field_data'];
         $field_doc = $user_status['field_doc'];
-
-        $paymentUpdate = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
+        if (!$paymentUpdate) {
+            return redirect('/retry/online-application');
+        }
 
         if (empty($hasFile)) {
 
@@ -285,8 +288,12 @@ class OnlinePaymentController extends Controller
 
         sleep(5);
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $paymentUpdate = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
+        $bookingForPayment = null;
+        if ($paymentUpdate && !empty($paymentUpdate->reference)) {
+            $bookingForPayment = Booking::where('booking_payment_ref', $paymentUpdate->reference)->orderByDesc('year')->first();
+        }
+        $this_year = $bookingForPayment ? (string) $bookingForPayment->year : Lookups::resolveYearForUser((int) $id, Session::get('year'));
 
         $fileType = "proof_of_payment";
         $hasFile = UserFiles::where('userUid', $id)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
@@ -295,7 +302,9 @@ class OnlinePaymentController extends Controller
         $field_data = $user_status['field_data'];
         $field_doc = $user_status['field_doc'];
 
-        $paymentUpdate = OnlinePayments::where('userUid', $id)->orderBy('created_at', 'desc')->first();
+        if (!$paymentUpdate) {
+            return redirect('/retry/online-application');
+        }
 
         if (empty($hasFile)) {
 
@@ -457,13 +466,15 @@ class OnlinePaymentController extends Controller
     public function update_user_status($user_id)
     {
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $user_id, Session::get('year'));
 
         $userInfo = StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->first();
         $userFiles = UserFiles::where('userUid',  $user_id)->where('year', $this_year)->get();
 
         $user = User::with('files')->where('id', $user_id)->first();
+        if (!$userInfo) {
+            return;
+        }
 
         if ($userInfo->overall_status !== "Cancelled" && $userInfo->overall_status !== "Rejected" && $userInfo->applicationStatus !== "Approved Confirmed") {
 
