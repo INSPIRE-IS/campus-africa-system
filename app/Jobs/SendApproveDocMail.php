@@ -28,6 +28,7 @@ class SendApproveDocMail implements ShouldQueue
     public $typeName;
     public $returnUrl;
     public $year;
+    public $year;
 
     /**
      * Create a new job instance.
@@ -35,7 +36,7 @@ class SendApproveDocMail implements ShouldQueue
      * @param App\Models\User $userUid
      * @return void
      */
-    public function __construct(User $userUid, $typeName, $returnUrl, $year)
+    public function __construct(User $userUid, $typeName, $returnUrl, $year = null)
     {
         //
         $this->userUid = $userUid;
@@ -51,12 +52,35 @@ class SendApproveDocMail implements ShouldQueue
      */
     public function handle()
     {
-
         $userId = $this->userUid;
 
         $user = User::where('id', $userId->id)->first();
-        $studentInfoForMail = StudentsInfo::where('userUid',  $userId->id)->where('year', $this->year)->first();
+        if (!$user) {
+            return;
+        }
+
+        // Prefer an explicit year passed from the controller (doc approval happens in a year-specific context).
+        $this_year = (string) (int) $this->year;
+        if ($this_year === '0') {
+            $this_year = (string) (int) StudentsInfo::where('userUid', $userId->id)->orderByDesc('year')->value('year');
+        }
+        if ($this_year === '0' || $this_year === '') {
+            $this_year = (string) (int) Lookups::activeYearValue();
+        }
+
+        $studentInfoForMail = StudentsInfo::where('userUid', $userId->id)->where('year', $this_year)->first();
+        if (!$studentInfoForMail) {
+            // Fallback: use the latest StudentsInfo row if a year-specific row doesn't exist.
+            $studentInfoForMail = StudentsInfo::where('userUid', $userId->id)->orderByDesc('year')->first();
+        }
+        if (!$studentInfoForMail) {
+            return;
+        }
+
         $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
+        if (!$booking) {
+            return;
+        }
 
         $message_replace['bookingRef'] = $booking->booking_code;
         $message_replace['name'] = $studentInfoForMail->userFirstName;
@@ -65,6 +89,9 @@ class SendApproveDocMail implements ShouldQueue
         $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Document Approved")->first();
+        if (!$mailerForMessage) {
+            return;
+        }
 
         if ($mailerForMessage->status == '1') {
 

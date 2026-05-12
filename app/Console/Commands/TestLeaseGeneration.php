@@ -33,7 +33,7 @@ class TestLeaseGeneration extends Command
         // 2. Determine year
         // ==========================================================
         $this_year = $this->argument('year');
-        // $lookupYear = Lookups::where('group_id', '4')->first();
+        // $lookupYear = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         // $this_year = $lookupYear ? $lookupYear->lookup_name : date("Y");
 
         $this->info("Lease year: $this_year");

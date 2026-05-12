@@ -41,9 +41,9 @@
         @if ($bookingNext)
             <div style="width: 100%;padding: 0 15px;margin: 0 auto;">
                 <div style="display: flex;justify-content: flex-end;padding-top: 5px;">
-                    <a href="/create-new-booking/{{ $user[0]['userInfo']['userUid'] }}" class="btn btn-warning mt-4"
+                    <a href="/create-new-booking/{{ $user[0]['userInfo']['userUid'] }}?year={{ $bookingNextYear }}" class="btn btn-warning mt-4"
                         style="padding: 10px 20px;background-color: #e74f26;color: #fff;border: none;border-radius: 10px;text-decoration: none;font-weight: 500;transition: background-color 0.3s ease;">
-                        Create a new booking for {{ $this_year + 1 }}
+                        Create a new booking for {{ $bookingNextYear }}
                     </a>
                 </div>
             </div>

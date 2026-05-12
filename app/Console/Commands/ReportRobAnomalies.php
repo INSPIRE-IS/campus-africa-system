@@ -26,7 +26,7 @@ class ReportRobAnomalies extends Command
     {
         $year = $this->argument('year');
         if (!$year) {
-            $lookup = Lookups::where('group_id', '4')->first();
+            $lookup = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
             $year = $lookup ? $lookup->lookup_name : date('Y');
         }
 

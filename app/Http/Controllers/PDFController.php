@@ -35,12 +35,8 @@ class PDFController extends Controller
     $property = $request->property;
     $roomType = $request->roomType;
 
-    $this_year = Lookups::where('group_id', '4')->first();
-    if (Session::has('year')) {
-      $year = Session::get('year');
-      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-    }
-    $this_year = $this_year->lookup_name;
+    $yearUserId = (int) ($bookingId ?: $studentId);
+    $this_year = Lookups::resolveYearForUser($yearUserId, Session::get('year'));
 
     if (!$request->type) {
 
@@ -298,6 +294,60 @@ class PDFController extends Controller
       Log::info('Sending email to ' . $leaseOpenTag);
       $userUidData = User::where('id', $studentId)->first();
       $this->dispatch(new SendResendLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year));
+
+      // $message_replace['booking_application'] = "#".$booking->booking_code;
+      // $message_replace['name'] = $userForLease->userFirstName;
+      // $message_replace['lease_link'] = "<a href='https://".$_SERVER['HTTP_HOST']."/sign-lease/".$leaseToken->leaseToken."' target='_blank'>";
+      // $message_replace['close_lease_link']="</a>";
+
+      // $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
+
+      // if($mailerForMessage->status == '1'){
+
+      //   $mailerMessage = $mailerForMessage->message;
+
+      //   $newMessage = str_replace("[booking_application]", $message_replace['booking_application'], $mailerMessage);
+      //   $newMessage = str_replace("[name]", $message_replace['name'], $newMessage);
+      //   $newMessage = str_replace("[lease_link]", $message_replace['lease_link'], $newMessage);
+      //   $newMessage = str_replace("[close_lease_link]", $message_replace['close_lease_link'], $newMessage);
+
+      //   $data['messageForMail'] = $newMessage;
+      //   $data['email'] = $userForLease->userEmail;
+      //   $data['name'] = $userForLease->userFirstName;
+      //   $data['subject'] = str_replace("[application_number]", $booking->booking_code, $mailerForMessage->subject);
+
+
+
+      //   $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
+      //   $data['cc'] = explode(";", $allowedMailsCC);
+
+      //   $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
+
+      //   if(!empty($allowedMails)){
+
+      //     $mailArr = explode(";", $allowedMails);
+
+      //     if(in_array(explode("@", $data['email'])[1], $mailArr)){
+      //         $data['email'] = $userForLease->userEmail;
+      //     }else{
+      //         $data['email'] = "studentsca00@gmail.com";
+      //     }
+      //   }else{
+      //     $data['email'] = $userForLease->userEmail;
+      //   }
+
+      //   Mail::send('email.green_back', $data, function($message) use ($data) {
+      //       // $message->to($data['email'], $data['name'])->subject('Application Approved');
+      //       // $message->to($data['email'])->subject($data['subject']);
+      //       // $message->cc(['studentsca00@gmail.com', 'roger@whitehart.co.za', 'mirichea@whitehart.co.za']);
+      //       $message->to($data['email'])->subject($data['subject']);
+      //         $message->bcc($data['cc']);
+      //         $message->from('noreply@campusafrica.co.za','Campus Africa');
+      //       // $message->cc(['campusafricaforms@gmail.com', 'roger@whitehart.co.za']);
+      //   });
+      // }
+
+
     }
 
     return [UserFiles::where('fileId', 'moveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
@@ -311,12 +361,7 @@ class PDFController extends Controller
     $property = $request->property;
     $roomType = $request->roomType;
 
-    $this_year = Lookups::where('group_id', '4')->first();
-    if (Session::has('year')) {
-      $year = Session::get('year');
-      $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-    }
-    $this_year = $this_year->lookup_name;
+    $this_year = Lookups::resolveYearForUser((int) $studentId, Session::get('year'));
 
 
     $data = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
@@ -411,7 +456,7 @@ class PDFController extends Controller
     $leaseOpenTag = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/sign-temp-lease/" . $leaseToken->leaseToken . "' target='_blank'>";
     $userUidData = User::where('id', $studentId)->first();
     Log::info('send temp lease url : ' . $leaseOpenTag);
-    SendResendTempLeaseMail::dispatch($userUidData, $leaseToken->leaseToken, $leaseOpenTag);
+    SendResendTempLeaseMail::dispatch($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year);
 
     return [UserFiles::where('fileId', 'tempMoveIn')->where('userUid', $studentId)->where('year', $this_year)->first(), StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first()];
   }

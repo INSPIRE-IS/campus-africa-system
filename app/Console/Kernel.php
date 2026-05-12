@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         $this_year = $this_year->lookup_name; // date('Y')
 
         $schedule->command('calculate:compatibility --year=' . $this_year)

@@ -48,25 +48,16 @@ class ApplicationController extends Controller
             $lookups = Lookups::get();
             $agent = new Agent();
             $residences = Residence::whereNull('status')->get();
-            // Step 1 supports a rolling 2-year window (current calendar year + next year).
-            // Default the dropdown to the current year when it exists; otherwise fall back to next year, then newest available.
-            $currentYear = (int) now()->year;
-            $this_year_lookup = Lookups::where('group_id', '4')->where('lookup_name', $currentYear)->first();
 
-            if (!$this_year_lookup) {
-                $this_year_lookup = Lookups::where('group_id', '4')->where('lookup_name', $currentYear + 1)->first();
-            }
-
-            if (!$this_year_lookup) {
-                $this_year_lookup = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->first();
-            }
-
-            $this_year = $this_year_lookup ? $this_year_lookup->lookup_name : (string) $currentYear;
+            // Year dropdown should be driven by the configured "active year" (plus previous year when applicable),
+            // not simply by calendar year or "first row" ordering.
+            $yearLookups = Lookups::uiYearLookups();
+            $this_year = $yearLookups->first()->lookup_name ?? (Lookups::activeYearValue() ?? (string) now()->year);
             $questions = Question::with('options')->get();
             //dd($this_year);
             $fundingTypes = Lookups::FUNDING_TYPES;
 
-            return view('application.step_1', ["lookups" => $lookups, "questions" => $questions, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences, "application_year" => $this_year, "fundingTypes" => $fundingTypes]);
+            return view('application.step_1', ["lookups" => $lookups, "yearLookups" => $yearLookups, "questions" => $questions, "propertyID" => $propertyID, "roomType" => $roomType, "agent" => $agent, "residences" => $residences, "application_year" => $this_year, "fundingTypes" => $fundingTypes]);
         } else {
             return view('errors.onlineAppOffline');
         }
@@ -110,10 +101,15 @@ class ApplicationController extends Controller
 
         $application = ApplicationToken::where('applicationToken', $request->applicationToken)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        if (!$application) {
+            return ["failed"];
+        }
 
-
+        // Resolve the year from the user's latest StudentsInfo record (multi-year safe).
+        $this_year = StudentsInfo::where('userUid', $application->userUid)->orderBy('year', 'desc')->value('year');
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
 
         if ($request->security_code == $application->security_token) {
             ApplicationToken::where('applicationToken', $request->applicationToken)->update(['verified' => 1]);
@@ -174,8 +170,7 @@ class ApplicationController extends Controller
             }
         }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::activeYearValue() ?? (string) now()->year;
 
         $booking = (object)[];
 
@@ -189,14 +184,26 @@ class ApplicationController extends Controller
     public function step_2(Request $request)
     {
         $lookups = Lookups::get();
-
+        if (empty(Auth::user())) {
+            return redirect()->route('login');
+        }
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        if (!$userInfo) {
+            return redirect()->route('login')->withErrors(['message' => 'No valid application year found. Please start the application again.']);
+        }
 
 
         // if(!empty($user)){
@@ -220,10 +227,19 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', $user->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        if (!$userInfo) {
+            return redirect()->route('login')->withErrors(['message' => 'No valid application year found. Please start the application again.']);
+        }
 
         if ($request->app_address_p == 1) {
             $request->pAddress1 = $userInfo->userAddress1;
@@ -259,8 +275,14 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', $user->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update([
             'burCompanyName' => $request->bCompanyName,
@@ -285,14 +307,23 @@ class ApplicationController extends Controller
     {
         $lookups = Lookups::get();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', Auth::user()->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
         /** @disregard P1009 */
         if (!Auth::check()) {
             return redirect()->route('login');
         }
         /** @disregard P1009 */
         $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        if (!$user) {
+            return redirect()->route('login')->withErrors(['message' => 'No valid application year found. Please start the application again.']);
+        }
 
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         // $user = User::where('id', Auth::user()->id)->first();
@@ -305,10 +336,19 @@ class ApplicationController extends Controller
         // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
         $user = User::where('id', Auth::user()->id)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Session::get('year');
+        if (empty($this_year)) {
+            $this_year = Booking::where('userId', $user->id)->orderBy('year', 'desc')->value('year');
+        }
+        if (empty($this_year)) {
+            $this_year = Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
+        }
+        Session::put('year', $this_year);
 
         $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        if (!$userInfo) {
+            return redirect()->route('login')->withErrors(['message' => 'No valid application year found. Please start the application again.']);
+        }
 
         if ($request->app_parent_kin == 1) {
             $request->kFirstName = $userInfo->sponFirstName;
@@ -357,10 +397,6 @@ class ApplicationController extends Controller
     {
         $lookups = Lookups::get();
 
-        // determine target year
-        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
-        // load current user
-
         /** @disregard P1009 */
         if (!Auth::check()) {
             return redirect()->route('login');
@@ -368,6 +404,12 @@ class ApplicationController extends Controller
 
         /** @disregard P1009 */
         $userId = Auth::user()->id;
+
+        // determine target year (prefer session, then latest booking year, then active year)
+        $year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($year)) {
+            Session::put('year', $year);
+        }
 
         // search booking for selected year
         $booking = Booking::where('userId', $userId)
@@ -527,9 +569,7 @@ class ApplicationController extends Controller
 
     public function update_user_status($user_id)
     {
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $user_id, Session::get('year'));
 
         $userInfo = StudentsInfo::where('userUid',  $user_id)->where('year', $this_year)->first();
         $userFiles = UserFiles::where('userUid',  $user_id)->where('year', $this_year)->get();
@@ -675,9 +715,10 @@ class ApplicationController extends Controller
         if ($request->hasFile('file')) {
 
             if ($request->file('file')->isValid()) {
-
-                $this_year = Lookups::where('group_id', '4')->first();
-                $this_year = $this_year->lookup_name;
+                $this_year = Lookups::resolveYearForUser((int) $userUid, Session::get('year'));
+                if (!empty($this_year)) {
+                    Session::put('year', $this_year);
+                }
 
                 $userInfo = StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->first();
 
@@ -781,12 +822,12 @@ class ApplicationController extends Controller
 
         try {
             $lookups = Lookups::get();
-
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-
             /** @disregard P1009 */
             $userId = Auth::user()->id;
+            $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+            if (!empty($this_year)) {
+                Session::put('year', $this_year);
+            }
 
             // $application = ApplicationToken::where('applicationToken', $applicationToken)->first();
             $user = User::where('id',  $userId)->first();
@@ -1045,14 +1086,17 @@ class ApplicationController extends Controller
     {
         $lookups = Lookups::get();
 
-        // determine target year
-        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
-
         // load current user
         $user = Auth::user();
 
         if (!$user) {
             return redirect()->route('login');
+        }
+
+        // determine target year (prefer session, then latest booking year, then active year)
+        $year = Lookups::resolveYearForUser((int) $user->id, Session::get('year'));
+        if (!empty($year)) {
+            Session::put('year', $year);
         }
 
         // search booking for selected year
@@ -1131,12 +1175,15 @@ class ApplicationController extends Controller
     public function change_student_type(Request $request)
     {
         $lookups = Lookups::get();
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        /** @disregard P1009 */
+        $userId = Auth::user()->id;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
 
         // $user = User::where('id', Auth::user()->id)->first();
-        $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        $user = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
         $agent = new Agent();
 
         return view('user.changeType', ["headerTitle" => "Change Student Type", "lookups" => $lookups, "user" => $user, "agent" => $agent, "active" => 1]);
@@ -1144,12 +1191,15 @@ class ApplicationController extends Controller
 
     public function update_student_details(Request $request)
     {
+        /** @disregard P1009 */
+        $userId = Auth::user()->id;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
-        $user = User::where('id', Auth::user()->id)->first();
-        $userInfo = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->first();
+        $user = User::where('id', $userId)->first();
+        $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
         if ($request->studentType !== $userInfo->studentType) {
             if ($userInfo->studentType == "Cash / Direct") {
@@ -1311,11 +1361,16 @@ class ApplicationController extends Controller
 
     public function verified()
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
         /** @disregard P1009 */
         $userId = Auth::user()->id;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
         $info = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+        if (!$info) {
+            return redirect('/dashboard')->withErrors(['message' => 'No valid application year found.']);
+        }
         $booking = Booking::where('id', $info->bookingId)->first();
         return view('outSession.verified', compact('info', 'booking'));
     }
@@ -1334,7 +1389,7 @@ class ApplicationController extends Controller
         $residence = Residence::where('id', $property)->first();
 
         $property = Property::where('residence', $residence->id)->get();
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = (int) (Lookups::activeYearValue() ?? now()->year);
         $searchable_rooms = [];
 
         foreach ($property as $prop) {
@@ -1352,13 +1407,14 @@ class ApplicationController extends Controller
 
     public function re_verify_email(Request $request)
     {
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $request->userUid, null);
 
         // $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
         // $user = User::where('id', $request->userUid)->first();
         $booking = Booking::where('userId', $request->userUid)->where('year', $this_year)->first();
+        if (!$booking) {
+            return response()->json(['message' => 'No valid booking found for selected user/year.'], 422);
+        }
 
         $user = User::where('id', $request->userUid)->first();
 
@@ -1418,19 +1474,18 @@ class ApplicationController extends Controller
 
     public function retry_payment(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
         /** @disregard P1009 */
         $userId = Auth::user()->id;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
 
         $lookups = Lookups::get();
         $user = User::where('id', $userId)->first();
         $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
         $agent = new Agent();
         $transaction = OnlinePayments::where("userUid", $userId)->orderBy("created_at", "desc")->first();
-
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
 
         $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
         $propertyTypeInfo = Residence::where('id', $booking->property)->first();
@@ -1440,8 +1495,7 @@ class ApplicationController extends Controller
 
     public function new_booking_step_1(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = (int) (Lookups::activeYearValue() ?? now()->year);
         /** @disregard P1009 */
         $userId = Auth::user()->id;
 
@@ -1469,8 +1523,7 @@ class ApplicationController extends Controller
         /** @disregard P1009 */
         $userId = Auth::user()->id;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::activeYearValue() ?? (string) now()->year;
         //dd($this_year);
         $updateData = [
             'First Name|userFirstName' => ucwords(strtolower($request->firstName)),
@@ -1770,25 +1823,22 @@ class ApplicationController extends Controller
 
             // User::where('id', $userId)->update(["rob_10_fee" => 2]);
             StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(["rob_10_fee" => 2]);
-
-            $this_year = Lookups::where('group_id', '4')->first();
-            $this_year = $this_year->lookup_name;
-
-            $findPop = UserFiles::where('userUid', $userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->first();
+            $popYear = (string) $request->year;
+            $findPop = UserFiles::where('userUid', $userId)->where('fileId', 'proof_of_payment')->where('year', $popYear)->first();
 
             if (empty($findPop)) {
                 UserFiles::create([
                     'userUid' => $userId,
                     'fileId' => 'proof_of_payment',
                     'status' => 'Approved',
-                    'year' => $this_year
+                    'year' => $popYear
                 ]);
-                StudentsInfo::where('userUid', $userId)->where("year", $this_year)->update(["rob_40_bed" => 1]);
+                StudentsInfo::where('userUid', $userId)->where("year", $popYear)->update(["rob_40_bed" => 1]);
             } else {
-                UserFiles::where('userUid', $userId)->where('fileId', 'proof_of_payment')->where('year', $this_year)->update([
+                UserFiles::where('userUid', $userId)->where('fileId', 'proof_of_payment')->where('year', $popYear)->update([
                     'status' => 'Approved',
                 ]);
-                StudentsInfo::where('userUid', $userId)->where("year", $this_year)->update(["rob_40_bed" => 1]);
+                StudentsInfo::where('userUid', $userId)->where("year", $popYear)->update(["rob_40_bed" => 1]);
             }
 
             $actionFileData['userUid'] = $userId;
@@ -1797,7 +1847,7 @@ class ApplicationController extends Controller
             $actionFileData['actionUserDisplayName'] = $user->userFirstName;
             /** @disregard P1009 */
             $actionFileData['actionUserRole'] = Auth::user()->userRole;
-            $actionFileData['year'] = $this_year;
+            $actionFileData['year'] = $popYear;
 
             ActionList::create($actionFileData);
         }
@@ -1809,7 +1859,10 @@ class ApplicationController extends Controller
             if (!empty($nsfasStudentsApproval)) {
 
                 $yearOfImport = ImportNSFASApproval::where('id', $nsfasStudentsApproval->importId)->first();
-                $this_year = Lookups::where('group_id', '4')->first();
+                $this_year = Lookups::activeYearLookup();
+                if (!$this_year) {
+                    return redirect()->back()->withErrors(['message' => 'No active application year configured.']);
+                }
 
                 if (!empty($nsfasStudentsApproval) && $yearOfImport->year == $this_year->lookup_name) {
 
@@ -1869,9 +1922,13 @@ class ApplicationController extends Controller
             'current_time' => now()->toDateTimeString(),
             'expires_in_human' => $expiresAt->diffForHumans(),
         ]);
-
-
-        $lookup_lease_dates = Lookups::where('group_id', '4')->first();
+        $selectedYear = $booking->year ?? null;
+        $lookup_lease_dates = $selectedYear
+            ? Lookups::where('group_id', '4')->where('lookup_name', $selectedYear)->first()
+            : null;
+        if (!$lookup_lease_dates) {
+            $lookup_lease_dates = Lookups::activeYearLookup();
+        }
         $booking = Booking::where('id', $booking->id)->first();
 
         $alreadyPayment = BookingPayment::where("bookingId", $booking->id)->first();
@@ -1997,16 +2054,18 @@ class ApplicationController extends Controller
     {
         $lookups = Lookups::get();
 
-        // $this_year = Lookups::where('group_id', '4')->first();
+        // $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         // $this_year = $this_year->lookup_name;
-        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
-        // $user = User::where('id', Auth::user()->id)->first();
-        //dd($year);
         /** @disregard P1009 */
         $userId = Auth::user() ? Auth::user()->id : null;
 
         if (!$userId) {
             return redirect()->route('login');
+        }
+
+        $year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($year)) {
+            Session::put('year', $year);
         }
         // search booking for selected year
         $booking = Booking::where('userId', $userId)
@@ -2056,8 +2115,10 @@ class ApplicationController extends Controller
 
         $user = User::where('id', $userId)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
 
         $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
@@ -2096,8 +2157,10 @@ class ApplicationController extends Controller
 
         $user = User::where('id', $userId)->first();
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
 
         StudentsInfo::where('userUid', $user->id)->where('year', $this_year)->update([
             'burCompanyName' => $request->bCompanyName,
@@ -2124,8 +2187,10 @@ class ApplicationController extends Controller
         $userId = Auth::user()->id;
 
         $lookups = Lookups::get();
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
         $user = StudentsInfo::where('userUid', $userId)->orderBy('year', 'desc')->where('year', '!=', $this_year)->first();
         $userNew = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
         $agent = new Agent();
@@ -2138,8 +2203,10 @@ class ApplicationController extends Controller
         /** @disregard P1009 */
         $userId = Auth::user()->id;
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($this_year)) {
+            Session::put('year', $this_year);
+        }
 
         $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
 
@@ -2216,6 +2283,7 @@ class ApplicationController extends Controller
         $new->status = "Uploaded";     // reset status so it's not auto-approved
         $new->approved_by = null;      // remove approval
         $new->rejectReason = null;     // optional: clear previous rejection
+        $new->deleted_at = null;       // ensure we don't carry over soft-delete state
         $new->created_at = now();
         $new->updated_at = now();
 
@@ -2235,7 +2303,10 @@ class ApplicationController extends Controller
 
         $lookups = Lookups::get();
         // determine target year
-        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
+        $year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($year)) {
+            Session::put('year', $year);
+        }
         // search booking for selected year
         $booking = Booking::where('userId', $userId)
             ->where('year', $year)
@@ -2273,6 +2344,24 @@ class ApplicationController extends Controller
         // new logic for repeat booking duplicate previous year files
         $IdCopy           = $this->duplicatePreviousYearFile($userId, 'copyID', $year);
         $StudentCopy      = $this->duplicatePreviousYearFile($userId, 'studentCard', $year);
+
+        // Keep StudentsInfo ROB flags in sync with duplicated docs.
+        // Admin UI indicators for these docs are driven by `students_info.rob_*` fields,
+        // not by `user_files.status`. If we duplicate `user_files` rows without updating
+        // `students_info`, the docs exist in DB but the ROB stays red ("missing").
+        $robUpdates = [];
+        if (!empty($IdCopy)) {
+            $robUpdates['rob_15_id'] = ($IdCopy->status === 'Approved') ? 2 : (($IdCopy->status === 'Uploaded') ? 1 : 0);
+            // Reset to pending for the year-specific row (approval happens in the admin flow).
+            $robUpdates['id_data_approved'] = 0;
+        }
+        if (!empty($StudentCopy)) {
+            $robUpdates['rob_20_card'] = ($StudentCopy->status === 'Approved') ? 2 : (($StudentCopy->status === 'Uploaded') ? 1 : 0);
+            $robUpdates['student_card_approved'] = 0;
+        }
+        if (!empty($robUpdates)) {
+            StudentsInfo::where('userUid', $userId)->where('year', $year)->update($robUpdates);
+        }
 
         $BankCopy = UserFiles::where("userUid", $userId)->where('fileId', 'bankStatement')->where('year', $year)->first();
         // new logic for cash students require sponsorId and sponsorPayslip
@@ -2333,7 +2422,10 @@ class ApplicationController extends Controller
         /** @disregard P1009 */
         $userId = Auth::user()->id;
         //dd(Auth::user()->id);
-        $year = Session::get('year') ?? Lookups::where('group_id', 4)->first()->lookup_name;
+        $year = Lookups::resolveYearForUser((int) $userId, Session::get('year'));
+        if (!empty($year)) {
+            Session::put('year', $year);
+        }
 
         $IdCopy = UserFiles::where("userUid", $userId)->where('fileId', 'copyID')->where('year', $year)->first();
         $StudentCopy = UserFiles::where("userUid", $userId)->where('fileId', 'studentCard')->where('year', $year)->first();

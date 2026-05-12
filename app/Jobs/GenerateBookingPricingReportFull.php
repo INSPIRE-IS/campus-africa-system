@@ -110,7 +110,15 @@ class GenerateBookingPricingReportFull implements ShouldQueue
             return;
         }
 
-        $lookupLeaseDates = Lookups::where('group_id', '4')->first();
+        // Use the active/current year lookup row deterministically (do not rely on `->first()` ordering).
+        $lookupLeaseDates = Lookups::where('group_id', '4')->where('lookup_name', $currentYear)->first();
+        if (!$lookupLeaseDates) {
+            $lookupLeaseDates = Lookups::activeYearLookup();
+        }
+        if (!$lookupLeaseDates) {
+            $this->sendReportEmail("Year lookup row not found for {$currentYear}.", null, false, $currentYear);
+            return;
+        }
         $waiveBookingFee = Lookups::where('group_id', '7')->first();
         [$wpResidences, $wpRooms] = $this->getCachedWpData();
 
@@ -334,8 +342,8 @@ class GenerateBookingPricingReportFull implements ShouldQueue
 
     private function getCurrentYearLookupName()
     {
-        $lookup = Lookups::where('group_id', '4')->first();
-        return $lookup ? $lookup->lookup_name : null;
+        $year = Lookups::activeYearValue();
+        return $year ? (string) $year : null;
     }
 
     private function getFields()

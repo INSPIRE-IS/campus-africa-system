@@ -31,9 +31,13 @@ class BookingReportController extends Controller
         //dd($jsonDataRooms);
         // $residences = Residence::get();
         $year = Session::get('year');
+        $yearLookups = Lookups::internalYearLookups();
         if ($year == null) {
-            $lookupYear = Lookups::where('group_id', '4')->first();
-            $year = $lookupYear->lookup_name;
+            $year = $yearLookups->first()->lookup_name ?? (Lookups::activeYearValue() ?? (string) now()->year);
+            session(['year' => $year]);
+        }
+        if (!Lookups::isInternalYear($year)) {
+            $year = $yearLookups->first()->lookup_name ?? (Lookups::activeYearValue() ?? (string) now()->year);
             session(['year' => $year]);
         }
         $residences = [];
@@ -179,7 +183,7 @@ class BookingReportController extends Controller
         $total['percent'] =  round($total['bookings'] / $total['beds'] * 100);
 
 
-        return view('admin.report.booking_summary', ["headerTitle" => "Booking Summary", "title" => "Booking Summary", "lookups" => $lookups, "year" => $year, "summaryData" => $summaryData, "total" => $total]);
+        return view('admin.report.booking_summary', ["headerTitle" => "Booking Summary", "title" => "Booking Summary", "lookups" => $lookups, "yearLookups" => $yearLookups, "year" => $year, "summaryData" => $summaryData, "total" => $total]);
     }
 
     public function setYear(Request $request)
@@ -187,6 +191,10 @@ class BookingReportController extends Controller
         $request->validate([
             'year' => 'required|integer',
         ]);
+
+        if (!Lookups::isInternalYear($request->year)) {
+            return redirect()->back()->withErrors(['message' => 'Invalid year selected.']);
+        }
 
         session(['year' => $request->year]);
 

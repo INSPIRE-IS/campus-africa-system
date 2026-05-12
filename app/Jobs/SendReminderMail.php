@@ -33,7 +33,7 @@ class SendReminderMail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $userUid, $returnUrl, $year)
+    public function __construct(User $userUid, $returnUrl, $year = null)
     {
         $this->userUid = $userUid;
         $this->returnUrl = $returnUrl;
@@ -51,8 +51,31 @@ class SendReminderMail implements ShouldQueue
         $userMain = $this->userUid;
 
         $user = User::where('id', $userMain->id)->first();
-        $studentInfoForMail = StudentsInfo::where('userUid',  $userMain->id)->where('year', $this->year)->first();
+        if (!$user) {
+            return;
+        }
+
+        // Prefer an explicit year passed from the controller; otherwise fall back to latest StudentsInfo, then active year.
+        $this_year = (string) (int) $this->year;
+        if ($this_year === '0') {
+            $this_year = (string) (int) StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->value('year');
+        }
+        if ($this_year === '0' || $this_year === '') {
+            $this_year = (string) (int) Lookups::activeYearValue();
+        }
+
+        $studentInfoForMail = StudentsInfo::where('userUid',  $userMain->id)->where('year', $this_year)->first();
+        if (!$studentInfoForMail) {
+            $studentInfoForMail = StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->first();
+        }
+        if (!$studentInfoForMail) {
+            return;
+        }
+
         $booking = Booking::where('id', $studentInfoForMail->bookingId)->first();
+        if (!$booking) {
+            return;
+        }
 
 
         $all = ['studentCard', 'proofRegistration', 'copyID', 'proof_of_payment'];
@@ -123,6 +146,9 @@ class SendReminderMail implements ShouldQueue
         $message_replace['missing'] = $outstandingDocsText;
 
         $mailerForMessage = MailerList::where("mailer_name", "Reminder Mail")->first();
+        if (!$mailerForMessage) {
+            return;
+        }
 
         if ($mailerForMessage->status == '1') {
 

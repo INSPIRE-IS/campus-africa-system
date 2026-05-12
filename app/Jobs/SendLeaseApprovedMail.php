@@ -26,13 +26,14 @@ class SendLeaseApprovedMail implements ShouldQueue
 
     public $userUid;
     public $year;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $year)
+    public function __construct(User $userUid, $year = null)
     {
         $this->userUid = $userUid;
         $this->year = $year;
@@ -47,15 +48,40 @@ class SendLeaseApprovedMail implements ShouldQueue
     {
 
         $userMain = $this->userUid;
+        if (!$userMain) {
+            return;
+        }
 
-        $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
+        // Prefer an explicit year passed from the controller (lease approval happens in a year-specific context).
+        $this_year = (string) (int) $this->year;
+        if ($this_year === '0') {
+            $this_year = (string) (int) StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->value('year');
+        }
+        if ($this_year === '0' || $this_year === '') {
+            $this_year = (string) (int) Lookups::activeYearValue();
+        }
+
+        $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        if (!$userForLease) {
+            $userForLease = StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->first();
+        }
+        if (!$userForLease) {
+            return;
+        }
+
         $booking = Booking::where('id', $userForLease->bookingId)->first();
+        if (!$booking) {
+            return;
+        }
 
 
         $message_replace['booking_application'] = "#" . $booking->booking_code;
         $message_replace['name'] = $userForLease->userFirstName;
 
         $mailerForMessage = MailerList::where("mailer_name", "Lease Approved")->first();
+        if (!$mailerForMessage) {
+            return;
+        }
 
         if ($mailerForMessage->status == '1') {
 

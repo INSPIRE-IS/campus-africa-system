@@ -90,7 +90,7 @@ class ProfileController extends Controller
             return false;
         }
         // dd($request->answers);
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         if (Session::has('year')) {
             $year = Session::get('year');
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();

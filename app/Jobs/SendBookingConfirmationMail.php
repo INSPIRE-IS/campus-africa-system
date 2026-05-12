@@ -27,13 +27,14 @@ class SendBookingConfirmationMail implements ShouldQueue
     public $userUid;
     public $returnUrl;
     public $year;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $returnUrl, $year)
+    public function __construct(User $userUid, $returnUrl, $year = null)
     {
         $this->userUid = $userUid;
         $this->returnUrl = $returnUrl;
@@ -47,12 +48,34 @@ class SendBookingConfirmationMail implements ShouldQueue
      */
     public function handle()
     {
-
         $userMain = $this->userUid;
 
-        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
         $user = User::where('id', $userMain->id)->first();
+        if (!$user) {
+            return;
+        }
+
+        // Prefer an explicit year passed from the controller; otherwise fall back to latest StudentsInfo, then active year.
+        $this_year = (string) (int) $this->year;
+        if ($this_year === '0') {
+            $this_year = (string) (int) StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->value('year');
+        }
+        if ($this_year === '0' || $this_year === '') {
+            $this_year = (string) (int) Lookups::activeYearValue();
+        }
+
+        $userInfo = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+        if (!$userInfo) {
+            $userInfo = StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->first();
+        }
+        if (!$userInfo) {
+            return;
+        }
+
         $booking = Booking::where('id', $userInfo->bookingId)->first();
+        if (!$booking) {
+            return;
+        }
 
 
         $all = ['studentCard', 'proofRegistration'];
@@ -122,6 +145,9 @@ class SendBookingConfirmationMail implements ShouldQueue
         $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Booking Confirmation")->first();
+        if (!$mailerForMessage) {
+            return;
+        }
 
         if ($mailerForMessage->status == '1') {
 

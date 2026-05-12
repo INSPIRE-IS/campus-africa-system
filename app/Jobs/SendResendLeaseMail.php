@@ -34,7 +34,7 @@ class SendResendLeaseMail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $userUid, $randomString, $leaseOpenTag, $year)
+    public function __construct(User $userUid, $randomString, $leaseOpenTag, $year = null)
     {
         $this->userUid = $userUid;
         $this->randomString = $randomString;
@@ -55,8 +55,33 @@ class SendResendLeaseMail implements ShouldQueue
             Log::info('SendResendLeaseMail job started for at ' . $now);
             Log::info('SendResendLeaseMail job tag: ' . $this->leaseOpenTag);
             $userMain = $this->userUid;
-            $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this->year)->first();
+
+            if (!$userMain) {
+                return;
+            }
+
+            // Prefer an explicit year passed from the controller (lease resend is year-specific).
+            $this_year = (string) (int) $this->year;
+            if ($this_year === '0') {
+                $this_year = (string) (int) StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->value('year');
+            }
+            if ($this_year === '0' || $this_year === '') {
+                $this_year = (string) (int) Lookups::activeYearValue();
+            }
+
+            $userForLease = StudentsInfo::where('userUid', $userMain->id)->where('year', $this_year)->first();
+            if (!$userForLease) {
+                // Fallback: use latest StudentsInfo row if the year-specific one doesn't exist.
+                $userForLease = StudentsInfo::where('userUid', $userMain->id)->orderByDesc('year')->first();
+            }
+            if (!$userForLease) {
+                return;
+            }
+
             $booking = Booking::where('id', $userForLease->bookingId)->first();
+            if (!$booking) {
+                return;
+            }
 
             $message_replace['booking_application'] = "#" . $booking->booking_code;
             $message_replace['name'] = $userForLease->userFirstName;
@@ -64,6 +89,9 @@ class SendResendLeaseMail implements ShouldQueue
             $message_replace['close_lease_link'] = "</a>";
 
             $mailerForMessage = MailerList::where("mailer_name", "Application Approved")->first();
+            if (!$mailerForMessage) {
+                return;
+            }
 
             if ($mailerForMessage->status == '1') {
 

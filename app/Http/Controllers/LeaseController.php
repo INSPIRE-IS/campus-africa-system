@@ -39,12 +39,7 @@ class LeaseController extends Controller
         } else if ($lease_link->year != null) {
             $this_year = $lease_link->year;
         } else {
-            $this_year = Lookups::where('group_id', '4')->first();
-            if (Session::has('year')) {
-                $year = Session::get('year');
-                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-            }
-            $this_year = $this_year->lookup_name;
+            $this_year = Lookups::resolveYearForUser((int) $lease_link->userUid, Session::get('year'));
         }
 
 
@@ -144,12 +139,7 @@ class LeaseController extends Controller
         } else if ($lease_link->year != null) {
             $this_year = $lease_link->year;
         } else {
-            $this_year = Lookups::where('group_id', '4')->first();
-            if (Session::has('year')) {
-                $year = Session::get('year');
-                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-            }
-            $this_year = $this_year->lookup_name;
+            $this_year = Lookups::resolveYearForUser((int) $lease_link->userUid, Session::get('year'));
         }
 
         $student = User::where('id', $lease_link->userUid)->first();
@@ -355,12 +345,7 @@ class LeaseController extends Controller
         } else if ($lease_link->year != null) {
             $this_year = $lease_link->year;
         } else {
-            $this_year = Lookups::where('group_id', '4')->first();
-            if (Session::has('year')) {
-                $year = Session::get('year');
-                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-            }
-            $this_year = $this_year->lookup_name;
+            $this_year = Lookups::resolveYearForUser((int) $lease_link->userUid, Session::get('year'));
         }
 
 
@@ -413,12 +398,7 @@ class LeaseController extends Controller
         } else if ($lease_link->year != null) {
             $this_year = $lease_link->year;
         } else {
-            $this_year = Lookups::where('group_id', '4')->first();
-            if (Session::has('year')) {
-                $year = Session::get('year');
-                $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-            }
-            $this_year = $this_year->lookup_name;
+            $this_year = Lookups::resolveYearForUser((int) $lease_link->userUid, Session::get('year'));
         }
 
         // $user = User::where('id', $lease_link->userUid)->first();
@@ -667,12 +647,7 @@ class LeaseController extends Controller
             }
         }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        if (Session::has('year')) {
-            $year = Session::get('year');
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-        }
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $request->userId, Session::get('year'));
 
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(
@@ -690,7 +665,7 @@ class LeaseController extends Controller
         $userUidData = User::where('id', $request->userId)->first();
         try {
             Log::info('Sending email to ');
-            // $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag));
+            $this->dispatch(new SendResendLeaseMail($userUidData, $this->generateRandomLongString(), $leaseOpenTag, $this_year));
         } catch (\Exception $e) {
             Log::error('Failed to dispatch SendResendLeaseMail job', [
                 'error' => $e->getMessage(),
@@ -771,15 +746,12 @@ class LeaseController extends Controller
             }
         }
 
-        $this_year = Lookups::where('group_id', '4')->first();
-        if (Session::has('year')) {
-            $year = Session::get('year');
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
-        }
-        $this_year = $this_year->lookup_name;
+        $this_year = Lookups::resolveYearForUser((int) $request->userId, Session::get('year'));
 
         $studentInfo = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
-        $studentInfo->update(['rob_51_temp_lease_approve' => 0]);
+        if ($studentInfo) {
+            $studentInfo->update(['rob_51_temp_lease_approve' => 0]);
+        }
 
         // Create Lease Link
         $leaseToken = UserLeaseToken::create(
@@ -798,7 +770,7 @@ class LeaseController extends Controller
         $userUidData = User::where('id', $request->userId)->first();
         try {
             Log::info('Sending email to ');
-            $this->dispatch(new SendResendTempLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag));
+            $this->dispatch(new SendResendTempLeaseMail($userUidData, $leaseToken->leaseToken, $leaseOpenTag, $this_year));
         } catch (\Exception $e) {
             Log::error('Failed to dispatch SendResendTempLeaseMail job', [
                 'error' => $e->getMessage(),
@@ -1118,7 +1090,7 @@ class LeaseController extends Controller
         // curl_close($curl);
 
         // //Get Users Information
-        // $this_year = Lookups::where('group_id', '4')->first();
+        // $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         // $this_year = $this_year->lookup_name;
         // $userForLease = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
         // $bookingForLease = Booking::where('id', $userForLease->bookingId)->first();

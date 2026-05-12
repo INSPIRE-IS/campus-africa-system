@@ -310,8 +310,8 @@ class GenerateBookingPricingReport implements ShouldQueue
 
     private function getCurrentYearLookupName()
     {
-        $lookup = Lookups::where('group_id', '4')->first();
-        return $lookup ? $lookup->lookup_name : null;
+        $year = Lookups::activeYearValue();
+        return $year ? (string) $year : null;
     }
 
     private function getLookupDataForYear($groupId, $year)
