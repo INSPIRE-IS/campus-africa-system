@@ -86,6 +86,16 @@ Document everything for this repo.
 - Admin "Add Document" (app profile) is gated by: allowed residence, `role_upload_docs == 1`, `rob_60_cancelled == 0`, and either `rob_50_approve == 0` or (`role_modify_approved == 1` and `rob_50_approve == 2`). See `resources/views/admin/app_profile.blade.php`.
 - Admin "Update Rates" button (`#openPaymentModal` in `app_profile.blade.php`) is shown only when `Auth::user()->role_sys_admin == 1`. It opens `#paymentModal`, which posts to `/update-booking-payment` (`HomeController::updateBookingPayment`) to update `booking_payments.monthly_rental` and `funded_monthly`, and recalculates `monthly_rental_total` and `total_funded` as `* 10`. The controller logs an `ActionList` entry "Booking Payment Updated"; there is no server-side role check beyond auth, so UI gating is the only access control.
 - Cancel booking vs deallocate bed (admin app profile):
+  - Unallocate Bed button visibility (admin app profile):
+    - The "Unallocate Bed" button is not rendered server-side; it is injected by JS after `POST /get-booking-details` returns booking details.
+    - It shows only when all of these are true:
+      - The selected-year booking has a bed allocated (`booking.bed_code` is not null/empty for the year being viewed).
+      - The logged-in admin has property permission for the student's current booking property (`$allowedResidences` contains `booking.property`).
+      - The logged-in admin has `role_change_bed == 1`.
+      - The lease is NOT approved (`students_info.rob_55_lease != 2`). (If lease is signed/pending i.e. `rob_55_lease == 1`, the button can still show; approved leases hide it.)
+    - The confirmation message changes based on whether a lease file is approved, but visibility is driven by `rob_55_lease` (not the file status).
+    - Year context gotcha: `POST /get-booking-details` uses `Session::get('year')` (fallback active year). If the session year is not the year you think you're viewing, `booking.bed_code` may be null and the button will not appear.
+  - Server-side auth gap (important): `POST /unallocate-bed` does not enforce `role_change_bed` server-side; UI gating is the only control. Treat this as a security/access-control TODO.
   - Cancel booking (`POST /cancel/booking` → `HomeController::cancel_booking`): sets `StudentsInfo.rob_60_cancelled=1`, `rob_40_bed=1`, `rob_50_approve=0`; clears booking bed fields (`property_data_id`, floor/unit/room/bed/bed_code), clears `room_rate`, sets `booking.cancelled=1`; clears `Property.user_id_room` for the user; deletes lease file (`user_files.fileId=moveIn`); logs `ActionList` with reason if provided.
   - Deallocate bed (`POST /unallocate-bed` → `HomeController::unallocate_bed`): clears booking bed fields and `Property.user_id_room`; sets `rob_40_bed=1`, `rob_50_approve=0`; deletes lease file (`moveIn`); logs `ActionList` "Unallocated Bed …". It does **not** set `rob_60_cancelled` or `booking.cancelled`.
   - UI entry points: `resources/views/admin/app_profile.blade.php` uses `cancelBooking(bookingId, userId)` (role `role_cancel_booking`) and bed deallocation via `unallocate_bed` in the bed‑change flow (role `role_change_bed`).

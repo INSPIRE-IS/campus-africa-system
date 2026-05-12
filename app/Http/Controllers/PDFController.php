@@ -8,13 +8,13 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\Residence;
 use App\Models\ActionList;
-use PDF;
-use Auth;
+use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Auth;
 use App\Models\UserFiles;
 use App\Models\Lookups;
 use App\Models\UserLeaseToken;
 use App\Models\MailerList;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
@@ -141,7 +141,7 @@ class PDFController extends Controller
           'message' => 'Cannot generate lease. Booking not found.',
         ], 404);
       }
-        $propertyData = Property::where('id', $booking->property_data_id)->first();
+      $propertyData = Property::where('id', $booking->property_data_id)->first();
       if (!$propertyData) {
         return response()->json([
           'message' => 'Cannot generate lease. Booking property data not found.',

@@ -24,6 +24,7 @@ class SendLeaseApprovedMail implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $userUid;
+    public $year;
 
     /**
      * Create a new job instance.

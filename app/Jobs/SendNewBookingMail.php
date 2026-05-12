@@ -27,6 +27,7 @@ class SendNewBookingMail implements ShouldQueue
 
     public $userUid;
     public $returnUrl;
+    public $year;
 
     /**
      * Create a new job instance.
