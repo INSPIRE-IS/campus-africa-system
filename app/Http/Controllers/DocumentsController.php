@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFiles;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use App\Models\ActionList;
 use App\Models\Lookups;
 use App\Models\Booking;

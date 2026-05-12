@@ -28,7 +28,7 @@ class SendApplicationThankYouMail implements ShouldQueue
     public $securityToken;
     public $returnUrl;
     public $year;
-    public $year;
+
 
     /**
      * Create a new job instance.

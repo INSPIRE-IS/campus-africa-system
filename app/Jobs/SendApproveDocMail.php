@@ -28,7 +28,6 @@ class SendApproveDocMail implements ShouldQueue
     public $typeName;
     public $returnUrl;
     public $year;
-    public $year;
 
     /**
      * Create a new job instance.

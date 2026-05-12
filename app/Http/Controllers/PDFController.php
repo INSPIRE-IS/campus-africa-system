@@ -8,14 +8,14 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\Residence;
 use App\Models\ActionList;
-use PDF;
-use Auth;
+use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Auth;
 use App\Models\UserFiles;
 use App\Models\Lookups;
 use App\Models\UserLeaseToken;
 use App\Models\MailerList;
-use Mail;
-
+use Illuminate\Support\Facades\Mail;
+use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\StudentsInfo;
 use App\Models\BookingPayment;
 use App\Services\LeaseContactService;

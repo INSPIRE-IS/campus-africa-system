@@ -26,7 +26,6 @@ class SendLeaseApprovedMail implements ShouldQueue
 
     public $userUid;
     public $year;
-    public $year;
 
     /**
      * Create a new job instance.
