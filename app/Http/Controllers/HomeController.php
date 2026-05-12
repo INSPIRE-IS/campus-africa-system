@@ -42,6 +42,7 @@ use App\Jobs\SendDeclinedDocMail;
 use App\Jobs\SendBookingConfirmationMail;
 use App\Jobs\SendStudentVerifyMailByAdminMail;
 use App\Jobs\SendLeaseApprovedMail;
+use App\Jobs\SendLeaseCancelledMail;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendReminderMail;
 use App\Models\OnlinePayments;
@@ -8491,7 +8492,20 @@ class HomeController extends Controller
 
     public function unallocate_bed(Request $request)
     {
-        $userId = $request->userId;
+        $userId = (int) $request->userId;
+        $forceCancelLease = $request->boolean('force_cancel_lease');
+        $notifyStudent = $request->boolean('notify_student');
+
+        $isSysAdmin = Auth::check() && (int) Auth::user()->role_sys_admin === 1;
+        $canChangeBed = Auth::check() && (int) Auth::user()->role_change_bed === 1;
+
+        if (!$isSysAdmin && !$canChangeBed) {
+            return response()->json(['message' => 'Not authorised to unallocate beds.'], 403);
+        }
+
+        if ($forceCancelLease && !$isSysAdmin) {
+            return response()->json(['message' => 'Not authorised to force-cancel leases.'], 403);
+        }
 
         $year = Session::get('year');
         if (empty($year)) {
@@ -8503,16 +8517,35 @@ class HomeController extends Controller
         }
 
         $booking_old = Booking::where('userId', $userId)->where('year', $this_year)->first();
+        if (empty($booking_old)) {
+            return response()->json(['message' => 'Booking not found for selected year.'], 404);
+        }
+
+        $studentInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
+        $leaseRob = $studentInfo ? (int) $studentInfo->rob_55_lease : null;
+
+        // Non sys-admin users can't unallocate when a lease is approved (button is hidden in UI).
+        if ($leaseRob === 2 && !$isSysAdmin) {
+            return response()->json(['message' => 'Cannot unallocate: lease is approved.'], 422);
+        }
 
         Booking::where('userId', $userId)->where('year', $this_year)->update(['property_data_id' => null, 'floor' => null, 'unit' => null, 'room' => null, 'bed' => null, 'bed_code' => null]);
-        Property::where('id', $booking_old->property_data_id)->update(["user_id_room" => null, "room_available" => null]);
+        if (!empty($booking_old->property_data_id)) {
+            Property::where('id', $booking_old->property_data_id)->update(["user_id_room" => null, "room_available" => null]);
+        }
 
         //Update the User robot
         // User::where('id', $userId)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
-        StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0]);
+        StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update(['rob_40_bed' => 1, 'rob_50_approve' => 0, 'rob_55_lease' => 3]);
 
         //Delete the Lease
         UserFiles::where('userUid', $userId)->where('fileId', 'moveIn')->where('year', $this_year)->delete();
+
+        // Invalidate any active lease tokens for this year.
+        UserLeaseToken::where('userUid', $userId)
+            ->where('active', 1)
+            ->where('year', $this_year)
+            ->update(['active' => 0]);
 
         // $hasMda = UserFiles::where('userUid', $userId)->where('year', $this_year)->where('fileId', 'MDA')->first();
 
@@ -8521,14 +8554,29 @@ class HomeController extends Controller
         // }
 
 
+        $actionSuffix = '';
+        if ($forceCancelLease) {
+            $actionSuffix .= ' | Lease reset';
+        }
+        if ($notifyStudent) {
+            $actionSuffix .= ' | Student email: queued';
+        }
+
         ActionList::create([
             "userUid" => $userId,
-            "action" => "Unallocated Bed " . $booking_old->bed_code . " on the " . $booking_old->floor . " floor, unit " . $booking_old->unit,
+            "action" => "Unallocated Bed " . $booking_old->bed_code . " on the " . $booking_old->floor . " floor, unit " . $booking_old->unit . $actionSuffix,
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
             "year" => $this_year,
         ]);
+
+        if ($isSysAdmin && $notifyStudent) {
+            $studentUser = User::where('id', $userId)->first();
+            if (!empty($studentUser)) {
+                $this->dispatch(new SendLeaseCancelledMail($studentUser, $this_year, $booking_old->booking_code));
+            }
+        }
 
         // $status_data = User::where('id', $userId)->first();
 

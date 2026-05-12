@@ -2224,14 +2224,16 @@
                         } else {
 
                             Object.keys(data).forEach(function(key) {
+                                var commentEmail = (data[key].users && data[key].users.email) ? data[key].users.email : "";
+                                var commentRoleName = (data[key].users && data[key].users.user_role_name) ? data[key].users.user_role_name : "";
+
                                 $(".comments_block").append(
                                     '<div class="infoBlock"><div class="responsible" style="width:100%">' +
                                     (data[key].created_at).slice(8, 10) + '/' + (data[key].created_at)
                                     .slice(5, 7) + '/' + (data[key].created_at).slice(0, 4) + ' ' + (
                                         data[key].created_at).slice(11, 16) +
-                                    ' | <span class="commentMail">' + data[key].users.email +
-                                    '</span> <span class="commentName"> | ' + data[key].users
-                                    .user_role_name + '</span></p></div><div class="information"><p>' +
+                                    ' | <span class="commentMail">' + commentEmail +
+                                    '</span> <span class="commentName"> | ' + commentRoleName + '</span></p></div><div class="information"><p>' +
                                     data[key].comment + '</p></div></div>')
                             });
                         }
@@ -3393,15 +3395,18 @@
                         if (data[0].bed_code !== "" && data[0].bed_code !== null) {
                             bed_code = "Bed Code: " + data[0].bed_code;
 
-                            if ("<?php echo in_array($booking->property, $allowedResidences); ?>") {
-                                // console.log('1')
-                                if ("<?php echo Auth::user()->role_change_bed; ?>" == "1" && data[5].rob_55_lease !== 2) {
-                                    // if(data[2] == 'false'){                            
-                                    var unallocated_bed = '<button data-lease="' + data[2] +
-                                        '" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
-                                    // }
+                            var hasResidenceAccess = "<?php echo in_array($booking->property, $allowedResidences); ?>" == "1";
+                            var isSysAdmin = "<?php echo Auth::user()->role_sys_admin; ?>" == "1";
+                            var canChangeBed = "<?php echo Auth::user()->role_change_bed; ?>" == "1";
+                            var leaseRob = data[5] && typeof data[5].rob_55_lease !== "undefined" ? parseInt(data[5].rob_55_lease, 10) : null;
 
-                                    // console.log(data);
+                            if (hasResidenceAccess || isSysAdmin) {
+                                // Normal staff: allow only when lease isn't approved. Sys admin can override.
+                                if ((canChangeBed && leaseRob !== 2) || isSysAdmin) {
+                                    var unallocated_bed = '<button data-lease="' + data[2] +
+                                        '" data-lease-status="' + leaseRob +
+                                        '" data-sysadmin="' + (isSysAdmin ? 1 : 0) +
+                                        '" class="unallocateBed" type="button" id="btn_clear_bed">Unallocate Bed</button>';
                                 }
                             }
                         }
@@ -3774,8 +3779,9 @@
                                         @endif
 
                                         var pDoc = document.getElementById("MDAStatus");
-                                        parentDiv = pDoc.parentNode;
-                                        parentDiv.style.display = 'none';
+                                        if (pDoc && pDoc.parentNode) {
+                                            pDoc.parentNode.style.display = 'none';
+                                        }
                                     },
                                     error: function(xhr) {
                                         showLeaseError(xhr, 'Lease generation blocked');
@@ -4265,12 +4271,15 @@
                         function myFunction(item, index) {
                             // console.log(item)
                             if (item['actionUserRole'] == "1") {
-                                if (item['users']['user_role_name'] == "") {
+                                var userRoleName = "";
+                                if (item['users'] && item['users']['user_role_name']) {
+                                    userRoleName = item['users']['user_role_name'];
+                                }
+
+                                if (userRoleName == "") {
                                     var role = '<button type="button" class="admin">Admin</button>';
                                 } else {
-                                    var role = '<button type="button" class="admin">' + item['users'][
-                                        'user_role_name'
-                                    ] + '</button>';
+                                    var role = '<button type="button" class="admin">' + userRoleName + '</button>';
                                 }
 
                                 if (item['user']) {
@@ -5341,22 +5350,46 @@
 
             jQuery(document).ready(function($) {
                 $(document).on("click", '#btn_clear_bed', function(e) {
-                    var msg = "You are about to unallocate this bed, the bed will be available to book again";
+                    var isSysAdmin = String($(this).data("sysadmin")) === "1";
+                    var leaseApproved = String($(this).data("lease")) === "true";
+                    var leaseStatus = parseInt($(this).data("lease-status"), 10);
+                    var hasActiveLease = leaseApproved || leaseStatus === 1 || leaseStatus === 2;
 
-                    if ($(this).data("lease") === "true") {
-                        msg =
-                            "You are about to unallocate this bed, the bed will be available to book again. The Lease will also be rejected.";
+                    var msg = "You are about to unallocate this bed. The bed will be available to book again.";
+                    if (hasActiveLease) {
+                        msg += " This bed has an active lease. If you unallocate, the lease will be reset.";
+                    }
+
+                    var html = '<div style="text-align:left;">' + msg + '</div>';
+                    if (isSysAdmin) {
+                        html +=
+                            '<div style="margin-top:12px;text-align:left;">' +
+                            '<label style="display:flex;gap:8px;align-items:flex-start;">' +
+                            '<input type="checkbox" id="swal_notify_student" checked />' +
+                            '<span>Email the student to notify them that the lease was cancelled and the bed will be reallocated.</span>' +
+                            '</label>' +
+                            '</div>';
                     }
 
                     Swal.fire({
                         title: 'Are you sure?',
-                        text: msg,
+                        html: html,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Yes!',
-                        showLoaderOnConfirm: true
+                        showLoaderOnConfirm: true,
+                        preConfirm: () => {
+                            var notify = 0;
+                            var el = document.getElementById("swal_notify_student");
+                            if (el && el.checked) {
+                                notify = 1;
+                            }
+                            return {
+                                notify_student: notify,
+                            };
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
@@ -5364,6 +5397,8 @@
                                 url: "/unallocate-bed",
                                 data: {
                                     userId: "{{ $user[0]['userInfo']['userUid'] }}",
+                                    force_cancel_lease: isSysAdmin && hasActiveLease ? 1 : 0,
+                                    notify_student: result.value && result.value.notify_student ? 1 : 0,
                                 },
 
                                 success: function(data) {
@@ -5378,12 +5413,18 @@
                                     );
 
                                     var pDoc = document.getElementById("MDAStatus");
-                                    parentDiv = pDoc.parentNode;
-                                    parentDiv.style.display = 'none';
+                                    if (pDoc && pDoc.parentNode) {
+                                        pDoc.parentNode.style.display = 'none';
+                                    }
 
                                     refreshActions();
                                     checkUserStatus();
 
+                                    // Avoid leaving the UI in a partially-updated state; a full reload ensures all
+                                    // button visibility + status banners are recalculated from server state.
+                                    setTimeout(function() {
+                                        window.location.reload();
+                                    }, 250);
 
                                 }
                             })
