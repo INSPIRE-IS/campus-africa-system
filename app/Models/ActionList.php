@@ -16,6 +16,11 @@ class ActionList extends Model
         'actionUserDisplayName',
         'actionUserRole',
         'year',
+        'meta',
+    ];
+
+    protected $casts = [
+        'meta' => 'array',
     ];
 
     public function users(){

@@ -48,6 +48,19 @@
                 </div>
             </div>
         @endif
+
+        @if (!empty($userAccount) && !empty($userAccount->banned_at))
+            <div style="width: 100%;padding: 0 15px;margin: 10px auto 0 auto;">
+                <div
+                    style="padding: 12px 14px;border: 1px solid #dc3545;background: #f8d7da;color: #842029;border-radius: 10px;">
+                    <strong>Restricted:</strong> This student is banned from portal access and re-application.<br />
+                    <strong>Banned at:</strong> {{ $userAccount->banned_at }}<br />
+                    @if (!empty($userAccount->banned_reason))
+                        <strong>Reason:</strong> {{ $userAccount->banned_reason }}
+                    @endif
+                </div>
+            </div>
+        @endif
 {{-- Physical Address Next of Kin Student Type --}}
         <div class="container">
 
@@ -332,6 +345,14 @@
                                         @endif
                                     @endif
                                 @endif
+                            @endif
+                        @endif
+
+                        @if (Auth::user()->role_sys_admin == 1 && !empty($userAccount))
+                            @if (empty($userAccount->banned_at))
+                                <button type="button" class="appBooking" id="btn_ban_student">Ban student</button>
+                            @else
+                                <button type="button" class="appBooking" id="btn_unban_student">Remove ban</button>
                             @endif
                         @endif
 
@@ -5517,6 +5538,138 @@
             // }, 30000)
 
             jQuery(document).ready(function($) {
+                $(document).on("click", "#btn_ban_student", function(e) {
+                    var userId = "{{ $user[0]['userInfo']['userUid'] }}";
+
+                    Swal.fire({
+                        title: "Ban student?",
+                        html: '<div style="text-align:left;">' +
+                            '<p>This will block the student from portal access and re-application.</p>' +
+                            '<label style="display:block;font-weight:600;margin-top:8px;">Reason (required)</label>' +
+                            '<textarea id="swal_ban_reason" class="swal2-textarea" placeholder="Enter the ban reason"></textarea>' +
+                            '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;">' +
+                            '<input type="checkbox" id="swal_ban_notify" checked />' +
+                            '<span>Email the student with this reason.</span>' +
+                            "</label>" +
+                            "</div>",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Ban",
+                        showLoaderOnConfirm: true,
+                        preConfirm: () => {
+                            var reasonEl = document.getElementById("swal_ban_reason");
+                            var reason = reasonEl ? String(reasonEl.value || "").trim() : "";
+                            if (!reason) {
+                                Swal.showValidationMessage("Reason is required.");
+                                return false;
+                            }
+                            var notifyEl = document.getElementById("swal_ban_notify");
+                            var notify = notifyEl && notifyEl.checked ? 1 : 0;
+                            return {
+                                reason: reason,
+                                notify_student: notify,
+                            };
+                        },
+                    }).then((result) => {
+                        if (!result.isConfirmed) {
+                            return;
+                        }
+
+                        $.ajax({
+                            type: "post",
+                            url: "/ban-student",
+                            data: {
+                                userId: userId,
+                                reason: result.value.reason,
+                                notify_student: result.value.notify_student ? 1 : 0,
+                            },
+                            success: function() {
+                                window.location.reload();
+                            },
+                            error: function(xhr) {
+                                var msg = "Unable to ban student.";
+                                if (xhr && xhr.responseText) {
+                                    try {
+                                        var resp = JSON.parse(xhr.responseText);
+                                        if (resp.message) {
+                                            msg = resp.message;
+                                        }
+                                    } catch (e2) {}
+                                }
+                                Swal.fire("Error", msg, "error");
+                            },
+                        });
+                    });
+
+                    e.preventDefault();
+                });
+
+                $(document).on("click", "#btn_unban_student", function(e) {
+                    var userId = "{{ $user[0]['userInfo']['userUid'] }}";
+
+                    Swal.fire({
+                        title: "Remove ban?",
+                        html: '<div style="text-align:left;">' +
+                            '<p>This will restore portal access and allow the student to apply again.</p>' +
+                            '<label style="display:block;font-weight:600;margin-top:8px;">Reason (optional)</label>' +
+                            '<textarea id="swal_unban_reason" class="swal2-textarea" placeholder="Enter an internal note (optional)"></textarea>' +
+                            '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;">' +
+                            '<input type="checkbox" id="swal_unban_notify" checked />' +
+                            '<span>Email the student to notify them that access has been restored.</span>' +
+                            "</label>" +
+                            "</div>",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, remove ban",
+                        showLoaderOnConfirm: true,
+                        preConfirm: () => {
+                            var reasonEl = document.getElementById("swal_unban_reason");
+                            var reason = reasonEl ? String(reasonEl.value || "").trim() : "";
+                            var notifyEl = document.getElementById("swal_unban_notify");
+                            var notify = notifyEl && notifyEl.checked ? 1 : 0;
+                            return {
+                                reason: reason,
+                                notify_student: notify,
+                            };
+                        },
+                    }).then((result) => {
+                        if (!result.isConfirmed) {
+                            return;
+                        }
+
+                        $.ajax({
+                            type: "post",
+                            url: "/unban-student",
+                            data: {
+                                userId: userId,
+                                reason: result.value && result.value.reason ? result.value.reason : "",
+                                notify_student: result.value && result.value.notify_student ? 1 : 0,
+                            },
+                            success: function() {
+                                window.location.reload();
+                            },
+                            error: function(xhr) {
+                                var msg = "Unable to remove ban.";
+                                if (xhr && xhr.responseText) {
+                                    try {
+                                        var resp = JSON.parse(xhr.responseText);
+                                        if (resp.message) {
+                                            msg = resp.message;
+                                        }
+                                    } catch (e2) {}
+                                }
+                                Swal.fire("Error", msg, "error");
+                            },
+                        });
+                    });
+
+                    e.preventDefault();
+                });
+
                 $(document).on("click", '#btn_clear_bed', function(e) {
                     var isSysAdmin = String($(this).data("sysadmin")) === "1";
                     var leaseApproved = String($(this).data("lease")) === "true";

@@ -265,6 +265,8 @@ Route::post('/change-booking', [HomeController::class, 'change_booking']);
 // Route::post('/change-booking-building', [HomeController::class, 'change_booking_building']);
 Route::post('/change-lease', [HomeController::class, 'change_lease']);
 Route::post('/unallocate-bed', [HomeController::class, 'unallocate_bed']);
+Route::post('/ban-student', [HomeController::class, 'ban_student']);
+Route::post('/unban-student', [HomeController::class, 'unban_student']);
 
 Route::post('/getPaymentInfo', [HomeController::class, 'getPaymentInfo']);
 Route::post('/update-booking-payment', [HomeController::class, 'updateBookingPayment'])->name('update.booking.payment');

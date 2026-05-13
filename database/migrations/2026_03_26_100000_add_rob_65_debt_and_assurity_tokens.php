@@ -18,7 +18,7 @@ class AddRob65DebtAndAssurityTokens extends Migration
                 $table->unsignedTinyInteger('rob_65_debt')->default(3)->after('rob_60_cancelled');
             }
         });
-
+        // Schema::dropIfExists('assurity_tokens');
         Schema::create('assurity_tokens', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('userUid')->index();

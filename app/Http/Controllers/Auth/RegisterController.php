@@ -145,6 +145,22 @@ class RegisterController extends Controller
             }
 
             return DB::transaction(function () use ($request, $jsonDataResidence, $jsonDataRooms) {
+                // Block re-application if the applicant matches a previously banned user.
+                $bannedMatch = User::findBannedMatch($request->email, $request->idNumber, $request->passportNo, $request->studNumber);
+                if (!empty($bannedMatch)) {
+                    Log::warning('registration_step_one blocked: banned applicant match', [
+                        'match_user_id' => $bannedMatch->id,
+                        'email' => $request->email,
+                        'idNumber' => $request->idNumber,
+                        'passportNo' => $request->passportNo,
+                        'studentNo' => $request->studNumber,
+                    ]);
+
+                    return response()->json([
+                        'message' => 'Your application cannot be processed currently. Please contact an administrator with your ID number for assistance.',
+                    ], 403);
+                }
+
                 $validated = $request->validate([
                     'email' => 'email|required|unique:users',
                 ]);
