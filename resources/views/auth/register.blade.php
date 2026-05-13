@@ -644,6 +644,21 @@
                             $("#dispYear").empty().append($("#year").val());
                             
                         },
+                        error: function(xhr) {
+                            $("#step1").val("Proceed to Next Step");
+                            var msg = "Something went wrong. Please try again.";
+                            if (xhr && xhr.responseText) {
+                                try {
+                                    var resp = JSON.parse(xhr.responseText);
+                                    if (resp && resp.message) {
+                                        msg = resp.message;
+                                    } else if (resp && resp.errors && resp.errors.email && resp.errors.email[0]) {
+                                        msg = resp.errors.email[0];
+                                    }
+                                } catch (e) {}
+                            }
+                            alert(msg);
+                        },
                     });
                 }else{
                     $.ajax({

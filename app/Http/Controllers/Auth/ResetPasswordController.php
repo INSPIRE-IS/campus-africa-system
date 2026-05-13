@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserResetToken;
 use App\Services\FirebaseService;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class ResetPasswordController extends Controller
 {
@@ -24,7 +25,9 @@ class ResetPasswordController extends Controller
     |
     */
 
-    use ResetsPasswords;
+    use ResetsPasswords {
+        reset as protected traitReset;
+    }
 
     /**
      * Where to redirect users after resetting their password.
@@ -39,6 +42,25 @@ class ResetPasswordController extends Controller
         $this->firebase = $firebase;
     }
 
+    public function reset(Request $request)
+    {
+        $request->validate($this->rules(), $this->validationErrorMessages());
+
+        $email = strtolower(trim((string) $request->email));
+        $user = User::withTrashed()
+            ->where('email', $email)
+            ->orWhere('userEmail', $email)
+            ->first();
+
+        if ($user && (int) ($user->userRole ?? 0) === 0 && !empty($user->banned_at)) {
+            return redirect()->back()->withErrors([
+                'email' => 'Your application cannot be processed currently. Please contact an administrator with your ID number for assistance.',
+            ])->withInput($request->only('email'));
+        }
+
+        return $this->traitReset($request);
+    }
+
 
     public function resetPasswordUser(Request $request, $userCustomId)
     {
@@ -47,6 +69,12 @@ class ResetPasswordController extends Controller
 
         if ($userToken && !empty($userToken)) {
             $user = User::where('id', $userToken->userUid)->first();
+
+            if ($user && (int) ($user->userRole ?? 0) === 0 && !empty($user->banned_at)) {
+                return redirect('/login')->withErrors([
+                    'message' => 'Your application cannot be processed currently. Please contact an administrator with your ID number for assistance.',
+                ]);
+            }
 
             return view('outSession.updatePassword', ["userCustomId" => $userCustomId, "user" => $user]);
         } else {
@@ -62,6 +90,16 @@ class ResetPasswordController extends Controller
 
         if ($password === $password_confirmation) {
             $userToken = UserResetToken::where('userToken', $userCustomId)->where('active', '1')->first();
+            if (empty($userToken)) {
+                return redirect('/login')->withErrors(['message' => 'Invalid password reset token.']);
+            }
+
+            $user = User::where('id', $userToken->userUid)->first();
+            if ($user && (int) ($user->userRole ?? 0) === 0 && !empty($user->banned_at)) {
+                return redirect('/login')->withErrors([
+                    'message' => 'Your application cannot be processed currently. Please contact an administrator with your ID number for assistance.',
+                ]);
+            }
 
             User::where('id', $userToken->userUid)->update(['password' => Hash::make($password)]);
             UserResetToken::where('userToken', $userCustomId)->where('active', '1')->update(['active' => 0]);

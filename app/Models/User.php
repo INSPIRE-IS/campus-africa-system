@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -157,6 +158,9 @@ class User extends Authenticatable
         'role_all_apps_report',
         'role_allow_generate_invoice',
         'role_allow_generate_temp_lease',
+        'banned_at',
+        'banned_reason',
+        'banned_by',
     ];
 
     public function files()
@@ -188,6 +192,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'role_super' => 'boolean',
+        'banned_at' => 'datetime',
     ];
 
     public function getLoginRouteExpiresInAttribute(): int
@@ -215,5 +220,55 @@ class User extends Authenticatable
     public function getResolvedFirstNameAttribute()
     {
         return $this->userFirstName ?: $this->latestStudentInfo?->firstName;
+    }
+
+    public function isBanned(): bool
+    {
+        return !empty($this->banned_at);
+    }
+
+    /**
+     * Find a banned user match using the identifiers captured on Step 1.
+     * This is used to prevent re-application with a new account.
+     */
+    public static function findBannedMatch($email, $idNumber, $passportNo, $studentNo): ?self
+    {
+        $email = strtolower(trim((string) $email));
+        $idNumber = trim((string) $idNumber);
+        $passportNo = strtoupper(trim((string) $passportNo));
+        $studentNo = trim((string) $studentNo);
+
+        $hasAny = (!empty($email) || !empty($idNumber) || !empty($passportNo) || !empty($studentNo));
+        if (!$hasAny) {
+            return null;
+        }
+
+        $studentUserIds = collect();
+        if (!empty($studentNo)) {
+            $studentUserIds = StudentsInfo::withTrashed()
+                ->where('studentNo', $studentNo)
+                ->pluck('userUid')
+                ->filter()
+                ->unique()
+                ->values();
+        }
+
+        return static::withTrashed()
+            ->whereNotNull('banned_at')
+            ->where(function ($q) use ($email, $idNumber, $passportNo, $studentUserIds) {
+                if (!empty($email)) {
+                    $q->orWhere('email', $email)->orWhere('userEmail', $email);
+                }
+                if (!empty($idNumber)) {
+                    $q->orWhere('userId', $idNumber);
+                }
+                if (!empty($passportNo)) {
+                    $q->orWhere('userPassport', $passportNo);
+                }
+                if ($studentUserIds instanceof Collection && $studentUserIds->isNotEmpty()) {
+                    $q->orWhereIn('id', $studentUserIds->all());
+                }
+            })
+            ->first();
     }
 }
