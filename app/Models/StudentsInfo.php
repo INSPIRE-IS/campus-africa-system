@@ -111,6 +111,7 @@ class StudentsInfo extends Model
         'rob_55_lease',
         'email_data_approved',
         'rob_60_cancelled',
+        'rob_65_debt',
         'onboard_complete',
         'email_verified',
         'fee_approved',

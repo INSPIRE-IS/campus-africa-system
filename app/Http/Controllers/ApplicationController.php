@@ -465,6 +465,10 @@ class ApplicationController extends Controller
             $typeName = "Lease";
             $field_data = "";
             $field_doc = "rob_55_lease";
+        } elseif ($fileType == "assurity_doc") {
+            $typeName = "Debt Assurity";
+            $field_data = "";
+            $field_doc = "rob_65_debt";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;
@@ -1504,6 +1508,8 @@ class ApplicationController extends Controller
             'rob_55_lease' => 3,
             'rob_45_other' => 3,
             'rob_60_cancelled' => 0,
+            // Debt Assurity uses temp-lease style semantics; default to Not Set (3).
+            'rob_65_debt' => 3,
             'email_data_approved' => 0,
             'onboard_complete' => 0,
             'email_verified' => 0,

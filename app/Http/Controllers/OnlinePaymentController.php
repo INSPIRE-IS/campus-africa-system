@@ -13,9 +13,17 @@ use DateTime;
 use Illuminate\Support\Facades\Log;
 use Auth;
 use App\Models\StudentsInfo;
+use App\Services\AssurityService;
 
 class OnlinePaymentController extends Controller
 {
+    /** @var AssurityService */
+    protected $assurityService;
+
+    public function __construct(AssurityService $assurityService)
+    {
+        $this->assurityService = $assurityService;
+    }
 
     public function initiate_payment(Request $request)
     {
@@ -265,6 +273,13 @@ class OnlinePaymentController extends Controller
 
         $this->update_user_status($id);
 
+        // After Step 5 payment submission, auto-request Debt Assurity for Cash students (sponsor signing link).
+        $this->assurityService->maybeAutoRequestAfterStep5($id, $this_year, [
+            'user_uid' => $id,
+            'display_name' => $currUser->userFirstName,
+            'role' => 0,
+        ], 'step5-paygate');
+
         /** @disregard P1009 */
         if (Auth::check() === false) {
             /** @disregard P1009 */
@@ -374,6 +389,13 @@ class OnlinePaymentController extends Controller
         ]);
 
         $this->update_user_status($id);
+
+        // After Step 5 payment submission, auto-request Debt Assurity for Cash students (sponsor signing link).
+        $this->assurityService->maybeAutoRequestAfterStep5($id, $this_year, [
+            'user_uid' => $id,
+            'display_name' => $currUser->userFirstName,
+            'role' => 0,
+        ], 'step5-paygate-on-screen');
         /** @disregard P1009 */
         if (Auth::check() === false) {
             /** @disregard P1009 */
@@ -424,6 +446,10 @@ class OnlinePaymentController extends Controller
             $typeName = "Lease";
             $field_data = "";
             $field_doc = "rob_55_lease";
+        } elseif ($fileType == "assurity_doc") {
+            $typeName = "Debt Assurity";
+            $field_data = "";
+            $field_doc = "rob_65_debt";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;

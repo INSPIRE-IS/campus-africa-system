@@ -222,6 +222,18 @@
                 </a>
         @endif
 
+        @if(isset($user) && $user->studentType == 'Cash / Direct')
+            <div class="paymentSection" style="margin-top:60px;">
+                <div class="form-field">
+                    <h1 class="header">Debt Assurity</h1>
+                </div>
+                <p class="cardSubHeaderGrey">
+                    A debt assurity acknowledgement will be sent to your sponsor for signature. Please make sure your sponsor
+                    details are correct and remind them to sign when they receive the link.
+                </p>
+            </div>
+        @endif
+
         <!-- <div class="paymentTwo" style="margin-top:100px;">
             <h1 class="header">Payment Submitted!</h1>
             <br/>

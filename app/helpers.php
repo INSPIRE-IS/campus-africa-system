@@ -36,6 +36,10 @@ if (!function_exists('get_user_status')) {
             $typeName = "Lease";
             $field_data = "";
             $field_doc = "rob_55_lease";
+        } elseif ($fileType == "assurity_doc") {
+            $typeName = "Debt Assurity";
+            $field_data = "";
+            $field_doc = "rob_65_debt";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;
