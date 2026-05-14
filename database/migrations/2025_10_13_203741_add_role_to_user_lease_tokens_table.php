@@ -14,9 +14,17 @@ class AddRoleToUserLeaseTokensTable extends Migration
     public function up()
     {
         Schema::table('user_lease_token', function (Blueprint $table) {
-            $table->string('role')->default('student'); // 'student' or 'parent'
-            $table->string('year')->nullable();
-            $table->softDeletes();
+            if (!Schema::hasColumn('user_lease_token', 'role')) {
+                $table->string('role')->default('student');
+            }
+
+            if (!Schema::hasColumn('user_lease_token', 'year')) {
+                $table->string('year')->nullable();
+            }
+
+            if (!Schema::hasColumn('user_lease_token', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
     }
 
@@ -28,9 +36,17 @@ class AddRoleToUserLeaseTokensTable extends Migration
     public function down()
     {
         Schema::table('user_lease_token', function (Blueprint $table) {
-            $table->dropColumn('role');
-            $table->dropColumn('year');
-            $table->dropSoftDeletes();
+            if (Schema::hasColumn('user_lease_token', 'role')) {
+                $table->dropColumn('role');
+            }
+
+            if (Schema::hasColumn('user_lease_token', 'year')) {
+                $table->dropColumn('year');
+            }
+
+            if (Schema::hasColumn('user_lease_token', 'deleted_at')) {
+                $table->dropSoftDeletes();
+            }
         });
     }
 }

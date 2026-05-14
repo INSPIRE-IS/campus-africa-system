@@ -38,7 +38,7 @@
     </style>
 
     <div class="greyAppSection  @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
-        @if ($bookingNext)
+        @if ($bookingNext && (empty($userAccount) || empty($userAccount->banned_at)))
             <div style="width: 100%;padding: 0 15px;margin: 0 auto;">
                 <div style="display: flex;justify-content: flex-end;padding-top: 5px;">
                     <a href="/create-new-booking/{{ $user[0]['userInfo']['userUid'] }}?year={{ $bookingNextYear }}" class="btn btn-warning mt-4"
