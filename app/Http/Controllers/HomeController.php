@@ -9548,7 +9548,15 @@ class HomeController extends Controller
                 }
             }
 
-            User::where('id', $request->userUid)->update($updateData);
+            // Not all student status fields exist on both `users` and `students_info`.
+            // For inline student-type edits we include `rob_65_debt` (debt assurity) which lives on
+            // `students_info` only, so avoid updating `users` with that field.
+            $userUpdateData = $updateData;
+            if ($request->task == 'inline_edit_student_type') {
+                unset($userUpdateData['rob_65_debt']);
+            }
+
+            User::where('id', $request->userUid)->update($userUpdateData);
 
             StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update($updateData);
         }
