@@ -10,7 +10,7 @@ use Grosv\LaravelPasswordlessLogin\LoginUrl;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\MailerList;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Booking;
 use App\Models\Lookups;
 use Illuminate\Support\Facades\Auth;

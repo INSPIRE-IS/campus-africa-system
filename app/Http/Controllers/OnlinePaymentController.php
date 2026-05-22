@@ -12,7 +12,7 @@ use App\Models\Lookups;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use App\Models\StudentsInfo;
 use App\Services\AssurityService;
 

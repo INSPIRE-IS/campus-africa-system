@@ -9,8 +9,8 @@ use App\Jobs\DownloadSelectedDocsJob;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserFiles;
-use Auth;
-use Mail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ActionList;
 use App\Models\MailerList;
 use App\Models\Lookups;
@@ -34,7 +34,7 @@ use App\Models\BookingPayment;
 use App\Models\StudentsInfo;
 use DateTime;
 use App\Models\InstitutionProperties;
-use PDF;
+use Illuminate\Support\Facades\PDF;
 use App\Models\PropertyCount;
 
 use App\Jobs\SendApproveDocMail;
@@ -2674,7 +2674,7 @@ class HomeController extends Controller
             // 'nsfas_bursar' => $request->nsfas_bursar,
         ]);
 
-        $oldstudInfo = StudentsInfo::where("userUid", $request->userUid)->first();
+        $oldInfo = StudentsInfo::where("userUid", $request->userUid)->first();
 
         $newstudData = [
             'userFirstName|First Name' => $request->firstName,
@@ -3611,12 +3611,13 @@ class HomeController extends Controller
             "email" => $request->email,
             "password" => Hash::make($password),
             "userRole" => "1",
-            "role_create_app" => $request->create_app,
-            "role_edit_app" => $request->edit_app,
-            "role_upload_docs" => $request->upload_docs,
-            "role_approve_docs" => $request->approve_docs,
-            "role_delete_booking" => $request->delete_booking,
-            "role_delete_uploaded" => $request->delete_uploaded,
+            // Checkboxes: when unchecked they are omitted from the request; normalize to 0/1.
+            "role_create_app" => $request->create_app !== '1' ? 0 : 1,
+            "role_edit_app" => $request->edit_app !== '1' ? 0 : 1,
+            "role_upload_docs" => $request->upload_docs !== '1' ? 0 : 1,
+            "role_approve_docs" => $request->approve_docs !== '1' ? 0 : 1,
+            "role_delete_booking" => $request->delete_booking !== '1' ? 0 : 1,
+            "role_delete_uploaded" => $request->delete_uploaded !== '1' ? 0 : 1,
             // "role_braamlofts" => $request->role_braamlofts,
             // "role_80_jorissen" => $request->role_80_jorissen,
             // "role_49_jorissen" => $request->role_49_jorissen,
@@ -3624,18 +3625,18 @@ class HomeController extends Controller
             // "role_wynton_joy" => $request->role_wynton_joy,
             // "role_126_siemert" => $request->role_126_siemert,
             // "role_ymca" => $request->role_ymca,
-            "role_change_date" => $request->role_change_date,
-            "role_change_bed" => $request->role_change_bed,
-            "role_manage_users" => $request->role_manage_users,
-            "role_sys_admin" => $request->role_sys_admin,
+            "role_change_date" => $request->role_change_date !== '1' ? 0 : 1,
+            "role_change_bed" => $request->role_change_bed !== '1' ? 0 : 1,
+            "role_manage_users" => $request->role_manage_users !== '1' ? 0 : 1,
+            "role_sys_admin" => $request->role_sys_admin !== '1' ? 0 : 1,
             // "email_info" => $request->email_details,
-            "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload,
-            "role_cancel_booking" => $request->role_cancel_booking,
-            "role_update_booking_fee" => $request->role_update_booking_fee,
-            "role_lookup" => $request->role_lookup,
-            "role_comment" => $request->role_comment,
+            "role_nsfas_approval_upload" => $request->role_nsfas_approval_upload !== '1' ? 0 : 1,
+            "role_cancel_booking" => $request->role_cancel_booking !== '1' ? 0 : 1,
+            "role_update_booking_fee" => $request->role_update_booking_fee !== '1' ? 0 : 1,
+            "role_lookup" => $request->role_lookup !== '1' ? 0 : 1,
+            "role_comment" => $request->role_comment !== '1' ? 0 : 1,
             "user_role_name" => $request->user_role_name,
-            "role_cancel_lease" => $request->role_cancel_lease,
+            "role_cancel_lease" => $request->role_cancel_lease !== '1' ? 0 : 1,
             "role_lease_regen" => $regen,
             "role_modify_approved" => $request->role_modify_approved !== '1' ? 0 : 1,
             "role_non_funding" => $request->role_non_funding !== '1' ? 0 : 1,
@@ -3643,17 +3644,18 @@ class HomeController extends Controller
             "role_funding" => $request->role_funding !== '1' ? 0 : 1,
             "role_app_lease" => $request->role_app_lease !== '1' ? 0 : 1,
             "template" => $request->template,
-            "role_change_student_type" => $request->role_change_student_type,
-            "role_view_booking_summary" => $request->role_view_booking_summary,
-            "role_toggle_online_booking" => $request->role_toggle_online_booking,
-            "role_change_building" => $request->role_change_building,
+            "role_change_student_type" => $request->role_change_student_type !== '1' ? 0 : 1,
+            "role_view_booking_summary" => $request->role_view_booking_summary !== '1' ? 0 : 1,
+            "role_toggle_online_booking" => $request->role_toggle_online_booking !== '1' ? 0 : 1,
+            "role_change_building" => $request->role_change_building !== '1' ? 0 : 1,
             // "role_change_building" => $request->role_change_building,
-            "role_waive_fee" => $request->role_waive_fee,
+            "role_waive_fee" => $request->role_waive_fee !== '1' ? 0 : 1,
             // "role_approve_waive" => $request->role_approve_waive,
-            "role_bm_report" => $request->role_bm_report,
-            "role_mda_report" => $request->role_mda_report,
-            "role_all_apps_report" => $request->role_all_apps_report,
-            "role_allow_generate_invoice" => $request->role_allow_generate_invoice,
+            "role_bm_report" => $request->role_bm_report !== '1' ? 0 : 1,
+            "role_mda_report" => $request->role_mda_report !== '1' ? 0 : 1,
+            "role_all_apps_report" => $request->role_all_apps_report !== '1' ? 0 : 1,
+            // Checkbox: when unchecked it is omitted from the request -> treat as false (0)
+            "role_allow_generate_invoice" => $request->role_allow_generate_invoice !== '1' ? 0 : 1,
         ]);
 
         $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();

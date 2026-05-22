@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use PDF;
+use Illuminate\Support\Facades\PDF;
 use App\Services\AssurityService;
 use Jenssegers\Agent\Agent;
 

@@ -9,7 +9,7 @@ use App\Models\UserFiles;
 use App\Models\MailerList;
 use App\Models\Booking;
 use App\Models\User;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ActionList;
 
 class MailReminder extends Controller
