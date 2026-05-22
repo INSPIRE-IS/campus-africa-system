@@ -136,7 +136,7 @@ class PDFController extends Controller
       }
       // Debt Assurity must be approved (1) before a lease can be generated for Cash students.
       if ($data->studentType == 'Cash / Direct' && (int) $data->rob_65_debt !== 1) {
-        \Log::warning('LEASE_GATE: blocked lease generation due to debt assurity status', [
+        Log::warning('LEASE_GATE: blocked lease generation due to debt assurity status', [
           'studentId' => $studentId,
           'year' => $this_year,
           'rob_65_debt' => (int) $data->rob_65_debt,

@@ -11,7 +11,7 @@ use App\Models\Residence;
 use App\Models\RoomTypes;
 use App\Models\UserFiles;
 use App\Models\ActionList;
-use Illuminate\Support\Facades\PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\Storage;
 use App\Models\StudentsInfo;
 use DateInterval;

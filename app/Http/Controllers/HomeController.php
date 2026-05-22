@@ -34,7 +34,7 @@ use App\Models\BookingPayment;
 use App\Models\StudentsInfo;
 use DateTime;
 use App\Models\InstitutionProperties;
-use Illuminate\Support\Facades\PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\PropertyCount;
 
 use App\Jobs\SendApproveDocMail;

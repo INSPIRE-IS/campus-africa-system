@@ -16,7 +16,7 @@ use DateTime;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 
 
 class TestQuoteInvoicePDFGeneration extends Command
