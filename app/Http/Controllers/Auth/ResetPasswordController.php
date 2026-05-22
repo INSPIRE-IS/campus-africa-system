@@ -63,21 +63,23 @@ class ResetPasswordController extends Controller
         if ($password === $password_confirmation) {
             $userToken = UserResetToken::where('userToken', $userCustomId)->where('active', '1')->first();
 
+            if (!$userToken) {
+                return redirect()->route('login')->with('error', 'Password reset link is invalid or has expired.');
+            }
+
             User::where('id', $userToken->userUid)->update(['password' => Hash::make($password)]);
             UserResetToken::where('userToken', $userCustomId)->where('active', '1')->update(['active' => 0]);
 
-            $user = User::with([
-                "studentInfo.booking" => function ($query) {
-                    $query->whereNotNull("bed_code"); // ensure bed_code exists
-                }
-            ])
-                ->whereHas("studentInfo.booking", function ($query) {
-                    $query->whereNotNull("bed_code"); // filter users that actually have a booking with bed_code
-                })
-                ->where("id", $userToken->userUid)
-                ->first();
+            // Always load the user (system/admin users won't have studentInfo/booking).
+            // Firebase password update only applies to tenant users with an active booking.
+            $user = User::with(['studentInfo.booking'])->where("id", $userToken->userUid)->first();
 
-            if ($user->studentInfoForCurrentYear && $user->studentInfoForCurrentYear->booking) {
+            if (
+                $user
+                && $user->studentInfoForCurrentYear
+                && $user->studentInfoForCurrentYear->booking
+                && !empty($user->studentInfoForCurrentYear->booking->bed_code)
+            ) {
                 $bedCode = $user->studentInfoForCurrentYear->booking->bed_code;
                 $bookingCode = $user->studentInfoForCurrentYear->booking->booking_code;
                 try {
@@ -89,7 +91,11 @@ class ResetPasswordController extends Controller
                 }
                 //return ["bed_code" => $bedCode,"booking_code" => $bookingCode];
             } else {
-                logger()->info("No booking found for user {$user->id}");
+                if ($user) {
+                    logger()->info("No booking found for user {$user->id}; skipping Firebase password update.");
+                } else {
+                    logger()->warning("Password updated for userUid {$userToken->userUid} but user record could not be loaded.");
+                }
             }
             return redirect()->route('login');
         } else {
