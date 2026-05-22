@@ -11,7 +11,7 @@ use App\Models\Booking;
 use App\Models\Lookups;
 use DateTime;
 use Illuminate\Support\Facades\Log;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use App\Models\StudentsInfo;
 use App\Services\AssurityService;
 

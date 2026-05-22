@@ -10,7 +10,7 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\ActionList;
 use App\Models\StudentsInfo;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Residence;
 use App\Models\RoomTypes;
 use Illuminate\Support\Facades\DB;

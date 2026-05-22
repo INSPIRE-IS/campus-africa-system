@@ -13,7 +13,7 @@ use App\Models\UserLeaseToken;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use PDF;
+use Illuminate\Support\Facades\PDF;
 
 class TestLeasePDFGeneration extends Command
 {
