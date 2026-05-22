@@ -7000,6 +7000,20 @@ class HomeController extends Controller
     public function download_docs(Request $request, $userId)
     {
         try {
+            // Downloading a student's full doc pack is privileged (contains PII).
+            if (!Auth::check() || (int) Auth::user()->userRole === 0) {
+                abort(403);
+            }
+            if (!(
+                (int) Auth::user()->role_upload_docs === 1
+                || (int) Auth::user()->role_approve_docs === 1
+                || (int) Auth::user()->role_edit_app === 1
+                || (int) Auth::user()->role_app_lease === 1
+                || (int) Auth::user()->role_sys_admin === 1
+                || (int) Auth::user()->role_super === 1
+            )) {
+                abort(403);
+            }
 
             $this_year = Lookups::where('group_id', '4')->value('lookup_name') ?? date('Y');
             if (Session::has('year')) {
@@ -10925,6 +10939,19 @@ class HomeController extends Controller
 
     public function create_new_booking(Request $request, $userID)
     {
+        // Creating bookings is an administrative action; deny view-only accounts.
+        if (!Auth::check() || (int) Auth::user()->userRole === 0) {
+            abort(403);
+        }
+        if (!(
+            (int) Auth::user()->role_create_app === 1
+            || (int) Auth::user()->role_edit_app === 1
+            || (int) Auth::user()->role_sys_admin === 1
+            || (int) Auth::user()->role_super === 1
+        )) {
+            abort(403);
+        }
+
         $activeYear = (int) Lookups::activeYearValue();
         if ($activeYear <= 0) {
             $activeYear = (int) now()->year;
@@ -11874,6 +11901,21 @@ class HomeController extends Controller
 
     public function send_reminder_mail(Request $request)
     {
+        // Reminder emails are an admin action; deny view-only accounts.
+        if (!Auth::check() || (int) Auth::user()->userRole === 0) {
+            abort(403);
+        }
+        if (!(
+            (int) Auth::user()->role_upload_docs === 1
+            || (int) Auth::user()->role_approve_docs === 1
+            || (int) Auth::user()->role_edit_app === 1
+            || (int) Auth::user()->role_comment === 1
+            || (int) Auth::user()->role_app_lease === 1
+            || (int) Auth::user()->role_sys_admin === 1
+            || (int) Auth::user()->role_super === 1
+        )) {
+            abort(403);
+        }
         // $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         // $this_year = $this_year->lookup_name;
 
