@@ -13,7 +13,7 @@ use App\Models\UserFiles;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class AssurityService
 {
