@@ -6913,6 +6913,20 @@ class HomeController extends Controller
     public function download_docs(Request $request, $userId)
     {
         try {
+            // Downloading a student's full doc pack is privileged (contains PII).
+            if (!Auth::check() || (int) Auth::user()->userRole === 0) {
+                abort(403);
+            }
+            if (!(
+                (int) Auth::user()->role_upload_docs === 1
+                || (int) Auth::user()->role_approve_docs === 1
+                || (int) Auth::user()->role_edit_app === 1
+                || (int) Auth::user()->role_app_lease === 1
+                || (int) Auth::user()->role_sys_admin === 1
+                || (int) Auth::user()->role_super === 1
+            )) {
+                abort(403);
+            }
 
             $this_year = Lookups::where('group_id', '4')->value('lookup_name') ?? date('Y');
             if (Session::has('year')) {
@@ -10709,14 +10723,34 @@ class HomeController extends Controller
 
     public function create_new_booking(Request $request, $userID)
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-        //get current year
-        $session_year = Session::get('year');
-        if (!empty($session_year)) {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-            $this_year = $this_year->lookup_name;
+        // Creating bookings is an administrative action; deny view-only accounts.
+        if (!Auth::check() || (int) Auth::user()->userRole === 0) {
+            abort(403);
         }
+        if (!(
+            (int) Auth::user()->role_create_app === 1
+            || (int) Auth::user()->role_edit_app === 1
+            || (int) Auth::user()->role_sys_admin === 1
+            || (int) Auth::user()->role_super === 1
+        )) {
+            abort(403);
+        }
+
+        $activeYear = (int) Lookups::activeYearValue();
+        if ($activeYear <= 0) {
+            $activeYear = (int) now()->year;
+        }
+
+        // The app profile "Create new booking" button passes the intended year via query string.
+        $requestedYear = (string) (int) $request->query('year');
+        $applicationYear = (string) $activeYear;
+        if ($requestedYear !== '0' && Lookups::where('group_id', 4)->where('lookup_name', $requestedYear)->exists()) {
+            $applicationYear = $requestedYear;
+        }
+
+        // Year context (used for "old/cancelled" gating) follows the current session year if present.
+        $session_year = (int) Session::get('year');
+        $this_year = (string) ($session_year > 0 ? $session_year : $activeYear);
 
         $userMain = User::where('id', $userID)->first();
 
@@ -11601,7 +11635,23 @@ class HomeController extends Controller
 
     public function send_reminder_mail(Request $request)
     {
-        // $this_year = Lookups::where('group_id', '4')->first();
+        // Reminder emails are an admin action; deny view-only accounts.
+        if (!Auth::check() || (int) Auth::user()->userRole === 0) {
+            abort(403);
+        }
+        if (!(
+            (int) Auth::user()->role_upload_docs === 1
+            || (int) Auth::user()->role_approve_docs === 1
+            || (int) Auth::user()->role_edit_app === 1
+            || (int) Auth::user()->role_comment === 1
+            || (int) Auth::user()->role_app_lease === 1
+            || (int) Auth::user()->role_sys_admin === 1
+            || (int) Auth::user()->role_super === 1
+        )) {
+            abort(403);
+        }
+
+        // $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         // $this_year = $this_year->lookup_name;
 
         $user = User::where('id', $request->userId)->first();

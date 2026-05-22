@@ -38,15 +38,22 @@
     </style>
 
     <div class="greyAppSection  @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
-        @if ($bookingNext)
-            <div style="width: 100%;padding: 0 15px;margin: 0 auto;">
-                <div style="display: flex;justify-content: flex-end;padding-top: 5px;">
-                    <a href="/create-new-booking/{{ $user[0]['userInfo']['userUid'] }}" class="btn btn-warning mt-4"
-                        style="padding: 10px 20px;background-color: #e74f26;color: #fff;border: none;border-radius: 10px;text-decoration: none;font-weight: 500;transition: background-color 0.3s ease;">
-                        Create a new booking for {{ $this_year + 1 }}
-                    </a>
+        @if ($bookingNext && (empty($userAccount) || empty($userAccount->banned_at)))
+            @if (
+                (int) Auth::user()->role_create_app === 1 ||
+                    (int) Auth::user()->role_edit_app === 1 ||
+                    (int) Auth::user()->role_sys_admin === 1 ||
+                    (int) Auth::user()->role_super === 1)
+                <div style="width: 100%;padding: 0 15px;margin: 0 auto;">
+                    <div style="display: flex;justify-content: flex-end;padding-top: 5px;">
+                        <a href="/create-new-booking/{{ $user[0]['userInfo']['userUid'] }}?year={{ $bookingNextYear }}"
+                            class="btn btn-warning mt-4"
+                            style="padding: 10px 20px;background-color: #e74f26;color: #fff;border: none;border-radius: 10px;text-decoration: none;font-weight: 500;transition: background-color 0.3s ease;">
+                            Create a new booking for {{ $bookingNextYear }}
+                        </a>
+                    </div>
                 </div>
-            </div>
+            @endif
         @endif
 {{-- Physical Address Next of Kin Student Type --}}
         <div class="container">
@@ -719,12 +726,29 @@
                             </div>
                         </div>
                         <!-- <a href="/download/docs/{{ $user[0]['userInfo']['userUid'] }}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
-                        <button type="button" class="appBooking" id="sendMailReminder"
-                            onClick="reminderMail('{{ $user[0]['userInfo']['userUid'] }}')"
-                            style="color:#fff; background-color:#e74f26; border:none">Email Reminder</button>
+                        @if (
+                            (int) Auth::user()->role_upload_docs === 1 ||
+                                (int) Auth::user()->role_approve_docs === 1 ||
+                                (int) Auth::user()->role_edit_app === 1 ||
+                                (int) Auth::user()->role_comment === 1 ||
+                                (int) Auth::user()->role_app_lease === 1 ||
+                                (int) Auth::user()->role_sys_admin === 1 ||
+                                (int) Auth::user()->role_super === 1)
+                            <button type="button" class="appBooking" id="sendMailReminder"
+                                onClick="reminderMail('{{ $user[0]['userInfo']['userUid'] }}')"
+                                style="color:#fff; background-color:#e74f26; border:none">Email Reminder</button>
+                        @endif
                         <!-- files_to_download -->
-                        <button type="button" class="appBooking" id="downloadAllDocs"
-                            onClick="downloadZipDocs('{{ $user[0]['userInfo']['userUid'] }}')">Download All</button>
+                        @if (
+                            (int) Auth::user()->role_upload_docs === 1 ||
+                                (int) Auth::user()->role_approve_docs === 1 ||
+                                (int) Auth::user()->role_edit_app === 1 ||
+                                (int) Auth::user()->role_app_lease === 1 ||
+                                (int) Auth::user()->role_sys_admin === 1 ||
+                                (int) Auth::user()->role_super === 1)
+                            <button type="button" class="appBooking" id="downloadAllDocs"
+                                onClick="downloadZipDocs('{{ $user[0]['userInfo']['userUid'] }}')">Download All</button>
+                        @endif
                         <div class="waitve_btn"></div>
                         @if (in_array($booking->property, $allowedResidences))
                             @if (
