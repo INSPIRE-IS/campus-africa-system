@@ -14,6 +14,11 @@
 3) If today's session file does not exist yet, create it from `temp/session-template.md`.
 4) Check `temp/todos.md` for the current action plan and priority items.
 
+Quick pointers:
+- Session index/menu: `temp/session-contents.md`
+- 6-month roadmap / research notes: `temp/enhancement2027.md` (see also `temp/session-2026-05-24.md`)
+- Master vs staging comparisons (gitignored notes): `temp/git-master-vs-staging.md`
+
 ## No-Surprises Rules
 - Do not auto-commit. Only commit when explicitly asked.
 - Do not change production/live behavior unless it is gated/flagged and approved.
@@ -26,6 +31,10 @@
 
 ## Purpose
 Document everything for this repo.
+
+## Email delivery tracking note (Office 365)
+- SMTP via `smtp.office365.com` only confirms SMTP acceptance; it does not provide reliable "delivered" / "read" feedback.
+- If we need delivery tracking, use Exchange Online Message Trace (UI) or Microsoft Graph message trace APIs.
 
 
 ## Repo layout
@@ -81,7 +90,10 @@ Document everything for this repo.
 - Reports view: sections for All Documents / Institution & Funding Docs / Compatibility are gated by `role_all_apps_report` + `role_lookup` (not `role_manage_users`).
 - Reports downloads:
   - `/download-selected-docs` (reports page) dispatches `DownloadSelectedDocsJob` -> `download:selected_docs` (console). Filters are applied when values are not "All": `year`, `property`, `institution`, `studentType`, and `lease_filter`. The command only zips `user_files.fileId = moveIn` for the selected year, and `lease_filter` maps to `Uploaded`/`Approved` status.
-  - Reports buttons are wired via jQuery click handlers; avoid duplicate inline `onClick` to prevent double job dispatch.
+- Reports buttons are wired via jQuery click handlers; avoid duplicate inline `onClick` to prevent double job dispatch.
+- Email safety lookups (legacy behavior used across many mail jobs/commands):
+  - Lookups group `10` (`Email - Restrict to Test Domain(s)`): semicolon-delimited domain allowlist; if set, recipients not matching allowed domains are replaced with `studentsca00@gmail.com` (prevents accidental spamming from staging/dev).
+  - Lookups group `11` (`Email - BCC Email Addresses`): semicolon-delimited internal addresses; passed as `$cc` but used as **BCC** in `YellowBackMail`/`GreenBackMail` (mailables call `bcc()` when list present).
 - Step 5 booking guardrails: `ApplicationController::step_5()` now checks auth before starting a DB transaction, loads booking via `StudentsInfo.bookingId` with fallback to user+year, and logs out + redirects to login if the booking is missing or cancelled.
 - Admin "Add Document" (app profile) is gated by: allowed residence, `role_upload_docs == 1`, `rob_60_cancelled == 0`, and either `rob_50_approve == 0` or (`role_modify_approved == 1` and `rob_50_approve == 2`). See `resources/views/admin/app_profile.blade.php`.
 - Admin "Update Rates" button (`#openPaymentModal` in `app_profile.blade.php`) is shown only when `Auth::user()->role_sys_admin == 1`. It opens `#paymentModal`, which posts to `/update-booking-payment` (`HomeController::updateBookingPayment`) to update `booking_payments.monthly_rental` and `funded_monthly`, and recalculates `monthly_rental_total` and `total_funded` as `* 10`. The controller logs an `ActionList` entry "Booking Payment Updated"; there is no server-side role check beyond auth, so UI gating is the only access control.
@@ -153,6 +165,7 @@ Document everything for this repo.
   - `temp/REVIEWED_VIEWS.md`: ad-hoc notes/review findings for specific Blade views (e.g., admin maintenance/update screens).
   - `temp/TODOS1.md`: scratch TODO list (may overlap with root `TODOS.md` / `TODOS1.md`).
   - `temp/UPGRADE.md`: Laravel upgrade research notes (dependency blockers, risks, staged upgrade plan).
+  - `temp/monthly-pop-bulk-enable-2026-cash.sql`: SQL helper to bulk-enable Monthly POP reminders for 2026 Cash students (includes preview export + ActionList audit insert).
 ## Project TODOs
 - See `TODOS.md`
 
