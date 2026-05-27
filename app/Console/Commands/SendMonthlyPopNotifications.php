@@ -115,9 +115,14 @@ class SendMonthlyPopNotifications extends Command
             $targetDay = $sendDay;
 
             $monthKey = Carbon::parse($today)->format('Y-m');
+            // Prevent duplicate sends for the same month. Support both the legacy wording ("sent")
+            // and the newer wording ("queued") so changing copy doesn't re-trigger older months.
             $alreadySent = ActionList::where('userUid', $row->user_id)
                 ->where('year', $row->year)
-                ->where('action', 'like', "Monthly POP notice sent {$monthKey}%")
+                ->where(function ($q) use ($monthKey) {
+                    $q->where('action', 'like', "Monthly POP notice sent {$monthKey}%")
+                        ->orWhere('action', 'like', "Monthly POP notice queued {$monthKey}%");
+                })
                 ->exists();
 
             if ($alreadySent) {
@@ -167,26 +172,43 @@ class SendMonthlyPopNotifications extends Command
             $message = str_replace(array_keys($messageReplace), array_values($messageReplace), $mailer->message);
             $subject = str_replace('[application_number]', $row->booking_code, $mailer->subject);
 
+            // Email safety / legacy lookup behavior:
+            // - Lookups group 10: "Email - Restrict to Test Domain(s)"
+            //   If populated (semicolon-delimited domains), recipients outside the allowlist are replaced with
+            //   the safe test inbox `studentsca00@gmail.com`. If empty/null, real recipients are used.
+            // - Lookups group 11: "Email - BCC Email Addresses"
+            //   Semicolon-delimited internal email addresses. Used as BCC (see YellowBackMail::build()).
+            //
+            // This pattern exists across multiple mail jobs and was historically used to prevent accidental
+            // spamming during testing/staging, while allowing internal teams to be copied on sends in production.
             $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();
             $cc = !empty($allowedMailsCC) ? explode(';', $allowedMailsCC) : [];
             $allowedMails = Lookups::where('group_id', '10')->pluck('lookup_name')->first();
 
+            // Track the resolved recipients we actually dispatch emails to (useful for audit/debugging).
+            $toLogParts = [];
+            $ccLog = array_values(array_filter(array_map('trim', $cc), fn ($v) => $v !== ''));
+
             if ($sendStudent) {
                 $studentEmail = $this->resolveAllowedEmail($row->userEmail, $allowedMails);
-                SendMonthlyPopMail::dispatch($studentEmail, $subject, $message, $cc);
+                SendMonthlyPopMail::dispatch($studentEmail, $subject, $message, $cc, $row->user_id, $row->year, $monthKey, 'student', $row->booking_code);
+                $toLogParts[] = "student={$studentEmail}";
                 $counts['emails_sent']++;
             }
 
             if ($sendSponsor && !empty($row->sponEmail)) {
                 $sponsorEmail = $this->resolveAllowedEmail($row->sponEmail, $allowedMails);
-                SendMonthlyPopMail::dispatch($sponsorEmail, $subject, $message, $cc);
+                SendMonthlyPopMail::dispatch($sponsorEmail, $subject, $message, $cc, $row->user_id, $row->year, $monthKey, 'sponsor', $row->booking_code);
+                $toLogParts[] = "sponsor={$sponsorEmail}";
                 $counts['emails_sent']++;
             }
 
             if ($sendStudent || $sendSponsor) {
+                $toLog = empty($toLogParts) ? 'to=none' : ('to=' . implode(', ', $toLogParts));
+                $ccLogText = empty($ccLog) ? 'cc=none' : ('cc=' . implode(';', $ccLog));
                 ActionList::create([
                     'userUid' => $row->user_id,
-                    'action' => "Monthly POP notice sent {$monthKey} (send {$effectiveSendDateString}, due {$effectiveDueDate}, amount {$row->monthly_pop_amount})",
+                    'action' => "Monthly POP notice queued {$monthKey} (run {$effectiveSendDateString}, due {$effectiveDueDate}, amount {$row->monthly_pop_amount}, {$toLog}, {$ccLogText})",
                     'actionUserUid' => 0,
                     'actionUserDisplayName' => 'System',
                     'actionUserRole' => 'system',

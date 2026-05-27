@@ -620,21 +620,6 @@ class HomeController extends Controller
                         }
                     }
 
-                    if ($item['field'] == "proof_of_payment" || $item['field'] == "copyID") {
-
-                        if ($item['status'] == "Approved") {
-                            array_push($phase1Arr, 2);
-                        }
-
-                        if ($item['status'] == "Uploaded") {
-                            array_push($phase1Arr, 1);
-                        }
-
-                        if ($item['status'] == "Rejected" || $item['status'] == "") {
-                            array_push($phase1Arr, 0);
-                        }
-                    }
-
 
                     if ($item['field'] == "studentCard" || $item['field'] == "proofRegistration" || $item['field'] == "bursaryApproval" || $item['field'] == "bankStatement") {
                         if ($phase2 == "Empty" && $item['status'] == "Uploaded") {
@@ -3196,6 +3181,7 @@ class HomeController extends Controller
 
         $roomId = $request->roomType;
 
+        /** @disregard P1014 */
         $request->property = Residence::where('id', $request->property)->pluck('residence')->first();
         $request->roomType = RoomTypes::where('id', $request->roomType)->pluck('name')->first();
 
