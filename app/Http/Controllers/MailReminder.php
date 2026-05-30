@@ -18,7 +18,7 @@ class MailReminder extends Controller
     {
         $BookingFeeReminder = Lookups::where('group_id', '12')->first();
         $oustandingReminder = Lookups::where('group_id', '13')->first();
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
         $this_year = $this_year->lookup_name;
 
         $allowedMailsCC = Lookups::where('group_id', '11')->pluck('lookup_name')->first();

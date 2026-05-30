@@ -53,6 +53,7 @@
                         </a>
                     </div>
                 </div>
+            </div>
             @endif
         @endif
 {{-- Physical Address Next of Kin Student Type --}}

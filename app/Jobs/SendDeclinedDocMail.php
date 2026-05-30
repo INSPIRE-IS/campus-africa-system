@@ -26,19 +26,21 @@ class SendDeclinedDocMail implements ShouldQueue
     public $typeName;
     public $reason;
     public $redirectUrl;
+    public $year;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $userUid, $typeName, $reason, $redirectUrl)
+    public function __construct(User $userUid, $typeName, $reason, $redirectUrl, $year = null)
     {
         //
         $this->userUid = $userUid;
         $this->typeName = $typeName;
         $this->reason = $reason;
         $this->redirectUrl = $redirectUrl;
+        $this->year = $year;
     }
 
     /**
@@ -48,14 +50,34 @@ class SendDeclinedDocMail implements ShouldQueue
      */
     public function handle()
     {
-        $this_year = Lookups::where('group_id', '4')->first();
-        $this_year = $this_year->lookup_name;
-
         $userId = $this->userUid;
 
         $userMain = User::where('id', $userId->id)->first();
+        if (!$userMain) {
+            return;
+        }
+
+        // Prefer an explicit year passed from the controller; otherwise fall back to latest StudentsInfo, then active year.
+        $this_year = (string) (int) $this->year;
+        if ($this_year === '0') {
+            $this_year = (string) (int) StudentsInfo::where('userUid', $userId->id)->orderByDesc('year')->value('year');
+        }
+        if ($this_year === '0' || $this_year === '') {
+            $this_year = (string) (int) Lookups::activeYearValue();
+        }
+
         $userInfo = StudentsInfo::where('userUid', $userId->id)->where('year', $this_year)->first();
+        if (!$userInfo) {
+            $userInfo = StudentsInfo::where('userUid', $userId->id)->orderByDesc('year')->first();
+        }
+        if (!$userInfo) {
+            return;
+        }
+
         $booking = Booking::where('id', $userInfo->bookingId)->first();
+        if (!$booking) {
+            return;
+        }
 
 
         $message_replace['bookingRef'] = $booking->booking_code;
@@ -66,6 +88,9 @@ class SendDeclinedDocMail implements ShouldQueue
         $message_replace['close_application_link'] = "</a>";
 
         $mailerForMessage = MailerList::where("mailer_name", "Document Declined")->first();
+        if (!$mailerForMessage) {
+            return;
+        }
 
         if ($mailerForMessage->status == '1') {
 

@@ -13,6 +13,7 @@
 2) Open the latest `temp/session-YYYY-MM-DD.md` for recent context.
 3) If today's session file does not exist yet, create it from `temp/session-template.md`.
 4) Check `temp/todos.md` for the current action plan and priority items.
+5) Open `temp/session-contents.md` (session index) to quickly jump between days, and update it when you create a new session file.
 
 Quick pointers:
 - Session index/menu: `temp/session-contents.md`
@@ -28,6 +29,8 @@ Quick pointers:
 - Always think like a senior developer when making technical decisions.
 - All BA/design choices should reflect senior‑level UI/UX and senior‑marketer thinking (clarity, conversion, and user trust).
 - Default to the best possible UI/UX unless there is a clear constraint.
+- Never guess.
+- Always ask for additional context if required.
 
 ## Purpose
 Document everything for this repo.
@@ -72,9 +75,28 @@ Document everything for this repo.
 - Follow Laravel conventions; prefer existing services/traits when extending behavior
 
 ## Notes
+- Year handling (important legacy behavior):
+  - `lookups.group_id = 4` functions like a "year config table" (one row per academic year with lease dates and year-based config in `lookups.data`).
+  - Many legacy code paths still use `Lookups::where('group_id', '4')->first()` (no ordering / no active-year filter), so the "current year" effectively becomes **whatever row MySQL returns first**.
+  - As of 2026-05-10, `lookups.is_active_year` was introduced for group_id=4, and the Lookups admin UI enforces **exactly one** active year. Prefer treating the active year row as the single source of truth for "current year" config.
+  - Operational workaround previously used when rolling to a new year: **update/insert the lookup rows so the newest year is the first row returned** (e.g., rename/shift `2025->2026` and `2026->2027`) to keep legacy `->first()` calls aligned. This should become unnecessary once legacy call sites are migrated to use `is_active_year` (or session year where appropriate).
+  - Newer pages (notably `HomeController::dashboard()` and `HomeController::documents()`) instead build a year list and use `orderByDesc('lookup_name')` + `Session::put('year')`, which is safer with multiple years.
+  - Student registration (public `/register` wizard):
+    - The Year dropdown is populated from **all** `lookups.group_id=4` rows (`resources/views/auth/register.blade.php`).
+    - `RegisterController::registration_step_one` persists the chosen year onto `students_info.year` and `bookings_data.year`.
+    - Registration now sets `Session::put('year', $request->year)` on Step 1, and file uploads use `Session::get('year')` (fallback to latest booking year). This is required for safe dual-year registration (e.g., 2026 + 2027), but should be tested end-to-end before deploying.
+  - Admin applications (`/applications`):
+    - `HomeController::applications` sets `Session::put('year', Lookups::where('group_id','4')->first()->lookup_name)` (legacy).
+    - The year dropdown in `resources/views/admin/applications.blade.php` lists all year rows (sorted desc), and `/applications/filter` persists the chosen year into session.
+  - Future improvement (recommended):
+    - Migrate remaining legacy `Lookups group_id=4 ->first()` call sites to use the active-year row (or the session-selected year for year-scoped student data) so we can safely support overlapping registrations (e.g., 2026 second-semester registrations in July while opening 2027 applications on June 1).
 - Do not commit secrets from `.env`
 - Use `artisan` generators for new models, controllers, and migrations
 - Application status logic: there is legacy logic tied to user files and flags (e.g., mapping `fileType` like `proof_of_payment`, `copyID`, `studentCard`, `proofRegistration`, `bursaryApproval`, `bankStatement`, `moveIn`, and `other*` to status fields such as `fee_approved`, `id_data_approved`, `student_card_approved`, `registration_approved`, `bursary_approved`, `bank_approved`, and `rob_*` steps). Be mindful of cancelled bookings and soft-deleted records when investigating inconsistencies.
+- Repeat booking doc carry-over (new feature):
+  - When a student creates a new booking/application for the next year, the system can auto-duplicate certain *previous-year approved* docs into the new year so the student does not re-upload from scratch.
+  - Current implementation: `ApplicationController::new_booking_step_4()` calls `duplicatePreviousYearFile()` for `user_files.fileId` = `copyID` and `studentCard` (only if the previous year's file status is `Approved`). The duplicated row is created for the new year with `status = Uploaded` and approval fields cleared.
+  - Admin UI "ROB" indicators for core docs are driven by `students_info.rob_*` fields (e.g., `rob_15_id`, `rob_20_card`), not `user_files.status`. If carry-over creates `user_files` rows but does not update `students_info.rob_*`, the app profile can show docs present in DB while the ROB indicator stays red (appears "missing"). This needs to be kept in sync as part of the carry-over business rule.
 - When investigating application status for a student, the admin suggested checking whether the user has linked files; current code paths may loop through files per user, which is heavy and not necessarily useful as-is. Consider summarizing counts or aggregations instead of per-file loops.
 - The `booking-summary` view/function reports per-property totals (beds, bookings allocated, waiting list, booking %). Keep this in mind for future analysis; we can review this function together when ready.
 - `booking_summary` logic (BookingReportController): counts only bookings for the selected year where `booking.cancelled != '1'`, StudentsInfo exists for `userUid`+`year`, and `StudentsInfo.rob_60_cancelled != 1`. Allocation rules: allocated if `rob_10_fee == '2'` and `rob_40_bed == '2'`; waitlisted if `rob_10_fee == '2'` and `rob_40_bed != '2'`. Room types exclude "Building Manager"; properties exclude `status != null` and (for year >= 2026) residence IDs 3,4,7. SQL note: in MySQL, `booking.cancelled != 1` excludes NULLs; use `(cancelled != 1 OR cancelled IS NULL)` to match UI counts.
@@ -117,6 +139,9 @@ Document everything for this repo.
   - `/check-rooms/{userId}` and `/check-all-rooms/{userId}` build the residence/room-type lists for the bed-change modals.
   - `/get-booking-info` (POST) builds floor/unit/bed lists from `property_data` where `room_available IS NULL`, `inventory=1`, and year is within `year`/`year_end`. It marks beds as booked if a current-year booking exists and the student is not approved/cancelled.
 - Booking fee requirement logic (UI + reports): `proof_of_payment` is required only when booking fee > 0 and not waived (`booking_fee_waived` or `rob_b_waived`). If fee is 0/null or waived, PoP should be omitted from required docs and `rob_10_fee` should be `2`.
+  - Implementation detail (legacy compatibility): when booking fee resolves to `0`, the system currently creates/updates `user_files` with `fileId = proof_of_payment` and marks it `Approved` (and sets `students_info.rob_10_fee = 2`) so the older "required docs" + ROB status logic does not block students.
+    - Public registration step 1: `app/Http/Controllers/Auth/RegisterController.php` (`registration_step_one`) when computed booking fee is `0`.
+    - Application payment step 5: `app/Http/Controllers/ApplicationController.php` (`step_5`) when computed booking fee is `0`.
 - Irregularity Report (app profile) is visible to `role_sys_admin` and `role_bm_report`. Actions require a comment (stored in `comments` + `ActionList`). Current actions: recompute `rob_45_other` from other docs + waiver flags; clear booking fee requirement (sets PoP approved + `rob_10_fee=2`) when fee is not required; **fix bed allocation** when `bed_code` is set but `rob_40_bed != 2` (sets `rob_40_bed=2`).
 - ROB anomaly report (`report:rob-anomalies`) flags bed allocation issues when `bed_code` is set but `rob_40_bed != 2` (included for approval-ready‑except‑bed, or when `--include-not-ready` is used).
 - Report command `report:rob-anomalies`: by default only includes approval-ready students (rob_15/20/25/30/35/40 all `2` and `rob_50_approve != 2`). Use `--include-not-ready` to include earlier-stage records. Flags: `rob_45_other` mismatch, `rob_10_fee != 2` when fee not required, PoP missing/not approved when fee required, missing booking/payment. Output includes room type, bed code, bookingStatus.
@@ -157,12 +182,14 @@ Document everything for this repo.
     - This is a convenience preset only; the effective access control is determined by the per-permission columns (`role_*`).
   - Document approve/reject endpoint: `POST /action/file` (`HomeController::action_file`) currently gates only on `Auth::user()->userRole` being `1/2/3` (i.e., "not a student"), and does not enforce `role_approve_docs` server-side. UI gating may hide buttons, but the API will still accept requests from any staff account.
 - Property active/inactive: `property.status` remains legacy for application/control flow. New `property.active_date` / `property.inactive_date` are introduced for year‑based reporting filters (reports page only for now). Long term, the goal is to migrate more logic to date‑based activity and reduce reliance on `status`.
-- TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).
+- TODO: add login/session tracking (prefer session rows with `user_id`, `login_at`, `logout_at` nullable, `ip_address`, `user_agent`, `session_id`, optional `login_method`; or at least `users.last_login_at` + `last_login_ip`).- Lease PDFs now render admin fee/deposit directly from `BookingPayment` with waiver flags only (no studentType branching) to align with funding lookup logic.
 - `temp/` (gitignored) is a scratchpad folder for investigations and reference documents (not used by app code). Current contents:
   - `temp/CLIENT_SIGNOFF.md`: draft acceptance checklist for the assurity + related flow changes (compare/merge with root `CLIENT_SIGNOFF.md` as needed).
   - `temp/DEED OF SURETY.docx`: source legal wording used to build/update `resources/views/PDF/assurity.blade.php`.
   - `temp/laravel260319ca.log`: captured Laravel log snapshot used for debugging production/staging issues.
   - `temp/REVIEWED_VIEWS.md`: ad-hoc notes/review findings for specific Blade views (e.g., admin maintenance/update screens).
+  - `temp/wp-site.md`: public WordPress site inventory (page types, functionality, key URLs) used for product/research context.
+  - `temp/laravel-system.md`: Laravel portal scope/design inventory (student onboarding, docs, bookings, leases, admin operations).
   - `temp/TODOS1.md`: scratch TODO list (may overlap with root `TODOS.md` / `TODOS1.md`).
   - `temp/UPGRADE.md`: Laravel upgrade research notes (dependency blockers, risks, staged upgrade plan).
   - `temp/monthly-pop-bulk-enable-2026-cash.sql`: SQL helper to bulk-enable Monthly POP reminders for 2026 Cash students (includes preview export + ActionList audit insert).

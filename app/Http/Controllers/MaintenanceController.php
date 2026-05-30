@@ -47,7 +47,7 @@ class MaintenanceController extends Controller
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
             $this_year = $this_year->lookup_name;
         } else {
-            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
             $this_year = $this_year->lookup_name;
         }
         $studInfo = StudentsInfo::select('bookingId', 'userFirstName', 'userLastname', 'userEmail', 'userCellCode', 'userCell', 'year', 'id')
@@ -111,7 +111,7 @@ class MaintenanceController extends Controller
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
             $this_year = $this_year->lookup_name;
         } else {
-            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
             $this_year = $this_year->lookup_name;
         }
         $studInfo = StudentsInfo::select('bookingId', 'userFirstName', 'userLastname', 'userEmail', 'userCellCode', 'userCell', 'year', 'id')

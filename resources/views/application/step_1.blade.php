@@ -254,10 +254,8 @@
                             field is
                             required </small></span></label>
                 <select name="year" id="year" class="required">
-                    {{-- <option value="" disabled selected>Please select one</option> --}}
-                    @foreach ($lookups->where('group_id', 4)->sortByDesc('lookup_name') as $lookup)
-                        <option value="{{ $lookup->lookup_name }}"
-                            {{ $application_year == $lookup->lookup_name ? 'selected' : 'disabled' }}>
+                    @foreach (($yearLookups ?? collect()) as $lookup)
+                        <option value="{{ $lookup->lookup_name }}" {{ (int) $application_year === (int) $lookup->lookup_name ? 'selected' : '' }}>
                             {{ $lookup->lookup_name }}
                         </option>
                     @endforeach

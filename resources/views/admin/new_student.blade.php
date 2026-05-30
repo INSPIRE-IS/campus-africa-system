@@ -154,10 +154,16 @@
                 <label>Year * <span id="year_error" class="hidden" style="color:red"><small>This field is
                             required</small></span></label>
                 <select name="year" id="year" class="required">
-                    @foreach ($lookups as $lookup)
-                        @if ($lookup->group_id == '4')
-                            <option value="{{ $lookup->lookup_name }}" selected>{{ $lookup->lookup_name }}</option>
-                        @endif
+                    @php
+                        $defaultYear = old('year', session('year'));
+                        if (empty($defaultYear) && isset($yearLookups) && $yearLookups->count() > 0) {
+                            $defaultYear = $yearLookups->first()->lookup_name; // newest first
+                        }
+                    @endphp
+                    @foreach (($yearLookups ?? collect()) as $lookup)
+                        <option value="{{ $lookup->lookup_name }}" {{ (string) $lookup->lookup_name === (string) $defaultYear ? 'selected' : '' }}>
+                            {{ $lookup->lookup_name }}
+                        </option>
                     @endforeach
                 </select>
             </div>

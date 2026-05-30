@@ -538,6 +538,27 @@ $('#questionnaireForm').on('submit', function (e) {
             modalRoom.style.display = "none";
         }
 
+        // Safety: prevent "grey overlay lockout" if a modal gets opened and the close button isn't reachable.
+        window.addEventListener('click', function(event) {
+            if (event.target === modalRestore) {
+                modalRestore.style.display = "none";
+            }
+            if (event.target === modalRoom) {
+                modalRoom.style.display = "none";
+            }
+        });
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                modalRestore.style.display = "none";
+                modalRoom.style.display = "none";
+                $('#changeQuestionnaireModal').fadeOut(0);
+                if (typeof Swal !== 'undefined' && Swal.close) {
+                    Swal.close();
+                }
+            }
+        });
+
 
         function cancelBooking(bookingId, userId) {
 

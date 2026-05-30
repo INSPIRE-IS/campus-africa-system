@@ -9,7 +9,8 @@
     $leaseFees = is_array($lookupData) ? ($lookupData['lease_fees'] ?? []) : [];
     $depositApplies = is_array($lookupData) ? ($lookupData['deposit_applies'] ?? []) : [];
     $currentYear = $currentYear ?? ($year_lookup ? $year_lookup->lookup_name : null);
-    $showFundingFees = $lookup->group_id === '4' && $currentYear && $lookup->lookup_name == $currentYear;
+    // Fee/deposit config is stored per-year in `lookups.data`. Allow editing for any year row.
+    $showFundingFees = $lookup->group_id === '4';
     $showFundingDeposits = $showFundingFees;
 @endphp
 
@@ -115,6 +116,14 @@
         </div>
 
         @if($lookup->group_id == "4")
+            <div class="form-field">
+                <label>Active Year</label>
+                <div style="display:inline-flex; align-items:center;">
+                    <input type="checkbox" id="is_active_year" name="is_active_year" style="width:27px !important" value="1" {{ $lookup->is_active_year ? 'checked' : '' }}>
+                    <label for="is_active_year" style="width:auto;">&nbsp;&nbsp;Mark this year as the active application year</label>
+                </div>
+                <small>Only one Year lookup can be active. Changing this affects defaults across the system.</small>
+            </div>
             <div class="form-field">
                 <div class="form-field">
                     <label>Lease From Date (Month)</label>
@@ -267,7 +276,7 @@
         </div>
 
         <div class="form-field <?php if(!$showFundingFees){echo "hidden";} ?>" id="fundingFeesTable" style="height:400px !important;">
-            <label>Funding Type Lease Fees (Current Year Only)</label>
+            <label>Funding Type Lease Fees</label>
             <table style="width:100%">
                 <thead>
                     <tr>
@@ -286,11 +295,11 @@
                     @endforeach
                 </tbody>
             </table>
-            <small>Shown only when the lookup year matches the current year ({{ $currentYear ?? 'N/A' }}).</small>
+            <small>Saved per year. Used when creating/updating bookings and leases for this year.</small>
         </div>
 
         <div class="form-field <?php if(!$showFundingDeposits){echo "hidden";} ?>" id="fundingDepositsTable" style="height:400px !important;">
-            <label>Funding Type Deposit Applies (Current Year Only)</label>
+            <label>Funding Type Deposit Applies</label>
             <table style="width:100%">
                 <thead>
                     <tr>
@@ -309,7 +318,7 @@
                     @endforeach
                 </tbody>
             </table>
-            <small>Shown only when the lookup year matches the current year ({{ $currentYear ?? 'N/A' }}).</small>
+            <small>Saved per year. If checked, deposit is set to the monthly rental for this funding type (unless waived).</small>
         </div>
 
         <!-- <div class="form-field <?php if($lookup->group_id !== "7"){echo "hidden";} ?>" id="waiverDateFrom">
@@ -329,13 +338,10 @@
 </div>
 
 <script>
-    const currentYear = @json($currentYear ?? null);
-
     function toggleFundingFees() {
         const groupId = $("#group_id").val();
-        const lookupYear = $("#value").val();
-        const shouldShowFees = groupId === "4" && currentYear && lookupYear === String(currentYear);
-        const shouldShowDeposits = groupId === "4" && currentYear && lookupYear === String(currentYear);
+        const shouldShowFees = groupId === "4";
+        const shouldShowDeposits = groupId === "4";
 
         $("#fundingFeesTable").toggleClass('hidden', !shouldShowFees);
         $("#fundingFeesTable").find('input').prop('disabled', !shouldShowFees);
