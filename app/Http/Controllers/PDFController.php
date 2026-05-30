@@ -8,7 +8,7 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\Residence;
 use App\Models\ActionList;
-use Illuminate\Support\Facades\PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserFiles;
 use App\Models\Lookups;

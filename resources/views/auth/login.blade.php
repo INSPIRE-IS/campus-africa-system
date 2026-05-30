@@ -81,6 +81,14 @@
         }
     });
 
+    @if ($errors->has('message'))
+        Swal.fire(
+            'Unable to continue',
+            @json($errors->first('message')),
+            'error'
+        );
+    @endif
+
     $("#loginPasswordless").on('click', function(){
 
         // console.log($("#email").val() !== "")
@@ -114,6 +122,12 @@
                         Swal.fire(
                             'Unavailable',
                             'Passwordless login is currently unavailable. Please login using your email address and password!',
+                            'error'
+                        ) 
+                    }else if(data == "banned"){
+                        Swal.fire(
+                            'Unable to continue',
+                            'Your application cannot be processed currently. Please contact an administrator with your ID number for assistance.',
                             'error'
                         ) 
                     }else{

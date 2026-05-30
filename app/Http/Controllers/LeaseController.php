@@ -10,7 +10,7 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\Residence;
 use App\Models\Lookups;
-use Illuminate\Support\Facades\PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\MailerList;

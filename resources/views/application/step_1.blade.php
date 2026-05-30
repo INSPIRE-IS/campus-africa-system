@@ -1101,17 +1101,24 @@
                                 },
                                 error: function(textStatus, errorThrown) {
 
-                                    let response = JSON.parse(textStatus.responseText)
+                                    let response = {};
+                                    try {
+                                        response = JSON.parse(textStatus.responseText);
+                                    } catch (e) {}
 
                                     $("#submitForm").empty().append('Proceed to next step');
 
-                                    if (errorThrown == "error") {
-                                        Swal.fire(
-                                            'invalid Email',
-                                            response.errors.email[0],
-                                            'error'
-                                        )
+                                    if (response && response.errors && response.errors.email && response.errors.email[0]) {
+                                        Swal.fire('Invalid Email', response.errors.email[0], 'error');
+                                        return;
                                     }
+
+                                    if (response && response.message) {
+                                        Swal.fire('Unable to continue', response.message, 'error');
+                                        return;
+                                    }
+
+                                    Swal.fire('Unable to continue', 'Something went wrong. Please try again.', 'error');
                                 }
                             });
                         } else {

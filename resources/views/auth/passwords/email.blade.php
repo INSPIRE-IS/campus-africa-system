@@ -2,6 +2,16 @@
 
 @section('content')
 
+@if ($errors->has('email') && \Illuminate\Support\Str::contains($errors->first('email'), 'cannot be processed currently'))
+    <script>
+        Swal.fire(
+            'Unable to continue',
+            @json($errors->first('email')),
+            'error'
+        );
+    </script>
+@endif
+
 <div class="yellowGradientSmall">
     <div class="container">
 

@@ -13,6 +13,7 @@ use App\Models\MailerList;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Booking;
 use App\Models\Lookups;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -27,7 +28,9 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers {
+        login as protected traitLogin;
+    }
 
     /**
      * Where to redirect users after login.
@@ -46,6 +49,28 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    public function login(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $email = strtolower(trim((string) $request->input($this->username())));
+        $user = User::withTrashed()
+            ->where('email', $email)
+            ->orWhere('userEmail', $email)
+            ->first();
+
+        if ($user && (int) ($user->userRole ?? 0) === 0 && !empty($user->banned_at)) {
+            return redirect()->back()->withErrors([
+                'message' => 'Your application cannot be processed currently. Please contact an administrator with your ID number for assistance.',
+            ])->withInput($request->only($this->username()));
+        }
+
+        return $this->traitLogin($request);
+    }
+
     public function passwordlessLogin(Request $request)
     {
 
@@ -58,6 +83,10 @@ class LoginController extends Controller
             if ($user && !empty($user)) {
 
                 if ($user->userRole == '0') {
+
+                    if (!empty($user->banned_at)) {
+                        return "banned";
+                    }
 
                     $booking = Booking::where("userId", $user->id)->where('year', date('Y'))->first();
 

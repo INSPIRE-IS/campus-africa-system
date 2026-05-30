@@ -43,6 +43,8 @@ use App\Jobs\SendBookingConfirmationMail;
 use App\Jobs\SendStudentVerifyMailByAdminMail;
 use App\Jobs\SendLeaseApprovedMail;
 use App\Jobs\SendLeaseCancelledMail;
+use App\Jobs\SendStudentBannedMail;
+use App\Jobs\SendStudentUnbannedMail;
 use App\Jobs\SendNewBookingMail;
 use App\Jobs\SendReminderMail;
 use App\Models\OnlinePayments;
@@ -1094,6 +1096,7 @@ class HomeController extends Controller
                     "this_year" => $this_year,
                     'bookingNext' => $show_booking,
                     'bookingNextYear' => $bookingNextYear,
+                    'userAccount' => User::withTrashed()->where('id', $userId)->first(),
                 ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
@@ -2944,6 +2947,13 @@ class HomeController extends Controller
 
     public function add_student(Request $request)
     {
+        $bannedMatch = User::findBannedMatch($request->email, $request->idNumber, $request->passportNo, $request->studNumber);
+        if (!empty($bannedMatch)) {
+            return redirect()->back()->withErrors([
+                'message' => 'This student is banned and cannot be registered. Please contact a system administrator.',
+            ]);
+        }
+
         $user = User::create([
             'name' => $request->firstName,
             // 'userFirstName' => $request->firstName,
@@ -8646,6 +8656,130 @@ class HomeController extends Controller
         // $status_data = User::where('id', $userId)->first();
 
         return 'true';
+    }
+
+    public function ban_student(Request $request)
+    {
+        $isSysAdmin = Auth::check() && (int) Auth::user()->role_sys_admin === 1;
+        if (!$isSysAdmin) {
+            return response()->json(['message' => 'Not authorised to ban students.'], 403);
+        }
+
+        $request->validate([
+            'userId' => 'required|integer',
+            'reason' => 'required|string|max:2000',
+        ]);
+
+        $userId = (int) $request->userId;
+        $reason = trim((string) $request->reason);
+        $notifyStudent = $request->boolean('notify_student');
+
+        $student = User::withTrashed()->where('id', $userId)->first();
+        if (empty($student)) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
+
+        $student->banned_at = now();
+        $student->banned_reason = $reason;
+        $student->banned_by = Auth::user()->id;
+        $student->save();
+
+        $actionSuffix = $notifyStudent ? ' | Student email: queued' : '';
+        ActionList::create([
+            "userUid" => $student->id,
+            "action" => "Student banned from portal access/re-application. Reason: " . $reason . $actionSuffix,
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
+            "meta" => [
+                "event" => "student_banned",
+                "banned_at" => optional($student->banned_at)->toIso8601String(),
+                "reason" => $reason,
+                "banned_by" => (int) Auth::user()->id,
+                "notify_student" => $notifyStudent ? 1 : 0,
+            ],
+        ]);
+
+        if ($notifyStudent) {
+            $this->dispatch(new SendStudentBannedMail($student, $this_year, $reason));
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function unban_student(Request $request)
+    {
+        $isSysAdmin = Auth::check() && (int) Auth::user()->role_sys_admin === 1;
+        if (!$isSysAdmin) {
+            return response()->json(['message' => 'Not authorised to unban students.'], 403);
+        }
+
+        $request->validate([
+            'userId' => 'required|integer',
+            'reason' => 'nullable|string|max:2000',
+        ]);
+
+        $userId = (int) $request->userId;
+        $reason = trim((string) $request->reason);
+        $notifyStudent = $request->boolean('notify_student');
+        $student = User::withTrashed()->where('id', $userId)->first();
+        if (empty($student)) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        $year = Session::get('year');
+        if (empty($year)) {
+            $this_year = Lookups::where('group_id', '4')->first();
+            $this_year = $this_year->lookup_name;
+        } else {
+            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
+            $this_year = $this_year->lookup_name;
+        }
+
+        $student->banned_at = null;
+        $student->banned_reason = null;
+        $student->banned_by = null;
+        $student->save();
+
+        $actionSuffix = '';
+        if (!empty($reason)) {
+            $actionSuffix .= ' Reason: ' . $reason;
+        }
+        if ($notifyStudent) {
+            $actionSuffix .= ' | Student email: queued';
+        }
+
+        ActionList::create([
+            "userUid" => $student->id,
+            "action" => "Student ban removed." . (!empty($actionSuffix) ? ' ' . $actionSuffix : ''),
+            "actionUserUid" => Auth::user()->id,
+            "actionUserDisplayName" => Auth::user()->userFirstName,
+            "actionUserRole" => Auth::user()->userRole,
+            "year" => $this_year,
+            "meta" => [
+                "event" => "student_unbanned",
+                "unbanned_at" => now()->toIso8601String(),
+                "unbanned_by" => (int) Auth::user()->id,
+                "reason" => !empty($reason) ? $reason : null,
+                "notify_student" => $notifyStudent ? 1 : 0,
+            ],
+        ]);
+
+        if ($notifyStudent) {
+            $this->dispatch(new SendStudentUnbannedMail($student, $this_year, $reason));
+        }
+
+        return response()->json(['success' => true]);
     }
 
     public function change_nsfsbursar(Request $request)
