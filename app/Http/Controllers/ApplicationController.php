@@ -871,13 +871,6 @@ class ApplicationController extends Controller
             $roomTypeNew = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
 
             $roomTypeData = RoomTypes::where('id', $booking->roomType)->first();
-
-            //TODO: temp set booking fee to 0 for sharing rooms
-            $isSharingRoom = false;
-
-            if ($roomTypeData && str_contains(strtolower($roomTypeData->name), 'sharing')) {
-                $isSharingRoom = true;
-            }
             $roomTypeId = $roomTypeData->room_map_slug;
 
             $bookingRoomtype = $roomTypeInfo->name;
@@ -994,13 +987,6 @@ class ApplicationController extends Controller
                     }
                 }
             }
-            ///////////////////////////////////////////////////////
-            //TODO: temp set booking fee to 0 for sharing rooms
-            if ($isSharingRoom === true) {
-                $room_rate = "0";
-                $actionFileData['action'] = "Booking Fee waived (Sharing Room)";
-            }
-            ///////////////////////////////////////////////////////
             // existing DB updates here
             // Booking::update(...)
             if ($room_rate == "0") {
