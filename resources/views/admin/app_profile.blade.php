@@ -5273,7 +5273,13 @@
                             },
 
                             success: function(data) {
-                                // window.location = "/applications";
+                                if (data && data.warning && data.message) {
+                                    Swal.fire('Application restored', data.message, 'warning').then(() => {
+                                        window.location.reload();
+                                    });
+                                    return;
+                                }
+
                                 window.location.reload();
                             },
                             error: function(xhr) {
