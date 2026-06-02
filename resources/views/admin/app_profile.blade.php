@@ -36,6 +36,17 @@
             cursor: help;
         }
 
+        .paymentSummaryTableWrap {
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .paymentSummaryTable {
+            width: 100%;
+            text-align: left;
+        }
+
         .paymentSummaryActions {
             display: flex;
             align-items: flex-start;
@@ -83,6 +94,10 @@
         }
 
         @media (max-width: 850px) {
+            .paymentSummaryTable {
+                min-width: 520px;
+            }
+
             .paymentSummaryActions {
                 flex-direction: column;
             }
@@ -525,7 +540,8 @@
 
 
                     @if ($paymentBooking)
-                        <table style="width:100%; text-align:left">
+                        <div class="paymentSummaryTableWrap">
+                        <table class="paymentSummaryTable">
                             <tbody>
                             <tr >
                                 <th>
@@ -720,6 +736,7 @@
                             </tr>
                         </tbody>
                         </table>
+                        </div>
                         <br />
                         <div class="paymentSummaryActions">
                             <div class="paymentSummaryStatus">
