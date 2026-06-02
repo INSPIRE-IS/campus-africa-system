@@ -4114,8 +4114,41 @@ class HomeController extends Controller
             $clearedFields = json_decode($json, true);
         }
 
-        if (empty($clearedFields) || empty($clearedFields['bed_code'])) {
+        if (empty($clearedFields)) {
             return response()->json(['message' => 'Restore not possible: bed details missing from cancel snapshot.'], 422);
+        }
+
+        if (empty($clearedFields['bed_code'])) {
+            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update([
+                'rob_60_cancelled' => 0,
+                'rob_40_bed' => 1,
+                'rob_50_approve' => 0,
+            ]);
+
+            Booking::where('userId', $request->userId)->where('year', $this_year)->update([
+                'cancelled' => null,
+                'property_data_id' => null,
+                'floor' => null,
+                'unit' => null,
+                'room' => null,
+                'bed' => null,
+                'bed_code' => null,
+                'room_rate' => $clearedFields['room_rate'] ?? null,
+            ]);
+
+            ActionList::create([
+                "userUid" => $request->userId,
+                "action" => "Restored Cancelled Application | No bed restored: cancellation snapshot did not include bed details",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
+
+            return response()->json([
+                'warning' => true,
+                'message' => 'Application restored, but bed, floor, unit, and room details were not restored because they were not available in the cancellation snapshot. Please use Change Building or Change Booking to set the correct room type and allocate a bed when available.',
+            ]);
         }
 
         $bedCode = $clearedFields['bed_code'];
