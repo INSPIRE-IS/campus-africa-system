@@ -18,6 +18,7 @@
 6) Check `temp/TODOS.md` for the current action plan and priority items.
 
 Quick pointers:
+- Working notes (gitignored): `temp/agent.md`
 - Session index/menu: `temp/session-contents.md`
 - 6-month roadmap / research notes: `temp/enhancement2027.md` (see also `temp/session-2026-05-24.md`)
 - Master vs staging comparisons (gitignored notes): `temp/git-master-vs-staging.md`

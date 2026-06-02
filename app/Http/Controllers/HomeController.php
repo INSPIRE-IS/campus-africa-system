@@ -1095,8 +1095,8 @@ class HomeController extends Controller
                     "paymentBooking" => $returnInfo['paymentBooking'],
                     "this_year" => $this_year,
                     'bookingNext' => $show_booking,
-                    'userAccount' => User::withTrashed()->where('id', $userId)->first(),
                     'bookingNextYear' => $bookingNextYear,
+                    'userAccount' => User::withTrashed()->where('id', $userId)->first(),
                 ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
