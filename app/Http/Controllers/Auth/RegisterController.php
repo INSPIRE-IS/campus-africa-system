@@ -403,25 +403,6 @@ class RegisterController extends Controller
 
                         ActionList::create($actionFileData);
                     }
-                    $isSharingRoom = false;
-
-                    if ($roomTypeData && str_contains(strtolower($roomTypeData->name), 'sharing')) {
-                        $isSharingRoom = true;
-                    }
-
-                    if ($isSharingRoom === true) {
-                        $bookingPrice = 0;
-                    }
-                    if ($isSharingRoom === true) {
-                        ActionList::create([
-                            "userUid" => $user->id,
-                            "action" => "Booking fee waived due to sharing room",
-                            "actionUserUid" => $user->id,
-                            "actionUserDisplayName" => $userInfo->userFirstName,
-                            "actionUserRole" => 0,
-                            "year" => $request->year,
-                        ]);
-                    }
                     ///////////////////////////////////////////////////////
 
                     $diff = 0;
