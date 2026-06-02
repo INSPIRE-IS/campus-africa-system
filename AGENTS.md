@@ -92,3 +92,8 @@ php artisan storage:link || true
 php artisan queue:restart
 ```
 
+## Notes Management
+- Keep this file stable: project setup, session checklist, safety rules, and pointers only.
+- Detailed business rules, investigations, and route maps live in `temp/` and are gitignored.
+- Start with `temp/agent.md` for the short index/current context, then open only the relevant `temp/notes-*.md` topic file.
+- Current TODOs: `temp/TODOS.md` points to the active tracked/scratch TODO lists.

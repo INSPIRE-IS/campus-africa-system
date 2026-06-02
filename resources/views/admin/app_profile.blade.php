@@ -459,7 +459,8 @@
 
                     @if ($paymentBooking)
                         <table style="width:100%; text-align:left">
-                            <tr>
+                            <tbody>
+                            <tr >
                                 <th>
                                     <h2 class="appHeader bold" style="text-transform:uppercase;">
                                         @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct')
@@ -650,6 +651,7 @@
                                     @endif
                                 </td>
                             </tr>
+                        </tbody>
                         </table>
                         <br />
                         <div class="flex">
@@ -1242,7 +1244,7 @@
                             </p>
                         @endif
 
-                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+                        <div class="robFixLegend" style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <div class="status"><div class="button approved"></div></div>
                                 <span>Approved</span>
@@ -1261,7 +1263,8 @@
                             </div>
                         </div>
 
-                        <table class="table table-sm" style="margin-bottom:12px; table-layout:fixed; width:100%;">
+                        <div class="robFixTableWrap">
+                        <table class="table table-sm robFixTable" style="margin-bottom:12px; table-layout:fixed; width:100%;">
                             <colgroup>
                                 <col style="width:28%;">
                                 <col style="width:10%;">
@@ -1381,8 +1384,10 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
 
-                        <table class="table table-sm" style="margin-bottom:0; table-layout:fixed; width:100%;">
+                        <div class="robFixTableWrap">
+                        <table class="table table-sm robFixTable" style="margin-bottom:0; table-layout:fixed; width:100%;">
                             <colgroup>
                                 <col style="width:32%;">
                                 <col style="width:10%;">
@@ -1480,6 +1485,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 @endif
 {{-- Comments --}}

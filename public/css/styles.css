@@ -78,7 +78,7 @@ body {
         width: 91%;
         float: right;
         border-bottom-left-radius: 70px;
-        // margin-right: -2px;
+        /* margin-right: -2px; */
 
         .footerHeader {
             color: #ffffff;
@@ -447,7 +447,7 @@ body {
         }
 
         .bigHeader {
-            background-color: #e8e8e8;
+            background-color: #FFF;
             padding: 40px;
             height: 200px;
             border-radius: 10px 10px 0px 0px;
@@ -688,7 +688,7 @@ body {
 
 .col-3 {
     width: 25%;
-    // float: left;
+    /* float: left; */
 }
 
 .form-card {
@@ -716,7 +716,7 @@ body {
         border-radius: 5px;
         background-color: #f0f0f0;
         border-radius: 5px !important;
-        // border: none !important;
+        /* border: none !important; */
         border: none;
         padding: 10px;
     }
@@ -1202,7 +1202,7 @@ body {
         font-weight: 400;
         line-height: 25px;
         text-align: center;
-        // margin-right: 18px;
+        /* margin-right: 18px; */
     }
 
     .successLabel {
@@ -1556,8 +1556,8 @@ input:read-only {
     th {
         background-color: #868686;
         color: #ffffff;
-        // max-width: 50px;
-        // font-size: 10px;
+        /* max-width: 50px;
+        font-size: 10px; */
         font-size: 7px;
         font-weight: 400;
         line-height: 11px;
@@ -1649,6 +1649,26 @@ input:read-only {
 }
 
 /* ROB Fixes status dots (match document robot style outside .section) */
+#RobFixes {
+    clear: both;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+#RobFixes .robFixLegend {
+    flex-wrap: wrap;
+}
+
+#RobFixes .robFixTableWrap {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#RobFixes .robFixTable {
+    max-width: 100%;
+}
+
 #RobFixes .status {
     width: auto;
 }
@@ -1703,6 +1723,26 @@ input:read-only {
     border-color: #cecece;
     color: #9aa0a6;
     cursor: default;
+}
+
+@media only screen and (max-width: 850px) {
+    #RobFixes .robFixTable {
+        min-width: 620px;
+    }
+
+    #RobFixes .robFixTable th,
+    #RobFixes .robFixTable td {
+        white-space: normal;
+        vertical-align: middle;
+    }
+
+    #RobFixes .appBooking {
+        width: 100%;
+        min-width: 0;
+        padding-left: 8px;
+        padding-right: 8px;
+        white-space: normal;
+    }
 }
 
 .robFixSwalConfirm,
@@ -2676,7 +2716,7 @@ input:read-only {
     }
 
     #paymentDetailsSection {
-        // height:1350px;
+        /* height:1350px; */
         height: 1140px;
     }
 
@@ -2690,7 +2730,7 @@ input:read-only {
     }
 
     #newStudentPayment {
-        // height:2200px;
+        /* height:2200px; */
         height: 2040px;
     }
 
@@ -2707,8 +2747,8 @@ input:read-only {
     }
 
     #newStudentDocs {
-        // height:2000px;
-        // height:1540px;
+        /* height:2000px;
+        height:1540px; */
         height: 1550px;
     }
 
@@ -2734,9 +2774,9 @@ input:read-only {
         width: 110% !important;
     }
 
-    // .footer{
-    //     margin-top:750px;
-    //   }
+    /* .footer{
+        margin-top:750px;
+    } */
 
 
     #logincards {
@@ -2800,7 +2840,7 @@ input:read-only {
     }
 
     .cards #documentsCard {
-        margin-top: 975px !important
+        margin-top: 725px !important
     }
 
     #downloadAllDocs,
@@ -2942,9 +2982,9 @@ input:read-only {
         height: 310px;
     }
 
-    // #documentsCard {
-    //     margin-top: 1211px !important;
-    // }
+    /* #documentsCard {
+        margin-top: 1211px !important;
+    } */
 
 
     .redBannerNotice {
@@ -2954,7 +2994,7 @@ input:read-only {
 
     #newStudents {
         #registerCards {
-            // margin-left: -50px;
+            /* margin-left: -50px; */
             width: 100% !important;
         }
     }
@@ -2993,7 +3033,7 @@ input:read-only {
     }
 
     #seconCards {
-        // margin-top:300px;
+        /* margin-top:300px; */
         margin-top: 193px;
     }
 
