@@ -35,6 +35,88 @@
             color: #666;
             cursor: help;
         }
+
+        .paymentSummaryTableWrap {
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .paymentSummaryTable {
+            width: 100%;
+            text-align: left;
+        }
+
+        .paymentSummaryActions {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .paymentSummaryActions .paymentSummaryStatus {
+            min-width: 160px;
+        }
+
+        .paymentSummaryActions #nsfas_wording {
+            margin: 0;
+            padding-top: 8px;
+        }
+
+        .paymentSummaryActions .paymentSummaryButtons {
+            display: flex;
+            flex: 1;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .paymentSummaryActions .profileSubmit,
+        .paymentSummaryActions .generatePdf,
+        .paymentSummaryActions .nsfasQuoteBtn {
+            float: none !important;
+            margin: 0 !important;
+            min-height: 38px;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            line-height: 18px;
+            white-space: normal;
+        }
+
+        .paymentSummaryActions .profileSubmit {
+            background-color: #ffbb3c;
+        }
+
+        .paymentSummaryActions .nsfasQuoteBtn {
+            background-color: #f1cc3e;
+        }
+
+        @media (max-width: 850px) {
+            .paymentSummaryTable {
+                min-width: 520px;
+            }
+
+            .paymentSummaryActions {
+                flex-direction: column;
+            }
+
+            .paymentSummaryActions .paymentSummaryStatus,
+            .paymentSummaryActions .paymentSummaryButtons {
+                width: 100%;
+            }
+
+            .paymentSummaryActions .paymentSummaryButtons {
+                flex-direction: column;
+            }
+
+            .paymentSummaryActions .profileSubmit,
+            .paymentSummaryActions .generatePdf,
+            .paymentSummaryActions .nsfasQuoteBtn {
+                width: 100%;
+            }
+        }
     </style>
 
     <div class="greyAppSection  @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
@@ -458,8 +540,10 @@
 
 
                     @if ($paymentBooking)
-                        <table style="width:100%; text-align:left">
-                            <tr>
+                        <div class="paymentSummaryTableWrap">
+                        <table class="paymentSummaryTable">
+                            <tbody>
+                            <tr >
                                 <th>
                                     <h2 class="appHeader bold" style="text-transform:uppercase;">
                                         @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct')
@@ -650,26 +734,26 @@
                                     @endif
                                 </td>
                             </tr>
+                        </tbody>
                         </table>
+                        </div>
                         <br />
-                        <div class="flex">
-                            <div>
+                        <div class="paymentSummaryActions">
+                            <div class="paymentSummaryStatus">
                                 <h2 id="nsfas_wording">
                                     @if ($paymentBooking->nsfas_rate)
                                         NSFAS Rate Applies
                                     @endif
                                 </h2>
                             </div>
-                            <div style="flex-grow:2">
+                            <div class="paymentSummaryButtons">
                                 @if (Auth::user()->role_sys_admin == 1)
                                     <button type="button" id="openPaymentModal" class="profileSubmit"
-                                        onClick="document.getElementById('paymentModal').style.display = 'block';"
-                                        style="padding: 10px;margin-top: 30px;background-color: #ffbb3c;border: none;color: #fff;border-radius: 10px;">
+                                        onClick="document.getElementById('paymentModal').style.display = 'block';">
                                         Update Rates
                                     </button>
                                     <button type="button" id="openMonthlyPopModal" class="profileSubmit"
-                                        onClick="document.getElementById('monthlyPopModal').style.display = 'block';"
-                                        style="padding: 10px;margin-top: 30px;background-color: #ffbb3c;border: none;color: #fff;border-radius: 10px;">
+                                        onClick="document.getElementById('monthlyPopModal').style.display = 'block';">
                                         Update Monthly POP
                                     </button>
                                 @endif
@@ -678,8 +762,7 @@
                                         onClick="generateInvoice('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
                                         Generate Pro Forma Invoice
                                     </button>                               
-                                    <button type="button" 
-                                        style="padding: 10px;margin-right: 8px; margin-top: 30px;background-color: #f1cc3e; border: none;color: #fff;border-radius: 10px; float: right;"
+                                    <button type="button" class="nsfasQuoteBtn"
                                         onClick="generateNSFASQuote('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
                                         Generate NSFAS Quote
                                     </button>
@@ -1242,7 +1325,7 @@
                             </p>
                         @endif
 
-                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+                        <div class="robFixLegend" style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <div class="status"><div class="button approved"></div></div>
                                 <span>Approved</span>
@@ -1261,7 +1344,8 @@
                             </div>
                         </div>
 
-                        <table class="table table-sm" style="margin-bottom:12px; table-layout:fixed; width:100%;">
+                        <div class="robFixTableWrap">
+                        <table class="table table-sm robFixTable" style="margin-bottom:12px; table-layout:fixed; width:100%;">
                             <colgroup>
                                 <col style="width:28%;">
                                 <col style="width:10%;">
@@ -1381,8 +1465,10 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
 
-                        <table class="table table-sm" style="margin-bottom:0; table-layout:fixed; width:100%;">
+                        <div class="robFixTableWrap">
+                        <table class="table table-sm robFixTable" style="margin-bottom:0; table-layout:fixed; width:100%;">
                             <colgroup>
                                 <col style="width:32%;">
                                 <col style="width:10%;">
@@ -1480,6 +1566,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 @endif
 {{-- Comments --}}
