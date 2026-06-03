@@ -122,7 +122,26 @@ class StudentsInfo extends Model
         'gender',
         'userEmailAlt',
         'rob_51_temp_lease_approve',
+        'last_step_completed',
+        'last_activity_at',
+        'marketing_consent',
+        'marketing_consent_at',
+        'marketing_consent_channel',
     ];
+
+    protected $casts = [
+        'last_activity_at' => 'datetime',
+        'marketing_consent' => 'boolean',
+        'marketing_consent_at' => 'datetime',
+    ];
+
+    public function touchActivity(string $step)
+    {
+        $this->last_step_completed = $step;
+        $this->last_activity_at = now();
+
+        return $this->save();
+    }
 
     public function files()
     {

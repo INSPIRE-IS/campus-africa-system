@@ -167,6 +167,9 @@ class RegisterController extends Controller
 
                 // Persist selected academic year early so subsequent steps (uploads, verification) use the right year.
                 Session::put('year', $request->year);
+                $marketingConsent = filter_var($request->input('marketing_consent'), FILTER_VALIDATE_BOOLEAN);
+                $stepOneCompletedAt = now();
+
                 // 1. Create user
                 $user = User::create([
                     'name' => $request->firstName,
@@ -216,6 +219,11 @@ class RegisterController extends Controller
                     'app_source' => 1,
                     'gender' => $request->gender,
                     'userEmailAlt' => $request->email_alt,
+                    'last_step_completed' => 'registration',
+                    'last_activity_at' => $stepOneCompletedAt,
+                    'marketing_consent' => $marketingConsent ? 1 : 0,
+                    'marketing_consent_at' => $marketingConsent ? $stepOneCompletedAt : null,
+                    'marketing_consent_channel' => 'email',
                 ]);
 
                 ActionList::create([
