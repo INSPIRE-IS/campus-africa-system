@@ -1093,6 +1093,7 @@
                                     roomType: $("#roomType").val(),
                                     password: $("#password").val(),
                                     gender: $("#gender").val(),
+                                    marketing_consent: 0,
                                     answers: answers,
                                 },
                                 success: function(data) {
