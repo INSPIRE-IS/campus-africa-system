@@ -5329,6 +5329,54 @@
                 }
             }
 
+            function restoreBookingValue(value) {
+                if (value === null || value === undefined || value === '') {
+                    return '-';
+                }
+                return String(value).replace(/[&<>"']/g, function(match) {
+                    return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#039;'
+                    }[match];
+                });
+            }
+
+            function restoreBookingWarningHtml(data) {
+                var bedRestore = data && data.bed_restore ? data.bed_restore : {};
+                var details = bedRestore.details ? bedRestore.details : {};
+                var rows = [
+                    ['Application year', data.year],
+                    ['Residence', details.residence || details.residence_id],
+                    ['Room type', details.room_type || details.room_type_id],
+                    ['Floor', details.floor],
+                    ['Unit', details.unit],
+                    ['Room', details.room],
+                    ['Bed', details.bed],
+                    ['Bed code', details.bed_code],
+                    ['Room rate', details.room_rate]
+                ];
+                var html = '<p style="color:#d33;font-weight:700;text-align:left;">' + restoreBookingValue(data.message) + '</p>';
+                html += '<div style="text-align:left;margin-top:12px;">';
+                html += '<strong>Previous bed information</strong>';
+                html += '<table style="width:100%;margin-top:8px;border-collapse:collapse;">';
+                rows.forEach(function(row) {
+                    html += '<tr><td style="padding:4px 8px;border-bottom:1px solid #eee;font-weight:700;width:35%;">' + restoreBookingValue(row[0]) + '</td><td style="padding:4px 8px;border-bottom:1px solid #eee;">' + restoreBookingValue(row[1]) + '</td></tr>';
+                });
+                html += '</table>';
+
+                if (bedRestore.available) {
+                    html += '<p style="margin-top:10px;color:#b26a00;font-weight:700;">Previous bed appears available, but it was not restored automatically. Allocate it separately after confirming the dropdown selection.</p>';
+                } else if (bedRestore.current_holder_user_id) {
+                    html += '<p style="margin-top:10px;color:#d33;font-weight:700;">Previous bed is currently allocated to another student. Current holder user ID: ' + restoreBookingValue(bedRestore.current_holder_user_id) + '.</p>';
+                }
+
+                html += '</div>';
+                return html;
+            }
+
             function restoreBooking(bookingId, userId) {
                 Swal.fire({
                     title: 'Are you sure?',
@@ -5346,11 +5394,17 @@
                             data: {
                                 bookingId: bookingId,
                                 userId: userId,
+                                year: "{{ $this_year }}",
                             },
 
                             success: function(data) {
                                 if (data && data.warning && data.message) {
-                                    Swal.fire('Application restored', data.message, 'warning').then(() => {
+                                    Swal.fire({
+                                        title: data.title || 'Application restored - bed not restored',
+                                        html: restoreBookingWarningHtml(data),
+                                        icon: 'warning',
+                                        confirmButtonText: 'OK, I understand'
+                                    }).then(() => {
                                         window.location.reload();
                                     });
                                     return;
@@ -5387,11 +5441,19 @@
                             data: {
                                 bookingId: bookingId,
                                 userId: userId,
+                                year: "{{ $this_year }}",
                             },
 
                             success: function(data) {
                                 window.location = "/applications";
                             },
+                            error: function(xhr) {
+                                let message = 'Cancel not possible.';
+                                if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                                    message = xhr.responseJSON.message;
+                                }
+                                Swal.fire('Cancel blocked', message, 'error');
+                            }
                         });
                     }
                 })

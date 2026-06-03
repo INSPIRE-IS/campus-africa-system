@@ -4024,10 +4024,18 @@ class HomeController extends Controller
 
     public function cancel_booking(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        $this_year = $this_year->lookup_name;
+        $preferredYear = $request->year ?: Session::get('year');
+        $this_year = Lookups::resolveYearForUser((int) $request->userId, $preferredYear);
+        if (empty($this_year)) {
+            return response()->json(['message' => 'Cancel not possible: no application year could be resolved.'], 422);
+        }
+        Session::put('year', $this_year);
 
         $booking_old = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
+        if (!$booking_old) {
+            return response()->json(['message' => 'Cancel not possible: no booking found for this year.'], 422);
+        }
+
         Log::info('cancel_booking: start', [
             'userId' => $request->userId,
             'bookingId' => $request->bookingId ?? null,
@@ -4093,8 +4101,17 @@ class HomeController extends Controller
     public function restore_booking(Request $request)
     {
 
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        $this_year = $this_year->lookup_name;
+        $preferredYear = $request->year ?: Session::get('year');
+        $this_year = Lookups::resolveYearForUser((int) $request->userId, $preferredYear);
+        if (empty($this_year)) {
+            return response()->json(['message' => 'Restore not possible: no application year could be resolved.'], 422);
+        }
+        Session::put('year', $this_year);
+
+        $booking = Booking::where('userId', $request->userId)->where('year', $this_year)->first();
+        if (!$booking) {
+            return response()->json(['message' => 'Restore not possible: no booking found for this year.'], 422);
+        }
 
         $lastCancel = ActionList::where('userUid', $request->userId)
             ->where('year', $this_year)
@@ -4102,114 +4119,140 @@ class HomeController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
 
-        if (!$lastCancel) {
-            return response()->json(['message' => 'Restore not possible: no cancel snapshot found for this year.'], 422);
-        }
-
-        $clearedFields = null;
+        $clearedFields = [];
         $marker = 'Cleared booking fields: ';
-        $pos = strpos($lastCancel->action, $marker);
-        if ($pos !== false) {
-            $json = substr($lastCancel->action, $pos + strlen($marker));
-            $clearedFields = json_decode($json, true);
-        }
-
-        if (empty($clearedFields)) {
-            return response()->json(['message' => 'Restore not possible: bed details missing from cancel snapshot.'], 422);
-        }
-
-        if (empty($clearedFields['bed_code'])) {
-            StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update([
-                'rob_60_cancelled' => 0,
-                'rob_40_bed' => 1,
-                'rob_50_approve' => 0,
-            ]);
-
-            Booking::where('userId', $request->userId)->where('year', $this_year)->update([
-                'cancelled' => null,
-                'property_data_id' => null,
-                'floor' => null,
-                'unit' => null,
-                'room' => null,
-                'bed' => null,
-                'bed_code' => null,
-                'room_rate' => $clearedFields['room_rate'] ?? null,
-            ]);
-
-            ActionList::create([
-                "userUid" => $request->userId,
-                "action" => "Restored Cancelled Application | No bed restored: cancellation snapshot did not include bed details",
-                "actionUserUid" => Auth::user()->id,
-                "actionUserDisplayName" => Auth::user()->userFirstName,
-                "actionUserRole" => Auth::user()->userRole,
-                "year" => $this_year,
-            ]);
-
-            return response()->json([
-                'warning' => true,
-                'message' => 'Application restored, but bed, floor, unit, and room details were not restored because they were not available in the cancellation snapshot. Please use Change Building or Change Booking to set the correct room type and allocate a bed when available.',
-            ]);
-        }
-
-        $bedCode = $clearedFields['bed_code'];
-        $propertyDataAll = Property::where('bed_code', $bedCode)->get();
-        $propertyData = null;
-        foreach ($propertyDataAll as $pi) {
-            $yearEnd = (int) ($pi->year_end ?? 0);
-            $yearStart = (int) ($pi->year ?? 0);
-            if ($yearEnd === 0) {
-                if ((int) $this_year >= $yearStart) {
-                    $propertyData = $pi;
-                    break;
+        if ($lastCancel) {
+            $pos = strpos($lastCancel->action, $marker);
+            if ($pos !== false) {
+                $json = substr($lastCancel->action, $pos + strlen($marker));
+                $decodedFields = json_decode($json, true);
+                if (is_array($decodedFields)) {
+                    $clearedFields = $decodedFields;
                 }
-            } elseif ((int) $this_year >= $yearStart && (int) $this_year <= $yearEnd) {
-                $propertyData = $pi;
-                break;
             }
         }
 
-        if (!$propertyData) {
-            return response()->json(['message' => 'Restore not possible: bed code no longer available for this year.'], 422);
+        $bedCode = $clearedFields['bed_code'] ?? null;
+        $propertyData = null;
+        $bedRestoreStatus = 'missing_snapshot';
+        $bedRestoreMessage = 'no cancellation snapshot was found for this year.';
+
+        if (!empty($clearedFields) && empty($bedCode)) {
+            $bedRestoreStatus = 'missing_bed_details';
+            $bedRestoreMessage = 'no previous bed information was available in the cancellation snapshot.';
         }
 
-        if (!empty($propertyData->user_id_room) && (int) $propertyData->user_id_room !== (int) $request->userId) {
-            return response()->json(['message' => 'Restore not possible: bed is already allocated to another student.'], 422);
+        if (!empty($bedCode)) {
+            $propertyDataAll = Property::where('bed_code', $bedCode)->get();
+            foreach ($propertyDataAll as $pi) {
+                $yearEnd = (int) ($pi->year_end ?? 0);
+                $yearStart = (int) ($pi->year ?? 0);
+                if ($yearEnd === 0) {
+                    if ((int) $this_year >= $yearStart) {
+                        $propertyData = $pi;
+                        break;
+                    }
+                } elseif ((int) $this_year >= $yearStart && (int) $this_year <= $yearEnd) {
+                    $propertyData = $pi;
+                    break;
+                }
+            }
+
+            if (!$propertyData) {
+                $bedRestoreStatus = 'bed_not_available_for_year';
+                $bedRestoreMessage = "previous bed {$bedCode} was not found for {$this_year}.";
+            } elseif (!empty($propertyData->user_id_room) && (int) $propertyData->user_id_room !== (int) $request->userId) {
+                $bedRestoreStatus = 'bed_allocated_to_other_student';
+                $bedRestoreMessage = "previous bed {$bedCode} is currently allocated to another student.";
+            } else {
+                $bedRestoreStatus = 'bed_available_not_auto_restored';
+                $bedRestoreMessage = "previous bed {$bedCode} appears available, but Restore Booking does not assign beds automatically.";
+            }
         }
 
-        // User::where('id', $request->userId)->update(['rob_60_cancelled' => 0]);
+        $residenceId = $propertyData->residence ?? $booking->property ?? null;
+        $roomTypeId = $propertyData->room_type ?? $booking->roomType ?? null;
+        $residenceName = $residenceId ? Residence::where('id', $residenceId)->value('residence') : null;
+        $roomTypeName = $roomTypeId ? RoomTypes::where('id', $roomTypeId)->value('name') : null;
+
+        $previousBedInfo = [
+            'snapshot_found' => !empty($clearedFields),
+            'status' => $bedRestoreStatus,
+            'available' => $bedRestoreStatus === 'bed_available_not_auto_restored',
+            'current_holder_user_id' => $propertyData && !empty($propertyData->user_id_room) ? (int) $propertyData->user_id_room : null,
+            'details' => [
+                'residence' => $residenceName,
+                'residence_id' => $residenceId,
+                'room_type' => $roomTypeName,
+                'room_type_id' => $roomTypeId,
+                'floor' => $clearedFields['floor'] ?? ($propertyData->floor ?? null),
+                'unit' => $clearedFields['unit'] ?? ($propertyData->unit ?? null),
+                'room' => $clearedFields['room'] ?? ($propertyData->room ?? null),
+                'bed' => $clearedFields['bed'] ?? ($propertyData->bed ?? null),
+                'bed_code' => $bedCode,
+                'room_rate' => $clearedFields['room_rate'] ?? $booking->room_rate,
+            ],
+        ];
+
         StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update([
             'rob_60_cancelled' => 0,
-            'rob_40_bed' => 2,
+            'rob_40_bed' => 1,
+            'rob_50_approve' => 0,
         ]);
 
-        Booking::where('userId', $request->userId)->where('year', $this_year)->update([
+        $bookingUpdate = [
             'cancelled' => null,
-            'property' => $propertyData->residence,
-            'roomType' => $propertyData->room_type,
-            'property_data_id' => $propertyData->id,
-            'floor' => $propertyData->floor,
-            'unit' => $propertyData->unit,
-            'room' => $propertyData->room,
-            'bed' => $propertyData->bed,
-            'bed_code' => $propertyData->bed_code,
-            'room_rate' => $clearedFields['room_rate'] ?? null,
-        ]);
+            'property_data_id' => null,
+            'floor' => null,
+            'unit' => null,
+            'room' => null,
+            'bed' => null,
+            'bed_code' => null,
+        ];
 
-        Property::where('id', $propertyData->id)->update([
-            'user_id_room' => $request->userId,
-            'room_available' => 1,
-        ]);
+        if (array_key_exists('room_rate', $clearedFields)) {
+            $bookingUpdate['room_rate'] = $clearedFields['room_rate'];
+        }
+
+        Booking::where('userId', $request->userId)->where('year', $this_year)->update($bookingUpdate);
+
+        /*
+         * Future bed-restore flow:
+         * If the post-restore modal adds a "Restore previous bed" button, put this
+         * assignment logic behind a separate endpoint after confirming $propertyData
+         * exists and is unallocated. The artisan command booking:restore-assign-bed
+         * has the same operational pattern.
+         *
+         * StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->update(['rob_40_bed' => 2]);
+         * Booking::where('userId', $request->userId)->where('year', $this_year)->update([
+         *     'property' => $propertyData->residence,
+         *     'roomType' => $propertyData->room_type,
+         *     'property_data_id' => $propertyData->id,
+         *     'floor' => $propertyData->floor,
+         *     'unit' => $propertyData->unit,
+         *     'room' => $propertyData->room,
+         *     'bed' => $propertyData->bed,
+         *     'bed_code' => $propertyData->bed_code,
+         * ]);
+         * Property::where('id', $propertyData->id)->update(['user_id_room' => $request->userId, 'room_available' => 1]);
+         */
 
         ActionList::create([
             "userUid" => $request->userId,
-            "action" => "Restored Cancelled Application | Restored bed: " . $bedCode,
+            "action" => "Restored Cancelled Application | Bed not restored: " . $bedRestoreMessage,
             "actionUserUid" => Auth::user()->id,
             "actionUserDisplayName" => Auth::user()->userFirstName,
             "actionUserRole" => Auth::user()->userRole,
             "year" => $this_year,
         ]);
 
-        return 'true';
+        return response()->json([
+            'warning' => true,
+            'title' => 'Application restored - bed not restored',
+            'message' => 'Application restored successfully. Bed, floor, unit, and room details were not restored. ' . ucfirst($bedRestoreMessage) . ' Please allocate the bed separately through Change Building or Change Booking.',
+            'year' => $this_year,
+            'bed_restore' => $previousBedInfo,
+        ]);
     }
 
     public function reports(Request $request)
