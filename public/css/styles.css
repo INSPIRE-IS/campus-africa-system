@@ -447,13 +447,25 @@ body {
         }
 
         .bigHeader {
-            background-color: #FFF;
-            padding: 40px;
+            background-color: #e8e8e8;
+            padding: 20px;
             height: 200px;
             border-radius: 10px 10px 0px 0px;
             margin-top: -40px;
             margin-left: -50px;
             margin-right: -50px;
+        }
+
+        @media only screen and (max-width: 850px) {
+            .bigHeader {
+                background-color: #e8e8e8;
+                padding: 20px;
+                height: 200px;
+                border-radius: 10px 10px 0px 0px;
+                margin-top: -40px;
+                margin-left: -20px;
+                margin-right: -20px;
+            }
         }
 
         .buttons {
