@@ -2,86 +2,153 @@
 
 namespace App\Jobs;
 
+use App\Models\Question;
+use App\Models\StudentCompatibilityScore;
+use App\Models\StudentQuestionAnswer;
+use App\Models\StudentsInfo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\StudentCompatibilityScore;
-use App\Models\StudentQuestionAnswer;
-use App\Models\Question;
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CalculateCompatibilityJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected array $students;
+    protected $students;
     protected $year;
-    const MIN_SCORE = 0;
+    protected $minScore;
 
-    public function __construct(array $students, $year)
+    public function __construct(array $students, $year, $minScore = null)
     {
         $this->students = $students;
         $this->year = $year;
+        $this->minScore = $minScore ?? (float) config('compatibility.min_score', 30);
     }
 
     public function handle()
     {
+        $chunkStudents = collect($this->students)->keyBy('id');
+        if ($chunkStudents->isEmpty()) {
+            return;
+        }
+
         $questions = Question::where('is_active', 1)->get()->keyBy('id');
-        $answers = StudentQuestionAnswer::whereIn('student_id', array_column($this->students, 'id'))
+        if ($questions->isEmpty()) {
+            return;
+        }
+
+        $eligibleStudents = $this->eligibleStudentsQuery()
+            ->get()
+            ->keyBy('id');
+
+        if ($eligibleStudents->count() < 2) {
+            return;
+        }
+
+        $answers = StudentQuestionAnswer::whereIn('student_id', $eligibleStudents->keys()->all())
             ->where('academic_year', $this->year)
+            ->whereNotNull('question_option_id')
             ->get()
             ->groupBy('student_id');
 
-        $insertData = [];
+        $upsertData = [];
 
-        foreach ($this->students as $i => $a) {
-            foreach ($this->students as $j => $b) {
-                if ($a['id'] >= $b['id']) continue;
-                // Log::info("Comparing {$a['id']} with {$b['id']}");
-                $agender = $a['gender'] ?? null;
-                $bgender = $b['gender'] ?? null;
-                // Log::info("Genders: {$agender}, {$bgender}");
+        foreach ($chunkStudents as $a) {
+            $studentAId = (int) ($a['id'] ?? 0);
+            if (!$studentAId || !$eligibleStudents->has($studentAId)) {
+                continue;
+            }
 
-                if (!$agender || !$bgender || $agender !== $bgender) continue;
+            foreach ($eligibleStudents as $b) {
+                $studentBId = (int) $b->id;
+                if ($studentAId >= $studentBId) {
+                    continue;
+                }
 
-                $aproperty = $a['booking']['property'] ?? null;
-                $bproperty = $b['booking']['property'] ?? null;
-                // Log::info("Properties: {$aproperty}, {$bproperty}");
-
-                if (!$aproperty || !$bproperty) continue;
-                if ($aproperty !== $bproperty) continue;
+                if (!$this->studentsCanMatch($a, $b->toArray())) {
+                    continue;
+                }
 
                 $score = $this->calculateWeightScore(
-                    $answers[$a['id']] ?? collect(),
-                    $answers[$b['id']] ?? collect(),
+                    $answers->get($studentAId, collect()),
+                    $answers->get($studentBId, collect()),
                     $questions
                 );
 
-                if ($score >= self::MIN_SCORE) {
-                    $insertData[] = [
-                        'student_a_id' => $a['id'],
-                        'student_b_id' => $b['id'],
-                        'academic_year' => $this->year,
-                        'compatibility_score' => $score,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
+                if ($score < $this->minScore) {
+                    continue;
                 }
 
-                if (count($insertData) >= 1000) {
-                    StudentCompatibilityScore::insert($insertData);
-                    $insertData = [];
+                $now = now();
+                $upsertData[] = [
+                    'student_a_id' => $studentAId,
+                    'student_b_id' => $studentBId,
+                    'academic_year' => $this->year,
+                    'compatibility_score' => $score,
+                    'last_calculated_at' => $now,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+
+                if (count($upsertData) >= 1000) {
+                    $this->upsertScores($upsertData);
+                    $upsertData = [];
                 }
             }
         }
 
-        if ($insertData) {
-            StudentCompatibilityScore::insert($insertData);
+        if ($upsertData) {
+            $this->upsertScores($upsertData);
         }
+    }
+
+    private function eligibleStudentsQuery()
+    {
+        return StudentsInfo::select('id', 'gender', 'bookingId', 'year', 'rob_60_cancelled')
+            ->with(['booking:id,property,roomType,year,cancelled', 'booking.roomType:id,name'])
+            ->where('year', $this->year)
+            ->whereNotNull('gender')
+            ->where(function ($query) {
+                $query->whereNull('rob_60_cancelled')
+                    ->orWhere('rob_60_cancelled', '!=', 1);
+            })
+            ->whereIn('id', function ($query) {
+                $query->select('student_id')
+                    ->from('student_question_answers')
+                    ->where('academic_year', $this->year)
+                    ->whereNotNull('question_option_id');
+            })
+            ->whereHas('booking', function ($query) {
+                $query->where('year', $this->year)
+                    ->whereNotNull('property')
+                    ->where(function ($bookingQuery) {
+                        $bookingQuery->whereNull('cancelled')
+                            ->orWhere('cancelled', '!=', 1);
+                    })
+                    ->whereHas('roomType', function ($roomTypeQuery) {
+                        $roomTypeQuery->sharedOnly();
+                    });
+            })
+            ->orderBy('id');
+    }
+
+    private function studentsCanMatch(array $studentA, array $studentB)
+    {
+        $genderA = $studentA['gender'] ?? null;
+        $genderB = $studentB['gender'] ?? null;
+        if (!$genderA || !$genderB || $genderA !== $genderB) {
+            return false;
+        }
+
+        $propertyA = $studentA['booking']['property'] ?? null;
+        $propertyB = $studentB['booking']['property'] ?? null;
+        if (!$propertyA || !$propertyB) {
+            return false;
+        }
+
+        return (string) $propertyA === (string) $propertyB;
     }
 
     private function calculateWeightScore($answersA, $answersB, $questions)
@@ -89,21 +156,35 @@ class CalculateCompatibilityJob implements ShouldQueue
         $mapA = $answersA->pluck('question_option_id', 'question_id')->toArray();
         $mapB = $answersB->pluck('question_option_id', 'question_id')->toArray();
 
-        $common = array_intersect(array_keys($mapA), array_keys($mapB));
-        if (empty($common)) return 0;
-
-        $total = 0;
-        $max = 0;
-        foreach ($common as $qid) {
-            $q = $questions[$qid] ?? null;
-            if (!$q) continue;
-            $w = $q->weight ?? 1;
-            $max += $w;
-
-            $similarity = ($mapA[$qid] == $mapB[$qid]) ? 1 : 0;
-            $total += $w * $similarity;
+        $commonQuestions = array_intersect(array_keys($mapA), array_keys($mapB));
+        if (empty($commonQuestions)) {
+            return 0;
         }
 
-        return $max ? round(($total / $max) * 100, 2) : 0;
+        $totalScore = 0;
+        $maxScore = 0;
+        foreach ($commonQuestions as $questionId) {
+            $question = $questions[$questionId] ?? null;
+            if (!$question) {
+                continue;
+            }
+
+            $weight = $question->weight ?? 1;
+            $maxScore += $weight;
+
+            $similarity = ($mapA[$questionId] == $mapB[$questionId]) ? 1 : 0;
+            $totalScore += $weight * $similarity;
+        }
+
+        return $maxScore ? round(($totalScore / $maxScore) * 100, 2) : 0;
+    }
+
+    private function upsertScores(array $scores)
+    {
+        StudentCompatibilityScore::upsert(
+            $scores,
+            ['student_a_id', 'student_b_id', 'academic_year'],
+            ['compatibility_score', 'last_calculated_at', 'updated_at']
+        );
     }
 }
