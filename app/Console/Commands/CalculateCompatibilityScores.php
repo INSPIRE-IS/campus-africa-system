@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\CalculateCompatibilityJob;
+use App\Models\Lookups;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentsInfo;
 use Illuminate\Console\Command;
@@ -10,13 +11,15 @@ use Illuminate\Console\Command;
 class CalculateCompatibilityScores extends Command
 {
     protected $signature = 'calculate:compatibility {--year=}';
+    // php artisan calculate:compatibility --year=2026
+    // php artisan calculate:compatibility --year=2027
     protected $description = 'Calculates compatibility scores between all students based on preference answers';
 
     public function handle()
     {
         ini_set('memory_limit', '1024M');
 
-        $year = $this->option('year') ?? date('Y');
+        $year = $this->option('year') ?: (Lookups::activeYearValue() ?? date('Y'));
         $batchSize = (int) config('compatibility.batch_size', 500);
         $minScore = (float) config('compatibility.min_score', 30);
 

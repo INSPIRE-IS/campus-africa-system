@@ -2033,20 +2033,29 @@ class HomeController extends Controller
 
     public function search(Request $request)
     {
-        $year = $request->input('year');
-        $query = $request->input('query');
+        $year = $request->input('year') ?: (Lookups::activeYearValue() ?? date('Y'));
+        $query = trim((string) $request->input('query'));
 
-        $students = StudentsInfo::where('userFirstName', 'like', "%{$query}%")
-            ->orWhere('userLastname', 'like', "%{$query}%")
-            ->where('year', $year)
+        if (strlen($query) < 3) {
+            return response()->json([
+                'data' => [],
+                'current_page' => 1,
+                'last_page' => 1,
+            ]);
+        }
+
+        $students = StudentsInfo::where('year', $year)
+            ->where(function ($studentQuery) use ($query) {
+                $studentQuery->where('userFirstName', 'like', "%{$query}%")
+                    ->orWhere('userLastname', 'like', "%{$query}%");
+            })
             ->orderBy('userFirstName')
             ->paginate(100);
 
         $results = [];
-        $questions = Question::all()->keyBy('id');
 
         foreach ($students as $student) {
-            $matches = $this->findTopMatches($student->id, $year, $questions);
+            $matches = $this->findTopMatches($student->id, $year);
             $results[] = [
                 'student' => $student,
                 'top_matches' => $matches,
@@ -2070,7 +2079,7 @@ class HomeController extends Controller
         })
             ->where('academic_year', $year)
             ->orderByDesc('compatibility_score')
-            ->take(10)
+            ->take($limit)
             ->get();
         //dd($matches);
         if ($matches->isEmpty()) {
@@ -2099,7 +2108,7 @@ class HomeController extends Controller
                 : $match->student_a_id;
 
             $other = StudentsInfo::where('id', $otherId)
-                ->where('year', 2026)
+                ->where('year', $year)
                 ->first();
 
             Log::warning("No studentIds found for student {$otherId} in year {$year}");
