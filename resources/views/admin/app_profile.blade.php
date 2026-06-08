@@ -5486,6 +5486,7 @@
                             data: {
                                 bookingId: bookingId,
                                 userId: userId,
+                                year: "{{ $this_year }}",
                             },
 
                             success: function(data) {

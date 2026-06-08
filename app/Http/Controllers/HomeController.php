@@ -2033,20 +2033,29 @@ class HomeController extends Controller
 
     public function search(Request $request)
     {
-        $year = $request->input('year');
-        $query = $request->input('query');
+        $year = $request->input('year') ?: (Lookups::activeYearValue() ?? date('Y'));
+        $query = trim((string) $request->input('query'));
 
-        $students = StudentsInfo::where('userFirstName', 'like', "%{$query}%")
-            ->orWhere('userLastname', 'like', "%{$query}%")
-            ->where('year', $year)
+        if (strlen($query) < 3) {
+            return response()->json([
+                'data' => [],
+                'current_page' => 1,
+                'last_page' => 1,
+            ]);
+        }
+
+        $students = StudentsInfo::where('year', $year)
+            ->where(function ($studentQuery) use ($query) {
+                $studentQuery->where('userFirstName', 'like', "%{$query}%")
+                    ->orWhere('userLastname', 'like', "%{$query}%");
+            })
             ->orderBy('userFirstName')
             ->paginate(100);
 
         $results = [];
-        $questions = Question::all()->keyBy('id');
 
         foreach ($students as $student) {
-            $matches = $this->findTopMatches($student->id, $year, $questions);
+            $matches = $this->findTopMatches($student->id, $year);
             $results[] = [
                 'student' => $student,
                 'top_matches' => $matches,
@@ -2070,7 +2079,7 @@ class HomeController extends Controller
         })
             ->where('academic_year', $year)
             ->orderByDesc('compatibility_score')
-            ->take(10)
+            ->take($limit)
             ->get();
         //dd($matches);
         if ($matches->isEmpty()) {
@@ -2099,7 +2108,7 @@ class HomeController extends Controller
                 : $match->student_a_id;
 
             $other = StudentsInfo::where('id', $otherId)
-                ->where('year', 2026)
+                ->where('year', $year)
                 ->first();
 
             Log::warning("No studentIds found for student {$otherId} in year {$year}");
@@ -2470,9 +2479,31 @@ class HomeController extends Controller
 
     public function delete_admin(Request $request)
     {
+        $actor = Auth::user();
+        $targetUser = User::where('id', $request->userUid)->first();
+        $activeYear = Lookups::activeYearValue() ?? (string) now()->year;
 
+        $deletedRows = User::where('id', $request->userUid)->delete();
 
-        User::where('id', $request->userUid)->delete();
+        ActionList::create([
+            "userUid" => $request->userUid,
+            "action" => "Deleted user account via user edit | user_id={$request->userUid} | email=" . ($targetUser->userEmail ?? 'unknown') . " | role=" . ($targetUser->userRole ?? 'unknown') . " | deleted_rows={$deletedRows}",
+            "actionUserUid" => $actor->id,
+            "actionUserDisplayName" => $actor->userFirstName,
+            "actionUserRole" => $actor->userRole,
+            "year" => $activeYear,
+            "meta" => [
+                "flow" => "delete_admin",
+                "target_user" => [
+                    "id" => $targetUser->id ?? $request->userUid,
+                    "first_name" => $targetUser->userFirstName ?? null,
+                    "last_name" => $targetUser->userLastname ?? null,
+                    "email" => $targetUser->userEmail ?? null,
+                    "role" => $targetUser->userRole ?? null,
+                ],
+                "deleted_rows" => $deletedRows,
+            ],
+        ]);
 
         return redirect('/users');
     }
@@ -3686,6 +3717,7 @@ class HomeController extends Controller
     public function delete_lookup(Request $request)
     {
 
+        // TODO: Review this maintenance delete flow for ActionList logging and server-side permission checks.
         Lookups::where('id', $request->lookupId)->delete();
 
         return 'true';
@@ -3693,6 +3725,7 @@ class HomeController extends Controller
 
     public function delete_room(Request $request)
     {
+        // TODO: Review this maintenance delete flow for ActionList logging and server-side permission checks.
         RoomTypes::where('id', $request->roomId)->delete();
 
         return 'true';
@@ -4046,19 +4079,73 @@ class HomeController extends Controller
 
     public function delete_booking(Request $request)
     {
+        $preferredYear = $request->year ?: Session::get('year');
+        $this_year = Lookups::resolveYearForUser((int) $request->userId, $preferredYear);
+        if (empty($this_year)) {
+            return response()->json(['message' => 'Delete not possible: no application year could be resolved.'], 422);
+        }
+        Session::put('year', $this_year);
 
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        $this_year = $this_year->lookup_name;
-
-        Booking::where('id', $request->bookingId)->where('year', $this_year)->delete();
-        StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->delete();
-
+        $actor = Auth::user();
+        $booking = Booking::where('id', $request->bookingId)->where('userId', $request->userId)->where('year', $this_year)->first();
+        $studentInfo = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->first();
         $allFiles = UserFiles::where('userUid', $request->userId)->where('year', $this_year)->get();
+
+        $bookingDeleted = Booking::where('id', $request->bookingId)->where('userId', $request->userId)->where('year', $this_year)->delete();
+        $studentInfoDeleted = StudentsInfo::where('userUid', $request->userId)->where('year', $this_year)->delete();
+
+        $deletedFiles = [];
 
         foreach ($allFiles as $file) {
             UserFiles::where('id', $file->id)->delete();
+            $deletedFiles[] = [
+                "id" => $file->id,
+                "fileId" => $file->fileId,
+                "status" => $file->status,
+            ];
         }
         // User::where('id', $request->userId)->delete();
+
+        $bookingSnapshot = [
+            "id" => $booking->id ?? $request->bookingId,
+            "booking_code" => $booking->booking_code ?? null,
+            "property" => $booking->property ?? null,
+            "roomType" => $booking->roomType ?? null,
+            "property_data_id" => $booking->property_data_id ?? null,
+            "floor" => $booking->floor ?? null,
+            "unit" => $booking->unit ?? null,
+            "room" => $booking->room ?? null,
+            "bed" => $booking->bed ?? null,
+            "bed_code" => $booking->bed_code ?? null,
+            "room_rate" => $booking->room_rate ?? null,
+            "cancelled" => $booking->cancelled ?? null,
+        ];
+
+        ActionList::create([
+            "userUid" => $request->userId,
+            "action" => "Deleted booking via app profile | booking_id={$request->bookingId} | year={$this_year} | booking_code=" . ($booking->booking_code ?? 'unknown') . " | bed_code=" . ($booking->bed_code ?? 'unknown') . " | bookings_deleted={$bookingDeleted} | students_info_deleted={$studentInfoDeleted} | files_deleted=" . count($deletedFiles),
+            "actionUserUid" => $actor->id,
+            "actionUserDisplayName" => $actor->userFirstName,
+            "actionUserRole" => $actor->userRole,
+            "year" => $this_year,
+            "meta" => [
+                "flow" => "delete_booking",
+                "booking" => $bookingSnapshot,
+                "students_info" => [
+                    "id" => $studentInfo->id ?? null,
+                    "bookingId" => $studentInfo->bookingId ?? null,
+                    "rob_40_bed" => $studentInfo->rob_40_bed ?? null,
+                    "rob_50_approve" => $studentInfo->rob_50_approve ?? null,
+                    "rob_60_cancelled" => $studentInfo->rob_60_cancelled ?? null,
+                ],
+                "deleted_rows" => [
+                    "bookings_data" => $bookingDeleted,
+                    "students_info" => $studentInfoDeleted,
+                    "user_files" => count($deletedFiles),
+                ],
+                "deleted_files" => $deletedFiles,
+            ],
+        ]);
 
         return 'true';
     }
@@ -6001,6 +6088,7 @@ class HomeController extends Controller
 
         $property = Property::where('id', $request->propertyId)->first();
 
+        // TODO: Review delete-bed for ActionList logging, permission checks, and clearer naming; it closes bed availability rather than deleting the row.
         if ($property->year == $this_year) {
             Property::where('id', $request->propertyId)->update(['year_end' => $property->year - 1]);
         } else {
@@ -8429,7 +8517,7 @@ class HomeController extends Controller
 
     public function delete_nsfas($id)
     {
-        //
+        // TODO: Review this NSFAS import delete flow for ActionList logging and server-side permission checks.
         ImportNSFASApproval::where('id', $id)->delete();
         ImportNSFASStudentAuditLog::where('importId', $id)->delete();
 
