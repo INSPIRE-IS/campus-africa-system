@@ -1282,8 +1282,33 @@ class ApplicationController extends Controller
         }
     }
 
+    private function openEmailVerificationYears($selectedYear = null)
+    {
+        $years = Lookups::uiYearLookups()
+            ->pluck('lookup_name')
+            ->map(function ($year) {
+                return (string) $year;
+            })
+            ->values()
+            ->all();
+
+        $selectedYear = (string) (int) $selectedYear;
+        if ($selectedYear !== '0' && Lookups::isUiYear($selectedYear) && !in_array($selectedYear, $years, true)) {
+            $years[] = $selectedYear;
+        }
+
+        if (empty($years) && $selectedYear !== '0') {
+            $years[] = $selectedYear;
+        }
+
+        return $years;
+    }
+
     public function verify_email_account(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect('/login')->withErrors(['message' => 'Please use the verification link from your email again.']);
+        }
 
         // User::where('id', Auth::user()->id)->update(['onboard_complete' => 2, 'email_verified' => 1]);
         $this_year = Session::get('year');
@@ -1295,7 +1320,14 @@ class ApplicationController extends Controller
         }
         Session::put('year', $this_year);
 
-        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2, 'email_verified' => 1]);
+        $verifiedEmail = Auth::user()->email ?: Auth::user()->userEmail;
+        $verificationYears = $this->openEmailVerificationYears($this_year);
+
+        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['onboard_complete' => 2]);
+        StudentsInfo::where('userUid', Auth::user()->id)
+            ->whereIn('year', $verificationYears)
+            ->where('userEmail', $verifiedEmail)
+            ->update(['email_verified' => 1]);
 
         $appOnline = Lookups::where('group_id', '9')->first();
 
@@ -1308,6 +1340,10 @@ class ApplicationController extends Controller
 
     public function verify_new_email_account(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect('/login')->withErrors(['message' => 'Please use the verification link from your email again.']);
+        }
+
         // User::where('id', Auth::user()->id)->update(['email_verified' => 1]);
 
         $this_year = Session::get('year');
@@ -1319,7 +1355,13 @@ class ApplicationController extends Controller
         }
         Session::put('year', $this_year);
 
-        StudentsInfo::where('userUid', Auth::user()->id)->where('year', $this_year)->update(['email_verified' => 1]);
+        $verifiedEmail = Auth::user()->email ?: Auth::user()->userEmail;
+        $verificationYears = $this->openEmailVerificationYears($this_year);
+
+        StudentsInfo::where('userUid', Auth::user()->id)
+            ->whereIn('year', $verificationYears)
+            ->where('userEmail', $verifiedEmail)
+            ->update(['email_verified' => 1]);
 
         $appOnline = Lookups::where('group_id', '9')->first();
 

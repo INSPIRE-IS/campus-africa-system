@@ -2763,6 +2763,15 @@
                             }
                         }
 
+                        if (
+                            $(".app_details_btn .btn_edit_inline[formid='inline_app_details']").length === 0 &&
+                            ("<?php echo Auth::user()->role_sys_admin; ?>" == "1" || "<?php echo Auth::user()->role_super; ?>" == "1")
+                        ) {
+                            $(".app_details_btn").append(
+                                '<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>'
+                            )
+                        }
+
                         if (data['parent_approved'] == 1) {
                             $("#rejectedSpon").addClass('hidden')
                             $("#approvedSpon").removeClass('hidden')
@@ -5937,7 +5946,8 @@
                         data: {
                             userUid: "{{ $user[0]['userInfo']['userUid'] }}",
                             formId: formId,
-                            type: edittype
+                            type: edittype,
+                            year: "{{ $this_year }}"
                         },
 
                         success: function(data) {
@@ -6182,6 +6192,145 @@
                                 }
 
                             },
+                            error: function(xhr) {
+                                function escapeInlineMessage(value) {
+                                    if (value === null || value === undefined || value === '') {
+                                        value = '-';
+                                    }
+
+                                    return $('<div>').text(value).html();
+                                }
+
+                                function parseInlineErrorResponse(xhr) {
+                                    if (xhr && xhr.responseJSON) {
+                                        return xhr.responseJSON;
+                                    }
+
+                                    if (xhr && xhr.responseText) {
+                                        try {
+                                            return JSON.parse(xhr.responseText);
+                                        } catch (e) {
+                                            return {
+                                                raw: xhr.responseText
+                                            };
+                                        }
+                                    }
+
+                                    return {};
+                                }
+
+                                function inlineErrorList(errors) {
+                                    var list = [];
+
+                                    if (!errors) {
+                                        return list;
+                                    }
+
+                                    Object.keys(errors).forEach(function(key) {
+                                        if ($.isArray(errors[key])) {
+                                            errors[key].forEach(function(item) {
+                                                list.push(key + ': ' + item);
+                                            });
+                                        } else {
+                                            list.push(key + ': ' + errors[key]);
+                                        }
+                                    });
+
+                                    return list;
+                                }
+
+                                var response = parseInlineErrorResponse(xhr);
+                                var title = xhr && xhr.status == 422 ? 'Update blocked' : 'Update failed';
+                                var statusText = xhr && xhr.status ? 'HTTP ' + xhr.status : 'No HTTP status';
+                                var message = response.message || '';
+                                var details = inlineErrorList(response.errors);
+
+                                if (!message && response.exception) {
+                                    message = response.exception;
+                                }
+
+                                if (!message && response.raw) {
+                                    if (response.raw.indexOf('users_email_unique') !== -1 || response.raw.indexOf('Duplicate entry') !== -1) {
+                                        message = 'This email address is already used by another login account. The email was not updated.';
+                                    } else {
+                                        message = response.raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+                                    }
+                                }
+
+                                if (!message) {
+                                    message = 'The server blocked this update but did not return a readable reason.';
+                                }
+
+                                var html = '<div style="text-align:left;font-size:14px;line-height:1.45;">' +
+                                    '<p style="margin:0 0 10px;">' + escapeInlineMessage(message) + '</p>' +
+                                    '<p style="margin:0 0 12px;color:#6b7280;"><strong>Status:</strong> ' + escapeInlineMessage(statusText) + '</p>';
+
+                                if (details.length) {
+                                    html += '<p style="margin:0 0 6px;"><strong>Details:</strong></p><ul style="padding-left:18px;margin:0 0 12px;">';
+                                    details.forEach(function(item) {
+                                        html += '<li>' + escapeInlineMessage(item) + '</li>';
+                                    });
+                                    html += '</ul>';
+                                }
+
+                                if (response.duplicate) {
+                                    title = 'Email already in use';
+                                    var duplicate = response.duplicate;
+                                    html += '<div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 12px;margin:10px 0;background:#f9fafb;">' +
+                                        '<p style="margin:0 0 6px;"><strong>Existing account</strong></p>' +
+                                        '<p style="margin:0;"><strong>User ID:</strong> ' + escapeInlineMessage(duplicate.user_id) + '</p>' +
+                                        '<p style="margin:0;"><strong>Status:</strong> ' + escapeInlineMessage(duplicate.status) + '</p>' +
+                                        '<p style="margin:0;"><strong>Name:</strong> ' + escapeInlineMessage(duplicate.name) + '</p>' +
+                                        '<p style="margin:0;"><strong>Login email:</strong> ' + escapeInlineMessage(duplicate.email) + '</p>' +
+                                        '<p style="margin:0;"><strong>Contact email:</strong> ' + escapeInlineMessage(duplicate.userEmail) + '</p>' +
+                                        '<p style="margin:0;"><strong>ID / Passport:</strong> ' + escapeInlineMessage(duplicate.id_number) + '</p>' +
+                                        '<p style="margin:0;"><strong>Matched on:</strong> ' + escapeInlineMessage(duplicate.match_source) + '</p>';
+
+                                    if (duplicate.deleted_at) {
+                                        html += '<p style="margin:0;"><strong>Deleted at:</strong> ' + escapeInlineMessage(duplicate.deleted_at) + '</p>';
+                                    }
+
+                                    html += '</div>';
+
+                                    if (duplicate.students_info && duplicate.students_info.length) {
+                                        html += '<p style="margin:10px 0 6px;"><strong>Student rows linked to that account:</strong></p>' +
+                                            '<div style="max-height:180px;overflow:auto;border:1px solid #e5e7eb;border-radius:6px;">' +
+                                            '<table style="width:100%;border-collapse:collapse;font-size:13px;">' +
+                                            '<thead><tr style="background:#f3f4f6;">' +
+                                            '<th style="text-align:left;padding:6px;">Year</th>' +
+                                            '<th style="text-align:left;padding:6px;">Info ID</th>' +
+                                            '<th style="text-align:left;padding:6px;">Student</th>' +
+                                            '<th style="text-align:left;padding:6px;">ID / Passport</th>' +
+                                            '<th style="text-align:left;padding:6px;">Student No</th>' +
+                                            '<th style="text-align:left;padding:6px;">Booking</th>' +
+                                            '<th style="text-align:left;padding:6px;">Cancelled</th>' +
+                                            '</tr></thead><tbody>';
+                                        duplicate.students_info.forEach(function(row) {
+                                            html += '<tr>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.year) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.id) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage((row.userFirstName || '') + ' ' + (row.userLastname || '')) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.userId || row.userPassport) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.studentNo) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.bookingRef || row.bookingId) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.rob_60_cancelled) + '</td>' +
+                                                '</tr>';
+                                        });
+                                        html += '</tbody></table></div>';
+                                    }
+                                }
+
+                                html += '<p style="margin-top:12px;color:#b91c1c;">No records were changed.</p></div>';
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: title,
+                                    html: html,
+                                    width: response.duplicate ? 820 : 560,
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#e74f26',
+                                });
+                            },
                         });
 
                         e.preventDefault();
@@ -6236,7 +6385,8 @@
                                         userUid: "{{ $user[0]['userInfo']['userUid'] }}",
                                         formId: formId,
                                         approvefield: approvefield,
-                                        task: task
+                                        task: task,
+                                        year: "{{ $this_year }}"
                                     },
 
                                     success: function(data) {

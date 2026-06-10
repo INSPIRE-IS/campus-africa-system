@@ -9138,11 +9138,139 @@ class HomeController extends Controller
         }
     }
 
+    private function resolveInlineProfileYear(Request $request)
+    {
+        $requestedYear = $request->input('year') ?: Session::get('year');
+
+        if (!empty($requestedYear)) {
+            $lookup = Lookups::where('group_id', '4')->where('lookup_name', '=', $requestedYear)->first();
+            if ($lookup) {
+                return $lookup->lookup_name;
+            }
+        }
+
+        $activeYear = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
+        return $activeYear ? $activeYear->lookup_name : (string) now()->year;
+    }
+
+    private function canEditInlineProfileSection($formId)
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        if ($formId == 'inline_app_details' && ((int) Auth::user()->role_sys_admin === 1 || (int) Auth::user()->role_super === 1)) {
+            return true;
+        }
+
+        if ($formId == 'inline_edit_student_type') {
+            return (int) Auth::user()->role_change_student_type === 1;
+        }
+
+        if (in_array($formId, ['inline_edit_address', 'inline_edit_kin', 'inline_app_details'], true)) {
+            return (int) Auth::user()->role_edit_app === 1;
+        }
+
+        return false;
+    }
+
+    private function inlineDuplicateEmailResponse($email, $currentUserId)
+    {
+        $email = trim((string) $email);
+        if ($email === '') {
+            return null;
+        }
+
+        $duplicateUser = User::withTrashed()
+            ->where('id', '!=', $currentUserId)
+            ->where(function ($query) use ($email) {
+                $query->where('email', $email)
+                    ->orWhere('userEmail', $email);
+            })
+            ->first();
+        $duplicateStudent = null;
+        $matchSource = null;
+
+        if ($duplicateUser) {
+            $matchSource = $duplicateUser->email === $email ? 'users.email' : 'users.userEmail';
+        } else {
+            $duplicateStudent = StudentsInfo::where('userUid', '!=', $currentUserId)
+                ->where('userEmail', $email)
+                ->orderByDesc('year')
+                ->first();
+
+            if ($duplicateStudent) {
+                $duplicateUser = User::withTrashed()->where('id', $duplicateStudent->userUid)->first();
+                $matchSource = 'students_info.userEmail';
+            }
+        }
+
+        if (!$duplicateUser && !$duplicateStudent) {
+            return null;
+        }
+
+        $duplicateUserId = $duplicateUser ? $duplicateUser->id : $duplicateStudent->userUid;
+        $studentRows = StudentsInfo::where('userUid', $duplicateUserId)
+            ->orderByDesc('year')
+            ->get([
+                'id',
+                'year',
+                'userFirstName',
+                'userLastname',
+                'userId',
+                'userPassport',
+                'studentNo',
+                'bookingId',
+                'bookingRef',
+                'rob_60_cancelled',
+            ]);
+        $latestStudentRow = $studentRows->first();
+        $duplicateName = $duplicateUser
+            ? trim(($duplicateUser->userFirstName ?? '') . ' ' . ($duplicateUser->userLastname ?? ''))
+            : trim(($latestStudentRow->userFirstName ?? '') . ' ' . ($latestStudentRow->userLastname ?? ''));
+
+        return response()->json([
+            'message' => 'This email address is already linked to another user account. The email was not updated.',
+            'duplicate' => [
+                'user_id' => $duplicateUserId,
+                'email' => $duplicateUser ? $duplicateUser->email : null,
+                'userEmail' => $duplicateUser ? $duplicateUser->userEmail : $email,
+                'name' => $duplicateName,
+                'id_number' => $duplicateUser ? $duplicateUser->userId : ($latestStudentRow->userId ?? null),
+                'deleted_at' => ($duplicateUser && $duplicateUser->deleted_at) ? (string) $duplicateUser->deleted_at : null,
+                'status' => ($duplicateUser && $duplicateUser->trashed()) ? 'soft-deleted' : 'active',
+                'match_source' => $matchSource,
+                'students_info' => $studentRows,
+            ],
+        ], 422);
+    }
+
+    private function inlineProfileOpenYears($selectedYear = null)
+    {
+        $years = Lookups::uiYearLookups()
+            ->pluck('lookup_name')
+            ->map(function ($year) {
+                return (string) $year;
+            })
+            ->values()
+            ->all();
+
+        $selectedYear = (string) (int) $selectedYear;
+        if ($selectedYear !== '0' && Lookups::isUiYear($selectedYear) && !in_array($selectedYear, $years, true)) {
+            $years[] = $selectedYear;
+        }
+
+        return $years;
+    }
+
     public function edit_inline_data(Request $request)
     {
 
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        $this_year = $this_year->lookup_name;
+        $this_year = $this->resolveInlineProfileYear($request);
+
+        if ($request->type == "form" && !$this->canEditInlineProfileSection($request->formId)) {
+            abort(403);
+        }
 
         $user = User::find($request->userUid);
         $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
@@ -9179,6 +9307,7 @@ class HomeController extends Controller
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
                     <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+                    <input type="hidden" name="year" value="<?php echo $this_year; ?>">
 
                     <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
                     <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
@@ -9280,6 +9409,7 @@ class HomeController extends Controller
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
                     <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+                    <input type="hidden" name="year" value="<?php echo $this_year; ?>">
 
                     <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
                     <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
@@ -9320,24 +9450,23 @@ class HomeController extends Controller
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
                     <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+                    <input type="hidden" name="year" value="<?php echo $this_year; ?>">
 
                     <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
                     <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
                 </form>
             <?php
             } else {
-                $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-                $this_year = $this_year->lookup_name;
-
                 $booking = Booking::where('userId', $user->id)->where('year', $this_year)->first();
+                $bookingCode = $booking ? $booking->booking_code : '';
                 if ($userInfo->email_verified == '1') {
-                    echo '<a href="mailto:' . $userInfo->userEmail . '?subject=' . $booking->booking_code . '">' . $userInfo->userEmail . "</a><i class='fas fa-check' style='color:green'></i><br/>";
+                    echo '<a href="mailto:' . $userInfo->userEmail . '?subject=' . $bookingCode . '">' . $userInfo->userEmail . "</a><i class='fas fa-check' style='color:green'></i><br/>";
                     echo '<input type="hidden" id="emailverifiedStatus" value="1"/>';
                 } else {
                     $mailVerificationEmail = MailerList::where("mailer_name", "Password Validation From Admin")->first();
 
                     if ($mailVerificationEmail->status == '1') {
-                        echo '<a href="mailto:' . $userInfo->userEmail . '?subject=Campus Africa Ref ' . $booking->booking_code . '">' . $userInfo->userEmail . "</a> &#10060; &nbsp;&nbsp; <button type='button' class='unallocateBed' onClick='reVerifyEmail()' id='reVerify'>Resend Email verification</button><br/>";
+                        echo '<a href="mailto:' . $userInfo->userEmail . '?subject=Campus Africa Ref ' . $bookingCode . '">' . $userInfo->userEmail . "</a> &#10060; &nbsp;&nbsp; <button type='button' class='unallocateBed' onClick='reVerifyEmail()' id='reVerify'>Resend Email verification</button><br/>";
                     }
                     echo '<input type="hidden" id="emailverifiedStatus" value="0"/>';
                 }
@@ -9345,7 +9474,7 @@ class HomeController extends Controller
                 $number = substr($userInfo->userCellCode, 1) . $userInfo->userCell;
 
 
-                echo '<a href="https://wa.me/' . $number . '?text=Campus%20Africa%20Ref%20{{$booking->booking_code}}%0A%0A%0A%0A" target="_blank">' . $userInfo->userCellCode . $userInfo->userCell . "<br/>";
+                echo '<a href="https://wa.me/' . $number . '?text=Campus%20Africa%20Ref%20' . $bookingCode . '%0A%0A%0A%0A" target="_blank">' . $userInfo->userCellCode . $userInfo->userCell . "<br/>";
 
             ?>
                 <!-- <button type="button" class="approve button btn_approve_inline" formid="<?php echo $request->formId; ?>" approvefield="email_data_approved" style="height:40px;">Approve</button>
@@ -9391,6 +9520,7 @@ class HomeController extends Controller
 
                     <input type="hidden" name="task" value="<?php echo $request->formId; ?>">
                     <input type="hidden" name="userUid" value="<?php echo $request->userUid; ?>">
+                    <input type="hidden" name="year" value="<?php echo $this_year; ?>">
 
                     <button type="button" class="approve button btn_save_inline" formid="<?php echo $request->formId; ?>" edittype="data">Update</button>
                     <button type="button" class="rejected button btn_edit_inline" formid="<?php echo $request->formId; ?>" edittype="data">Cancel</button>
@@ -9415,14 +9545,12 @@ class HomeController extends Controller
 
     public function save_inline_data(Request $request)
     {
-        $oldData = User::find($request->userUid);
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        $this_year = $this_year->lookup_name;
-        $session_year = Session::get('year');
-        if (!empty($session_year)) {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-            $this_year = $this_year->lookup_name;
+        if (!$this->canEditInlineProfileSection($request->task)) {
+            abort(403);
         }
+
+        $oldData = User::find($request->userUid);
+        $this_year = $this->resolveInlineProfileYear($request);
         if ($request->task == "inline_edit_address") {
             $newData = [
                 'userAddress1|Address 1' => $request->userAddress1,
@@ -9539,6 +9667,50 @@ class HomeController extends Controller
 
             $userInfoUse = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
         } elseif ($request->task == "inline_app_details") {
+            $request->merge(['userEmail' => trim((string) $request->userEmail)]);
+            if (!filter_var($request->userEmail, FILTER_VALIDATE_EMAIL)) {
+                return response()->json([
+                    'message' => 'Please enter a valid email address. The email was not updated.',
+                ], 422);
+            }
+
+            $duplicateEmailResponse = $this->inlineDuplicateEmailResponse($request->userEmail, $request->userUid);
+            if ($duplicateEmailResponse) {
+                return $duplicateEmailResponse;
+            }
+
+            $inlineAppDetailsYears = $this->inlineProfileOpenYears($this_year);
+            $oldInlineStudentRows = StudentsInfo::where('userUid', $request->userUid)
+                ->whereIn('year', $inlineAppDetailsYears)
+                ->get()
+                ->keyBy('year');
+
+            if ($oldInlineStudentRows->isEmpty()) {
+                $oldInlineStudentRows = StudentsInfo::where('userUid', $request->userUid)
+                    ->where('year', $this_year)
+                    ->get()
+                    ->keyBy('year');
+            }
+
+            $inlineAppDetailsYears = $oldInlineStudentRows->keys()
+                ->map(function ($year) {
+                    return (string) $year;
+                })
+                ->values()
+                ->all();
+
+            $inlineAppDetailsEmailChanged = false;
+            if ($oldData && ((string) $oldData->email !== (string) $request->userEmail || (string) $oldData->userEmail !== (string) $request->userEmail)) {
+                $inlineAppDetailsEmailChanged = true;
+            }
+
+            foreach ($oldInlineStudentRows as $oldInlineStudentRow) {
+                if ((string) $oldInlineStudentRow->userEmail !== (string) $request->userEmail) {
+                    $inlineAppDetailsEmailChanged = true;
+                    break;
+                }
+            }
+
             $newData = [
                 'userEmail|Email' => $request->userEmail,
                 'userCell|Cellphone Number' => $request->userCell,
@@ -9557,9 +9729,9 @@ class HomeController extends Controller
             $userBefore = User::where('id', $request->userUid)->first();
             $userInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
 
-            if ($request->userEmail !== $userInfo->userEmail) {
+            if ($inlineAppDetailsEmailChanged) {
                 // User::where('id', $request->userUid)->update(["email_verified" => 0]);
-                StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update(["email_verified" => 0]);
+                StudentsInfo::where('userUid', $request->userUid)->whereIn('year', $inlineAppDetailsYears)->update(["email_verified" => 0]);
 
                 $booking = Booking::where('userId', $request->userUid)->where('year', $this_year)->first();
 
@@ -9568,7 +9740,8 @@ class HomeController extends Controller
                 $url = $generator->generate();
 
                 $userUidData = User::where('id', $request->userUid)->first();
-                $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $this_year, $booking->booking_code, $url));
+                $bookingCode = $booking ? $booking->booking_code : '';
+                $this->dispatch(new SendStudentVerifyMailByAdminMail($userUidData, $this_year, $bookingCode, $url));
 
                 // $message_replace['bookingRef'] = $booking->booking_code;
                 // $message_replace['name'] = $userInfo->userFirstName;
@@ -9634,20 +9807,24 @@ class HomeController extends Controller
         }
 
         if (isset($newData)) {
-            foreach ($newData as $key => $new) {
-                $info = explode("|", $key);
-                $key = $info[0];
-                $changedField = $info[1];
+            $usesOpenYearAppDetailsLogging = $request->task == 'inline_app_details' && isset($oldInlineStudentRows);
 
-                if ($oldData->$key !== $new) {
-                    ActionList::create([
-                        "userUid" => $request->userUid,
-                        "action" => "Updated " . $changedField . " From " . $oldData->$key . " to " . $new,
-                        "actionUserUid" => Auth::user()->id,
-                        "actionUserDisplayName" => Auth::user()->userFirstName,
-                        "actionUserRole" => Auth::user()->userRole,
-                        "year" => $this_year,
-                    ]);
+            if (!$usesOpenYearAppDetailsLogging) {
+                foreach ($newData as $key => $new) {
+                    $info = explode("|", $key);
+                    $key = $info[0];
+                    $changedField = $info[1];
+
+                    if ($oldData->$key !== $new) {
+                        ActionList::create([
+                            "userUid" => $request->userUid,
+                            "action" => "Updated " . $changedField . " From " . $oldData->$key . " to " . $new,
+                            "actionUserUid" => Auth::user()->id,
+                            "actionUserDisplayName" => Auth::user()->userFirstName,
+                            "actionUserRole" => Auth::user()->userRole,
+                            "year" => $this_year,
+                        ]);
+                    }
                 }
             }
 
@@ -9658,10 +9835,63 @@ class HomeController extends Controller
             if ($request->task == 'inline_edit_student_type') {
                 unset($userUpdateData['rob_65_debt']);
             }
+            if ($request->task == 'inline_app_details') {
+                $userUpdateData['email'] = $request->userEmail;
+            }
 
             User::where('id', $request->userUid)->update($userUpdateData);
 
             StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->update($updateData);
+
+            if ($usesOpenYearAppDetailsLogging) {
+                StudentsInfo::where('userUid', $request->userUid)
+                    ->whereIn('year', $inlineAppDetailsYears)
+                    ->update($updateData);
+
+                $inlineAppDetailsFieldLabels = [
+                    'userEmail' => 'Email',
+                    'userCell' => 'Cellphone Number',
+                    'userCellCode' => 'Country Code',
+                ];
+
+                foreach ($inlineAppDetailsYears as $inlineAppDetailsYear) {
+                    $oldInlineStudentRow = $oldInlineStudentRows->get($inlineAppDetailsYear);
+                    if (!$oldInlineStudentRow) {
+                        continue;
+                    }
+
+                    if ($oldData && (string) $oldData->email !== (string) $request->userEmail) {
+                        ActionList::create([
+                            "userUid" => $request->userUid,
+                            "action" => "Updated Login Email From " . $oldData->email . " to " . $request->userEmail,
+                            "actionUserUid" => Auth::user()->id,
+                            "actionUserDisplayName" => Auth::user()->userFirstName,
+                            "actionUserRole" => Auth::user()->userRole,
+                            "year" => $inlineAppDetailsYear,
+                        ]);
+                    }
+
+                    foreach ($updateData as $field => $newValue) {
+                        if (!array_key_exists($field, $inlineAppDetailsFieldLabels)) {
+                            continue;
+                        }
+
+                        $oldValue = $oldInlineStudentRow->$field;
+                        if ((string) $oldValue === (string) $newValue) {
+                            continue;
+                        }
+
+                        ActionList::create([
+                            "userUid" => $request->userUid,
+                            "action" => "Updated " . $inlineAppDetailsFieldLabels[$field] . " From " . $oldValue . " to " . $newValue,
+                            "actionUserUid" => Auth::user()->id,
+                            "actionUserDisplayName" => Auth::user()->userFirstName,
+                            "actionUserRole" => Auth::user()->userRole,
+                            "year" => $inlineAppDetailsYear,
+                        ]);
+                    }
+                }
+            }
         }
 
         if ($request->task == 'inline_edit_student_type') {
@@ -9673,14 +9903,7 @@ class HomeController extends Controller
 
     public function approve_inline_data(Request $request)
     {
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        $this_year = $this_year->lookup_name;
-        //get current year
-        $session_year = Session::get('year');
-        if (!empty($session_year)) {
-            $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-            $this_year = $this_year->lookup_name;
-        }
+        $this_year = $this->resolveInlineProfileYear($request);
 
         // $oldData = User::find($request->userUid);    
         $oldUserInfo = StudentsInfo::where('userUid', $request->userUid)->where('year', $this_year)->first();
