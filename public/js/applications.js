@@ -315,6 +315,20 @@ jQuery(document).ready(function ($) {
         var rowId = rowId.replace(" odd-row", "");
         var rowId = rowId.replace(" even-row", "");
 
+        var selectedYear = String($("#year").val() || "");
+        var editableYears = (window.campusAfricaEditableApplicationYears || []).map(function (year) {
+            return String(year);
+        });
+
+        if (selectedYear && editableYears.indexOf(selectedYear) === -1) {
+            window.location =
+                "/application-profile-historic/" +
+                rowId +
+                "?year=" +
+                encodeURIComponent(selectedYear);
+            return;
+        }
+
         window.location = "/application-profile/" + rowId;
     });
 

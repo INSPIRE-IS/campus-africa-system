@@ -87,6 +87,7 @@ Route::post('/move-in-form', [HomeController::class, 'fileUpload']);
 Route::get('/complete-reservation', [HomeController::class, 'complete_reservation']);
 Route::get('/applications', [HomeController::class, 'applications']);
 Route::get('/application-profile/{userId}', [HomeController::class, 'application_profile']);
+Route::get('/application-profile-historic/{userId}', [HomeController::class, 'application_profile_historic']);
 Route::get('/edit-inline-data', [HomeController::class, 'edit_inline_data']);
 Route::post('/save-inline-data', [HomeController::class, 'save_inline_data']);
 Route::post('/approve-inline-data', [HomeController::class, 'approve_inline_data']);

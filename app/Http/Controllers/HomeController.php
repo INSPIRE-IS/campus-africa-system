@@ -71,6 +71,61 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
+    private function canViewHistoricApplications(): bool
+    {
+        $user = Auth::user();
+
+        return $user && ((int) $user->role_sys_admin === 1 || (int) $user->role_super === 1);
+    }
+
+    private function applicationYearLookupsForCurrentUser()
+    {
+        if (!$this->canViewHistoricApplications()) {
+            return Lookups::internalYearLookups();
+        }
+
+        $activeYear = (int) Lookups::activeYearValue();
+        if ($activeYear <= 0) {
+            $activeYear = (int) now()->year;
+        }
+
+        return Lookups::where('group_id', 4)
+            ->get()
+            ->filter(function ($lookup) use ($activeYear) {
+                $year = (int) $lookup->lookup_name;
+
+                return $year > 0 && $year <= $activeYear;
+            })
+            ->sortByDesc(function ($lookup) {
+                return (int) $lookup->lookup_name;
+            })
+            ->values();
+    }
+
+    private function isAllowedApplicationListYear($year): bool
+    {
+        $year = (string) (int) $year;
+        if ($year === '0') {
+            return false;
+        }
+
+        if (!$this->canViewHistoricApplications()) {
+            return Lookups::isInternalYear($year);
+        }
+
+        return $this->applicationYearLookupsForCurrentUser()
+            ->pluck('lookup_name')
+            ->map(function ($lookupYear) {
+                return (string) $lookupYear;
+            })
+            ->contains($year);
+    }
+
+    private function isEditableApplicationYear($year): bool
+    {
+        return Lookups::isUiYear($year);
+    }
+
     /**
      * Show the application dashboard.
      *
@@ -676,9 +731,18 @@ class HomeController extends Controller
 
         if (Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3") {
 
-            $yearLookups = Lookups::internalYearLookups();
-            $this_year = $yearLookups->first()->lookup_name ?? (Lookups::activeYearValue() ?? (string) now()->year);
-            Session::put('year', $this_year);
+            $yearLookups = $this->applicationYearLookupsForCurrentUser();
+            $editableYearLookups = Lookups::uiYearLookups();
+            $this_year = Session::get('application_filter_year') ?: Session::get('year');
+
+            if (!$this_year || !$this->isAllowedApplicationListYear($this_year)) {
+                $this_year = $yearLookups->first()->lookup_name ?? (Lookups::activeYearValue() ?? (string) now()->year);
+            }
+
+            Session::put('application_filter_year', $this_year);
+            if ($this->isEditableApplicationYear($this_year)) {
+                Session::put('year', $this_year);
+            }
             //dd(Session::get('year'));
 
             $allowedResidences = [];
@@ -694,11 +758,11 @@ class HomeController extends Controller
                 }
             }
             $agent = new Agent();
-            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "allowedResidences" => $allowedResidences, "agent" => $agent, "lookups" => $lookups, "yearLookups" => $yearLookups, "this_year" => $this_year]);
+            return view('admin.applications', ["headerTitle" => "Applications", "title" => "Applications", "allowedResidences" => $allowedResidences, "agent" => $agent, "lookups" => $lookups, "yearLookups" => $yearLookups, "editableApplicationYears" => $editableYearLookups->pluck('lookup_name')->values(), "this_year" => $this_year]);
         }
     }
 
-    public function activeBooking($userId, $this_year)
+    public function activeBooking($userId, $this_year, $readOnly = false)
     {
 
         $user = User::where('id', $userId)->first();
@@ -733,7 +797,9 @@ class HomeController extends Controller
         }
 
 
-        StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update($updateData);
+        if (!$readOnly) {
+            StudentsInfo::where('userUid', $userId)->where('year', $this_year)->update($updateData);
+        }
 
 
         $name = $studentInfo->userFirstName . " " . $studentInfo->userLastname;
@@ -1040,6 +1106,15 @@ class HomeController extends Controller
             $session_year = (int) Session::get('year');
             $this_year = (string) ($session_year > 0 ? $session_year : $activeYear);
 
+            if (!$this->isEditableApplicationYear($this_year)) {
+                if ($this->canViewHistoricApplications() && $this->isAllowedApplicationListYear($this_year)) {
+                    return redirect('/application-profile-historic/' . $userId . '?year=' . urlencode($this_year));
+                }
+
+                $this_year = (string) $activeYear;
+                Session::put('year', $this_year);
+            }
+
             // Show the "create new booking" button only when the next year is actually configured in lookups.
             $bookingNextYear = (string) (((int) $this_year) + 1);
             $show_booking = false;
@@ -1097,6 +1172,8 @@ class HomeController extends Controller
                     'bookingNext' => $show_booking,
                     'bookingNextYear' => $bookingNextYear,
                     'userAccount' => User::withTrashed()->where('id', $userId)->first(),
+                    'profileReadOnly' => false,
+                    'historicalProfile' => false,
                 ]);
             } elseif ($returnInfo['Info'] == '0') {
                 return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
@@ -1104,6 +1181,73 @@ class HomeController extends Controller
                 return view('admin.oldBookingNotification', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "this_year" => $this_year, "bookingList" => $returnInfo['bookingList'], "buildingList" => $returnInfo['buildingList'], "roomList" => $returnInfo['roomList'], "filesList" => $returnInfo['filesList'], "all" => $returnInfo['all'], "user" => $returnInfo['user']]);
             }
         }
+    }
+
+    public function application_profile_historic(Request $request, $userId)
+    {
+        if (!(Auth::user()->userRole == "1" || Auth::user()->userRole == "2" || Auth::user()->userRole == "3")) {
+            return redirect('/dashboard');
+        }
+
+        if (!$this->canViewHistoricApplications()) {
+            return redirect('/applications')->withErrors(['message' => 'Historic application view is restricted to sys admin users.']);
+        }
+
+        $this_year = (string) (int) $request->query('year');
+        if ($this_year === '0' || !$this->isAllowedApplicationListYear($this_year) || $this->isEditableApplicationYear($this_year)) {
+            return redirect('/application-profile/' . $userId);
+        }
+
+        $bookingCurr = Booking::where('userId', $userId)->where('year', $this_year)->first();
+        if (empty($bookingCurr)) {
+            return view('errors.studentView', [
+                "headerTitle" => "Unable to View",
+                "title" => "Unable to View",
+                "buildingName" => "No historic application found for year " . $this_year,
+            ]);
+        }
+
+        $returnInfo = $this->activeBooking($userId, $this_year, true);
+        if ($returnInfo instanceof \Illuminate\Http\RedirectResponse) {
+            return $returnInfo;
+        }
+
+        if ($returnInfo['Info'] == '0') {
+            return view('errors.studentView', ["headerTitle" => $returnInfo['headerTitle'], "title" => $returnInfo['title'], "buildingName" => $returnInfo['buildingName']]);
+        }
+
+        $paymentBooking = $returnInfo['paymentBooking'];
+        if (empty($paymentBooking)) {
+            $paymentBooking = new BookingPayment(['bookingId' => $bookingCurr->id]);
+        }
+
+        return view('admin.app_profile', [
+            "headerTitle" => $returnInfo['headerTitle'],
+            "appProfile" => "true",
+            "user" => $returnInfo['user'],
+            "actions" => $returnInfo['actions'],
+            "completed" => $returnInfo['completed'],
+            "lookups" => $returnInfo['lookups'],
+            "title" => "Student Profile",
+            "booking" => $returnInfo['booking'],
+            "residence" => $returnInfo['residence'],
+            "bookingPropData" => $returnInfo['bookingPropData'],
+            "files_to_download" => $returnInfo['files_to_download'],
+            "booking_paid" => $returnInfo['booking_paid'],
+            'booking_waived' => $returnInfo['booking_waived'],
+            'comments' => $returnInfo['comments'],
+            'leaseApproved' => $returnInfo['leaseApproved'],
+            'allowedResidences' => $returnInfo['allowedResidences'],
+            "mailVerificationEmail" => $returnInfo['mailVerificationEmail'],
+            "previousBookings" => $returnInfo['previousBookings'],
+            "paymentBooking" => $paymentBooking,
+            "this_year" => $this_year,
+            'bookingNext' => false,
+            'bookingNextYear' => null,
+            'userAccount' => User::withTrashed()->where('id', $userId)->first(),
+            'profileReadOnly' => true,
+            'historicalProfile' => true,
+        ]);
     }
 
     function get_user_status($fileType, $user, $student)
@@ -3708,7 +3852,6 @@ class HomeController extends Controller
 
         if ($request->firstLoad !== "1") {
 
-            Session::put('year', $request->year);
             Session::put('property', $request->property);
             Session::put('room_type', $request->room_type);
             Session::put('applicant', $request->applicant);
@@ -3727,7 +3870,7 @@ class HomeController extends Controller
             Session::put('email', $request->email);
         } else {
 
-            $request->year = Session::get('year');
+            $request->year = Session::get('application_filter_year') ?: Session::get('year');
             $request->property = Session::get('property');
             $request->room_type = Session::get('room_type');
             $request->applicant = Session::get('applicant');
@@ -3898,8 +4041,9 @@ class HomeController extends Controller
             $requestedYear = Lookups::activeYearValue() ?? Lookups::where('group_id', '4')->orderByDesc('lookup_name')->value('lookup_name');
         }
 
-        // Enforce the internal admin year window (active year + previous year).
-        if (!Lookups::isInternalYear($requestedYear)) {
+        // Enforce the applications list year window. Sys admin can inspect historic years,
+        // but those years are kept out of the editable application-profile session context.
+        if (!$this->isAllowedApplicationListYear($requestedYear)) {
             Log::warning('app_filter: year rejected (outside allowed window)', [
                 'userId' => Auth::user()->id ?? null,
                 'year' => $requestedYear,
@@ -3928,6 +4072,10 @@ class HomeController extends Controller
         }
 
         array_push($search_value, "bookings_data.year = '" . $this_year->lookup_name . "'");
+        Session::put('application_filter_year', $this_year->lookup_name);
+        if ($this->isEditableApplicationYear($this_year->lookup_name)) {
+            Session::put('year', $this_year->lookup_name);
+        }
 
         if ($request->date !== "" && !empty($request->date)) {
             $date = 'u.created_at LIKE "%' . $request->date . '%"';

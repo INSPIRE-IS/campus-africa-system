@@ -315,6 +315,8 @@
     <input type="hidden" id="firstLoad" value="1" />
 
     <Script>
+        window.campusAfricaEditableApplicationYears = @json($editableApplicationYears ?? []);
+
         function changeResidence() {
             if ($("#property").val() !== "All") {
                 $("#room_type").empty().append('<option value="" selected disabled>Loading</option>')
