@@ -1,6 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
+    @php
+        $profileReadOnly = $profileReadOnly ?? false;
+        $historicalProfile = $historicalProfile ?? false;
+    @endphp
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -117,10 +121,28 @@
                 width: 100%;
             }
         }
+
+        .historicReadOnlyNotice {
+            width: calc(100% - 30px);
+            margin: 10px auto 0;
+            padding: 10px 14px;
+            border: 1px solid #d6d6d6;
+            border-radius: 8px;
+            background: #f6f6f6;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+        }
     </style>
 
-    <div class="greyAppSection  @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif">
-        @if ($bookingNext && (empty($userAccount) || empty($userAccount->banned_at)))
+    <div class="greyAppSection @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif @if ($profileReadOnly) profileReadOnly @endif">
+        @if ($profileReadOnly)
+            <div class="historicReadOnlyNotice">
+                Historical application {{ $this_year }} - read only.
+            </div>
+        @endif
+
+        @if (!$profileReadOnly && $bookingNext && (empty($userAccount) || empty($userAccount->banned_at)))
             @if (
                 (int) Auth::user()->role_create_app === 1 ||
                     (int) Auth::user()->role_edit_app === 1 ||
@@ -322,7 +344,7 @@
                             @else
                                 &#10060;
                                 &nbsp;&nbsp;
-                                @if ($mailVerificationEmail->status == '1')
+                                @if (!$profileReadOnly && $mailVerificationEmail->status == '1')
                                     <button type="button" class="unallocateBed" onClick="reVerifyEmail()"
                                         id="reVerify">Resend Email verification</button>
                                 @endif
@@ -366,6 +388,7 @@
                     <div class="app_summary_details"></div>
 
                     <div class="buttons flex" id="buttonTop">
+                        @if (!$profileReadOnly)
 
                         @if (in_array($booking->property, $allowedResidences))
                             @if ($leaseApproved == 'false' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
@@ -403,8 +426,10 @@
                                 onClick="changeBuilding('{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">Change
                                 Building</button>
                         @endif
+                        @endif
                     </div>
                     <div class="buttons flex" id="buttonBottom">
+                        @if (!$profileReadOnly)
                         @if (in_array($booking->property, $allowedResidences))
                             @if ($user[0]['userInfo']['rob_60_cancelled'] == 0)
                                 @if (Auth::user()->role_delete_booking == 1)
@@ -443,6 +468,8 @@
                             @else
                                 <button type="button" class="appBooking" id="btn_unban_student">Remove ban</button>
                             @endif
+                        @endif
+
                         @endif
 
                     </div>
@@ -577,6 +604,7 @@
                                     </div>
 
                                     <div id="booking_btns">
+                                        @if (!$profileReadOnly)
                                         @if ($paymentBooking->booking_fee_waived == '0')
                                             @if ($paymentBooking->booking_fee != '0')
                                                 @if (Auth::user()->role_waive_fee == '1')
@@ -596,6 +624,7 @@
                                                         onClick="ActionWaiveRej('rob_b_waived', '{{ $paymentBooking->bookingId }}', 'booking_info', 'booking_btns', 'Booking fee', 'reason_booking_fee_reject', 'booking_fee_waived')">Reject</button>
                                                 @endif
                                             @endif
+                                        @endif
                                         @endif
                                     </div>
 
@@ -624,6 +653,7 @@
                                     </div>
 
                                     <div id="loan_btns">
+                                        @if (!$profileReadOnly)
                                         @if ($paymentBooking->loan_admin_fee_waived == '0')
                                             @if ($paymentBooking->loan_admin_fee != '0')
                                                 @if (Auth::user()->role_waive_fee == '1')
@@ -643,6 +673,7 @@
                                                         onClick="ActionWaiveRej('rob_loan_waived', '{{ $paymentBooking->bookingId }}', 'loan_info', 'loan_btns', 'Loan Admin fee', 'reason_admin_fee_reject', 'loan_admin_fee_waived')">Reject</button>
                                                 @endif
                                             @endif
+                                        @endif
                                         @endif
                                     </div>
 
@@ -671,6 +702,7 @@
                                     </div>
 
                                     <div id="deposit_btns">
+                                        @if (!$profileReadOnly)
                                         @if ($paymentBooking->deposit_waived == '0')
                                             @if ($paymentBooking->deposit != '0')
                                                 @if (Auth::user()->role_waive_fee == '1')
@@ -690,6 +722,7 @@
                                                         onClick="ActionWaiveRej('rob_deposit_waived', '{{ $paymentBooking->bookingId }}', 'deposit_info', 'deposit_btns', 'Deposit', 'reason_deposit_reject', 'deposit_waived')">Reject</button>
                                                 @endif
                                             @endif
+                                        @endif
                                         @endif
                                     </div>
 
@@ -746,6 +779,7 @@
                                 </h2>
                             </div>
                             <div class="paymentSummaryButtons">
+                                @if (!$profileReadOnly)
                                 @if (Auth::user()->role_sys_admin == 1)
                                     <button type="button" id="openPaymentModal" class="profileSubmit"
                                         onClick="document.getElementById('paymentModal').style.display = 'block';">
@@ -765,6 +799,7 @@
                                         onClick="generateNSFASQuote('{{ $paymentBooking->id }}', '{{ $booking->id }}', '{{ $user[0]['userInfo']['userUid'] }}')">
                                         Generate NSFAS Quote
                                     </button>
+                                @endif
                                 @endif
                             
                             </div>
@@ -830,14 +865,14 @@
                             </div>
                         </div>
                         <!-- <a href="/download/docs/{{ $user[0]['userInfo']['userUid'] }}"><button type="button" class="appBooking" id="downloadAllDocs">Download All</button></a> -->
-                        @if (
-                            (int) Auth::user()->role_upload_docs === 1 ||
+                        @if (!$profileReadOnly &&
+                            ((int) Auth::user()->role_upload_docs === 1 ||
                                 (int) Auth::user()->role_approve_docs === 1 ||
                                 (int) Auth::user()->role_edit_app === 1 ||
                                 (int) Auth::user()->role_comment === 1 ||
                                 (int) Auth::user()->role_app_lease === 1 ||
                                 (int) Auth::user()->role_sys_admin === 1 ||
-                                (int) Auth::user()->role_super === 1)
+                                (int) Auth::user()->role_super === 1))
                             <button type="button" class="appBooking" id="sendMailReminder"
                                 onClick="reminderMail('{{ $user[0]['userInfo']['userUid'] }}')"
                                 style="color:#fff; background-color:#e74f26; border:none">Email Reminder</button>
@@ -854,7 +889,7 @@
                                 onClick="downloadZipDocs('{{ $user[0]['userInfo']['userUid'] }}')">Download All</button>
                         @endif
                         <div class="waitve_btn"></div>
-                        @if (in_array($booking->property, $allowedResidences))
+                        @if (!$profileReadOnly && in_array($booking->property, $allowedResidences))
                             @if (
                                 (Auth::user()->role_modify_approved == 1 && $user[0]['userInfo']['rob_50_approve'] == 2) ||
                                     $user[0]['userInfo']['rob_50_approve'] == 0)
@@ -1057,7 +1092,7 @@
                                             @endif
                                         @endif
 
-                                        @if ($file['field'] === 'moveIn' && $file['status'] !== 'XApproved')
+                                        @if (!$profileReadOnly && $file['field'] === 'moveIn' && $file['status'] !== 'XApproved')
                                             @if (Auth::user()->role_lease_regen == '1')
                                                 <a href="#">
                                                     <button type="button" id="myBtn_regen_lease">Regen Lease</button>
@@ -1082,7 +1117,7 @@
                                                 @endphp
 
                                                 {{-- Only show generate/resend when not approved (Debt Assurity approved = 1). --}}
-                                                @if (Auth::user()->role_sys_admin == 1 && (int) $rob65Debt !== 1)
+                                                @if (!$profileReadOnly && Auth::user()->role_sys_admin == 1 && (int) $rob65Debt !== 1)
                                                     <a href="#">
                                                         <button type="button" id="myBtn_regen_assurity" title="Create/refresh the Debt Assurity PDF, issue a new signing link, and email the sponsor (and notify the student).">Generate</button>
                                                     </a>
@@ -1096,7 +1131,7 @@
                                                 @endif
 
                                                 {{-- Optional manual upload of a signed PDF (sys admin only). --}}
-                                                @if (Auth::user()->role_sys_admin == 1 && $file['status'] !== 'XApproved')
+                                                @if (!$profileReadOnly && Auth::user()->role_sys_admin == 1 && $file['status'] !== 'XApproved')
                                                     <label for="assurity_doc" id="assurity_docSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;" title="Sys admin only: manually upload a signed Debt Assurity PDF.">
                                                         <span class="text">Upload Signed</span>
                                                         <i class="fas fa-file-upload"></i>
@@ -1116,7 +1151,7 @@
                                                 </a>
                                             @endif
                                         @endif
-                                        @if ($file['field'] === 'tempMoveIn' && $file['status'] !== 'XApproved')
+                                        @if (!$profileReadOnly && $file['field'] === 'tempMoveIn' && $file['status'] !== 'XApproved')
                                             @if (Auth::user()->role_allow_generate_temp_lease == '1')
                                                 <a href="#">
                                                     <button type="button" id="myBtn_regen_temp_lease"> <small >Regen Temp Lease</small></button>
@@ -1135,7 +1170,7 @@
                                                 onClick="btn_view_document_ajax({{ $file['id'] }})">View
                                                 Document</button>
                                         @else
-                                            @if (in_array($booking->property, $allowedResidences))
+                                            @if (!$profileReadOnly && in_array($booking->property, $allowedResidences))
                                                 @if (Auth::user()->role_upload_docs == 1 && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                                                     @if ($file['field'] === 'assurity_doc')
                                                         {{-- Assurity is sponsor-signed; manual upload is handled in the assurity block above (sys admin only). --}}
@@ -1374,7 +1409,7 @@
                                         </span>
                                     </td>
                                     <td style="text-align:center;">
-                                        @if ($bookingFeeIssue && Auth::user()->role_sys_admin == 1)
+                                        @if (!$profileReadOnly && $bookingFeeIssue && Auth::user()->role_sys_admin == 1)
                                             <button type="button" class="appBooking robFixActionBtn"
                                                 onClick="robFix('clear_booking_fee_requirement', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
                                                 Clear Requirement
@@ -1422,7 +1457,7 @@
                                         </span>
                                     </td>
                                     <td style="text-align:center;">
-                                        @if ($rob45Mismatch && Auth::user()->role_sys_admin == 1)
+                                        @if (!$profileReadOnly && $rob45Mismatch && Auth::user()->role_sys_admin == 1)
                                             <button type="button" class="appBooking robFixActionBtn"
                                                 onClick="robFix('recompute_other_docs', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
                                                 Recompute Other Docs
@@ -1449,7 +1484,7 @@
                                         </span>
                                     </td>
                                     <td style="text-align:center;">
-                                        @if ($bedAllocationMismatch && Auth::user()->role_sys_admin == 1)
+                                        @if (!$profileReadOnly && $bedAllocationMismatch && Auth::user()->role_sys_admin == 1)
                                             <button type="button" class="appBooking robFixActionBtn"
                                                 onClick="robFix('fix_bed_allocation', '{{ $user[0]['userInfo']['userUid'] }}', '{{ $booking->id ?? '' }}')">
                                                 Approve Bed Allocation
@@ -1572,7 +1607,7 @@
                 <div class="customWhiteCard" id="Comments" style="margin-top:20px; margin-bottom:20px; height:660px;">
                     <h2 class="appHeader">Comments</h2>
                     @if (in_array($booking->property, $allowedResidences))
-                        @if (Auth::user()->role_comment == '1' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
+                        @if (!$profileReadOnly && Auth::user()->role_comment == '1' && $user[0]['userInfo']['rob_60_cancelled'] == 0)
                             <textarea id="newComment" name="newComment" rows="6" cols="50" style="width:100%; border-radius:5px;"></textarea>
                             <br />
                             <button type="button" class='detailsChange' id="addComment"
@@ -2243,6 +2278,23 @@
 
 
         <script defer>
+            const profileReadOnly = @json($profileReadOnly);
+
+            function ensureWritableProfile() {
+                if (!profileReadOnly) {
+                    return true;
+                }
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Read only',
+                    text: 'Historical applications cannot be edited from this view.',
+                    confirmButtonColor: '#e74f26',
+                });
+
+                return false;
+            }
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -2250,6 +2302,10 @@
             });
 
             async function paymentRef() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 const steps = ["1", "2"];
                 const firstStep = swal.mixin({
                     confirmButtonText: 'Next',
@@ -2384,6 +2440,9 @@
                 window.open(url, "_blank");
             }
             function changeNsfsBursar(userId, bursar) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
 
                 if (bursar == 1) {
                     newBursar = "No"
@@ -2431,6 +2490,10 @@
             // })
 
             $("#addComment").on('click', function() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 $("#addComment").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
                 $.ajax({
                     type: "post",
@@ -2763,6 +2826,15 @@
                             }
                         }
 
+                        if (
+                            $(".app_details_btn .btn_edit_inline[formid='inline_app_details']").length === 0 &&
+                            ("<?php echo Auth::user()->role_sys_admin; ?>" == "1" || "<?php echo Auth::user()->role_super; ?>" == "1")
+                        ) {
+                            $(".app_details_btn").append(
+                                '<button type="button" class="amend button btn_edit_inline" formid="inline_app_details" edittype="form">Edit</button>'
+                            )
+                        }
+
                         if (data['parent_approved'] == 1) {
                             $("#rejectedSpon").addClass('hidden')
                             $("#approvedSpon").removeClass('hidden')
@@ -2881,6 +2953,11 @@
                             }
                         }
 
+                        if (profileReadOnly) {
+                            $(".address_btn, .studentType_btn, .kin_btn, .app_details_btn, .appSection, .main_btn").empty();
+                            $("#sendMailReminder").addClass('hidden');
+                        }
+
                         // appStatusText
                     }
                 });
@@ -2922,6 +2999,10 @@
             }
 
             function changeBuilding(bookingId, userid) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 var modal = document.getElementById("changeBuildingModal");
                 modal.style.display = "block";
 
@@ -3012,6 +3093,9 @@
             }
 
             function changeBooking(bookingId, type) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
 
                 // console.log(bookingId)
                 // console.log(type)
@@ -3081,6 +3165,9 @@
             }
 
             function changeLease(bookingId, type) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
 
                 $("#bookingId2").val(bookingId)
                 var modal = document.getElementById("myModalEditLease");
@@ -3089,6 +3176,9 @@
             }
 
             function cancelLease(bookingId, type) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
 
                 @if ($user[0]['userInfo']['rob_55_lease'] == 2)
                     let msg = "The current Approved Lease will be rejected.";
@@ -3123,6 +3213,9 @@
             }
 
             $("#generateLease").on('click', function() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
 
                 if ($("#property").val() == "" || $("#roomType").val() == "" || $("#bed_code").val() == null || $(
                         "#lease_from_date").val() == "" || $("#lease_from_time").val() == "" || $("#lease_to_date")
@@ -3922,6 +4015,10 @@
             })
 
             $("#changeBuildingType").on('click', function() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
 
                 if ($("#propertyBuilding").val() == null || $("#propertyBuilding").val() == "" || $("#roomTypeBuilding")
                     .val() == null || $("#roomTypeBuilding").val() == "") {
@@ -3956,6 +4053,10 @@
             })
 
             $("#changeBookingType").on('click', function() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
 
 
                 if ($("#floor").val() !== "Choose a Floor" && $("#bed_code").val() == "Choose a Bed") {
@@ -4102,6 +4203,10 @@
             })
 
             function reVerifyEmail() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 $("#reVerify").empty().append('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 $.ajax({
@@ -4149,6 +4254,10 @@
             })
 
             $("#changeLeaseDates").on('click', function() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
 
                 if ($("#lease_to_date").hasClass('fieldError') === false && $("#lease_from_date").hasClass(
                         'fieldError') === false) {
@@ -4680,6 +4789,10 @@
             })
 
             function UploadDocument(field) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 // let field = $(this).attr('id');
                 // console.log(field);
 
@@ -4996,6 +5109,10 @@
             }
 
             function ActionWaiveRej(changeField, bookingId, updateField1, updateField2, textChange, rejField, field) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You are about to reject this waiver",
@@ -5092,6 +5209,10 @@
             }
 
             function ActionWaiveAprv(changeField, bookingId, updateField1, updateField2, textChange) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You are about to approve this waiver",
@@ -5162,6 +5283,10 @@
             }
 
             function waive(changeField, userId, bookingId, changeField1, changeField2, reasonField, waiveField, textChange) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You are about to waive this fee",
@@ -5233,6 +5358,10 @@
             }
 
             function waiveBookingFee(userId, bookingId) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 // $("#waiveThisBookingFee").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
 
                 Swal.fire({
@@ -5301,6 +5430,10 @@
             }
 
             function reminderMail(userId) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 $("#sendMailReminder").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
                 $.ajax({
                     type: "post",
@@ -5388,6 +5521,10 @@
             }
 
             function restoreBooking(bookingId, userId) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "This booking will become active again!",
@@ -5435,6 +5572,10 @@
             }
 
             function cancelBooking(bookingId, userId) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You will cancel this booking!",
@@ -5470,6 +5611,10 @@
             }
 
             function deleteBooking(bookingId, userId) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
@@ -5499,6 +5644,10 @@
 
 
             function resendLease() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 $("#myBtn_resend_lease").html('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 $.ajax({
@@ -5547,6 +5696,11 @@
             }
 
             $(document).off('click.regenLease').on('click.regenLease', '#myBtn_regen_lease', function(e) {
+                if (!ensureWritableProfile()) {
+                    e.preventDefault();
+                    return;
+                }
+
                 let btn = $(this);
                 $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -5584,6 +5738,10 @@
             });
 
             function resendTempLease() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 $("#myBtn_resend_temp_lease").html('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 $.ajax({
@@ -5603,6 +5761,10 @@
             }
 
             function resendAssurity() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 $("#myBtn_resend_assurity").html('<i class="fas fa-circle-notch fa-spin"></i>');
 
                 $.ajax({
@@ -5621,6 +5783,11 @@
             }
 
             $(document).off('click.regenAssurity').on('click.regenAssurity', '#myBtn_regen_assurity', function(e) {
+                if (!ensureWritableProfile()) {
+                    e.preventDefault();
+                    return;
+                }
+
                 let btn = $(this);
                 $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -5643,6 +5810,11 @@
             });
 
             $(document).off('click.regenTempLease').on('click.regenTempLease', 'button#myBtn_regen_temp_lease', function(e) {
+                if (!ensureWritableProfile()) {
+                    e.preventDefault();
+                    return;
+                }
+
                 let btn = $(this);
                 $(btn).html('<i class="fas fa-circle-notch fa-spin"></i>');
 
@@ -5719,6 +5891,11 @@
 
             jQuery(document).ready(function($) {
                 $(document).on("click", "#btn_ban_student", function(e) {
+                    if (!ensureWritableProfile()) {
+                        e.preventDefault();
+                        return;
+                    }
+
                     var userId = "{{ $user[0]['userInfo']['userUid'] }}";
 
                     Swal.fire({
@@ -5787,6 +5964,11 @@
                 });
 
                 $(document).on("click", "#btn_unban_student", function(e) {
+                    if (!ensureWritableProfile()) {
+                        e.preventDefault();
+                        return;
+                    }
+
                     var userId = "{{ $user[0]['userInfo']['userUid'] }}";
 
                     Swal.fire({
@@ -5937,6 +6119,11 @@
                 });
 
                 $(document).on('click', '.btn_edit_inline', function(e) {
+                    if (!ensureWritableProfile()) {
+                        e.preventDefault();
+                        return;
+                    }
+
                     let formId = $(this).attr('formid');
                     let edittype = $(this).attr('edittype');
 
@@ -5948,7 +6135,8 @@
                         data: {
                             userUid: "{{ $user[0]['userInfo']['userUid'] }}",
                             formId: formId,
-                            type: edittype
+                            type: edittype,
+                            year: "{{ $this_year }}"
                         },
 
                         success: function(data) {
@@ -6121,6 +6309,10 @@
 
 
                 $(document).on('click', '.btn_save_inline', function(e) {
+                    if (!ensureWritableProfile()) {
+                        e.preventDefault();
+                        return;
+                    }
 
                     let formid = $(this).attr('formid')
 
@@ -6193,6 +6385,145 @@
                                 }
 
                             },
+                            error: function(xhr) {
+                                function escapeInlineMessage(value) {
+                                    if (value === null || value === undefined || value === '') {
+                                        value = '-';
+                                    }
+
+                                    return $('<div>').text(value).html();
+                                }
+
+                                function parseInlineErrorResponse(xhr) {
+                                    if (xhr && xhr.responseJSON) {
+                                        return xhr.responseJSON;
+                                    }
+
+                                    if (xhr && xhr.responseText) {
+                                        try {
+                                            return JSON.parse(xhr.responseText);
+                                        } catch (e) {
+                                            return {
+                                                raw: xhr.responseText
+                                            };
+                                        }
+                                    }
+
+                                    return {};
+                                }
+
+                                function inlineErrorList(errors) {
+                                    var list = [];
+
+                                    if (!errors) {
+                                        return list;
+                                    }
+
+                                    Object.keys(errors).forEach(function(key) {
+                                        if ($.isArray(errors[key])) {
+                                            errors[key].forEach(function(item) {
+                                                list.push(key + ': ' + item);
+                                            });
+                                        } else {
+                                            list.push(key + ': ' + errors[key]);
+                                        }
+                                    });
+
+                                    return list;
+                                }
+
+                                var response = parseInlineErrorResponse(xhr);
+                                var title = xhr && xhr.status == 422 ? 'Update blocked' : 'Update failed';
+                                var statusText = xhr && xhr.status ? 'HTTP ' + xhr.status : 'No HTTP status';
+                                var message = response.message || '';
+                                var details = inlineErrorList(response.errors);
+
+                                if (!message && response.exception) {
+                                    message = response.exception;
+                                }
+
+                                if (!message && response.raw) {
+                                    if (response.raw.indexOf('users_email_unique') !== -1 || response.raw.indexOf('Duplicate entry') !== -1) {
+                                        message = 'This email address is already used by another login account. The email was not updated.';
+                                    } else {
+                                        message = response.raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+                                    }
+                                }
+
+                                if (!message) {
+                                    message = 'The server blocked this update but did not return a readable reason.';
+                                }
+
+                                var html = '<div style="text-align:left;font-size:14px;line-height:1.45;">' +
+                                    '<p style="margin:0 0 10px;">' + escapeInlineMessage(message) + '</p>' +
+                                    '<p style="margin:0 0 12px;color:#6b7280;"><strong>Status:</strong> ' + escapeInlineMessage(statusText) + '</p>';
+
+                                if (details.length) {
+                                    html += '<p style="margin:0 0 6px;"><strong>Details:</strong></p><ul style="padding-left:18px;margin:0 0 12px;">';
+                                    details.forEach(function(item) {
+                                        html += '<li>' + escapeInlineMessage(item) + '</li>';
+                                    });
+                                    html += '</ul>';
+                                }
+
+                                if (response.duplicate) {
+                                    title = 'Email already in use';
+                                    var duplicate = response.duplicate;
+                                    html += '<div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 12px;margin:10px 0;background:#f9fafb;">' +
+                                        '<p style="margin:0 0 6px;"><strong>Existing account</strong></p>' +
+                                        '<p style="margin:0;"><strong>User ID:</strong> ' + escapeInlineMessage(duplicate.user_id) + '</p>' +
+                                        '<p style="margin:0;"><strong>Status:</strong> ' + escapeInlineMessage(duplicate.status) + '</p>' +
+                                        '<p style="margin:0;"><strong>Name:</strong> ' + escapeInlineMessage(duplicate.name) + '</p>' +
+                                        '<p style="margin:0;"><strong>Login email:</strong> ' + escapeInlineMessage(duplicate.email) + '</p>' +
+                                        '<p style="margin:0;"><strong>Contact email:</strong> ' + escapeInlineMessage(duplicate.userEmail) + '</p>' +
+                                        '<p style="margin:0;"><strong>ID / Passport:</strong> ' + escapeInlineMessage(duplicate.id_number) + '</p>' +
+                                        '<p style="margin:0;"><strong>Matched on:</strong> ' + escapeInlineMessage(duplicate.match_source) + '</p>';
+
+                                    if (duplicate.deleted_at) {
+                                        html += '<p style="margin:0;"><strong>Deleted at:</strong> ' + escapeInlineMessage(duplicate.deleted_at) + '</p>';
+                                    }
+
+                                    html += '</div>';
+
+                                    if (duplicate.students_info && duplicate.students_info.length) {
+                                        html += '<p style="margin:10px 0 6px;"><strong>Student rows linked to that account:</strong></p>' +
+                                            '<div style="max-height:180px;overflow:auto;border:1px solid #e5e7eb;border-radius:6px;">' +
+                                            '<table style="width:100%;border-collapse:collapse;font-size:13px;">' +
+                                            '<thead><tr style="background:#f3f4f6;">' +
+                                            '<th style="text-align:left;padding:6px;">Year</th>' +
+                                            '<th style="text-align:left;padding:6px;">Info ID</th>' +
+                                            '<th style="text-align:left;padding:6px;">Student</th>' +
+                                            '<th style="text-align:left;padding:6px;">ID / Passport</th>' +
+                                            '<th style="text-align:left;padding:6px;">Student No</th>' +
+                                            '<th style="text-align:left;padding:6px;">Booking</th>' +
+                                            '<th style="text-align:left;padding:6px;">Cancelled</th>' +
+                                            '</tr></thead><tbody>';
+                                        duplicate.students_info.forEach(function(row) {
+                                            html += '<tr>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.year) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.id) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage((row.userFirstName || '') + ' ' + (row.userLastname || '')) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.userId || row.userPassport) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.studentNo) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.bookingRef || row.bookingId) + '</td>' +
+                                                '<td style="padding:6px;border-top:1px solid #e5e7eb;">' + escapeInlineMessage(row.rob_60_cancelled) + '</td>' +
+                                                '</tr>';
+                                        });
+                                        html += '</tbody></table></div>';
+                                    }
+                                }
+
+                                html += '<p style="margin-top:12px;color:#b91c1c;">No records were changed.</p></div>';
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: title,
+                                    html: html,
+                                    width: response.duplicate ? 820 : 560,
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#e74f26',
+                                });
+                            },
                         });
 
                         e.preventDefault();
@@ -6207,6 +6538,11 @@
                 });
 
                 $(document).on('click', '.btn_approve_inline', function(e) {
+                    if (!ensureWritableProfile()) {
+                        e.preventDefault();
+                        return;
+                    }
+
                     let formId = $(this).attr('formid');
                     let approvefield = $(this).attr('approvefield');
                     let task = "1";
@@ -6247,7 +6583,8 @@
                                         userUid: "{{ $user[0]['userInfo']['userUid'] }}",
                                         formId: formId,
                                         approvefield: approvefield,
-                                        task: task
+                                        task: task,
+                                        year: "{{ $this_year }}"
                                     },
 
                                     success: function(data) {
@@ -6271,6 +6608,10 @@
             });
 
             function addOtherDoc() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 swal.fire({
                     title: 'Please name this document',
                     input: 'text',
@@ -6367,6 +6708,9 @@
             }
 
             function deleteFile(fileName) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
 
                 Swal.fire({
                     title: 'Are you sure?',
@@ -6405,6 +6749,10 @@
             })
 
             $("#sponsorSubmit").on('click', function() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 //Check if any hidden fields are required, remove required check
                 $('.hidden .fieldError').removeClass('fieldError').val('');
                 $("#sponsorSubmit").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -6529,6 +6877,10 @@
             })
 
             $("#saveBursarDetails").on('click', function() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 //Check if any hidden fields are required, remove required check
                 $('.hidden .fieldError').removeClass('fieldError').val('');
                 $("#saveBursarDetails").empty().append('<i class="fas fa-circle-notch fa-spin"></i>')
@@ -6648,6 +7000,10 @@
             })
 
             function robFix(action, userId, bookingId) {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Comment for change',
                     input: 'textarea',

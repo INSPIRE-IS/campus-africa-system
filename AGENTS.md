@@ -97,3 +97,14 @@ php artisan queue:restart
 - Detailed business rules, investigations, and route maps live in `temp/` and are gitignored.
 - Start with `temp/agent.md` for the short index/current context, then open only the relevant `temp/notes-*.md` topic file.
 - Current TODOs: `temp/TODOS.md` points to the active tracked/scratch TODO lists.
+
+## Windows PowerShell + Tinker
+- Be careful with `php artisan tinker --execute` on Windows/PowerShell. Inline PHP containing `$variables` can be expanded or mangled by the shell before Tinker sees it.
+- Prefer variable-free one-liners for quick checks, with double quotes around the `--execute` argument and single quotes inside PHP strings:
+
+```powershell
+php artisan tinker --execute="echo \App\Models\StudentCompatibilityScore::where('academic_year', 2026)->selectRaw('compatibility_score, count(*) as total')->groupBy('compatibility_score')->orderBy('compatibility_score')->pluck('total', 'compatibility_score')->toJson(JSON_PRETTY_PRINT);"
+```
+
+- Avoid double-quoted `--execute` commands that contain PHP `$rows`, `$r`, etc. unless each `$` is escaped for PowerShell.
+- Avoid relying on nested quote-heavy one-liners for complex checks. If variables/loops are needed, prefer a small temporary Artisan command, a purpose-built route/controller debug method, or a Tinker command that returns JSON without PHP variables.
