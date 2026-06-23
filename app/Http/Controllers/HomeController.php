@@ -1108,7 +1108,7 @@ class HomeController extends Controller
 
             if (!$this->isEditableApplicationYear($this_year)) {
                 if ($this->canViewHistoricApplications() && $this->isAllowedApplicationListYear($this_year)) {
-                    return redirect('/application-profile-historic/' . $userId . '?year=' . urlencode($this_year));
+                    return redirect('/application-profile-historic/' . $userId);
                 }
 
                 $this_year = (string) $activeYear;
@@ -1193,7 +1193,7 @@ class HomeController extends Controller
             return redirect('/applications')->withErrors(['message' => 'Historic application view is restricted to sys admin users.']);
         }
 
-        $this_year = (string) (int) $request->query('year');
+        $this_year = (string) (int) Session::get('application_filter_year');
         if ($this_year === '0' || !$this->isAllowedApplicationListYear($this_year) || $this->isEditableApplicationYear($this_year)) {
             return redirect('/application-profile/' . $userId);
         }

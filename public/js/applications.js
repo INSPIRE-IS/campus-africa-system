@@ -321,11 +321,7 @@ jQuery(document).ready(function ($) {
         });
 
         if (selectedYear && editableYears.indexOf(selectedYear) === -1) {
-            window.location =
-                "/application-profile-historic/" +
-                rowId +
-                "?year=" +
-                encodeURIComponent(selectedYear);
+            window.location = "/application-profile-historic/" + rowId;
             return;
         }
 
