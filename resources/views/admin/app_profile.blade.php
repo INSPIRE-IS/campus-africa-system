@@ -4,6 +4,7 @@
     @php
         $profileReadOnly = $profileReadOnly ?? false;
         $historicalProfile = $historicalProfile ?? false;
+        $moveApplicationYear = $moveApplicationYear ?? ['show' => false];
     @endphp
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -133,6 +134,46 @@
             font-size: 14px;
             font-weight: 600;
         }
+
+        .profileYearMoveActions {
+            width: 100%;
+            padding: 0 15px;
+            margin: 0 auto;
+        }
+
+        .profileYearMoveActionsInner {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .moveYearBtn {
+            padding: 10px 20px;
+            background-color: #343a40;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .moveYearBtn:hover,
+        .moveYearBtn:focus {
+            color: #fff;
+            background-color: #23272b;
+        }
+
+        @media (max-width: 600px) {
+            .profileYearMoveActionsInner {
+                justify-content: stretch;
+            }
+
+            .moveYearBtn {
+                width: 100%;
+            }
+        }
     </style>
 
     <div class="greyAppSection @if ($user[0]['userInfo']['studentType'] == 'Cash / Direct') greyAppCash @endif @if ($profileReadOnly) profileReadOnly @endif">
@@ -158,6 +199,17 @@
                     </div>
                 </div>
             @endif
+        @endif
+
+        @if (!$profileReadOnly && !empty($moveApplicationYear['show']))
+            <div class="profileYearMoveActions">
+                <div class="profileYearMoveActionsInner">
+                    <button type="button" id="moveApplicationYearBtn" class="btn moveYearBtn"
+                        onclick="moveApplicationYearPreview()">
+                        {{ $moveApplicationYear['label'] ?? 'Move application year' }}
+                    </button>
+                </div>
+            </div>
         @endif
 
         @if (!empty($userAccount) && !empty($userAccount->banned_at))
@@ -2279,6 +2331,7 @@
 
         <script defer>
             const profileReadOnly = @json($profileReadOnly);
+            const moveApplicationYearConfig = @json($moveApplicationYear);
 
             function ensureWritableProfile() {
                 if (!profileReadOnly) {
@@ -2300,6 +2353,206 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+
+            function escapeMoveYearHtml(value) {
+                if (value === null || typeof value === 'undefined') {
+                    return '-';
+                }
+
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            function moveYearRowsHtml(rows) {
+                var html = '<table style="width:100%;border-collapse:collapse;margin-top:8px;">';
+                rows.forEach(function(row) {
+                    html += '<tr>' +
+                        '<td style="width:38%;padding:5px 8px;border-bottom:1px solid #eee;font-weight:700;">' + escapeMoveYearHtml(row[0]) + '</td>' +
+                        '<td style="padding:5px 8px;border-bottom:1px solid #eee;">' + escapeMoveYearHtml(row[1]) + '</td>' +
+                        '</tr>';
+                });
+                html += '</table>';
+                return html;
+            }
+
+            function moveYearMessagesHtml(title, messages, color) {
+                if (!messages || !messages.length) {
+                    return '';
+                }
+
+                var showContext = !!(moveApplicationYearConfig && moveApplicationYearConfig.canViewContext);
+                var html = '<div style="margin-top:14px;color:' + color + ';">';
+                html += '<strong>' + escapeMoveYearHtml(title) + '</strong>';
+                html += '<ul style="margin:8px 0 0 18px;padding:0;">';
+                messages.forEach(function(item) {
+                    html += '<li style="margin-bottom:8px;">' + escapeMoveYearHtml(item.message || item.code);
+                    if (showContext && item.context && Object.keys(item.context).length) {
+                        html += '<pre style="white-space:pre-wrap;background:#f7f7f7;color:#333;border:1px solid #ddd;border-radius:6px;padding:7px;margin:6px 0 0;font-size:12px;">' +
+                            escapeMoveYearHtml(JSON.stringify(item.context, null, 2)) +
+                            '</pre>';
+                    }
+                    html += '</li>';
+                });
+                html += '</ul></div>';
+                return html;
+            }
+
+            function moveYearPreviewHtml(data) {
+                var records = data.records || {};
+                var booking = records.booking || {};
+                var counts = records.counts || {};
+                var rows = [
+                    ['Student user ID', data.user_id],
+                    ['Move', (data.from_year || '-') + ' to ' + (data.to_year || '-')],
+                    ['Booking ID', booking.id],
+                    ['Current booking code', booking.booking_code],
+                    ['New booking code', booking.new_booking_code],
+                    ['Source files', counts.source_files],
+                    ['Generated files', counts.generated_files],
+                    ['Approved files', counts.approved_files],
+                    ['Action logs', counts.action_logs],
+                    ['Booking payments', counts.booking_payments],
+                    ['Question answers', counts.question_answers],
+                    ['Compatibility scores', counts.compatibility_scores]
+                ];
+
+                var html = '<div style="text-align:left;max-height:60vh;overflow:auto;">';
+                html += '<p style="margin:0 0 8px;">This will update the existing application rows in place. It will not create a duplicate application.</p>';
+                html += moveYearRowsHtml(rows);
+                html += moveYearMessagesHtml('Blockers', data.blockers || [], '#d33');
+                html += moveYearMessagesHtml('Warnings', data.warnings || [], '#b26a00');
+                html += '</div>';
+                return html;
+            }
+
+            function moveYearAjaxError(xhr, fallbackTitle) {
+                var data = xhr && xhr.responseJSON ? xhr.responseJSON : null;
+                var message = data && data.message ? data.message : 'The application year move could not be completed.';
+
+                if (data && (data.blockers || data.warnings)) {
+                    Swal.fire({
+                        title: fallbackTitle,
+                        html: moveYearPreviewHtml(data),
+                        icon: 'error',
+                        confirmButtonColor: '#e74f26',
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: fallbackTitle,
+                    text: message,
+                    icon: 'error',
+                    confirmButtonColor: '#e74f26',
+                });
+            }
+
+            function moveApplicationYearPreview() {
+                if (!ensureWritableProfile()) {
+                    return;
+                }
+
+                if (!moveApplicationYearConfig || !moveApplicationYearConfig.show) {
+                    Swal.fire({
+                        title: 'Move unavailable',
+                        text: 'This application is not eligible for the year move flow.',
+                        icon: 'info',
+                        confirmButtonColor: '#e74f26',
+                    });
+                    return;
+                }
+
+                var button = $('#moveApplicationYearBtn');
+                button.prop('disabled', true).text('Checking...');
+
+                $.ajax({
+                    type: 'post',
+                    url: '/application-profile/move-year-preview',
+                    data: {
+                        userId: moveApplicationYearConfig.userId,
+                        fromYear: moveApplicationYearConfig.fromYear,
+                        toYear: moveApplicationYearConfig.toYear,
+                    },
+                    success: function(data) {
+                        var hasBlockers = data.blockers && data.blockers.length;
+                        var canApplyMove = !!moveApplicationYearConfig.canApply;
+                        Swal.fire({
+                            title: hasBlockers ? 'Move blocked' : (canApplyMove ? 'Review application year move' : 'Year move review'),
+                            html: moveYearPreviewHtml(data),
+                            icon: hasBlockers ? 'error' : 'warning',
+                            showCancelButton: !hasBlockers && canApplyMove,
+                            confirmButtonText: hasBlockers || !canApplyMove ? 'OK' : 'Move to ' + escapeMoveYearHtml(data.to_year),
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#e74f26',
+                            cancelButtonColor: '#6c757d',
+                            width: 760,
+                        }).then(function(result) {
+                            if (!hasBlockers && canApplyMove && result.isConfirmed) {
+                                moveApplicationYearApply();
+                            }
+                        });
+                    },
+                    error: function(xhr) {
+                        moveYearAjaxError(xhr, 'Move preview failed');
+                    },
+                    complete: function() {
+                        button.prop('disabled', false).text(moveApplicationYearConfig.label || 'Move application year');
+                    }
+                });
+            }
+
+            function moveApplicationYearApply() {
+                Swal.fire({
+                    title: 'Moving application',
+                    text: 'Please wait while the application year is updated.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: function() {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    type: 'post',
+                    url: '/application-profile/move-year-apply',
+                    data: {
+                        userId: moveApplicationYearConfig.userId,
+                        fromYear: moveApplicationYearConfig.fromYear,
+                        toYear: moveApplicationYearConfig.toYear,
+                    },
+                    success: function(data) {
+                        var booking = data.records && data.records.booking ? data.records.booking : {};
+                        var counts = data.records && data.records.counts ? data.records.counts : {};
+                        var html = moveYearRowsHtml([
+                            ['Moved to year', data.to_year],
+                            ['Booking ID', booking.id],
+                            ['Booking code', booking.booking_code],
+                            ['Files moved', counts.user_files_moved],
+                            ['Action logs moved', counts.action_logs_moved],
+                            ['Lease tokens moved', counts.lease_tokens_moved],
+                            ['Assurity tokens moved', counts.assurity_tokens_moved],
+                            ['Compatibility scores deleted', counts.compatibility_scores_deleted],
+                            ['Audit ActionList ID', data.audit_id]
+                        ]);
+
+                        Swal.fire({
+                            title: 'Application moved',
+                            html: html,
+                            icon: 'success',
+                            confirmButtonColor: '#e74f26',
+                        }).then(function() {
+                            window.location = data.redirect || ('/application-profile/' + moveApplicationYearConfig.userId);
+                        });
+                    },
+                    error: function(xhr) {
+                        moveYearAjaxError(xhr, 'Move failed');
+                    }
+                });
+            }
 
             async function paymentRef() {
                 if (!ensureWritableProfile()) {

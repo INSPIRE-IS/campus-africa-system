@@ -51,6 +51,7 @@ use App\Models\OnlinePayments;
 use App\Models\Question;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentQuestionAnswer;
+use App\Services\ApplicationYearMoveService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
@@ -124,6 +125,105 @@ class HomeController extends Controller
     private function isEditableApplicationYear($year): bool
     {
         return Lookups::isUiYear($year);
+    }
+
+    private function canApplyApplicationYearMove(): bool
+    {
+        return $this->canViewHistoricApplications();
+    }
+
+    private function canViewApplicationYearMoveContext(): bool
+    {
+        $user = Auth::user();
+
+        return $user && (int) $user->role_super === 1;
+    }
+
+    private function applicationYearMoveButtonData($userId, $year, $booking = null): array
+    {
+        $fromYear = (string) (int) $year;
+        $activeYear = (string) (int) Lookups::activeYearValue();
+        $toYear = (string) ((int) $fromYear - 1);
+        $uiYears = Lookups::uiYearLookups()
+            ->pluck('lookup_name')
+            ->map(function ($lookupYear) {
+                return (string) $lookupYear;
+            });
+
+        $show = $this->canViewHistoricApplications()
+            && $fromYear !== '0'
+            && $fromYear === $activeYear
+            && $uiYears->count() >= 2
+            && $uiYears->contains($fromYear)
+            && $uiYears->contains($toYear)
+            && !empty($booking);
+
+        return [
+            'show' => $show,
+            'canApply' => $this->canApplyApplicationYearMove(),
+            'canViewContext' => $this->canViewApplicationYearMoveContext(),
+            'userId' => (int) $userId,
+            'fromYear' => $fromYear,
+            'toYear' => $toYear,
+            'label' => "Move application to {$toYear}",
+        ];
+    }
+
+    private function validateApplicationYearMoveRequest($userId, $fromYear, $toYear, $requireApply = false)
+    {
+        if (!$this->canViewHistoricApplications()) {
+            return response()->json([
+                'message' => 'Only sys admin and super users can review an application year move.',
+            ], 403);
+        }
+
+        if ($requireApply && !$this->canApplyApplicationYearMove()) {
+            return response()->json([
+                'message' => 'Only sys admin and super users can apply an application year move.',
+            ], 403);
+        }
+
+        $userId = (int) $userId;
+        $fromYear = (string) (int) $fromYear;
+        $toYear = (string) (int) $toYear;
+
+        if ($userId <= 0 || $fromYear === '0' || $toYear === '0') {
+            return response()->json([
+                'message' => 'Invalid application year move request.',
+            ], 422);
+        }
+
+        $sessionYear = (string) (int) Session::get('year');
+        if ($sessionYear !== $fromYear) {
+            return response()->json([
+                'message' => 'The selected profile year has changed. Refresh the profile before moving this application.',
+            ], 409);
+        }
+
+        $booking = Booking::where('userId', $userId)->where('year', $fromYear)->first();
+        $buttonData = $this->applicationYearMoveButtonData($userId, $fromYear, $booking);
+        if (!$buttonData['show'] || $buttonData['toYear'] !== $toYear) {
+            return response()->json([
+                'message' => 'This application is not eligible for the app-profile year move flow.',
+            ], 403);
+        }
+
+        return true;
+    }
+
+    private function applicationYearMoveActor(): array
+    {
+        $actor = Auth::user();
+        $displayName = trim(($actor->userFirstName ?? '') . ' ' . ($actor->userLastname ?? ''));
+        if ($displayName === '') {
+            $displayName = $actor->email ?? 'Sys admin';
+        }
+
+        return [
+            'id' => $actor->id ?? null,
+            'display_name' => $displayName,
+            'role' => $actor->userRole ?? null,
+        ];
     }
 
     /**
@@ -1171,6 +1271,7 @@ class HomeController extends Controller
                     "this_year" => $this_year,
                     'bookingNext' => $show_booking,
                     'bookingNextYear' => $bookingNextYear,
+                    'moveApplicationYear' => $this->applicationYearMoveButtonData($userId, $this_year, $bookingCurr),
                     'userAccount' => User::withTrashed()->where('id', $userId)->first(),
                     'profileReadOnly' => false,
                     'historicalProfile' => false,
@@ -1244,10 +1345,54 @@ class HomeController extends Controller
             "this_year" => $this_year,
             'bookingNext' => false,
             'bookingNextYear' => null,
+            'moveApplicationYear' => ['show' => false],
             'userAccount' => User::withTrashed()->where('id', $userId)->first(),
             'profileReadOnly' => true,
             'historicalProfile' => true,
         ]);
+    }
+
+    public function move_application_year_preview(Request $request, ApplicationYearMoveService $service)
+    {
+        $userId = (int) $request->input('userId');
+        $fromYear = $request->input('fromYear');
+        $toYear = $request->input('toYear');
+
+        $allowed = $this->validateApplicationYearMoveRequest($userId, $fromYear, $toYear);
+        if ($allowed !== true) {
+            return $allowed;
+        }
+
+        return response()->json($service->preview($userId, $fromYear, $toYear));
+    }
+
+    public function move_application_year_apply(Request $request, ApplicationYearMoveService $service)
+    {
+        $userId = (int) $request->input('userId');
+        $fromYear = $request->input('fromYear');
+        $toYear = $request->input('toYear');
+
+        $allowed = $this->validateApplicationYearMoveRequest($userId, $fromYear, $toYear, true);
+        if ($allowed !== true) {
+            return $allowed;
+        }
+
+        try {
+            $result = $service->apply($userId, $fromYear, $toYear, $this->applicationYearMoveActor());
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+
+        if (empty($result['ok'])) {
+            return response()->json($result, 422);
+        }
+
+        Session::put('year', $result['to_year']);
+        $result['redirect'] = '/application-profile/' . $userId;
+
+        return response()->json($result);
     }
 
     function get_user_status($fileType, $user, $student)
