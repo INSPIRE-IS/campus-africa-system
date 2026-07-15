@@ -88,6 +88,8 @@ Route::get('/complete-reservation', [HomeController::class, 'complete_reservatio
 Route::get('/applications', [HomeController::class, 'applications']);
 Route::get('/application-profile/{userId}', [HomeController::class, 'application_profile']);
 Route::get('/application-profile-historic/{userId}', [HomeController::class, 'application_profile_historic']);
+Route::post('/application-profile/move-year-preview', [HomeController::class, 'move_application_year_preview']);
+Route::post('/application-profile/move-year-apply', [HomeController::class, 'move_application_year_apply']);
 Route::get('/edit-inline-data', [HomeController::class, 'edit_inline_data']);
 Route::post('/save-inline-data', [HomeController::class, 'save_inline_data']);
 Route::post('/approve-inline-data', [HomeController::class, 'approve_inline_data']);
