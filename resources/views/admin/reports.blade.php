@@ -106,13 +106,15 @@
                     <option value="{{ $prop->id }}">{{ $prop->residence }}</option>
                 @endforeach
             </select>
+            <select id="bmYear" name="bmYear">
+                @foreach ($appYears as $year)
+                    <option value="{{ $year->year }}">{{ $year->year }}</option>
+                @endforeach
+            </select>
             <br />
 
-            <button type="button" class="detailsChange" id="downloadRooms" style="float:left; margin-left:0px;"
-                onClick="downloadRoomsReport()">Download
+            <button type="button" class="detailsChange" id="downloadRooms" style="float:left; margin-left:0px;">Download
                 Beds</button>
-            <div class="hidden"><a href="" download id="downloadBedsBtn"><button type="button"
-                        id="downloadBtnBeds">Download</button></a></div>
         @endif
         {{-- MDA Report --}}
         @if (Auth::user()->role_mda_report == 1)
@@ -666,13 +668,16 @@
                 type: "post",
                 url: "/download-beds",
                 data: {
-                    property: $("#propdd").val()
+                    property: $("#propdd").val(),
+                    year: $("#bmYear").val()
                 },
                 success: function(data) {
-                    var a = document.getElementById('downloadBedsBtn');
-                    a.href = data
-                    $("#downloadBtnBeds").click();
                     $("#downloadRooms").empty().append('Download Beds')
+                    alert(data.message || 'A link will be emailed to you once the beds report has been generated.');
+                },
+                error: function(data) {
+                    $("#downloadRooms").empty().append('Download Beds')
+                    alert('Something went wrong!');
                 },
             });
         }
