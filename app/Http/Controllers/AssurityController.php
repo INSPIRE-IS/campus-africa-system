@@ -30,7 +30,7 @@ class AssurityController extends Controller
     }
     protected function resolveYear()
     {
-        $this_year = Lookups::where('group_id', '4')->first();
+        $this_year = Lookups::activeYearLookup();
         if (Session::has('year')) {
             $year = Session::get('year');
             $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $year)->first();
@@ -73,6 +73,40 @@ class AssurityController extends Controller
         ];
     }
 
+    public function download_unsigned(Request $request, $studentId)
+    {
+        if ($resp = $this->ensureSysAdmin()) {
+            return $resp;
+        }
+
+        $this_year = Lookups::resolveYearForUser((int) $studentId, Session::get('year'));
+        $student = StudentsInfo::where('userUid', $studentId)->where('year', $this_year)->first();
+        $booking = Booking::where('userId', $studentId)->where('year', $this_year)->first();
+
+        if (!$student || !$booking) {
+            abort(404, 'Missing student or booking for Debt Assurity.');
+        }
+
+        if ($student->studentType !== 'Cash / Direct') {
+            abort(422, 'Debt Assurity is only required for Cash students.');
+        }
+
+        $residence = Residence::where('id', $booking->property)->first();
+        $pdf = PDF::loadView('PDF.assurity', [
+            'student' => $student,
+            'booking' => $booking,
+            'residence' => $residence,
+            'signature' => null,
+            'signed_at' => null,
+            'signed_on' => null,
+            'spouse_required' => false,
+            'spouse_reason' => '',
+            'spouse_signature' => null,
+        ]);
+
+        return $pdf->download($booking->year . '_ASSURITY_UNSIGNED_' . $booking->booking_code . '.pdf');
+    }
+
     public function resend(Request $request)
     {
         if ($resp = $this->ensureSysAdmin()) {
@@ -103,6 +137,42 @@ class AssurityController extends Controller
             ->first();
 
         if (!$token) {
+            $file = UserFiles::where('fileId', 'assurity_doc')
+                ->where('userUid', $studentId)
+                ->where('year', $this_year)
+                ->first();
+
+            if ($file && $file->status === 'Uploaded') {
+                return response()->json(['message' => 'Debt Assurity has already been signed/uploaded and is awaiting review.'], 422);
+            }
+
+            if ($file && $file->status === 'Approved') {
+                return response()->json(['message' => 'Debt Assurity has already been approved.'], 422);
+            }
+
+            $signedTokenExists = AssurityToken::where('userUid', $studentId)
+                ->where('year', $this_year)
+                ->where('signed', 1)
+                ->exists();
+
+            if (!$file && $signedTokenExists) {
+                return response()->json(['message' => 'Debt Assurity has already been signed, but the document record is missing. Upload the signed document manually or regenerate a new surety request.'], 422);
+            }
+
+            if (!$file) {
+                $result = $this->assurityService->requestAssurity($studentId, $this_year, [
+                    'user_uid' => Auth::user()->id,
+                    'display_name' => Auth::user()->userFirstName,
+                    'role' => Auth::user()->userRole,
+                ], 'admin-resend-missing-file');
+
+                if (!$result['ok']) {
+                    return response()->json(['message' => $result['message'] ?? 'Unable to generate assurity.'], 422);
+                }
+
+                return response()->json(['status' => 'ok', 'generated' => true]);
+            }
+
             $token = AssurityToken::create([
                 'userUid' => $studentId,
                 'assurity_token' => Str::random(40),
@@ -286,10 +356,13 @@ class AssurityController extends Controller
             'rejectReason' => '',
         ];
 
-        UserFiles::where('fileId', 'assurity_doc')
-            ->where('userUid', $student->userUid)
-            ->where('year', $this_year)
-            ->update($fileData);
+        UserFiles::updateOrCreate([
+            'fileId' => 'assurity_doc',
+            'userUid' => $student->userUid,
+            'year' => $this_year,
+        ], array_merge($fileData, [
+            'uploaded_by' => trim((string) (($student->sponFirstName ?? '') . ' ' . ($student->sponLastName ?? ''))) ?: 'Sponsor',
+        ]));
 
         StudentsInfo::where('userUid', $student->userUid)
             ->where('year', $this_year)
