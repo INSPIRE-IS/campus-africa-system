@@ -1163,18 +1163,24 @@
                                                         <button type="button" id="myBtn_download_assurity" title="Download the latest saved Debt Assurity PDF.">Download</button>
                                                     </a>
                                                 @endif
+                                                @if (!$profileReadOnly && Auth::user()->role_sys_admin == 1)
+                                                    <a href="/download-assurity/{{ $user[0]['userInfo']['userUid'] }}" target="_blank">
+                                                        <button type="button" title="Download a blank unsigned Debt Assurity PDF for physical signing.">Print Blank</button>
+                                                    </a>
+                                                @endif
 
                                                 @php
                                                     $rob65Debt = $user[0]['userInfo']['rob_65_debt'] ?? null;
+                                                    $assurityPendingReview = $file['status'] === 'AUploaded';
                                                 @endphp
 
-                                                {{-- Only show generate/resend when not approved (Debt Assurity approved = 1). --}}
-                                                @if (!$profileReadOnly && Auth::user()->role_sys_admin == 1 && (int) $rob65Debt !== 1)
+                                                {{-- Only generate/send when there is no signed/uploaded document awaiting review. --}}
+                                                @if (!$profileReadOnly && Auth::user()->role_sys_admin == 1 && (int) $rob65Debt !== 1 && !$assurityPendingReview)
                                                     <a href="#">
                                                         <button type="button" id="myBtn_regen_assurity" title="Create/refresh the Debt Assurity PDF, issue a new signing link, and email the sponsor (and notify the student).">Generate</button>
                                                     </a>
                                                     @if ($file['status'] !== 'AUploaded')
-                                                        <button type="button" id="myBtn_resend_assurity" onClick="resendAssurity()" title="Email a new signing link without changing the current PDF content.">Resend</button>
+                                                        <button type="button" id="myBtn_resend_assurity" onClick="resendAssurity()" title="Email the sponsor signing link and notify the student.">Send Link</button>
                                                     @endif
                                                 @endif
 
@@ -1183,7 +1189,7 @@
                                                 @endif
 
                                                 {{-- Optional manual upload of a signed PDF (sys admin only). --}}
-                                                @if (!$profileReadOnly && Auth::user()->role_sys_admin == 1 && $file['status'] !== 'XApproved')
+                                                @if (!$profileReadOnly && Auth::user()->role_sys_admin == 1 && !in_array($file['status'], ['AUploaded', 'XApproved']))
                                                     <label for="assurity_doc" id="assurity_docSection" class="outstandingUpload" style="padding:8px 16px; border-radius:10px;" title="Sys admin only: manually upload a signed Debt Assurity PDF.">
                                                         <span class="text">Upload Signed</span>
                                                         <i class="fas fa-file-upload"></i>
@@ -6016,10 +6022,10 @@
                         userId: "{{ $user[0]['userInfo']['userUid'] }}",
                     },
                     success: function(data) {
-                        $("#myBtn_resend_assurity").html('Resend');
+                        $("#myBtn_resend_assurity").html('Send Link');
                     },
                     error: function(xhr) {
-                        showLeaseError(xhr, 'Assurity resend failed', 'Resend', $("#myBtn_resend_assurity"));
+                        showLeaseError(xhr, 'Assurity link send failed', 'Send Link', $("#myBtn_resend_assurity"));
                     },
                 });
             }
