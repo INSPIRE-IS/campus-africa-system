@@ -637,7 +637,8 @@ class DocumentsController extends Controller
                 //Update Robot status back to pending
                 if (!empty($field_doc)) {
                     // User::where('id', $userUid)->update([$field_doc => '1']);
-                    StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update([$field_doc => '1']);
+                    $pendingStatus = $field_doc === 'rob_65_debt' ? '2' : '1';
+                    StudentsInfo::where('userUid', $userUid)->where('year', $this_year)->update([$field_doc => $pendingStatus]);
                 }
 
                 //Get the file

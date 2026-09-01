@@ -382,6 +382,7 @@ Route::post('/save-signed-temp-lease/{id}', [LeaseController::class, 'save_signe
 //Debt Assurity (Sponsor signature)
 Route::post('/generate-assurity/{studentId}', [AssurityController::class, 'generate']);
 Route::post('/resend-assurity', [AssurityController::class, 'resend']);
+Route::get('/download-assurity/{studentId}', [AssurityController::class, 'download_unsigned']);
 Route::get('/sign-assurity/{token}', [AssurityController::class, 'view_sign_assurity']);
 Route::post('/save-signed-assurity/{token}', [AssurityController::class, 'save_signed_assurity']);
 
