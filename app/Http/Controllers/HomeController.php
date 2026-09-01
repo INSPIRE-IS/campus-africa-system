@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\DownloadCompatibilityDocs;
 use App\Jobs\DownloadAppsJob;
+use App\Jobs\DownloadBedsJob;
 use App\Jobs\DownloadDocsJob;
 use App\Jobs\DownloadSelectedDocsJob;
 use Illuminate\Http\Request;
@@ -12687,234 +12688,19 @@ class HomeController extends Controller
     public function download_beds(Request $request)
     {
         $propertyId = $request->property;
-        //get current year        
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        // dont do this session cause it does not show on the report so could lead to confusion
-        // $session_year = Session::get('year');
-        // if (!empty($session_year)) {
-        //     $this_year = Lookups::where('group_id', '4')->where('lookup_name', '=', $session_year)->first();
-        // }
-        $institutions = Lookups::where('group_id', '1')->first();
-        $faculties = Lookups::where('group_id', '3')->first();
+        $allowedYears = Lookups::internalYearLookups()->pluck('lookup_name')->map(function ($year) {
+            return (string) $year;
+        })->toArray();
+        $requestedYear = (string) $request->year;
+        $this_year = in_array($requestedYear, $allowedYears)
+            ? Lookups::where('group_id', '4')->where('lookup_name', $requestedYear)->first()
+            : Lookups::activeYearLookup();
 
-        $query = "";
+        DownloadBedsJob::dispatch($this_year->lookup_name, $propertyId, $request->user()->id, $request->user()->email);
 
-        if ($propertyId !== "All") {
-            $query .= "where pd.residence = '" . $propertyId . "'";
-        }
-
-        if ($query !== "") {
-            $query .= " and (pd.year_end = '0' or pd.year_end = '" . $this_year->lookup_name . "') ";
-        } else {
-            $query .= "where (pd.year_end = '0' or pd.year_end = '" . $this_year->lookup_name . "') ";
-        }
-        if ($query !== "") {
-            $query .= " and pd.deleted_at is null ";
-        } else {
-            $query .= " where pd.deleted_at is null ";
-        }
-        $beds = [
-            [
-                '<b>RESIDENCE</b>',
-                '<b>FLOOR PREFIX</b>',
-                '<b>BED CODE PREFIX</b>',
-                '<b>FLOOR</b>',
-                '<b>UNIT</b>',
-                '<b>ROOM</b>',
-                '<b>BED</b>',
-                '<b>BED CODE</b>',
-                '<b>ROOM TYPE</b>',
-                '<b>LEASE RATE (MONTHLY)</b>',
-                '<b>INVENTORY</b>',
-                '<b>BOOKING REF</b>',
-                '<b>FIRST NAME</b>',
-                '<b>LAST NAME</b>',
-                '<b>EMAIL</b>',
-                '<b>CELL NUMBER</b>',
-                '<b>NATIONALITY</b>',
-                '<b>ID NUMBER / PASSPORT</b>',
-                '<b>GENDER</b>',
-                '<b>STUDENT TYPE</b>',
-                '<b>BURSAR COMPANY</b>',
-                '<b>INSTITUTION</b>',
-                '<b>STUDENT NUMBER</b>',
-                '<b>YEAR OF STUDY</b>',
-                '<b>FACULTY</b>',
-                '<b>NEXT OF KIN NAME</b>',
-                '<b>NEXT OF KIN CONTACT</b>',
-                '<b>NEXT OF KIN RELATIONSHIP</b>',
-            ],
-        ];
-
-        $waitlist = [
-            [
-                '<b>RESIDENCE</b>',
-                '<b>ROOM TYPE</b>',
-                '<b>LEASE RATE (MONTHLY)</b>',
-                '<b>BOOKING REF</b>',
-                '<b>FIRST NAME</b>',
-                '<b>LAST NAME</b>',
-                '<b>EMAIL</b>',
-                '<b>CELL NUMBER</b>',
-                '<b>NATIONALITY</b>',
-                '<b>ID NUMBER / PASSPORT</b>',
-                '<b>GENDER</b>',
-                '<b>STUDENT TYPE</b>',
-                '<b>BURSAR COMPANY</b>',
-                '<b>INSTITUTION</b>',
-                '<b>STUDENT NUMBER</b>',
-                '<b>YEAR OF STUDY</b>',
-                '<b>FACULTY</b>',
-                '<b>NEXT OF KIN NAME</b>',
-                '<b>NEXT OF KIN CONTACT</b>',
-                '<b>NEXT OF KIN RELATIONSHIP</b>',
-            ],
-        ];
-
-        if ($propertyId !== "All") {
-            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->where('property', $propertyId)->orderBy('id', 'asc')->get();
-        } else {
-            $allBookingsThisYear = Booking::where('year', $this_year->lookup_name)->where('property_data_id', null)->orderBy('id', 'asc')->get();
-        }
-
-        foreach ($allBookingsThisYear as $booking) {
-            $propertyName = Residence::where('id', $booking->property)->pluck('residence')->first();
-            $room = RoomTypes::where('id', $booking->roomType)->pluck('name')->first();
-            $user = StudentsInfo::where('bookingId', $booking->id)->where('rob_10_fee', '2')->orderBy('year', 'desc')->first();
-
-            if (!empty($user) && $user->rob_60_cancelled == 0) {
-                $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
-                $leaseRate = $paymentBooking ? $paymentBooking->monthly_rental : "";
-
-                $first_name = $user->userFirstName ?? "";
-                $last_name = $user->userLastname ?? "";
-                $email = $user->userEmail ?? "";
-                $cell = ($user->userCellCode ?? "") . ($user->userCell ?? "");
-                $nationality = $user->userNationality ?? "";
-                $id = isset($user->userId) ? ($user->userId != "" ? $user->userId : $user->userPassport) : "";
-                $gender = "";
-
-                if ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4) {
-                    $gender = "Female";
-                } elseif ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9) {
-                    $gender = "Male";
-                }
-                $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
-                $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
-                $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
-                $studNumber = $user->studentNo;
-                $yearOfStudy = $user->yearOfStudy;
-                $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
-                $kinName = $user->kinFirstName . " " . $user->kinLastname;
-                $relationship = $user->kinRelationship;
-                $kinContact = $user->kincellCode . $user->kinCellNo;
-
-                $list = [$propertyName, $room, $leaseRate, $booking->booking_code, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
-                array_push($waitlist, $list);
-            }
-        }
-
-        $allBeds = DB::select('SELECT pd.id, p.residence, r.name, pd.meta_info_1, pd.meta_info_2, pd.floor, pd.unit, pd.room, pd.bed, pd.bed_code, pd.inventory, pd.year, pd.year_end FROM property_data pd LEFT OUTER JOIN property p on pd.residence = p.id LEFT OUTER JOIN room_types r on pd.room_type = r.id ' . $query . ' ORDER BY pd.residence ASC, pd.meta_info_1, pd.floor + 0 ASC, pd.floor, pd.unit + 0 ASC, pd.room, pd.bed');
-
-        foreach ($allBeds as $bed) {
-            if ($bed->inventory == '1') {
-                $bed->inventory = "Yes";
-            } else {
-                $bed->inventory = "No";
-            }
-
-            $booking = Booking::where('property_data_id', $bed->id)->where('year',  $this_year->lookup_name)->first();
-
-            if (!empty($booking)) {
-                $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
-                $leaseRate = $paymentBooking ? $paymentBooking->monthly_rental : "";
-                $user = StudentsInfo::where('bookingId', $booking->id)->where('year',  $this_year->lookup_name)->first();
-
-                if (!empty($user)) {
-                    $booking_ref = $booking->booking_code;
-                    $first_name = $user->userFirstName;
-                    $last_name = $user->userLastname;
-                    $email = $user->userEmail;
-                    $cell = $user->userCellCode . $user->userCell;
-                    $nationality = $user->userNationality;
-                    $id = $user->userId != "" ? $user->userId : $user->userPassport;
-                    $gender = "";
-                    if ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 0 && floatval(substr($user->userId, 6, 1)) <= 4) {
-                        $gender = "Female";
-                    } elseif ($nationality == "South Africa" && $user->userId != "" && floatval(substr($user->userId, 6, 1)) >= 5 && floatval(substr($user->userId, 6, 1)) <= 9) {
-                        $gender = "Male";
-                    }
-                    $studentType = $user->studentType == "Cash / Direct" ? "Cash" : $user->studentType;
-                    $bursarCompany = $user->studentType == "Bursary" ? $user->burCompanyName : "";
-                    $instit = Lookups::where('id', $user->institutionStudy)->pluck('lookup_name')->first();
-                    $studNumber = $user->studentNo;
-                    $yearOfStudy = $user->yearOfStudy;
-                    $faculty = Lookups::where('id', $user->faculty)->pluck('lookup_name')->first();
-                    $kinName = $user->kinFirstName . " " . $user->kinLastname;
-                    $relationship = $user->kinRelationship;
-                    $kinContact = $user->kincellCode . $user->kinCellNo;
-                } else {
-                    $booking_ref = "";
-                    $first_name = "";
-                    $last_name = "";
-                    $email = "";
-                    $cell = "";
-                    $nationality = "";
-                    $id = "";
-                    $gender = "";
-                    $studentType = "";
-                    $bursarCompany = "";
-                    $instit = "";
-                    $studNumber = "";
-                    $yearOfStudy = "";
-                    $faculty = "";
-                    $kinName = "";
-                    $relationship = "";
-                    $kinContact = "";
-                }
-            } else {
-                $leaseRate = "";
-                $booking_ref = "";
-                $first_name = "";
-                $last_name = "";
-                $email = "";
-                $cell = "";
-                $nationality = "";
-                $id = "";
-                $gender = "";
-                $studentType = "";
-                $bursarCompany = "";
-                $instit = "";
-                $studNumber = "";
-                $yearOfStudy = "";
-                $faculty = "";
-                $kinName = "";
-                $relationship = "";
-                $kinContact = "";
-            }
-
-            $bed = [$bed->residence, $bed->meta_info_1, $bed->meta_info_2, $bed->floor, $bed->unit, $bed->room, $bed->bed, $bed->bed_code, $bed->name, $leaseRate, $bed->inventory, $booking_ref, $first_name, $last_name, $email, $cell, $nationality, $id, $gender, $studentType, $bursarCompany, $instit, $studNumber, $yearOfStudy, $faculty, $kinName, $kinContact, $relationship];
-            array_push($beds, $bed);
-        }
-
-        $xlsx = new \Shuchkin\SimpleXLSXGen();
-        $xlsx->addSheet($beds, 'BED CODES');
-        $xlsx->addSheet($waitlist, 'WAITLIST');
-
-        $prop = $propertyId === "All"
-            ? 'All'
-            : Residence::where('id', $propertyId)->pluck('residence')->first();
-
-        // if($year !== "All"){
-
-        $downloadUrl = 'Bed_Allocations_Export_' . $this_year->lookup_name . '_' . $prop . '.xlsx';
-        $xlsx->saveAs($downloadUrl);
-        // }else{
-        //     $downloadUrl = 'System_Bed_Allocations_All_Years.xlsx';
-        //     $xlsx->saveAs('System_Bed_Allocations_All_Years.xlsx');
-        // }
-
-        return $downloadUrl;
+        return response()->json([
+            'message' => 'A link will be emailed to you once the beds report has been generated.',
+        ]);
     }
 
     public function download_mda(Request $request)
