@@ -370,3 +370,10 @@ function btn_view_document_ajax(fileId) {
 
     $("#myModal").load("/documents/view-document/" + fileId);
 }
+
+function btn_view_archived_lease_ajax(actionId) {
+    $("#myModal").html("<div class='modal-content'>Loading</div>");
+    $("#myModal").css("display", "block");
+
+    $("#myModal").load("/documents/archived-lease/action/" + actionId);
+}
