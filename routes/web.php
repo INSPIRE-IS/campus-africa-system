@@ -19,6 +19,7 @@ use App\Http\Controllers\MailReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MetricsFeatureController;
+use App\Http\Controllers\PricingInspectorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -202,6 +203,7 @@ Route::get('/metrics-features/data', [MetricsFeatureController::class, 'data']);
 Route::get('/metrics-codes', [MetricsFeatureController::class, 'codes']);
 Route::get('/metrics-codes/exceptions', [MetricsFeatureController::class, 'exceptions']);
 Route::get('/metrics-codes/breakdown', [MetricsFeatureController::class, 'codesBreakdown']);
+Route::get('/metrics-pricing', [PricingInspectorController::class, 'index']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
