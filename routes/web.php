@@ -19,6 +19,7 @@ use App\Http\Controllers\MailReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MetricsFeatureController;
+use App\Http\Controllers\PricingInspectorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -255,6 +256,7 @@ Route::get('/metrics-features/data', [MetricsFeatureController::class, 'data']);
 Route::get('/metrics-codes', [MetricsFeatureController::class, 'codes']);
 Route::get('/metrics-codes/exceptions', [MetricsFeatureController::class, 'exceptions']);
 Route::get('/metrics-codes/breakdown', [MetricsFeatureController::class, 'codesBreakdown']);
+Route::get('/metrics-pricing', [PricingInspectorController::class, 'index']);
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
@@ -346,6 +348,7 @@ Route::post("/update-bursar-details", [HomeController::class, 'update_bursar_det
 
 //Documents
 Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);
+Route::get('/documents/archived-lease/action/{actionId}', [DocumentsController::class, 'view_archived_lease_for_action'])->middleware('auth');
 // Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
 Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save']);
 Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);

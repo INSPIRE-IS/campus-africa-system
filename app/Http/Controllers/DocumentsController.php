@@ -15,8 +15,10 @@ use Jenssegers\Agent\Agent;
 use App\Models\StudentsInfo;
 use App\Models\MDAInfo;
 use App\Models\BookingPayment;
+use App\Models\PropertyPermission;
 use DateTime;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use App\Services\AssurityService;
 
 class DocumentsController extends Controller
@@ -89,6 +91,74 @@ class DocumentsController extends Controller
         ];
 
         return view('application.document.view_document', $data);
+    }
+
+    public function view_archived_lease_for_action($actionId)
+    {
+        if (!Auth::check() || !in_array((string) Auth::user()->userRole, ['1', '2', '3'], true)) {
+            abort(403, 'You are not authorised to view archived leases.');
+        }
+
+        $action = ActionList::find($actionId);
+        if (!$action || !$this->isLeaseArchiveAction($action->action)) {
+            abort(404, 'Archived lease action not found.');
+        }
+
+        $student = StudentsInfo::where('userUid', $action->userUid)
+            ->where('year', $action->year)
+            ->first();
+        $booking = Booking::where('userId', $action->userUid)
+            ->where('year', $action->year)
+            ->first();
+
+        if (!$student || !$booking || !$this->canViewApplicationProfile($student, $booking)) {
+            abort(403, 'You are not authorised to view this archived lease.');
+        }
+
+        $file = UserFiles::withTrashed()
+            ->where('userUid', $action->userUid)
+            ->where('year', $action->year)
+            ->where('fileId', 'moveIn')
+            ->whereNotNull('deleted_at')
+            ->get()
+            ->filter(function ($candidate) use ($action) {
+                return abs($candidate->deleted_at->getTimestamp() - $action->created_at->getTimestamp()) <= 120;
+            })
+            ->sortBy(function ($candidate) use ($action) {
+                return abs($candidate->deleted_at->getTimestamp() - $action->created_at->getTimestamp());
+            })
+            ->first();
+
+        $documentUrl = null;
+        if ($file && !empty($file->fileUrl)) {
+            $relativePath = ltrim(str_replace('\\', '/', $file->fileUrl), '/');
+            if ($relativePath !== '' && strpos($relativePath, '..') === false && Storage::disk('public')->exists($relativePath)) {
+                $documentUrl = Storage::disk('public')->url($relativePath);
+            }
+        }
+
+        return view('application.document.view_archived_lease', [
+            'action' => $action,
+            'file' => $file,
+            'documentUrl' => $documentUrl,
+        ]);
+    }
+
+    private function isLeaseArchiveAction($action)
+    {
+        return strpos($action, 'Application Cancelled') === 0
+            || strpos($action, 'Unallocated Bed') === 0;
+    }
+
+    private function canViewApplicationProfile(StudentsInfo $student, Booking $booking)
+    {
+        if ((int) $student->rob_60_cancelled === 1) {
+            return true;
+        }
+
+        return PropertyPermission::where('userUid', Auth::id())
+            ->where('property', $booking->property)
+            ->exists();
     }
 
 

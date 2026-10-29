@@ -29,6 +29,7 @@
         <div style="margin-bottom: 25px;">
             <button type="button" class="detailsChange" id="toggleMetricsConfig" onclick="toggleMetricsConfig()">Configure Metrics</button>
             <a href="/metrics-codes?status=500" class="detailsChange" style="margin-left: 10px;">View Codes</a>
+            <a href="/metrics-pricing" class="detailsChange" style="margin-left: 10px;">Pricing Inspector</a>
         </div>
 
         <div id="metricsConfigWrapper" class="form-card" style="display: none; padding: 20px; margin-bottom: 25px;">

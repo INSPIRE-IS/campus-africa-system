@@ -577,6 +577,10 @@
                                 </div>
                                 <div class="information">
                                     <p>{{ $action->action }}</p>
+                                    @if (\Illuminate\Support\Str::startsWith($action->action, ['Application Cancelled', 'Unallocated Bed']))
+                                        <button type="button"
+                                            onClick="btn_view_archived_lease_ajax({{ $action->id }})">View archived lease</button>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
