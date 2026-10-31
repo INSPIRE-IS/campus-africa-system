@@ -34,6 +34,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use App\Support\MonthlyPopDocument;
 
 class ApplicationController extends Controller
 {
@@ -537,6 +538,10 @@ class ApplicationController extends Controller
             $typeName = "Debt Assurity";
             $field_data = "";
             $field_doc = "rob_65_debt";
+        } elseif (MonthlyPopDocument::isMonthlyPop($fileType)) {
+            $typeName = MonthlyPopDocument::label($fileType);
+            $field_data = "";
+            $field_doc = "";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;

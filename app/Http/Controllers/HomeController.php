@@ -53,6 +53,7 @@ use App\Models\Question;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentQuestionAnswer;
 use App\Services\ApplicationYearMoveService;
+use App\Support\MonthlyPopDocument;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
@@ -905,7 +906,14 @@ class HomeController extends Controller
 
         $name = $studentInfo->userFirstName . " " . $studentInfo->userLastname;
 
-        $files = UserFiles::where('userUid', $userId)->where('year', $this_year)->get();
+        // Monthly POPs are recurring operational documents reviewed from Action List,
+        // not application documents that require approval.
+        $files = UserFiles::where('userUid', $userId)
+            ->where('year', $this_year)
+            ->get()
+            ->reject(function ($file) {
+                return MonthlyPopDocument::isMonthlyPop($file->fileId);
+            });
         //dd($files);
         $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
@@ -1439,6 +1447,10 @@ class HomeController extends Controller
             $typeName = "Debt Assurity";
             $field_data = "";
             $field_doc = "rob_65_debt";
+        } elseif (MonthlyPopDocument::isMonthlyPop($fileType)) {
+            $typeName = MonthlyPopDocument::label($fileType);
+            $field_data = "";
+            $field_doc = "";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;
@@ -1947,7 +1959,12 @@ class HomeController extends Controller
 
         $user = User::with('files')->where('id', $userId)->first();
         $userInfo = StudentsInfo::where('userUid', $userId)->where('year', $this_year)->first();
-        $userFiles = UserFiles::where('userUid', $userId)->where('year', $this_year)->get();
+        $userFiles = UserFiles::where('userUid', $userId)
+            ->where('year', $this_year)
+            ->get()
+            ->reject(function ($file) {
+                return MonthlyPopDocument::isMonthlyPop($file->fileId);
+            });
         $userData = [];
         $uploaded = [];
         // $all = [0 => 'copyID', 1 => 'studentCard', 2 => 'bankStatement', 3 => 'proofRegistration', 4 => 'proof_of_payment', 5 => 'moveIn', 6 => "bursaryApproval" ];

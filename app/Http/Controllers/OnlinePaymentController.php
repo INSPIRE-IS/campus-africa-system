@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\MonthlyPopDocument;
+
 use Illuminate\Http\Request;
 use App\Models\OnlinePayments;
 use App\Models\UserFiles;
@@ -459,6 +461,10 @@ class OnlinePaymentController extends Controller
             $typeName = "Debt Assurity";
             $field_data = "";
             $field_doc = "rob_65_debt";
+        } elseif (MonthlyPopDocument::isMonthlyPop($fileType)) {
+            $typeName = MonthlyPopDocument::label($fileType);
+            $field_data = "";
+            $field_doc = "";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;

@@ -349,6 +349,7 @@ Route::post("/update-bursar-details", [HomeController::class, 'update_bursar_det
 //Documents
 Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);
 Route::get('/documents/archived-lease/action/{actionId}', [DocumentsController::class, 'view_archived_lease_for_action'])->middleware('auth');
+Route::get('/documents/monthly-pop/action/{actionId}', [DocumentsController::class, 'view_monthly_pop_for_action'])->middleware('auth');
 // Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
 Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save']);
 Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);
