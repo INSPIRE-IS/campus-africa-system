@@ -581,6 +581,10 @@
                                         <button type="button"
                                             onClick="btn_view_archived_lease_ajax({{ $action->id }})">View archived lease</button>
                                     @endif
+                                    @if (($action->meta['type'] ?? null) === 'monthly_pop')
+                                        <button type="button"
+                                            onClick="btn_view_monthly_pop_ajax({{ $action->id }})">View Monthly POP</button>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -4916,6 +4920,9 @@
                                 var usernames = '<p>' + item['actionUserDisplayName'] + '</p>';
                             }
 
+                            var monthlyPopButton = item['meta'] && item['meta']['type'] === 'monthly_pop' ?
+                                '<button type="button" onClick="btn_view_monthly_pop_ajax(' + item['id'] + ')">View Monthly POP</button>' : '';
+
                             $(".actionItemList").append(
                                 '<div class="infoBlock">' +
                                 '<div class="responsible">' +
@@ -4927,6 +4934,7 @@
                                 '</div>' +
                                 '<div class="information">' +
                                 '<p>' + item['action'] + '</p>' +
+                                monthlyPopButton +
                                 ' </div>' +
                                 '</div>'
                             )
@@ -4956,6 +4964,9 @@
                                 var role = '<button type="button" class="applicant">Applicant</button>';
                             }
 
+                            var monthlyPopButton = item['meta'] && item['meta']['type'] === 'monthly_pop' ?
+                                '<button type="button" onClick="btn_view_monthly_pop_ajax(' + item['id'] + ')">View Monthly POP</button>' : '';
+
                             $(".actionItemList").append(
                                 '<div class="infoBlock">' +
                                 '<div class="responsible">' +
@@ -4967,6 +4978,7 @@
                                 '</div>' +
                                 '<div class="information">' +
                                 '<p>' + item['action'] + '</p>' +
+                                monthlyPopButton +
                                 ' </div>' +
                                 '</div>'
                             )

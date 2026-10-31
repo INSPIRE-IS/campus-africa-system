@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\SendMonthlyPopMail;
+use App\Support\MonthlyPopDocument;
 
 class SendMonthlyPopNotifications extends Command
 {
@@ -112,9 +113,54 @@ class SendMonthlyPopNotifications extends Command
                 }
             }
 
-            $targetDay = $sendDay;
-
             $monthKey = Carbon::parse($today)->format('Y-m');
+            $effectiveSendDate = $todayCarbon->copy();
+            $effectiveDueDate = MonthlyPopDocument::dueDateForReminderDate($effectiveSendDate);
+            $effectiveDueDateString = $effectiveDueDate->toDateString();
+            $effectiveSendDateString = $effectiveSendDate->toDateString();
+            $documentPeriod = $effectiveDueDate->format('Y-m');
+            $fileId = MonthlyPopDocument::fileIdForDueDate($effectiveDueDate);
+
+            $monthlyPopFile = UserFiles::withTrashed()
+                ->where('userUid', $row->user_id)
+                ->where('fileId', $fileId)
+                ->where('year', $row->year)
+                ->first();
+
+            if (!$monthlyPopFile && !$dryRun) {
+                $monthlyPopFile = UserFiles::create([
+                    'userUid' => $row->user_id,
+                    'fileId' => $fileId,
+                    'year' => $row->year,
+                ]);
+                $counts['created_docs']++;
+            } elseif ($monthlyPopFile && $monthlyPopFile->trashed() && !$dryRun) {
+                $monthlyPopFile->restore();
+            }
+
+            $requestActionExists = ActionList::where('userUid', $row->user_id)
+                ->where('year', $row->year)
+                ->where('action', 'like', "Monthly POP requested for {$documentPeriod}%")
+                ->exists();
+
+            if ($monthlyPopFile && !$requestActionExists && !$dryRun) {
+                ActionList::create([
+                    'userUid' => $row->user_id,
+                    'action' => "Monthly POP requested for {$documentPeriod} (due {$effectiveDueDateString}, amount {$row->monthly_pop_amount})",
+                    'actionUserUid' => 0,
+                    'actionUserDisplayName' => 'System',
+                    'actionUserRole' => 'system',
+                    'year' => $row->year,
+                    'meta' => [
+                        'type' => 'monthly_pop',
+                        'user_file_id' => $monthlyPopFile->id,
+                        'period' => $documentPeriod,
+                        'due_date' => $effectiveDueDateString,
+                        'amount' => $row->monthly_pop_amount,
+                    ],
+                ]);
+            }
+
             // Prevent duplicate sends for the same month. Support both the legacy wording ("sent")
             // and the newer wording ("queued") so changing copy doesn't re-trigger older months.
             $alreadySent = ActionList::where('userUid', $row->user_id)
@@ -129,25 +175,6 @@ class SendMonthlyPopNotifications extends Command
                 $counts['skipped']++;
                 continue;
             }
-
-            $existing = UserFiles::withTrashed()
-                ->where('userUid', $row->user_id)
-                ->where('fileId', 'other_monthly_pop')
-                ->where('year', $row->year)
-                ->first();
-
-            if (!$existing && !$dryRun) {
-                UserFiles::create([
-                    'userUid' => $row->user_id,
-                    'fileId' => 'other_monthly_pop',
-                    'year' => $row->year,
-                ]);
-                $counts['created_docs']++;
-            }
-
-            $effectiveSendDate = $todayCarbon->copy();
-            $effectiveDueDate = $effectiveSendDate->copy()->addMonthNoOverflow()->startOfMonth()->toDateString();
-            $effectiveSendDateString = $effectiveSendDate->toDateString();
 
             $sendStudent = (int) $row->send_to_student === 1;
             $sendSponsor = (int) $row->send_to_sponsor === 1;
@@ -164,7 +191,7 @@ class SendMonthlyPopNotifications extends Command
                 '[application_number]' => $row->booking_code,
                 '[name]' => $row->userFirstName,
                 '[monthly_pop_amount]' => $row->monthly_pop_amount,
-                '[monthly_pop_due_date]' => $effectiveDueDate,
+                '[monthly_pop_due_date]' => $effectiveDueDateString,
                 '[application_link]' => "<a href='{$appUrl}/login' target='_blank'>",
                 '[close_application_link]' => '</a>',
             ];
@@ -208,11 +235,18 @@ class SendMonthlyPopNotifications extends Command
                 $ccLogText = empty($ccLog) ? 'cc=none' : ('cc=' . implode(';', $ccLog));
                 ActionList::create([
                     'userUid' => $row->user_id,
-                    'action' => "Monthly POP notice queued {$monthKey} (run {$effectiveSendDateString}, due {$effectiveDueDate}, amount {$row->monthly_pop_amount}, {$toLog}, {$ccLogText})",
+                    'action' => "Monthly POP notice queued {$monthKey} for {$documentPeriod} (run {$effectiveSendDateString}, due {$effectiveDueDateString}, amount {$row->monthly_pop_amount}, {$toLog}, {$ccLogText})",
                     'actionUserUid' => 0,
                     'actionUserDisplayName' => 'System',
                     'actionUserRole' => 'system',
                     'year' => $row->year,
+                    'meta' => [
+                        'type' => 'monthly_pop',
+                        'user_file_id' => $monthlyPopFile ? $monthlyPopFile->id : null,
+                        'period' => $documentPeriod,
+                        'due_date' => $effectiveDueDateString,
+                        'amount' => $row->monthly_pop_amount,
+                    ],
                 ]);
             }
         }

@@ -377,3 +377,10 @@ function btn_view_archived_lease_ajax(actionId) {
 
     $("#myModal").load("/documents/archived-lease/action/" + actionId);
 }
+
+function btn_view_monthly_pop_ajax(actionId) {
+    $("#myModal").html("<div class='modal-content'>Loading</div>");
+    $("#myModal").css("display", "block");
+
+    $("#myModal").load("/documents/monthly-pop/action/" + actionId);
+}

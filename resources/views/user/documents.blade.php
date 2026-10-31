@@ -75,6 +75,8 @@
                                 @endif
                             @elseif($file->fileId == 'moveIn')
                                 LEASE
+                            @elseif(\App\Support\MonthlyPopDocument::isMonthlyPop($file->fileId))
+                                {{ strtoupper(\App\Support\MonthlyPopDocument::label($file->fileId)) }}
                             @else
                                 <?php echo strtoupper(str_replace('_', ' ', str_replace('other', 'other |', $file->fileId))); ?>
                             @endif
@@ -166,7 +168,8 @@
                             @endif
                         @elseif($file->status == 'Uploaded')
                             <td><span class="flex">
-                                    <div class="pendingRobot"></div> &nbsp;&nbsp; Pending Approval
+                                    <div class="pendingRobot"></div> &nbsp;&nbsp;
+                                    {{ \App\Support\MonthlyPopDocument::isMonthlyPop($file->fileId) ? 'Uploaded' : 'Pending Approval' }}
                                 </span></td>
                             <td style="width:33%; text-align:center;">
                                 <a href="/storage/{{ $file->fileUrl }}" style="text-decoration:inherit"

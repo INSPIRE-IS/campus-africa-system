@@ -20,6 +20,7 @@ use DateTime;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use App\Services\AssurityService;
+use App\Support\MonthlyPopDocument;
 
 class DocumentsController extends Controller
 {
@@ -144,6 +145,55 @@ class DocumentsController extends Controller
         ]);
     }
 
+    public function view_monthly_pop_for_action($actionId)
+    {
+        if (!Auth::check() || !in_array((string) Auth::user()->userRole, ['1', '2', '3'], true)) {
+            abort(403, 'You are not authorised to view Monthly POP documents.');
+        }
+
+        $action = ActionList::find($actionId);
+        $meta = $action ? ($action->meta ?: []) : [];
+
+        if (!$action || ($meta['type'] ?? null) !== 'monthly_pop') {
+            abort(404, 'Monthly POP action not found.');
+        }
+
+        $student = StudentsInfo::where('userUid', $action->userUid)
+            ->where('year', $action->year)
+            ->first();
+        $booking = Booking::where('userId', $action->userUid)
+            ->where('year', $action->year)
+            ->first();
+
+        if (!$student || !$booking || !$this->canViewApplicationProfile($student, $booking)) {
+            abort(403, 'You are not authorised to view this Monthly POP document.');
+        }
+
+        $file = null;
+        if (!empty($meta['user_file_id'])) {
+            $file = UserFiles::withTrashed()
+                ->where('id', $meta['user_file_id'])
+                ->where('userUid', $action->userUid)
+                ->where('year', $action->year)
+                ->first();
+        }
+
+        $documentUrl = null;
+        if ($file && !empty($file->fileUrl)) {
+            $relativePath = ltrim(str_replace('\\', '/', $file->fileUrl), '/');
+            if ($relativePath !== '' && strpos($relativePath, '..') === false && Storage::disk('public')->exists($relativePath)) {
+                $documentUrl = Storage::disk('public')->url($relativePath);
+            }
+        }
+
+        return view('application.document.view_monthly_pop', [
+            'action' => $action,
+            'file' => $file,
+            'documentUrl' => $documentUrl,
+            'meta' => $meta,
+        ]);
+    }
+
     private function isLeaseArchiveAction($action)
     {
         return strpos($action, 'Application Cancelled') === 0
@@ -211,6 +261,10 @@ class DocumentsController extends Controller
             $typeName = "Debt Assurity";
             $field_data = "";
             $field_doc = "rob_65_debt";
+        } elseif (MonthlyPopDocument::isMonthlyPop($fileType)) {
+            $typeName = MonthlyPopDocument::label($fileType);
+            $field_data = "";
+            $field_doc = "";
         } else {
             $typeName = strtoupper(str_replace("_", " ", str_replace("other", "other |", $fileType)));
             $field_data = $fileType;
@@ -637,7 +691,22 @@ class DocumentsController extends Controller
         $userUid = $request->userUid;
         $fileType = $request->fileType;
 
+        if ((int) Auth::user()->userRole === 0 && (int) Auth::id() !== (int) $userUid) {
+            abort(403, 'You are not authorised to upload documents for this student.');
+        }
+
         $this_year = Lookups::resolveYearForUser((int) $userUid, Session::get('year'));
+
+        if (MonthlyPopDocument::isMonthlyPop($fileType)) {
+            $monthlyPopRequest = UserFiles::where('userUid', $userUid)
+                ->where('fileId', $fileType)
+                ->where('year', $this_year)
+                ->first();
+
+            if (!$monthlyPopRequest) {
+                return response()->json(['message' => 'This Monthly POP upload has not been requested.'], 422);
+            }
+        }
 
         $fileUrlBack = "";
 
@@ -720,14 +789,32 @@ class DocumentsController extends Controller
                     $name = Auth::user()->userFirstName;
                 }
 
-                ActionList::create([
+                $actionData = [
                     "userUid" => $userUid,
                     "action" => $text,
                     "actionUserUid" => Auth::user()->id,
                     "actionUserDisplayName" => $name,
                     "actionUserRole" => Auth::user()->userRole,
                     "year" => $this_year,
-                ]);
+                ];
+
+                if (MonthlyPopDocument::isMonthlyPop($fileType)) {
+                    $period = MonthlyPopDocument::period($fileType);
+                    $bookingId = Booking::where('userId', $userUid)
+                        ->where('year', $this_year)
+                        ->value('id');
+                    $actionData['meta'] = [
+                        'type' => 'monthly_pop',
+                        'user_file_id' => $file->id,
+                        'period' => $period,
+                        'due_date' => $period ? $period . '-01' : null,
+                        'amount' => $bookingId
+                            ? BookingPayment::where('bookingId', $bookingId)->value('monthly_pop_amount')
+                            : null,
+                    ];
+                }
+
+                ActionList::create($actionData);
 
                 $this->update_user_status($userUid);
 
