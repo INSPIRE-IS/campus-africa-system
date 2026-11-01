@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MetricsFeatureController;
 use App\Http\Controllers\PricingInspectorController;
+use App\Http\Controllers\SupplementaryDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -166,6 +167,9 @@ Route::post('/update-profile', [ProfileController::class, 'update']);
 Route::post('/questionnaire/update', [ProfileController::class, 'update_questionnaire'])->name('questionnaire.update');
 
 Route::get('/my-documents', [HomeController::class, 'documents'])->name('my-documents');
+Route::post('/my-documents/additional', [SupplementaryDocumentController::class, 'store'])
+    ->middleware('auth')
+    ->name('supplementary-documents.store');
 
 Route::get('/leases', [HomeController::class, 'leases']);
 Route::get('/compatibility', [HomeController::class, 'compatibility']); //->name('compatibility');
@@ -350,6 +354,15 @@ Route::post("/update-bursar-details", [HomeController::class, 'update_bursar_det
 Route::get('/documents/view-document/{id}', [DocumentsController::class, 'view_document']);
 Route::get('/documents/archived-lease/action/{actionId}', [DocumentsController::class, 'view_archived_lease_for_action'])->middleware('auth');
 Route::get('/documents/monthly-pop/action/{actionId}', [DocumentsController::class, 'view_monthly_pop_for_action'])->middleware('auth');
+Route::get('/documents/supplementary/{documentId}/view', [SupplementaryDocumentController::class, 'view'])
+    ->middleware('auth')
+    ->name('supplementary-documents.view');
+Route::get('/documents/supplementary/{documentId}/file', [SupplementaryDocumentController::class, 'file'])
+    ->middleware('auth')
+    ->name('supplementary-documents.file');
+Route::post('/documents/supplementary/{documentId}/review', [SupplementaryDocumentController::class, 'review'])
+    ->middleware('auth')
+    ->name('supplementary-documents.review');
 // Route::get('/documents/edit-data/{id}/{fileId}', [DocumentsController::class, 'edit_data_form']);
 Route::post('/documents/save-data', [DocumentsController::class, 'edit_data_save']);
 Route::post('/move-in-form-admin', [DocumentsController::class, 'adminFileUpload']);

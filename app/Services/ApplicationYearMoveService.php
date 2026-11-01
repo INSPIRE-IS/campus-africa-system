@@ -12,6 +12,7 @@ use App\Models\Residence;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentQuestionAnswer;
 use App\Models\StudentsInfo;
+use App\Models\SupplementaryDocument;
 use App\Models\User;
 use App\Models\UserFiles;
 use App\Models\UserLeaseToken;
@@ -110,6 +111,7 @@ class ApplicationYearMoveService
         $targetStudents = collect();
         $targetBookings = collect();
         $targetFiles = collect();
+        $targetSupplementaryDocuments = collect();
         $targetLeaseTokens = collect();
         $targetAssurityTokens = collect();
 
@@ -117,15 +119,17 @@ class ApplicationYearMoveService
             $targetStudents = StudentsInfo::withTrashed()->where('userUid', $userId)->where('year', $toYear)->get();
             $targetBookings = Booking::withTrashed()->where('userId', $userId)->where('year', $toYear)->get();
             $targetFiles = UserFiles::withTrashed()->where('userUid', $userId)->where('year', $toYear)->get();
+            $targetSupplementaryDocuments = SupplementaryDocument::withTrashed()->where('user_uid', $userId)->where('year', $toYear)->get();
             $targetLeaseTokens = UserLeaseToken::withTrashed()->where('userUid', $userId)->where('year', $toYear)->get();
             $targetAssurityTokens = AssurityToken::withTrashed()->where('userUid', $userId)->where('year', $toYear)->get();
         }
 
-        if ($targetStudents->count() > 0 || $targetBookings->count() > 0 || $targetFiles->count() > 0) {
+        if ($targetStudents->count() > 0 || $targetBookings->count() > 0 || $targetFiles->count() > 0 || $targetSupplementaryDocuments->count() > 0) {
             $blockers[] = $this->message('target_not_empty', "Target year {$toYear} already has application records. This move will not merge or overwrite target-year data.", [
                 'students_info_ids' => $targetStudents->pluck('id')->values()->all(),
                 'booking_ids' => $targetBookings->pluck('id')->values()->all(),
                 'user_file_ids' => $targetFiles->pluck('id')->values()->all(),
+                'supplementary_document_ids' => $targetSupplementaryDocuments->pluck('id')->values()->all(),
             ]);
         }
 
@@ -159,6 +163,7 @@ class ApplicationYearMoveService
         }
 
         $sourceFiles = collect();
+        $sourceSupplementaryDocuments = collect();
         $sourceGeneratedFiles = collect();
         $sourceApprovedFiles = collect();
         $sourcePayments = collect();
@@ -171,6 +176,7 @@ class ApplicationYearMoveService
 
         if ($userId > 0 && $fromYear) {
             $sourceFiles = UserFiles::withTrashed()->where('userUid', $userId)->where('year', $fromYear)->orderBy('id')->get();
+            $sourceSupplementaryDocuments = SupplementaryDocument::withTrashed()->where('user_uid', $userId)->where('year', $fromYear)->orderBy('id')->get();
             $sourceGeneratedFiles = $sourceFiles->whereIn('fileId', $this->generatedFileIds)->values();
             $sourceApprovedFiles = $sourceFiles->filter(function ($file) {
                 return in_array($file->status, ['Approved', 'XApproved'], true);
@@ -293,11 +299,13 @@ class ApplicationYearMoveService
                     'students_info' => $targetStudents->count(),
                     'bookings_data' => $targetBookings->count(),
                     'user_files' => $targetFiles->count(),
+                    'supplementary_documents' => $targetSupplementaryDocuments->count(),
                     'lease_tokens' => $targetLeaseTokens->count(),
                     'assurity_tokens' => $targetAssurityTokens->count(),
                 ],
                 'counts' => [
                     'source_files' => $sourceFiles->count(),
+                    'supplementary_documents' => $sourceSupplementaryDocuments->count(),
                     'generated_files' => $sourceGeneratedFiles->count(),
                     'approved_files' => $sourceApprovedFiles->count(),
                     'booking_payments' => $sourcePayments->count(),
@@ -333,6 +341,7 @@ class ApplicationYearMoveService
             $targetStudent = StudentsInfo::withTrashed()->where('userUid', $userId)->where('year', $toYear)->lockForUpdate()->first();
             $targetBooking = Booking::withTrashed()->where('userId', $userId)->where('year', $toYear)->lockForUpdate()->first();
             $targetFilesCount = UserFiles::withTrashed()->where('userUid', $userId)->where('year', $toYear)->count();
+            $targetSupplementaryDocumentsCount = SupplementaryDocument::withTrashed()->where('user_uid', $userId)->where('year', $toYear)->count();
             $targetLeaseTokensCount = UserLeaseToken::withTrashed()->where('userUid', $userId)->where('year', $toYear)->count();
             $targetAssurityTokensCount = AssurityToken::withTrashed()->where('userUid', $userId)->where('year', $toYear)->count();
 
@@ -340,7 +349,7 @@ class ApplicationYearMoveService
                 throw new Exception('Source user/student/booking changed before the move could be applied. Run the preview again.');
             }
 
-            if ($targetStudent || $targetBooking || $targetFilesCount > 0 || $targetLeaseTokensCount > 0 || $targetAssurityTokensCount > 0) {
+            if ($targetStudent || $targetBooking || $targetFilesCount > 0 || $targetSupplementaryDocumentsCount > 0 || $targetLeaseTokensCount > 0 || $targetAssurityTokensCount > 0) {
                 throw new Exception('Target year is no longer empty. Run the preview again.');
             }
 
@@ -377,6 +386,11 @@ class ApplicationYearMoveService
 
             $filesMoved = UserFiles::withTrashed()
                 ->where('userUid', $userId)
+                ->where('year', $fromYear)
+                ->update(['year' => $toYear, 'updated_at' => now()]);
+
+            $supplementaryDocumentsMoved = SupplementaryDocument::withTrashed()
+                ->where('user_uid', $userId)
                 ->where('year', $fromYear)
                 ->update(['year' => $toYear, 'updated_at' => now()]);
 
@@ -436,6 +450,7 @@ class ApplicationYearMoveService
                     ],
                     'counts' => [
                         'user_files_moved' => $filesMoved,
+                        'supplementary_documents_moved' => $supplementaryDocumentsMoved,
                         'action_logs_moved' => $actionsMoved,
                         'lease_tokens_moved' => $leaseTokensMoved,
                         'assurity_tokens_moved' => $assurityTokensMoved,
@@ -468,6 +483,7 @@ class ApplicationYearMoveService
                     ],
                     'counts' => [
                         'user_files_moved' => $filesMoved,
+                        'supplementary_documents_moved' => $supplementaryDocumentsMoved,
                         'action_logs_moved' => $actionsMoved,
                         'lease_tokens_moved' => $leaseTokensMoved,
                         'assurity_tokens_moved' => $assurityTokensMoved,
