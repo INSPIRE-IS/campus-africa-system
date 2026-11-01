@@ -384,3 +384,10 @@ function btn_view_monthly_pop_ajax(actionId) {
 
     $("#myModal").load("/documents/monthly-pop/action/" + actionId);
 }
+
+function btn_view_supplementary_document_ajax(documentId) {
+    $("#myModal").html("<div class='modal-content'>Loading</div>");
+    $("#myModal").css("display", "block");
+
+    $("#myModal").load("/documents/supplementary/" + documentId + "/view");
+}

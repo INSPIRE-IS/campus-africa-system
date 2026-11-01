@@ -52,6 +52,7 @@ use App\Models\OnlinePayments;
 use App\Models\Question;
 use App\Models\StudentCompatibilityScore;
 use App\Models\StudentQuestionAnswer;
+use App\Models\SupplementaryDocument;
 use App\Services\ApplicationYearMoveService;
 use App\Support\MonthlyPopDocument;
 use Carbon\Carbon;
@@ -914,6 +915,10 @@ class HomeController extends Controller
             ->reject(function ($file) {
                 return MonthlyPopDocument::isMonthlyPop($file->fileId);
             });
+        $supplementaryDocuments = SupplementaryDocument::where('user_uid', $userId)
+            ->where('year', $this_year)
+            ->orderByDesc('created_at')
+            ->get();
         //dd($files);
         $booking = Booking::where('userId', $userId)->where('year', $this_year)->first();
         $paymentBooking = BookingPayment::where('bookingId', $booking->id)->first();
@@ -1136,7 +1141,7 @@ class HomeController extends Controller
         $previousBookings = Booking::where('userId', $userId)->where('year', '!=', $this_year)->orderBy('year', 'desc')->get();
 
         if ((($userData[0]['userInfo']['rob_60_cancelled'] == '0' || $userData[0]['userInfo']['rob_60_cancelled'] == null) && in_array($booking->property, $allowedResidences)) || $userData[0]['userInfo']['rob_60_cancelled'] == '1') {
-            return ["Info" => 1, "headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'tempLeaseApproved' => $tempLeaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail, "previousBookings" => $previousBookings, "paymentBooking" => $paymentBooking];
+            return ["Info" => 1, "headerTitle" => $name, "appProfile" => "true", "user" => $userData, "actions" => $actions, "completed" => $completed, "lookups" => $lookup, "title" => "Student Profile", "booking" => $booking, "residence" => $residence, "bookingPropData" => $bookingPropData, "files_to_download" => $files_to_download, "booking_paid" => $booking_paid, 'booking_waived' => $booking_waived, 'comments' => $comments, 'leaseApproved' => $leaseApproved, 'tempLeaseApproved' => $tempLeaseApproved, 'allowedResidences' => $allowedResidences, "mailVerificationEmail" => $mailVerificationEmail, "previousBookings" => $previousBookings, "paymentBooking" => $paymentBooking, 'supplementaryDocuments' => $supplementaryDocuments];
         } else {
             return ["Info" => 0, "headerTitle" => "Unable to View", "title" => "Unable to View", "buildingName" => $buildingName];
         }
@@ -1277,6 +1282,7 @@ class HomeController extends Controller
                     "mailVerificationEmail" => $returnInfo['mailVerificationEmail'],
                     "previousBookings" => $returnInfo['previousBookings'],
                     "paymentBooking" => $returnInfo['paymentBooking'],
+                    'supplementaryDocuments' => $returnInfo['supplementaryDocuments'],
                     "this_year" => $this_year,
                     'bookingNext' => $show_booking,
                     'bookingNextYear' => $bookingNextYear,
@@ -1351,6 +1357,7 @@ class HomeController extends Controller
             "mailVerificationEmail" => $returnInfo['mailVerificationEmail'],
             "previousBookings" => $returnInfo['previousBookings'],
             "paymentBooking" => $paymentBooking,
+            'supplementaryDocuments' => $returnInfo['supplementaryDocuments'],
             "this_year" => $this_year,
             'bookingNext' => false,
             'bookingNextYear' => null,
@@ -2017,6 +2024,28 @@ class HomeController extends Controller
             }
         }
 
+        if (in_array($filter, ['all', 'review', 'approved'], true)) {
+            $supplementaryQuery = SupplementaryDocument::where('user_uid', $userId)
+                ->where('year', $this_year);
+
+            if ($filter === 'review') {
+                $supplementaryQuery->where('status', 'Uploaded');
+            } elseif ($filter === 'approved') {
+                $supplementaryQuery->where('status', 'Approved');
+            }
+
+            foreach ($supplementaryQuery->orderByDesc('created_at')->get() as $document) {
+                $data[] = [
+                    'source' => 'supplementary',
+                    'field' => 'supplementary_' . $document->id,
+                    'label' => 'ADDITIONAL | ' . $document->title,
+                    'status' => $document->status,
+                    'created_at' => $document->created_at,
+                    'id' => $document->id,
+                ];
+            }
+        }
+
         return $data;
     }
 
@@ -2242,6 +2271,14 @@ class HomeController extends Controller
         });
 
         $user = StudentsInfo::where('userUid', Auth::user()->id)->where('year', $selected_year)->first();
+        $supplementaryDocuments = SupplementaryDocument::where('user_uid', Auth::id())
+            ->where('year', $selected_year)
+            ->orderByDesc('created_at')
+            ->get();
+        $supplementaryUploadEnabled = $user
+            && config('student_documents.additional_uploads_mode', 'disabled') === 'review'
+            && (bool) $user->additional_document_upload_enabled
+            && (int) $user->rob_60_cancelled !== 1;
 
         return view('user.documents', [
             "headerTitle" => "My Documents",
@@ -2249,7 +2286,9 @@ class HomeController extends Controller
             "active" => 1,
             "user" => $user,
             "selected_year" => $selected_year,
-            "years" => $years
+            "years" => $years,
+            "supplementaryDocuments" => $supplementaryDocuments,
+            "supplementaryUploadEnabled" => $supplementaryUploadEnabled,
         ]);
     }
 

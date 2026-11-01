@@ -5,6 +5,105 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
+    <style>
+        .additional-documents {
+            width: 89%;
+            margin: 36px 0 24px;
+            padding-top: 24px;
+            border-top: 1px solid #d7d7d7;
+        }
+
+        .additional-documents h2 {
+            margin: 0 0 18px;
+            font-size: 24px;
+        }
+
+        .additional-document-form {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) minmax(220px, 1fr) auto;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 24px;
+        }
+
+        .additional-document-field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .additional-document-field input {
+            width: 100%;
+            min-height: 42px;
+            padding: 8px 10px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .additional-document-submit {
+            min-height: 42px;
+            padding: 8px 18px;
+            border: 0;
+            border-radius: 4px;
+            background: #e65332;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .additional-document-message {
+            margin: 0 0 16px;
+            padding: 10px 12px;
+            border-left: 4px solid #3f8f47;
+            background: #f3f8f3;
+        }
+
+        .additional-document-message.error {
+            border-left-color: #c43d3d;
+            background: #fff3f3;
+            color: #8a2020;
+        }
+
+        .additional-document-table-wrap {
+            overflow-x: auto;
+        }
+
+        .additional-document-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .additional-document-table th,
+        .additional-document-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .additional-document-table th:last-child,
+        .additional-document-table td:last-child {
+            width: 90px;
+            text-align: right;
+        }
+
+        @media (max-width: 767px) {
+            .additional-documents {
+                width: 100%;
+            }
+
+            .additional-document-form {
+                grid-template-columns: 1fr;
+            }
+
+            .additional-document-submit {
+                width: 100%;
+            }
+        }
+    </style>
+
     <div class="container">
         <div style="display: flex; justify-content: flex-end; margin-bottom: 4px;margin-top: 12px;">
             <form method="GET" action="{{ route('my-documents') }}" style="display: flex; align-items: center;">
@@ -195,6 +294,77 @@
 
             </tbody>
         </table>
+
+        @if ($supplementaryUploadEnabled || $supplementaryDocuments->isNotEmpty())
+        <section class="additional-documents" aria-labelledby="additional-documents-heading">
+            <h2 id="additional-documents-heading">Additional Documents</h2>
+
+            @if (session('supplementary_success'))
+                <p class="additional-document-message">{{ session('supplementary_success') }}</p>
+            @endif
+
+            @if ($errors->any())
+                <div class="additional-document-message error">
+                    @foreach ($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
+
+            @if ($supplementaryUploadEnabled)
+                <form method="POST" action="{{ route('supplementary-documents.store') }}"
+                    enctype="multipart/form-data" class="additional-document-form">
+                    @csrf
+                    <div class="additional-document-field">
+                        <label for="additional_document_title">Document title</label>
+                        <input type="text" id="additional_document_title" name="title" maxlength="150"
+                            value="{{ old('title') }}" required>
+                    </div>
+                    <div class="additional-document-field">
+                        <label for="additional_document_file">Document</label>
+                        <input type="file" id="additional_document_file" name="file"
+                            accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" required>
+                    </div>
+                    <button type="submit" class="additional-document-submit">
+                        <i class="fas fa-upload" aria-hidden="true"></i> Upload
+                    </button>
+                </form>
+            @endif
+
+            @if ($supplementaryDocuments->isNotEmpty())
+                <div class="additional-document-table-wrap">
+                    <table class="additional-document-table">
+                        <thead>
+                            <tr>
+                                <th>Document</th>
+                                <th>Uploaded</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($supplementaryDocuments as $document)
+                                <tr>
+                                    <td>{{ $document->title }}</td>
+                                    <td>{{ $document->created_at->format('d|m|Y H:i') }}</td>
+                                    <td>
+                                        {{ $document->status }}
+                                        @if ($document->status === 'Rejected' && $document->rejection_reason)
+                                            <div><small>{{ $document->rejection_reason }}</small></div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('supplementary-documents.file', $document->id) }}"
+                                            target="_blank" rel="noopener">View</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </section>
+        @endif
         <br />
     </div>
 

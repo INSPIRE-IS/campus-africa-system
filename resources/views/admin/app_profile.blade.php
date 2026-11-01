@@ -41,6 +41,22 @@
             cursor: help;
         }
 
+        .action-document-view {
+            padding: 6px 10px;
+            border: 1px solid #464749;
+            border-radius: 7px;
+            background: #fff;
+            color: #464749;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .action-document-view:hover,
+        .action-document-view:focus {
+            background: #464749;
+            color: #fff;
+        }
+
         .paymentSummaryTableWrap {
             max-width: 100%;
             overflow-x: auto;
@@ -578,11 +594,11 @@
                                 <div class="information">
                                     <p>{{ $action->action }}</p>
                                     @if (\Illuminate\Support\Str::startsWith($action->action, ['Application Cancelled', 'Unallocated Bed']))
-                                        <button type="button"
+                                        <button type="button" class="action-document-view"
                                             onClick="btn_view_archived_lease_ajax({{ $action->id }})">View archived lease</button>
                                     @endif
                                     @if (($action->meta['type'] ?? null) === 'monthly_pop')
-                                        <button type="button"
+                                        <button type="button" class="action-document-view"
                                             onClick="btn_view_monthly_pop_ajax({{ $action->id }})">View Monthly POP</button>
                                     @endif
                                 </div>
@@ -1275,6 +1291,27 @@
 
                                 <?php $i++; ?>
                             @endif
+                        @endforeach
+
+                        @foreach ($supplementaryDocuments as $document)
+                            <div class="section">
+                                <div class="label">
+                                    ADDITIONAL | {{ strtoupper($document->title) }}
+                                </div>
+                                <div class="status" title="{{ $document->status }}">
+                                    @if ($document->status === 'Approved')
+                                        <div class="button approved"></div>
+                                    @elseif ($document->status === 'Uploaded')
+                                        <div class="button action"></div>
+                                    @else
+                                        <div class="button rejected"></div>
+                                    @endif
+                                </div>
+                                <div class="banner">
+                                    <button type="button"
+                                        onClick="btn_view_supplementary_document_ajax({{ $document->id }})">View Document</button>
+                                </div>
+                            </div>
                         @endforeach
 
                     </div>
@@ -4921,7 +4958,9 @@
                             }
 
                             var monthlyPopButton = item['meta'] && item['meta']['type'] === 'monthly_pop' ?
-                                '<button type="button" onClick="btn_view_monthly_pop_ajax(' + item['id'] + ')">View Monthly POP</button>' : '';
+                                '<button type="button" class="action-document-view" onClick="btn_view_monthly_pop_ajax(' + item['id'] + ')">View Monthly POP</button>' : '';
+                            var archivedLeaseButton = item['action'].startsWith('Application Cancelled') || item['action'].startsWith('Unallocated Bed') ?
+                                '<button type="button" class="action-document-view" onClick="btn_view_archived_lease_ajax(' + item['id'] + ')">View archived lease</button>' : '';
 
                             $(".actionItemList").append(
                                 '<div class="infoBlock">' +
@@ -4934,6 +4973,7 @@
                                 '</div>' +
                                 '<div class="information">' +
                                 '<p>' + item['action'] + '</p>' +
+                                archivedLeaseButton +
                                 monthlyPopButton +
                                 ' </div>' +
                                 '</div>'
@@ -4965,7 +5005,9 @@
                             }
 
                             var monthlyPopButton = item['meta'] && item['meta']['type'] === 'monthly_pop' ?
-                                '<button type="button" onClick="btn_view_monthly_pop_ajax(' + item['id'] + ')">View Monthly POP</button>' : '';
+                                '<button type="button" class="action-document-view" onClick="btn_view_monthly_pop_ajax(' + item['id'] + ')">View Monthly POP</button>' : '';
+                            var archivedLeaseButton = item['action'].startsWith('Application Cancelled') || item['action'].startsWith('Unallocated Bed') ?
+                                '<button type="button" class="action-document-view" onClick="btn_view_archived_lease_ajax(' + item['id'] + ')">View archived lease</button>' : '';
 
                             $(".actionItemList").append(
                                 '<div class="infoBlock">' +
@@ -4978,6 +5020,7 @@
                                 '</div>' +
                                 '<div class="information">' +
                                 '<p>' + item['action'] + '</p>' +
+                                archivedLeaseButton +
                                 monthlyPopButton +
                                 ' </div>' +
                                 '</div>'
@@ -5002,42 +5045,51 @@
                         data.forEach(myFunction);
 
                         function myFunction(item, index) {
-                            if (item['field'] == "studentCard") {
-                                var name = 'STUDENT CARD';
+                            var name = item['label'] || '';
+                            var button = '';
+                            var status = '';
+
+                            if (item['source'] === 'supplementary') {
+                                button = '<button type="button" onClick="btn_view_supplementary_document_ajax(' +
+                                    item['id'] + ')">View Document</button>';
+                            } else if (item['field'] == "studentCard") {
+                                name = 'STUDENT CARD';
                             } else if (item['field'] == "proof_of_payment") {
-                                var name = 'PROOF OF PAYMENT';
+                                name = 'PROOF OF PAYMENT';
                             } else if (item['field'] == "copyID") {
-                                var name = 'COPY OF ID DOCUMENT';
+                                name = 'COPY OF ID DOCUMENT';
                             } else if (item['field'] == "proofRegistration") {
-                                var name = 'PROOF OF REGISTRATION';
+                                name = 'PROOF OF REGISTRATION';
                             } else if (item['field'] == "bursaryApproval") {
-                                var name = 'NSFAS APPROVAL';
+                                name = 'NSFAS APPROVAL';
                             } else if (item['field'] == "bankStatement") {
-                                var name = 'BANK STATEMENT';
+                                name = 'BANK STATEMENT';
+                            } else {
+                                name = item['field'].replace(/_/g, ' ').toUpperCase();
                             }
 
-                            if (item['status'] == "Uploaded" || item['status'] == "Approved") {
-                                var button = '<button type="button" onClick="btn_view_document_ajax(' +
+                            if (item['source'] !== 'supplementary' &&
+                                (item['status'] == "Uploaded" || item['status'] == "Approved")) {
+                                button = '<button type="button" onClick="btn_view_document_ajax(' +
                                     item['id'] + ')">View Document</button>';
-
-                            } else {
-                                // var button = '<button type="button" class="error">Send reminder</button>';
                             }
 
                             if (item['status'] == "Uploaded") {
-                                var status = '<div class="button action"></div>';
+                                status = '<div class="button action"></div>';
                             } else if (item['status'] == "Approved") {
-                                var status = '<div class="button approved"></div>';
+                                status = '<div class="button approved"></div>';
                             } else if (item['status'] == "Rejected" || item['status'] == "") {
-                                var status = '<div class="button rejected"></div>';
+                                status = '<div class="button rejected"></div>';
                             } else if (item['status'] == "na") {
-                                var status = '<div class="button na"></div>';
+                                status = '<div class="button na"></div>';
                             }
+
+                            var safeName = $('<div>').text(name).html();
 
                             $("#documentsSectionDisplay").append(
                                 '<div class="section">' +
                                 '<div class="label">' +
-                                name +
+                                safeName +
                                 '</div>' +
                                 '<div class="banner">' +
                                 button +

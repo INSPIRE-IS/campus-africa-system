@@ -127,12 +127,14 @@ class StudentsInfo extends Model
         'marketing_consent',
         'marketing_consent_at',
         'marketing_consent_channel',
+        'additional_document_upload_enabled',
     ];
 
     protected $casts = [
         'last_activity_at' => 'datetime',
         'marketing_consent' => 'boolean',
         'marketing_consent_at' => 'datetime',
+        'additional_document_upload_enabled' => 'boolean',
     ];
 
     public function touchActivity(string $step)
