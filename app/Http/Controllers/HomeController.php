@@ -2656,8 +2656,52 @@ class HomeController extends Controller
 
     public function edit_admin(Request $request)
     {
+        if ((int) Auth::user()->role_manage_users !== 1 && (int) Auth::user()->role_super !== 1) {
+            abort(403, 'Unauthorized');
+        }
 
-        $oldUser = User::where('id', $request->userUid)->first();
+        $request->merge([
+            'email' => strtolower(trim((string) $request->email)),
+        ]);
+
+        $request->validate([
+            'userUid' => ['required', 'integer'],
+            'firstName' => ['required', 'string', 'max:100'],
+            'lastName' => ['nullable', 'string', 'max:100'],
+            'email' => [
+                'required',
+                'string',
+                'max:255',
+                'email:rfc',
+                function ($attribute, $value, $fail) use ($request) {
+                    $domain = strtolower(substr(strrchr($value, '@') ?: '', 1));
+
+                    if ($domain === '' || strpos($domain, '.') === false) {
+                        $fail('Please enter a complete email address, including the domain extension (for example, .co.za).');
+                        return;
+                    }
+
+                    if ($domain === 'campusafrica.co') {
+                        $fail('Please use the complete Campus Africa email domain: @campusafrica.co.za.');
+                        return;
+                    }
+
+                    $existingUser = User::withTrashed()
+                        ->where('id', '!=', (int) $request->userUid)
+                        ->where(function ($query) use ($value) {
+                            $query->where('email', $value)
+                                ->orWhere('userEmail', $value);
+                        })
+                        ->first();
+
+                    if ($existingUser) {
+                        $fail('Another user already exists with this email address. Please edit that account instead.');
+                    }
+                },
+            ],
+        ]);
+
+        $oldUser = User::where('id', $request->userUid)->firstOrFail();
 
         $regen = "0";
 
@@ -3920,6 +3964,9 @@ class HomeController extends Controller
 
     public function new_admin(Request $request)
     {
+        if ((int) Auth::user()->role_manage_users !== 1 && (int) Auth::user()->role_super !== 1) {
+            abort(403, 'Unauthorized');
+        }
 
         $propertyList = Residence::whereNull('status')->get();
 
@@ -3950,6 +3997,47 @@ class HomeController extends Controller
 
     public function add_admin(Request $request)
     {
+        if ((int) Auth::user()->role_manage_users !== 1 && (int) Auth::user()->role_super !== 1) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->merge([
+            'email' => strtolower(trim((string) $request->email)),
+        ]);
+
+        $request->validate([
+            'firstName' => ['required', 'string', 'max:100'],
+            'lastName' => ['nullable', 'string', 'max:100'],
+            'email' => [
+                'required',
+                'string',
+                'max:255',
+                'email:rfc',
+                function ($attribute, $value, $fail) {
+                    $domain = substr(strrchr($value, '@') ?: '', 1);
+                    if ($domain === '' || strpos($domain, '.') === false) {
+                        $fail('Please enter a complete email address, including the domain extension (for example, .co.za).');
+                        return;
+                    }
+
+                    if (strtolower($domain) === 'campusafrica.co') {
+                        $fail('Please use the complete Campus Africa email domain: @campusafrica.co.za.');
+                        return;
+                    }
+
+                    $existingUser = User::withTrashed()
+                        ->where(function ($query) use ($value) {
+                            $query->where('email', $value)
+                                ->orWhere('userEmail', $value);
+                        })
+                        ->first();
+
+                    if ($existingUser) {
+                        $fail('A user already exists with this email address. Please use Edit User if you want to update that account.');
+                    }
+                },
+            ],
+        ]);
 
         $password = $this->generateRandomString();
 
@@ -3963,7 +4051,10 @@ class HomeController extends Controller
 
         //
 
-        $newUser = User::create([
+        DB::beginTransaction();
+
+        try {
+            $newUser = User::create([
             "name" => $request->firstName,
             "userFirstName" => ucwords(strtolower($request->firstName)),
             "userLastname" => ucwords(strtolower($request->lastName)),
@@ -4019,45 +4110,92 @@ class HomeController extends Controller
             "role_all_apps_report" => $request->role_all_apps_report !== '1' ? 0 : 1,
             // Checkbox: when unchecked it is omitted from the request -> treat as false (0)
             "role_allow_generate_invoice" => $request->role_allow_generate_invoice !== '1' ? 0 : 1,
-        ]);
+            ]);
 
-        $this_year = Lookups::where('group_id', '4')->where('is_active_year', '1')->first();
-        $this_year = $this_year->lookup_name;
-        ActionList::create([
-            "userUid" => $newUser->id,
-            "action" => "System User Created",
-            "actionUserUid" => Auth::user()->id,
-            "actionUserDisplayName" => Auth::user()->userFirstName,
-            "actionUserRole" => Auth::user()->userRole,
-            "year" => $this_year,
-        ]);
+            $this_year = Lookups::activeYearValue();
+            ActionList::create([
+                "userUid" => $newUser->id,
+                "action" => "System User Created",
+                "actionUserUid" => Auth::user()->id,
+                "actionUserDisplayName" => Auth::user()->userFirstName,
+                "actionUserRole" => Auth::user()->userRole,
+                "year" => $this_year,
+            ]);
 
-        $allAccess = explode(",", $request->propertyAccess);
+            $allAccess = explode(",", (string) $request->propertyAccess);
 
-        foreach ($allAccess as $access) {
-            if ($access !== "") {
-                PropertyPermission::create(['userUid' => $newUser->id, "property" => $access]);
+            foreach ($allAccess as $access) {
+                if ($access !== "") {
+                    PropertyPermission::create(['userUid' => $newUser->id, "property" => $access]);
+                }
             }
+
+            $userToken = UserResetToken::create(["userUid" => $newUser->id, "userToken" => $this->generateRandomLongString()]);
+
+            DB::commit();
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+
+            if ((int) ($e->errorInfo[1] ?? 0) === 1062) {
+                return redirect()->back()->withErrors([
+                    'email' => 'A user already exists with this email address. Please use Edit User if you want to update that account.',
+                ])->withInput();
+            }
+
+            throw $e;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
         }
-
-        // if($request->email_details == "1"){
-
-        $userToken = UserResetToken::create(["userUid" => $newUser->id, "userToken" => $this->generateRandomLongString()]);
 
         $data['name'] = $request->firstName;
         $data['email'] = $request->email;
         $data['userToken'] = $userToken->userToken;
         $data['type'] = "registered";
 
-        Mail::send('email.system_user_application', $data, function ($message) use ($data) {
-            $message->to($data['email'], $data['name'])->subject('Campus Africa User Registered');
-            $message->from('noreply@campusafrica.co.za', 'Campus Africa');
-        });
+        try {
+            Mail::send('email.system_user_application', $data, function ($message) use ($data) {
+                $message->to($data['email'], $data['name'])->subject('Campus Africa User Registered');
+                $message->from('noreply@campusafrica.co.za', 'Campus Africa');
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            Log::error('System user welcome email failed', [
+                'user_id' => $newUser->id,
+                'exception' => get_class($e),
+                'error' => $e->getMessage(),
+            ]);
+
+            try {
+                ActionList::create([
+                    "userUid" => $newUser->id,
+                    "action" => "System User Welcome Email Failed",
+                    "actionUserUid" => Auth::user()->id,
+                    "actionUserDisplayName" => Auth::user()->userFirstName,
+                    "actionUserRole" => Auth::user()->userRole,
+                    "year" => $this_year,
+                    "meta" => [
+                        'exception' => get_class($e),
+                        'message' => $e->getMessage(),
+                    ],
+                ]);
+            } catch (\Throwable $auditException) {
+                Log::error('Unable to audit system user welcome email failure', [
+                    'user_id' => $newUser->id,
+                    'error' => $auditException->getMessage(),
+                ]);
+            }
+
+            return redirect()->route('users')->with(
+                'warning',
+                'The system user was created, but the welcome email could not be sent. Check the email address before sending a password reset.'
+            );
+        }
 
         // }
 
 
-        return redirect()->route('users');
+        return redirect()->route('users')->with('success', 'System user created and the welcome email was sent.');
     }
 
     public function delete_lookup(Request $request)

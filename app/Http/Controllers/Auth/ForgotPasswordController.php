@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
@@ -20,20 +22,32 @@ class ForgotPasswordController extends Controller
     |
     */
 
-    use SendsPasswordResetEmails {
-        sendResetLinkEmail as protected traitSendResetLinkEmail;
-    }
+    use SendsPasswordResetEmails;
 
     public function sendResetLinkEmail(Request $request)
     {
+        $request->merge([
+            'email' => strtolower(trim((string) $request->email)),
+        ]);
+
         $request->validate([
-            'email' => 'required|email',
+            'email' => [
+                'required',
+                'string',
+                'max:255',
+                'email:rfc',
+                function ($attribute, $value, $fail) {
+                    $domain = substr(strrchr($value, '@') ?: '', 1);
+                    if ($domain === '' || strpos($domain, '.') === false) {
+                        $fail('Please enter a complete email address.');
+                    }
+                },
+            ],
         ]);
 
         $email = strtolower(trim((string) $request->email));
         $user = User::withTrashed()
             ->where('email', $email)
-            ->orWhere('userEmail', $email)
             ->first();
 
         if ($user && (int) ($user->userRole ?? 0) === 0 && !empty($user->banned_at)) {
@@ -42,6 +56,47 @@ class ForgotPasswordController extends Controller
             ])->withInput($request->only('email'));
         }
 
-        return $this->traitSendResetLinkEmail($request);
+        $genericStatus = 'If an account exists for this email address, you will receive a password reset email.';
+
+        if (!$user || $user->trashed()) {
+            return redirect()->back()->with('status', $genericStatus);
+        }
+
+        $storedEmailValidator = validator([
+            'email' => $user->email,
+        ], [
+            'email' => [
+                'required',
+                'string',
+                'max:255',
+                'email:rfc',
+                function ($attribute, $value, $fail) {
+                    $domain = substr(strrchr($value, '@') ?: '', 1);
+                    if ($domain === '' || strpos($domain, '.') === false) {
+                        $fail('The stored email address is incomplete.');
+                    }
+                },
+            ],
+        ]);
+
+        if ($storedEmailValidator->fails()) {
+            $exception = new \UnexpectedValueException("Password reset blocked because users.email is invalid for user {$user->id}.");
+            report($exception);
+
+            return redirect()->back()->with('status', $genericStatus);
+        }
+
+        try {
+            Password::sendResetLink(['email' => $user->email]);
+        } catch (\Throwable $e) {
+            report($e);
+            Log::error('Password reset email failed', [
+                'user_id' => $user->id,
+                'exception' => get_class($e),
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        return redirect()->back()->with('status', $genericStatus);
     }
 }

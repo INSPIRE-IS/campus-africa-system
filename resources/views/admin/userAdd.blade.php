@@ -3,6 +3,13 @@
 @section('content')
 
 <div class="container form-card">
+@if ($errors->any())
+    <div class="alert alert-danger" role="alert">
+        @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
+        @endforeach
+    </div>
+@endif
 <form action="/add-admin" method="post" autocomplete="off">
     @csrf
         <br/>
@@ -10,13 +17,13 @@
 
         <div class="form-field">
             <label>First Name </label>
-            <input type="text" name="firstName" id="firstName" required>
+            <input type="text" name="firstName" id="firstName" value="{{ old('firstName') }}" required>
             <input type="hidden" name="userUid" id="userUid" required >
         </div>
 
         <div class="form-field">
             <label>Last Name</label>
-            <input type="text" name="lastName" id="lastName"  >
+            <input type="text" name="lastName" id="lastName" value="{{ old('lastName') }}">
         </div>
 
         <!-- <div class="form-field">
@@ -46,12 +53,12 @@
 
         <div class="form-field">
             <label>Email Address *</label>
-            <input type="email" name="email" id="email" required  >
+            <input type="email" name="email" id="email" value="{{ old('email') }}" pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" title="Enter a complete email address, including the domain extension." required>
         </div>
 
         <div class="form-field">
             <label>User Role Name</label>
-            <input type="text" name="user_role_name" id="user_role_name"  >
+            <input type="text" name="user_role_name" id="user_role_name" value="{{ old('user_role_name') }}">
         </div>
 
         <div class="form-field">
@@ -298,7 +305,7 @@
 
         <input type="hidden" name="propertyAccess" id="propertyAccess"/>
 
-        <input type="submit" value="Update" class="profileSubmit" style="opacity:1"/>
+        <input type="submit" value="Add User" class="profileSubmit" style="opacity:1"/>
     </form>
 </div>
 

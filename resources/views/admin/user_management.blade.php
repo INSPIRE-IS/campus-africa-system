@@ -8,6 +8,12 @@
         <br />
         <h1>System Users</h1>
         <br />
+        @if (session('success'))
+            <div class="alert alert-success" role="alert">{{ session('success') }}</div>
+        @endif
+        @if (session('warning'))
+            <div class="alert alert-warning" role="alert">{{ session('warning') }}</div>
+        @endif
         <a href="/new/admin"><button type="button" class="inactiveBtn">Add New System User</button></a>
         <br /><br />
 
