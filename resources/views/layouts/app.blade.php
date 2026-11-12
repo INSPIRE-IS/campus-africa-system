@@ -134,8 +134,12 @@
                 <img src="/images/footer/Visa.png" alt="Facebook" height="43" style="margin: 5px;">
                 <img src="/images/footer/Verified-by-Visa.png" alt="Facebook" height="43" style="margin: 5px;">
             </div>
-            <div class="flex" style="align-items: center; justify-content: center">
-                <a href="/terms"><small class="footerRights" style="font-size:14px;">Terms and Conditions</small></a>
+            <div style="text-align: center;">
+                <small class="footerRights" style="font-size:14px;">
+                    <a href="/terms" style="color: inherit;">Terms and Conditions</a>
+                    <span style="margin: 0 8px;">|</span>
+                    <a href="{{ route('privacy-policy') }}" style="color: inherit;">Privacy Policy</a>
+                </small>
             </div>
             <p class="footerRights thisRight">Campus Africa - All Right Reserved</p>
         </div>
