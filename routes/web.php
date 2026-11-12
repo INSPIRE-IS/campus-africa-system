@@ -36,6 +36,9 @@ use App\Http\Controllers\SupplementaryDocumentController;
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/terms', [LoginController::class, 'terms']);
+Route::get('/privacy-policy/{policy?}', [LoginController::class, 'privacyPolicy'])
+    ->where('policy', 'campus-africa|doomscroller')
+    ->name('privacy-policy');
 
 // Route::get('/', [LoginController::class, 'login']);
 // Route::post('/login', [LoginController::class, 'login']);

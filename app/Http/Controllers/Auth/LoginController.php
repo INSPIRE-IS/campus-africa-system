@@ -172,4 +172,12 @@ class LoginController extends Controller
     {
         return view('terms', ["headerTitle" => "Terms And Conditions"]);
     }
+
+    public function privacyPolicy($policy = 'campus-africa')
+    {
+        return view('privacy-policy', [
+            'headerTitle' => 'Privacy Policy',
+            'policy' => $policy,
+        ]);
+    }
 }
