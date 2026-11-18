@@ -208,7 +208,10 @@
         <!-- <div class="footerClearfix"></div> -->
         <div class="container" style="margin-top:500px;">
             <br />
-            <p class="footerRights">Campus Africa - All Right Reserved</p>
+            <p class="footerRights"
+                style="height:40px; min-height:40px; margin:0 auto !important; pointer-events:none;">
+                Campus Africa - All Right Reserved
+            </p>
         </div>
     </footer>
 
