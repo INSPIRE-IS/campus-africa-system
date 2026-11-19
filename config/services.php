@@ -33,6 +33,12 @@ return [
         'v3'    => [
             'key'   => env('SENDINBLUE_API')
         ]
-    ]
+    ],
+
+    'wordpress' => [
+        'url' => env('WORDPRESS_API_URL', 'https://campusafrica.co.za/wp-json/wp/v2'),
+        'username' => env('WORDPRESS_API_USERNAME'),
+        'application_password' => env('WORDPRESS_API_PASSWORD'),
+    ],
 
 ];
