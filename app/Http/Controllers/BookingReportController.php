@@ -204,6 +204,18 @@ class BookingReportController extends Controller
 
     public function room_activation(Request $request)
     {
+        $wordpressUrl = rtrim((string) config('services.wordpress.url'), '/');
+        $wordpressUsername = config('services.wordpress.username');
+        $wordpressPassword = config('services.wordpress.application_password');
+
+        if (!$wordpressUrl || !$wordpressUsername || !$wordpressPassword) {
+            Log::error('WordPress room activation failed: API credentials are not configured.');
+
+            return response()->json([
+                'message' => 'WordPress room activation is not configured.',
+            ], 500);
+        }
+
         $roomAvailableText = $request->roomAvailableText;
         $roomID = $request->roomID;
         $roomMap = $request->roomMap;
@@ -236,15 +248,12 @@ class BookingReportController extends Controller
 
         $response = "";
 
-        //cm9nZXI6eXdxcENoSVpXUmNUV0o4YVFmNXc2T0Z2
-        //cm9nZXI6OHlRVVNRUTFHZVJmaHlsMXV1QWZNTHdM
-
         if ($roomActive === 0) {
 
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://campusafrica.co.za/wp-json/wp/v2/rooms/' . $roomMap,
+                CURLOPT_URL => $wordpressUrl . '/rooms/' . $roomMap,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -258,7 +267,7 @@ class BookingReportController extends Controller
                     }
                 }',
                 CURLOPT_HTTPHEADER => array(
-                    'Authorization: Basic cm9nZXI6eXdxcENoSVpXUmNUV0o4YVFmNXc2T0Z2',
+                    'Authorization: Basic ' . base64_encode($wordpressUsername . ':' . $wordpressPassword),
                     'Content-Type: application/json',
                     'Cookie: wordpress_test_cookie=WP%20Cookie%20check'
                 ),
