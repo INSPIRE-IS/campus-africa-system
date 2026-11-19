@@ -104,7 +104,7 @@
                                             &#128308; &nbsp;&nbsp; No
                                         @endif
                                     </span>
-                                    <?php if(Auth::user()->role_toggle_online_booking == '1'){?>
+                                    <?php if(Auth::user()->role_toggle_online_booking == '1' && config('services.wordpress.writes_enabled')){?>
                                     <button type="button" id="{{ $room['room_id'] }}_button"
                                         onClick="changeRoom('{{ $room['room_map_id'] }}', '{{ $room['room_id'] }}')"
                                         class='detailsChange' style="margin:0px;">Change</button>
@@ -223,6 +223,15 @@
                                 'Room Type Updated',
                                 'success'
                             )
+                        },
+                        error: function(xhr) {
+                            $("#" + roomID + "_button").empty().append('Change');
+                            Swal.fire(
+                                'Update failed',
+                                xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message :
+                                'The room type could not be updated.',
+                                'error'
+                            );
                         },
                     });
                 }

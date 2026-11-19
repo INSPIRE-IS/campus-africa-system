@@ -13,6 +13,7 @@ use App\Models\PropertyPermission;
 use App\Models\StudentsInfo;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class BookingReportController extends Controller
@@ -204,6 +205,20 @@ class BookingReportController extends Controller
 
     public function room_activation(Request $request)
     {
+        if (Auth::user()->role_toggle_online_booking != '1') {
+            return response()->json([
+                'message' => 'You do not have permission to change online booking availability.',
+            ], 403);
+        }
+
+        if (!config('services.wordpress.writes_enabled')) {
+            Log::warning('WordPress room activation blocked: API writes are disabled for this environment.');
+
+            return response()->json([
+                'message' => 'WordPress room activation is disabled for this environment.',
+            ], 403);
+        }
+
         $wordpressUrl = rtrim((string) config('services.wordpress.url'), '/');
         $wordpressUsername = config('services.wordpress.username');
         $wordpressPassword = config('services.wordpress.application_password');
@@ -216,26 +231,45 @@ class BookingReportController extends Controller
             ], 500);
         }
 
-        $roomAvailableText = $request->roomAvailableText;
-        $roomID = $request->roomID;
-        $roomMap = $request->roomMap;
-        $setting = $request->roomAvailableText == "Yes" ? 1 : 0;
+        $request->validate([
+            'roomAvailableText' => 'required|in:Yes,No',
+            'roomID' => 'required|integer|exists:room_types,id',
+        ]);
 
-        RoomTypes::where('id', $roomID)->update(["online" => $roomAvailableText == "Yes" ? '0' : '1']);
+        $selectedRoom = RoomTypes::findOrFail($request->roomID);
+        $roomMap = (string) $selectedRoom->room_map_slug;
+        $currentOnline = $selectedRoom->online == '1';
+        $expectedCurrentText = $currentOnline ? 'Yes' : 'No';
+
+        if ($request->roomAvailableText !== $expectedCurrentText) {
+            return response()->json([
+                'message' => 'Room availability changed after this page loaded. Refresh and try again.',
+            ], 409);
+        }
+
+        if ($roomMap === '') {
+            return response()->json([
+                'message' => 'This room type does not have a WordPress room mapping.',
+            ], 422);
+        }
+
+        $setting = $currentOnline ? 1 : 0;
+        $newOnline = $currentOnline ? '0' : '1';
 
         $allRooms = RoomTypes::where('name', '!=', 'Building Manager')->get();
 
         $roomActive = 0;
         $roomCount = 0;
-        foreach ($allRooms as $room) {
-            if ($room->room_map_slug == $roomMap) {
+        foreach ($allRooms as $candidateRoom) {
+            if ($candidateRoom->room_map_slug == $roomMap) {
                 $roomCount++;
+                $onlineAfterUpdate = $candidateRoom->id == $request->roomID ? $newOnline : $candidateRoom->online;
                 if ($setting == 1) {
-                    if ($room->online == '1') {
+                    if ($onlineAfterUpdate == '1') {
                         $roomActive++;
                     }
                 } else {
-                    if ($room->online == '0') {
+                    if ($onlineAfterUpdate == '0') {
                         $roomActive++;
                     }
                 }
@@ -246,37 +280,81 @@ class BookingReportController extends Controller
             $roomActive = 0;
         }
 
-        $response = "";
+        $wordpressUpdated = false;
 
         if ($roomActive === 0) {
+            try {
+                $wordpressResponse = Http::withBasicAuth($wordpressUsername, $wordpressPassword)
+                    ->acceptJson()
+                    ->timeout(30)
+                    ->post($wordpressUrl . '/rooms/' . $roomMap, [
+                        'acf' => [
+                            'offline' => $setting,
+                        ],
+                    ]);
 
-            $curl = curl_init();
+                $responseData = $wordpressResponse->json();
+                $returnedRoomId = data_get($responseData, 'id');
+                $returnedOffline = data_get($responseData, 'acf.offline');
+                $responseMatches = (string) $returnedRoomId === $roomMap
+                    && (bool) $returnedOffline === (bool) $setting;
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $wordpressUrl . '/rooms/' . $roomMap,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => '{
-                    "acf": {
-                        "offline": ' . $setting . '
-                    }
-                }',
-                CURLOPT_HTTPHEADER => array(
-                    'Authorization: Basic ' . base64_encode($wordpressUsername . ':' . $wordpressPassword),
-                    'Content-Type: application/json',
-                    'Cookie: wordpress_test_cookie=WP%20Cookie%20check'
-                ),
-            ));
+                Log::info('WordPress room activation response.', [
+                    'local_room_type_id' => $selectedRoom->id,
+                    'wordpress_room_id' => $roomMap,
+                    'requested_offline' => (bool) $setting,
+                    'http_status' => $wordpressResponse->status(),
+                    'returned_room_id' => $returnedRoomId,
+                    'returned_offline' => $returnedOffline,
+                    'response_matches' => $responseMatches,
+                    'actor_id' => Auth::id(),
+                ]);
 
-            $response = curl_exec($curl);
-            curl_close($curl);
+                if (!$wordpressResponse->successful() || !$responseMatches) {
+                    Log::error('WordPress room activation was not applied.', [
+                        'local_room_type_id' => $selectedRoom->id,
+                        'wordpress_room_id' => $roomMap,
+                        'http_status' => $wordpressResponse->status(),
+                        'wordpress_error_code' => data_get($responseData, 'code'),
+                        'wordpress_error_message' => data_get($responseData, 'message'),
+                        'actor_id' => Auth::id(),
+                    ]);
+
+                    return response()->json([
+                        'message' => 'WordPress did not confirm the room availability update. No local changes were made.',
+                    ], 502);
+                }
+
+                $wordpressUpdated = true;
+            } catch (\Throwable $exception) {
+                Log::error('WordPress room activation request failed.', [
+                    'local_room_type_id' => $selectedRoom->id,
+                    'wordpress_room_id' => $roomMap,
+                    'error' => $exception->getMessage(),
+                    'actor_id' => Auth::id(),
+                ]);
+
+                return response()->json([
+                    'message' => 'WordPress could not be reached. No local changes were made.',
+                ], 502);
+            }
         }
 
-        return $response;
+        $selectedRoom->online = $newOnline;
+        $selectedRoom->save();
+
+        Log::info('Local room availability updated.', [
+            'local_room_type_id' => $selectedRoom->id,
+            'wordpress_room_id' => $roomMap,
+            'online' => (bool) $newOnline,
+            'wordpress_updated' => $wordpressUpdated,
+            'actor_id' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'message' => 'Room type updated.',
+            'online' => (bool) $newOnline,
+            'wordpress_updated' => $wordpressUpdated,
+        ]);
     }
 }
