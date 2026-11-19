@@ -69,7 +69,7 @@ class ManageBlackFridayBookingFeeCommandTest extends TestCase
         $this->assertCount(2, $state['events']);
         $this->assertSame(250, $wordpress->residenceFee);
         $this->assertSame('', $wordpress->blankRoomOverride);
-        $this->assertSame(250, $wordpress->overrideRoomFee);
+        $this->assertSame('250', $wordpress->overrideRoomFee);
 
         $this->assertSame(0, Artisan::call('wordpress:black-friday-booking-fee', ['action' => 'activate']));
 
@@ -130,7 +130,7 @@ class ManageBlackFridayBookingFeeCommandTest extends TestCase
 
         Carbon::setTestNow(Carbon::parse('2026-11-19 10:01:00', 'Africa/Johannesburg'));
         $this->assertSame(0, Artisan::call('wordpress:black-friday-booking-fee', ['action' => 'reconcile-test']));
-        $this->assertSame(250, $wordpress->testRoomOverride);
+        $this->assertSame('250', $wordpress->testRoomOverride);
 
         Carbon::setTestNow(Carbon::parse('2026-11-19 10:04:00', 'Africa/Johannesburg'));
         $this->assertSame(0, Artisan::call('wordpress:black-friday-booking-fee', ['action' => 'reconcile-test']));
@@ -166,16 +166,19 @@ class ManageBlackFridayBookingFeeCommandTest extends TestCase
 
             $data = $request->data();
             if ($request->method() === 'POST' && strpos($request->url(), '/residences/1592') !== false) {
+                $this->assertIsInt($data['acf']['booking_fee']);
                 $wordpress->residenceFee = $data['acf']['booking_fee'];
                 return Http::response($this->residence($wordpress->residenceFee), 200);
             }
 
             if ($request->method() === 'POST' && strpos($request->url(), '/rooms/2002') !== false) {
+                $this->assertIsString($data['acf']['booking_fee_override']);
                 $wordpress->overrideRoomFee = $data['acf']['booking_fee_override'];
                 return Http::response($this->rooms($wordpress)[1], 200);
             }
 
             if ($request->method() === 'POST' && strpos($request->url(), '/rooms/4245') !== false) {
+                $this->assertIsString($data['acf']['booking_fee_override']);
                 $wordpress->testRoomOverride = $data['acf']['booking_fee_override'];
                 return Http::response($this->testRoom($wordpress->testRoomOverride), 200);
             }

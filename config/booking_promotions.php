@@ -10,7 +10,7 @@ return [
         'booking_fee' => 250,
         'state_path' => 'wordpress-promotions/black-friday-2026.json',
         'test_state_path' => 'wordpress-promotions/black-friday-2026-room-test.json',
-        'test_room_id' => 4245,
+        'test_room_id' => 1842,
         'residences' => [
             1592 => '49-jorissen',
             1623 => '80-jorissen',

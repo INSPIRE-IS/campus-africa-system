@@ -557,9 +557,14 @@ class WordPressBookingFeePromotionService
 
     private function writeField(array $target, $value)
     {
+        // WordPress exposes room overrides as string|null, while residence fees are numeric.
+        $requestValue = $target['field'] === 'booking_fee_override' && $value !== null
+            ? (string) $value
+            : $value;
+
         $response = $this->request()->post(
             $this->wordpressUrl . '/' . $target['post_type'] . '/' . $target['id'],
-            ['acf' => [$target['field'] => $value]]
+            ['acf' => [$target['field'] => $requestValue]]
         );
 
         $this->assertSuccessful($response, "update {$target['post_type']} {$target['id']}");
