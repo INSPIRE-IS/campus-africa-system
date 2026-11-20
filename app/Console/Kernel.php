@@ -34,6 +34,15 @@ class Kernel extends ConsoleKernel
             ->dailyAt('01:10');
         $schedule->command('booking:send-monthly-pop')
             ->dailyAt('06:00');
+
+        if (config('booking_promotions.black_friday_2026.enabled')) {
+            $schedule->command('wordpress:black-friday-booking-fee reconcile')
+                ->everyMinute()
+                ->withoutOverlapping(10);
+            $schedule->command('wordpress:black-friday-booking-fee reconcile-test')
+                ->everyMinute()
+                ->withoutOverlapping(10);
+        }
         // $schedule->command('inspire')->hourly();
         // $schedule->call(function(){
         //     info('Called every minute');

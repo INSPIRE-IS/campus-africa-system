@@ -39,6 +39,7 @@ return [
         'url' => env('WORDPRESS_API_URL', 'https://campusafrica.co.za/wp-json/wp/v2'),
         'username' => env('WORDPRESS_API_USERNAME'),
         'application_password' => env('WORDPRESS_API_PASSWORD'),
+        'writes_enabled' => env('WORDPRESS_API_WRITES_ENABLED', false),
     ],
 
 ];
