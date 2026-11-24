@@ -21,6 +21,7 @@ use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MetricsFeatureController;
 use App\Http\Controllers\PricingInspectorController;
 use App\Http\Controllers\SupplementaryDocumentController;
+use App\Http\Controllers\BedsReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -201,6 +202,8 @@ Route::post("/restore/booking", [HomeController::class, 'restore_booking']);
 
 Route::get('/reports', [HomeController::class, 'reports']);
 Route::post('/download-report', [HomeController::class, 'download_report']);
+Route::get('/beds-report', [BedsReportController::class, 'show'])->name('beds-report.show')->middleware('throttle:60,1');
+Route::get('/beds-report/download', [BedsReportController::class, 'download'])->name('beds-report.download')->middleware('throttle:60,1');
 
 Route::get('/metrics-features', [MetricsFeatureController::class, 'index']);
 Route::post('/metrics-features/enable', [MetricsFeatureController::class, 'enable']);
