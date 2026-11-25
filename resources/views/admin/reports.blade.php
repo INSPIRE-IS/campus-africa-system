@@ -673,7 +673,7 @@
                 },
                 success: function(data) {
                     $("#downloadRooms").empty().append('Download Beds')
-                    alert(data.message || 'A link will be emailed to you once the beds report has been generated.');
+                    alert(data.message || 'The beds report will be emailed once it has been generated.');
                 },
                 error: function(data) {
                     $("#downloadRooms").empty().append('Download Beds')

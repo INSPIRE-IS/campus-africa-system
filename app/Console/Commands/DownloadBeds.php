@@ -9,16 +9,18 @@ use App\Models\PropertyPermission;
 use App\Models\Residence;
 use App\Models\RoomTypes;
 use App\Models\StudentsInfo;
+use App\Services\BedsReportDeliveryService;
+use App\Support\BedsReportFilename;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class DownloadBeds extends Command
 {
     protected $signature = 'download:beds {year} {property} {user_id} {email}';
 
-    protected $description = 'Generate Building Manager bed allocation XLSX and email a download link';
+    protected $description = 'Generate Building Manager bed allocation XLSX and email it using size-based delivery';
 
     public function handle()
     {
@@ -148,25 +150,24 @@ class DownloadBeds extends Command
             : Residence::where('id', $propertyId)->pluck('residence')->first();
 
         $timestamp = now()->format('Ymd_His');
-        $safeProperty = Str::of($propertyName ?: 'Property')->replace([' ', '/', '\\'], '_');
-        $fileName = "Bed_Allocations_Export_{$year}_{$safeProperty}_{$timestamp}.xlsx";
-        $filePath = storage_path('app/public/' . $fileName);
+        $fileName = BedsReportFilename::make($year, $propertyName, $timestamp);
+        $storageDirectory = BedsReportDeliveryService::STORAGE_DIRECTORY;
+        Storage::disk('local')->makeDirectory($storageDirectory);
+        $filePath = Storage::disk('local')->path($storageDirectory . '/' . $fileName);
 
         $xlsx = new \Shuchkin\SimpleXLSXGen();
         $xlsx->addSheet($beds, 'BED CODES');
         $xlsx->addSheet($waitlist, 'WAITLIST');
         $xlsx->saveAs($filePath);
 
-        if (file_exists($filePath)) {
-            Mail::raw("Beds report created - https://apply.campusafrica.co.za/storage/{$fileName}", function ($message) use ($email) {
-                $message->to($email)->subject('Beds report download');
-            });
-
-            return 0;
+        if (!is_file($filePath) || !is_readable($filePath)) {
+            $this->emailFailure($email, 'Download failed: unable to create the beds report file.');
+            return 1;
         }
 
-        $this->emailFailure($email, 'Download failed: unable to create the beds report file.');
-        return 1;
+        app(BedsReportDeliveryService::class)->emailReport($filePath, $fileName, $email);
+
+        return 0;
     }
 
     private function bedHeader(): array
