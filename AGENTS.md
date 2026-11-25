@@ -96,7 +96,7 @@ $ACTIVATE_RELEASE()
 $RESTART_QUEUES()
 ```
 
-This shows the release steps, not a replacement for site-specific settings. Use Forge's queue restart after activation rather than a separate pre-activation `php artisan queue:restart`. For branches containing the React server-admin checker, add the separate Vite build documented in `resources/server-admin/README.md` after `yarn production`.
+This shows the release steps, not a replacement for site-specific settings. Use Forge's queue restart after activation rather than a separate pre-activation `php artisan queue:restart`. On branches with the React server-admin checker, `yarn production` also builds its Vite assets. No separate Forge build step is needed. See `resources/server-admin/README.md` for Node requirements.
 
 ## Notes Management
 - Keep this file stable: project setup, session checklist, safety rules, and pointers only.

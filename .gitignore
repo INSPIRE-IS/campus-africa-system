@@ -24,5 +24,3 @@ composer.lock
 *.xlsx
 note.txt
 /temp
-/resources/server-admin/node_modules/
-/public/server-admin-build/
