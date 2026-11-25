@@ -1,0 +1,33 @@
+:root { font: 16px/1.5 system-ui, sans-serif; color: #20242a; background: #f8f9fa; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: inherit; text-underline-offset: 3px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 12px max(20px, calc((100% - 1080px) / 2)); border-bottom: 1px solid #d8dde2; background: white; }
+.topbar div, nav { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+.topbar img { object-fit: contain; }
+nav { font-size: .875rem; }
+main, footer { max-width: 1120px; margin: 0 auto; padding: 24px 20px; }
+.heading, .section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.eyebrow, dt, small { font-size: .8125rem; color: #505c68; }
+.eyebrow { margin: 0 0 4px; font-weight: 700; }
+h1, h2 { margin: 0; line-height: 1.2; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.125rem; }
+button { min-width: 138px; min-height: 40px; border: 1px solid #282d33; border-radius: 6px; background: #282d33; color: white; font: inherit; cursor: pointer; }
+button:disabled { opacity: .65; cursor: wait; }
+:focus-visible { outline: 3px solid #976000; outline-offset: 3px; }
+.overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 215px), 1fr)); gap: 16px; margin: 24px 0; padding: 16px 0; border-block: 1px solid #d8dde2; }
+dd { margin: 4px 0 0; font-weight: 650; }
+.notice { padding: 10px 12px; border-left: 3px solid currentColor; background: white; }
+.bad { color: #a32328; }
+.good { color: #196341; }
+.warning { color: #734900; }
+.section-heading { margin: 24px 0 12px; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: white; font-size: .875rem; }
+th, td { padding: 9px 12px; border-bottom: 1px solid #d8dde2; text-align: left; vertical-align: top; }
+thead { background: #eef0f2; }
+th:first-child { width: 52%; overflow-wrap: anywhere; }
+td { white-space: nowrap; }
+small { display: block; font-weight: 400; }
+footer { color: #505c68; font-size: .8125rem; }

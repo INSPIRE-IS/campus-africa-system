@@ -92,6 +92,47 @@ class WordPressBookingFeePromotionService
         ];
     }
 
+    public function verification()
+    {
+        $checkedAt = $this->now();
+        $startsAt = Carbon::parse($this->config['starts_at'], $this->timezone());
+        $endsAt = Carbon::parse($this->config['ends_at'], $this->timezone());
+        $phase = $checkedAt->lt($startsAt) ? 'upcoming' : ($checkedAt->lt($endsAt) ? 'promotion' : 'rollback');
+        $state = $this->state();
+        $inventory = $this->inventory();
+        $values = $this->currentValues($inventory);
+        $targets = $state['targets'] ?? $this->buildSnapshot($inventory)['targets'];
+        $canVerify = $phase !== 'upcoming' && ($phase !== 'rollback' || $state !== null);
+        $rows = [];
+
+        foreach ($targets as $target) {
+            $key = $this->targetKey($target);
+            $found = array_key_exists($key, $values);
+            $expected = $phase === 'promotion' ? $target['promotion_value'] : $target['original_value'];
+            $rows[] = [
+                'key' => $key,
+                'title' => $target['title'],
+                'field' => $target['field'],
+                'current' => $values[$key] ?? null,
+                'expected' => $canVerify ? $expected : null,
+                'result' => !$found ? 'missing' : (!$canVerify ? 'observed'
+                    : ($this->valuesMatch($values[$key], $expected) ? 'match' : 'mismatch')),
+            ];
+        }
+
+        return [
+            'starts_at' => $startsAt->toIso8601String(),
+            'ends_at' => $endsAt->toIso8601String(),
+            'checked_at' => $checkedAt->toIso8601String(),
+            'phase' => $phase,
+            'state' => $state['status'] ?? null,
+            'snapshot' => $state !== null,
+            'enabled' => (bool) $this->config['enabled'],
+            'writes_enabled' => (bool) config('services.wordpress.writes_enabled'),
+            'rows' => $rows,
+        ];
+    }
+
     public function activate()
     {
         $this->assertWritesAllowed();

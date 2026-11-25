@@ -1,5 +1,7 @@
 /node_modules
+/resources/server-admin/node_modules
 /public/hot
+/public/server-admin-build
 /public/storage
 /storage/*.key
 /storage/dbdata

@@ -22,6 +22,7 @@ use App\Http\Controllers\MetricsFeatureController;
 use App\Http\Controllers\PricingInspectorController;
 use App\Http\Controllers\SupplementaryDocumentController;
 use App\Http\Controllers\BedsReportController;
+use App\Http\Controllers\BlackFridayStatusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -214,6 +215,10 @@ Route::get('/metrics-codes', [MetricsFeatureController::class, 'codes']);
 Route::get('/metrics-codes/exceptions', [MetricsFeatureController::class, 'exceptions']);
 Route::get('/metrics-codes/breakdown', [MetricsFeatureController::class, 'codesBreakdown']);
 Route::get('/metrics-pricing', [PricingInspectorController::class, 'index']);
+Route::get('/server-admin/black-friday', [BlackFridayStatusController::class, 'index'])
+    ->middleware('auth')->name('server-admin.black-friday');
+Route::get('/server-admin/black-friday/status', [BlackFridayStatusController::class, 'status'])
+    ->middleware(['auth', 'throttle:12,1'])->name('server-admin.black-friday.status');
 
 Route::post('/email-check', [HomeController::class, 'email_check']);
 Route::post('/email-check-idNo', [ApplicationController::class, 'email_check_idNo']);
