@@ -12956,7 +12956,7 @@ class HomeController extends Controller
         DownloadBedsJob::dispatch($this_year->lookup_name, $propertyId, $request->user()->id, $request->user()->email);
 
         return response()->json([
-            'message' => 'The beds report will be emailed once it has been generated.',
+            'message' => 'A link will be emailed to you once the beds report has been generated.',
         ]);
     }
 

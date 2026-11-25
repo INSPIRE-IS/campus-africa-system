@@ -1,7 +1,5 @@
 /node_modules
-/resources/server-admin/node_modules
 /public/hot
-/public/server-admin-build
 /public/storage
 /storage/*.key
 /storage/dbdata
@@ -24,5 +22,3 @@ composer.lock
 *.xlsx
 note.txt
 /temp
-/resources/server-admin/node_modules/
-/public/server-admin-build/

@@ -67,18 +67,14 @@ Document everything for this repo.
 - Build assets: `npm run dev` / `npm run prod`
 - Watch assets: `npm run watch` / `npm run hot`
 
-## Deployment notes (Laravel Forge CI/CD)
-- Laravel Forge handles deployments from the site's configured Git branch.
-- The site uses Forge's zero-downtime deployment macros. Run application build and migration steps inside the new release directory, before activating it.
-- Keep application storage shared between releases so uploaded files and the Black Friday rollback snapshot survive deployments.
+## Deployment notes (CI/CD -> Forge -> Envoyer)
+- Deployment flow: merge to git (CI/CD) -> Laravel Forge server -> Envoyer deploy pipeline.
+- Deployment hooks (Envoyer). Always work inside the new release directory:
 
 ```bash
-$CREATE_RELEASE()
-cd "$FORGE_RELEASE_DIRECTORY"
+cd {{ release }}
 
-$FORGE_COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-yarn install --frozen-lockfile
-yarn production
+npm run production
 
 # Clear ALL cached / compiled Laravel artifacts
 php artisan optimize:clear
@@ -92,11 +88,9 @@ php artisan optimize
 # Storage symlink (safe to re-run)
 php artisan storage:link || true
 
-$ACTIVATE_RELEASE()
-$RESTART_QUEUES()
+# Restart queues AFTER everything is ready
+php artisan queue:restart
 ```
-
-This shows the release steps, not a replacement for site-specific settings. Use Forge's queue restart after activation rather than a separate pre-activation `php artisan queue:restart`. For branches containing the React server-admin checker, add the separate Vite build documented in `resources/server-admin/README.md` after `yarn production`.
 
 ## Notes Management
 - Keep this file stable: project setup, session checklist, safety rules, and pointers only.
